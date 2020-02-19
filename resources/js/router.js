@@ -1,0 +1,646 @@
+import Vue from 'vue';
+import VueRouter from 'vue-router';
+import AuthService from './services/auth';
+
+import 'nprogress/nprogress.css';
+import NProgress from 'nprogress';
+
+/*
+ |--------------------------------------------------------------------------
+ | Admin Views
+ |--------------------------------------------------------------------------|
+ */
+
+// Dashboard
+
+import NotFoundPage from './views/errors/404.vue';
+
+/*
+ |--------------------------------------------------------------------------
+ | Frontend Views
+ |--------------------------------------------------------------------------|
+ */
+
+import LayoutDashboard from "./views/layouts/LayoutDashboard";
+import DashboardIndexComponent from "./components/dashboard/DashboardIndexComponent";
+import ActivityLogComponent from "./components/system/activity/ActivityLogComponent";
+import SettingIndexComponent from "./components/setting/SettingIndexComponent";
+import NotificationIndexComponent from "./components/setting/NotificationIndexComponent";
+import IndexBranchComponent from "./components/system/organize/IndexBranchComponent";
+import EditBranchComponent from "./components/system/organize/EditBranchComponent";
+import EditIndexComponent from "./components/system/user/EditIndexComponent";
+import IndexComponent from "./components/system/user/IndexComponent";
+import IndexUserMarketComponent from "./components/system/user/IndexUserMarketComponent";
+import EditComponent from "./components/system/user/EditComponent";
+import IndexSaleRoomComponent from "./components/system/organize/IndexSaleRoomComponent";
+import EditSaleRoomComponent from "./components/system/organize/EditSaleRoomComponent";
+import BranchSaleroomComponent from "./components/system/organize/BranchSaleroomComponent";
+import BranchListUserComponent from "./components/system/organize/BranchListUserComponent";
+import BranchAddUserComponent from "./components/system/organize/BranchAddUserComponent";
+import IndexDepartmentComponent from "./components/system/organize/department/IndexDepartmentComponent";
+import EditDepartmentComponent from "./components/system/organize/department/EditDepartmentComponent";
+import DepartmentCityComponent from "./components/system/organize/department/DepartmentCityComponent";
+import IndexCityComponent from "./components/system/organize/IndexCityComponent";
+import CityBranchComponent from "./components/system/organize/CityBranchComponent";
+import EditCityComponent from "./components/system/organize/EditCityComponent";
+import SaleroomIndexComponent from "./components/system/saleroom/SaleroomIndexComponent";
+import EditSaleroomComponent from "./components/system/saleroom/EditSaleroomComponent";
+import SampleCourseComponent from "./components/education/SampleCourseComponent";
+import SaleRoomUserComponent from "./components/system/organize/SaleRoomUserComponent";
+import SaleroomUserComponent from "./components/system/saleroom/SaleroomUserComponent";
+import SaleroomUserEditComponent from "./components/system/saleroom/SaleroomUserEditComponent";
+import SaleroomUserViewComponent from "./components/system/saleroom/SaleroomUserViewComponent";
+import IndexBranchByRoleComponent from "./components/system/branch/IndexBranchByRoleComponent";
+import BranchUserByRoleComponent from "./components/system/branch/BranchUserByRoleComponent";
+import BranchEditByRoleComponent from "./components/system/branch/BranchEditByRoleComponent";
+import UserMarketComponent from "./components/system/user/UserMarketComponent";
+import UserMarketOrganizeComponent from "./components/system/user/UserMarketOrganizeComponent";
+import BranchMasterComponent from "./components/system/user/BranchMasterComponent";
+import UserTrashComponent from "./components/system/user/UserTrashComponent";
+import RoleIndexComponent from "./roles/RoleIndexComponent";
+import RoleEditComponent from "./roles/RoleEditComponent";
+import RoleListUserComponent from "./roles/RoleListUserComponent";
+import ImportIndexComponent from "./components/import/ImportIndexComponent";
+import ReportIndexComponent from "./components/system/report/ReportIndexComponent";
+import ReportIndexBaseComponent from "./components/system/report/ReportIndexBaseComponent";
+import SurveyListComponent from "./components/survey/SurveyListComponent";
+import SurveyCreateComponent from "./components/survey/SurveyCreateComponent";
+import SurveyStatisticComponent from "./components/survey/SurveyStatisticComponent";
+import SurveyPresentComponent from "./components/survey/SurveyPresentComponent";
+import QuestionAddComponent from "./components/survey/QuestionAddComponent";
+import QuestionListComponent from "./components/survey/QuestionListComponent";
+import SurveyEditComponent from "./components/survey/SurveyEditComponent";
+import QuestionEditComponent from "./components/survey/QuestionEditComponent";
+import SurveyRestoreComponent from "./components/survey/SurveyRestoreComponent";
+import SaleRoomUserIndexComponent from "./components/system/saleroomuser/IndexComponent";
+import CourseSampleEditComponent from "./components/education/CourseSampleEditComponent";
+import CourseCloneComponent from "./components/education/CourseCloneComponent";
+import CourseListComponent from "./components/education/CourseListComponent";
+import CourseEditComponent from "./components/education/CourseEditComponent";
+import EnrolComponent from "./components/education/EnrolComponent";
+import CourseStatisticComponent from "./components/education/CourseStatisticComponent";
+import CourseCreateComponent from "./components/education/CourseCreateComponent";
+import CourseConcenComponent from "./components/education/CourseConcenComponent";
+import CourseCreateConcenComponent from "./components/education/CourseCreateConcenComponent";
+import CourseEditConcentComponent from "./components/education/CourseEditConcentComponent";
+import CourseRestoreComponent from "./components/education/CourseRestoreComponent";
+import StudentUncertificateComponent from "./components/education/StudentUncertificateComponent";
+import ViewUserComponent from "./components/system/saleroomuser/ViewUserComponent";
+import SettingCertificateComponent from "./components/education/SettingCertificateComponent";
+import EditCertificateComponent from "./components/education/EditCertificateComponent";
+import ListUserExam from "./components/education/ListUserExam";
+
+Vue.use(VueRouter);
+Vue.use(NProgress);
+
+const routes = [
+
+  /*
+   |--------------------------------------------------------------------------
+   | Admin Backend Routes
+   |--------------------------------------------------------------------------|
+   */
+  {
+    path: '/tms',
+    component: LayoutDashboard, // Change the desired Layout here
+    meta: { requiresAuth: true },
+    children: [
+      // Dashboard
+      {
+        path: 'dashboard',
+        component: DashboardIndexComponent,
+        name: 'Dashboard'
+      },
+      //Organize
+      //-departments
+      {
+        path: 'system/organize/department',
+        component: IndexDepartmentComponent,
+        name: 'DepartmentIndex'
+      },
+      {
+        path: 'system/organize/department/edit/:id',
+        component: EditDepartmentComponent,
+        name: 'EditDepartment',
+        props: (route) => ({ id: route.params.id})
+      },
+      //-city
+      {
+        path: 'system/organize/city',
+        component: IndexCityComponent,
+        name: 'CityIndex',
+        props: (route) => ({
+          department: route.query.department_id ? route.query.department_id : 0,
+        })
+      },
+      {
+        path: 'system/organize/city/edit/:city_id',
+        component: EditCityComponent,
+        name: 'EditCity',
+        props: (route) => ({ id: route.params.city_id})
+      },
+      {
+        path: 'system/organize/departments/city/:id',
+        component: DepartmentCityComponent,
+        name: 'DepartmentCityIndex',
+        props: (route) => ({ id: route.params.id})
+      },
+      //-branch
+      {
+        path: 'system/organize/branch',
+        component: IndexBranchComponent,
+        name: 'BranchIndex',
+        props: (route) => ({
+          city_id: route.query.city ? route.query.city : 0,
+          code: route.query.code
+        })
+      },
+      {
+        path: 'system/organize/branch/edit/:branch_id',
+        component: EditBranchComponent,
+        name: 'EditBranch',
+        props: (route) => ({
+          id: route.params.branch_id,
+          city_id: route.query.city ? route.query.city : 0,
+        })
+      },
+      {
+        path: 'system/organize/city/branch/:city',
+        component: CityBranchComponent,
+        name: 'BranchIndexByCity',
+        props: (route) => ({
+          id: route.params.city,
+        })
+      },
+      //-saleroom
+      {
+        path: 'system/organize/saleroom',
+        component: IndexSaleRoomComponent,
+        name: 'SaleroomIndex',
+        props: (route) => ({
+          branch_id: route.query.branch_id ? route.query.branch_id : 0,
+          code: route.query.code
+        })
+      },
+      {
+        path: 'system/organize/saleroom/edit/:saleroom_id',
+        component: EditSaleRoomComponent,
+        name: 'EditSaleroom',
+        props: (route) => ({
+          id: route.params.saleroom_id,
+          branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
+          root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom',
+        })
+      },
+      {
+        path: 'system/organize/branch/saleroom/:branch_id',
+        component: BranchSaleroomComponent,
+        name: 'SaleroomIndexByBranch',
+        props: (route) => ({
+          id: route.params.branch_id,
+        })
+      },
+      //Branch for branch master & owner
+      {
+        path: 'branch/list', //master only
+        component: IndexBranchByRoleComponent,
+        name: 'BranchIndexByRole',
+        props: (route) => ({
+          master_id: route.query.master_id ? route.query.master_id : '',
+        })
+      },
+      {
+        path: 'branch/edit/:branch_id',
+        component: BranchEditByRoleComponent,
+        name: 'BranchEditByRole',
+        props: (route) => ({
+          id: route.params.branch_id ? route.params.branch_id : 0,
+        })
+      },
+      {
+        path: 'branch/user', //list user
+        component: BranchUserByRoleComponent,
+        name: 'BranchUserIndexByRole',
+        props: (route) => ({
+          id: route.query.branch_id ? route.query.branch_id : 0,
+          owner_type: !route.query.branch_id || route.query.branch_id === 0 ? 'owner' : 'master',
+          branch_type: 'agents',
+          saleroom_type: 'pos',
+        })
+      },
+      {
+        path: 'branch/:branch_id/user/:user_id/view', //view saleroom user
+        component: SaleroomUserViewComponent,
+        name: 'BranchUserViewByRole',
+        props: (route) => ({
+          branch_id: route.params.branch_id ? route.params.branch_id : 0,
+          user_id: route.params.user_id ? route.params.user_id : 0,
+          owner_type: route.query.type ? route.query.type : 0,
+        })
+      },
+      {
+        path: 'branch/:branch_id/user/:user_id/view', //edit saleroom user
+        component: SaleroomUserEditComponent,
+        name: 'BranchUserEditByRole',
+        props: (route) => ({
+          branch_id: route.params.branch_id ? route.params.branch_id : 0,
+          user_id: route.params.user_id ? route.params.user_id : 0,
+          owner_type: route.query.type ? route.query.type : 0,
+        })
+      },
+      //Saleroom for branch master or branch owner
+      {
+        path: 'saleroom/list',
+        component: SaleroomIndexComponent,
+        name: 'SaleroomIndexByRole',
+        props: (route) => ({
+          branch_id: route.query.branch_id ? route.query.branch_id : 0,
+        })
+      },
+      {
+        path: 'saleroom/:saleroom_id/edit',
+        component: EditSaleroomComponent,
+        name: 'SaleroomEditByRole',
+        props: (route) => ({
+          id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+          owner_type: route.query.type ? route.query.type : '',
+        })
+      },
+      {
+        path: 'saleroom/:saleroom_id/user', //list user
+        component: SaleroomUserComponent,
+        name: 'SaleroomUserIndexByRole',
+        props: (route) => ({
+          id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+          type: 'pos',
+          owner_type: route.query.type ? route.query.type : 0,
+        })
+      },
+      {
+        path: 'saleroom/:saleroom_id/user/:user_id/view', //view saleroom user
+        component: SaleroomUserViewComponent,
+        name: 'SaleroomUserViewByRole',
+        props: (route) => ({
+          saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+          user_id: route.params.user_id ? route.params.user_id : 0,
+          owner_type: route.query.type ? route.query.type : 0,
+          type: 'saleroom',
+        })
+      },
+      {
+        path: 'saleroom/:saleroom_id/user/:user_id/edit', //edit saleroom user
+        component: SaleroomUserEditComponent,
+        name: 'SaleroomUserEditByRole',
+        props: (route) => ({
+          saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+          user_id: route.params.user_id ? route.params.user_id : 0,
+          owner_type: route.query.type ? route.query.type : 0,
+          type: 'saleroom',
+        })
+      },
+      //Saleroom user for pos manager
+      {
+        path: 'sale_room_user', //edit saleroom user
+        component: SaleRoomUserIndexComponent,
+        name: 'SaleRoomUserIndex'
+      },
+      {
+        path: 'user/view/:name_section/:user_id', //edit saleroom user
+        component: ViewUserComponent,
+        name: 'SaleRoomUserView',
+        props: (route) => ({
+          name_section: route.params.name_section ? route.params.name_section : '',
+          user_id: route.params.user_id ? route.params.user_id : 0,
+        })
+      },
+      //User
+      {
+        path: 'system/user/edit/:user_id',
+        component: EditIndexComponent,
+        name: 'EditUserById',
+        props: (route) => ({
+          type: route.query.type,
+          user_id: route.params.user_id})
+      },
+      {
+        path: 'system/user/edit_detail/:user_id',
+        component: EditComponent,
+        name: 'EditDetailUserById',
+        props: (route) => ({
+          type: route.query.type,
+          user_id: route.params.user_id
+        })
+      },
+      {
+        path: 'system/user',
+        component: IndexComponent,
+        name: 'SystemUserList',
+        props: (route) => ({ type: route.query.type})
+      },
+      {
+        path: 'system/view_user_market',
+        component: IndexUserMarketComponent,
+        name: 'SystemUserMarketList',
+        props: (route) => ({ type: route.query.type})
+      },
+      {
+        path: 'system/user_market',
+        component: UserMarketComponent,
+        name: 'UserMarketIndex',
+      },
+      {
+        path: 'system/user_market/organize/:user_id',
+        component: UserMarketOrganizeComponent,
+        name: 'UserMarketOrganize',
+        props: (route) => ({ user_id: route.params.user_id})
+      },
+      {
+        path: 'system/branch_master',
+        component: BranchMasterComponent,
+        name: 'BranchMasterIndex',
+      },
+      {
+        path: 'education/user_teacher',
+        component: IndexComponent,
+        name: 'TeacherIndex',
+        props: (route) => ({ type: 'teacher'})
+      },
+      {
+        path: 'education/user_student',
+        component: IndexComponent,
+        name: 'StudentIndex',
+        props: (route) => ({ type: 'student'})
+      },
+      {
+        path: 'system/user/trash',
+        component: UserTrashComponent,
+        name: 'userTrashIndex',
+        props: (route) => ({ type: 'system'})
+      },
+      {
+        path: 'system/organize/branch/user_list/:branch_id',
+        component: BranchListUserComponent,
+        name: 'ListUserByBranch',
+        props: (route) => ({ id: route.params.branch_id})
+      },
+      {
+        path: 'system/organize/saleroom/user/:saleroom_id',
+        component: SaleRoomUserComponent,
+        name: 'ListUserBySaleroom',
+        props: (route) => ({
+          id: route.params.saleroom_id,
+          branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
+          root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom'
+        })
+      },
+      {
+        path: 'system/organize/branch/add_user/:branch_id',
+        component: BranchAddUserComponent,
+        name: 'AddUserByBranch',
+        props: (route) => ({ id: route.params.branch_id})
+      },
+      {
+        path: 'excel/import/user',
+        component: ImportIndexComponent,
+        name: 'ImportIndex',
+        props: (route) => ({ query: route.params.type ? route.params.type : 'system' })
+      },
+      //Roles
+      {
+        path: 'role',
+        component: RoleIndexComponent,
+        name: 'RoleIndex'
+      },
+      {
+        path: 'role/edit/:role_id',
+        component: RoleEditComponent,
+        name: 'RoleEdit',
+        props: (route) => ({ role_id: route.params.role_id})
+      },
+      {
+        path: 'role/list_user/:role_id',
+        component: RoleListUserComponent,
+        name: 'RoleUserIndex',
+        props: (route) => ({ role_id: route.params.role_id})
+      },
+      //Activity log
+      {
+        path: 'activity_log',
+        component: ActivityLogComponent,
+        name: 'ActivityLog'
+      },
+      //Report
+      {
+        path: 'report',
+        component: ReportIndexComponent,
+        name: 'ReportIndex'
+      },
+      {
+        path: 'report/base',
+        component: ReportIndexBaseComponent,
+        name: 'ReportBaseIndex'
+      },
+      //Survey
+      {
+        path: 'survey/list',
+        component: SurveyListComponent,
+        name: 'SurveyIndex'
+      },
+      {
+        path: 'survey/create',
+        component: SurveyCreateComponent,
+        name: 'SurveyCreate'
+      },
+      {
+        path: 'survey/viewlayout/:survey_id',
+        component: SurveyPresentComponent,
+        name: 'SurveyPresent',
+        props: (route) => ({ survey_id: route.params.survey_id})
+      },
+      {
+        path: 'survey/statistic/:survey_id',
+        component: SurveyStatisticComponent,
+        name: 'SurveyStatistic',
+        props: (route) => ({ survey_id: route.params.survey_id})
+      },
+      {
+        path: 'survey/statistic/:survey_id',
+        component: SurveyEditComponent,
+        name: 'SurveyDetail',
+        props: (route) => ({ survey_id: route.params.survey_id})
+      },
+      {
+        path: 'survey/restore',
+        component: SurveyRestoreComponent,
+        name: 'SurveyRestore'
+      },
+      {
+        path: 'question/create/:survey_id',
+        component: QuestionAddComponent,
+        name: 'QuestionCreate',
+        props: (route) => ({ sur_id: route.params.survey_id})
+      },
+      {
+        path: 'question/list',
+        component: QuestionListComponent,
+        name: 'QuestionIndex',
+      },
+      {
+        path: 'question/detail/:question_id',
+        component: QuestionEditComponent,
+        name: 'QuestionDetail',
+        props: (route) => ({ ques_id: route.params.question_id})
+      },
+      //Settings
+      //-configuration
+      {
+        path: 'configuration',
+        component: SettingIndexComponent,
+        name: 'Configuration'
+      },
+      //-notification
+      {
+        path: 'notification',
+        component: NotificationIndexComponent,
+        name: 'Notification'
+      },
+      //Education
+      //-course sample
+      {
+        path: 'education/course/course_sample',
+        component: SampleCourseComponent,
+        name: 'SampleCourseIndex',
+      },
+      {
+        path: 'education/course/detail_sample/:id',
+        component: CourseSampleEditComponent,
+        name: 'SampleCourseDetail',
+        props: (route) => ({ course_id: route.params.id})
+      },
+      {
+        path: 'education/course/detail/:id',
+        component: CourseEditComponent,
+        name: 'CourseDetail',
+        props: (route) => ({ course_id: route.params.id})
+      },
+      {
+        path: 'education/course/detail_concentrate/:id',
+        component: CourseEditConcentComponent,
+        name: 'CourseConcentrateDetail',
+        props: (route) => ({ course_id: route.params.id})
+      },
+      {
+        path: 'education/course/clone/:course_id',
+        component: CourseCloneComponent,
+        name: 'CourseClone',
+        props: (route) => ({ course_id: route.params.course_id})
+      },
+      {
+        path: 'education/course/list',
+        component: CourseListComponent,
+        name: 'CourseIndex',
+      },
+      {
+        path: 'education/course/list_restore',
+        component: CourseRestoreComponent,
+        name: 'CourseRestoreIndex',
+      },
+      {
+        path: 'certificate/student/uncertificate',
+        component: StudentUncertificateComponent,
+        name: 'StudentUncertificate',
+      },
+      {
+        path: 'education/course/list_concentrate',
+        component: CourseConcenComponent,
+        name: 'CourseConcentrateIndex',
+      },
+      {
+        path: 'education/course/create',
+        component: CourseCreateComponent,
+        name: 'CourseCreate',
+      },
+      {
+        path: 'education/course/create_concentrate',
+        component: CourseCreateConcenComponent,
+        name: 'CourseCreateConcern',
+      },
+      {
+        path: 'education/course/enrol/:id/:come_from',
+        component: EnrolComponent,
+        name: 'CourseEnrol',
+        props: (route) => ({
+          course_id: route.params.id,
+          come_from: route.params.come_from
+        })
+      },
+      {
+        path: 'education/course/statistic/:id/:come_from',
+        component: CourseStatisticComponent,
+        name: 'CourseStatistic',
+        props: (route) => ({
+          course_id: route.params.id,
+          come_from: route.params.come_from
+        })
+      },
+      {
+        path: 'certificate/setting',
+        component: SettingCertificateComponent,
+        name: 'SettingCertificate'
+      },
+      {
+        path: 'certificate/edit/:id',
+        component: EditCertificateComponent,
+        name: 'EditCertificate',
+        props: (route) => ({
+          id: route.params.id,
+        })
+      },
+      {
+        path: 'education/resetexam',
+        component: ListUserExam,
+        name: 'UserExam'
+      },
+    ]
+  },
+
+  //  DEFAULT ROUTE
+  { path: '*', component: NotFoundPage }
+];
+
+const router = new VueRouter({
+  routes,
+  mode: 'history',
+  linkActiveClass: 'active'
+});
+
+router.beforeResolve((to, from, next) => {
+  if (to.name) {
+    NProgress.start();
+  }
+  next();
+});
+
+router.beforeEach((to, from, next) => {
+  //  If the next route is requires user to be Logged IN
+  if (to.matched.some(m => m.meta.requiresAuth)) {
+    return AuthService.check().then(authenticated => {
+      if (!authenticated) {
+        let baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+        let fullUrl = location.href;
+        window.location.replace(baseUrl + '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + fullUrl);
+        //return next({ path: '/login' }); //not working
+      } else {
+        return next();
+      }
+    });
+  }
+
+  return next();
+});
+
+router.afterEach((to, from) => {
+  NProgress.done();
+});
+
+export default router;

@@ -1,0 +1,126 @@
+﻿{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template theme_boost/flat_navigation
+
+    Display the flat navigation for the boost theme
+
+    Classes required for JS:
+    * none
+
+    Data attributes required for JS:
+    * none
+
+    Context variables required for this template:
+    * flatnavigation - array of flat_navigation_nodes
+      * showdivider - boolean
+      * action - string
+      * isactive - boolean
+      * get_indent - integer
+      * is_section - boolean
+      * text - HTML
+
+    Example context (json):
+    {
+        "flatnavigation" : [
+            {
+                "showdivider": false,
+                "action": "#",
+                "isactive": true,
+                "get_indent": 1,
+                "is_section": false,
+                "text": "First"
+            },{
+                "showdivider": true,
+                "action": "#",
+                "isactive": false,
+                "get_indent": 0,
+                "is_section": true,
+                "text": "Last &amp; Second"
+            }
+        ]
+    }
+}}
+<aside class="left-sidebar">
+    <!-- Sidebar scroll-->
+    <div class="scroll-sidebar">
+        <!-- User Profile-->
+        <div class="user-profile">
+            <div class="user-pro-body">
+                <div><img src="{{ $user['url'] ? $user['url'] : asset('images/user.png') }}" alt="user-img" class="img-circle"></div>
+                <div class="dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle u-dropdown link hide-menu" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">{{ $user['firstname'].' '.$user['lastname'] }} <span class="caret"></span></a>
+                    <div class="dropdown-menu animated flipInY">
+                        <!-- text-->
+                        <a href="javascript:void(0)" class="dropdown-item"><i class="ti-user"></i> My Profile</a>
+                        <!-- text-->
+                        <a href="pages-login.html" class="dropdown-item"><i class="fas fa-power-off"></i> Logout</a>
+                        <!-- text-->
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Sidebar navigation-->
+        <nav class="sidebar-nav">
+            <ul id="sidebarnav">
+                <li>
+                    <a class="waves-effect waves-dark {{ (Request::segment(1) === '' || Request::segment(1) === 'dashboard' ) ? 'active' : '' }}" href="/" aria-expanded="false"><i class="icon-speedometer"></i>
+                        <span class="hide-menu">Dashboard</span>
+                    </a>
+                </li>
+                <li>
+                    <a class="has-arrow waves-effect waves-dark {{ (Request::segment(1) === '' || Request::segment(1) === 'system' ) ? 'active' : '' }}" href="javascript:void(0)" aria-expanded="false"><i class="ti-layout-grid2"></i>
+                        <span class="hide-menu">Quản lý hệ thống </span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse {{ (Request::segment(1) === '' || Request::segment(1) === 'system' ) ? 'in' : '' }}">
+                        <li><a href="{{ route('system.organize') }}">Cơ cấu tổ chức </a></li>
+                        <li>
+                            <a href="javascript:void(0)" class="has-arrow {{ (Request::segment(2) === '' || Request::segment(2) === 'user' ) ? 'active' : '' }}">Quản trị người dùng</a>
+                            <ul aria-expanded="false" class="collapse {{ (Request::segment(2) === '' || Request::segment(2) === 'user' ) ? 'in' : '' }}">
+                                <li><a href="{{ route('system.user') }}">Người dùng</a></li>
+                                <li><a href="#">Phân quyền</a></li>
+                            </ul>
+                        </li>
+                        <li><a href="#">Phòng học</a></li>
+                        <li><a href="#">Notification</a></li>
+                        <li><a href="#">Log hệ thống</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="has-arrow waves-effect waves-dark" href="javascript:void(0)" aria-expanded="false"><i class="ti-layout-grid2"></i>
+                        <span class="hide-menu">Quản lý đào tạo </span>
+                    </a>
+                    <ul aria-expanded="false" class="collapse">
+                        <li><a href="#">Khóa học </a></li>
+                        <li><a href="#">Khung năng lực</a></li>
+                        <li><a href="#">Giảng viên</a></li>
+                        <li><a href="#">Học viên</a></li>
+                        <li><a href="#">Chương trình đào tạo</a></li>
+                        <li><a href="#">Chứng chỉ</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a class="waves-effect waves-dark" href="/" aria-expanded="false"><i class="ti-layout-grid2"></i>
+                        <span class="hide-menu">Báo cáo</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <!-- End Sidebar navigation -->
+    </div>
+    <!-- End Sidebar scroll-->
+</aside>

@@ -1,0 +1,82 @@
+.custom-tree .dd-handle{
+	width: calc(100% - 180px);
+	display: inline-block;
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0; 
+}
+.dd-handle-last{
+	margin-left: 42px;
+}
+.custom-tree .button-list{
+	height: 38px;
+	line-height: 34px;
+	border: 2px solid #e0e3e4;
+	border-left: 0;
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}
+.custom-tree .button-list .btn{
+	margin-top: 0;
+}
+.dd{
+	max-width: 100%;
+}
+.mce-path-item{
+	display: none;
+}
+
+/* -------------------------Ratio------------------------- */
+.image-box {
+  position: relative;
+  overflow: hidden;
+}
+.image-box::before {
+  content: "";
+  display: block;
+  padding-top: 100%; /* initial ratio of 1:1*/
+}
+.image-box .image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  margin: auto;
+  background-size: cover;
+  background-position: center;
+}
+.image-box.ratio-1-1::before {
+  padding-top: 100%;
+}
+.image-box.ratio-2-1::before {
+  padding-top: 50%;
+}
+.image-box.ratio-1-2::before {
+  padding-top: 200%;
+}
+.image-box.ratio-3-4:before {
+  padding-top: 150%;
+}
+.image-box.ratio-4-3:before {
+  padding-top: 75%;
+}
+.image-box.ratio-5-3:before {
+  padding-top: 60%;
+}
+.image-box.ratio-16-9:before {
+  padding-top: 56.25%;
+}
+/* -------------------------Close ratio------------------------- */
+
+.btn-download-info-user{
+	position: absolute;
+	z-index: 100;
+	left: 10px;
+	bottom: 10px;
+}
+.custom-control-label::before{
+  top: .1rem;
+}
+.custom-control-label::after{
+  top: .1rem;
+}

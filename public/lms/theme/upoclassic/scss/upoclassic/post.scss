@@ -1,0 +1,77 @@
+// General Post SCSS for use in all presets.
+@import "../../classic/scss/classic/post";
+
+#page-site-index.pagelayout-frontpage {
+    .hiddendock {
+        border: 2px solid  #f2dede;
+        margin-top: 10px;
+        margin-bottom: 10px;
+        padding: 0;
+
+        h4 {
+            background-color: #f2dede;
+            padding: 1em 5px;
+            border-bottom: thin solid $secondary;
+            margin: 0;
+        }
+
+        .block-region {
+            display: flex;
+            flex-wrap: wrap;
+            .block {
+                min-width: 250px;
+                margin: 4px;
+            }
+        }
+    }
+
+    .block-region.yui3-dd-drop {
+        border: 1px dashed $primary;
+        min-height: 5em !important;
+    }
+
+    .banner-blocks, .homeblocks, .hiddendock, .footerblocks {
+        .row {
+            margin-left: 0;
+            margin-right: 0;
+            aside {
+                padding-left: 0;
+                padding-right: 0;
+            }
+        }
+        margin-bottom: 1em;
+    }
+
+    .homeblocks, .footerblocks {
+        .block {
+            border: none;
+            background: transparent;
+        }
+    }
+
+    .banner-blocks {
+        margin-left: -7.5px;
+        margin-right: -7.5px;
+        margin-bottom: 0;
+
+        .block {
+            @include border-radius(0);
+            margin-bottom: 4px !important;
+        }
+
+        @media (min-width: 768px) {
+
+            .block_news_items, .block_rss_client {
+                div.content {
+                    ul {
+                        display: flex;
+                        li {
+                            padding: 0 1em !important;
+                            border: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

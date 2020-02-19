@@ -1,0 +1,48 @@
+<html>
+
+<head>
+    <script src="/template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/sso/sslssso.js"></script>
+    <script type="text/javascript" src="/lms/theme/bgtlms/js/custom.js"></script>
+    <script src="/lms/theme/bgtlms/js/jquery.tabledit.js"></script>
+    <script src="/lms/theme/bgtlms/js/html-table-search.js"></script>
+    <script src="/lms/theme/bgtlms/js/bootstrap-toggle.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            setTimeout(() => {
+                sslssso.logout();
+                localStorage.setItem('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye', 'logout');
+                window.location.href = '/';
+            }, 1000);
+        });
+    </script>
+
+    <style>
+        .loader {
+			border: 5px solid #f3f3f3;
+			border-top: 5px solid #3498db;
+			border-radius: 50%;
+			width: 40px;
+			height: 40px;
+			animation: spin 2s linear infinite;
+			margin: auto auto;
+			position: fixed;
+			top: 50%;
+			left: 50%;
+			margin-left: -20px;
+			margin-top: -20px;
+		}
+        
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<div class="loader"></div>
+
+</html>

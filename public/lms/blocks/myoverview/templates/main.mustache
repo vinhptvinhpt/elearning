@@ -1,0 +1,185 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_myoverview/main
+
+    This template renders the main content area for the myoverview block.
+
+    Example context (json):
+    {}
+}}
+
+<div id="block-myoverview-{{uniqid}}" class="block-myoverview block-cards" data-region="myoverview" role="navigation">
+            <!-- The popup certificate -->
+            <div id="popup_certificate" class="modal">
+                <!-- Modal content -->
+                <div class="modal-content">
+                    <span id="close_popup" class="close" >&times;</span>
+                    <img id="cert_popup_img" src="" width="400" height="600" style="margin-left: auto; margin-right: auto;">
+                </div>
+            </div>
+            
+            <div id="progress-status" class="progress-status hidden-status"> Bạn đã hoàn thành <span class="pass">0</span><i>/</i><span class="total">0</span> khoá học</div>
+            <div data-region="filter" class="d-flex align-items-center flex-wrap" aria-label="{{#str}} aria:controls, block_myoverview {{/str}}">
+                {{> block_myoverview/nav-grouping-selector }}
+
+                {{> block_myoverview/nav-sort-selector }}
+
+                {{> block_myoverview/nav-display-selector }}
+            </div>
+
+    <div class="container-fluid p-0">
+        {{> block_myoverview/courses-view }}
+    </div>
+    <style>
+        div#progress-status {
+            margin-bottom: 15px;
+            color: #6c757d!important;
+            margin-top: -10px;
+        }
+        div#progress-status span {
+            color: #ffc107;
+            font-weight: 600;
+            font-size: 18px;
+            margin: 0 1px 0 3px;
+        }
+        div#progress-status i{
+            color:red;
+        }
+        .card.dashboard-card.disable:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(238, 238, 238, 0.5);
+        }
+        div#is_end_quiz {
+            display: block !important;
+            font-weight: 400;
+            font-size: 14px;
+            color: #ad0b0b;
+        }
+        /* The Modal (background) */
+        .modal {
+        display: none; /* Hidden by default */
+        position: fixed; /* Stay in place */
+        z-index: 99999!important; /* Sit on top */
+        padding-top: 100px; /* Location of the box */
+        left: 0;
+        top: 0;
+        width: 100%; /* Full width */
+        height: 100%; /* Full height */
+        overflow: auto; /* Enable scroll if needed */
+        background-color: rgb(0,0,0); /* Fallback color */
+        background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+        }
+
+        /* Modal Content */
+        .modal-content {
+        background-color: #fefefe;
+        margin: -80px auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 80%;
+        }
+
+        /* The Close Button */
+        .close {
+        color: #aaaaaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+        color: #000;
+        text-decoration: none;
+        cursor: pointer;
+        }
+    </style>
+</div>
+{{#js}}
+require(
+[
+    'jquery',
+    'block_myoverview/main',
+],
+function(
+    $,
+    Main
+) {
+    var root = $('#block-myoverview-{{uniqid}}');
+    Main.init(root);
+
+    if($('#region-main div[data-region="courses-view"] .dashboard-card-deck .card.dashboard-card')){
+        var stt = 0;
+        var interval_obj = setInterval(function(){
+
+            var total = $('#region-main .block_myoverview .dashboard-card-deck > .card.dashboard-card').length;
+            var success = total;
+            var certificate = $('#certificate_img').attr('value');
+            $('body #progress-status .total').html(total);
+            var pass = 0;
+            $('body #region-main .block_myoverview .dashboard-card-deck > .card.dashboard-card').each(function() {
+                var process = $('.progress-bar.bar',this).attr('aria-valuenow');
+                if(process == 100){
+                    pass += 1;
+                }
+            });
+            stt++;
+            // [VinhPT][19.11.2019] Comment for vietlot pilot
+            if(certificate != 'No-Certificate'){
+                $('body #progress-status').html('Bạn đã được cấp chứng chỉ');
+                //$("body #progress-status").click(function(){ window.location.replace(certificate); });
+                $("body #progress-status").click(function(){ 
+                    var popup = document.getElementById("popup_certificate");
+                    popup.style.display = "block";
+                    var img_cert = document.getElementById("cert_popup_img");
+                    img_cert.src = certificate;
+                });
+                $('body #close_popup').click(function(){ document.getElementById("popup_certificate").style.display = "none"; });
+            }else{
+                $('body #progress-status .pass').html(pass);
+                $('body #progress-status').removeClass('hidden-status');
+            }
+            // if($('#is_end_quiz').length > 0){
+                // success = success - 1;
+                // $('body #is_end_quiz').each(function(index) {
+                    // if($(this).attr('value') == 1){
+                        // var parent = $(this).parents('.dashboard-card');
+                        // if(pass < success){
+                            // $(parent).addClass('disable');
+                            // $(this).html('Bạn phải hoàn thành tất cả các khoá học chứng chỉ mới được làm bài thi này.');
+                        // }
+                    // }
+                    // console.log('a'+index+':'+$(this).attr('value'));
+                // });
+            
+            // }
+
+            if(stt >= 10){
+                clearInterval(interval_obj);
+            }
+        }, 1500);
+        
+    }
+
+});
+{{/js}}

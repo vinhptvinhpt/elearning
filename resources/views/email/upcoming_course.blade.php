@@ -1,0 +1,60 @@
+<html lang="en">
+<head>
+    <title>Giới thiệu một số khóa học sẽ bắt đầu trong thời gian tới</title>
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+<div>
+<?php 
+    //using class
+    use App\Mail\CourseSendMail;
+
+    // echo public_path();
+    $dir = public_path(). "/files/email";
+    // //return file or foler in directory above
+    $temp_files = scandir($dir);
+    //get content of file with name
+    $string = file_get_contents(public_path()."/files/email/template.json");
+    // //decode content of file above=
+    $data = json_decode($string, true);
+    $text = $data['remind_upcoming_course'];
+    //replace values
+    $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
+    $text = str_replace(CourseSendMail::USERNAME, $username, $text);
+    //define string for table
+    $course_list_string = '<table style="border: 1px">
+    <tr>
+        <th>Mã khóa học</th>
+        <th>Tên khóa học</th>
+        <th>Thời gian bắt đầu</th>
+        <th>Thời gian kết thúc</th>
+        <th>Địa điểm học</th>
+    </tr>';
+    //loop to set tr to table
+    foreach($course_list as $course) {
+        $course_list_string .= '<tr>
+        <td><p style="color: blue;">'. $course->shortname .'</p></td>
+        <td><p style="color: blue;">'.$course->fullname.'</p></td>
+        <td><p style="color: blue;">'.date('d/m/Y', $course->startdate).'</p></td>
+        <td><p style="color: blue;">'.date('d/m/Y', $course->enddate).'</p></td>
+        <td><p style="color: blue;">'.$course->course_place.'</p></td>
+        </tr>';
+    }
+        
+    $course_list_string .= '</table>';
+    //replace string with list above
+    $text = str_replace(CourseSendMail::COURSELIST, $course_list_string, $text);
+    //
+    echo $text;
+?>
+
+
+</body>
+</html>
+
+
+

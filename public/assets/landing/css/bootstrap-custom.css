@@ -1,0 +1,30 @@
+@charset "utf-8";
+/* CSS Document */
+
+dl, ol, ul {
+	margin: 0;
+	padding: 0;
+}
+
+.navbar {
+	padding: 0;
+}
+
+.navbar-toggler {
+	position: absolute;
+	right: 10px;
+	color: #363636;
+	padding: 5px;
+	font-size: 0;
+	outline: none !important;
+	box-shadow: none;
+	border-radius: 2px;
+	background: #f2f2f2;
+}
+.navbar-toggler:active {
+	outline: none !important;
+}
+.navbar-toggler span {
+	display: inline-block;
+	font-size: 0;
+}

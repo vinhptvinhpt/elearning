@@ -1,0 +1,99 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    Page header.
+}}
+{{{ output.doctype }}}
+<html {{{ output.htmlattributes }}}>
+<head>
+    <title>{{{ output.page_title }}}</title>
+<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese" rel="stylesheet">
+    <link rel="shortcut icon" href="{{{ output.favicon }}}" />
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17" />
+<script src="/template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+<script src="/sso/sslssso.js"></script>
+<script>
+	$(document).ready(function(){
+		var currentUrl = window.location.href;
+		var jwtsso = getToken();
+		if (jwtsso){
+			<!-- $.ajax({ -->
+				<!-- url:'/sso/authentoken', -->
+				<!-- data: {'jwt': jwtsso}, -->
+				<!-- type: 'POST', -->
+				<!-- success: function(data) { -->
+					<!-- data.action = "sso.onidentification"; -->
+					<!-- $.ajax({ -->
+					<!-- url:'/lms/login/index.php', -->
+					<!-- data: data, -->
+					<!-- type: 'POST', -->
+					<!-- success: function(data) {		 -->
+						<!-- if(data == 1){ -->
+							<!-- window.location.href = currentUrl; -->
+						<!-- } -->
+					<!-- }, -->
+					<!-- error: function(ex){ -->
+						<!-- console.log('Lms sso error'); -->
+						<!-- console.log(ex); -->
+					<!-- } -->
+				<!-- }); -->
+				<!-- }, -->
+				<!-- error: function(ex){ -->
+					<!-- console.log('token sso error'); -->
+					<!-- console.log(ex); -->
+				<!-- } -->
+			<!-- }); -->
+		}else{
+			$.ajax({
+				url:'/lms/login/index.php',
+				data: {action:'sso.logout'},
+				type: 'POST',
+				dataType: 'json',
+				success: function(data) {
+					if(data == 1 && window.location.href != '/lms/login/index.php'){
+                        localStorage.setItem(logoutCookie, 'logout');
+						window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback='+currentUrl;
+					}
+				}
+			});
+		}
+	});
+
+    function getCookieByName(o) {
+        var e;
+        if (2 === (e = ("; " + document.cookie).split("; " + o + "=")).length) return e.pop().split(";").shift()
+    }
+
+	var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
+	var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
+    var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
+	function isSafariBrowser() {
+		var o = navigator.userAgent.indexOf("Safari") > -1;
+		return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
+	}
+
+	function getToken(){
+		var jwtsso;
+		jwtsso = getCookieByName(safariCookie);
+		return jwtsso;
+	}
+
+
+</script>
+</head>

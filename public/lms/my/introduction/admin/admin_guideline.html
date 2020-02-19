@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>LMS</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:400,500,700&display=swap&subset=vietnamese" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+</head>
+
+<body>
+<style>
+    body{
+        line-height: 1.4;
+        font-family: 'Roboto', sans-serif;
+    }
+    .h1, .h2, .h3, .h4, .h5, .h6, h1, h2, h3, h4, h5, h6 {
+        line-height: 1.4;
+    }
+    img{
+        max-width: 100%;
+    }
+    a{
+        color: #0a0a80;
+    }
+    .col-md-5,.col-md-7{
+        margin-bottom: 2em;
+    }
+    ul li,ol li{
+        margin-bottom: 10px;
+        position: relative;
+    }
+    ol{
+        list-style: none;
+    }
+    ol li:before{
+        content: "";
+        width: 5px;
+        height: 2px;
+        background: #222;
+        position: absolute;
+        left: -15px;
+        top: 10px;
+    }
+    strong,b{
+        font-weight: 500;
+    }
+</style>
+<div class="col-12">
+    <div class="row">
+        <div class="container">
+            <div class="text-center mt-5">
+                <h2 class="mb-4" style="color: #0a0a80;font-weight: bold;">HƯỚNG DẪN QUẢN TRỊ PHẦN MỀM<br>
+                    E-LEARNING BGT
+                </h2>
+                <h4 style="color: #073a07;" class="mb-3">MỤC LỤC</h4>
+            </div>
+        </div>
+    </div>
+
+    <div class="mb-4">
+        <p>
+            <strong class="mr-2">1.</strong><a style="color: #333;" href="#ml1">Đăng nhập hệ thống đào tạo trực tuyến</a>
+        </p>
+        <p>
+            <strong class="mr-2">2.</strong><a style="color: #333;" href="#ml2">E-learning - Hệ thống học trực tuyến</a>
+        </p>
+        <p>
+            <strong class="mr-2">3.</strong><a style="color: #333;" href="#ml3">Quản lý hệ thống</a>
+        </p>
+            <p class="pl-3">
+                <strong class="mr-2">3.1</strong><a style="color: #333;" href="#ml31">Cơ cấu tổ chức</a><br>
+                <strong class="mr-2">3.2</strong><a style="color: #333;" href="#ml32">Quản trị người dùng</a><br>
+                <strong class="mr-2">3.3</strong><a style="color: #333;" href="#ml33">Quản lý quyền</a><br>
+                <strong class="mr-2">3.4</strong><a style="color: #333;" href="#ml34">Thêm dữ liệu bằng excel</a><br>
+                <strong class="mr-2">3.5</strong><a style="color: #333;" href="#ml35">Theo dõi hoạt động</a><br>
+            </p>
+        <p>
+            <strong class="mr-2">4.</strong><a style="color: #333;" href="#ml4">Quản lý đào tạo</a>
+        </p>
+            <p class="pl-3">
+                <strong class="mr-2">4.1</strong><a style="color: #333;" href="#ml41">Nhóm chức năng thư viện khóa học</a><br>
+            </p>
+                <div class="pl-3">
+                    <p class="pl-3">
+                        <strong class="mr-2">4.1.1</strong><a style="color: #333;" href="#ml411">Thêm mới thư viện khóa học</a><br>
+                        <strong class="mr-2">4.1.2</strong><a style="color: #333;" href="#ml412">Sửa thông tin thư viện khóa học</a><br>
+                        <strong class="mr-2">4.1.3</strong><a style="color: #333;" href="#ml413">Khởi tạo nội dung khóa học</a><br>
+                        <strong class="mr-2">4.1.4</strong><a style="color: #333;" href="#ml414">Xóa khóa học trong thư viện khóa học</a><br>
+                        <strong class="mr-2">4.1.5</strong><a style="color: #333;" href="#ml415">Khôi phục khóa đào tạo</a><br>
+                    </p>
+                </div>
+            <p class="pl-3">
+                <strong class="mr-2">4.2</strong><a style="color: #333;" href="#ml42">Nhóm chức năng khóa đào tạo</a><br>
+            </p>
+                <div class="pl-3">
+                    <p class="pl-3">
+                        <strong class="mr-2">4.2.1</strong><a style="color: #333;" href="#ml421">Khóa đào tạo online</a><br>
+                        <strong class="mr-2">4.2.2</strong><a style="color: #333;" href="#ml422">Khóa đào tạo tập trung</a><br>
+                        <strong class="mr-2">4.2.3</strong><a style="color: #333;" href="#ml423">Tạo mới khóa từ thư viện</a><br>
+                    </p>
+                </div>
+            <p class="pl-3">
+                <strong class="mr-2">4.3</strong><a style="color: #333;" href="#ml43">Nhóm chức năng chứng chỉ</a><br>
+            </p>
+                <div class="pl-3">
+                    <p class="pl-3">
+                        <strong class="mr-2">4.3.1</strong><a style="color: #333;" href="#ml431">Danh sách học viên</a><br>
+                        <strong class="mr-2">4.3.2</strong><a style="color: #333;" href="#ml432">Cấp chứng chỉ cho học viên</a><br>
+                    </p>
+                </div>
+        <p>
+            <strong class="mr-2">5.</strong><a style="color: #333;" href="#ml5">Quản lý Báo cáo</a>
+        </p>
+            <p class="pl-3">
+                <strong class="mr-2">5.1</strong><a style="color: #333;" href="#ml51">Danh sách khảo sát</a><br>
+                <strong class="mr-2">5.2</strong><a style="color: #333;" href="#ml52">Danh sách câu hỏi</a><br>
+                <strong class="mr-2">5.3</strong><a style="color: #333;" href="#ml53">Khôi phục khảo sát</a><br>
+                <strong class="mr-2">5.4</strong><a style="color: #333;" href="#ml54">Thống kê sơ bộ</a><br>
+                <strong class="mr-2">5.5</strong><a style="color: #333;" href="#ml55">Báo cáo đánh giá</a><br>
+            </p>
+        <p>
+            <strong class="mr-2">6.</strong><a style="color: #333;" href="#ml6">Cấu hình hệ thống</a>
+        </p>
+    </div>
+
+    <div>
+        <h4 style="color: #073a07;" class="mb-3 text-center">GIỚI THIỆU QUY TRÌNH</h4>
+        <h5 class="mb-3"><i>Quản trị viên khi đăng nhập hệ thống sẽ thực hiện các chức năng như sau:</i></h5>
+        <div class="text-center mb-3">
+            <img src="img/1.png" alt="">
+        </div>
+    </div>
+
+    <div id="ml1">
+        <h4 class="mb-3" >1. Đăng nhập hệ thống đào tạo trực tuyến</h4>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Học viên truy cập theo đường link </p>
+                <p><a href="https://daotao.vietlott.vn/">https://daotao.vietlott.vn/</a></p>
+                <p>Học viên thực hiện theo 3 bước để đăng nhập vào ứng dụng:</p>
+                <ul>
+                    <li>Bước 1: Nhập thông tin tài khoản</li>
+                    <li>Bước 2: Nhập thông tin mật khẩu, người dùng có thể ghi nhớ đăng nhập để thuận tiện cho lần đăng nhập sau bằng cách tích chọn <strong>“Ghi nhớ đăng nhập”</strong></li>
+                    <li>Bước 3: Chọn <strong>“Đăng nhập”</strong> để thực hiện đăng nhập</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/2.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Sau khi đăng nhập hệ thống thành công, giao diện hiển thị màn hình thống kê nhanh các thông số hệ thống</p>
+                <p><strong>Vùng 1:</strong> thanh menu trái gồm các chức năng dành cho quản trị viên</p>
+                <p><strong>Vùng 2:</strong> Hiển thị thông tin theo các chức năng tương ứng:</p>
+                <ul>
+                    <li>Theo dõi số nhân viên bán hàng được đào tạo theo tháng</li>
+                    <li>Thống kê khóa học online, offline</li>
+                    <li>Theo dõi danh sách nhân viên bán hàng mới và nhân viên bán hàng cũ</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/3.png" alt="">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="ml2">
+        <h4 class="mb-3" >2.  E-learning - Hệ thống học trực tuyến</h4>
+        <div class="row">
+            <div class="col-md-5">
+                <ol>
+                    <li>Trên thanh menu trái, chọn chức năng “Hệ thống học trực tuyến”, hệ thống sẽ hiển thị giao diện với danh sách các khóa học như hình bên</li>
+                    <li>Quản trị viên chọn khóa học để xem chi tiết, đăng ký và học trực tuyến</li>
+                </ol>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/4.png" alt="">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="ml3">
+        <h4 class="mb-3" >3.  Quản lý hệ thống</h4>
+        <h5 class="mb-3" id="ml31">3.1  Cơ cấu tổ chức</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Quản lý Tỉnh thành</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <strong>“Cơ cấu tổ chức”</strong> -> chọn chức năng <strong>“Tỉnh thành”</strong> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.	Chức năng thêm mới thủ công Tỉnh thành</li>
+                    <li>2.	Chức năng sửa Tỉnh thành</li>
+                    <li>3.	Chức năng xóa Tỉnh thành</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/5.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.	Chức năng thêm mới thủ công Tỉnh thành</i></p>
+                <p>Với chức năng thêm mới thủ công thực hiện thêm mới từng tỉnh thành theo khu vực, nhập tên tỉnh thành và mã</p>
+                <p>Những trường có dấu “*” bắt buộc phải nhập, sau khi nhập xong các thông tin chọn <img src="img/7.png" alt="">  để hoàn tất việc them mới Tỉnh thành</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/6.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.	Chức năng sửa Tỉnh thành</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/8.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.	Chức năng xóa Tỉnh thành</i></p>
+                <p>Để thực hiện xóa Tỉnh thành người dùng chọn  <img src="img/10.png" alt="">, hệ thống hiển thị thông báo xác nhận xóa tỉnh thành,
+                    chọn <img src="img/11.png" alt="">  để xóa, chọn <img src="img/12.png" alt="">  để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/9.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Quản lý Đại lý</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <strong>“Cơ cấu tổ chức”</strong> -> chọn chức năng
+                    <strong>“Đại lý”</strong> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.	Chức năng thêm mới thủ công Đại lý</li>
+                    <li>2.	Chức năng sửa Đại lý</li>
+                    <li>3.	Chức năng xóa Đại lý</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/13.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.	Thêm mới Đại lý</i></p>
+                <p>Để thực hiện xóa Tỉnh thành người dùng chọn  <img src="img/10.png" alt="">, hệ thống hiển thị thông báo xác nhận xóa tỉnh thành,
+                    chọn <img src="img/11.png" alt="">  để xóa, chọn <img src="img/12.png" alt="">  để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/9.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.	Chỉnh sửa Đại lý</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/14.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.	Xóa Đại lý</i></p>
+                <ul>
+                    <li>Bước 1: chọn đại lý cần xóa -> <img src="img/16.png" alt=""></li>
+                    <li>Bước 2: chọn <img src="img/17.png" alt="">  để xóa, chọn <img src="img/18.png" alt="">  để hủy</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/15.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Quản lý Điểm bán</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Cơ cấu tổ chức”</b> -> chọn chức năng
+                    <b>“Điểm bán”</b> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.	Chức năng thêm mới thủ công Điểm bán</li>
+                    <li>2.	Chức năng sửa Điểm bán</li>
+                    <li>3.	Chức năng xóa Điểm bán</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/19.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.	Thêm mới Điểm bán</i></p>
+                <p>Với chức năng thêm mới thủ công, thực hiện thêm mới từng điểm bán bằng cách nhập mã, tên,
+                    địa điểm điểm bán, lựa chọn Tỉnh thành, Đại lý và chọn Quản lý tương ứng</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn <img src="img/21.png" alt="">  để hoàn tất việc thêm mới Điểm bán</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/20.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.	Chỉnh sửa Điểm bán</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập
+                    thông tin sau khi chỉnh sửa xong chọn  <img src="img/23.png" alt=""> như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/22.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.	Xóa Điểm bán</i></p>
+                <ul>
+                    <li>Bước 1: chọn điểm bán cần xóa -> <img src="img/25.png" alt=""></li>
+                    <li>Bước 2: chọn <img src="img/26.png" alt="">  để xóa, chọn <img src="img/27.png" alt="">  để hủy</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/24.png" alt="">
+            </div>
+        </div>
+
+        <h5 class="mb-3" id="ml32">3.2  Quản trị người dùng</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Danh sách người dùng</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản trị người dùng”</b> -> chọn chức năng <b>“Danh sách người dùng”</b>
+                    giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style:none;">
+                    <li>1.	Chức năng thêm mới thủ công người dùng</li>
+                    <li>2.	Tải lên file excel danh sách người dùng</li>
+                    <li>3.	Chức năng sửa người dùng</li>
+                    <li>4.  Chức năng xóa người dùng</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/28.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.	Thêm mới người dùng</i></p>
+                <p>Với chức năng thêm mới thủ công, thực hiện thêm mới từng người dùng bằng cách nhập các trường thông tin</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn <img src="img/30.png" alt="">  để hoàn tất việc thêm mới Người dùng</p>
+
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/29.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Tải lên file excel người dùng</i></p>
+                <p>Để thực hiện import danh sách Người dùng từ file excel cần làm theo các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Chọn  <img src="img/32.png" alt=""> </li>
+                    <li>Bước 2: Điền các thông tin theo các trường trong file excel</li>
+                    <li>Bước 3: Kéo thả file vào phần tải file lên</li>
+                    <li>Bước 4: Tích chọn thêm mới để thực hiện thêm mới hoàn toàn hoặc Thêm mới và cập nhật để thực hiện cập nhật những Người dùng đã có trong hệ thống</li>
+                    <li>Bước 5: Chọn Import để hoàn tất việc tải lên file excel</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/31.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Sửa người dùng</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin sau khi chỉnh sửa xong chọn  <img src="img/34.png" alt=""> như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/33.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>4.    Xóa người dùng</i></p>
+                <ul>
+                    <li>Bước 1: chọn nhân viên cần gỡ -> <img src="img/36.png" alt=""></li>
+                    <li>Bước 2: chọn <img src="img/37.png" alt="">  để gỡ người dùng, chọn <img src="img/38.png" alt="">  để hủy</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/35.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Chuyên viên kinh doanh</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập “Quản trị người dùng” -> chọn chức năng “Chuyên viên kinh doanh” giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.  Chức năng thêm mới thủ công </li>
+                    <li>2.  Tải lên file excel danh sách CVKD</li>
+                    <li>3.  Chức năng phân quyền quản lý đại lý</li>
+                    <li>4.  Chức năng sửa CVKD</li>
+                    <li>5.  Chức năng gỡ CVKD</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/39.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.    Thêm nhân viên mới</i></p>
+                <p>Với chức năng thêm nhân viên mới thủ công, thực hiện thêm mới từng người dùng bằng cách nhập các trường thông tin</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn  <img src="img/41.png" alt=""> để hoàn tất việc thêm mới </p>
+
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/40.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Thêm nhân viên có sẵn</i></p>
+                <p>Để gán quyền giám sát thị trường cho nhân viên có sẵn trong hệ thống người dùng nhập tên người dùng chọn  <img src="img/43.png" alt=""> để tìm người dùng hoặc chọn dấu tích vào ô <img src="img/43.png" alt="">  để chọn người cần gán quyền sau đó chọn <img src="img/44.png" alt="">  để thêm.</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/42.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Phân quyền quản lý đại lý</i></p>
+                <p>Để thực hiện gán quyền đại lý người dùng chọn vào biểu tượng <img src="img/47.png" alt="">  giao diện hiển thị các đại lý đang giám sát như sau:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/46.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>4.    Chỉnh sửa người dùng</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin sau khi chỉnh sửa xong chọn  <img src="img/49.png" alt="">  như hình bên</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/48.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>5.    Gỡ người dùng</i></p>
+                <ul>
+                    <li>Bước 1: chọn nhân viên cần gỡ -> <img src="img/51.png" alt=""></li>
+                    <li>Bước 2: chọn <img src="img/52.png" alt="">  để gỡ người 
+                        dùng khỏi điểm bán, chọn <img src="img/53.png" alt="">  để hủy </li>
+                </ul> 
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/50.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Quản lý giảng viên</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản trị người dùng”</b> -> chọn chức năng 
+                <b>“giảng viên”</b> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.  Chức năng thêm mới thủ công giảng viên</li>
+                    <li>2.  Tải lên file excel danh sách giảng viên</li>
+                    <li>3.  Chức năng sửa thông tin giảng viên</li>
+                    <li>4.  Chức năng xóa giảng viên</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/54.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.   Thêm mới thủ công giảng viên</i></p>
+                <p>Với chức năng thêm mới giảng viên thủ công, thực hiện thêm mới từng giảng viên bằng cách nhập các trường thông tin như hình bên</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn <img src="img/56.png" alt="">  để hoàn tất việc thêm mới</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/55.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Tải lên file exel giảng viên</i></p>
+                <p>Để thực hiện import danh sách giảng viên từ file excel cần làm theo các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Chọn  <img src="img/58.png" alt=""> </li>
+                    <li>Bước 2: Điền các thông tin theo các trường trong file excel</li>
+                    <li>Bước 3: Kéo thả file vào phần tải file lên</li>
+                    <li>Bước 4: Tích chọn thêm mới để thực hiện thêm mới hoàn toàn hoặc Thêm mới và cập nhật để thực hiện cập nhật những giảng viên đã có trong hệ thống</li>
+                    <li>Bước 5: Chọn Import để hoàn tất việc tải lên file excel</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/57.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Chỉnh sửa thông tin giảng viên</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin sau khi chỉnh sửa xong chọn <img src="img/60.png" alt="">  như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/59.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>4.    Xóa giảng viên</i></p>
+                <p>Để thực hiện xóa giảng viên chọn  <img src="img/62.png" alt="">, hệ thống hiển thị thông báo xác nhận xóa người dùng, chọn <img src="img/63.png" alt="">  để xóa, chọn  <img src="img/64.png" alt=""> để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/61.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Quản lý học viên</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản trị người dùng”</b> -> chọn chức năng <b>“Học viên”</b> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.  Chức năng thêm mới thủ công học viên</li>
+                    <li>2.  Tải lên file excel danh sách học viên</li>
+                    <li>3.  Chức năng sửa thông tin học viên</li>
+                    <li>4.  Chức năng xóa học viên</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/65.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.    Thêm mới thủ công học viên</i></p>
+                <p>Với chức năng thêm mới học viên thủ công, thực hiện thêm mới từng học viên bằng cách nhập các trường thông tin như hình bên</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn <img src="img/67.png" alt="">  để hoàn tất việc thêm mới</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/66.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Tải lên file excel học viên</i></p>
+                <p>Để thực hiện import danh sách học viên từ file excel cần làm theo các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Chọn   <img src="img/69.png" alt=""></li>
+                    <li>Bước 2: Điền các thông tin theo các trường trong file excel</li>
+                    <li>Bước 3: Kéo thả file vào phần tải file lên</li>
+                    <li>Bước 4: Tích chọn thêm mới để thực hiện thêm mới hoàn toàn hoặc Thêm mới và cập nhật để thực hiện cập nhật những học viên đã có trong hệ thống</li>
+                    <li>Bước 5: Chọn Import để hoàn tất việc tải lên file excel</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/68.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Chỉnh sửa học viên</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập thông tin sau khi chỉnh sửa xong chọn <img src="img/71.png" alt="">  như hình bên</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/70.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>4.    Xóa học viên</i></p>
+                <p>Để thực hiện xóa học viên chọn  <img src="img/73.png" alt="">, hệ thống hiển thị thông báo xác nhận xóa người dùng, chọn <img src="img/74.png" alt="">  để xóa, chọn  <img src="img/75.png" alt=""> để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/72.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Khôi phục người dùng</i></strong></p>
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản trị người dùng”</b> -> chọn chức năng <b>“Khôi phục người dùng”</b> giao diện quản lý hiển thị với các chức năng như sau:</p>
+                <ul style="list-style: none;">
+                    <li>1.  Chức năng sửa thông tin người dùng</li>
+                    <li>2.  Chức năng khôi phục tài khoản bị khóa</li>
+                    <li>3.  Xóa vĩnh viễn tài khoản</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/76.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.    Chỉnh sửa thông tin</i></p>
+                <p>Nhập thông tin vào các trường cần chỉnh sửa, đối với những trường có dấu “*” là bắt buộc phải nhập các trường thông tin như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/77.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Khôi phục tài khoản </i></p>
+                <p>Để thực hiện khôi phục tài khoản người quản trị tích vào ô  <img src="img/79.png" alt=""> để chọn tài khoản cần khôi phục sau đó chọn  <img src="img/80.png" alt="">, hệ thống hiển thị thông báo để xác nhận chọn  <img src="img/81.png" alt="">, chọn <img src="img/82.png" alt="">  để hủy.</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/78.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Xóa vĩnh viễn tài khoản </i></p>
+                <p>Chọn  <img src="img/84.png" alt=""> để thực hiện xóa hoàn toàn tài khoản khỏi hệ thống
+                Để xác nhận chọn  <img src="img/85.png" alt="">, chọn <img src="img/86.png" alt="">  để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/83.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml33">3.3  Quản lý quyền</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p><strong><i>Danh sách người dùng</i></strong></p>
+                <p>Trên thanh menu trái, chọn chức năng <b>“Quản lý hệ thống”</b> chọn <b>“Quản lý quyền”</b>, hệ thống sẽ hiển thị danh sách các quyền như hình bên</p>
+                <ul style="list-style:none;">
+                    <li>1.  Chức năng thêm mới thủ công quyền</li>
+                    <li>2.  Chức năng xem phân bổ quyền</li>
+                    <li>3.  Xóa quyền</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/87.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.    Thêm mới thủ công</i></p>
+                <p>Với chức năng thêm mới thủ công, thực hiện thêm mới từng quyền bằng cách nhập các trường thông tin như bên</p>
+                <p>Những trường có dấu “*” là bắt buộc phải nhập, sau khi nhập xong các thông tin chọn  <img src="img/89.png" alt=""> để hoàn tất việc thêm mới</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/88.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>2.    Sửa quyền</i></p>
+                <p>Để sửa quyền Quản trị viên chọn biểu tượng <img src="img/90.png" alt="">  và cập nhật quyền bằng cách tích chọn <img src="img/91.png" alt="">  hoặc bỏ tích để cập nhật các quyền truy cập hệ thống, sau khi chỉnh sửa xong chọn <img src="img/92.png" alt="">  như hình bên</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/93.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>3.    Xóa quyền</i></p>
+                <p>Để xóa quyền chọn biểu tượng  <img src="img/94.png" alt="">, những quyền không có biểu tượng này là những quyền mặc định của hệ thống bắt buộc phải có, những quyền này chỉ có thể chỉnh sửa mà không có chức năng xóa</p>
+                <p>Khi chọn xóa hệ thống hiển thị thông báo hỏi có chắc chắn muốn xóa không, chọn OK để xóa Cancel để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/95.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml34">3.4  Thêm dữ liệu bằng excel</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản lý hệ thống”</b> -> chọn chức năng <b>“Thêm dữ liệu bằng excel”</b> </p>
+                <p>Để thực hiện import danh sách giảng viên từ file excel cần làm theo các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Chọn  <img src="img/96.png" alt=""> </li>
+                    <li>Bước 2: Điền các thông tin theo các trường trong file excel</li>
+                    <li>Bước 3: Kéo thả file vào phần tải file lên</li>
+                    <li>Bước 4: Tích chọn thêm mới để thực hiện thêm mới hoàn toàn hoặc Thêm mới và cập nhật để thực hiện cập nhật những thông tin về người dùng đã có trong hệ thống</li>
+                    <li>Bước 5: Chọn Import để hoàn tất việc tải lên file excel</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/97.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml35">3.5  Theo dõi hoạt động</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Quản lý hệ thống”</b> -> chọn chức năng <b>“Activity Log”</b> giao diện quản lý hiển thị với các chức năng như bên:</p>
+                <p>Người dùng có thể xem danh sách Log hệ thống theo các tiêu chí lựa chọn như sau:</p>
+                <p>1.  Xem theo cơ cấu tổ chức gồm:</p>
+                <ul>
+                    <li>Người dùng</li>
+                    <li>Cơ cấu tổ chức</li>
+                    <li>Khóa đào tạo</li>
+                    <li>Quyền</li>
+                </ul>
+                <p>2.  Xem theo hành động gồm:</p>
+                <ul>
+                    <li>Create</li>
+                    <li>Update</li>
+                    <li>Delete</li>
+                    <li>Restore</li>
+                    <li>Add</li>
+                    <li>Remove</li>
+                    <li>Delete recycle bin</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/98.png" alt="">
+            </div>
+        </div>
+
+    </div>
+
+    <div id="ml4">
+        <h4 class="mb-3" >4. Quản lý đào tạo</h4>
+        <h5 class="mb-3" id="ml41">4.1  Nhóm chức năng thư viện khóa học</h5>
+        <div class="row">
+            <div class="col-12">
+                <p>Trên thanh menu trái, NSD thực click vào Menu <b>Quản lý đào tạo</b>, chọn chức năng  <b>Thư viện khóa học</b>. Các chức năng chính trong Thư viện khóa học</p>
+                <ul>
+                    <li>4.1.1 Thêm mới thư viện khóa học</li>
+                    <li>4.1.2 Sửa thông tin thư viện khóa học</li>
+                    <li>4.1.3 Khởi tạo nội dung khóa học</li>
+                    <li>4.1.4 Xóa khóa học</li>
+                    <li>4.1.5 Khôi phục khóa học</li>
+                </ul>
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml411">4.1.1    Thêm mới thư viện khóa học</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Bước 1: Tại giao diện chính <b>Thư viện khóa học</b>, NSD click vào button <b>Thêm mới thư viện khóa học thủ công</b> </p>
+                <p>Bước 2: NSD nhập các thông tin của khóa học bao gồm: Hình ảnh đại diện của khóa học; Mã khóa học; Tên khóa học; Điểm qua môn; Mô tả khóa học.<br>
+                Lưu ý: các trường dánh dấu (*) là các trường NSD bắt buộc phải nhập</p>
+                <p>Bước 3: Click button <b>Tạo mới</b> để hoàn thành thêm mới khóa học, hệ thống sẽ hiển thị thông báo <b>Khởi tạo khóa học thành công</b>. </p> 
+                <ul>
+                    <li>Click  <b>OK</b> để kết thúc thao tác.</li>
+                    <li>Click <b>Hủy</b> để hủy thao tác thêm mới thư viện khóa học.</li>
+                </ul> 
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/99.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml412">4.1.2   Sửa thông tin thư viện khóa học</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Bước 1: Tại cột <b>Hành động</b> trên Danh sách thư viện khóa học, NSD thực hiện click button  <img src="img/100.png" alt="">. Hệ thống hiển thị giao diện <b>“Chỉnh sửa thư viện khóa học”</b>.</p>
+                <p>Bước 2:  Nhập các thông tin cần thay đổi.</p>
+                <p>Bước 3: Click button <b>Sửa</b> để lưu thông tin mới. Hệ thống hiển thị màn hình xác nhận sửa thông tin khóa học thành công.</p>
+                <ul>
+                    <li>Click button <b>OK</b> để kết thúc thao tác</li>
+                    <li>Click button <b>Hủy</b> để hủy thao tác sửa thông tin khóa học</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/101.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml413">4.1.3   Khởi tạo nội dung khóa học</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO MỚI NỘI DUNG KHÓA HỌC</b></p>
+                <ul>
+                    <li>Bước 1: Tại màn hình giao diện Danh sách thư viện khóa học, NSD tích chọn icon  <img src="img/102.png" alt="">. NSD thực hiện click icon <img src="img/103.png" alt="">  góc bên phải màn hình, chọn Bật chế độ chỉnh sửa</li>
+                    <li>Bước 2: Thêm chủ đề vào khóa học: NSD thực hiện click vào  <b>Add Topic</b>.  Hệ thống hiển thị màn hình nhập số lượng chủ đề trong khóa học. NSD nhập số phân mục và click button <b>Add Topic</b> (Hình 1)</li>
+                    <li>Bước 3: Thêm hoạt động/ tài nguyên vào chủ đề cho khóa học: NSD click icon < + Thêm hoạt động hoặc tài nguyên -> Tích chọn Interactive Content -> Click button <b>Thêm</b> (Hình 2)</li>
+                    <li>
+                        <p>Bước 4: Soạn nội dung cho khóa học (Hình 3): NSD thực hiện nhập tất cả các nội dung sau: </p>
+                        + Mô tả: Nhập mô tả nội dung cho khóa học<br>
+                        + Chọn Documentation Tool<br>
+                        + Title: Nhập tiêu đề khóa học<br>
+                        + Heading: nhập heading khóa học<br>
+                    </li>
+                    <li>
+                        <p>Bước 5: Tạo page cho từng hoạt động</p>
+                        + Page type: chọn Standard page<br>
+                        + Title: nhập tiêu đề cho page<br>
+                        <ul>
+                            <li>Element type: đối với dữ liệu dạng text, chọn Text và thực hiện nhập dữ liệu vào ô  <img src="img/104.png" alt="">. Đối với dữ liệu ảnh, tích chọn Image và click button <img src="img/105.png" alt=""></li>
+                            <li>Thêm Element vào page: Tích chọn <img src="img/106.png" alt=""></li>
+                        </ul>
+                        + Thêm page cho hoạt động: Tích chọn <img src="img/107.png" alt=""><br>
+                    </li>
+                    <li>
+                        Bước 6: Click button <b>Lưu và trở về khóa học</b>/ <b>Lưu và cho xem</b> để hoàn thành thao tác lưu hoạt động cho khóa học.  Click button  <b>Hủy bỏ</b> để hủy bỏ hoạt động cho khóa học vừa soạn thảo.
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/108.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/109.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/110.png" alt="">
+                <p>Hình 3</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>CHỈNH SỬA NỘI DUNG KHÓA HỌC</b></p>
+                <ul>
+                    <li>Bước 1: Chọn Menu Quản lý đào tạo -> Thư viện khóa học</li>
+                    <li>Bước 2: Nhập thông tin tìm kiếm khóa học cần chỉnh sửa: Tìm kiếm theo tên khóa học hoặc mã khóa học -> Click button <b>Tìm</b> (Hình 1)</li>
+                    <li>
+                        <p>Bước 3: NSD chọn khóa học cần chỉnh sửa trong <b>Tổng số thư viện khóa học hiện tại</b>, click button  <img src="img/111.png" alt="">. NSD có thể chỉnh sửa các thông tin:</p>
+                        <p>+ Thêm chủ đề (Topic) vào khóa học: NSD thực hiện click button <b>Add Topic</b> và thực hiện tương tự như Bước 2 của phần Tạo mới nội dung khóa học</p>
+                        <p>+ Chỉnh sửa chủ đề có sẵn trong khóa học: click  <b>Chỉnh sửa</b> -> Chọn Edit topic. Thực hiện chỉnh sửa tên chủ đề, chỉnh sửa tóm tắt -> click button <b>Lưu những thay đổi</b> để lưu thông tin mới. ( Hình 2) (Hình 3)</p>
+                        <p>+ Thêm hoạt động hoặc tài nguyên cho chủ đề: NSD thực hiện click button < +Thêm hoạt động hoặc tài nguyên> và thực hiện tương tự như Bước 3</p>
+                        <p>
+                            + Chỉnh sửa hoạt động hoặc tài nguyên đã có trong chủ đề:
+                            <ul>
+                                <li>Sửa tên Hoạt động/chủ đề: tại chủ đề cần chỉnh sửa, click button  <img src="img/112.png" alt=""></li>
+                                <li>Chỉnh sửa các cài đặt trong chủ đề: tại chủ đề cần chỉnh sửa, click button <b>Chỉnh sửa</b> -> chọn <b>Chỉnh sửa các cài đặt</b>. NSD chỉnh sửa thông tin và click button <b>Lưu và trở về khóa học</b>/ <b>Lưu và cho xem</b> để lưu thông tin mới. Click button <b>Hủy bỏ</b> để hủy thao tác sửa thông tin.</li>
+                            </ul>
+                        </p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/113.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/114.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/115.png" alt="">
+                <p>Hình 3</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO BÀI KIỂM TRA TRONG KHÓA HỌC</b></p>
+                <p>Tại màn hình giao diện Danh sách thư viện khóa học, NSD chọn khóa học cần thêm đề thi và tích chọn icon  <img src="img/116.png" alt="">.</p>
+                <ul>
+                    <li>
+                        <p>Bước 1: NSD thực hiện tạo  add  Topic và Thêm hoạt động /tài nguyên: (Hình 1)</p>
+                        <p>+    Thêm chủ đề của bài kiểm tra: NSD thực hiện click vào   <img src="img/117.png" alt="">.  Hệ thống hiển thị màn hình nhập số lượng chủ đề trong Topic. NSD nhập số phân mục và click button <b>Add Topic</b> </p>
+                        <p>+    Thêm hoạt động/ tài nguyên của bài kiểm tra: Tại góc dưới bên phải của mỗi chủ đề, NSD thực hiện click icon (Thêm hoạt động hoặc tài nguyên) -> Tích chọn Đề thi -> Click button <b>Thêm</b> (Hình 2)</p>
+                        <p>+    Tại mục Editor, NSD thực hiện chọn Documentation Tool) -> Title: Nhập tiêu đề cho hoạt động/tài nguyên. -> Click button Lưu và trở về khóa học / Lưu và cho xem để lưu. Click button <b>Hủy bỏ</b> để hủy bỏ thao tác (Hình 3)</p>
+                    </li>
+                    <li>
+                        <p>Bước 2: Tạo câu hỏi cho đề thi: Sau bước 1, hệ thống hiển thị màn hình cho phép tạo câu hỏi cho đề thi, NSD tích chọn button <b>Chỉnh sửa đề thi</b> và thực hiện tuần tự các bước sau:</p>
+                        <p>+    Chọn   <img src="img/118.png" alt="">-> <b>Chọn a new question</b></p>
+                        <p>+    Chọn <b>Multiple Choise</b> sau đó click button <img src="img/119.png" alt=""></p>
+                        <p>+    Click button <b>Lưu những thay đổi</b> để thực hiện lưu câu hỏi.(Hình 4)</p>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/120.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/121.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/122.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/123.png" alt="">
+                <p>Hình 4</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO GAME THỰC HÀNH TRÊN MÁY BÁN HÀNG</b></p>
+                <ul>
+                    <li>
+                        <p>Bước 1: Tại màn hình giao diện Danh sách thư viện khóa học, NSD chọn khóa học cần thêm đề thi và tích chọn icon <img src="img/124.png" alt=""></p>
+                    </li>
+                    <li>
+                        <p>Bước 2: NSD thực hiện tạo  add  Topic và Thêm hoạt động /tài nguyên:</p>
+                        <ul>
+                            <li>Thêm chủ đề của Game: NSD thực hiện click vào  <b>Add Topic</b>.  Hệ thống hiển thị màn hình nhập số lượng chủ đề trong Topic. NSD nhập số phân mục và click button <b>Add Topic</b></li>
+                            <li>Thêm hoạt động/ tài nguyên của Game: Tại góc dưới bên phải của mỗi chủ đề, NSD thực hiện click icon <b>Thêm hoạt động hoặc tài nguyên</b> -> Tích chọn Game BGT -> Click button <b>Thêm</b> (Hình 1)</li>
+                            <li>NSD thực hiện nhập các thông tin Tên, Mô tả của Hoạt động  -> Tích button <b>Lưu và trở về khóa học</b> / <b>Lưu và cho xem</b> để thực hiện lưu lại thao tác.</li>
+                            <li>Hệ thống hiển thị màn hình cho phép thiết lập game BGT(Hình 2)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/125.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/126.png" alt="">
+                <p>Hình 2</p>
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml414">4.1.4   Xóa khóa học trong thư viện khóa học</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <ul>
+                    <li>Tại cột <b>Hành động</b> trên Danh sách thư viện khóa học, NSD thực hiện click button  <img src="img/127.png" alt="">. Hệ thống hiển thị màn hình xác nhận Xóa khóa học trong thư viện</li>
+                    <li>
+                        <p>NSD thực hiện xác nhận thao tác xóa:</p>
+                        <ul>
+                            <li>Click button <b>OK</b> để xác nhận xóa khóa học</li>
+                            <li>Click button <b>Cancel</b> để hủy thao tác xóa khóa học</li>
+                        </ul>
+                    </li>
+                    <li>Màn hình giao diện xác nhận xóa khóa học trong thư viện khóa học:</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/128.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml415">4.1.5   Khôi phục khóa đào tạo</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>NSD thực click vào Menu <b>Quản lý đào tạo</b>, chọn chức năng  <b>Khóa đào tạo</b> -> <b>Khôi phục khóa đào tạo</b>. Hệ thống hiển thị giao diện <b>“Khôi phục khóa đào tạo”</b> (Hình 1)</p>
+                <ul>
+                    <li>
+                        <p>Bước 1: Tìm kiếm khóa đào tạo cần khôi phục</p>
+                        <ul>
+                            <li>Tìm kiếm trong Thư viện khóa học: Click button <img src="img/129.png" alt="">  tại listbox Chọn danh mục khóa học, chọn <b>Khóa đào tạo cần tìm kiếm</b> </li>
+                            <li>Tìm kiếm theo ngày xóa: Nhập ngày tại texbox <b>Ngày xóa khóa đào tạo:</b></li>
+                            <li>Tìm kiếm theo mã hoặc theo tên: nhập mã / tên khóa đào tạo , Click button <b>Tìm</b></li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p>Bước 2: Khôi phục: Tại màn hình Danh sách tổng số khóa đào tạo muốn khôi phục:</p>
+                        <ul>
+                            <li>Click button  <img src="img/130.png" alt=""> để khôi phục khóa đào tạo. Hệ thống hiển thị màn hình xác nhận khôi phục khóa đào tạo. Click <b>OK</b> để khôi phục khóa đạo tạo; click <b>Cancel</b> để hủy khôi phục khóa đào tạo</li>
+                            <li>Click button <img src="img/131.png" alt="">  để xóa hoàn toàn khóa đào tạo ra khỏi hệ thống.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/132.png" alt="">
+                Hình 1
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml42">4.2  Nhóm chức năng khóa đào tạo</h5>
+        <h5 class="mb-3" id="ml421">4.2.1   Khóa đào tạo online</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO MỚI KHÓA ĐÀO TẠO ONLINE</b></p>
+                <ul>
+                    <li>Bước 1: Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo online</b>. NSD click button  <img src="img/133.png" alt="">. Hệ thống hiển thị màn hình <b>Tạo mới khóa đào tạo</b> (Hình 1)</li>
+                    <li>Bước 2: NSD nhập các thông tin tại các ô textbox: Hình ảnh đại diện của khóa học; Mã khóa học; Tên khóa học; Danh mục khóa học; Điểm qua môn; Thời gian bắt đầu; Thời gian kết thúc; Cho phép học viên tự đăng ký; Mô tả khóa học</li>
+                    <li>
+                        <p>Bước 3: Click button <b>Tạo mới</b> để hoàn thành thêm mới khóa đào tạo online (Hình 2).</p>
+                        <ul>
+                            <li>NSD Click button  <b>OK</b> để kết thúc thao tác</li>
+                            <li>Click button <b>Hủy</b> để hủy thao tác thêm mới thư viện khóa học.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/134.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/135.png" alt="">
+                <p>Hình 2</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO NỘI DUNG CHO KHÓA ĐÀO TẠO ONLINE</b></p>
+                <ul>
+                    <li>Bước 1: Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo online</b> -> click icon <img src="img/136.png" alt=""></li>
+                    <li>Bước 2: Tại màn hình cho phép tạo nội dung khóa đào tạo online. NSD thực hiện click icon  <img src="img/137.png" alt="">-> chọn chức năng <b>Bật chế độ chỉnh sửa</b> (Hình 1)</li>
+                    <li>Bước 3: Thêm chủ đề vào khóa học: click  <img src="img/138.png" alt="">  .  NSD nhập số phân mục và click button <b>Add Topic</b> (Hình 2)</li>
+                    <li>Bước 4: Thêm hoạt động/ tài nguyên vào chủ đề cho khóa đào tạo: Tại góc dưới bên phải của mỗi chủ đề, NSD thực hiện click icon   <img src="img/139.png" alt="">-> Tích chọn Interactive Content -> Click button <b>Thêm</b> (Hình 3)</li>
+                    <li>
+                        <p>Bước 5: Soạn nội dung cho khóa đào tạo:</p>
+                        <ul>
+                            <li>Mô tả: Nhập mô tả nội dung cho khóa học</li>
+                            <li>Chọn Documentation Tool</li>
+                            <li>Title: Nhập tiêu đề khóa đào tạo</li>
+                            <li>Heading: nhập heading khóa đào tạo</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p>Bước 6: Tạo page cho từng hoạt động</p>
+                        <ul>
+                            <li>Page type: chọn Standard page</li>
+                            <li>
+                                <p>Title: nhập tiêu đề cho page</p>
+                                <ul>
+                                    <li>Element type: đối với dữ liệu dạng text, chọn Text và thực hiện nhập dữ liệu vào ô <img src="img/140.png" alt=""> . Đối với dữ liệu ảnh, tích chọn Image và click button  <img src="img/141.png" alt=""> để tải ảnh từ máy tính cá nhân lên hệ thống.</li>
+                                    <li>Thêm Element vào page: Tích chọn <img src="img/142.png" alt=""> </li>
+                                </ul>
+                            </li>
+                            <li>
+                                Thêm page cho hoạt động: Tích chọn <img src="img/143.png" alt="">
+                            </li>
+                        </ul>
+                    </li>
+                    <li>Click button <b>Lưu và trở về khóa học</b>/ <b>Lưu và cho xem</b> để hoàn thành thao tác lưu hoạt động cho khóa học (Hình 4)</li>
+                    <li>
+                        Click button  <Hủy bỏ> để hủy bỏ hoạt động cho khóa học vừa soạn thảo.
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/144.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/145.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/146.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/147.png" alt="">
+                <p>Hình 4</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>GÁN HỌC VIÊN/ GIẢNG VIÊN VÀO KHÓA ĐÀO TẠO ONLINE</b></p>
+                <p>Tại màn hình <b>Danh sách thống kê khóa đào tạo online</b>, NSD click <img src="img/148.png" alt=""> . Hệ thống hiển thị màn hình <b>Ghi danh khóa học</b></p>
+                <ul>
+                    <li>
+                        <p>Cách 1: Gán học viên/giảng viên vào khóa đào tạo bằng chức năng <b>Tải lên file excel</b>. (Hình 1)</p>
+                        <ul>
+                            <li>NSD thực hiện click vào <b>Tải lên file excel</b> hoặc click icon <img src="img/149.png" alt=""></li>
+                            <li>NSD click <b>Tải về biểu mẫu</b> để tải biểu mẫu excel về máy tính cá nhân -> thực hiện nhập dữ liệu học viên vào file excel</li>
+                            <li>NSD thực hiện kéo – thả file excel vừa nhập dữ liệu  từ máy tính cá nhân vào vùng tạo sẵn trên hệ thống -> click button  <img src="img/150.png" alt=""> để hoàn thành thao tác. NSD click button <img src="img/151.png" alt="">  để hủy bỏ thao tác. (Hình 2)</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p>Cách 2. Gán học viên/giảng viên vào khóa đào tạo bằng chức năng <b>Ghi danh khóa đào tạo</b>. (Hình 3)</p>
+                        <ul>
+                            <li>
+                                <p>NSD thực hiện click vào <b>Ghi danh khóa đào tạo</b> hoặc click icon <img src="img/152.png" alt=""> . Hệ thống hiển thị màn hình ghi danh khóa đào tạo với 03 phân vùng chính: (Hình 3)</p>
+                                <ul>
+                                    <li>Vùng 1: Tìm kiếm học viên/giảng viên để gán vào khóa đào tạo online; </li>
+                                    <li>Vùng 2: Danh sách người dùng cần ghi danh; </li>
+                                    <li>Vùng 3: Danh sách người dùng đã ghi danh vào khóa đào tạo.</li>
+                                </ul>
+                            </li>
+                            <li>Tìm kiếm người dùng cần ghi danh: Tại vùng 1, NSD nhập các điều kiện tìm kiếm: Loại người dùng ( chọn trong listbox: học viên hoặc giảng viên); Nhập tên người dùng cần tìm kiếm -> Click button  <img src="img/153.png" alt="">. Hệ thống hiển thị màn hình <b>Danh sách người dùng cần ghi danh</b> thỏa mãn điều kiện tìm kiếm</li>
+                            <li>Ghi danh người dùng vào khóa đào tạo: Tại vùng 2 trong <b>Danh sách người dùng cần ghi danh</b>, NSD thực hiện tích chọn người dùng muốn gán vào khóa đào tạo -> click icon  <img src="img/154.png" alt=""> để hoàn thành thao tác. Hệ thống hiển thị màn hình ghi danh khóa đào tạo thành công. (Hình 4)</li>
+                            <li>Rút học viên khỏi khóa đào tạo: Tại vùng 3, trong màn hình <b>Danh sách người dùng đã ghi danh vào khóa đào tạo</b>, NSD thực hiện tích chọn người dùng muốn rút khỏi khóa đào tạo, click button  <img src="img/155.png" alt="">. Hệ thống hiển thị màn hình xác nhận hủy ghi danh khóa đào tạo thành công.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/156.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/157.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/158.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/159.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/160.png" alt="">
+                <p>Hình 4</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>XEM CHI TIẾT KHÓA ĐÀO TẠO ONLINE</b></p>
+                <ul>
+                    <li>Tại màn hình Danh sách thống kê khóa đào tạo online trong kết quả tìm kiếm, NSD click vào mã khóa đào tạo online . (Hình 1)</li>
+                    <li>
+                        <p>Hệ thống  hiển thị màn hình cho phép xem chi tiết thông tin của khóa đào tạo online được chọn (Hình 2), bao gồm:</p>
+                        <ul>
+                            <li>Ảnh đại diện khóa học</li>
+                            <li>Tên khóa học</li>
+                            <li>Mã khóa học</li>
+                            <li>Danh mục khóa học</li>
+                            <li>Điểm qua môn</li>
+                            <li>Thời gian bắt đầu</li>
+                            <li>Thời gian kết thúc</li>
+                            <li>Mô tả khóa học</li>
+                            <li>Danh sách học viên trong khóa học</li>
+                            <li>Tiến trình học của từng học viên</li>
+                            <li>Bảng điểm chi tiết của từng học viên</li>
+                            <li>Trạng thái của từng học viên</li>
+                        </ul>
+                    </li>
+                    <li>Sửa thông tin khóa đào tạo online: NSD click chọn button <img src="img/161.png" alt=""> , hệ thống hiển thị màn hình <b>Chỉnh sửa thông tin khóa đào tạo</b>. NSD thực hiện nhập các thông tin mới -> click button <img src="img/162.png" alt="">  để hoàn thành thao tác. NSD có thể click button <img src="img/163.png" alt="">  để hủy thao tác sửa thông tin khóa đào tạo online. (Hình 3)</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/164.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/165.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/166.png" alt="">
+                <p>Hình 3</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>PHÊ DUYỆT/ HỦY PHÊ DUYỆT KHÓA ĐÀO TẠO ONLINE</b></p>
+                <p>NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo online</b>. trong cột  <b>Trạng thái</b> </p>
+                <ul>
+                    <li>NSD click chọn nút sang màu xanh <img src="img/167.png" alt="">  để phê duyệt khóa học</li>
+                    <li>NSD click chọn nút sang màu trắng  <img src="img/168.png" alt=""> để hủy phê duyệt khóa học</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/169.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TÌM KIẾM KHÓA ĐÀO TẠO ONLINE</b></p>
+                <ul>
+                    <li>Tại khung menu Dashboard, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo online</b>. NSD thực hiện nhập các điều kiện tìm kiếm -> click button  <img src="img/170.png" alt="">. (Hình 1)</li>
+                    <li>
+                        <p>Hệ thống hiển danh sách thống kê khóa đào tạo phù hợp kết quả tìm kiếm (Hình 2)</p>
+                        <ul>
+                            <li>NSD có thể xem thống kê Tổng số khóa đào tạo hiện tại phù hợp kết quả tìm kiếm</li>
+                            <li>NSD click button <b>Trang cuối</b> để để nhảy đến trang hiển thị danh sách cuối</li>
+                            <li>NSD click button <b>Trang đầu</b> để để nhảy đến trang hiển thị danh sách đầu tiên</li>
+                            <li>NSD click button <b>Trang trước</b>/ <b>Trang kế tiếp</b> để để nhảy đến trang hiển thị danh sách đầu tiên để chuyển lần lượt trang hiển thị danh sách khóa đào tạo</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/171.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/172.png" alt="">
+                <p>Hình 2</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>XÓA KHÓA ĐÀO TẠO ONLINE</b></p>
+                <p>Tại màn hình Danh sách thống kê khóa đào tạo online trong kết quả tìm kiếm, NSD click icon  <img src="img/173.png" alt="">. Hệ thống  hiển thị màn hình xác nhận xóa khóa đào tạo online.</p>
+                <ul>
+                    <li>NSD click button  <img src="img/174.png" alt="">  để hoàn thành thao tác xóa khóa đào tạo</li>
+                    <li>NSD click button  <img src="img/175.png" alt=""> để hủy thao tác xóa khóa đào tạo</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/176.png" alt="">
+            </div>
+        </div>
+
+        <h5 class="mb-3" id="ml422">4.2.2   Khóa đào tạo tập trung</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>TẠO MỚI KHÓA ĐÀO TẠO TẬP TRUNG</b></p>
+                <ul>
+                    <li>Bước 1: Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo tập trung</b>. NSD thực hiện click button  <img src="img/177.png" alt="">. Hệ thống hiển thị màn hình <b>Tạo mới khóa đào tạo tập trung</b> (Hình 1)</li>
+                    <li>Bước 2: NSD nhập các thông tin: Hình ảnh đại diện của khóa học, Mã khóa học, Tên khóa học, Danh mục khóa học, Điểm qua môn, Thời gian bắt đầu, Thời gian kết thúc, Phòng học...</li>
+                    <li>
+                        <p>Bước 3: Click button <img src="img/178.png" alt="">  để hoàn thành thêm mới, hệ thống sẽ hiển thị thông báo <b>Tạo mới khóa học thành công</b>.</p>
+                        <ul>
+                            <li>NSD Click button  <img src="img/179.png" alt="">  để kết thúc thao tác (Hình 2)</li>
+                            <li>Click button <img src="img/180.png" alt="">  để hủy thao tác thêm mới thư viện khóa học.</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/181.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/182.png" alt="">
+                <p>Hình 2</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>GÁN HỌC VIỆN/GIẢNG VIÊN VÀO KHÓA HỌC TẬP TRUNG</b></p>
+                <p>Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo tập trung</b> . Trên màn hình Danh sách thống kê khóa đào tạo tập trung, NSD click  <img src="img/183.png" alt="">. (Hình 1)</p>
+                <ul>
+                    <li>
+                        <p>Cách 1: Gán học viên/giảng viên vào khóa đào tạo tập trung bằng chức năng <b>Tải lên file excel</b>. Chức năng cho phép gán những học viên/ giảng viên chưa tồn tại trên hệ thống vào khóa đào tạo. (Hình 2)</p>
+                        <ul>
+                            <li>NSD click vào <b>Tải lên file excel</b> hoặc click icon <img src="img/184.png" alt="">  góc phải màn hình</li>
+                            <li>NSD click <b>Tải về biểu mẫu</b> để tải biểu mẫu excel về máy tính cá nhân -> thực hiện nhập dữ liệu học viên vào file excel</li>
+                            <li>NSD  kéo – thả file excel vừa nhập dữ liệu  từ máy tính cá nhân vào vùng tạo sẵn trên hệ thống, sau đó click button <img src="img/185.png" alt="">  để hoàn thành thao tác. NSD click button  <img src="img/186.png" alt=""> để hủy bỏ thao tác, hệ thống trở về giao diện quản lý khóa đào tạo (Hình 3)</li>
+                            <li>NSD  click vào <b>Ghi danh khóa đào tạo</b> để ghi danh học viên/giảng viên đã có tồn tại trên hệ thống vào khóa đào tạo </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <p>Cách 2. Gán học viên/giảng viên vào khóa đào tạo tập trung bằng chức năng <b>Ghi danh khóa đào tạo</b>. Chức năng cho phép gán học viên/giảng viên đã tồn tại trên hệ thống vào khóa đào tạo. (Hình 4)</p>
+                        <ul>
+                            <li>NSD thực hiện click vào <img src="img/187.png" alt="">  hoặc click icon <img src="img/188.png" alt="">  góc phải màn hình. Hệ thống hiển thị màn hình ghi danh khóa đào tạo với 03 phân vùng chính: (Hình 5)</li>
+                            <li>Vùng 1: Tìm kiếm học viên/giảng viên để gán vào khóa đào tạo tập trung;</li>
+                            <li>Vùng 2: Danh sách người dùng cần ghi danh; </li>
+                            <li>
+                                <p>Vùng 3: Danh sách người dùng đã ghi danh vào khóa đào tạo.</p>
+                                <ul>
+                                    <li>Tìm kiếm người dùng cần ghi danh: Tại vùng 1, NSD thực hiện nhập các điều kiện tìm kiếm: Loại người dùng ( chọn trong listbox: học viên hoặc giảng viên); Nhập tên người dùng cần tìm kiếm -> Click button <img src="img/189.png" alt=""> . Hệ thống hiển thị màn hình <b>Danh sách người dùng cần ghi danh</b> thỏa mãn điều kiện tìm kiếm</li>
+                                    <li>Ghi danh người dùng vào khóa đào tạo: Tại vùng 2 trong <b>Danh sách người dùng cần ghi danh</b>, NSD thực hiện tích chọn người dùng muốn gán vào khóa đào tạo -> click icon  <img src="img/190.png" alt=""> để hoàn thành thao tác. Hệ thống hiển thị màn hình ghi danh khóa đào tạo thành công. (Hình 6)</li>
+                                    <li>Rút học viên khỏi khóa đào tạo: Tại vùng 3, trong màn hình <b>Danh sách người dùng đã ghi danh vào khóa đào tạo</b>, NSD thực hiện tích chọn người dùng muốn rút khỏi khóa đào tạo, click button <img src="img/191.png" alt=""> . Hệ thống hiển thị màn hình xác nhận hủy ghi danh khóa đào tạo thành công.  (Hình 7)</li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/192.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/193.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/194.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/195.png" alt="">
+                <p>Hình 4</p>
+                <img src="img/196.png" alt="">
+                <p>Hình 5</p>
+                <img src="img/197.png" alt="">
+                <p>Hình 6</p>
+                <img src="img/198.png" alt="">
+                <p>Hình 7</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>XEM THÔNG TIN CHI TIẾT KHÓA ĐÀO TẠO TẬP TRUNG</b></p>
+                <ul>
+                    <li>
+                        <p>Tại màn hình Danh sách thống kê khóa đào tạo tập trung, NSD click vào mã khóa đào tạo tập trung . (Hình 1)</p>
+                        <p>Hệ thống  hiển thị màn hình cho phép xem chi tiết thông tin của khóa đào tạo tập trung được chọn, bao gồm:</p>
+                        <ul>
+                            <li>Ảnh đại diện khóa học </li>
+                            <li>Tên khóa học</li>
+                            <li>Mã khóa học</li>
+                            <li>Danh mục khóa học</li>
+                            <li>Điểm qua môn</li>
+                            <li>Thời gian bắt đầu</li>
+                            <li>Thời gian kết thúc</li>
+                            <li>Mô tả khóa học</li>
+                            <li>Danh sách học viên trong khóa học: tiến trình của từng học viên, bảng điểm chi tiết, trạng thái của từng học viên</li>
+                            <li>Danh sách điểm danh học viên trong khóa học (Hình 2)</li>
+                        </ul>
+                    </li>
+                    <li>Sửa thông tin khóa đào tạo tập trung: NSD click chọn button  <img src="img/199.png" alt="">, hệ thống hiển thị màn hình <b>Chỉnh sửa thông tin khóa đào tạo</b>. NSD thực hiện nhập các thông tin mới -> click button  <img src="img/200.png" alt=""> để hoàn thành thao tác. NSD có thể click button  <img src="img/201.png" alt=""> để hủy thao tác sửa thông tin khóa đào tạo online. (Hình 3)</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/202.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/203.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/204.png" alt="">
+                <p>Hình 3</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>PHÊ DUYỆT/HỦY PHÊ DUYỆT KHÓA ĐÀO TẠO TẬP TRUNG</b></p>
+                <p>Tại khung menu bên trái, NSD chọn menu Quản lý đào tạo -> Khóa đào tạo -> Khóa đào tạo tập trung. Hệ thống hiển thị danh sách thống kê các khóa học tập trung hiện tại, trong cột  <b>Trạng thái</b></p>
+                <ul>
+                    <li>NSD click chọn nút sang màu xanh <img src="img/205.png" alt="">  để phê duyệt khóa học</li>
+                    <li>NSD click chọn nút sang màu trắng <img src="img/206.png" alt="">  để hủy phê duyệt khóa học</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/207.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>ĐIỂM DANH </b></p>
+                <ul>
+                    <li>Bước 1: NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo tập trung</b>. Trên danh sách thống kê Khóa đào tạo tập trung hiện tại, NSD thực hiện click button sử nội dung  <img src="img/208.png" alt="">. (Hình 1)</li>
+                    <li>Bước 2: NSD click vào chức năng  <b>Điểm danh</b> (Hình 2)</li>
+                    <li>Bước 3:  Trên tab <b>Điểm danh</b> NSD thực hiện click vào button Có/ Vắng  để điểm danh học viên tham gia khóa đào tạo tập trung. Click button  <img src="img/209.png" alt=""> để hoàn thành thao tác điểm danh. (Hình 3)<br>
+                        Hệ thống hiển thị màn hình xác nhận thao tác điểm danh thành công. NSD click button <b>OK</b> để hoàn thành thao tác.
+                    </li>
+                    <li>Xem lịch sử điểm danh: NSD thực hiện click vào tab <b>Lịch sử</b> trên màn hình điểm danh để xem thông tin lịch sử điểm danh đối với khóa học (Hình 4)</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/210.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/211.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/212.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/213.png" alt="">
+                <p>Hình 4</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>NHẬP ĐIỂM</b></p>
+                <ul>
+                    <li>Bước 1: NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo tập trung</b> -> click button <img src="img/214.png" alt=""> .  (Hình 1)</li>
+                    <li>Bước 2: Click  vào chức năng  <b>Chấm điểm</b> (Hình 2)</li>
+                    <li>Bước 3:  Tại màn hình thống kê danh sách học viên trong khóa học, NSD thực hiện nhập điểm cho học viên tại cột <b>Đểm cuối khóa</b> -> Bấm <b>Enter</b> để hoàn thành nhập điểm (Hình 3)</li>
+                    <li>Xem danh sách điểm số của cả khóa: Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Khóa đào tạo tập trung</b>. Trên danh sách thống kê Tổng số khóa đào tạo tập trung hiện tại, NSD thực hiện click button sử nội dung  <img src="img/214.png" alt="">.  (Hình 4)</li>
+                </ul>
+                <p>Hệ thống chuyển sang màn hình cho phép xem thông tin điểm số của tất cả học viên trong khóa đào tạo. NSD thực hiện click  <img src="img/215.png" alt="">. Hệ thống hiển thị màn hình cho phép xem điểm số của tất cả học viên trong khóa đào tạo.</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/216.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/217.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/218.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/219.png" alt="">
+                <p>Hình 4</p>
+                <img src="img/220.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml423">4.2.3   Tạo mới khóa từ thư viện</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <ul>
+                    <li>Bước 1: Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Khóa đào tạo</b> -> <b>Tạo mới khóa từ thư viện</b>. (Hình 1)</li>
+                    <li>Bước 2: NSD nhập các thông tin, bao gồm: Hình ảnh đại diện của khóa học, Chọn danh sách thư viện khóa học, Nhập mã khóa học, Tên khóa học, Danh mục khóa học, Thời gian bắt đầu, Thời gian kết thúc, Điểm qua môn, Cho phép học viên tự đăng ký, Khóa học làm bài kiểm tra, Mô tả khóa học</li>
+                    <li>Bước 3: Click button <img src="img/221.png" alt="">  để hoàn thành thêm mới khóa từ thư viện, hệ thống sẽ hiển thị thông báo <b>Nhân bản khóa học thành công</b>.  NSD thực hiện Click button  <img src="img/222.png" alt="">  để hoàn thành thao tác tạo khóa học từ thư viện</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/223.png" alt="">
+                <p>Hình 1</p>
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml43">4.3  Nhóm chức năng chứng chỉ</h5>
+        <h5 class="mb-3" id="ml431">4.3.1   Danh sách học viên</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Tại khung menu bên trái, NSD chọn menu <b>Quản lý đào tạo</b> -> <b>Chứng chỉ</b> -> <b>Danh sách học viên</b>.  Hệ thống hiển thị giao diện với 2 vùng:</p>
+                <ul>
+                    <li>Vùng 1: Danh sách học viên chưa cấp mã chứng chỉ</li>
+                    <li>Vùng 2: Danh sách học viên đã được cấp mã chứng chỉ</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/224.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml432">4.3.2   Cấp chứng chỉ cho học viên</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <ul>
+                    <li>Bước 1: Tìm kiếm học viên chưa được cấp chứng chỉ: Tại vùng 1 Danh sách học viên chưa được cấp mã chứng chỉ, NSD nhập thông tin học viên, click button  <img src="img/225.png" alt=""> . Hệ thống hiển thị danh sách thống kê những học viên thỏa mãn điều kiện tìm kiếm (Hình 1, 2)</li>
+                    <li>
+                        <p>Bước 2: Cấp mã</p>
+                        <ul>
+                            <li>Cấp mã cho từng học viên: Tại vùng 1, NSD tích chọn học viên cần cấp mã, click button  <img src="img/226.png" alt="">. (Hình 3)</li>
+                            <li>Cấp mã học viên với số lượng lớn: Tại vùng 1, NSD thực hiện tích chọn tất cả học viên, click button  <img src="img/227.png" alt=""> (Hình 4)</li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/228.png" alt="">
+                <p>Hình 1</p>
+                <img src="img/229.png" alt="">
+                <p>Hình 2</p>
+                <img src="img/230.png" alt="">
+                <p>Hình 3</p>
+                <img src="img/231.png" alt="">
+                <p>Hình 4</p>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div id="ml5">
+        <h4 class="mb-3" >5. Quản lý Báo cáo</h4>
+        <h5 class="mb-3" id="ml51">5.1 Danh sách khảo sát</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Trên thanh menu trái thực hiện truy cập <b>“Báo cáo”</b> -> chọn chức năng <b>“Quản lý Survey”</b> -> chọn chức năng <b>“Danh sách Survey”</b> giao diện quản lý hiển thị với các chức năng như hình bên</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/232.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>1.    Tìm kiếm: Người dùng có thể chọn tìm kiếm theo tên survey bằng cách chọn <img src="img/233.png" alt=""></i></p>
+                <p><i>2.    Chọn ngày bắt đầu ngày kết thúc: người dùng có thể lọc các survey theo ngày bắt đầu hoặc ngày kết thúc</i></p>
+                <p><i>3.    Tạo mới</i></p>
+                <p class="pl-3">Để tạo mới Survey click  <img src="img/234.png" alt=""> sau đó thực hiện các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Nhập các thông tin vào các trường bắt buộc phải nhập có dấu “*”, Mã, Tên, Thời gian bắt đầu, Thời gian kết thúc</li>
+                    <li>Bước 2: Nhập thông tin mô tả về survey, với các định dạng mô tả như hình bên</li>
+                    <li>Bước 3: Chọn <img src="img/235.png" alt="">  để hoàn tất việc tạo survey, chọn <img src="img/236.png" alt="">  để hủy </li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/237.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>4.    Xem giao diện trình bày survey: người dùng chọn  <img src="img/238.png" alt=""></i></p>
+                <p>Hệ thống hiển thị giao diện trình bày survey để người dùng xem được cách bố trí chi tiết của survey như sau:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/239.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>5.    Thêm câu hỏi vào survey</i></p>
+                <p>Để thêm câu hỏi vào survey người dùng thực hiện các bước sau:</p>
+                <ul>
+                    <li>Bước 1: Chọn survey cần thêm câu hỏi, trường này bắt buộc phải chọn</li>
+                    <li>Bước 2: Chọn loại câu hỏi, trường này bắt buộc phải chọn</li>
+                    <li>Bước 3: Gõ tên câu hỏi, trường này bắt buộc phải nhập</li>
+                    <li>Bước 4: Nhập nội dung câu hỏi với các định dạng trong khung, trường này bắt buộc phải nhập</li>
+                    <li>Bước 5: Chọn <img src="img/240.png" alt="">  để thêm đáp án cho câu hỏi, chọn <img src="img/241.png" alt="">  để xóa đáp án cho câu hỏi, sau khi hoàn tất chọn  <img src="img/242.png" alt=""> để hoàn tất thêm câu hỏi vào survey</li>
+                </ul>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/243.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>6.    Sửa thông tin survey</i></p>
+                <p>Để sửa thông tin survey người dùng cũng làm tương tự các bước như việc tạo survey ở phần 3 sau đó chọn  <img src="img/244.png" alt=""> để hoàn tất việc sửa thông tin survey</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/245.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p><i>7.    Xóa </i></p>
+                <p>Để xóa survey người dùng chọn  <img src="img/246.png" alt="">, màn hình hiển thị thông báo người dùng chọn “OK” để hoàn tất việc xóa, chọn “Cancel” để hủy</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/247.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml52">5.2  Danh sách câu hỏi</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Xem danh sách các câu hỏi người dùng có thể xem theo lựa chọn survey và chọn loại câu hỏi hoặc gõ tên câu hỏi để xem bằng cách chọn <img src="img/248.png" alt=""> , như hình bên:</p>
+                <p>Tại giao diện này người dùng có thể Tạo mới câu hỏi <img src="img/249.png" alt=""> , chỉnh sửa  <img src="img/250.png" alt=""> và xóa <img src="img/251.png" alt="">  câu hỏi.</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/252.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml53">5.3  Khôi phục khảo sát</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Trên thanh menu trái thực hiện truy cập “Báo cáo” -> chọn chức năng “Quản lý khảo sát” -> chọn chức năng “Khôi phục khảo sát” giao diện quản lý hiển thị với các chức năng như hình bên.</p>
+                <p>Click chọn  <img src="img/253.png" alt=""> để khôi phục, chọn <img src="img/254.png" alt="">  để xóa khảo sát</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/255.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml54">5.4  Thống kê sơ bộ</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Tại chức năng thống kê sơ bộ người dùng có thể xem các đồ thị thống kê về số lượng Tỉnh thành, thống kê số lượng Đại lý, số lượng Điểm bán.</p>
+                <p>Xem chi tiết các thông số thống kê về Nhân viên bán hàng và thống kê khóa đào tạo như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/256.png" alt="">
+            </div>
+        </div>
+        <h5 class="mb-3" id="ml55">5.5  Báo cáo đánh giá</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Người dùng có thể xem chi tiết báo cáo đánh giá bằng cách thực hiện từng bước như sau:</p>
+                <ul>
+                    <li>Bước 1: Lựa chọn Khu vực cần xem báo cáo đánh giá</li>
+                    <li>Bước 2: Lựa chọn Tỉnh thành</li>
+                    <li>Bước 3: Lựa chọn Đại lý cần xem báo cáo</li>
+                    <li>Bước 4: Lựa chọn Điểm bản</li>
+                    <li>Bước 5: Click vào <img src="img/257.png" alt="">  để thực hiện xem báo cáo thống kê chi tiết như hình bên:</li>
+                </ul>
+                <p>(Có thể chọn 1 hoặc nhiều tiêu chí để thực hiện bước xem báo cáo)</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/258.png" alt="">
+            </div>
+        </div>
+
+    </div>
+    <div id="ml6">
+        <h5 class="mb-3">6  Cấu hình hệ thống</h5>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>Cấu hình chung</b></p>
+                <p>Người dùng có thể thay đổi một số tùy chỉnh cho hệ thống bằng cách tích chọn hoặc bỏ chọn ô <img src="img/259.png" alt=""> , tích chọn để cho phép hệ thống hiển thị các chức năng và thông tin hiển thị liên quan, như hình bên</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/260.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>Cấu hình mẫu email</b></p>
+                <p>Người dùng có thể cấu hình chỉnh sửa các template email như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/261.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Thực hiện chỉnh template cho email bằng cách chọn  <img src="img/262.png" alt="">, giao diện chỉnh sửa hiển thị như hình bên:</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/263.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Người dùng chỉnh sửa template với những định dạng và nội dung email trong phần mô tả, chọn <img src="img/264.png" alt="">  để hoàn tất việc chỉnh sửa template, màn hình hiển thị sửa thành công.</p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/265.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p class="text-center"><b>Gửi notification</b></p>
+                <p>Để gửi thông báo người dùng cần gõ tên người nhận </p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/266.png" alt="">
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                <p>Gõ nội dung thông báo trong ô Nội dung chọn Gửi để gửi thông báo đến người nhận  </p>
+            </div>
+            <div class="col-md-7 text-center">
+                <img src="img/267.png" alt="">
+            </div>
+        </div>
+    </div>
+
+</div>
+</body>
+
+</html>

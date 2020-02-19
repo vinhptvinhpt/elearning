@@ -1,0 +1,1109 @@
+<?php
+
+namespace App\Http\Controllers\Api;
+
+use App\CourseCompletion;
+use App\CourseFinal;
+use App\MdlCourse;
+use App\MdlCourseCompletions;
+use App\MdlEnrol;
+use App\MdlGradeGrade;
+use App\MdlGradeItem;
+use App\MdlRoleAssignments;
+use App\MdlUser;
+use App\MdlUserEnrolments;
+use App\ModelHasRole;
+use App\Role;
+use App\TmsLog;
+use App\TmsSaleRoomUser;
+use App\TmsUserDetail;
+use Carbon\Carbon;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\URL;
+
+class TaskController extends Controller
+{
+    public function resetAdminPassword()
+    {
+        MdlUser::findOrFail(2)->update([
+            'password' => bcrypt("Bgt@2019")
+        ]);
+        echo "Success!";
+    }
+
+    #region insert student to course_completion courses certificate
+    public function completeCourseForStudent()
+    {
+        $lstUserCourse = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
+            ->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', function ($join) {
+                $join->on('ttc.category_id', '=', 'c.category');
+                $join->on('e.courseid', '=', 'c.id');
+            })
+            //->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->join('mdl_grade_items as gri', 'gri.courseid', '=', 'c.id')
+            ->leftJoin('course_completion as courc', function ($join) {
+                $join->on('courc.userid', '=', 'u.id');
+                $join->on('courc.courseid', '=', 'c.id');
+            })
+            //->where('c.category', '=', 3)
+            ->whereNull('courc.userid')
+            ->whereNull('courc.courseid')
+            ->select('u.id as user_id', 'c.id as course_id', 'ccc.gradepass', 'gri.itemmodule', 'courc.courseid as courcID', 'courc.userid as courscUID', 'c.is_certificate'
+                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
+                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
+                cs.section <> 0 and cmc.completionstate != 0 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
+                DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id) as total_module'),
+                DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
+				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
+
+        $count_course = count($lstUserCourse);
+
+        if ($count_course > 0) {
+            $arrData = [];
+            $data_item = [];
+
+            $num = 0;
+            $limit = 300;
+
+            foreach ($lstUserCourse as $course) {
+                if ($course->is_certificate == 0) { //khóa học cấp chứng chỉ không có bài thi, không cần set điểm pass
+                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
+                        $data_item['userid'] = $course->user_id;
+                        $data_item['courseid'] = $course->course_id;
+                        $data_item['finalgrade'] = $course->finalgrade;
+                        $data_item['timecompleted'] = strtotime(Carbon::now());
+                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+
+                        array_push($arrData, $data_item);
+                        $num++;
+                    }
+                } else {
+                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
+                        && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+
+                        $data_item['userid'] = $course->user_id;
+                        $data_item['courseid'] = $course->course_id;
+                        $data_item['finalgrade'] = $course->finalgrade;
+                        $data_item['timecompleted'] = strtotime(Carbon::now());
+                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+
+                        array_push($arrData, $data_item);
+                        $num++;
+
+                    }
+                }
+
+                if ($num >= $limit) {
+                    CourseCompletion::insert($arrData);
+                    $num = 0;
+                    $arrData = [];
+                }
+
+            }
+
+            CourseCompletion::insert($arrData);
+
+        }
+    }
+    #endregion
+
+    #region insert student to course_final from courses certificate
+    public function finalizeCourseForStudent()
+    {
+        $lstUserCourse = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
+            ->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', function ($join) {
+                $join->on('ttc.category_id', '=', 'c.category');
+                $join->on('e.courseid', '=', 'c.id');
+            })
+            /*->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')*/
+            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->join('mdl_grade_items as gri', 'gri.courseid', '=', 'c.id')
+            ->leftJoin('course_final as courc', function ($join) {
+                $join->on('courc.userid', '=', 'u.id');
+                $join->on('courc.courseid', '=', 'c.id');
+            })
+            //->where('c.category', '=', 3)
+            ->where('c.is_end_quiz', '=', 1)//điều kiện xác nhận là bài thi cuối khóa
+            ->whereNull('courc.userid')
+            ->whereNull('courc.courseid')
+            ->select('u.id as user_id', 'c.id as course_id', 'ccc.gradepass', 'gri.itemmodule', 'courc.courseid as courcID', 'courc.userid as courscUID'
+                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
+                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
+                cs.section <> 0 and cmc.completionstate != 0 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
+                DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id) as total_module'),
+                DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
+				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
+
+        $count_course = count($lstUserCourse);
+
+        if ($count_course > 0) {
+            $arrData = [];
+            $data_item = [];
+
+            $num = 0;
+            $limit = 300;
+
+            foreach ($lstUserCourse as $course) {
+                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
+                    && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+
+                    $data_item['userid'] = $course->user_id;
+                    $data_item['courseid'] = $course->course_id;
+                    $data_item['finalgrade'] = $course->finalgrade;
+                    $data_item['timecompleted'] = strtotime(Carbon::now());
+
+                    array_push($arrData, $data_item);
+
+                    $num++;
+                    if ($num >= $limit) {
+                        CourseFinal::insert($arrData);
+                        $num = 0;
+                        $arrData = [];
+                    }
+
+                }
+            }
+            CourseFinal::insert($arrData);
+        }
+    }
+    #endregion
+
+    #region student to course_completion courses offline
+    public function completeOfflineCourseForStudent()
+    {
+        $lstUserCourse = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->join('mdl_grade_items as gri', 'gri.courseid', '=', 'c.id')
+            ->leftJoin('course_completion as courc', function ($join) {
+                $join->on('courc.userid', '=', 'u.id');
+                $join->on('courc.courseid', '=', 'c.id');
+            })
+            ->where('c.category', '=', 5)///điều kiện xác nhận là khóa học offline
+            ->whereNull('courc.userid')
+            ->whereNull('courc.courseid')
+            ->select('u.id as user_id', 'c.id as course_id', 'ccc.gradepass', 'gri.itemmodule', 'courc.courseid as courcID', 'courc.userid as courscUID', 'c.total_date_course'
+                , DB::raw('(SELECT count(att.id) FROM `mdl_attendance` att
+                                    join mdl_course mc on mc.id = att.courseid
+                                    join mdl_user mu on mu.id = att.userid where att.courseid = c.id and att.userid = u.id) as count_date'),
+                DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
+				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
+
+        $count_course = count($lstUserCourse);
+
+        if ($count_course > 0) {
+            $arrData = [];
+            $data_item = [];
+
+            $num = 0;
+            $limit = 300;
+
+            foreach ($lstUserCourse as $course) {
+
+                if ($course->total_date_course > 0 && $course->count_date >= $course->total_date_course
+                    && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+
+                    $data_item['userid'] = $course->user_id;
+                    $data_item['courseid'] = $course->course_id;
+                    $data_item['finalgrade'] = $course->finalgrade;
+                    $data_item['timecompleted'] = strtotime(Carbon::now());
+                    $data_item['timeenrolled'] = strtotime(Carbon::now());
+                    array_push($arrData, $data_item);
+
+                    $num++;
+                    if ($num >= $limit) {
+                        CourseCompletion::insert($arrData);
+                        $num = 0;
+                        $arrData = [];
+                    }
+
+                }
+            }
+            CourseCompletion::insert($arrData);
+        }
+    }
+    #endregion
+
+    #region lock student account after 30 days no certificate
+    public function lockStudentNoCertificate()
+    {
+        $now = date('Y-m-d', strtotime(Carbon::now()));
+
+        #region cmt code cu, query qua nhieu
+//        $role = Role::where('name', 'student')->pluck('id');
+//        $user_array = ModelHasRole::whereIn('role_id', $role)->pluck('model_id');
+//        $user_detail = TmsUserDetail::where([
+//            'deleted' => 0,
+//            'confirm' => 0
+//        ])
+//            ->where('email', 'not like', '%bgt%')//ko xoa cac account la nhan vien BGT, phuong an xu ly tam thoi voi so luong user BGT hien co trong he thong
+//            ->whereIn('user_id', $user_array)
+//            ->get();
+//
+//        if (!empty($user_detail)) {
+//            $user_detail = $user_detail->toArray();
+//            foreach ($user_detail as $user) {
+//                $created_at = date('Y-m-d', strtotime($user['created_at']));
+//                if ((strtotime($now) - strtotime($created_at)) > 30 * 60 * 60 * 24 && !$this->checkCourseComplete($user['user_id'])) {
+//                    \DB::beginTransaction();
+//                    $user_id = $user['user_id'];
+//                    $mdlUser = MdlUser::findOrFail($user_id);
+//                    if ($mdlUser) {
+//                        $mdlUser->deleted = 1;
+//                        $mdlUser->save();
+//
+//                        $tmsUser = TmsUserDetail::where('user_id', $user_id)->first();
+//                        $tmsUser->deleted = 1;
+//                        $tmsUser->save();
+//
+//                        $type = 'user';
+//                        $url = URL::current();
+//                        $action = 'delete';
+//                        $info = 'Khóa Tài khoản học viên: ' . $mdlUser['username'] . ' sau 30 ngày chưa được cấp giấy chứng nhập.';
+//                        TmsLog::create([
+//                            'type' => $type,
+//                            'url' => $url,
+//                            'user' => $user_id,
+//                            'ip' => '',
+//                            'action' => $action,
+//                            'info' => $info,
+//                        ]);
+//                    }
+//                    \DB::commit();
+//                }
+//            }
+//        }
+
+        #endregion
+
+        //ThoLD = 31/12/2019
+        //lay danh sach cac hoc vien dang nam trong khung nang luc chung chi
+
+        $student_role = Role::ROLE_STUDENT;
+
+        $lstUsers = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
+            ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
+            ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
+            //comment get all roles not only student
+            //->where('r.name', '=', \App\Role::STUDENT)
+
+            //Lọc bỏ các user có thêm role khác ngoài role student
+            ->whereNotExists(function ($query) use ($student_role) {
+                $query->select(DB::raw(1))
+                    ->from('model_has_roles')
+                    ->whereRaw('model_has_roles.model_id = u.id')
+                    ->where('model_has_roles.role_id', "<>", $student_role);
+            })
+            ->where('tud.deleted', '=', 0)
+            ->where('tud.confirm', '=', 0)
+            ->where('ttu.trainning_id', '=', \App\TmsTrainningProgram::PROGRAM_CERTIFICATE)//id khung nang luc bat buoc
+            ->where('tud.email', 'not like', '%bgt%')//ko xoa cac account la nhan vien BGT, phuong an xu ly tam thoi voi so luong user BGT hien co trong he thong
+            ->select(
+                'u.id as user_id'
+                , 'tud.created_at'
+                , 'ccc.gradepass as gradepass'
+                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+                inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = u.id and cm.course = c.id)
+                as user_course_completionstate')
+
+                , DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
+                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                where cs.section <> 0 and cm.course = c.id) as user_course_learn')
+
+                , DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
+                                 where cc.userid = u.id and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
+
+                , DB::raw('(select `g`.`finalgrade`
+  				from mdl_grade_items as gi
+				join mdl_grade_grades as g
+				on g.itemid = gi.id
+				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->get();
+
+        if ($lstUsers) {
+
+            $arr_userId = [];
+            $arr_log = [];
+            $data_log = [];
+
+            $num = 0;
+            $limit = 300;
+
+            \DB::beginTransaction();
+            foreach ($lstUsers as $user) {
+                $created_at = date('Y-m-d', strtotime($lstUsers->created_at));
+
+                if ((
+                        strtotime($now) - strtotime($created_at)) > 30 * 60 * 60 * 24  //>30 ngay
+                    && $user->status_user == 0  //chua duoc cap giay cn
+                    && $user->finalgrade < $user->gradepass //thi truot
+                    && $user->user_course_completionstate < $user->user_course_learn //chua hoan thanh cac khoa hoc theo lo trinh
+                ) {
+
+                    $user_id = $user->user_id;
+                    $mdlUser = MdlUser::findOrFail($user_id);
+                    if ($mdlUser) {
+
+                        array_push($arr_userId, $user->user_id);
+
+                        $data_log['type'] = 'user';
+                        $data_log['url'] = URL::current();
+                        $data_log['user'] = $user->user_id;
+                        $data_log['ip'] = '';
+                        $data_log['action'] = 'delete';
+                        $data_log['info'] = 'Khóa Tài khoản học viên: ' . $mdlUser['username'] . ' sau 30 ngày chưa được cấp giấy chứng nhận.';
+
+                        array_push($arr_log, $data_log);
+                        $num++;
+
+                        if ($num >= $limit) { //lấy đủ 300 update, sau đó lại lấy lại
+                            MdlUser::whereIn('id', $arr_userId)->update(['deleted' => 1]);
+
+                            TmsUserDetail::whereIn('user_id', $arr_userId)->update(['deleted' => 1]);
+
+                            TmsLog::insert($arr_log);
+
+                            //khởi tạo lại
+                            $num = 0;
+                            $arr_userId = [];
+                            $arr_log = [];
+                        }
+
+                    }
+
+                    usleep(200);
+                }
+            }
+
+            MdlUser::whereIn('id', $arr_userId)->update(['deleted' => 1]);
+
+            TmsUserDetail::whereIn('user_id', $arr_userId)->update(['deleted' => 1]);
+
+            TmsLog::insert($arr_log);
+
+            \DB::commit();
+        }
+    }
+    #endregion
+
+    #region xóa tài khoản trong thùng rác sau 60 ngày
+    public function deleteAccountAfter()
+    {
+        $now = date('Y-m-d', strtotime(Carbon::now()));
+        $user_detail = TmsUserDetail::select('user_id', 'updated_at')->where([
+            'deleted' => 1,
+        ])->get();
+        if (!empty($user_detail)) {
+            $user_detail = $user_detail->toArray();
+
+            $arr_userId = [];
+
+            $arr_log = [];
+            $data_log = [];
+
+            $num = 0;
+            $limit = 300;
+
+            \DB::beginTransaction();
+            foreach ($user_detail as $user) {
+                $updated_at = date('Y-m-d', strtotime($user['updated_at']));
+                if ((strtotime($now) - strtotime($updated_at)) > 30 * 60 * 60 * 24 * 2) {
+
+                    $user_id = $user['user_id'];
+
+                    array_push($arr_userId, $user_id);
+
+                    $mdlUser = MdlUser::findOrFail($user_id);
+
+//                    //Function clear user khỏi DB
+//                    TmsUserDetail::clearUser($user_id);
+
+                    $data_log['type'] = 'user';
+                    $data_log['url'] = '*';
+                    $data_log['user'] = $user_id;
+                    $data_log['ip'] = '';
+                    $data_log['action'] = 'clear';
+                    $data_log['info'] = 'Xóa vĩnh viễn tài khoản: ' . $mdlUser['username'] . ' sau 60 ngày trong thùng rác.';
+
+                    array_push($arr_log, $data_log);
+                    $num++;
+
+                    if ($num > $limit) {
+                        MdlUser::whereIn('id', $arr_userId)->delete();
+                        TmsUserDetail::whereIn('user_id', $arr_userId)->delete();
+                        //Xóa khỏi bảng ModelHasRole
+                        ModelHasRole::whereIn('model_id', $arr_userId)->delete();
+                        //Xóa khỏi bảng TmsSaleRoomUser
+                        TmsSaleRoomUser::whereIn('user_id', $arr_userId)->delete();
+                        //Xóa khỏi bảng TmsSaleRoomUser
+                        TmsSaleRoomUser::whereIn('user_id', $arr_userId)->delete();
+
+                        TmsLog::insert($arr_log);
+                        $num = 0;
+                        $arr_userId = [];
+                        $arr_log = [];
+                    }
+
+
+                }
+            }
+
+            MdlUser::whereIn('id', $arr_userId)->delete();
+            TmsUserDetail::whereIn('user_id', $arr_userId)->delete();
+            //Xóa khỏi bảng ModelHasRole
+            ModelHasRole::whereIn('model_id', $arr_userId)->delete();
+            //Xóa khỏi bảng TmsSaleRoomUser
+            TmsSaleRoomUser::whereIn('user_id', $arr_userId)->delete();
+            //Xóa khỏi bảng TmsSaleRoomUser
+            TmsSaleRoomUser::whereIn('user_id', $arr_userId)->delete();
+
+            TmsLog::insert($arr_log);
+            \DB::commit();
+        }
+    }
+
+    #endregion
+
+    public function autoEnrolTrainning()
+    {
+        #region code cu enrol
+//        $role = \App\Role::select('mdl_role_id')->where('name', \App\Role::STUDENT)->first();
+//        $user_list = DB::table('tms_traninning_users as ttu')
+//            ->select('ttu.user_id as user_id')
+//            ->get();
+//        if ($user_list) {
+//            foreach ($user_list as $user) {
+//                $category_id = \App\TmsTrainningUser::with('category')->where('user_id', $user->user_id)->first();
+//                $category_id = $category_id['category']['category_id'];
+//                $courses = DB::table('mdl_course_categories as cate')
+//                    ->join('mdl_course as course', 'course.category', '=', 'cate.id')
+//                    ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'course.id')
+//                    ->select('course.id as course_id')
+//                    ->where('cate.id', '=', $category_id)
+//                    ->get();
+//
+//                if ($courses) {
+//                    foreach ($courses as $course) {
+//                        $enrole = MdlEnrol::firstOrCreate(
+//                            [
+//                                'enrol' => 'manual',
+//                                'courseid' => $course->course_id,
+//                                'roleid' => $role['mdl_role_id']
+//                            ],
+//                            [
+//                                'sortorder' => 0,
+//                                'status' => 0,
+//                                'expirythreshold' => 86400,
+//                                'timecreated' => strtotime(Carbon::now()),
+//                                'timemodified' => strtotime(Carbon::now()),
+//                            ]
+//                        );
+////                        $checkEnrole = DB::table('mdl_user_enrolments')
+////                            ->where('enrolid', '=', $enrole->id)
+////                            ->where('userid', '=', $user->user_id)
+////                            ->first();
+////                        if (!$checkEnrole) {
+////                            DB::table('mdl_user_enrolments')->insert([
+////                                'enrolid' => $enrole->id,
+////                                'userid' => $user->user_id
+////                            ]);
+////                        }
+//
+//                        MdlUserEnrolments::firstOrCreate([
+//                            'enrolid' => $enrole->id,
+//                            'userid' => $user->user_id
+//                        ]);
+//
+//                        $context = DB::table('mdl_context')
+//                            ->where('instanceid', '=', $course->course_id)
+//                            ->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE)
+//                            ->first();
+//                        $context_id = $context ? $context->id : 0;
+//                        MdlRoleAssignments::firstOrCreate([
+//                            'roleid' => $role['mdl_role_id'],
+//                            'userid' => $user->user_id,
+//                            'contextid' => $context_id
+//                        ]);
+//
+//                        //lay gia trị trong bang mdl_grade_items
+//                        $mdl_grade_item = MdlGradeItem::where('courseid', $course->course_id)->first();
+//
+//                        if ($mdl_grade_item) {
+//                            //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+//                            MdlGradeGrade::firstOrCreate([
+//                                'userid' => $user->user_id,
+//                                'itemid' => $mdl_grade_item->id
+//                            ]);
+//                        }
+//
+//                        //write log to notifications
+//                        $this->insert_single_notification(\App\TmsNotification::MAIL, $user->user_id, \App\TmsNotification::ENROL, $course->course_id);
+//                    }
+//                }
+//            }
+//        }
+        #endregion
+
+        //ThoLd 31/12/2019
+        //optimize query
+        $courses = DB::table('tms_traninning_users as ttu')
+            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            ->join('mdl_course as c', 'c.id', '=', 'ttc.course_id')
+            ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'ttu.user_id')
+            ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+            ->select('ttu.user_id', 'c.id as course_id', 'r.mdl_role_id')
+            ->where('r.name', '=', \App\Role::STUDENT)
+            ->where('ttc.deleted', '=', 0)
+            ->get();
+
+        if ($courses) {
+            foreach ($courses as $course) {
+                $enrole = MdlEnrol::firstOrCreate(
+                    [
+                        'enrol' => 'manual',
+                        'courseid' => $course->course_id,
+                        'roleid' => $course->mdl_role_id
+                    ],
+                    [
+                        'sortorder' => 0,
+                        'status' => 0,
+                        'expirythreshold' => 86400,
+                        'timecreated' => strtotime(Carbon::now()),
+                        'timemodified' => strtotime(Carbon::now()),
+                    ]
+                );
+
+                MdlUserEnrolments::firstOrCreate([
+                    'enrolid' => $enrole->id,
+                    'userid' => $course->user_id
+                ]);
+
+                $context = DB::table('mdl_context')
+                    ->where('instanceid', '=', $course->course_id)
+                    ->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE)
+                    ->first();
+                $context_id = $context ? $context->id : 0;
+                MdlRoleAssignments::firstOrCreate([
+                    'roleid' => $course->mdl_role_id,
+                    'userid' => $course->user_id,
+                    'contextid' => $context_id
+                ]);
+
+                //lay gia trị trong bang mdl_grade_items
+                $mdl_grade_item = MdlGradeItem::where('courseid', $course->course_id)->first();
+
+                if ($mdl_grade_item) {
+                    //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+                    MdlGradeGrade::firstOrCreate([
+                        'userid' => $course->user_id,
+                        'itemid' => $mdl_grade_item->id
+                    ]);
+                }
+
+                //write log to notifications
+                $this->insert_single_notification(\App\TmsNotification::MAIL, $course->user_id, \App\TmsNotification::ENROL, $course->course_id);
+                usleep(200);
+            }
+        }
+    }
+
+    function insert_single_notification($type, $sendto, $target, $course_id)
+    {
+        $tms_notif = \App\TmsNotification::firstOrCreate([
+            'type' => $type,
+            'sendto' => $sendto,
+            'target' => $target,
+            'status_send' => \Illuminate\Support\Facades\Auth::user()->id ? \Illuminate\Support\Facades\Auth::user()->id : 0,
+            'course_id' => $course_id
+        ]);
+//        $tms_notif = new \App\TmsNotification();
+//        $tms_notif->type = $type;
+//        $tms_notif->sendto = $sendto;
+//        $tms_notif->target = $target;
+//        $tms_notif->status_send = \App\TmsNotification::UN_SENT;
+//        $tms_notif->course_id = $course_id;
+//        if (!empty(\Illuminate\Support\Facades\Auth::user())) {
+//            $tms_notif->createdby = \Illuminate\Support\Facades\Auth::user()->id;
+//        }
+//
+//        $tms_notif->save();
+        usleep(100);
+        $this->insert_single_notification_log($tms_notif, \App\TmsNotificationLog::CREATE_NOTIF);
+    }
+
+    function insert_single_notification_log($tmsNotif, $action)  //action bao gồm create, update, delete lấy trong bảng TmsNotificationLog
+    {
+        \App\TmsNotificationLog::firstOrCreate(
+            [
+                'type' => $tmsNotif->type,
+                'target' => $tmsNotif->target,
+                'sendto' => $tmsNotif->sendto
+            ],
+            [
+                'content' => json_encode($tmsNotif),
+                'status_send' => $tmsNotif->status_send,
+                'createdby' => $tmsNotif->createdby,
+                'course_id' => $tmsNotif->course_id,
+                'action' => $action
+            ]);
+//        $tms_notifLog = new \App\TmsNotificationLog();
+//        $tms_notifLog->type = $tmsNotif->type;
+//        $tms_notifLog->target = $tmsNotif->target;
+//        $tms_notifLog->content = json_encode($tmsNotif);
+//        $tms_notifLog->sendto = $tmsNotif->sendto;
+//        $tms_notifLog->status_send = $tmsNotif->status_send;
+//        $tms_notifLog->createdby = $tmsNotif->createdby;
+//        $tms_notifLog->course_id = $tmsNotif->course_id;
+//        $tms_notifLog->action = $action;
+//        $tms_notifLog->save();
+    }
+
+    #region auto enrol hoc vien vao khoa hoc cap chung chi khi duoc tao
+    public function autoEnrol()
+    {
+        //category = 3
+        //user role = 5 student
+        //mdl_course / mdl_user / mdl_enrol / mdl_user_enrolments
+        $role_id = Role::ROLE_STUDENT; //student_role
+        $category_id = 3; //category chung chi
+        $all_courses = $this->getAllRequiredCourses();
+        $a = 0;
+        $b = 0;
+
+        if (count($all_courses) != 0) {
+            $course_data_array = array();
+            $students = $this->getStudents();
+
+            if (count($students) != 0) {
+                $student_ids = array();
+                foreach ($students as $student) {
+                    $student_ids[] = $student->id;
+                }
+                foreach ($all_courses as $one_course) {
+                    $a += count($student_ids);
+                    $course_data_array[$one_course->id]['students'] = $student_ids;
+                    $course_data_array[$one_course->id]['context_id'] = $one_course->context_id;
+                    $course_data_array[$one_course->id]['grade_id'] = $one_course->grade_id;
+                }
+            }
+
+            $courses = MdlUserEnrolments::where('mdl_course.category', $category_id)
+                ->where('mdl_enrol.enrol', 'manual')
+                ->where('roles.id', '=', $role_id)
+                ->select(
+                    'mdl_course.id',
+                    'mdl_user_enrolments.userid'
+                )
+                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->get();
+
+            $exists = array();
+            if (count($courses) != 0) {
+                foreach ($courses as $course) {
+                    $exists[$course->id][] = $course->userid;
+                }
+            }
+
+            foreach ($exists as $course_id => $user_ids) {
+                $b += count($user_ids);
+                if (array_key_exists($course_id, $course_data_array)) {
+                    $course_data_array[$course_id]['students'] = array_diff($course_data_array[$course_id]['students'], $user_ids);
+                }
+            }
+
+            $now = time();
+
+//                echo $a. " - " . $b;die;
+
+            foreach ($course_data_array as $course_id => $data) {
+                $user_ids = $data['students'];
+                $context_id = $data['context_id'] && strlen($data['context_id']) != 0 ? $data['context_id'] : 0;
+                $grade_id = $data['grade_id'] && strlen($data['grade_id']) != 0 ? $data['grade_id'] : 0;
+
+                $new_enrol = MdlEnrol::firstOrCreate(
+                    [
+                        'enrol' => 'manual',
+                        'courseid' => $course_id,
+                        'roleid' => $role_id,
+                    ],
+                    [
+                        'sortorder' => 0,
+                        'status' => 0,
+                        'expirythreshold' => 86400,
+                        'timecreated' => $now,
+                        'timemodified' => $now
+                    ]
+                );
+//                    $guest = MdlEnrol::firstOrCreate(
+//                        [
+//                            'enrol' => 'guest',
+//                            'courseid' => $course_id,
+//                            'roleid' => $role_id,
+//                            'sortorder' => 1
+//                        ],
+//                        [
+//                            'expirythreshold' => 86400,
+//                            'timecreated' => $now,
+//                            'timemodified' => $now
+//                        ]
+//                    );
+//                    $self = MdlEnrol::firstOrCreate(
+//                        [
+//                            'enrol' => 'self',
+//                            'courseid' => $course_id,
+//                            'roleid' => $role_id,
+//                            'sortorder' => 2
+//                        ],
+//                        [
+//                            'expirythreshold' => 86400,
+//                            'timecreated' => $now,
+//                            'timemodified' => $now
+//                        ]
+//                    );
+                foreach ($user_ids as $user_id) {
+                    MdlUserEnrolments::firstOrCreate(
+                        [
+                            'enrolid' => $new_enrol->id,
+                            'userid' => $user_id,
+                        ],
+                        [
+                            'timestart' => $now,
+                            'timecreated' => $now,
+                            'timemodified' => $now
+                        ]
+                    );
+
+                    MdlRoleAssignments::firstOrCreate(
+                        [
+                            'roleid' => $role_id,
+                            'userid' => $user_id,
+                            'contextid' => $context_id
+                        ]
+                    );
+
+                    //Tồn tại bản ghi trong bang mdl_grade_items
+                    if ($grade_id != 0) {
+                        //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+                        MdlGradeGrade::firstOrCreate(
+                            [
+                                'userid' => $user_id,
+                                'itemid' => $grade_id
+                            ],
+                            [
+                                'timecreated' => $now,
+                                'timemodified' => $now,
+                                'created_at' => date("Y-m-d H:i:s", $now),
+                                'updated_at' => date("Y-m-d H:i:s", $now),
+                            ]
+                        );
+                    }
+
+                    //Update mdl_course_completions
+                    MdlCourseCompletions::firstOrCreate(
+                        [
+                            'userid' => $user_id,
+                            'course' => $course_id
+                        ],
+                        [
+                            'timeenrolled' => $now,
+                        ]
+                    );
+                }
+            }
+        }
+    }
+    #endregion
+
+    #region auto enrol giao vien vao khoa hoc cap chung chi khi duoc tao
+    /*public function autoEnrolTeacher()
+    {
+        //category = 3
+        //user role = 4 teacher
+        //mdl_course / mdl_user / mdl_enrol / mdl_user_enrolments
+        $role_id = Role::ROLE_TEACHER; //teacher_role
+        $category_id = 3; //category chung chi
+        $all_courses = $this->getAllRequiredCourses();
+        $a = 0;
+        $b = 0;
+        if (count($all_courses) != 0) {
+            $course_data_array = array();
+            $students = $this->getUserByRole($role_id);
+
+            if (count($students) != 0) {
+                $student_ids = array();
+                foreach ($students as $student) {
+                    $student_ids[] = $student->id;
+                }
+                foreach ($all_courses as $one_course) {
+                    $a += count($student_ids);
+                    $course_data_array[$one_course->id]['students'] = $student_ids;
+                    $course_data_array[$one_course->id]['context_id'] = $one_course->context_id;
+                    $course_data_array[$one_course->id]['grade_id'] = $one_course->grade_id;
+                }
+            }
+
+            $courses = MdlUserEnrolments::where('mdl_course.category', $category_id)
+                ->where('mdl_enrol.enrol', 'manual')
+                ->where('roles.id', '=', $role_id)
+                ->select(
+                    'mdl_course.id',
+                    'mdl_user_enrolments.userid'
+                )
+                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->get();
+
+
+            $exists = array();
+            if (count($courses) != 0) {
+                foreach ($courses as $course) {
+                    $exists[$course->id][] = $course->userid;
+                }
+            }
+
+            foreach ($exists as $course_id => $user_ids) {
+                $b += count($user_ids);
+                if (array_key_exists($course_id, $course_data_array)) {
+                    $course_data_array[$course_id]['students'] = array_diff($course_data_array[$course_id]['students'], $user_ids);
+                }
+            }
+
+            $now = time();
+
+//                echo $a. " - " . $b;die;
+
+            foreach ($course_data_array as $course_id => $data) {
+                $user_ids = $data['students'];
+                $context_id = $data['context_id'] && strlen($data['context_id']) != 0 ? $data['context_id'] : 0;
+                $grade_id = $data['grade_id'] && strlen($data['grade_id']) != 0 ? $data['grade_id'] : 0;
+
+                $new_enrol = MdlEnrol::firstOrCreate([
+                    'enrol' => 'manual',
+                    'courseid' => $course_id,
+                    'roleid' => $role_id,
+                    'sortorder' => 0,
+                    'status' => 0,
+                    'expirythreshold' => 86400,
+                    'timecreated' => $now,
+                    'timemodified' => $now
+                ]);
+//                    $guest = MdlEnrol::firstOrCreate(
+//                        [
+//                            'enrol' => 'guest',
+//                            'courseid' => $course_id,
+//                            'roleid' => $role_id,
+//                            'sortorder' => 1
+//                        ],
+//                        [
+//                            'expirythreshold' => 86400,
+//                            'timecreated' => $now,
+//                            'timemodified' => $now
+//                        ]
+//                    );
+//                    $self = MdlEnrol::firstOrCreate(
+//                        [
+//                            'enrol' => 'self',
+//                            'courseid' => $course_id,
+//                            'roleid' => $role_id,
+//                            'sortorder' => 2
+//                        ],
+//                        [
+//                            'expirythreshold' => 86400,
+//                            'timecreated' => $now,
+//                            'timemodified' => $now
+//                        ]
+//                    );
+                foreach ($user_ids as $user_id) {
+                    MdlUserEnrolments::firstOrCreate([
+                        'enrolid' => $new_enrol->id,
+                        'userid' => $user_id,
+                        'timestart' => $now,
+                        'timecreated' => $now,
+                        'timemodified' => $now
+                    ]);
+
+                    MdlRoleAssignments::firstOrCreate(
+                        [
+                            'roleid' => $role_id,
+                            'userid' => $user_id,
+                            'contextid' => $context_id
+                        ]
+                    );
+
+                    //Tồn tại bản ghi trong bang mdl_grade_items
+                    if ($grade_id != 0) {
+                        //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+                        MdlGradeGrade::firstOrCreate(
+                            [
+                                'userid' => $user_id,
+                                'itemid' => $grade_id
+                            ],
+                            [
+                                'timecreated' => $now,
+                                'timemodified' => $now,
+                                'created_at' => date("Y-m-d H:i:s", $now),
+                                'updated_at' => date("Y-m-d H:i:s", $now),
+                            ]
+                        );
+                    }
+
+                    //Update mdl_course_completions
+                    MdlCourseCompletions::firstOrCreate(
+                        [
+                            'userid' => $user_id,
+                            'course' => $course_id
+                        ],
+                        [
+                            'timeenrolled' => $now,
+                        ]
+                    );
+                }
+            }
+        }
+    }*/
+    #endregion
+
+    function checkCourseComplete($user_id)
+    {
+        $check = true;
+        /*$completion_count = \App\MdlCourseCompletions::where('userid', $user_id)->whereIn('course', $this->certificate_course_id())->count();
+        if ($completion_count == $this->certificate_course_number()) {
+            $check = true;
+        }*/
+
+        $category = $this->certificate_course($user_id);
+        $data = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->where('u.id', '=', $user_id)
+            ->select('ccc.gradepass as gradepass'
+                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+                inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id)
+                as user_course_completionstate')
+
+                , DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
+                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                where cs.section <> 0 and cm.course = c.id) as user_course_learn')
+
+                , DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
+                                 where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
+
+                , DB::raw('(select `g`.`finalgrade`
+  				from mdl_grade_items as gi
+				join mdl_grade_grades as g
+				on g.itemid = gi.id
+				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade'));
+        $data = $data->where('c.category', '=', $category);
+        $data = $data->get();
+
+        if ($data) {
+            foreach ($data as $data_item) {
+                if (
+                    $data_item->status_user != 1 &&
+                    $data_item->finalgrade < $data_item->gradepass &&
+                    $data_item->user_course_completionstate != $data_item->user_course_learn &&
+                    $data_item->user_course_completionstate == 0
+                ) {
+                    $check = false;
+                }
+            }
+        }
+
+        return $check;
+    }
+
+    function certificate_course($user_id)
+    {
+        $category_id = \App\TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
+        $category_id = $category_id['category']['category_id'];
+        return $category_id;
+    }
+
+    function getStudents()
+    {
+        $students = MdlUser::where('roles.id', '=', 5)//Role hoc vien
+        ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->select(
+                'mdl_user.id',
+                'username',
+                'firstname',
+                'lastname',
+                'email'
+            )
+            ->get();
+        return $students;
+    }
+
+    function getUserByRole($role_id)
+    {
+        $students = MdlUser::where('roles.id', '=', $role_id)
+            ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->select(
+                'mdl_user.id',
+                'username',
+                'firstname',
+                'lastname',
+                'email'
+            )
+            ->get();
+        return $students;
+    }
+
+    /**
+     *
+     * @return array|null
+     *
+     */
+    function getAllRequiredCourses()
+    {
+        $category_id = 3; //category chung chi
+        $all_courses = MdlCourse::where('category', $category_id)
+            ->select('mdl_course.id', 'mdl_context.id as context_id', 'mdl_grade_items.id as grade_id')
+            ->leftJoin('mdl_context', function ($join) {
+                $join->on('mdl_context.instanceid', '=', 'mdl_course.id');
+                $join->where('mdl_context.contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
+            })
+            ->leftJoin('mdl_grade_items', function ($join) {
+                $join->on('mdl_course.id', '=', 'mdl_grade_items.courseid');
+                $join->where('mdl_grade_items.itemtype', '=', 'course');
+            })
+            ->get();
+
+        return $all_courses;
+    }
+}

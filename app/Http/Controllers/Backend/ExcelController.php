@@ -1,0 +1,294 @@
+<?php
+
+namespace App\Http\Controllers\Backend;
+
+use App\Exports\ListMismatchSaleroom;
+use App\Exports\ReportSheet;
+use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
+use Symfony\Component\HttpFoundation\Request;
+
+class ExcelController extends Controller
+{
+    public function exportMismatchSaleroom()
+    {
+
+        $sheet = array(
+            array(
+                '1',
+                'DB001',
+                'Điểm bán 1',
+                'Địa chỉ 1, XYZ',
+                '0123456789',
+                'NV00001',
+                'DL001',
+                'Chủ điểm bán, đại lý không chính xác'
+            ),
+            array(
+                '2',
+                'DB002',
+                'Điểm bán 2',
+                'Địa chỉ 2, ZYX',
+                '0123456789',
+                'NV00001',
+                'DL001',
+                'Chủ điểm bán, đại lý k đẹp'
+            )
+        );
+
+        $sheet2 = array(
+            array(
+                '1',
+                'DB001',
+                'Điểm bán 1',
+                'Địa chỉ 1, XYZ',
+                '0123456789',
+                'NV00001',
+                'DL001',
+                'Chủ điểm bán, đại lý không chính xác'
+            ),
+            array(
+                '2',
+                'DB002',
+                'Điểm bán 2',
+                'Địa chỉ 2, ZYX',
+                '0123456789',
+                'NV00001',
+                'DL001',
+                'Chủ điểm bán, đại lý k đẹp'
+            ),
+            array(
+                '3',
+                'DB003',
+                'Điểm bán 3',
+                'Địa chỉ 3, ZYX',
+                '0123456789',
+                'NV00001',
+                'DL001',
+                'Chủ điểm bán, đại lý k đẹp'
+            )
+        );
+
+
+        $dataExport = array(
+            'Sheet 01' => $sheet,
+            'Sheet 0cccccc' => $sheet2
+        );
+
+
+        $filename = "dat09.xlsx";
+
+        $exportExcel = new ListMismatchSaleroom($dataExport);
+
+        //$exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX); //store at D:\xampp\htdocs\elearning-bgt\storage\app\dat09.xlsx
+        //Excel::store($exportExcel, 'invoices.xlsx', '', \Maatwebsite\Excel\Excel::XLSX);
+
+        echo "Success";
+
+        //return ($exportExcel)->download($filename, \Maatwebsite\Excel\Excel::XLSX);
+        //return Excel::download($exportExcel, $filename);
+    }
+
+    public function exportReport(Request $request)
+    {
+
+        $data = $request->input('data');
+
+        $selected_level = $data['selected_level'];
+
+        $export_data = array();
+
+        if ($selected_level == 'district') {
+            $first_row_label = __('chi_nhanh');
+            $data = $data["region"];
+            foreach ($data as $department) {
+
+                $parent_total = $department['user_count'];
+                $parent_incomplete = $department['user_incomplete_count'];
+                $parent_completed = $department['user_completed_count'];
+                $parent_confirmed = $department['user_confirm_count'];
+
+                $parent_incomplete_percent = $parent_total != 0 ? intval($parent_incomplete / $parent_total * 100) : 0;
+                $parent_completed_percent = $parent_total != 0 ? intval($parent_completed / $parent_total * 100) : 0;
+                $parent_confirmed_percent = $parent_total != 0 ? intval($parent_confirmed / $parent_total * 100) : 0;
+
+                $export_data[] = array(
+                    $first_row_label,
+                    $department['name'],
+                    $parent_incomplete . "(" . $parent_incomplete_percent . "%)",
+                    $parent_completed . "(" . $parent_completed_percent . "%)",
+                    $parent_confirmed . "(" . $parent_confirmed_percent . "%)",
+                    $parent_total,
+                );
+                $stt = 1;
+                foreach ($department['cities'] as $item) {
+                    $total = count($item['user']);
+                    $incomplete = count($item['user_incomplete']);
+                    $completed = count($item['user_completed']);
+                    $confirmed = count($item['user_confirm']);
+
+                    $incomplete_percent = $total != 0 ? intval($incomplete / $total * 100) : 0;
+                    $completed_percent = $total != 0 ? intval($completed / $total * 100) : 0;
+                    $confirmed_percent = $total != 0 ? intval($confirmed / $total * 100) : 0;
+
+                    $export_data[] = array(
+                        $stt,
+                        $item['name'],
+                        $incomplete . "(" . $incomplete_percent . "%)",
+                        $completed . "(" . $completed_percent . "%)",
+                        $confirmed . "(" . $confirmed_percent . "%)",
+                        $total,
+                    );
+                    $stt++;
+                }
+            }
+        }
+
+        if($selected_level == "city") {
+            $first_row_label = __('tinh_thanh');
+
+            $parent_total = $data['user_count'];
+            $parent_incomplete = $data['user_incomplete_count'];
+            $parent_completed = $data['user_completed_count'];
+            $parent_confirmed = $data['user_confirm_count'];
+
+            $parent_incomplete_percent = $parent_total != 0 ? intval($parent_incomplete / $parent_total * 100) : 0;
+            $parent_completed_percent = $parent_total != 0 ? intval($parent_completed / $parent_total * 100) : 0;
+            $parent_confirmed_percent = $parent_total != 0 ? intval($parent_confirmed / $parent_total * 100) : 0;
+
+            $export_data[] = array(
+                $first_row_label,
+                $data['name'],
+                $parent_incomplete . "(" . $parent_incomplete_percent . "%)",
+                $parent_completed . "(" . $parent_completed_percent . "%)",
+                $parent_confirmed . "(" . $parent_confirmed_percent . "%)",
+                $parent_total,
+            );
+            $stt = 1;
+            foreach ($data['items'] as $item) {
+
+                $total = count($item['user']);
+                $incomplete = count($item['user_incomplete']);
+                $completed = count($item['user_completed']);
+                $confirmed = count($item['user_confirm']);
+
+                $incomplete_percent = $total != 0 ? intval($incomplete / $total * 100) : 0;
+                $completed_percent = $total != 0 ? intval($completed / $total * 100) : 0;
+                $confirmed_percent = $total != 0 ? intval($confirmed / $total * 100) : 0;
+
+                $export_data[] = array(
+                    $stt,
+                    $item['name'],
+                    $incomplete . "(" . $incomplete_percent . "%)",
+                    $completed . "(" . $completed_percent . "%)",
+                    $confirmed . "(" . $confirmed_percent . "%)",
+                    $total,
+                );
+                $stt++;
+            }
+        }
+
+        if ($selected_level == "branch") {
+            $export_data[] = array(
+                __('dai_ly'),
+                $data['name'],
+                $data['user_incomplete_count'],
+                $data['user_completed_count'],
+                $data['user_confirm_count'],
+                $data['user_count'],
+            );
+
+            $incomplete_array = [];
+            $completed_array = [];
+            $confirm_array = [];
+            $user_array = [];
+
+
+            foreach ($data['branch_users'] as $item) {
+                foreach ($item as $key => $users) {
+                    $name = array_column($users, 'user_name');
+                    if ($key == 'user') {
+                        $user_array = array_merge($user_array, $name);
+                    } elseif ($key == 'user_completed') {
+                        $completed_array = array_merge($completed_array, $name);
+                    } elseif ($key == 'user_confirm') {
+                        $confirm_array = array_merge($confirm_array, $name);
+                    } elseif ($key == 'user_incomplete') {
+                        $incomplete_array = array_merge($incomplete_array, $name);
+                    }
+                }
+            }
+
+            $max_count = max(count($user_array), count($incomplete_array), count($completed_array), count($confirm_array));
+
+            for ($i = 0; $i < $max_count; $i++) {
+                $branch_data = array(
+                    '',
+                    '',
+                    isset($incomplete_array[$i]) ? $incomplete_array[$i] : '',
+                    isset($completed_array[$i]) ? $completed_array[$i] : '',
+                    isset($confirm_array[$i]) ? $confirm_array[$i] : '',
+                    isset($user_array[$i]) ? $user_array[$i] : '',
+                );
+                $export_data[] = $branch_data;
+            }
+
+        }
+
+        if ($selected_level == "branch" || $selected_level == "saleroom") {
+            $items = $data['items'];
+            $stt = 1;
+            foreach ($items as $saleroom) {
+
+                $saleroom_data = array(
+                    $stt,
+                    $saleroom['name'],
+                    count($saleroom['user_incomplete']) == 0 ? "0" :  count($saleroom['user_incomplete']),
+                    count($saleroom['user_completed']) == 0 ? "0" :  count($saleroom['user_completed']),
+                    count($saleroom['user_confirm']) == 0 ? "0" :  count($saleroom['user_confirm']),
+                    count($saleroom['user']) == 0 ? "0" :  count($saleroom['user']),
+                );
+                $export_data[] = $saleroom_data;
+
+                $item_incomplete_array = array_column($saleroom['user_incomplete'], 'user_name');
+                $item_completed_array = array_column($saleroom['user_completed'], 'user_name');
+                $item_confirm_array = array_column($saleroom['user_confirm'], 'user_name');
+                $item_array = array_column($saleroom['user'], 'user_name');
+
+                $max_saleroom_count = max(
+                    count($item_incomplete_array),
+                    count($item_completed_array),
+                    count($item_confirm_array),
+                    count($item_array)
+                );
+                for ($i = 0; $i < $max_saleroom_count; $i++) {
+                    $saleroom_item = array(
+                        '',
+                        '',
+                        isset($item_incomplete_array[$i]) ? $item_incomplete_array[$i] : '',
+                        isset($item_completed_array[$i]) ? $item_completed_array[$i] : '',
+                        isset($item_confirm_array[$i]) ? $item_confirm_array[$i] : '',
+                        isset($item_array[$i]) ? $item_array[$i] : '',
+                    );
+                    $export_data[] = $saleroom_item;
+                }
+                $stt++;
+            }
+        }
+
+        //dd($export_data);
+
+        $exportExcel = new ReportSheet('Report Detail', $selected_level, $export_data);
+
+        $filename = "report_detail.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json(storage_path($filename));
+    }
+
+    public function downloadExportReport() {
+        $filename = "report_detail.xlsx";
+        return Storage::download($filename);
+    }
+}

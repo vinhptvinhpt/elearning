@@ -1,0 +1,477 @@
+body {
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+}
+
+button, input, optgroup, select, textarea {
+    margin: 0;
+    font-family: "Roboto", sans-serif;
+}
+
+textarea {
+    resize: none;
+    font-size: 11px;
+    line-height: 12px;
+    overflow: visible;
+}
+
+* {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+a, button {
+    cursor: pointer;
+}
+
+button > span {
+    vertical-align: middle;
+}
+
+button {
+    border-radius: 2px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border: outset 1px rgba(255, 255, 255, 0.3);
+    background-color: #f1ecf0;
+    color: #2a292e;
+}
+
+:focus {
+    outline: 0 !important;
+}
+
+.wrap {
+    width: 640px;
+    height: 480px;
+    overflow: hidden;
+}
+
+.screen {
+    width: 640px;
+    height: 480px;
+    position: relative;
+    display: none;
+    background-color: #606168;
+}
+
+.screen.active {
+    display: block;
+}
+
+.screen > button, .screen > label, .screen > input, .screen > div, .screen > textarea {
+    position: absolute;
+    z-index: 999;
+}
+
+.input {
+    background: none;
+    border: 1px solid #000;
+}
+
+.input.focus {
+    background-color: #fff;
+}
+
+.keno-input {
+    background-color: #007ab2;
+    border: 1px solid #000;
+}
+
+.keno-input.focus {
+    background-color: #5efff7;
+    border: 1px solid #000;
+}
+
+.three-d-input {
+    border: 1px solid #c736a3;
+    background: none;
+}
+
+.three-d-input.focus {
+    background-color: #ff61ff;
+}
+
+.four-d-input {
+    border: 1px solid #c736a3;
+    background: none;
+}
+
+.four-d-input.focus {
+    background-color: #ff61ff;
+}
+
+.power-input {
+    border: 1px solid #000;
+    background: none;
+}
+
+.power-input.focus {
+    background-color: #da8347;
+}
+
+.mega-input {
+    border: 1px solid #000;
+    background: none;
+}
+
+.mega-input.focus {
+    background-color: #bb4f5c;
+}
+
+.custom-control {
+    letter-spacing: 0;
+    margin-bottom: 0;
+    outline: none !important;
+    display: -webkit-inline-box;
+    display: inline-flex;
+    -webkit-box-align: center;
+    align-items: center;
+    padding-left: 0;
+    position: relative;
+    min-height: 1.5rem;
+    margin-right: 1rem;
+    margin-left: 0;
+    touch-action: manipulation;
+}
+
+.custom-control-input:checked ~ .custom-control-indicator,
+.custom-control-input:active:not(:disabled) ~ .custom-control-indicator {
+    background-image: none !important;
+    background-color: #fcfdfe;
+}
+
+.custom-control-input:focus ~ .custom-control-indicator {
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.custom-control-input:checked ~ .custom-control-indicator::before, .custom-control-input:checked ~ .custom-control-indicator::after {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+}
+
+.custom-control-input:disabled ~ .custom-control-indicator {
+    opacity: .5;
+}
+
+.custom-control-input:checked ~ .custom-control-description.strike-on-check {
+    text-decoration: line-through;
+    opacity: .6;
+}
+
+.custom-control-indicator {
+    width: 14px;
+    height: 14px;
+    line-height: 14px;
+    color: #fff;
+    background-color: #ffffff;
+    border: 1px solid #000000;
+    position: static;
+    flex-shrink: 0;
+    -webkit-box-flex: 0;
+    flex-grow: 0;
+    text-align: center;
+    left: 0;
+    display: block;
+    box-sizing: content-box;
+}
+
+.custom-control-indicator::after {
+    content: '';
+    display: inline-block;
+    -webkit-transform: scale(0);
+    transform: scale(0);
+}
+
+.custom-control-description {
+    padding-left: 3px;
+    font-size: 12px;
+}
+
+.custom-radio {
+    cursor: pointer;
+}
+
+.custom-radio .custom-control-indicator::after {
+    content: "\e646";
+    font-family: themify;
+    font-size: 16px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    color: #000;
+}
+
+.custom-checkbox {
+    cursor: pointer;
+}
+
+.custom-checkbox .custom-control-indicator::after {
+    content: "\e646";
+    font-family: themify;
+    font-size: 14px;
+    width: 100%;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    color: #000;
+}
+
+.custom-checkbox .custom-control-input:checked ~ .custom-control-indicator::before, .custom-checkbox .custom-control-input:checked ~ .custom-control-indicator::after {
+    border-radius: 0;
+}
+
+.custom-control-input {
+    position: absolute;
+    z-index: -1;
+    opacity: 0;
+}
+
+.numbers > div {
+    margin: 4px 0;
+    text-align: center;
+    position: relative;
+    height: 18px;
+}
+
+.keno-numbers div {
+    margin: 5px 0;
+    text-align: center;
+    position: relative;
+    height: 18px;
+}
+
+.numbers > div:not(.empty)::after {
+    display: block;
+    width: 60%;
+    height: 100%;
+    content: " ";
+    border: 1px solid #782c37;
+    position: absolute;
+    top: 0;
+    left: 20%;
+}
+
+.numbers > div a {
+    display: block;
+    width: 100%;
+    height: 70%;
+    top: 15%;
+    position: absolute;
+    text-align: center;
+    font-size: 10px;
+    line-height: 12px;
+    z-index: 2;
+    background-color: #fff;
+    font-weight: bold;
+    color: #782c37 !important;
+}
+
+.numbers > div a.selected::after {
+    content: "\e646";
+    font-family: themify;
+    font-size: 14px;
+    display: block;
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    text-align: center;
+    color: #000 !important;
+}
+
+.submit-button {
+    background-color: rgb(0, 255, 43);
+}
+
+.submit-button:disabled,
+.submit-button[disabled] {
+    background-color: #606168;
+}
+
+button:disabled,
+button[disabled] {
+    color: rgb(132, 133, 142);
+}
+
+.no-gutter > .col {
+    padding-left: 5px;
+    padding-right: 0;
+}
+
+#overlay {
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    z-index: 5;
+    background: rgba(44, 44, 44, 0.4) none repeat scroll 0 0;
+}
+
+#nav, #wrapper, #overlay {
+    -webkit-transition: all 0.25s ease 0s;
+    -moz-transition: all 0.25s ease 0s;;
+    transition: all 0.25s ease 0s;
+}
+
+@media (max-width: 767px) {
+    #nav {
+        position: fixed;
+        height: 100%;
+        top: 0;
+        left: -250px;
+        bottom: 0;
+        width: 250px;
+        background: #ffffff;
+        z-index: 5;
+    }
+
+    .nav-active #wrapper, .nav-active #nav {
+        -webkit-transform: translate3d(250px, 0px, 0px);
+        -moz-transform: translate3d(250px, 0px, 0px);
+        -ms-transform: translate3d(250px, 0px, 0px);
+        -o-transform: translate3d(250px, 0px, 0px);
+        transform: translate3d(250px, 0px, 0px);
+    }
+
+    .nav-active #overlay {
+        opacity: 1;
+        visibility: visible;
+    }
+}
+
+.question {
+    display: block;
+    padding: 0 10px;
+    line-height: 40px;
+    border: 1px solid #dee2e6;
+    font-size: 14px;
+    margin: 5px;
+    background-color: #e9ecef;
+}
+
+.question.active {
+    color: #fff !important;
+    background-color: #228be6;
+    border: 1px solid #1864ab;
+}
+
+.question.error {
+    color: #fff !important;
+    background-color: #f03e3e;
+    border: 1px solid #c92a2a;
+}
+
+.question.success {
+    color: #fff !important;
+    background-color: #37b24d;
+    border: 1px solid #2b8a3e;
+}
+
+.mode-btn {
+    background-color: #716c70;
+}
+
+.mode-btn.active {
+    background-color: #f1ecf0;
+}
+
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 99999!important; /* Sit on top */
+  padding-top: 100px; /* Location of the box */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+  background-color: #fefefe;
+  margin: -80px auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%;
+}
+
+/* The Close Button */
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.print-logo{
+    display: none;
+    position: absolute;
+    top: 101px;
+    right: 223px;
+}
+
+.print-1{
+    display: none;
+    position: absolute;
+    top: 192px;
+    right: 75px;
+}
+
+.print-2{
+    display: none;
+    position: absolute;
+    top: 192px;
+    left: 80px;
+}
+
+.print-3{
+    display: none;
+    position: absolute;
+    top: 212px;
+    right: 75px;
+}
+
+.print-4{
+    display: none;
+    position: absolute;
+    top: 212px;
+    left: 80px;
+}
+
+.print-5{
+    display: none;
+}
+
+.print-6{
+    display: none;
+}
+
+.print-total{
+    display: none;
+    position: absolute;
+    top: 248px;
+    right: 113px;
+}
