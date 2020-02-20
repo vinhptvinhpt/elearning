@@ -53,40 +53,39 @@
 </div>
 
 <script type="text/javascript" src="{{mix("/assets/js/app.js")}}"></script>
-<script src="/js/rsvp.min.js"></script>
-<script src="/js/basket.min.js"></script>
+{{--<script src="/js/rsvp.min.js"></script>--}}
+{{--<script src="/js/basket.min.js"></script>--}}
+{{--<script>--}}
+{{--    basket.require(--}}
+{{--        {url: '/sso/sslssso.js'},--}}
+{{--        {url: '/js/sweetalert.min.js'},--}}
+{{--        {url: '/assets/vendors/datatables.net/js/jquery.dataTables.min.js'},--}}
+{{--        {url: '/assets/vendors/jquery-toggles/toggles.min.js'},--}}
+{{--        {url: '/assets/dist/js/toggle-data.js'},--}}
+{{--        {url: '/assets/vendors/dropify/dist/js/dropify.min.js'},--}}
+{{--        {url: '/assets/vendors/select2/dist/js/select2.full.min.js'},--}}
+{{--        {url: '/assets/dist/js/select2-data.js'},--}}
+{{--        {url: '/js/main.js'}--}}
+{{--    )--}}
+{{--</script>--}}
 
-<script>
-    basket.require(
-        {url: '/sso/sslssso.js'},
-        {url: '/js/sweetalert.min.js'},
-        {url: '/assets/vendors/datatables.net/js/jquery.dataTables.min.js'},
-        {url: '/assets/vendors/jquery-toggles/toggles.min.js'},
-        {url: '/assets/dist/js/toggle-data.js'},
-        {url: '/assets/vendors/dropify/dist/js/dropify.min.js'},
-        {url: '/assets/vendors/select2/dist/js/select2.full.min.js'},
-        {url: '/assets/dist/js/select2-data.js'},
-        {url: '/js/main.js'}
-    )
-</script>
 
-
-{{--<script src="/sso/sslssso.js"></script>--}}
-{{--<script src="/js/sweetalert.min.js"></script>--}}
+<script src="/sso/sslssso.js"></script>
+<script src="/js/sweetalert.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
-{{--<script src="/assets/vendors/jquery-toggles/toggles.min.js"></script>--}}
-{{--<script src="/assets/dist/js/toggle-data.js"></script>--}}
+<script src="/assets/vendors/jquery-toggles/toggles.min.js"></script>
+<script src="/assets/dist/js/toggle-data.js"></script>
 
 <script src="/js/bootstrap-datepicker.min.js"></script>
 <script src="/assets/dist/js/dropdown-bootstrap-extended.js"></script>
 <script src="/assets/vendors/dropzone/dist/dropzone.js"></script>
 <script src="/assets/dist/js/form-file-upload-data.js"></script>
-{{--<script src="/assets/vendors/datatables.net/js/jquery.dataTables.min.js"></script>--}}
+<script src="/assets/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
 
-{{--<script src="/assets/vendors/dropify/dist/js/dropify.min.js"></script>--}}
-{{--<script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>--}}
-{{--<script src="/assets/dist/js/select2-data.js"></script>--}}
-{{--<script src="/js/main.js"></script>--}}
+<script src="/assets/vendors/dropify/dist/js/dropify.min.js"></script>
+<script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>
+<script src="/assets/dist/js/select2-data.js"></script>
+<script src="/js/main.js"></script>
 <script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
 <script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
 <script>
