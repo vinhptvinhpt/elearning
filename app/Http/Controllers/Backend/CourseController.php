@@ -223,5 +223,12 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiGetListCategoryRestore();
     }
 
+    //api update khóa học
+    //ThoLD (22/08/2019)
+    public function apiEditCourse($id, Request $request)
+    {
+        return $this->bussinessRepository->apiEditCourse($id, $request);
+    }
+
 
 }

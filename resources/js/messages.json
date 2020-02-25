@@ -146,6 +146,7 @@
         "ten_quyen": "Role Name",
         "mo_ta": "Description",
         "gan_nguoi_dung": "Add Related Users",
+        "chon_nguoi_dung": "Select User",
         "xem": "View",
         "sua": "Edit",
         "danh_sach_thu_vien_khoa_hoc": "Courses Library List",
@@ -704,7 +705,9 @@
         "add_city_success": "Add Province successfully",
         "loi_format_gia_tri_hay_nhap_lai": "Error formatting value. Please retype",
         "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Username already exists and is locked!",
-        "nhan_vien_diem_ban": "POS Employee"
+        "nhan_vien_diem_ban": "POS Employee",
+        "thoi_gian_du_kien": "Estimate time",
+        "nhap_so_gio_can_thiet": "Input number of hours"
     },
     "vi.keys": {
         "language": "",
@@ -869,6 +872,7 @@
         "ten_quyen": "Tên Quyền",
         "mo_ta": "Mô Tả",
         "gan_nguoi_dung": "Gán Người Dùng",
+        "chon_nguoi_dung": "Chọn người dùng",
         "xem": "Xem",
         "sua": "Sửa",
         "danh_sach_thu_vien_khoa_hoc": "Danh Sách Thư Viện Khóa Học",
@@ -1411,6 +1415,8 @@
         "add_city_success": "Gán Tỉnh thành thành công",
         "loi_format_gia_tri_hay_nhap_lai": "Lỗi format giá trị. Hãy nhập lại",
         "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Tên đăng nhập đã tồn tại và đang bị khóa!",
-        "nhan_vien_diem_ban": "Nhân viên điểm bán"
+        "nhan_vien_diem_ban": "Nhân viên điểm bán",
+        "thoi_gian_du_kien": "Thời gian dự kiến",
+        "nhap_so_gio_can_thiet": "Nhập số giờ cần thiết"
     }
 }

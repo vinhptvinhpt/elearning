@@ -4,8 +4,12 @@
       <div class="col">
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
-            <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item"><router-link to="/tms/education/course/list">{{ trans.get('keys.khoa_dao_tao_online') }}</router-link></li>
+            <li class="breadcrumb-item">
+              <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
+            </li>
+            <li class="breadcrumb-item">
+              <router-link to="/tms/education/course/list">{{ trans.get('keys.khoa_dao_tao_online') }}</router-link>
+            </li>
             <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_khoa_dao_tao_online') }}</li>
           </ol>
         </nav>
@@ -74,6 +78,14 @@
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
+                        <label for="inputText1-1">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
+                        <input v-model="course.estimate_duration" type="number" id="estimate_duration"
+                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
+                               class="form-control mb-4">
+                        <label v-if="!course.estimate_duration"
+                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      </div>
+                      <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
                         <input v-model="course.startdate" placeholder="mm/dd/YYYY"
                                type="date"
@@ -115,9 +127,21 @@
                       <!--                </div>-->
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-                        <textarea v-model="course.summary" class="form-control" rows="3"
-                                  id="article_ckeditor"
-                                  :placeholder="trans.get('keys.noi_dung')"></textarea>
+
+<!--                        <ckeditor-->
+<!--                          :editor="editor"-->
+<!--                          v-model="course.summary"-->
+<!--                          :config="editorConfig"-->
+<!--                          :placeholder="trans.get('keys.noi_dung')">-->
+<!--                        </ckeditor>-->
+
+                        <textarea
+                          v-model="course.summary"
+                          class="form-control"
+                          rows="3"
+                          id="article_ckeditor"
+                          :placeholder="trans.get('keys.noi_dung')"></textarea>
+
                       </div>
                     </form>
                     <div class="button-list text-right">
@@ -146,202 +170,237 @@
 </template>
 
 <script>
+  //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 
-    export default {
-        props: ['course_id'],
-        data() {
-            return {
-                course: {
-                    avatar: ''
-                },
-                categories: [],
-                language: this.trans.get('keys.language')
-            }
+  export default {
+    props: ['course_id'],
+    data() {
+      return {
+        course: {
+          avatar: ''
         },
-        methods: {
-            previewImage: function (event) {
-                var input = event.target;
-                // Ensure that you have a file before attempting to read it
-                if (input.files && input.files[0]) {
-                    // create a new FileReader to read this image and convert to base64 format
-                    var reader = new FileReader();
-                    // Define a callback function to run, when FileReader finishes its job
-                    reader.onload = (e) => {
-                        // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
-                        // Read image as base64 and set to imageData
-                        this.course.avatar = e.target.result;
-                    };
-                    // Start the reader job - read file as a data url (base64 format)
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
-            onChangeCate(event) {
-                if (event.target.value == 3) {
-                    $('#pass_score').attr("disabled", true);
-                } else {
-                    $('#pass_score').attr("disabled", false);
-                }
-            },
-            getCategories() {
-                axios.post('/api/courses/get_list_category_edit')
-                    .then(response => {
-                        this.categories = response.data;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-
-            },
-            getCourseDetail() {
-                axios.get('/api/courses/get_course_detail/' + this.course_id)
-                    .then(response => {
-                        this.course = response.data;
-
-                        var startdate = new Date(response.data.startdate * 1000);
-
-                        var ten = function (i) {
-                            return (i < 10 ? '0' : '') + i;
-                        };
-                        var YYYY = startdate.getFullYear();
-                        var MM = ten(startdate.getMonth() + 1);
-                        var DD = ten(startdate.getDate());
-
-                        this.course.startdate = YYYY + '-' + MM + '-' + DD;
-
-                        var endate = new Date(response.data.enddate * 1000);
-
-                        var YYYY_end = endate.getFullYear();
-                        var MM_end = ten(endate.getMonth() + 1);
-                        var DD_end = ten(endate.getDate());
-
-                        this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end;
-
-                        this.course.pass_score = Math.floor(response.data.pass_score);
-
-                        if (this.course.category == 3) {
-                            $('#pass_score').attr("disabled", true);
-                            $('#is_end_quiz').show();
-                        } else {
-                            $('#pass_score').attr("disabled", false);
-                            $('#is_end_quiz').hide();
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-
-            },
-            editCourse() {
-
-                if (!this.course.shortname) {
-                    $('.shortname_required').show();
-                    return;
-                }
-                if (!this.course.fullname) {
-                    $('.fullname_required').show();
-                    return;
-                }
-
-                if (!this.course.category) {
-                    $('.category_id_required').show();
-                    return;
-                }
-
-                if (!this.course.startdate) {
-                    $('.startdate_required').show();
-                    return;
-                }
-
-                if (!this.course.enddate) {
-                    $('.enddate_required').show();
-                    return;
-                }
-
-                if (!this.course.pass_score && this.course.category != 3) {
-                    $('.pass_score_required').show();
-                    return;
-                }
-
-                var allow_reg = 0;
-                if (this.course.allow_register) {
-                    allow_reg = 1;
-                }
-
-                var quiz_test = 0;
-                if (this.course.is_end_quiz) {
-                    quiz_test = 1;
-                }
-
-
-                var editor_data = CKEDITOR.instances.article_ckeditor.getData();
-
-                this.formData = new FormData();
-                this.formData.append('file', this.$refs.file.files[0]);
-                this.formData.append('fullname', this.course.fullname);
-                this.formData.append('shortname', this.course.shortname);
-                this.formData.append('startdate', this.course.startdate);
-                this.formData.append('enddate', this.course.enddate);
-                this.formData.append('pass_score', this.course.pass_score);
-                this.formData.append('description', editor_data);
-                this.formData.append('category_id', this.course.category);
-                this.formData.append('course_place', '');
-                this.formData.append('is_end_quiz', quiz_test);
-                this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
-                this.formData.append('allow_register', allow_reg);
-                this.formData.append('offline', 0); //ko phai khoa hoc tap trung
-
-                axios.post('/api/courses/update/' + this.course_id, this.formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                })
-                    .then(response => {
-                        var language = this.language;
-                        if (response.data.status) {
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    this.$router.push({ name: 'CourseIndex' });
-                                }
-                            );
-                        } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
-                    });
-            },
-            goBack() {
-                this.$router.push({ name: 'CourseIndex' });
-            }
-
-        },
-        mounted() {
-            this.getCategories();
-            this.getCourseDetail();
+        categories: [],
+        language: this.trans.get('keys.language'),
+        // editor: ClassicEditor,
+        // editorData: '<p>Content of the editor.</p>',
+        // editorConfig: {
+        //   ckfinder: {
+        //     enabled: true,
+        //     uploadUrl: '/ckfinder/connector?command=QuickUpload&type=Files'
+        //     //uploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+        //     //uploadUrl: '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
+        //   },
+        //   // toolbar: [
+        //   // 'ckfinder', 'imageUpload', '|', 'heading', '|', 'bold', 'italic', '|', 'undo', 'redo'
+        //   // ]
+        //   // The configuration of the editor.
+        // }
+      }
+    },
+    methods: {
+      previewImage: function (event) {
+        var input = event.target;
+        // Ensure that you have a file before attempting to read it
+        if (input.files && input.files[0]) {
+          // create a new FileReader to read this image and convert to base64 format
+          var reader = new FileReader();
+          // Define a callback function to run, when FileReader finishes its job
+          reader.onload = (e) => {
+            // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
+            // Read image as base64 and set to imageData
+            this.course.avatar = e.target.result;
+          };
+          // Start the reader job - read file as a data url (base64 format)
+          reader.readAsDataURL(input.files[0]);
         }
+      },
+      onChangeCate(event) {
+        if (event.target.value == 3) {
+          $('#pass_score').attr("disabled", true);
+        } else {
+          $('#pass_score').attr("disabled", false);
+        }
+      },
+      getCategories() {
+        axios.post('/api/courses/get_list_category_edit')
+          .then(response => {
+            this.categories = response.data;
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+
+      },
+      getCourseDetail() {
+        axios.get('/api/courses/get_course_detail/' + this.course_id)
+          .then(response => {
+            this.course = response.data;
+
+            var startdate = new Date(response.data.startdate * 1000);
+
+            var ten = function (i) {
+              return (i < 10 ? '0' : '') + i;
+            };
+            var YYYY = startdate.getFullYear();
+            var MM = ten(startdate.getMonth() + 1);
+            var DD = ten(startdate.getDate());
+
+            this.course.startdate = YYYY + '-' + MM + '-' + DD;
+
+            var endate = new Date(response.data.enddate * 1000);
+
+            var YYYY_end = endate.getFullYear();
+            var MM_end = ten(endate.getMonth() + 1);
+            var DD_end = ten(endate.getDate());
+
+            this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end;
+
+            this.course.pass_score = Math.floor(response.data.pass_score);
+
+            if (this.course.category == 3) {
+              $('#pass_score').attr("disabled", true);
+              $('#is_end_quiz').show();
+            } else {
+              $('#pass_score').attr("disabled", false);
+              $('#is_end_quiz').hide();
+            }
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+
+      },
+      editCourse() {
+
+        if (!this.course.shortname) {
+          $('.shortname_required').show();
+          return;
+        }
+        if (!this.course.fullname) {
+          $('.fullname_required').show();
+          return;
+        }
+
+        if (!this.course.category) {
+          $('.category_id_required').show();
+          return;
+        }
+
+        if (!this.course.estimate_duration) {
+          $('.estimate_duration_required').show();
+          return;
+        }
+
+
+        if (!this.course.startdate) {
+          $('.startdate_required').show();
+          return;
+        }
+
+        if (!this.course.enddate) {
+          $('.enddate_required').show();
+          return;
+        }
+
+        if (!this.course.pass_score && this.course.category != 3) {
+          $('.pass_score_required').show();
+          return;
+        }
+
+        var allow_reg = 0;
+        if (this.course.allow_register) {
+          allow_reg = 1;
+        }
+
+        var quiz_test = 0;
+        if (this.course.is_end_quiz) {
+          quiz_test = 1;
+        }
+
+        //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+
+        this.formData = new FormData();
+        this.formData.append('file', this.$refs.file.files[0]);
+        this.formData.append('fullname', this.course.fullname);
+        this.formData.append('shortname', this.course.shortname);
+        this.formData.append('estimate_duration', this.course.shortname);
+        this.formData.append('startdate', this.course.startdate);
+        this.formData.append('enddate', this.course.enddate);
+        this.formData.append('pass_score', this.course.pass_score);
+        //this.formData.append('description', editor_data);
+        this.formData.append('description', this.course.summary);
+        this.formData.append('category_id', this.course.category);
+        this.formData.append('course_place', '');
+        this.formData.append('is_end_quiz', quiz_test);
+        this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
+        this.formData.append('allow_register', allow_reg);
+        this.formData.append('offline', 0); //ko phai khoa hoc tap trung
+
+        axios.post('/api/courses/update/' + this.course_id, this.formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        })
+          .then(response => {
+            var language = this.language;
+            if (response.data.status) {
+              toastr['success'](response.data.message, 'Success');
+              // swal({
+              //         title: response.data.message,
+              //         // text: response.data.message,
+              //         type: "success",
+              //         showCancelButton: false,
+              //         closeOnConfirm: false,
+              //         showLoaderOnConfirm: true
+              //     }
+              //     , function () {
+              //         this.$router.push({ name: 'CourseIndex' });
+              //     }
+              // );
+
+            } else {
+              console.log(response.data);
+              swal({
+                title: response.data.message,
+                // text: response.data.message,
+                type: "error",
+                showCancelButton: false,
+                closeOnConfirm: false,
+                showLoaderOnConfirm: true
+              });
+            }
+          })
+          .catch(error => {
+            swal({
+              title: "Thông báo",
+              text: " Lỗi hệ thống.",
+              type: "error",
+              showCancelButton: false,
+              closeOnConfirm: false,
+              showLoaderOnConfirm: true
+            });
+          });
+      },
+      goBack() {
+        this.$router.push({name: 'CourseIndex'});
+      },
+      setEditor() {
+        var options = {
+          filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+          filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+          filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+        };
+        CKEDITOR.replace('article_ckeditor', options);
+        $('.dropify').dropify();
+      }
+    },
+    mounted() {
+      this.getCategories();
+      this.getCourseDetail();
+      this.setEditor();
     }
+  }
 </script>
 
 <style scoped>

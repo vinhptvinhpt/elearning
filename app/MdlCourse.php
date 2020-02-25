@@ -21,6 +21,8 @@ class MdlCourse extends Model
         'allow_register',
         'enablecompletion',
         'is_certificate',
-        'total_date_course', 'is_end_quiz'
+        'total_date_course',
+        'is_end_quiz',
+        'estimate_duration'
     ];
 }

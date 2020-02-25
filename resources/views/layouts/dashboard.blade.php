@@ -87,20 +87,6 @@
 <script src="/assets/dist/js/select2-data.js"></script>
 <script src="/js/main.js"></script>
 <script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
-<script src="/vendor/unisharp/laravel-ckeditor/adapters/jquery.js"></script>
-<script>
-    try {
-        var options = {
-            filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-            filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
-            filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-            filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
-        };
-
-        CKEDITOR.replace('article_ckeditor', options);
-    } catch {
-    }
-</script>
 @php
     $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 @endphp
