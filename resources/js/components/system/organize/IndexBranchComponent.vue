@@ -88,7 +88,6 @@
 
                                     </div>
                                 </div>
-
                             </div>
                             <div class="row">
                                 <div class="col-sm-6">
@@ -110,7 +109,6 @@
                                         </div>
                                     </div>
                                 </div>
-
                                 <div class="col-sm-6">
                                     <div class="form-group">
                                         <div class="input-group">
@@ -134,8 +132,8 @@
                         <div class="listData">
                             <h5 class="mb-20">{{trans.get('keys.danh_sach_dai_ly')}}</h5>
                             <div class="row">
-                                <div class="col-sm-8 dataTables_wrapper">
-                                    <div class="dataTables_length" style="display: inline-block;">
+                                <div class="col-sm-8">
+                                    <div class="datadataTables_wrapperTables_length" style="display: inline-block;">
                                         <label>{{trans.get('keys.hien_thi')}}
                                             <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getBranchData(1)">
                                                 <option value="10">10</option>
