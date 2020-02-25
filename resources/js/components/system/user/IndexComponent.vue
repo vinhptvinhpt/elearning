@@ -95,7 +95,8 @@
             <div class="col-sm">
               <div class="table-wrap">
                 <div class="row">
-                  <div class="col-sm-8 dataTables_wrapper">
+                  <div class="col-md-12 col-sm-12 dataTables_wrapper">
+                    <!--Items per page -->
                     <div class="dataTables_length" style="display: inline-block;">
                       <label>{{trans.get('keys.hien_thi')}}
                         <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getUser(1)">
@@ -124,19 +125,36 @@
                       </label>
                     </div>
                   </div>
+                </div>
+
+
+                <div class="row">
+                  <div class="fillterConfirm col-sm-4 offset-sm-4" style="display: inline-block;">
+                    <v-select
+                      :options="userSelectOptions"
+                      :reduce="userSelectOption => userSelectOption.id"
+                      :placeholder="this.trans.get('keys.chon_nguoi_dung')"
+                      :filter-by="myFilterBy"
+                      v-model="user_filter">
+                    </v-select>
+                  </div>
                   <div class="col-sm-4">
-                    <form v-on:submit.prevent="getUser(1)">
-                      <div class="d-flex flex-row form-group">
-                        <input v-model="keyword" type="text"
-                               class="form-control search_text" :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
-                        <button type="button" id="btnFilter" class="btn btn-primary btn-sm btn_fillter"
-                                @click="getUser(1)">
-                          {{trans.get('keys.tim')}}
-                        </button>
-                      </div>
-                    </form>
+                    <div class="form-group">
+                      <form v-on:submit.prevent="getUser(1)">
+                        <div class="d-flex flex-row">
+                          <input v-model="keyword" type="text"
+                                 class="form-control search_text"
+                                 :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
+                          <button type="button" id="btnFilter" class="btn btn-primary btn-sm btn_fillter"
+                                  @click="getUser(1)">
+                            {{trans.get('keys.tim')}}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   </div>
                 </div>
+
                 <div class="mt-10 mb-20">
                   <strong v-if="type == 'student'">
                     {{trans.get('keys.tong_so_hoc_vien_hien_tai')}} : {{ total_user }}
@@ -257,7 +275,9 @@
                 listrole:{},
                 user_delete:[],
                 allSelected:false,
-                file_url: ''
+                file_url: '',
+                user_filter: '',
+                userSelectOptions: []
             }
         },
         methods: {
@@ -334,12 +354,14 @@
                 if(this.type == 'student'){
                     this.urlListUser = '/education/user/list_student';
                 }
+
                 axios.post(this.urlListUser, {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row:this.row,
                     confirm:this.confirm,
-                    roles:this.roles
+                    roles:this.roles,
+                    user: this.user_filter
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
@@ -455,12 +477,61 @@
                   console.log(error);
                 })
             },
+            myFilterBy: (option, label, search) => {
+            if (!label) {
+              label = '';
+            }
+            let new_search = convertUtf8(search);
+            let new_label = convertUtf8(label);
+            //return this.filterBy(option, new_label, new_search); //can not call components function here
+            return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+          },
+            getUserForFilter(){
+            this.user = '';
+            this.userSelectOptions = []; //reset after search again
+
+            axios.post('/system/filter/list_user')
+              .then(response => {
+
+                //this.districts = response.data;
+
+                let additionalDepartments = [];
+                response.data.forEach(function(departmentItem) {
+                  let newDepartment = {
+                    label: departmentItem.fullname,
+                    id: departmentItem.user_id
+                  };
+                  additionalDepartments.push(newDepartment);
+                });
+                this.userSelectOptions = additionalDepartments;
+
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          },
         },
         mounted() {
             //this.getUser();
             this.getListRole();
             this.fetch();
+            this.getUserForFilter();
         }
+    }
+
+    function convertUtf8(str) {
+      str = str.toLowerCase();
+      str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");
+      str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");
+      str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i");
+      str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");
+      str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");
+      str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");
+      str = str.replace(/đ/g,"d");
+      str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+      str = str.replace(/ + /g," ");
+      str = str.trim();
+      return str;
     }
 </script>
 

@@ -13,6 +13,7 @@ import 'vue-select/dist/vue-select.css';
 import {BootstrapVue} from 'bootstrap-vue';
 import VSwitch from 'v-switch-case';
 import vSelect from 'vue-select';
+// import CKEditor from '@ckeditor/ckeditor5-vue';
 
 /**
  * Global plugins
@@ -77,6 +78,7 @@ Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 Vue.use(VSwitch);
 // Vue.use(IconsPlugin);
+// Vue.use( CKEditor );
 
 Vue.component('v-pagination', require('vue-plain-pagination'));
 Vue.component('v-select', vSelect);

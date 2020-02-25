@@ -2353,13 +2353,13 @@ class BussinessRepository implements IBussinessInterface
                 'u.username',
                 'u.firstname',
                 'u.lastname',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join 
-                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on 
-                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where 
+                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
+                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
                 cs.section <> 0 and cmc.completionstate = 1 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
 
                 DB::raw('(select `g`.`finalgrade`
-  				from mdl_grade_items as gi 
+  				from mdl_grade_items as gi
 				join mdl_grade_grades as g
 				on g.itemid = gi.id
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
@@ -4904,7 +4904,8 @@ class BussinessRepository implements IBussinessInterface
     public function apiListUserTeacher(Request $request)
     {
         $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $user_id  = $request->input('user');
+        $row = $request->input('row');
 
         $param = [
             'keyword'   => 'text',
@@ -4922,6 +4923,10 @@ class BussinessRepository implements IBussinessInterface
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
+
+        if ($user_id) {
+            $listUsers->where('mdl_user.id', $user_id);
+        }
         if ($this->keyword) {
             $listUsers = $listUsers->where(function ($query) {
                 $query->orWhere('tms_user_detail.fullname', 'like', "%{$this->keyword}%")
@@ -4949,6 +4954,9 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword      = $request->input('keyword');
         $row                = $request->input('row');
         $confirm            = $request->input('confirm');
+        $user_id = $request->input('user');
+
+        echo $user_id; die;
 
         $param = [
             'keyword'   => 'text',
@@ -4967,6 +4975,10 @@ class BussinessRepository implements IBussinessInterface
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm')
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
+
+        if ($user_id) {
+            $listUsers->where('mdl_user.id', $user_id);
+        }
         if ($this->keyword) {
             $listUsers = $listUsers->where(function ($query) {
                 $query->orWhere('tms_user_detail.fullname', 'like', "%{$this->keyword}%")
@@ -6379,6 +6391,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $roles = $request->input('roles');
+        $user_id = $request->input('user');
 
         $param = [
             'keyword' => 'text',
@@ -6422,6 +6435,10 @@ class BussinessRepository implements IBussinessInterface
         //$listUsers = $listUsers->where('status','=',0);
         //$listUsers = $listUsers->whereNotIn('roles.name',['teacher','student']);
         //}
+
+        if ($user_id) {
+            $listUsers->where('mdl_user.id', $user_id);
+        }
         if ($this->keyword) {
             $listUsers = $listUsers->where(function ($query) {
                 $query->orWhere('tms_user_detail.fullname', 'like', "%{$this->keyword}%")
@@ -6444,6 +6461,12 @@ class BussinessRepository implements IBussinessInterface
             'data' => $listUsers,
         ];
         return response()->json($response);
+    }
+
+    public function apiFilterUserList()
+    {
+        $users = TmsUserDetail::where('deleted', 0)->limit(20)->get()->toArray();
+        return response()->json($users);
     }
 
     public function apiStore(Request $request)
@@ -13800,13 +13823,13 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-        // Get user 
-        $data = DB::table(DB::raw('(select qa.userid, count(qa.id) as attempt_time 
+        // Get user
+        $data = DB::table(DB::raw('(select qa.userid, count(qa.id) as attempt_time
         from mdl_quiz as q inner join mdl_quiz_attempts as qa on q.id = qa.quiz
         where q.course = 251
         group by qa.userid) as data1'))
             ->join(DB::raw('(select userid, finalgrade
-        from mdl_grade_grades 
+        from mdl_grade_grades
         where itemid = 1070 and finalgrade < 7) as data2'), 'data1.userid', '=', 'data2.userid')
             ->join('tms_user_detail as tud', 'data1.userid', '=', 'tud.user_id')
             ->join('mdl_user as u', 'data1.userid', '=', 'u.id')

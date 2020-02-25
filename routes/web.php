@@ -209,6 +209,10 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 });
 
+Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
+    \UniSharp\LaravelFilemanager\Lfm::routes();
+});
+
 
 Route::get('/', 'Backend\BackendController@home')->name('home');
 Route::get('/en', 'Backend\BackendController@home');
@@ -667,6 +671,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/bridge/fetch', 'BridgeController@fetch');
     Route::post('/bridge/bonus', 'BridgeController@bonus');
 
+
+    Route::post('/system/filter/list_user', 'Backend\SystemController@apiFilterUserList');
 
 });
 // [VinhPT][26.12.2019] Login first screen
