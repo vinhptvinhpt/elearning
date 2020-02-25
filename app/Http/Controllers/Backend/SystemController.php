@@ -121,6 +121,10 @@ class SystemController extends Controller
         return view('system.user.user_trash');
     }
 
+    public function apiFilterUserList() {
+        return $this->bussinessRepository->apiFilterUserList();
+    }
+
     public function apiListRole()
     {
         return $this->bussinessRepository->apiListRole();

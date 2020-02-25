@@ -317,18 +317,18 @@
           quiz_test = 1;
         }
 
-        //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+        var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
         this.formData = new FormData();
         this.formData.append('file', this.$refs.file.files[0]);
         this.formData.append('fullname', this.course.fullname);
         this.formData.append('shortname', this.course.shortname);
-        this.formData.append('estimate_duration', this.course.shortname);
+        this.formData.append('estimate_duration', this.course.estimate_duration);
         this.formData.append('startdate', this.course.startdate);
         this.formData.append('enddate', this.course.enddate);
         this.formData.append('pass_score', this.course.pass_score);
-        //this.formData.append('description', editor_data);
-        this.formData.append('description', this.course.summary);
+        this.formData.append('description', editor_data);
+        //this.formData.append('description', this.course.summary);
         this.formData.append('category_id', this.course.category);
         this.formData.append('course_place', '');
         this.formData.append('is_end_quiz', quiz_test);
@@ -385,11 +385,12 @@
         this.$router.push({name: 'CourseIndex'});
       },
       setEditor() {
+        var CSRFToken = $('meta[name="csrf-token"]').attr('content');
         var options = {
           filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-          filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
+          filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=' + CSRFToken,
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
+          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
         };
         CKEDITOR.replace('article_ckeditor', options);
         $('.dropify').dropify();
