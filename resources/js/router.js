@@ -90,6 +90,7 @@ import SettingCertificateComponent from "./components/education/SettingCertifica
 import EditCertificateComponent from "./components/education/EditCertificateComponent";
 import ListUserExam from "./components/education/ListUserExam";
 
+
 Vue.use(VueRouter);
 Vue.use(NProgress);
 
