@@ -13,14 +13,6 @@ import 'vue-select/dist/vue-select.css';
 import {BootstrapVue} from 'bootstrap-vue';
 import VSwitch from 'v-switch-case';
 import vSelect from 'vue-select';
-// import CKEditor from '@ckeditor/ckeditor5-vue';
-
-/**
- * Global plugins
- */
-global.notie = require('notie');
-global.toastr = require('toastr');
-global._ = require('lodash');
 
 try {
     window.Popper = require('popper.js').default;
@@ -29,6 +21,15 @@ try {
     require('bootstrap');
 } catch (e) {
 }
+
+
+/**
+ * Global plugins
+ */
+global.notie = require('notie');
+global.toastr = require('toastr');
+global._ = require('lodash');
+
 
 /**
  * Vue is a modern JavaScript library for building interactive web interfaces
@@ -73,12 +74,25 @@ global.axios.interceptors.request.use(function (config) {
  */
 // require('./helpers/directives');
 
+toastr.options = {
+    closeButton: true,
+    debug: false,
+    positionClass: 'toast-top-right',
+    onclick: null,
+    showDuration: '3000',
+    hideDuration: '1000',
+    timeOut: '5000',
+    extendedTimeOut: '1000',
+    showEasing: 'swing',
+    hideEasing: 'linear',
+    showMethod: 'fadeIn',
+    hideMethod: 'fadeOut'
+};
+
 
 Vue.use(VueRouter);
 Vue.use(BootstrapVue);
 Vue.use(VSwitch);
-// Vue.use(IconsPlugin);
-// Vue.use( CKEditor );
 
 Vue.component('v-pagination', require('vue-plain-pagination'));
 Vue.component('v-select', vSelect);

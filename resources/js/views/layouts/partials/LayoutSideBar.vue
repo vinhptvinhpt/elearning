@@ -1,6 +1,7 @@
 <template>
     <nav class="hk-nav hk-nav-light">
-        <a href="javascript:void(0);" id="nav_close" class="nav-close"><i class="fa fa-arrow-left" aria-hidden="true"></i></a>
+        <a href="javascript:void(0);" id="nav_close" class="nav-close"><i class="fa fa-arrow-left"
+                                                                          aria-hidden="true"></i></a>
         <div class="nicescroll-bar">
             <div class="navbar-nav-wrap">
                 <ul class="navbar-nav flex-column">
@@ -33,7 +34,9 @@
                         <ul id="auth_drp"
                             class="nav flex-column collapse collapse-level-1">
                             <li class="nav-item" v-if="has_user_market && slug_can('tms-access-market-view')">
-                                <router-link :to="{ path: '/tms/system/organize/branchsystem/organize/branch', name: 'BranchIndex', query: { city: '0' } }" class="nav-link">
+                                <router-link
+                                        :to="{ path: '/tms/system/organize/branchsystem/organize/branch', name: 'BranchIndex', query: { city: '0' } }"
+                                        class="nav-link">
                                     <span class="nav-link-text">{{ trans.get('keys.quan_ly_dai_ly') }}</span>
                                 </router-link>
                             </li>
@@ -82,7 +85,8 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="slug_can('tms-system-organize-view') && (!has_user_market ||root_user)">
+                            <li class="nav-item"
+                                v-if="slug_can('tms-system-organize-view') && (!has_user_market ||root_user)">
                                 <a class="nav-link  has-submenu collapse-level-2" id="co_cau_to_chuc"
                                    @click="toggleMenu('co_cau_to_chuc','signup_organize12')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
@@ -101,7 +105,8 @@
                                         </router-link>
                                     </li>
                                     <li class="nav-item">
-                                        <router-link :to="{ path: '/tms/system/organize/branch', query: { city: '0' } }" class="nav-link">
+                                        <router-link :to="{ path: '/tms/system/organize/branch', query: { city: '0' } }"
+                                                     class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.dai_ly') }}</span>
                                         </router-link>
                                     </li>
@@ -114,7 +119,8 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-item" v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
+                            <li class="nav-item"
+                                v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
                                 <a class="nav-link  has-submenu collapse-level-2" id="quan_tri_nguoi_dung"
                                    @click="toggleMenu('quan_tri_nguoi_dung','signup_organize')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
@@ -512,7 +518,8 @@
                 var x = document.getElementById(parent_id);
                 if (x) {
                     var y = document.getElementById(child_id);
-                    if (y.style.display === "none") {
+
+                    if (y.style.display === "none" || y.style.display === '') {
                         x.classList.toggle("active");
                         y.style.display = "block";
                     } else {
