@@ -62,9 +62,7 @@
                 console.log(element);
                 $('#'+element).removeClass('notValidate');
             },
-
             createCertificate(){
-
                 if(!this.name) {
                     $('.name_required').show();
                     return;
@@ -124,9 +122,13 @@
                             showLoaderOnConfirm: true
                         });
                     });
+            },
+            setFileInput() {
+              $('.dropify').dropify();
             }
         },
         mounted() {
+          this.setFileInput();
         }
     }
 </script>

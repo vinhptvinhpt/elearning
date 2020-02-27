@@ -86,7 +86,7 @@
 <script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>
 <script src="/assets/dist/js/select2-data.js"></script>
 <script src="/js/main.js"></script>
-<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+{{--<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>--}}
 @php
     $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 @endphp

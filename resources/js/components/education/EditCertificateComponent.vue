@@ -209,9 +209,13 @@
                         });
                     });
             },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             this.userData();
+            this.setFileInput();
         }
     }
 </script>

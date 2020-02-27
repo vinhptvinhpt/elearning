@@ -312,12 +312,14 @@
             },
             goBack() {
                 this.$router.push({name: 'CourseIndex'});
+            },
+            setFileInput() {
+              $('.dropify').dropify();
             }
         },
         mounted() {
-
-
             this.getCategories();
+            this.setFileInput();
         }
     }
 </script>

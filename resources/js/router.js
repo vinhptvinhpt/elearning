@@ -89,6 +89,8 @@ import ViewUserComponent from "./components/system/saleroomuser/ViewUserComponen
 import SettingCertificateComponent from "./components/education/SettingCertificateComponent";
 import EditCertificateComponent from "./components/education/EditCertificateComponent";
 import ListUserExam from "./components/education/ListUserExam";
+import ProfileComponent from "./components/system/user/ProfileComponent";
+import ProfileEditComponent from "./components/system/user/ProfileEditComponent";
 
 
 Vue.use(VueRouter);
@@ -315,6 +317,22 @@ const routes = [
         })
       },
       //User
+      {
+        path: 'profile',
+        component: ProfileComponent,
+        name: 'Profile',
+        props: (route) => ({
+          type: 'system',
+        })
+      },
+      {
+        path: 'profile/edit',
+        component: ProfileEditComponent,
+        name: 'ProfileEdit',
+        props: (route) => ({
+          type: 'system',
+        })
+      },
       {
         path: 'system/user/edit/:user_id',
         component: EditIndexComponent,

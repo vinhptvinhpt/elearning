@@ -25,8 +25,10 @@
                     </div>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" data-dropdown-in="flipInX" data-dropdown-out="flipOutX">
-                    <a class="dropdown-item" href="/profile/"><i
-                            class="dropdown-icon zmdi zmdi-account"></i><span>Thông tin</span></a>
+                    <router-link class="dropdown-item" :to="{ name: 'Profile' }">
+                      <i class="dropdown-icon zmdi zmdi-account"></i>
+                      <span>Thông tin</span>
+                    </router-link>
                     <a class="dropdown-item" href="#"><i
                             class="dropdown-icon zmdi zmdi-settings"></i><span>Cài đặt</span></a>
                     <a class="dropdown-item" href="javascript:void(0)" @click.prevent="logOut()"><i

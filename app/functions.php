@@ -2355,7 +2355,7 @@ function validate_fails($request, $param)
                             "not_regex:/<meta[^>]*>/is",
 
                             "not_regex:/<[^>]*value[^>]*>/is",
-                            "not_regex:/<[^>]*style[^>]*>/is",
+//                            "not_regex:/<[^>]*style[^>]*>/is",
                             "not_regex:/<[^>]*onclick[^>]*>/is",
                             "not_regex:/<[^>]*onsubmit[^>]*>/is",
                             "not_regex:/<[^>]*onmouseover[^>]*>/is",
@@ -2364,9 +2364,9 @@ function validate_fails($request, $param)
                             "not_regex:/<[^>]*onscroll[^>]*>/is",
                             "not_regex:/<[^>]*onchange[^>]*>/is",
                             "not_regex:/<a[^>]*href[^>]*\"[^>]*\?[^>]*\"[^>]*>[^>]*<\/a>/is",
-                            "not_regex:/<[^>]*src[^>]*\"[^>]*\?[^>]*\"[^>]*\/>/is",
+//                            "not_regex:/<[^>]*src[^>]*\"[^>]*\?[^>]*\"[^>]*\/>/is",
                             "not_regex:/<a[^>]*href[^>]*'[^>]*\?[^>]*'[^>]*>[^>]*<\/a>/is",
-                            "not_regex:/<[^>]*src[^>]*'[^>]*\?[^>]*'[^>]*\/>/is",
+//                            "not_regex:/<[^>]*src[^>]*'[^>]*\?[^>]*'[^>]*\/>/is",
                             "not_regex:/(>=|<=|==|&&|\|\|)/is",
                             /*"not_regex:/[^>]*if([^>]*)/is",*/
                         ],

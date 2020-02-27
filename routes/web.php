@@ -91,7 +91,6 @@ Route::group([
         Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
 
         //test
-        Route::get('/python/test', 'Backend\TestReportController@viewPython');
         Route::get('/testNotify', 'Api\NotificationController@index');
 
         //manage branch
@@ -640,7 +639,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::get('/api/cron_delete_enrol', 'Backend\CourseController@apiDeleteEnrolNotUse');
     //test
-    Route::get('/python/test', 'Backend\TestReportController@viewPython');
     Route::get('/testNotify', 'Api\NotificationController@index');
 
     Route::post('/course/student/attendance', 'Backend\CourseController@apiListAttendanceUsers');
@@ -672,7 +670,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/bridge/bonus', 'BridgeController@bonus');
 
 
-    Route::post('/system/filter/list_user', 'Backend\SystemController@apiFilterUserList');
+    Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 
 });
 // [VinhPT][26.12.2019] Login first screen

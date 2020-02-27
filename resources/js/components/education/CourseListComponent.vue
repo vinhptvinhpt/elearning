@@ -19,6 +19,7 @@
           <div class="row">
             <div class="col-sm">
               <div class="table-wrap">
+
                 <div class="row">
                   <div class="col-sm-6">
                     <div class="dataTables_length">
@@ -35,7 +36,6 @@
                   </div>
                   <div class="col-sm-6">
                     <div class="dataTables_length">
-                      <!--<label>{{trans.get('keys.tinh_trang_khoa_hoc')}}</label>-->
                       <select v-model="status_course"
                               class="form-control" id="status_course">
                         <option value="">{{trans.get('keys.chon_tinh_trang_khoa_hoc')}}</option>
@@ -45,23 +45,43 @@
                       </select>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-3">
                     <div class="dataTables_length">
-                      <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                      <date-picker v-model="startdate" :config="options"></date-picker>
+                      <date-picker v-model="startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="col-sm-3">
                     <div class="dataTables_length">
-                      <label>{{trans.get('keys.ngay_ket_thuc')}}</label>
-                      <date-picker v-model="enddate" :config="options"></date-picker>
+                      <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                     </div>
                   </div>
-                  <div class="col-sm-6">
+                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">
+                    <v-select
+                      :options="filterSelectOptions"
+                      :reduce="filterSelectOption => filterSelectOption.id"
+                      :placeholder="this.trans.get('keys.chon_khoa_hoc')"
+                      :filter-by="myFilterBy"
+                      v-model="filter_select">
+                    </v-select>
+                  </div>
+                  <div class="col-sm-3">
+                    <form v-on:submit.prevent="getCourses(1)">
+                      <div class="d-flex flex-row form-group">
+                        <input v-model="keyword" type="text" class="form-control" :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                        <button type="button" id="btnFilter" class="btn btn-primary" @click="getCourses(1)">
+                          {{trans.get('keys.tim')}}
+                        </button>
+                      </div>
+                    </form>
+                  </div>
+
+                </div>
+
+                <div class="row">
+                  <div class="col-12">
                     <div class="dataTables_length" style="display: block;">
                       <label>{{trans.get('keys.hien_thi')}}
-                        <select v-model="row"
-                                class="custom-select custom-select-sm form-control form-control-sm" @change="getCourses(1)">
+                        <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getCourses(1)">
                           <option value="5">5</option>
                           <option value="10">10</option>
                           <option value="20">20</option>
@@ -70,38 +90,22 @@
                       </label>
                     </div>
                   </div>
-                  <div class="col-sm-6 mt-2">
-                    <form v-on:submit.prevent="getCourses(1)">
-                      <div class="d-flex flex-row form-group">
-                        <input v-model="keyword" type="text"
-                               class="form-control"
-                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                        <button type="button" id="btnFilter" class="btn btn-primary"
-                                @click="getCourses(1)">
-                          {{trans.get('keys.tim')}}
-                        </button>
-                      </div>
-                    </form>
-                  </div>
                 </div>
 
-
                 <div class="row">
-                  <div class="col-8">
-                    <span style="color:#3a55b1; font-size: 20px; font-weight: 600;">{{trans.get('keys.tong_so_khoa_dao_tao_hien_tai')}}: {{total_course}}</span>
+                  <div class="col-6">
+                    <span style="color:#3a55b1; font-size: 18px; font-weight: 600;">{{trans.get('keys.tong_so_khoa_dao_tao_hien_tai')}}: {{total_course}}</span>
                   </div>
-                  <div class="col-4">
+                  <div class="col-6">
                     <div id="datable_1_filter" class="dataTables_filter" style="float: right;">
                       <label>
-
                         <router-link :to="{name: 'CourseCreate'}">
                           <button type="button"
-                                  class="btn btn-success btn-sm"
+                                  class="btn btn-success btn-md"
                                   :placeholder="trans.get('keys.tao_moi')"
                                   value="Tạo mới"
                                   aria-controls="datable_1">{{trans.get('keys.tao_moi')}}</button>
                         </router-link>
-
                       </label>
                     </div>
                   </div>
@@ -209,7 +213,7 @@
                 enddate: '',
                 row: 5,
                 status_course: '',
-                urlGetListUser: '/api/courses/list',
+                urlGetList: '/api/courses/list',
                 categories: [],
                 date: new Date(),
                 options: {
@@ -218,7 +222,9 @@
                     showClear: true,
                     showClose: true,
                 },
-                lms_url: ''
+                lms_url: '',
+                filter_select: '',
+                filterSelectOptions: []
             }
         },
         filters: {
@@ -247,17 +253,8 @@
                     }
                 })
                     .then(response => {
-                        //this.data = response.data;
-                        swal({
-                            title: "Thông báo",
-                            text: " Import tài khoản thành công.",
-                            type: "success",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        }, function () {
-                            location.reload();
-                        });
+                        toastr['success']("Import tài khoản thành công", this.trans.get('keys.thanh_cong'));
+                        this.$router.push({name: 'CourseIndex'});
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -265,7 +262,7 @@
             },
             getCourses(paged) {
 
-                axios.post(this.urlGetListUser, {
+                axios.post(this.urlGetList, {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
@@ -300,6 +297,7 @@
                     axios.post('/api/courses/delete', {course_id: id})
                         .then(response => {
                             if (response.data.status) {
+                                let router_current = this.$router;
                                 swal({
                                     title: response.data.message,
                                     type: "success",
@@ -307,22 +305,16 @@
                                     closeOnConfirm: false,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    location.reload();
+                                    //location.reload();
+                                    router_current.push({name: 'CourseIndex'});
                                 });
                             } else {
-                                swal({
-                                    title: response.data.message,
-                                    type: "error",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                });
+                                toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                             }
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
-                            console.log(error);
+                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                         });
                 });
 
@@ -340,6 +332,7 @@
                     axios.post('/api/courses/approve', {course_id: course_id, current_status: status})
                         .then(response => {
                             if (response.data.status) {
+                                let router_current = this.$router;
                                 swal({
                                         title: "Thông báo!",
                                         text: response.data.message,
@@ -349,24 +342,17 @@
                                         showLoaderOnConfirm: true
                                     }
                                     , function () {
-                                        location.reload();
-                                    }
+                                        //location.reload();
+                                        router_current.push({name: 'CourseIndex'});
+                                  }
                                 );
                             } else {
-                                swal({
-                                    title: "Thông báo!",
-                                    text: response.data.message,
-                                    type: "error",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                });
+                                toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                             }
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
-                            console.log(error);
+                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                         });
                 });
 
@@ -384,13 +370,61 @@
                   console.log(error);
                 })
             },
+            myFilterBy: (option, label, search) => {
+              if (!label) {
+                label = '';
+              }
+              let new_search = convertUtf8(search);
+              let new_label = convertUtf8(label);
+              //return this.filterBy(option, new_label, new_search); //can not call components function here
+              return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+            },
+            getDataForFilter(){
+              this.user = '';
+              this.userSelectOptions = []; //reset after search again
+
+              axios.post('/system/filter/fetch',{
+                type: 'course-online'
+              })
+              .then(response => {
+                let additionalSelections = [];
+                response.data.forEach(function(selectItem) {
+                  let newItem = {
+                    label: selectItem.label,
+                    id: selectItem.id
+                  };
+                  additionalSelections.push(newItem);
+                });
+                this.filterSelectOptions = additionalSelections;
+              })
+              .catch(error => {
+                console.log(error);
+              });
+            },
         },
         mounted() {
             this.getCategories();
             this.getCourses();
             this.fetch();
+            this.getDataForFilter();
         }
     }
+
+    function convertUtf8(str) {
+      str = str.toLowerCase();
+      str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");
+      str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");
+      str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i");
+      str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");
+      str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");
+      str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");
+      str = str.replace(/đ/g,"d");
+      str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+      str = str.replace(/ + /g," ");
+      str = str.trim();
+      return str;
+    }
+
 </script>
 
 <style scoped>

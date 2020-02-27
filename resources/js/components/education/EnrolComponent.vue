@@ -560,11 +560,15 @@
                 } else {
                     this.$router.push({ name: 'CourseConcentrateIndex' });
                 }
+            },
+            setFileInput() {
+              $('.dropify').dropify();
             }
         },
         mounted() {
             this.getUserNeedEnrol();
             this.getCurrentUserEnrol();
+            this.setFileInput();
         }
     }
 </script>

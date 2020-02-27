@@ -154,7 +154,6 @@
                         console.log(error.response.data);
                     })
             },
-
             importExcel(){
                 // if(this.city_id == 0){
                 //     $('.city_required').show();
@@ -219,12 +218,16 @@
                   console.log(error);
                 })
             },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             //this.listData();
             this.listDepartment();
             //this.getUser();
             this.fetch();
+            this.setFileInput();
         }
     }
     function convertUtf8(str) {

@@ -1092,7 +1092,8 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.total_date_course',
                 'mdl_course.is_end_quiz',
                 'mdl_course.summary',
-                'mdl_course.course_place'
+                'mdl_course.course_place',
+                'mdl_course.estimate_duration'
             )
             ->where('mdl_course.id', '=', $id)->first();
 
@@ -1119,6 +1120,7 @@ class BussinessRepository implements IBussinessInterface
             $allow_register = $request->input('allow_register');
             $total_date_course = $request->input('total_date_course');
             $is_end_quiz = $request->input('is_end_quiz');
+            $estimate_duration = $request->input('estimate_duration');
             //thực hiện insert dữ liệu
             $param = [
                 'shortname' => 'code',
@@ -1130,12 +1132,15 @@ class BussinessRepository implements IBussinessInterface
                 'allow_register' => 'number',
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
-                'fullname' => 'text'
+                'fullname' => 'text',
+                'estimate_duration' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
                 $response->message = 'Định dạng dữ liệu không hợp lệ';
+                $response->otherData = $validator;
+                $response->error = $description;
                 return response()->json($response);
             }
 
@@ -1217,6 +1222,7 @@ class BussinessRepository implements IBussinessInterface
             $course->shortname = $shortname;
             $course->fullname = $fullname;
             $course->summary = $description;
+            $course->estimate_duration = $estimate_duration;
 
 
             $course->allow_register = $allow_register;
@@ -6463,10 +6469,23 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-    public function apiFilterUserList()
+    public function apiFilterFetch($request)
     {
-        $users = TmsUserDetail::where('deleted', 0)->limit(20)->get()->toArray();
-        return response()->json($users);
+        $response = [];
+        $type = $request->input('type');
+
+        if ($type == 'user') {
+            $response = TmsUserDetail::where('deleted', 0)->select('user_id as id', 'fullname as label')->limit(20)->get()->toArray();
+        } elseif ($type == 'course-online') {
+            $response = DB::table('mdl_course as c')
+            ->select(
+                'c.id',
+                'c.fullname as label'
+            )
+            ->where('c.category', '!=', 2)
+            ->where('c.category', '!=', 5)->limit(20)->get()->toArray();
+        }
+        return response()->json($response);
     }
 
     public function apiStore(Request $request)

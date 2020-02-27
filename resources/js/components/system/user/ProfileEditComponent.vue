@@ -5,30 +5,8 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-
-            <template v-if="owner_type === 'master'" >
-              <li class="breadcrumb-item"><router-link to="/tms/branch/list">{{ trans.get('keys.dai_ly') }}</router-link></li>
-              <li class="breadcrumb-item">{{ branch_name }}</li>
-            </template>
-
-            <li class="breadcrumb-item"><router-link to="/tms/saleroom/list">{{ trans.get('keys.danh_sach_diem_ban') }}</router-link></li>
-
-            <template v-if="role === 'employee'">
-              <li class="breadcrumb-item">
-                <router-link :to="{
-                name: 'SaleroomEditByRole',
-                params: {saleroom_id: saleroom_id}
-              }">{{ saleroom_name }}</router-link>
-              </li>
-              <li class="breadcrumb-item">
-                <router-link :to="{
-                name: 'SaleroomUserIndexByRole',
-                params: {saleroom_id: saleroom_id}
-              }">{{ trans.get('keys.danh_sach_nhan_vien') }}</router-link>
-              </li>
-              <li class="breadcrumb-item active">{{ trans.get('keys.sua_thong_tin_nhan_vien') }}</li>
-            </template>
-            <li v-if="role === 'manager'" class="breadcrumb-item active">{{ trans.get('keys.sua_thong_tin_chu_diem_ban') }}</li>
+            <li class="breadcrumb-item"><router-link to="/tms/profile">{{ trans.get('keys.thong_tin_ca_nhan') }}</router-link></li>
+            <li class="breadcrumb-item active">{{ trans.get('keys.sua_thong_tin_ca_nhan') }}</li>
           </ol>
         </nav>
       </div>
@@ -36,7 +14,9 @@
     <div>
       <div class="row mx-0">
         <div class="col-12 hk-sec-wrapper">
-          <h5 class="hk-sec-title">{{trans.get('keys.chinh_sua_thong_tin_nguoi_dung')}}</h5>
+          <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.chinh_sua_thong_tin_nguoi_dung')}}</h5>
+          <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.chinh_sua_thong_tin_giang_vien')}}</h5>
+          <h5 class="hk-sec-title" v-else>{{trans.get('keys.chinh_sua_thong_tin_hoc_vien')}}</h5>
           <div class="row">
             <div class="col-12 col-lg-3">
               <div class="card">
@@ -54,18 +34,18 @@
 
                     <div class="showChangePass" style="display:none;">
                                         <span class="wrap_password pass">
-                                            <input autocomplete="false" v-model="password" type="password" id="inputPassword" :placeholder="trans.get('keys.mat_khau')+' *'" class="form-control mb-4 " @input="validate_password">
+                                            <input autocomplete="false" v-model="password" type="password" id="inputPassword" :placeholder="trans.get('keys.mat_khau') + ' *'" class="form-control mb-4 " @input="validate_password">
                                             <i class="fa fa-check-circle-o label_validate" aria-hidden="true"></i>
                                         </span>
                       <label class="text-danger message error passError" style="display: none;">{{trans.get('keys.vui_long_nhap_mat_khau_moi')}}!</label>
                       <label class="text-danger message error passStyleError" style="display: none;">{{trans.get('keys.mat_khau_sai_dinh_dang')}}!</label>
                       <span class="wrap_password pass_conf">
-                                            <input autocomplete="false" v-model="passwordConf" type="password" id="inputPasswordConfirm" :placeholder="trans.get('keys.nhap_lai_mat_khau')+' *'" class="form-control mb-4" @input="validate_password">
+                                            <input autocomplete="false" v-model="passwordConf" type="password" id="inputPasswordConfirm" :placeholder="trans.get('keys.nhap_lai_mat_khau') + ' *'" class="form-control mb-4" @input="validate_password">
                                             <i class="fa fa-check-circle-o label_validate" aria-hidden="true"></i>
                                         </span>
                       <label class="text-danger message error passConfError" style="display: none;">{{trans.get('keys.vui_long_nhap_mat_khau_moi')}}!</label>
                       <label class="text-danger message error passConfStyleError" style="display: none;">{{trans.get('keys.mat_khau_sai_dinh_dang')}}!</label>
-                      <label>
+                      <label  style="display: block;">
                         <input type="checkbox" @click="viewPassword()">{{trans.get('keys.hien_thi_mat_khau')}}
                       </label>
                       <button type="button" class="btn btn-primary btn-sm" @click="updatePassword()">{{trans.get('keys.cap_nhat_mat_khau')}}</button>
@@ -77,31 +57,13 @@
             </div>
             <div class="col-12 col-lg-9">
               <form action="" class="form-row">
-                <div class="col-6 form-group" v-if="users.student_role > 0">
-                  <label for="inputConfirm">{{trans.get('keys.cap_giay_chung_nhan')}}</label>
-                  <select id="inputConfirm" class="form-control custom-select" v-model="users.confirm" @change="changeConfirm()">
-                    <option value="0">{{trans.get('keys.chua_cap')}}</option>
-                    <option value="1">{{trans.get('keys.hanh_dong')}}</option>
-                  </select>
-                </div>
-
-                <div class="col-6 form-group" v-if="users.student_role > 0">
-                  <label for="inputConfirmAddress">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</label>
-                  <select id="inputConfirmAddress" class="form-control custom-select" v-model="users.confirm_address" :disabled="(users.confirm == 0) ? true : false">
-                    <option value="0">{{trans.get('keys.chua_cap_nhat')}}</option>
-                    <option v-for="city in citys" :value="city.id">{{ city.name }}</option>
-                  </select>
-                </div>
-
                 <div class="col-4 form-group">
                   <label for="inputUsername">{{trans.get('keys.ten_dang_nhap')}} *</label>
-                  <input type="text" id="inputUsername" v-model="users.username" class="form-control mb-4" autocomplete="false" :disabled="(users.confirm == 0) ? true : false" @input="changeRequired('inputUsername')" readonly>
-                  <label v-if="!users.username" class="required text-danger username_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                  <input type="text" id="inputUsername" :value="users.username" class="form-control mb-4" autocomplete="false" disabled="true">
                 </div>
                 <div class="col-4 form-group">
                   <label for="inputCmtnd">{{trans.get('keys.cmnd')}} *</label>
-                  <input type="text" id="inputCmtnd" v-model="users.cmtnd" class="form-control mb-4" @input="changeRequired('inputCmtnd')">
-                  <label v-if="!users.cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                  <input type="text" id="inputCmtnd" :value="users.cmtnd" class="form-control mb-4" disabled="true">
                 </div>
                 <div class="col-4 form-group">
                   <label for="inputFullname">{{trans.get('keys.ho_va_ten')}} *</label>
@@ -117,7 +79,7 @@
                   <input type="text" id="inputAddress" v-model="users.address" class="form-control mb-4">
                 </div>
                 <div class="col-4 form-group">
-                  <label for="inputEmail">{{trans.get('keys.email')}} *</label>
+                  <label for="inputEmail">{{trans.get('keys.email')}}</label>
                   <input type="text" id="inputEmail" v-model="users.email" class="form-control mb-4" @input="changeRequired('inputEmail')">
                   <label v-if="!users.email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
@@ -135,51 +97,10 @@
                   </select>
                 </div>
 
-                <div class="col-4 form-group">
-                  <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>
-                  <input v-model="users.code" type="text" id="inputCode" placeholder="" class="form-control mb-4">
-                </div>
-
-                <div class="col-4 form-group">
-                  <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}} ( mm/dd/YYYY )</label>
-                  <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
-                </div>
-
-                <div class="col-4 form-group">
-                  <label for="inputWorkingStatus">{{trans.get('keys.tinh_trang_viec_lam')}}</label>
-                  <select id="inputWorkingStatus" class="form-control custom-select" v-model="users.working_status">
-                    <option value="0">{{trans.get('keys.dang_cong_tac')}}</option>
-                    <option value="1">{{trans.get('keys.nghi_cong_tac')}}</option>
-                  </select>
-                </div>
-
               </form>
-              <div class="button-list" v-if="users.deleted === 0">
+              <div class="button-list">
                 <button type="button" class="btn btn-primary btn-sm" @click="updateUser()">{{trans.get('keys.cap_nhat_thong_tin')}}</button>
-
-                <router-link v-if="type === 'saleroom'"
-                             :to="{
-                                name: 'SaleroomUserViewByRole',
-                                params: {saleroom_id: saleroom_id, user_id: user_id},
-                                query: {type: owner_type}
-                             }"
-                             class="btn btn-secondary btn-sm">
-                  {{trans.get('keys.quay_lai')}}
-                </router-link>
-                <router-link v-else-if="type === 'branch'"
-                             :to="{
-                                name: 'BranchUserViewByRole',
-                                params: {branch_id: branch_id, user_id: user_id},
-                                query: {type: owner_type}
-                             }"
-                             class="btn btn-secondary btn-sm">{{trans.get('keys.quay_lai')}}
-                </router-link>
-
-              </div>
-              <div class="text-right" v-else>
-                <a :title="trans.get('keys.khoi_phuc_tai_khoan')" href="#" class="btn btn-sm btn-success" @click="restoreUser(users.user_id)">
-                  {{trans.get('keys.khoi_phuc')}}
-                </a>
+                <router-link to="/tms/profile" class="btn btn-secondary btn-sm">{{trans.get('keys.quay_lai')}}</router-link>
               </div>
             </div>
           </div>
@@ -187,38 +108,35 @@
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
     export default {
-        props: [
-          'user_id',
-          'type',
-          'owner_type',
-          'saleroom_id'
-        ],
+        props: ['type'],
         data() {
             return {
-                saleroom_name: '',
-                branch_id: 0,
-                branch_name: '',
-                role: '',
-                users: {
-                    role:[],
-                    confirm_address:0,
-                    start_time:'',
-                    password:''
-                },
+                users: {},
                 roles:{},
                 citys:[],
                 passwordConf:'',
                 password:'',
-                placeholder_user_name: '',
+                user_id: 0,
             }
         },
-        methods:{
+        methods:{ fetch() {
+            axios.post('/bridge/fetch', {
+              view: 'Profile'
+              })
+                .then(response => {
+                  this.user_id = response.data.user_id;
+                  this.userData();
+                })
+                .catch(error => {
+                  console.log(error);
+                })
+            },
             changeRequired(element){
+                console.log(element);
                 $('#'+element).removeClass('notValidate');
             },
             viewPassword(){
@@ -318,12 +236,24 @@
             changeConfirm(){
                 if(this.confirm == 1){
                     $('#inputConfirmAddress').attr('disabled',false);
-                    $('#inputUsername').attr('placeholder','Nhập mã chứng nhận');
+                    $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_ma_chung_nhan'));
                 }else{
                     $('#inputConfirmAddress').attr('disabled',true);
-                    $('#inputUsername').attr('placeholder','Nhập tài khoản đăng nhập');
+                    $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_tai_khoan_dang_nhap'));
                 }
 
+            },
+            getRoles()
+            {
+                if(this.type == 'system') {
+                    axios.post('/system/user/list_role')
+                        .then(response => {
+                            this.roles = response.data;
+                        })
+                        .catch(error => {
+                            console.log(error.response.data);
+                        });
+                }
             },
             userData(){
                 axios.post('/system/user/detail',{
@@ -346,18 +276,10 @@
                     });
             },
             updateUser(){
-                if(!this.users.username) {
-                    $('.username_required').show();
-                    return;
-                }
-                if(!this.users.email){
+                /*if(!this.users.email){
                     $('.email_required').show();
                     return;
-                }
-                if(!this.users.cmtnd){
-                    $('.cmtnd_required').show();
-                    return;
-                }
+                }*/
                 if(!this.users.fullname){
                     $('.fullname_required').show();
                     return;
@@ -367,21 +289,11 @@
                 this.formData.append('fullname', this.users.fullname);
                 this.formData.append('dob', this.users.dob);
                 this.formData.append('email', this.users.email);
-                this.formData.append('username', this.users.username);
-                //this.formData.append('password', this.users.password);
                 this.formData.append('phone', this.users.phone);
-                this.formData.append('cmtnd', this.users.cmtnd);
                 this.formData.append('address', this.users.address);
-                this.formData.append('role', this.users.role);
-                this.formData.append('type', this.type);
                 this.formData.append('user_id', this.user_id);
                 this.formData.append('sex', this.users.sex);
-                this.formData.append('code', this.users.code);
-                this.formData.append('start_time', this.users.start_time);
-                this.formData.append('working_status', this.users.working_status);
-                this.formData.append('confirm_address', this.users.confirm_address);
-                this.formData.append('confirm', this.users.confirm);
-                axios.post('/system/user/update', this.formData, {
+                axios.post('/profile/update', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
@@ -399,51 +311,14 @@
                         roam_message('error','Lỗi hệ thống. Thao tác thất bại');
                     });
             },
-            restoreUser(user_id){
-                swal({
-                    title: "Bạn muốn khôi phục lại tài khoản này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
-                    type: "error",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post('/system/user/restore',{user_id:user_id})
-                        .then(response => {
-                            roam_message(response.data.status,response.data.message);
-                            location.reload();
-                        })
-                        .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
-                        });
-                });
-
-                return false;
-            },
-            fetch() {
-            axios.post('/bridge/fetch', {
-              user_id: this.user_id,
-              saleroom_id: this.saleroom_id,
-              view: 'SaleroomUserEditByRole'
-            })
-              .then(response => {
-                this.saleroom_name = response.data.saleroom_name;
-                this.role = response.data.role;
-                this.branch_id = response.data.branch_id;
-                this.branch_name = response.data.branch_name;
-              })
-              .catch(error => {
-                console.log(error);
-              })
-          },
-          setFileInput() {
-            $('.dropify').dropify();
-          }
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
-            this.userData();
-            this.getCitys();
             this.fetch();
+            this.getRoles();
+            this.getCitys();
             this.setFileInput();
         }
     }

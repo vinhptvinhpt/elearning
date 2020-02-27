@@ -49,7 +49,7 @@
 
                             <li class="nav-item" v-if="has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/view_user_market" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
+                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
@@ -69,7 +69,7 @@
 
                             <li class="nav-item" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/user" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
+                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
@@ -81,7 +81,7 @@
 
                             <li class="nav-item" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/sale_room_user" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
+                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 

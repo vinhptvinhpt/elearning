@@ -814,6 +814,9 @@
                 console.log(error);
               })
             },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             this.fetch();
@@ -821,6 +824,7 @@
             this.getRoles();
             this.getCitys();
             this.userData();
+            this.setFileInput();
         }
     }
 </script>
