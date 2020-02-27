@@ -670,7 +670,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/bridge/bonus', 'BridgeController@bonus');
 
 
-    Route::post('/system/filter/list_user', 'Backend\SystemController@apiFilterUserList');
+    Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 
 });
 // [VinhPT][26.12.2019] Login first screen

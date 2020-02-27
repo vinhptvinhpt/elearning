@@ -155,9 +155,13 @@
             },
             goBack() {
                 this.$router.push({ name: 'SampleCourseIndex' });
+            },
+            setFileInput() {
+              $('.dropify').dropify();
             }
         },
         mounted() {
+          this.setFileInput();
         }
     }
 </script>

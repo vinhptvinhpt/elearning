@@ -707,7 +707,16 @@
         "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Username already exists and is locked!",
         "nhan_vien_diem_ban": "POS Employee",
         "thoi_gian_du_kien": "Estimate time",
-        "nhap_so_gio_can_thiet": "Input number of hours"
+        "nhap_so_gio_can_thiet": "Input number of hours",
+        "quan_ly_nhan_vien_ban_hang": "Manage sale employees",
+        "success": "Success",
+        "thanh_cong": "Success",
+        "error": "Error",
+        "loi": "Error",
+        "fail": "Fail",
+        "that_bai": "Fail",
+        "loi_he_thong": "System error",
+        "chon_khoa_hoc": "Select course"
     },
     "vi.keys": {
         "language": "",
@@ -1417,6 +1426,15 @@
         "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Tên đăng nhập đã tồn tại và đang bị khóa!",
         "nhan_vien_diem_ban": "Nhân viên điểm bán",
         "thoi_gian_du_kien": "Thời gian dự kiến",
-        "nhap_so_gio_can_thiet": "Nhập số giờ cần thiết"
+        "nhap_so_gio_can_thiet": "Nhập số giờ cần thiết",
+        "quan_ly_nhan_vien_ban_hang": "Quản lý nhân viên bán hàng",
+        "success": "Thành công",
+        "thanh_cong": "Thành công",
+        "error": "Lỗi",
+        "loi": "Lỗi",
+        "fail": "Thất bại",
+        "that_bai": "Thất bại",
+        "loi_he_thong": "Lỗi hệ thống",
+        "chon_khoa_hoc": "Chọn khóa học"
     }
 }

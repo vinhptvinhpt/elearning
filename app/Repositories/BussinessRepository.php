@@ -1139,6 +1139,8 @@ class BussinessRepository implements IBussinessInterface
             if (!empty($validator)) {
                 $response->status = false;
                 $response->message = 'Định dạng dữ liệu không hợp lệ';
+                $response->otherData = $validator;
+                $response->error = $description;
                 return response()->json($response);
             }
 
@@ -6467,10 +6469,23 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-    public function apiFilterUserList()
+    public function apiFilterFetch($request)
     {
-        $users = TmsUserDetail::where('deleted', 0)->limit(20)->get()->toArray();
-        return response()->json($users);
+        $response = [];
+        $type = $request->input('type');
+
+        if ($type == 'user') {
+            $response = TmsUserDetail::where('deleted', 0)->select('user_id as id', 'fullname as label')->limit(20)->get()->toArray();
+        } elseif ($type == 'course-online') {
+            $response = DB::table('mdl_course as c')
+            ->select(
+                'c.id',
+                'c.fullname as label'
+            )
+            ->where('c.category', '!=', 2)
+            ->where('c.category', '!=', 5)->limit(20)->get()->toArray();
+        }
+        return response()->json($response);
     }
 
     public function apiStore(Request $request)

@@ -310,10 +310,14 @@
                         this.training_list = [];
                     })
             },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             this.getTrainingProgram();
             this.getCitys();
+            this.setFileInput();
         }
     }
 </script>

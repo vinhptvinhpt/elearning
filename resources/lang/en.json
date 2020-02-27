@@ -278,5 +278,6 @@
     "he_thong": "System",
     "quan_tri_he_thong": "System management",
     "danh_sach_nguoi_dung_thi_lai": "List retake exam users",
-    "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Username already exists and is locked!"
+    "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Username already exists and is locked!",
+    "quan_ly_nhan_vien_ban_hang": "Manage sale employees"
 }
