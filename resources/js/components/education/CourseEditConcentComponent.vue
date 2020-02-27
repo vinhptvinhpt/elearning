@@ -75,6 +75,14 @@
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
+                        <label for="inputText1-1">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
+                        <input v-model="course.estimate_duration" id="estimate_duration"
+                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
+                               class="form-control mb-4">
+                        <label v-if="!course.estimate_duration"
+                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      </div>
+                      <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
                         <input v-model="course.startdate" placeholder="mm/dd/YYYY"
                                type="datetime-local"
@@ -122,9 +130,11 @@
 
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-                        <textarea v-model="course.summary" class="form-control" rows="3"
-                                  id="article_ckeditor"
-                                  :placeholder="trans.get('keys.noi_dung')"></textarea>
+                        <ckeditor v-model="course.summary" :config="editorConfig"></ckeditor>
+
+<!--                        <textarea v-model="course.summary" class="form-control" rows="3"-->
+<!--                                  id="article_ckeditor"-->
+<!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->
                       </div>
                     </form>
                     <div class="button-list text-right">
@@ -149,7 +159,12 @@
 </template>
 
 <script>
+    import CKEditor from 'ckeditor4-vue';
+
     export default {
+        components: {
+          CKEditor
+        },
         props: ['course_id'],
         data() {
             return {
@@ -157,10 +172,22 @@
                     avatar: ''
                 },
                 categories: [],
-                language : this.trans.get('keys.language')
+                language : this.trans.get('keys.language'),
+                editorConfig: {
+                  filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+                  // The configuration of the editor.
+                  //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+                  filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                  filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                  filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                  filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+                }
             }
         },
         methods: {
+            setFileInput() {
+              $('.dropify').dropify();
+            },
             previewImage: function (event) {
                 var input = event.target;
                 // Ensure that you have a file before attempting to read it
@@ -216,6 +243,8 @@
                         this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end + 'T' + HH_end + ':' + II_end;
 
                         this.course.pass_score = Math.floor(response.data.pass_score);
+
+                        this.setFileInput();
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -231,6 +260,12 @@
                     $('.fullname_required').show();
                     return;
                 }
+
+                if (!this.course.estimate_duration) {
+                  $('.estimate_duration_required').show();
+                  return;
+                }
+
                 if (!this.course.startdate) {
                     $('.startdate_required').show();
                     return;
@@ -259,15 +294,18 @@
                     allow_reg = 1;
                 }
 
-                var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+                //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.course.fullname);
                 this.formData.append('shortname', this.course.shortname);
+                this.formData.append('estimate_duration', this.course.estimate_duration);
                 this.formData.append('startdate', this.course.startdate);
                 this.formData.append('enddate', this.course.enddate);
                 this.formData.append('pass_score', this.course.pass_score);
-                this.formData.append('description', editor_data);
+                //this.formData.append('description', editor_data);
+                this.formData.append('description', this.course.summary);
                 this.formData.append('is_end_quiz', 0);
                 this.formData.append('course_place', this.course.course_place);
                 this.formData.append('category_id', this.course.category);
@@ -280,42 +318,18 @@
                         'Content-Type': 'multipart/form-data'
                     },
                 })
-                    .then(response => {
-                        var language =  this.language;
-                        if (response.data.status) {
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    this.$router.push({ name: 'CourseConcentrateIndex'});
-                                }
-                            );
-                        } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
-                        }
-                    })
-                    .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
-                    });
+                .then(response => {
+                  var language = this.language;
+                  if (response.data.status) {
+                    toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                    this.$router.push({name: 'CourseConcentrateIndex'});
+                  } else {
+                    toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                  }
+                })
+                .catch(error => {
+                  toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.that_bai'));
+                });
             },
             goBack() {
                 this.$router.push({ name: 'CourseConcentrateIndex'});

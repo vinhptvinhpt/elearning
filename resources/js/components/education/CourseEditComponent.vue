@@ -79,7 +79,7 @@
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText1-1">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
-                        <input v-model="course.estimate_duration" type="number" id="estimate_duration"
+                        <input v-model="course.estimate_duration" id="estimate_duration"
                                :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
                                class="form-control mb-4">
                         <label v-if="!course.estimate_duration"
@@ -127,20 +127,13 @@
                       <!--                </div>-->
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-
-<!--                        <ckeditor-->
-<!--                          :editor="editor"-->
-<!--                          v-model="course.summary"-->
-<!--                          :config="editorConfig"-->
-<!--                          :placeholder="trans.get('keys.noi_dung')">-->
-<!--                        </ckeditor>-->
-
-                        <textarea
-                          v-model="course.summary"
-                          class="form-control"
-                          rows="3"
-                          id="article_ckeditor"
-                          :placeholder="trans.get('keys.noi_dung')"></textarea>
+                        <ckeditor v-model="course.summary" :config="editorConfig"></ckeditor>
+                        <!--                        <textarea-->
+                        <!--                          v-model="course.summary"-->
+                        <!--                          class="form-control"-->
+                        <!--                          rows="3"-->
+                        <!--                          id="article_ckeditor"-->
+                        <!--                          :placeholder="trans.get('keys.noi_dung')"></textarea>-->
 
                       </div>
                     </form>
@@ -170,9 +163,12 @@
 </template>
 
 <script>
-  //import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+  import CKEditor from 'ckeditor4-vue';
 
   export default {
+    components: {
+      CKEditor
+    },
     props: ['course_id'],
     data() {
       return {
@@ -181,20 +177,15 @@
         },
         categories: [],
         language: this.trans.get('keys.language'),
-        // editor: ClassicEditor,
-        // editorData: '<p>Content of the editor.</p>',
-        // editorConfig: {
-        //   ckfinder: {
-        //     enabled: true,
-        //     uploadUrl: '/ckfinder/connector?command=QuickUpload&type=Files'
-        //     //uploadUrl: '/laravel-filemanager/upload?type=Files&_token='
-        //     //uploadUrl: '/ckfinder/core/connector/php/connector.php?command=QuickUpload&type=Files&responseType=json',
-        //   },
-        //   // toolbar: [
-        //   // 'ckfinder', 'imageUpload', '|', 'heading', '|', 'bold', 'italic', '|', 'undo', 'redo'
-        //   // ]
-        //   // The configuration of the editor.
-        // }
+        editorConfig: {
+          filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+          // The configuration of the editor.
+          //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+          filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+          filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+          filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+        }
       }
     },
     methods: {
@@ -264,6 +255,9 @@
               $('#pass_score').attr("disabled", false);
               $('#is_end_quiz').hide();
             }
+            //Convert text-area to ck editor
+            this.setEditor();
+            this.setFileInput();
           })
           .catch(error => {
             console.log(error.response.data);
@@ -290,7 +284,6 @@
           $('.estimate_duration_required').show();
           return;
         }
-
 
         if (!this.course.startdate) {
           $('.startdate_required').show();
@@ -323,7 +316,7 @@
         this.formData.append('file', this.$refs.file.files[0]);
         this.formData.append('fullname', this.course.fullname);
         this.formData.append('shortname', this.course.shortname);
-        this.formData.append('estimate_duration', this.course.shortname);
+        this.formData.append('estimate_duration', this.course.estimate_duration);
         this.formData.append('startdate', this.course.startdate);
         this.formData.append('enddate', this.course.enddate);
         this.formData.append('pass_score', this.course.pass_score);
@@ -341,64 +334,39 @@
             'Content-Type': 'multipart/form-data'
           },
         })
-          .then(response => {
-            var language = this.language;
-            if (response.data.status) {
-              toastr['success'](response.data.message, 'Success');
-              // swal({
-              //         title: response.data.message,
-              //         // text: response.data.message,
-              //         type: "success",
-              //         showCancelButton: false,
-              //         closeOnConfirm: false,
-              //         showLoaderOnConfirm: true
-              //     }
-              //     , function () {
-              //         this.$router.push({ name: 'CourseIndex' });
-              //     }
-              // );
-
-            } else {
-              console.log(response.data);
-              swal({
-                title: response.data.message,
-                // text: response.data.message,
-                type: "error",
-                showCancelButton: false,
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true
-              });
-            }
-          })
-          .catch(error => {
-            swal({
-              title: "Thông báo",
-              text: " Lỗi hệ thống.",
-              type: "error",
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            });
-          });
+        .then(response => {
+          var language = this.language;
+          if (response.data.status) {
+            toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+            this.$router.push({name: 'CourseIndex'});
+          } else {
+            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+          }
+        })
+        .catch(error => {
+          toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.that_bai'));
+        });
       },
       goBack() {
         this.$router.push({name: 'CourseIndex'});
       },
       setEditor() {
-        var options = {
-          filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-          filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
-          filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-          filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
-        };
-        CKEDITOR.replace('article_ckeditor', options);
+        // var CSRFToken = $('meta[name="csrf-token"]').attr('content');
+        // var options = {
+        //   filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+        //   filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=' + CSRFToken,
+        //   filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+        //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
+        // };
+        // CKEDITOR.replace('article_ckeditor', options);
+      },
+      setFileInput() {
         $('.dropify').dropify();
       }
     },
     mounted() {
       this.getCategories();
       this.getCourseDetail();
-      this.setEditor();
     }
   }
 </script>

@@ -94,6 +94,34 @@
           <div class="row">
             <div class="col-sm">
               <div class="table-wrap">
+
+                <div class="row">
+                  <div class="fillterConfirm col-sm-4 offset-sm-4" style="display: inline-block;">
+                    <v-select
+                      :options="userSelectOptions"
+                      :reduce="userSelectOption => userSelectOption.id"
+                      :placeholder="this.trans.get('keys.chon_nguoi_dung')"
+                      :filter-by="myFilterBy"
+                      v-model="user_filter">
+                    </v-select>
+                  </div>
+                  <div class="col-sm-4">
+                    <div class="form-group">
+                      <form v-on:submit.prevent="getUser(1)">
+                        <div class="d-flex flex-row">
+                          <input v-model="keyword" type="text"
+                                 class="form-control search_text"
+                                 :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
+                          <button type="button" id="btnFilter" class="btn btn-primary btn-sm btn_fillter"
+                                  @click="getUser(1)">
+                            {{trans.get('keys.tim')}}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="row">
                   <div class="col-md-12 col-sm-12 dataTables_wrapper">
                     <!--Items per page -->
@@ -123,34 +151,6 @@
                           <option value="0">{{trans.get('keys.chua_co')}}</option>
                         </select>
                       </label>
-                    </div>
-                  </div>
-                </div>
-
-
-                <div class="row">
-                  <div class="fillterConfirm col-sm-4 offset-sm-4" style="display: inline-block;">
-                    <v-select
-                      :options="userSelectOptions"
-                      :reduce="userSelectOption => userSelectOption.id"
-                      :placeholder="this.trans.get('keys.chon_nguoi_dung')"
-                      :filter-by="myFilterBy"
-                      v-model="user_filter">
-                    </v-select>
-                  </div>
-                  <div class="col-sm-4">
-                    <div class="form-group">
-                      <form v-on:submit.prevent="getUser(1)">
-                        <div class="d-flex flex-row">
-                          <input v-model="keyword" type="text"
-                                 class="form-control search_text"
-                                 :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
-                          <button type="button" id="btnFilter" class="btn btn-primary btn-sm btn_fillter"
-                                  @click="getUser(1)">
-                            {{trans.get('keys.tim')}}
-                          </button>
-                        </div>
-                      </form>
                     </div>
                   </div>
                 </div>
@@ -487,35 +487,39 @@
             return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
           },
             getUserForFilter(){
-            this.user = '';
-            this.userSelectOptions = []; //reset after search again
+              this.user = '';
+              this.userSelectOptions = []; //reset after search again
 
-            axios.post('/system/filter/list_user')
-              .then(response => {
-
-                //this.districts = response.data;
-
-                let additionalDepartments = [];
-                response.data.forEach(function(departmentItem) {
-                  let newDepartment = {
-                    label: departmentItem.fullname,
-                    id: departmentItem.user_id
-                  };
-                  additionalDepartments.push(newDepartment);
-                });
-                this.userSelectOptions = additionalDepartments;
-
+              axios.post('/system/filter/fetch',{
+                type: 'user'
               })
-              .catch(error => {
-                console.log(error);
-              });
-          },
+                .then(response => {
+
+                  let additionalSelections = [];
+                  response.data.forEach(function(selectItem) {
+                    let newItem = {
+                      label: selectItem.label,
+                      id: selectItem.id
+                    };
+                    additionalSelections.push(newItem);
+                  });
+                  this.userSelectOptions = additionalSelections;
+
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             //this.getUser();
             this.getListRole();
             this.fetch();
             this.getUserForFilter();
+            this.setFileInput();
         }
     }
 

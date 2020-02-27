@@ -561,6 +561,9 @@
                     .catch(error => {
                         roam_message('error','Lỗi hệ thống. Thao tác thất bại');
                     });
+            },
+            setFileInput() {
+              $('.dropify').dropify();
             }
         },
         mounted() {
@@ -568,6 +571,7 @@
             this.getCitys();
             //this.get_branch();
             this.getTrainingProgram();
+            this.setFileInput();
         }
     }
 </script>

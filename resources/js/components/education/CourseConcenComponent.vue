@@ -198,7 +198,7 @@
                 enddate: '',
                 status_course: '',
                 row: 5,
-                urlGetListUser: '/api/courses/get_list_concentrate',
+                urlGetList: '/api/courses/get_list_concentrate',
                 categories: [],
                 date: new Date(),
                 options: {
@@ -227,7 +227,7 @@
 
             },
             getCourses(paged) {
-                axios.post(this.urlGetListUser, {
+                axios.post(this.urlGetList, {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,

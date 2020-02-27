@@ -9,7 +9,7 @@
     <link rel="icon" href="/images/favicon.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese"
           rel="stylesheet">
-{{--    <link href="{{mix("/assets/css/laraspace.css")}}" rel="stylesheet" type="text/css">--}}
+
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
 
@@ -28,7 +28,7 @@
     <link href="/assets/dist/css/custom.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <link href="/css/responsive.css" rel="stylesheet">
-
+    <link href="/assets/css/laraspace.css" rel="stylesheet" type="text/css">
 </head>
 
 <body class="">
@@ -86,7 +86,7 @@
 <script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>
 <script src="/assets/dist/js/select2-data.js"></script>
 <script src="/js/main.js"></script>
-<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>
+{{--<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>--}}
 @php
     $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 @endphp

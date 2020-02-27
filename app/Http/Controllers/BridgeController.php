@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 
+use App\ModelHasRole;
 use App\Role;
 use App\TmsBranch;
 use App\TmsBranchSaleRoom;
@@ -40,6 +41,13 @@ class BridgeController extends Controller
             'lms_url' => '',
             'base_url' => url("/tms")
         ];
+
+        if ($view == 'Profile') {
+            $user_id = Auth()->user()->id;
+            $role = ModelHasRole::with('role')->where('model_id', $user_id)->first();
+            $response['user_id'] = $user_id;
+            $response['role_name'] = $role ? $role['role']['name'] : '';
+        }
 
         if ($view == 'IndexSaleroom') {
             $response['is_user_market'] = has_user_market();

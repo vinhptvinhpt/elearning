@@ -436,11 +436,15 @@
                 console.log(error);
               })
           },
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.userData();
             this.getCitys();
             this.fetch();
+            this.setFileInput();
         }
     }
 </script>
