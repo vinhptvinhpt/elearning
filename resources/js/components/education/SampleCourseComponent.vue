@@ -78,16 +78,18 @@
                                                         </div>
                                                         <div class="col-12 form-group">
                                                             <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-                                                            <textarea v-model="description" class="form-control"
-                                                                      rows="3" id="article_ckeditor"
-                                                                      :placeholder="trans.get('keys.noi_dung')"></textarea>
+<!--                                                            <textarea v-model="description" class="form-control"-->
+<!--                                                                      :config="editorConfig"-->
+<!--                                                                      rows="3" id="article_ckeditor"-->
+<!--                                                                      :placeholder="trans.get('keys.noi_dung')"></textarea>-->
+                                                            <ckeditor v-model="description" :config="editorConfig"></ckeditor>
                                                         </div>
                                                     </form>
                                                     <div class="button-list text-right">
-                                                        <button type="button" @click="goBack()"
-                                                                class="btn btn-secondary btn-sm">
-                                                            {{trans.get('keys.huy')}}
-                                                        </button>
+                                                        <!--                                                        <button type="button" @click="goBack()"-->
+                                                        <!--                                                                class="btn btn-secondary btn-sm">-->
+                                                        <!--                                                            {{trans.get('keys.huy')}}-->
+                                                        <!--                                                        </button>-->
                                                         <button @click="createCourse()" type="button"
                                                                 class="btn btn-primary btn-sm">{{trans.get('keys.tao')}}
                                                         </button>
@@ -216,11 +218,15 @@
 <script>
     //import vPagination from 'vue-plain-pagination'
     // import CourseSampleCreate from './CourseCreateSampleComponent'
+    import CKEditor from 'ckeditor4-vue';
 
     export default {
         props: ['file_url', 'type'],
         //components: {vPagination},
         // components: {CourseSampleCreate},
+        components: {
+            CKEditor
+        },
         data() {
             return {
                 fullname: '',
@@ -228,6 +234,16 @@
                 pass_score: '',
                 description: '',
                 avatar: '',
+
+                editorConfig: {
+                    filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+                    // The configuration of the editor.
+                    //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+                    filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                    filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                    filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                    filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+                },
 
                 courses: {},
                 keyword: '',
@@ -264,13 +280,6 @@
             },
 
             setEditor() {
-                var options = {
-                    filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                    filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=',
-                    filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                    filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token='
-                };
-                CKEDITOR.replace('article_ckeditor', options);
                 $('.dropify').dropify();
             },
             createCourse() {
@@ -289,7 +298,7 @@
                 }
 
 
-                var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+                // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
@@ -297,7 +306,7 @@
                 this.formData.append('startdate', '01-01-2019'); //gán cứng 2 giá trị do sử dụng cùng 1 api với tạo mới khóa đào tạo, không sử dụng 2 giá trị này trên server
                 this.formData.append('enddate', '01-01-2119');
                 this.formData.append('pass_score', this.pass_score);
-                this.formData.append('description', editor_data);
+                this.formData.append('description', this.description);
                 this.formData.append('course_place', '');
                 this.formData.append('allow_register', 1);
                 this.formData.append('is_end_quiz', 0);
