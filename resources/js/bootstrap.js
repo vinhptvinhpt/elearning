@@ -97,3 +97,4 @@ Vue.use(VSwitch);
 Vue.component('v-pagination', require('vue-plain-pagination'));
 Vue.component('v-select', vSelect);
 
+
