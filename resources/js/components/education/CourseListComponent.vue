@@ -217,7 +217,7 @@
                 categories: [],
                 date: new Date(),
                 options: {
-                    format: 'YYYY-MM-DD',
+                    format: 'DD-MM-YYYY',
                     useCurrent: false,
                     showClear: true,
                     showClose: true,
