@@ -43,7 +43,7 @@
 
                       <div class="col-4 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-                        <input v-model="survey.startdate" placeholder="mm/dd/YYYY" type="date"
+                        <input v-model="survey.startdate"" type="date"
                                id="inputText7"
                                class="form-control mb-4">
                         <label v-if="!survey.startdate"
@@ -51,7 +51,7 @@
                       </div>
                       <div class="col-4 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}} *</label>
-                        <input v-model="survey.enddate" placeholder="mm/dd/YYYY" type="date"
+                        <input v-model="survey.enddate" type="date"
                                id="inputText6"
                                class="form-control mb-4">
                         <label v-if="!survey.enddate"

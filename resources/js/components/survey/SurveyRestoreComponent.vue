@@ -44,13 +44,13 @@
                   <div class="col-6">
                     <div class="dataTables_length">
                       <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                      <date-picker v-model="startdate" :config="{format: 'YYYY-MM-DD'}"></date-picker>
+                      <date-picker v-model="startdate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                     </div>
                   </div>
                   <div class="col-6">
                     <div class="dataTables_length">
                       <label>{{trans.get('keys.ngay_ket_thuc')}}</label>
-                      <date-picker v-model="enddate" :config="{format: 'YYYY-MM-DD'}"></date-picker>
+                      <date-picker v-model="enddate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                     </div>
                   </div>
                 </div>

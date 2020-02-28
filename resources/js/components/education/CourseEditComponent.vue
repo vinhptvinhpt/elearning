@@ -4,9 +4,7 @@
       <div class="col">
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
-            <li class="breadcrumb-item">
-              <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
-            </li>
+            <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link</li>
             <li class="breadcrumb-item">
               <router-link to="/tms/education/course/list">{{ trans.get('keys.khoa_dao_tao_online') }}</router-link>
             </li>
@@ -78,31 +76,39 @@
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText1-1">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
+                        <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
                         <input v-model="course.estimate_duration" id="estimate_duration"
                                :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
                                class="form-control mb-4">
                         <label v-if="!course.estimate_duration"
                                class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-                        <input v-model="course.startdate" placeholder="mm/dd/YYYY"
+                        <label for="inputText7">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
+                        <input v-model="course.startdate"
                                type="date"
                                id="inputText7"
                                class="form-control mb-4">
                         <label v-if="!course.startdate"
                                class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}} *</label>
-                        <input v-model="course.enddate" placeholder="mm/dd/YYYY"
+                        <label for="inputText8">{{trans.get('keys.thoi_gian_ket_thuc')}} *</label>
+                        <input v-model="course.enddate"
                                type="date"
                                id="inputText8"
                                class="form-control mb-4">
                         <label v-if="!course.enddate"
                                class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                        <input v-model="course.course_budget" id="course_budget" :placeholder="trans.get('keys.nhap_chi_phi')" class="form-control mb-4">
+                      </div>
+
                       <div class="col-md-4 col-sm-6 form-group">
                         <input v-model="course.allow_register" type="checkbox"
                                style="width:20px; height:20px;"
@@ -111,23 +117,15 @@
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group" id="is_end_quiz">
-                        <input v-model="course.is_end_quiz" type="checkbox"
+                        <input v-model="course.is_end_quiz" type="checkbox" id="inputText10"
                                style="width:20px; height:20px;">
-                        <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
+                        <label for="inputText10">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                       </div>
 
-                      <!--                <div class="col-4 form-group">-->
-                      <!--                    <label for="inputText1-1">Chi phí trả cho giáo viên-->
-                      <!--                        (vnđ) *</label>-->
-                      <!--                    <input v-model="fee_teacher" type="text" id="inputText1-3"-->
-                      <!--                           placeholder="Ví dụ: 5.000.000" class="form-control mb-4">-->
-                      <!--                    <label v-if="!fee_teacher" class="required text-danger fee_teacher_required hide">Trường bắt buộc-->
-                      <!--                        phải-->
-                      <!--                        nhập.</label>-->
-                      <!--                </div>-->
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                         <ckeditor v-model="course.summary" :config="editorConfig"></ckeditor>
+
                         <!--                        <textarea-->
                         <!--                          v-model="course.summary"-->
                         <!--                          class="form-control"-->
@@ -138,36 +136,29 @@
                       </div>
                     </form>
                     <div class="button-list text-right">
-                      <button type="button" @click="goBack()" class="btn btn-secondary btn-sm">
-                        {{trans.get('keys.huy')}}
-                      </button>
-                      <button @click="editCourse()" type="button" class="btn btn-primary btn-sm">
-                        {{trans.get('keys.sua')}}
-                      </button>
+                      <button type="button" @click="goBack()" class="btn btn-secondary btn-sm">{{trans.get('keys.huy')}}</button>
+                      <button @click="editCourse()" type="button" class="btn btn-primary btn-sm">{{trans.get('keys.sua')}}</button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
-          <div class="card">
-            <div class="card-header d-flex justify-content-between">
-              <!--                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"-->
-              <!--                           aria-expanded="false"><i class="fal fa-upload mr-3"></i>Tải lên file Excel</a>-->
-            </div>
-          </div>
         </div>
       </div>
     </div>
+    <enrol-teacher :course_id="course_id"></enrol-teacher>
   </div>
 </template>
 
 <script>
   import CKEditor from 'ckeditor4-vue';
+  import EnrolTeacher from './EnrolTeacherComponent'
 
   export default {
     components: {
-      CKEditor
+      CKEditor,
+      EnrolTeacher
     },
     props: ['course_id'],
     data() {
@@ -328,24 +319,25 @@
         this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
         this.formData.append('allow_register', allow_reg);
         this.formData.append('offline', 0); //ko phai khoa hoc tap trung
+        this.formData.append('course_budget', this.course.course_budget);
 
         axios.post('/api/courses/update/' + this.course_id, this.formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
         })
-        .then(response => {
-          var language = this.language;
-          if (response.data.status) {
-            toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-            this.$router.push({name: 'CourseIndex'});
-          } else {
-            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
-          }
-        })
-        .catch(error => {
-          toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.that_bai'));
-        });
+          .then(response => {
+            var language = this.language;
+            if (response.data.status) {
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+              this.$router.push({name: 'CourseIndex'});
+            } else {
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+            }
+          })
+          .catch(error => {
+            toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.that_bai'));
+          });
       },
       goBack() {
         this.$router.push({name: 'CourseIndex'});

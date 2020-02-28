@@ -21,11 +21,11 @@
                 <div class="row">
                   <div class="col-sm-6">
                     <label>{{trans.get('keys.tu_ngay')}}</label>
-                    <date-picker v-model="startdate" :config="{format: 'YYYY-MM-DD'}"></date-picker>
+                    <date-picker v-model="startdate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                   </div>
                   <div class="col-sm-6">
                     <label>{{trans.get('keys.den_ngay')}}</label>
-                    <date-picker v-model="enddate" :config="{format: 'YYYY-MM-DD'}"></date-picker>
+                    <date-picker v-model="enddate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                   </div>
                   <div class="col-sm-6">
                     <select v-model="category_id"
