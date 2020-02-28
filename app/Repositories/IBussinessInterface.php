@@ -28,11 +28,6 @@ interface IBussinessInterface
     public function apiGetSaleRoomByBranch(Request $request);
 
     //------------CourseController-----------------//
-    public function apiGetListCourse(Request $request);
-
-    public function apiCreateCourse(Request $request);
-
-    public function apiChangeStatusCourse(Request $request);
 
     public function apiDeleteCourse(Request $request);
 
@@ -91,13 +86,13 @@ interface IBussinessInterface
 
     //------------PermissionController----------------//
     public function apiPermissionAdd(Request $request);
-    
+
     public function apiPermissionListDetail(Request $request);
-    
+
     public function apiPermissionDelete($permission_id);
-    
+
     public function apiPermissionDetail(Request $request);
-    
+
     public function apiPermissionUpdate(Request $request);
 
 
