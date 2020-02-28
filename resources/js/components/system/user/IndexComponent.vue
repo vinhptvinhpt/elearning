@@ -97,13 +97,13 @@
 
                 <div class="row">
                   <div class="fillterConfirm col-sm-4 offset-sm-4" style="display: inline-block;">
-                    <v-select
-                      :options="userSelectOptions"
-                      :reduce="userSelectOption => userSelectOption.id"
-                      :placeholder="this.trans.get('keys.chon_nguoi_dung')"
-                      :filter-by="myFilterBy"
-                      v-model="user_filter">
-                    </v-select>
+<!--                    <v-select-->
+<!--                      :options="userSelectOptions"-->
+<!--                      :reduce="userSelectOption => userSelectOption.id"-->
+<!--                      :placeholder="this.trans.get('keys.chon_nguoi_dung')"-->
+<!--                      :filter-by="myFilterBy"-->
+<!--                      v-model="user_filter">-->
+<!--                    </v-select>-->
                   </div>
                   <div class="col-sm-4">
                     <div class="form-group">
@@ -518,7 +518,7 @@
             //this.getUser();
             this.getListRole();
             this.fetch();
-            this.getUserForFilter();
+        //    this.getUserForFilter();
             this.setFileInput();
         }
     }

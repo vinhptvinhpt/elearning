@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\MdlCourse;
+use App\Repositories\MdlCourseRepository;
+use App\ViewModel\ResponseModel;
+use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
+use Illuminate\Support\Facades\Config;
 
 //Quản lý thông tin khóa học
 //ThoLD (21/08/2019)
@@ -12,10 +17,12 @@ class CourseController extends Controller
 {
 
     private $bussinessRepository;
+    private $mdlCourseRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository)
+    public function __construct(BussinessRepository $bussinessRepository, MdlCourseRepository $mdlCourseRepository)
     {
         $this->bussinessRepository = $bussinessRepository;
+        $this->mdlCourseRepository = $mdlCourseRepository;
     }
 
     //view hiển thị danh sách khóa học
@@ -85,19 +92,100 @@ class CourseController extends Controller
         return view('education.statistic', ['course_id' => $id, 'come_from' => $come_from]);
     }
 
+    //api lấy danh sách khóa học
+    //ThoLD (21/08/2019)
     public function apiGetListCourse(Request $request)
     {
-        return $this->bussinessRepository->apiGetListCourse($request);
+        return $this->mdlCourseRepository->getall($request);
     }
 
+    //api tạo mới khóa học
+    //ThoLD (21/08/2019)
     public function apiCreateCourse(Request $request)
     {
-        return $this->bussinessRepository->apiCreateCourse($request);
+        $response = new ResponseModel();
+        try {
+            $param = [
+                'fullname' => 'text',
+                'shortname' => 'code',
+                'description' => 'longtext',
+                'pass_score' => 'number',
+                'category_id' => 'number',
+                'sample' => 'number',
+                'course_place' => 'text',
+                'allow_register' => 'number',
+                'total_date_course' => 'number',
+                'is_end_quiz' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            //check course info exist
+            $courseInfo = MdlCourse::select('id')->where('shortname', $request->input('shortname'))->first();
+
+            if ($courseInfo) {
+                $response->status = false;
+                $response->message = __('ma_khoa_hoc_da_ton_tai');
+                return response()->json($response);
+            }
+
+            $stdate = strtotime($request->input('startdate'));
+            $eddate = strtotime($request->input('enddate'));
+
+            if ($stdate > $eddate) {
+                $response->status = false;
+                $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
+                return response()->json($response);
+            }
+
+            \DB::beginTransaction();
+
+            $course = $this->mdlCourseRepository->store($request);
+
+            //write log to mdl_logstore_standard_log
+            $app_name = Config::get('constants.domain.APP_NAME');
+
+            $key_app = encrypt_key($app_name);
+
+
+            $dataLog = array(
+                'app_key' => $key_app,
+                'courseid' => $course->id,
+                'action' => 'create',
+                'description' => json_encode($course),
+            );
+
+            $dataLog = createJWT($dataLog, 'data');
+
+            $data_write = array(
+                'data' => $dataLog,
+            );
+
+            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+
+            //call api write log
+            callAPI('POST', $url, $data_write, false, '');
+            \DB::commit();
+
+        } catch (Exception $e) {
+            \DB::rollBack();
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+
     }
 
+    //api chuyển trạng thái khóa học
+    // mục đích cho việc phê duyệt khóa học
+    //ThoLD (22/08/2019)
     public function apiChangeStatusCourse(Request $request)
     {
-        return $this->bussinessRepository->apiChangeStatusCourse($request);
+        return $this->mdlCourseRepository->changestatuscourse($request);
     }
 
     public function apiDeleteCourse(Request $request)
