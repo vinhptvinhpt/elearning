@@ -109,7 +109,7 @@
                   <label v-if="!users.fullname" class="required text-danger fullname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
                 <div class="col-4 form-group">
-                  <label for="inputDob">{{trans.get('keys.ngay_sinh')}} ( mm/dd/YYYY )</label>
+                  <label for="inputDob">{{trans.get('keys.ngay_sinh')}}</label>
                   <input type="date" id="inputDob" v-model="users.dob" class="form-control mb-4">
                 </div>
                 <div class="col-4 form-group">
@@ -141,7 +141,7 @@
                 </div>
 
                 <div class="col-4 form-group">
-                  <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}} ( mm/dd/YYYY )</label>
+                  <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                   <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
                 </div>
 

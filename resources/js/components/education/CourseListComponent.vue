@@ -24,13 +24,21 @@
                   <div class="col-sm-6">
                     <div class="dataTables_length">
 
-                      <select v-model="category_id"
-                              class="form-control" id="category_id">
-                        <option value="">{{trans.get('keys.chon_danh_muc_khoa_hoc')}}</option>
-                        <option v-for="cate in categories" :value="cate.id">
-                          {{cate.category_name}}
-                        </option>
-                      </select>
+                      <v-select
+                        :options="filterSelectOptions"
+                        :reduce="filterSelectOption => filterSelectOption.id"
+                        :placeholder="this.trans.get('keys.chon_danh_muc_khoa_hoc')"
+                        :filter-by="myFilterBy"
+                        v-model="category_id">
+                      </v-select>
+
+<!--                      <select v-model="category_id"-->
+<!--                              class="form-control" id="category_id">-->
+<!--                        <option value="">{{trans.get('keys.chon_danh_muc_khoa_hoc')}}</option>-->
+<!--                        <option v-for="cate in categories" :value="cate.id">-->
+<!--                          {{cate.category_name}}-->
+<!--                        </option>-->
+<!--                      </select>-->
 
                     </div>
                   </div>
@@ -55,20 +63,20 @@
                       <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                     </div>
                   </div>
-                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">
-                    <v-select
-                      :options="filterSelectOptions"
-                      :reduce="filterSelectOption => filterSelectOption.id"
-                      :placeholder="this.trans.get('keys.chon_khoa_hoc')"
-                      :filter-by="myFilterBy"
-                      v-model="filter_select">
-                    </v-select>
-                  </div>
-                  <div class="col-sm-3">
+<!--                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">-->
+<!--                    <v-select-->
+<!--                      :options="filterSelectOptions"-->
+<!--                      :reduce="filterSelectOption => filterSelectOption.id"-->
+<!--                      :placeholder="this.trans.get('keys.chon_khoa_hoc')"-->
+<!--                      :filter-by="myFilterBy"-->
+<!--                      v-model="filter_select">-->
+<!--                    </v-select>-->
+<!--                  </div>-->
+                  <div class="col-sm-6">
                     <form v-on:submit.prevent="getCourses(1)">
                       <div class="d-flex flex-row form-group">
                         <input v-model="keyword" type="text" class="form-control" :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                        <button type="button" id="btnFilter" class="btn btn-primary" @click="getCourses(1)">
+                        <button type="button" id="btnFilter" class="btn btn-primary" style="margin-left: 5px" @click="getCourses(1)">
                           {{trans.get('keys.tim')}}
                         </button>
                       </div>
@@ -131,7 +139,8 @@
                       <td>
                         <router-link :to="{ name: 'CourseStatistic', params: { id: course.id, come_from: 'online' } }">
                           {{ course.shortname }}
-                        </router-link></td>
+                        </router-link>
+                      </td>
                       <td>{{ course.fullname }}</td>
                       <td class="text-center mobile_hide">{{ course.startdate |convertDateTime}}</td>
                       <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}</td>
@@ -211,8 +220,8 @@
                 category_id: '',
                 startdate: '',
                 enddate: '',
-                row: 5,
                 status_course: '',
+                row: 5,
                 urlGetList: '/api/courses/list',
                 categories: [],
                 date: new Date(),
@@ -237,7 +246,16 @@
             getCategories() {
                 axios.post('/api/courses/get_list_category')
                     .then(response => {
-                        this.categories = response.data;
+                        let additionalSelections = [];
+                        response.data.forEach(function(selectItem) {
+                          let newItem = {
+                            label: selectItem.category_name,
+                            id: selectItem.id
+                          };
+                          additionalSelections.push(newItem);
+                        });
+                        this.filterSelectOptions = additionalSelections;
+                        //this.categories = response.data;
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -261,7 +279,6 @@
                     });
             },
             getCourses(paged) {
-
                 axios.post(this.urlGetList, {
                     page: paged || this.current,
                     keyword: this.keyword,
@@ -286,41 +303,41 @@
                 this.getCourses();
             },
             deletePost(id) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn xóa mục đã chọn",
                     text: "Chọn 'ok' để thực hiện thao tác.",
                     type: "success",
                     showCancelButton: true,
-                    closeOnConfirm: false,
+                    closeOnConfirm: true,
                     showLoaderOnConfirm: true
                 }, function () {
                     axios.post('/api/courses/delete', {course_id: id})
                         .then(response => {
                             if (response.data.status) {
-                                let router_current = this.$router;
                                 swal({
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
-                                }, function () {
-                                    //location.reload();
-                                    router_current.push({name: 'CourseIndex'});
-                                });
+                                  }, function () {
+                                    current_pos.push({name: 'CourseIndex'});
+                                    current_pos.getUserNeedEnrol(current_pos.current);
+                                  }
+                                );
                             } else {
-                                toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
-
                         })
                         .catch(error => {
-                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
-
                 return false;
             },
             approveCourse(course_id, status) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn chuyển trạng thái khóa học?",
                     text: "Chọn 'ok' để thực hiện thao tác.",
@@ -332,27 +349,24 @@
                     axios.post('/api/courses/approve', {course_id: course_id, current_status: status})
                         .then(response => {
                             if (response.data.status) {
-                                let router_current = this.$router;
                                 swal({
-                                        title: "Thông báo!",
-                                        text: response.data.message,
-                                        type: "success",
-                                        showCancelButton: false,
-                                        closeOnConfirm: false,
-                                        showLoaderOnConfirm: true
-                                    }
-                                    , function () {
-                                        //location.reload();
-                                        router_current.push({name: 'CourseIndex'});
+                                    title: response.data.message,
+                                    type: "success",
+                                    showCancelButton: false,
+                                    closeOnConfirm: true,
+                                    showLoaderOnConfirm: true
+                                  }, function () {
+                                    current_pos.push({name: 'CourseIndex'});
+                                    current_pos.getUserNeedEnrol(current_pos.current);
                                   }
                                 );
                             } else {
-                                toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
 
                         })
                         .catch(error => {
-                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
 
@@ -400,13 +414,13 @@
               .catch(error => {
                 console.log(error);
               });
-            },
+            }
         },
         mounted() {
             this.getCategories();
             this.getCourses();
             this.fetch();
-            this.getDataForFilter();
+            //this.getDataForFilter();
         }
     }
 
@@ -428,5 +442,7 @@
 </script>
 
 <style scoped>
-
+  .v-select .dropdown-toggle {
+    @extend .form-control ;
+  }
 </style>

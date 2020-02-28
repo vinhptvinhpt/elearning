@@ -7,13 +7,13 @@ import Ls from './services/ls';
  */
 import 'vue-tabs-component/docs/resources/tabs-component.css';
 import 'vue-multiselect/dist/vue-multiselect.min.css';
-// import 'vue2-dropzone/dist/vue2Dropzone.css';
 import 'vue-select/dist/vue-select.css';
 
 import {BootstrapVue} from 'bootstrap-vue';
 import VSwitch from 'v-switch-case';
 import vSelect from 'vue-select';
 import CKEditor from 'ckeditor4-vue';
+import Datepicker from 'vuejs-datepicker';
 
 try {
     window.Popper = require('popper.js').default;
@@ -98,4 +98,4 @@ Vue.use( CKEditor );
 
 Vue.component('v-pagination', require('vue-plain-pagination'));
 Vue.component('v-select', vSelect);
-
+Vue.component('datepicker', Datepicker);

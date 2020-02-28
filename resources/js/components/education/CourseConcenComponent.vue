@@ -22,14 +22,12 @@
                 <div class="row">
                   <div class="col-sm-6">
                     <div class="dataTables_length">
-                      <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                      <date-picker v-model="startdate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
+                      <date-picker v-model="startdate" :placeholder="trans.get('keys.ngay_bat_dau')" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                     </div>
                   </div>
                   <div class="col-sm-6">
                     <div class="dataTables_length">
-                      <label>{{trans.get('keys.ngay_ket_thuc')}}</label>
-                      <date-picker v-model="enddate" :config="{format: 'DD-MM-YYYY'}"></date-picker>
+                      <date-picker v-model="enddate" :placeholder="trans.get('keys.ngay_ket_thuc')" :config="{format: 'DD-MM-YYYY'}"></date-picker>
                     </div>
                   </div>
                   <div class="col-sm-6">
@@ -46,16 +44,14 @@
                   <div class="col-sm-6">
                     <form v-on:submit.prevent="getCourses(1)">
                       <div class="d-flex flex-row form-group">
-                        <input v-model="keyword" type="text"
-                               class="form-control"
-                               :placeholder="trans.get('keys.nhap_tu_khoa')">
-                        <button type="button" id="btnFilter" class="btn btn-primary"
-                                @click="getCourses(1)">
+                        <input v-model="keyword" type="text" class="form-control" :placeholder="trans.get('keys.nhap_tu_khoa')">
+                        <button type="button" id="btnFilter" style="margin-left: 5px" class="btn btn-primary" @click="getCourses(1)">
                           {{trans.get('keys.tim')}}
                         </button>
                       </div>
                     </form>
                   </div>
+
                 </div>
                 <br/>
                 <div class="row">
@@ -71,14 +67,12 @@
                       </label>
                     </div>
                   </div>
-
                 </div>
-
 
                 <div class="row">
                   <div class="col-8 dataTables_wrapper">
                     <div class="dataTables_length" style="display: block;">
-                      <span style="color:#3a55b1; font-size: 20px; font-weight: 600;">{{trans.get('keys.tong_so_khoa_dao_tao_tap_trung_hien_tai')}}: {{total_course}}</span>
+                      <span style="color:#3a55b1; font-size: 18px; font-weight: 600;">{{trans.get('keys.tong_so_khoa_dao_tao_tap_trung_hien_tai')}}: {{total_course}}</span>
                     </div>
                   </div>
                   <div class="col-4">
@@ -86,7 +80,7 @@
                       <label>
                         <router-link :to="{name: 'CourseCreateConcern'}">
                           <button type="button"
-                                  class="btn btn-success btn-sm"
+                                  class="btn btn-success btn-md"
                                   :placeholder="trans.get('keys.tao_moi')"
                                   value="Tạo mới"
                                   aria-controls="datable_1">{{trans.get('keys.tao_moi')}}</button>
@@ -113,9 +107,11 @@
                     <tbody>
                     <tr v-for="(course,index) in courses">
                       <td>{{ (current-1)*row+(index+1) }}</td>
-                      <td><router-link :to="{name: 'CourseStatistic', params: {id: course.id, come_from: 'offline'}}">
+                      <td>
+                        <router-link :to="{ name: 'CourseStatistic', params: {id: course.id, come_from: 'offline' } }">
                         {{ course.shortname }}
-                      </router-link></td>
+                        </router-link>
+                      </td>
                       <td>{{ course.fullname }}</td>
                       <td class="text-center mobile_hide">{{ course.startdate |convertDateTime}}</td>
                       <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}</td>
@@ -251,12 +247,13 @@
                 this.getCourses();
             },
             deletePost(id) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn xóa mục đã chọn",
                     text: "Chọn 'ok' để thực hiện thao tác.",
                     type: "success",
                     showCancelButton: true,
-                    closeOnConfirm: false,
+                    closeOnConfirm: true,
                     showLoaderOnConfirm: true
                 }, function () {
                     axios.post('/api/courses/delete', {course_id: id})
@@ -266,31 +263,25 @@
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
-                                }, function () {
-                                    location.reload();
-                                });
+                                  }, function () {
+                                    current_pos.push({name: 'CourseIndex'});
+                                    current_pos.getUserNeedEnrol(current_pos.current);
+                                  }
+                                );
                             } else {
-                                swal({
-                                    title: response.data.message,
-                                    type: "error",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                });
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
-
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
-                            console.log(error);
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
-
                 return false;
             },
             approveCourse(course_id, status) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn chuyển trạng thái khóa học?",
                     text: "Chọn 'ok' để thực hiện thao tác.",
@@ -303,32 +294,23 @@
                         .then(response => {
                             if (response.data.status) {
                                 swal({
-                                        title: "Thông báo!",
-                                        text: response.data.message,
-                                        type: "success",
-                                        showCancelButton: false,
-                                        closeOnConfirm: false,
-                                        showLoaderOnConfirm: true
-                                    }
-                                    , function () {
-                                        location.reload();
-                                    }
+                                    title: response.data.message,
+                                    type: "success",
+                                    showCancelButton: false,
+                                    closeOnConfirm: true,
+                                    showLoaderOnConfirm: true
+                                  }, function () {
+                                    current_pos.push({name: 'CourseConcentrateIndex'});
+                                    current_pos.getUserNeedEnrol(current_pos.current);
+                                  }
                                 );
                             } else {
-                                swal({
-                                    title: "Thông báo!",
-                                    text: response.data.message,
-                                    type: "error",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                });
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
-                            console.log(error);
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
 
@@ -356,5 +338,7 @@
 </script>
 
 <style scoped>
-
+  .v-select .dropdown-toggle {
+    @extend .form-control ;
+  }
 </style>

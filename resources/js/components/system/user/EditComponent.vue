@@ -184,7 +184,6 @@
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
                                 <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                                 <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
-                                <label for="inputTimeStart">( mm/dd/YYYY )</label>
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
