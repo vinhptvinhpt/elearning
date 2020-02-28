@@ -80,7 +80,7 @@
                                             </div>
                                             <!--                <div class="col-4 form-group">-->
                                             <!--                    <label for="inputText6">Thời gian bắt đầu *</label>-->
-                                            <!--                    <input v-model="course.startdate" placeholder="mm/dd/YYYY" type="text" id="inputText7"-->
+                                            <!--                    <input v-model="course.startdate" type="text" id="inputText7"-->
                                             <!--                           class="form-control mb-4">-->
                                             <!--                    <label v-if="!course.startdate" class="required text-danger startdate_required hide">Trường bắt buộc-->
                                             <!--                        phải-->
@@ -88,7 +88,7 @@
                                             <!--                </div>-->
                                             <!--                <div class="col-4 form-group">-->
                                             <!--                    <label for="inputText6">Thời gian kết thúc *</label>-->
-                                            <!--                    <input v-model="course.enddate" placeholder="mm/dd/YYYY" type="text" id="inputText8"-->
+                                            <!--                    <input v-model="course.enddate" type="text" id="inputText8"-->
                                             <!--                           class="form-control mb-4">-->
                                             <!--                    <label v-if="!course.enddate" class="required text-danger enddate_required hide">Trường bắt buộc-->
                                             <!--                        phải-->

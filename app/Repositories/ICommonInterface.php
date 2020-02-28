@@ -4,11 +4,13 @@
 namespace App\Repositories;
 
 
+use Illuminate\Http\Request;
+
 interface ICommonInterface
 {
-    public function getall($keyword, $page, $pageSize);
+    public function getall(Request $request);
 
-    public function insert(object $table);
+    public function store(Request $request);
 
     public function update($id);
 

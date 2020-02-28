@@ -138,7 +138,7 @@
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputDob">{{trans.get('keys.ngay_sinh')}} </label>
                                 <input type="date" id="inputDob" v-model="users.dob" class="form-control mb-4">
-                                <label for="inputDob">(mm/dd/YYYY)</label>
+                                <label for="inputDob">(dd/mm/yyyy)</label>
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputAddress">{{trans.get('keys.dia_chi')}}</label>
@@ -166,7 +166,7 @@
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type == 'market'">
                                 <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                                 <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
-                                <label for="inputTimeStart">(mm/dd/YYYY)</label>
+                                <label for="inputTimeStart">(dd/mm/yyyy)</label>
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
@@ -184,7 +184,6 @@
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
                                 <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                                 <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
-                                <label for="inputTimeStart">( mm/dd/YYYY )</label>
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">

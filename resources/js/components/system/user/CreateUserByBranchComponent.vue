@@ -34,7 +34,7 @@
 
                 <div class="col-sm-6 form-group">
                     <label for="inputCertificateDate">{{trans.get('keys.ngay_cap_ma_chung_nhan')}}</label>
-                    <input v-model="certificate_date" type="date" id="inputCertificateDate" placeholder="mm/dd/YYYY" class="form-control mb-4" :disabled="confirm == 1 ? false : true">
+                    <input v-model="certificate_date" type="date" id="inputCertificateDate" class="form-control mb-4" :disabled="confirm == 1 ? false : true">
                 </div>
 
                 <div class="col-12 form-group">
@@ -81,7 +81,7 @@
                 </div>
                 <div class="col-4 form-group">
                     <label for="inputDob">{{trans.get('keys.ngay_thang_nam_sinh')}}</label>
-                    <input v-model="dob" type="date" id="inputDob" placeholder="mm/dd/YYYY" class="form-control mb-4">
+                    <input v-model="dob" type="date" id="inputDob" class="form-control mb-4">
                 </div>
                 <div class="col-4 form-group">
                     <label for="inputEmail">{{trans.get('keys.email')}}</label>

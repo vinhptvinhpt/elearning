@@ -4,29 +4,344 @@
 namespace App\Repositories;
 
 
-use App\Repositories\ICommonInterface;
-use App\Repositories\IMdlCourseInterface;
+use App\MdlContext;
+use App\MdlCourse;
+use App\MdlCourseCompletionCriteria;
+use App\MdlEnrol;
+use App\MdlGradeCategory;
+use App\MdlGradeItem;
+use App\MdlRole;
+use App\ViewModel\ResponseModel;
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 {
-
-    public function getall($keyword, $page, $pageSize)
+    //api lấy danh sách khóa học
+    //ThoLD (21/08/2019)
+    public function getall(Request $request)
     {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $category_id = $request->input('category_id');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+        $status_course = $request->input('status_course');
+        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number',
+            'category_id' => 'number',
+            'sample' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+        if ($checkRole === TRUE) {
+            $listCourses = DB::table('mdl_user_enrolments as mue')
+                ->where('mue.userid', '=', \Auth::user()->id)
+                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
+                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                ->select(
+                    'c.id',
+                    'c.fullname',
+                    'c.shortname',
+                    'c.startdate',
+                    'c.enddate',
+                    'c.visible',
+                    'mccc.gradepass as pass_score'
+                );
+        } else {
+            $listCourses = DB::table('mdl_course as c')
+                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
+                ->select(
+                    'c.id',
+                    'c.fullname',
+                    'c.shortname',
+                    'c.startdate',
+                    'c.enddate',
+                    'c.visible',
+                    'mccc.gradepass as pass_score'
+                );
+        }
+
+
+        //là khóa học mẫu
+        if ($sample == 1) {
+            $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
+        } else {
+            $listCourses = $listCourses->where('c.category', '!=', 2);
+            $listCourses = $listCourses->where('c.category', '!=', 5);
+        }
+
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
+        }
+
+        if ($category_id) {
+            $listCourses = $listCourses->where('c.category', '=', $category_id);
+        }
+
+        if ($startdate) {
+            $cv_startDate = strtotime($startdate);
+            $listCourses = $listCourses->where('c.startdate', '>=', $cv_startDate);
+        }
+
+        if ($enddate) {
+            $cv_endDate = strtotime($enddate);
+            $listCourses = $listCourses->where('c.enddate', '<=', $cv_endDate);
+        }
+
+
+        if ($status_course) {
+            $unix_now = strtotime(Carbon::now());
+            if ($status_course == 1) { //các khóa sắp diễn ra
+                $listCourses = $listCourses->where('c.startdate', '>', $unix_now);
+            } else if ($status_course == 2) { //các khóa đang diễn ra
+                $listCourses = $listCourses->where('c.startdate', '<=', $unix_now);
+                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
+            } else if ($status_course == 3) { //các khóa đã diễn ra
+                $listCourses = $listCourses->where('c.enddate', '<', $unix_now);
+            }
+        }
+
+
+        $listCourses = $listCourses->orderBy('id', 'desc');
+
+        $listCourses = $listCourses->paginate($row);
+        $total = ceil($listCourses->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $listCourses->currentPage(),
+            ],
+            'data' => $listCourses,
+            'total_course' => $totalCourse
+        ];
+
+
+        return response()->json($response);
     }
 
-    public function insert(object $table)
+    public function store(Request $request)
     {
+        $avatar = $request->file('file');
+        $fullname = $request->input('fullname');
+        $shortname = $request->input('shortname');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+        $pass_score = $request->input('pass_score');
+        $description = $request->input('description');
+        $category_id = $request->input('category_id');
+        $sample = $request->input('sample');
+        $course_place = $request->input('course_place');
+        $allow_register = $request->input('allow_register');
+        $total_date_course = $request->input('total_date_course');
+        $is_end_quiz = $request->input('is_end_quiz');
+
+        //thực hiện insert dữ liệu
+        if ($avatar) {
+            $name_file = str_replace(' ', '', $shortname);
+            $name_file = str_replace('/', '', $name_file);
+            $name_file = str_replace('\\', '', $name_file);
+            $name_file = utf8convert($name_file);
+            $name = $name_file . '.' . $avatar->getClientOriginalExtension();
+
+            // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
+            Storage::putFileAs(
+                'public/upload/course',
+                $avatar,
+                $name
+            );
+
+            $path_avatar = '/storage/upload/course/' . $name;
+        } else {
+            $path_avatar = '/storage/upload/course/default_course.jpg';
+        }
+
+        \DB::beginTransaction();
+        $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
+        $course->category = $category_id;
+        $course->shortname = $shortname;
+        $course->fullname = $fullname;
+        $course->summary = $description;
+        $course->course_avatar = $path_avatar;
+        if ($sample == 1) {
+            $course->startdate = strtotime(Carbon::now());
+            $course->enddate = strtotime(Carbon::now()->addYear(100)); // gia hạn thời gian cho khóa học mẫu là 100 năm
+            $course->visible = 1;  //luôn hiển thị khi là khóa học mẫu
+        } else {
+            $stdate = strtotime($startdate);
+            $eddate = strtotime($enddate);
+
+
+            $course->course_place = $course_place;
+            $course->startdate = $stdate;
+            $course->enddate = $eddate;
+            $course->visible = 0;
+        }
+
+        if ($category_id == 3) {
+            $course->is_certificate = 1;
+            $course->is_end_quiz = $is_end_quiz;
+        }
+
+        $course->total_date_course = $total_date_course;
+
+        $course->allow_register = $allow_register;
+        $course->enablecompletion = 1;
+
+        $course->save();
+
+        //insert dữ liệu điểm qua môn
+        MdlCourseCompletionCriteria::create(array(
+            'course' => $course->id,
+            'criteriatype' => 6, //default là 6 trong trường hợp này
+            'gradepass' => $pass_score
+        ));
+
+        $context_cate = MdlContext::where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT)
+            ->where('instanceid', '=', $category_id)->first();
+
+        if ($context_cate) {
+            //insert dữ liệu vào bảng mdl_context
+            $mdl_context = MdlContext::firstOrCreate([
+                'contextlevel' => \App\MdlUser::CONTEXT_COURSE,
+                'instanceid' => $course->id,
+                'depth' => 3,
+                'locked' => 0
+            ]);
+
+            //cập nhật path
+            $mdl_context->path = '/1/' . $context_cate->id . '/' . $mdl_context->id;
+            $mdl_context->save();
+        }
+
+
+        if ($allow_register == 1) {
+            MdlEnrol::firstOrCreate(
+                [
+                    'enrol' => 'self',
+                    'courseid' => $course->id,
+                    'roleid' => 5,
+                    'sortorder' => 2,
+                    'customint6' => 1
+                ],
+                [
+                    'expirythreshold' => 86400,
+                    'timecreated' => strtotime(Carbon::now()),
+                    'timemodified' => strtotime(Carbon::now())
+                ]
+            );
+        }
+
+        //get info of role teacher
+        $role_teacher = MdlRole::where('shortname', 'teacher')->first();
+        //call function auto enrol to show list courses for teacher when teacher create a course
+        enrole_user_to_course(Auth::user()->id, $role_teacher->id, $course->id, $course->category);
+
+        //write data to table mdl_grade_categories -> muc dich phuc vu cham diem, Vinh PT yeu cau
+        $mdl_grade_cate = MdlGradeCategory::firstOrCreate([
+            'courseid' => $course->id,
+            'depth' => 1,
+            'aggregation' => 13,
+            'aggregateonlygraded' => 1,
+            'timecreated' => strtotime(Carbon::now()),
+            'timemodified' => strtotime(Carbon::now())
+        ]);
+
+        $mdl_grade_cate->path = '/' . $mdl_grade_cate->id . '/';
+        $mdl_grade_cate->save();
+
+        //write data to table mdl_grade_items
+        MdlGradeItem::firstOrCreate([
+            'courseid' => $course->id,
+            'itemname' => $course->fullname,
+            'itemtype' => 'course',
+            'iteminstance' => $mdl_grade_cate->id,
+            'gradepass' => $pass_score
+        ]);
+
+        return $course;
+
     }
 
     public function update($id)
     {
+        // TODO: Implement update() method.
     }
 
     public function delete($id)
     {
+        // TODO: Implement delete() method.
     }
 
-    public function getdatastartenddate($option)
+    public function changestatuscourse(Request $request)
     {
+        // TODO: Implement changestatuscourse() method.
+        $response = new ResponseModel();
+        try {
+
+            $id = $request->input('course_id');
+            $current_status = $request->input('current_status');
+
+            $param = [
+                'course_id' => 'number',
+                'current_status' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+
+            $course = MdlCourse::findOrFail($id);
+
+            if (!$course) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_khoa_hoc');
+                return response()->json($response);
+            }
+
+            if ($current_status == 1) {
+                $current_status = 0;
+            } else {
+                $current_status = 1;
+            }
+
+            $course->update(array(
+                'visible' => $current_status,
+            ));
+
+            $response->status = true;
+            $response->message = __('phe_duyet_khoa_hoc');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
     }
 }

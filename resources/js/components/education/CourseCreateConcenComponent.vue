@@ -75,7 +75,7 @@
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-                        <input v-model="startdate" placeholder="mm/dd/YYYY" type="datetime-local"
+                        <input v-model="startdate" type="datetime-local"
                                id="inputText7"
                                class="form-control mb-4">
                         <label v-if="!startdate"
@@ -83,7 +83,7 @@
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}} *</label>
-                        <input v-model="enddate" placeholder="mm/dd/YYYY" type="datetime-local"
+                        <input v-model="enddate" type="datetime-local"
                                id="inputText8"
                                class="form-control mb-4">
                         <label v-if="!enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>

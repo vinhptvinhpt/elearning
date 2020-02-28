@@ -86,7 +86,7 @@
                                             <div class="col-md-4 col-sm-6 form-group">
                                                 <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}}
                                                     *</label>
-                                                <input v-model="startdate" placeholder="mm/dd/YYYY" type="date"
+                                                <input v-model="startdate" type="date"
                                                        id="inputText7"
                                                        class="form-control mb-4">
                                                 <label v-if="!startdate"
@@ -95,7 +95,7 @@
                                             <div class="col-md-4 col-sm-6 form-group">
                                                 <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
                                                     *</label>
-                                                <input v-model="enddate" placeholder="mm/dd/YYYY" type="date"
+                                                <input v-model="enddate" type="date"
                                                        id="inputText8"
                                                        class="form-control mb-4">
                                                 <label v-if="!enddate"
