@@ -267,16 +267,16 @@ class BussinessRepository implements IBussinessInterface
 
             //chart 3 data
             //hoc vien dang ki moi
-            $students = MdlUser::where('roles.id', '=', $role_id) //Role hoc vien
-                ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
+            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
                 ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
                 ->select(
-                    //                error strict mode laravel https://stackoverflow.com/a/44984930/3387087
-                    //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%m') mth"),
-                    //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%Y') yr"),
+                //                error strict mode laravel https://stackoverflow.com/a/44984930/3387087
+                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%m') mth"),
+                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%Y') yr"),
                     DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
                     DB::raw('count(*) as total')
                 )
@@ -347,8 +347,8 @@ class BussinessRepository implements IBussinessInterface
                 );
             }
 
-            $quit_students = MdlUser::where('roles.id', '=', $role_id) //Role hoc vien
-                ->where("quit_time", ">=", $start_time)
+            $quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+            ->where("quit_time", ">=", $start_time)
                 ->where("quit_time", "<=", $end_time)
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
@@ -661,353 +661,6 @@ class BussinessRepository implements IBussinessInterface
 
     // End BranchController
 
-    // CourseController
-    //api lấy danh sách khóa học
-    //ThoLD (21/08/2019)
-    public function apiGetListCourse(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $category_id = $request->input('category_id');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-        $status_course = $request->input('status_course');
-        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
-
-        $param = [
-            'keyword' => 'text',
-            'row' => 'number',
-            'category_id' => 'number',
-            'sample' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-        if ($checkRole === TRUE) {
-            $listCourses = DB::table('mdl_user_enrolments as mue')
-                ->where('mue.userid', '=', \Auth::user()->id)
-                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                ->select(
-                    'c.id',
-                    'c.fullname',
-                    'c.shortname',
-                    'c.startdate',
-                    'c.enddate',
-                    'c.visible',
-                    'mccc.gradepass as pass_score'
-                );
-        } else {
-            $listCourses = DB::table('mdl_course as c')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
-                ->select(
-                    'c.id',
-                    'c.fullname',
-                    'c.shortname',
-                    'c.startdate',
-                    'c.enddate',
-                    'c.visible',
-                    'mccc.gradepass as pass_score'
-                );
-        }
-
-
-        //là khóa học mẫu
-        if ($sample == 1) {
-            $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
-        } else {
-            $listCourses = $listCourses->where('c.category', '!=', 2);
-            $listCourses = $listCourses->where('c.category', '!=', 5);
-        }
-
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-
-        if ($keyword) {
-            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
-            // code xử lý remove ký tự đầu tiên của keyword đi
-            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
-                $total_len = strlen($keyword);
-                if ($total_len > 2) {
-                    $keyword = substr($keyword, 1, $total_len - 1);
-                }
-            }
-
-            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
-        }
-
-        if ($category_id) {
-            $listCourses = $listCourses->where('c.category', '=', $category_id);
-        }
-
-        if ($startdate) {
-            $cv_startDate = strtotime($startdate);
-            $listCourses = $listCourses->where('c.startdate', '>=', $cv_startDate);
-        }
-
-        if ($enddate) {
-            $cv_endDate = strtotime($enddate);
-            $listCourses = $listCourses->where('c.enddate', '<=', $cv_endDate);
-        }
-
-
-        if ($status_course) {
-            $unix_now = strtotime(Carbon::now());
-            if ($status_course == 1) { //các khóa sắp diễn ra
-                $listCourses = $listCourses->where('c.startdate', '>', $unix_now);
-            } else if ($status_course == 2) { //các khóa đang diễn ra
-                $listCourses = $listCourses->where('c.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
-            } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('c.enddate', '<', $unix_now);
-            }
-        }
-
-
-        $listCourses = $listCourses->orderBy('id', 'desc');
-
-        $listCourses = $listCourses->paginate($row);
-        $total = ceil($listCourses->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $listCourses->currentPage(),
-            ],
-            'data' => $listCourses,
-            'total_course' => $totalCourse
-        ];
-
-
-        return response()->json($response);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiCreateCourse(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            $avatar = $request->file('file');
-            $fullname = $request->input('fullname');
-            $shortname = $request->input('shortname');
-            $startdate = $request->input('startdate');
-            $enddate = $request->input('enddate');
-            $pass_score = $request->input('pass_score');
-            $description = $request->input('description');
-            $category_id = $request->input('category_id');
-            $sample = $request->input('sample');
-            $course_place = $request->input('course_place');
-            $allow_register = $request->input('allow_register');
-            $total_date_course = $request->input('total_date_course');
-            $is_end_quiz = $request->input('is_end_quiz');
-
-            $param = [
-                'fullname' => 'text',
-                'shortname' => 'code',
-                'description' => 'longtext',
-                'pass_score' => 'number',
-                'category_id' => 'number',
-                'sample' => 'number',
-                'course_place' => 'text',
-                'allow_register' => 'number',
-                'total_date_course' => 'number',
-                'is_end_quiz' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return response()->json($response);
-            }
-
-            //check course info exist
-            $courseInfo = MdlCourse::select('id')->where('shortname', $shortname)->first();
-
-            if ($courseInfo) {
-                $response->status = false;
-                $response->message = __('ma_khoa_hoc_da_ton_tai');
-                return response()->json($response);
-            }
-
-            //thực hiện insert dữ liệu
-            if ($avatar) {
-                $name_file = str_replace(' ', '', $shortname);
-                $name_file = str_replace('/', '', $name_file);
-                $name_file = str_replace('\\', '', $name_file);
-                $name_file = utf8convert($name_file);
-                $name = $name_file . '.' . $avatar->getClientOriginalExtension();
-
-                // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
-                Storage::putFileAs(
-                    'public/upload/course',
-                    $avatar,
-                    $name
-                );
-
-                $path_avatar = '/storage/upload/course/' . $name;
-            } else {
-                $path_avatar = '/storage/upload/course/default_course.jpg';
-            }
-
-            \DB::beginTransaction();
-            $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
-            $course->category = $category_id;
-            $course->shortname = $shortname;
-            $course->fullname = $fullname;
-            $course->summary = $description;
-            $course->course_avatar = $path_avatar;
-            if ($sample == 1) {
-                $course->startdate = strtotime(Carbon::now());
-                $course->enddate = strtotime(Carbon::now()->addYear(100)); // gia hạn thời gian cho khóa học mẫu là 100 năm
-                $course->visible = 1;  //luôn hiển thị khi là khóa học mẫu
-            } else {
-                $stdate = strtotime($startdate);
-                $eddate = strtotime($enddate);
-                if ($stdate > $eddate) {
-                    $response->status = false;
-                    $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
-                    return response()->json($response);
-                }
-
-                $course->course_place = $course_place;
-                $course->startdate = $stdate;
-                $course->enddate = $eddate;
-                $course->visible = 0;
-            }
-
-            if ($category_id == 3) {
-                $course->is_certificate = 1;
-                $course->is_end_quiz = $is_end_quiz;
-            }
-
-            $course->total_date_course = $total_date_course;
-
-            $course->allow_register = $allow_register;
-            $course->enablecompletion = 1;
-
-            $course->save();
-
-            //insert dữ liệu điểm qua môn
-            MdlCourseCompletionCriteria::create(array(
-                'course' => $course->id,
-                'criteriatype' => 6, //default là 6 trong trường hợp này
-                'gradepass' => $pass_score
-            ));
-
-            $context_cate = MdlContext::where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT)
-                ->where('instanceid', '=', $category_id)->first();
-
-            if ($context_cate) {
-                //insert dữ liệu vào bảng mdl_context
-                $mdl_context = MdlContext::firstOrCreate([
-                    'contextlevel' => \App\MdlUser::CONTEXT_COURSE,
-                    'instanceid' => $course->id,
-                    'depth' => 3,
-                    'locked' => 0
-                ]);
-
-                //cập nhật path
-                $mdl_context->path = '/1/' . $context_cate->id . '/' . $mdl_context->id;
-                $mdl_context->save();
-            }
-
-
-            if ($allow_register == 1) {
-                //insert dữ liệu vào bảng mdl_enrol, yêu cầu của VinhPT phục vụ mục đích đăng ký học của học viên bên LMS
-                //                $enrol = DB::table('mdl_enrol')
-                //                    ->where('courseid', '=', $course->id)
-                //                    ->where('enrol', '=', 'self')
-                //                    ->where('roleid', '=', 5)//quyền học viên
-                //                    ->first();
-
-                //                if ($enrol) {
-                //                    $enrol->status = 0;
-                //                    $enrol->save();
-                //                } else {
-                MdlEnrol::firstOrCreate(
-                    [
-                        'enrol' => 'self',
-                        'courseid' => $course->id,
-                        'roleid' => 5,
-                        'sortorder' => 2,
-                        'customint6' => 1
-                    ],
-                    [
-                        'expirythreshold' => 86400,
-                        'timecreated' => strtotime(Carbon::now()),
-                        'timemodified' => strtotime(Carbon::now())
-                    ]
-                );
-            }
-
-            //get info of role teacher
-            $role_teacher = MdlRole::where('shortname', 'teacher')->first();
-            //call function auto enrol to show list courses for teacher when teacher create a course
-            enrole_user_to_course(Auth::user()->id, $role_teacher->id, $course->id, $course->category);
-
-            //write data to table mdl_grade_categories -> muc dich phuc vu cham diem, Vinh PT yeu cau
-            $mdl_grade_cate = MdlGradeCategory::firstOrCreate([
-                'courseid' => $course->id,
-                'depth' => 1,
-                'aggregation' => 13,
-                'aggregateonlygraded' => 1,
-                'timecreated' => strtotime(Carbon::now()),
-                'timemodified' => strtotime(Carbon::now())
-            ]);
-
-            $mdl_grade_cate->path = '/' . $mdl_grade_cate->id . '/';
-            $mdl_grade_cate->save();
-
-            //write data to table mdl_grade_items
-            MdlGradeItem::firstOrCreate([
-                'courseid' => $course->id,
-                'itemname' => $course->fullname,
-                'itemtype' => 'course',
-                'iteminstance' => $mdl_grade_cate->id,
-                'gradepass' => $pass_score
-            ]);
-
-            //write log to mdl_logstore_standard_log
-            $app_name = Config::get('constants.domain.APP_NAME');
-
-            $key_app = encrypt_key($app_name);
-
-
-            $dataLog = array(
-                'app_key' => $key_app,
-                'courseid' => $course->id,
-                'action' => 'create',
-                'description' => json_encode($course),
-            );
-
-            $dataLog = createJWT($dataLog, 'data');
-
-            $data_write = array(
-                'data' => $dataLog,
-            );
-
-            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
-            //call api write log
-            callAPI('POST', $url, $data_write, false, '');
-
-            \DB::commit();
-
-            $response->otherData = $course->id;
-            $response->status = true;
-            $response->message = __('tao_moi_khoa_hoc_thanh_cong');
-        } catch (\Exception $e) {
-            \DB::rollBack();
-            $response->status = false;
-            $response->message = $e->getMessage();
-        }
-        return response()->json($response);
-    }
-
     //api lấy danh sách giáo viên
     //hiển hị dưới view create và edit course
     //ThoLD (21/08/2019)
@@ -1272,7 +925,7 @@ class BussinessRepository implements IBussinessInterface
                 DB::table('mdl_enrol')
                     ->where('courseid', '=', $course->id)
                     ->where('enrol', '=', 'self')
-                    ->where('roleid', '=', 5) //quyền học viên
+                    ->where('roleid', '=', 5)//quyền học viên
                     ->delete();
             }
 
@@ -1302,56 +955,6 @@ class BussinessRepository implements IBussinessInterface
 
             $response->status = true;
             $response->message = __('sua_khoa_hoc_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            $response->message = $e->getMessage();
-        }
-        return response()->json($response);
-    }
-
-    //api chuyển trạng thái khóa học
-    // mục đích cho việc phê duyệt khóa học
-    //ThoLD (22/08/2019)
-    public function apiChangeStatusCourse(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            $id = $request->input('course_id');
-            $current_status = $request->input('current_status');
-
-            $param = [
-                'course_id' => 'number',
-                'current_status' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return response()->json($response);
-            }
-
-
-            $course = MdlCourse::findOrFail($id);
-
-            if (!$course) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_khoa_hoc');
-                return response()->json($response);
-            }
-
-            if ($current_status == 1) {
-                $current_status = 0;
-            } else {
-                $current_status = 1;
-            }
-
-            $course->update(array(
-                'visible' => $current_status,
-            ));
-
-            $response->status = true;
-            $response->message = __('phe_duyet_khoa_hoc');
         } catch (\Exception $e) {
             $response->status = false;
             $response->message = $e->getMessage();
@@ -1615,7 +1218,7 @@ class BussinessRepository implements IBussinessInterface
                 ->where('enrol', '=', 'manual')
                 ->where('courseid', '=', $course->id)
                 ->where('enrol', '=', 'self')
-                ->where('roleid', '=', 5) //quyền học viên
+                ->where('roleid', '=', 5)//quyền học viên
                 ->first();
 
             if ($enrol) {
@@ -2355,7 +1958,7 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->where('c.id', '=', $course_id)
-            ->where('roles.id', 5) //hoc vien only
+            ->where('roles.id', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
@@ -2650,8 +2253,8 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             //var_dump($validates);
         } else {
-            $students = MdlUser::where('roles.id', '=', 5) //Role hoc vien
-                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            $students = MdlUser::where('roles.id', '=', 5)//Role hoc vien
+            ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('tms_device', 'mdl_user.id', '=', 'tms_device.user_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->select(
@@ -2751,11 +2354,11 @@ class BussinessRepository implements IBussinessInterface
                 return 'warning';
             \DB::beginTransaction();
             $permission = Permission::create([
-                'name'              => $name,
-                'url'               => $url,
-                'method'            => $method,
-                'description'       => $description,
-                'permission_slug'   => $slug,
+                'name' => $name,
+                'url' => $url,
+                'method' => $method,
+                'description' => $description,
+                'permission_slug' => $slug,
             ]);
 
             $info = 'Create permission: ' . '<br>';
@@ -2823,27 +2426,27 @@ class BussinessRepository implements IBussinessInterface
         $permission = Permission::select('id', 'name', 'url', 'method', 'description', 'permission_slug')
             ->findOrFail($permission_id);
         $data['permission'] = $permission;
-        $permission_slug   = permission_slug();
-        $permission_name   = permission_cat_name();
+        $permission_slug = permission_slug();
+        $permission_name = permission_cat_name();
         $items = [];
         $row = 0;
         foreach ($permission_slug as $key => $values) {
             $row++;
-            $items[$row]['id']       = '';
-            $items[$row]['space']    = '+)';
-            $items[$row]['name']     = $permission_name[$key];
+            $items[$row]['id'] = '';
+            $items[$row]['space'] = '+)';
+            $items[$row]['name'] = $permission_name[$key];
             $items[$row]['disabled'] = true;
             foreach ($values as $var_key => $value) {
                 $row++;
-                $items[$row]['id']       = '';
-                $items[$row]['space']    = '----';
-                $items[$row]['name']     = $permission_name[$var_key];
+                $items[$row]['id'] = '';
+                $items[$row]['space'] = '----';
+                $items[$row]['name'] = $permission_name[$var_key];
                 $items[$row]['disabled'] = true;
                 foreach ($value as $v_key => $val) {
                     $row++;
-                    $items[$row]['id']       = $v_key;
-                    $items[$row]['space']    = '--------';
-                    $items[$row]['name']     = $val;
+                    $items[$row]['id'] = $v_key;
+                    $items[$row]['space'] = '--------';
+                    $items[$row]['name'] = $val;
                     $items[$row]['disabled'] = false;
                 }
             }
@@ -2855,12 +2458,12 @@ class BussinessRepository implements IBussinessInterface
     public function apiPermissionUpdate(Request $request)
     {
         try {
-            $permission_id      = $request->input('permission_id');
-            $name               = $request->input('name');
+            $permission_id = $request->input('permission_id');
+            $name = $request->input('name');
             //            $description        = $request->input('description');
-            $url                = $request->input('url');
-            $method             = $request->input('method');
-            $permission_slug    = $request->input('permission_slug');
+            $url = $request->input('url');
+            $method = $request->input('method');
+            $permission_slug = $request->input('permission_slug');
             \DB::beginTransaction();
             $param = [
                 'permission_id' => 'number',
@@ -2888,11 +2491,11 @@ class BussinessRepository implements IBussinessInterface
             $info .= 'Permission url: ' . $permission->url . ' -> ' . $url . '<br>';
             $info .= 'Permission method: ' . $permission->method . ' -> ' . $method;
 
-            $permission->name               = $name;
-            $permission->description        = $name;
-            $permission->url                = $url;
-            $permission->method             = $method;
-            $permission->permission_slug    = $permission_slug;
+            $permission->name = $name;
+            $permission->description = $name;
+            $permission->url = $url;
+            $permission->method = $method;
+            $permission->permission_slug = $permission_slug;
             $permission->save();
 
             devcpt_log_system('role', '/permission/detail/' . $permission_id, 'update', $info);
@@ -2930,6 +2533,7 @@ class BussinessRepository implements IBussinessInterface
             return response()->json($citys);
         }
     }
+
     //Api lấy danh sách tỉnh thành theo chi nhánh
     public function apiGetCityByDepartmentReport(Request $request)
     {
@@ -3523,7 +3127,7 @@ class BussinessRepository implements IBussinessInterface
                 )->get()->toArray();
 
 
-            $region_data_agents =  $base_query_agents
+            $region_data_agents = $base_query_agents
                 ->where('tms_city.parent', 0)
                 //->whereIn('tms_city.district', $district_arr)
                 ->leftJoin('tms_department_citys', 'tms_city.id', '=', 'tms_department_citys.city_id')
@@ -4911,13 +4515,13 @@ class BussinessRepository implements IBussinessInterface
     // EducationController
     public function apiListUserTeacher(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $user_id  = $request->input('user');
+        $this->keyword = $request->input('keyword');
+        $user_id = $request->input('user');
         $row = $request->input('row');
 
         $param = [
-            'keyword'   => 'text',
-            'row'       => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -4959,17 +4563,18 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiListUserStudent(Request $request)
     {
-        $this->keyword      = $request->input('keyword');
-        $row                = $request->input('row');
-        $confirm            = $request->input('confirm');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $confirm = $request->input('confirm');
         $user_id = $request->input('user');
 
-        echo $user_id; die;
+        echo $user_id;
+        die;
 
         $param = [
-            'keyword'   => 'text',
-            'row'       => 'number',
-            'confirm'   => 'text',
+            'keyword' => 'text',
+            'row' => 'number',
+            'confirm' => 'text',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -5015,10 +4620,10 @@ class BussinessRepository implements IBussinessInterface
     public function apiListUserTeacherTrash(Request $request)
     {
         //$paged = $request->input('paged');
-        $role       = Role::select('id')->where('name', 'teacher')->first();
-        $userArray  = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
-        $keyword    = $request->input('keyword');
-        $row        = $request->input('row');
+        $role = Role::select('id')->where('name', 'teacher')->first();
+        $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
         $listUsers = TmsUserDetail::with('user')
             ->where('deleted', 1)
             ->whereIn('user_id', $userArray);
@@ -5040,11 +4645,11 @@ class BussinessRepository implements IBussinessInterface
     public function apiListUserStudentTrash(Request $request)
     {
         //$paged = $request->input('paged');
-        $role       = Role::select('id')->where('name', 'student')->first();
-        $userArray  = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
-        $keyword    = $request->input('keyword');
-        $row        = $request->input('row');
-        $listUsers  = TmsUserDetail::with('user')
+        $role = Role::select('id')->where('name', 'student')->first();
+        $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $listUsers = TmsUserDetail::with('user')
             ->where('deleted', 1)
             ->whereIn('user_id', $userArray);
         if ($keyword) {
@@ -5489,7 +5094,6 @@ class BussinessRepository implements IBussinessInterface
     }
 
 
-
     public function apiCreateQuestion(Request $request)
     {
         $response = new ResponseModel();
@@ -5617,8 +5221,6 @@ class BussinessRepository implements IBussinessInterface
         }
         return response()->json($response);
     }
-
-
 
 
     public function apiGetDetailQuestion($id)
@@ -5841,7 +5443,6 @@ class BussinessRepository implements IBussinessInterface
     #endregion
 
 
-
     //api lay thong tin survey va cau hoi trong survey
     //ThoLd (03/10/2019)
     public function apiPresentSurvey($id)
@@ -5936,7 +5537,6 @@ class BussinessRepository implements IBussinessInterface
         }
         return response()->json($response);
     }
-
 
 
     public function apiStatisticSurveyView(Request $request)
@@ -6480,12 +6080,12 @@ class BussinessRepository implements IBussinessInterface
             $response = TmsUserDetail::where('deleted', 0)->select('user_id as id', 'fullname as label')->limit(20)->get()->toArray();
         } elseif ($type == 'course-online') {
             $response = DB::table('mdl_course as c')
-            ->select(
-                'c.id',
-                'c.fullname as label'
-            )
-            ->where('c.category', '!=', 2)
-            ->where('c.category', '!=', 5)->limit(20)->get()->toArray();
+                ->select(
+                    'c.id',
+                    'c.fullname as label'
+                )
+                ->where('c.category', '!=', 2)
+                ->where('c.category', '!=', 5)->limit(20)->get()->toArray();
         }
         return response()->json($response);
     }
@@ -6998,7 +6598,6 @@ class BussinessRepository implements IBussinessInterface
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
-
 
 
     public function apiUpdateProfile(Request $request)
@@ -7564,7 +7163,7 @@ class BussinessRepository implements IBussinessInterface
                         else if (preg_match("/[a-z]/i", $user['dob'])) {
                             $newDate = 0;
                         } else if (is_numeric($user['dob'])) {
-                            $newDate = (int) $user['dob'];
+                            $newDate = (int)$user['dob'];
                         } //còn nếu type của cột dob là dạng date sẽ convert sang timestamp
                         else {
                             $newDate = Date::excelToTimestamp($user['dob']);
@@ -7901,7 +7500,7 @@ class BussinessRepository implements IBussinessInterface
                                 else if (preg_match("/[a-z]/i", $user['dob'])) {
                                     $newDate = 0;
                                 } else if (is_numeric($user['dob'])) {
-                                    $newDate = (int) $user['dob'];
+                                    $newDate = (int)$user['dob'];
                                 } //còn nếu type của cột dob là dạng date sẽ convert sang timestamp
                                 else {
                                     $newDate = Date::excelToTimestamp($user['dob']);
@@ -7922,7 +7521,7 @@ class BussinessRepository implements IBussinessInterface
                                 else if (preg_match("/[a-z]/i", $user['start_date'])) {
                                     $newDate_start = 0;
                                 } else if (is_numeric($user['start_date'])) {
-                                    $newDate_start = (int) $user['start_date'];
+                                    $newDate_start = (int)$user['start_date'];
                                 } //còn nếu type của cột dob là dạng date sẽ convert sang timestamp
                                 else {
                                     $newDate_start = Date::excelToTimestamp($user['start_date']);
@@ -8164,7 +7763,7 @@ class BussinessRepository implements IBussinessInterface
                                 else if (preg_match("/[a-z]/i", $user['dob'])) {
                                     $newDate = 0;
                                 } else if (is_numeric($user['dob'])) {
-                                    $newDate = (int) $user['dob'];
+                                    $newDate = (int)$user['dob'];
                                 } //còn nếu type của cột dob là dạng date sẽ convert sang timestamp
                                 else {
                                     $newDate = Date::excelToTimestamp($user['dob']);
@@ -8185,7 +7784,7 @@ class BussinessRepository implements IBussinessInterface
                                 else if (preg_match("/[a-z]/i", $user['start_date'])) {
                                     $newDate_start = 0;
                                 } else if (is_numeric($user['start_date'])) {
-                                    $newDate_start = (int) $user['start_date'];
+                                    $newDate_start = (int)$user['start_date'];
                                 } //còn nếu type của cột dob là dạng date sẽ convert sang timestamp
                                 else {
                                     $newDate_start = Date::excelToTimestamp($user['start_date']);
@@ -8359,7 +7958,8 @@ class BussinessRepository implements IBussinessInterface
         $timestamp,
         $start_date,
         $working_status
-    ) {
+    )
+    {
         $userOuput = [];
         $newUserId = 0;
         $userOuput['type'] = '';
@@ -8876,7 +8476,6 @@ class BussinessRepository implements IBussinessInterface
     /*$name = time() . '.' . $file->getClientOriginalExtension();
     $destinationPath = public_path('/upload/file_import/');
     $file->move($destinationPath, $name);*/
-
 
 
     public function apiListUserTrash(Request $request)
@@ -10438,9 +10037,9 @@ class BussinessRepository implements IBussinessInterface
     public function apiCityCreate(Request $request)
     {
         try {
-            $name       = $request->input('name');
-            $code       = $request->input('code');
-            $district   = $request->input('district');
+            $name = $request->input('name');
+            $code = $request->input('code');
+            $district = $request->input('district');
             $department = $request->input('department');
             //$user_id = $request->input('user_id');
             //$description = $request->input('description');
@@ -10477,7 +10076,7 @@ class BussinessRepository implements IBussinessInterface
 
             if ($tmsCity && $department != 0) {
                 TmsDepartmentCity::insert([
-                    'city_id'       => $tmsCity->id,
+                    'city_id' => $tmsCity->id,
                     'department_id' => $department
                 ]);
             }
@@ -10491,11 +10090,11 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiCityListData(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
-        $district       = $request->input('district');
-        $type           = $request->input('type');
-        $department       = $request->input('department');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $district = $request->input('district');
+        $type = $request->input('type');
+        $department = $request->input('department');
 
         $param = [
             'row' => 'number',
@@ -10563,7 +10162,7 @@ class BussinessRepository implements IBussinessInterface
             if (!is_numeric($city_id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
-            $city   = TmsCity::findOrFail($city_id);
+            $city = TmsCity::findOrFail($city_id);
             if ($city) {
                 /*$city->deleted = 1;*/
                 $city->delete();
@@ -10606,12 +10205,12 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiListAddBranch(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
 
         $param = [
-            'keyword'   => 'text',
-            'row'       => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -10644,8 +10243,8 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiAddBranchByCity(Request $request)
     {
-        $branch_add     = $request->input('branch_add');
-        $city_id        = $request->input('city_id');
+        $branch_add = $request->input('branch_add');
+        $city_id = $request->input('city_id');
 
         $param = [
             'city_id' => 'number',
@@ -10691,10 +10290,10 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $param = [
-                'name'          => 'text',
-                'code'          => 'code',
-                'district'      => 'text',
-                'department'    => 'number',
+                'name' => 'text',
+                'code' => 'code',
+                'district' => 'text',
+                'department' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -10702,35 +10301,35 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $check_name = TmsCity::where([
-                'name'      => $name,
-                'deleted'   => 0,
+                'name' => $name,
+                'deleted' => 0,
             ])->whereNotIn('id', [$city_id])->count();
             if ($check_name > 0)
                 return response()->json([
-                    'key'       => 'name',
-                    'message'   => __('ten_tinh_thanh_da_ton_tai')
+                    'key' => 'name',
+                    'message' => __('ten_tinh_thanh_da_ton_tai')
                 ]);
 
             //$type = $data['type'];
             $check = TmsCity::where([
-                'code'  => $code,
+                'code' => $code,
                 'deleted' => 0,
             ])->whereNotIn('id', [$city_id])->count();
             if ($check > 0)
                 return response()->json([
-                    'key'       => 'code',
-                    'message'   => __('ma_tinh_thanh_da_ton_tai')
+                    'key' => 'code',
+                    'message' => __('ma_tinh_thanh_da_ton_tai')
                 ]);
             $tmsCity = TmsCity::findOrFail($city_id);
-            $tmsCity->name      = $name;
-            $tmsCity->code      = $code;
-            $tmsCity->district  = $district;
+            $tmsCity->name = $name;
+            $tmsCity->code = $code;
+            $tmsCity->district = $district;
             $tmsCity->save();
 
             TmsDepartmentCity::where('city_id', $tmsCity->id)->delete();
             if ($tmsCity && $department != 0) {
                 TmsDepartmentCity::insert([
-                    'city_id'       => $tmsCity->id,
+                    'city_id' => $tmsCity->id,
                     'department_id' => $department
                 ]);
             }
@@ -10792,7 +10391,6 @@ class BussinessRepository implements IBussinessInterface
                 where tud.deleted = 0 and (tbsr.branch_id = tb.id or (tsru.sale_room_id = tb.id and tsru.type = "' . TmsSaleRoomUser::AGENTS . '"))) as user_count')
 
             )
-
             ->leftJoin('tms_city_branch as tcb', 'tcb.branch_id', '=', 'tb.id')
             ->leftJoin('tms_city as tc', 'tc.id', '=', 'tcb.city_id')
             ->leftJoin('tms_user_detail as tud', 'tud.user_id', '=', 'tb.user_id');
@@ -10951,7 +10549,7 @@ class BussinessRepository implements IBussinessInterface
             \DB::beginTransaction();
             if (!is_numeric($branch_id))
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-            $branch   = TmsBranch::find($branch_id);
+            $branch = TmsBranch::find($branch_id);
             if ($branch) {
                 //xoa han Vuong TM
                 //                $branch->deleted = 1;
@@ -11034,8 +10632,8 @@ class BussinessRepository implements IBussinessInterface
             if ($user_id && $user_id != 0 && $tmsBranch['user_id'] != $user_id) {
                 $role = Role::where('name', Role::MANAGE_AGENTS)->first();
                 ModelHasRole::where([
-                    'role_id'   => $role['id'],
-                    'model_id'  => $tmsBranch['user_id']
+                    'role_id' => $role['id'],
+                    'model_id' => $tmsBranch['user_id']
                 ])->delete();
                 add_role_for_user($user_id);
             }
@@ -11469,11 +11067,11 @@ class BussinessRepository implements IBussinessInterface
         $districtSearch = $request->input('districtSearch');
 
         $param = [
-            'name'          => 'text',
-            'row'           => 'number',
-            'branchSearch'  => 'text',
-            'citySearch'    => 'number',
-            'districtSearch'    => 'text',
+            'name' => 'text',
+            'row' => 'number',
+            'branchSearch' => 'text',
+            'citySearch' => 'number',
+            'districtSearch' => 'text',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -11619,7 +11217,7 @@ class BussinessRepository implements IBussinessInterface
     {
         try {
             if (!is_numeric($saleroom_id))
-                return response()->json(status_message('error',  __('loi_he_thong_thao_tac_that_bai')));
+                return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             \DB::beginTransaction();
             $saleRoom = TmsSaleRooms::find($saleroom_id);
             if ($saleRoom) { //xóa hoàn toàn điểm bán khỏi hệ thống, đã bàn thống nhất với VuongTM va UyDD, modifier: ThoLD
@@ -11665,11 +11263,11 @@ class BussinessRepository implements IBussinessInterface
     public function apiSaleRoomUpdate($saleroom_id, Request $request)
     {
         try {
-            $name       = $request->input('name');
-            $code       = $request->input('code');
-            $user_id    = $request->input('user_id');
-            $branch_id  = $request->input('branch_id');
-            $address    = $request->input('address');
+            $name = $request->input('name');
+            $code = $request->input('code');
+            $user_id = $request->input('user_id');
+            $branch_id = $request->input('branch_id');
+            $address = $request->input('address');
 
             if (!is_numeric($saleroom_id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
@@ -11712,8 +11310,8 @@ class BussinessRepository implements IBussinessInterface
             if ($user_id && $user_id != 0 && $saleRoom['user_id'] != $user_id && !has_user_market($user_id)) {
                 $role = Role::where('name', Role::MANAGE_POS)->first();
                 ModelHasRole::where([
-                    'role_id'   => $role['id'],
-                    'model_id'  => $saleRoom['user_id']
+                    'role_id' => $role['id'],
+                    'model_id' => $saleRoom['user_id']
                 ])->delete();
                 add_managepos_for_user($user_id);
             }
@@ -11793,11 +11391,11 @@ class BussinessRepository implements IBussinessInterface
     public function apiRemoveBranch(Request $request)
     {
         try {
-            $city_id    = $request->input('city_id');
-            $branch_id  = $request->input('branch_id');
+            $city_id = $request->input('city_id');
+            $branch_id = $request->input('branch_id');
 
             $param = [
-                'city_id'   => 'number',
+                'city_id' => 'number',
                 'branch_id' => 'number',
             ];
             $validator = validate_fails($request, $param);
@@ -11828,14 +11426,14 @@ class BussinessRepository implements IBussinessInterface
     //Api danh sách Điểm bán theo đại lý
     public function apiListSaleRoomByBranch(Request $request)
     {
-        $branch_id      = $request->input('id');
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $branch_id = $request->input('id');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
 
         $param = [
-            'id'        => 'number',
-            'keyword'   => 'text',
-            'row'       => 'number',
+            'id' => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -11879,12 +11477,12 @@ class BussinessRepository implements IBussinessInterface
     public function apiRemoveSaleRoom(Request $request)
     {
         try {
-            $sale_room_id   = $request->input('sale_room_id');
-            $branch_id      = $request->input('branch_id');
+            $sale_room_id = $request->input('sale_room_id');
+            $branch_id = $request->input('branch_id');
 
             $param = [
-                'sale_room_id'  => 'number',
-                'branch_id'     => 'number',
+                'sale_room_id' => 'number',
+                'branch_id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -11947,8 +11545,8 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiAddSaleRoomByBranch(Request $request)
     {
-        $sale_room_add  = $request->input('sale_room_add');
-        $branch_id      = $request->input('branch_id');
+        $sale_room_add = $request->input('sale_room_add');
+        $branch_id = $request->input('branch_id');
         try {
             if (!is_numeric($branch_id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
@@ -11987,9 +11585,9 @@ class BussinessRepository implements IBussinessInterface
         $working_status = $request->input('working_status');
 
         $param = [
-            'id'        => 'number',
-            'keyword'   => 'text',
-            'row'       => 'number',
+            'id' => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
             'working_status' => 'number'
         ];
         $validator = validate_fails($request, $param);
@@ -12084,12 +11682,12 @@ class BussinessRepository implements IBussinessInterface
     public function apiRemoveUser(Request $request)
     {
         try {
-            $sale_room_id   = $request->input('sale_room_id');
-            $user_id        = $request->input('user_id');
+            $sale_room_id = $request->input('sale_room_id');
+            $user_id = $request->input('user_id');
 
             $param = [
-                'sale_room_id'  => 'number',
-                'user_id'       => 'number',
+                'sale_room_id' => 'number',
+                'user_id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -12119,14 +11717,14 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiListAddUser(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
         $this->saleroom_id = $request->input('sale_room_id');
 
         $param = [
-            'keyword'       => 'text',
-            'row'           => 'number',
-            'sale_room_id'  => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
+            'sale_room_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -12203,8 +11801,8 @@ class BussinessRepository implements IBussinessInterface
     public function apiAddUserBySaleRoom(Request $request)
     {
         try {
-            $user_add       = $request->input('user_add');
-            $sale_room_id   = $request->input('sale_room_id');
+            $user_add = $request->input('user_add');
+            $sale_room_id = $request->input('sale_room_id');
 
             $param = [
                 'sale_room_id' => 'number',
@@ -12410,9 +12008,9 @@ class BussinessRepository implements IBussinessInterface
         $this->branch_id = $branch_id;
 
         $param = [
-            'id'        => 'number',
-            'keyword'   => 'text',
-            'row'       => 'number',
+            'id' => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -12469,10 +12067,10 @@ class BussinessRepository implements IBussinessInterface
     public function apiBranchRemoveUser(Request $request)
     {
         try {
-            $id        = $request->input('id');
+            $id = $request->input('id');
 
             $param = [
-                'id'  => 'number',
+                'id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -12509,14 +12107,14 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiListAddUserBranch(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
         $this->branch_id = $request->input('branch_id');
 
         $param = [
-            'keyword'       => 'text',
-            'row'           => 'number',
-            'branch_id'  => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
+            'branch_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -12600,8 +12198,8 @@ class BussinessRepository implements IBussinessInterface
     public function apiAddUserByBranch(Request $request)
     {
         try {
-            $user_add       = $request->input('user_add');
-            $this->branch_id      = $request->input('branch_id');
+            $user_add = $request->input('user_add');
+            $this->branch_id = $request->input('branch_id');
 
             $param = [
                 'branch_id' => 'number',
@@ -12706,12 +12304,12 @@ class BussinessRepository implements IBussinessInterface
     //IndexDepartmentComponent.vue
     public function apiDepartmentListAll(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
 
         $param = [
-            'row'       => 'number',
-            'keyword'       => 'text'
+            'row' => 'number',
+            'keyword' => 'text'
         ];
         $validator = validate_fails($request, $param);
 
@@ -12787,10 +12385,10 @@ class BussinessRepository implements IBussinessInterface
                     'message' => __('ma_chi_nhanh_da_ton_tai')
                 ]);
             $tmsDepartment = new TmsDepartments;
-            $tmsDepartment->name      = $name;
-            $tmsDepartment->code      = $code;
-            $tmsDepartment->manage    = $manage;
-            $tmsDepartment->des       = $des;
+            $tmsDepartment->name = $name;
+            $tmsDepartment->code = $code;
+            $tmsDepartment->manage = $manage;
+            $tmsDepartment->des = $des;
             $tmsDepartment->save();
 
             devcpt_log_system('organize', '/system/organize/departments/edit/' . $tmsDepartment->id, 'create', 'Thêm mới Chi nhánh: ' . $name);
@@ -12810,7 +12408,7 @@ class BussinessRepository implements IBussinessInterface
             if (!is_numeric($id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
-            $department   = TmsDepartments::findOrFail($id);
+            $department = TmsDepartments::findOrFail($id);
             if ($department) {
                 $department->delete();
 
@@ -12873,10 +12471,10 @@ class BussinessRepository implements IBussinessInterface
                     'message' => __('ma_chi_nhanh_da_ton_tai')
                 ]);
             $tmsDepartment = TmsDepartments::find($id);
-            $tmsDepartment->name      = $name;
-            $tmsDepartment->code      = $code;
-            $tmsDepartment->manage    = $manage;
-            $tmsDepartment->des       = $des;
+            $tmsDepartment->name = $name;
+            $tmsDepartment->code = $code;
+            $tmsDepartment->manage = $manage;
+            $tmsDepartment->des = $des;
             $tmsDepartment->save();
 
             devcpt_log_system('organize', '/system/organize/departments/edit/' . $tmsDepartment->id, 'update', 'Cập nhật Chi nhánh: ' . $name);
@@ -12890,14 +12488,14 @@ class BussinessRepository implements IBussinessInterface
     public function apiDepartmentCity(Request $request)
     {
         try {
-            $row        = $request->input('row');
-            $keyword    = $request->input('keyword');
-            $id         = $request->input('id');
+            $row = $request->input('row');
+            $keyword = $request->input('keyword');
+            $id = $request->input('id');
 
             $param = [
-                'row'       => 'number',
-                'keyword'   => 'code',
-                'id'        => 'number',
+                'row' => 'number',
+                'keyword' => 'code',
+                'id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -12945,13 +12543,13 @@ class BussinessRepository implements IBussinessInterface
     public function apiDepartmentListCityAdd(Request $request)
     {
         try {
-            $row        = $request->input('row');
-            $keyword    = $request->input('keyword');
+            $row = $request->input('row');
+            $keyword = $request->input('keyword');
 
             $param = [
-                'row'       => 'number',
-                'keyword'   => 'text',
-                'id'        => 'number',
+                'row' => 'number',
+                'keyword' => 'text',
+                'id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -13026,8 +12624,8 @@ class BussinessRepository implements IBussinessInterface
     public function apiDepartmentAddCity(Request $request)
     {
         try {
-            $id         = $request->input('id');
-            $city_add   = $request->input('city_add');
+            $id = $request->input('id');
+            $city_add = $request->input('city_add');
 
             $param = [
                 'id' => 'number',
@@ -13046,7 +12644,7 @@ class BussinessRepository implements IBussinessInterface
             $data = [];
             $data_item = [];
             foreach ($city_add as $city_id) {
-                $data_item['city_id']       = $city_id;
+                $data_item['city_id'] = $city_id;
                 $data_item['department_id'] = $id;
                 array_push($data, $data_item);
             }
@@ -13167,7 +12765,6 @@ class BussinessRepository implements IBussinessInterface
 
         return response()->json($response);
     }
-
 
 
     public function apiGetListTrainning(Request $request)
@@ -13463,7 +13060,7 @@ class BussinessRepository implements IBussinessInterface
                             ->where('enrol', '=', 'manual')
                             ->where('courseid', '=', $course->id)
                             ->where('enrol', '=', 'self')
-                            ->where('roleid', '=', 5) //quyền học viên
+                            ->where('roleid', '=', 5)//quyền học viên
                             ->first();
 
                         if ($enrol) {
