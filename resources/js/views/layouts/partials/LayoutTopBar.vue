@@ -4,8 +4,8 @@
                 class="fa fa-bars"
                 aria-hidden="true"></i></a>
         <a class="navbar-brand d-none d-sm-flex" href="javascript:void(0)" @click="gotoDashboard()">
-            <img id="vl_logo" class="brand-img d-inline-block" style="height: 30px;"
-                 src="/assets/dist/img/logo-light.png" alt="Vietlott"/>
+            <img id="vl_logo" class="brand-img d-inline-block" style="height: 34px;"
+                 src="/assets/dist/img/logo-black.png" alt="Easia"/>
         </a>
         <ul class="navbar-nav hk-navbar-content">
             <li class="nav-item dropdown dropdown-authentication">
@@ -51,7 +51,7 @@
                                     <div>
                                         <div class="notifications-text"><span
                                                 class="text-dark text-capitalize">{{ username }}</span><br>đã
-                                            thêm bạn vào khóa học <strong>BGT-ABC</strong></div>
+                                            thêm bạn vào khóa học <strong>ABC001</strong></div>
                                         <div class="notifications-time">12 phút</div>
                                     </div>
                                 </div>
@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text">Khóa học<span class="text-dark text-capitalize"> BGT01</span>
+                                        <div class="notifications-text">Khóa học<span class="text-dark text-capitalize"> ABC01</span>
                                             sẽ diễn ra vào <span
                                                     class="text-dark text-capitalize">Thứ 2, Ngày 19/08</span>
                                             lúc <span class="text-dark">10giờ : 30phút</span></div>
@@ -133,7 +133,7 @@
                                 <div class="media-body">
                                     <div>
                                         <div class="notifications-text">Bạn đã bỏ lỡ khóa học <span
-                                                class="text-dark text-capitalize">BGT02</span></div>
+                                                class="text-dark text-capitalize">ABC02</span></div>
                                         <div class="notifications-time">15d</div>
                                     </div>
                                 </div>

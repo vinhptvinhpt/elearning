@@ -383,6 +383,7 @@
                         this.userNeedEnrols = response.data.data.data;
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
+                        this.uncheckEnrolAll();
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -400,6 +401,7 @@
                         this.currentUserEnrols = response.data.data.data;
                         this.current_page = response.data.pagination.current_page;
                         this.totalPages_crr = response.data.pagination.total;
+                        this.uncheckRemoveEnrolAll();
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -449,14 +451,9 @@
                 this.allSelectedRemove = false;
             },
             enrolUserToCourse() {
+                let current_pos = this;
                 if (this.userEnrols.length === 0) {
-                    swal({
-                        title: 'Bạn chưa chọn học viên',
-                        type: "error",
-                        showCancelButton: false,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    });
+                    toastr['error'](current_pos.trans.get('keys.ban_chua_chon_nguoi_dung'), current_pos.trans.get('keys.loi'));
                     return;
                 }
                 axios.post('/api/course/enrol_user_to_course', {
@@ -466,93 +463,40 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    location.reload();
-                                }
-                            );
+                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          current_pos.getCurrentUserEnrol(current_pos.current_page);
+                          current_pos.getUserNeedEnrol(current_pos.current_page);
                         } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                          toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
-
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                      toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             removeEnrolUserToCourse() {
+                let current_pos = this;
                 if (this.userRemoveEnrol.length === 0) {
-                    swal({
-                        title: 'Bạn chưa chọn học viên',
-                        type: "error",
-                        showCancelButton: false,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    });
-                    return;
+                  toastr['error'](current_pos.trans.get('keys.ban_chua_chon_nguoi_dung'), current_pos.trans.get('keys.loi'));
+                  return;
                 }
                 axios.post('/api/course/remove_enrol_user_to_course', {
                     Users: this.userRemoveEnrol,
                     role_id: this.role_id,
                     course_id: this.course_id
                 })
-                    .then(response => {
-                        if (response.data.status) {
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    location.reload();
-                                }
-                            );
-                        } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
-                        }
-
-                    })
-                    .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
-                    });
+                .then(response => {
+                    if (response.data.status) {
+                      toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                      current_pos.getCurrentUserEnrol(current_pos.current_page);
+                      current_pos.getUserNeedEnrol(current_pos.current_page);
+                    } else {
+                      toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                    }
+                })
+                  .catch(error => {
+                  toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                });
             },
             goBack() {
                 if (this.come_from === 'online') {
@@ -563,6 +507,14 @@
             },
             setFileInput() {
               $('.dropify').dropify();
+            },
+            uncheckEnrolAll() {
+              this.allSelected = true;
+              this.selectAllEnrol();
+            },
+            uncheckRemoveEnrolAll() {
+              this.allSelectedRemove = true;
+              this.selectAllRemoveEnrol();
             }
         },
         mounted() {

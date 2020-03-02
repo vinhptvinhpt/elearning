@@ -63,7 +63,7 @@
                                       {{trans.get('keys.ho_ten')}}
                                     </th>
                                     <th class="text-center">
-                                      <input type="checkbox" v-model="allSelected" @click="selectAllEnrol()">
+                                      <input class="selection-all" type="checkbox" v-model="allSelected" @click="selectAllEnrol()">
                                     </th>
                                   </tr>
                                   </thead>
@@ -73,7 +73,7 @@
                                     <td>{{ user.username }}</td>
                                     <td class=" mobile_hide">{{ user.lastname }} {{ user.firstname }}</td>
                                     <td class="text-center">
-                                      <input type="checkbox" :value="user.id" v-model="userEnrols" @change="onCheckboxEnrol()"/>
+                                      <input class="selection-child" type="checkbox" :value="user.id" v-model="userEnrols" @change="onCheckboxEnrol()"/>
                                     </td>
                                   </tr>
                                   </tbody>
@@ -99,7 +99,6 @@
                                   <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-left"></i></span>
                                 </button>
                               </div>
-
                               <div class="col-lg-5">
                                 <h6 class="hk-sec-title">
                                   {{trans.get('keys.danh_sach_giao_vien_giang_day')}}</h6>
@@ -143,7 +142,7 @@
                                       {{trans.get('keys.ho_ten')}}
                                     </th>
                                     <th class="text-center">
-                                      <input type="checkbox" v-model="allSelectedRemove" @click="selectAllRemoveEnrol()">
+                                      <input class="selection-all" type="checkbox" v-model="allSelectedRemove" @click="selectAllRemoveEnrol()">
                                     </th>
                                   </tr>
                                   </thead>
@@ -153,7 +152,7 @@
                                     <td>{{ user.username }}</td>
                                     <td class=" mobile_hide">{{ user.lastname }} {{ user.firstname }}</td>
                                     <td class="text-center">
-                                      <input type="checkbox" :value="user.id" v-model="userRemoveEnrol" @change="onCheckboxRemoveEnrol()"/>
+                                      <input class="selection-child" type="checkbox" :value="user.id" v-model="userRemoveEnrol" @change="onCheckboxRemoveEnrol()"/>
                                     </td>
                                   </tr>
                                   </tbody>
@@ -166,7 +165,6 @@
                           </div>
                         </div>
                       </div>
-
                     </section>
                   </div>
                 </div>
@@ -218,6 +216,7 @@
                         this.userNeedEnrols = response.data.data.data;
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
+                        this.uncheckEnrolAll();
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -235,6 +234,7 @@
                         this.currentUserEnrols = response.data.data.data;
                         this.current_page = response.data.pagination.current_page;
                         this.totalPages_crr = response.data.pagination.total;
+                        this.uncheckRemoveEnrolAll();
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -286,13 +286,7 @@
             enrolUserToCourse() {
                 let current_pos = this;
                 if (this.userEnrols.length === 0) {
-                    swal({
-                        title: 'Bạn chưa chọn học viên',
-                        type: "error",
-                        showCancelButton: false,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    });
+                    toastr['error'](current_pos.trans.get('keys.ban_chua_chon_giao_vien'), current_pos.trans.get('keys.loi'));
                     return;
                 }
                 axios.post('/api/course/enrol_user_to_course', {
@@ -302,91 +296,48 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                            swal({
-                                title: response.data.message,
-                                type: "success",
-                                showCancelButton: false,
-                                closeOnConfirm: true,
-                                showLoaderOnConfirm: true
-                              }, function () {
-                                current_pos.getCurrentUserEnrol(current_pos.current_page);
-                                current_pos.getUserNeedEnrol(current_pos.current_page);
-                              }
-                            );
+                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          current_pos.getCurrentUserEnrol(current_pos.current_page);
+                          current_pos.getUserNeedEnrol(current_pos.current_page);
                         } else {
-                            swal({
-                                title: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                          toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
-
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                      toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             removeEnrolUserToCourse() {
                 let current_pos = this;
                 if (this.userRemoveEnrol.length === 0) {
-                    swal({
-                        title: 'Bạn chưa chọn học viên',
-                        type: "error",
-                        showCancelButton: false,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    });
-                    return;
+                  toastr['error'](current_pos.trans.get('keys.ban_chua_chon_giao_vien'), current_pos.trans.get('keys.loi'));
+                  return;
                 }
                 axios.post('/api/course/remove_enrol_user_to_course', {
                     Users: this.userRemoveEnrol,
                     role_id: this.role_id,
                     course_id: this.course_id
                 })
-                    .then(response => {
-                        if (response.data.status) {
-                            swal({
-                                title: response.data.message,
-                                type: "success",
-                                showCancelButton: false,
-                                closeOnConfirm: true,
-                                showLoaderOnConfirm: true
-                              }, function () {
-                                current_pos.getCurrentUserEnrol(current_pos.current_page);
-                                current_pos.getUserNeedEnrol(current_pos.current_page);
-                              }
-                            );
-                        } else {
-                            swal({
-                                title: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
-                        }
-
-                    })
-                    .catch(error => {
-                        console.log(error);
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
-                    });
+                .then(response => {
+                    if (response.data.status) {
+                      toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                      current_pos.getCurrentUserEnrol(current_pos.current_page);
+                      current_pos.getUserNeedEnrol(current_pos.current_page);
+                    } else {
+                      toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                    }
+                })
+                  .catch(error => {
+                  toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                });
+            },
+            uncheckEnrolAll() {
+              this.allSelected = true;
+              this.selectAllEnrol();
+            },
+            uncheckRemoveEnrolAll() {
+              this.allSelectedRemove = true;
+              this.selectAllRemoveEnrol();
             }
         },
         mounted() {
