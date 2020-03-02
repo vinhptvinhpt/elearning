@@ -2123,19 +2123,21 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
+            //Update performance 02/03/2020 by cuonghq
+            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id);
 
-            $count_user = count($lstUserIDs);
-            if ($count_user > 0) {
-                \DB::beginTransaction();
-                for ($i = 0; $i < $count_user; $i++) {
-
-                    enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id, $course->category);
-                    sleep(0.01);
-
-                    insert_single_notification(\App\TmsNotification::MAIL, $lstUserIDs[$i], \App\TmsNotification::ENROL, $course_id);
-                }
-                \DB::commit();
-            }
+//            $count_user = count($lstUserIDs);
+//            if ($count_user > 0) {
+//                \DB::beginTransaction();
+//                for ($i = 0; $i < $count_user; $i++) {
+//
+//                    enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id, $course->category);
+//                    sleep(0.01);
+//
+//                    insert_single_notification(\App\TmsNotification::MAIL, $lstUserIDs[$i], \App\TmsNotification::ENROL, $course_id);
+//                }
+//                \DB::commit();
+//            }
 
             $response->status = true;
             $response->message = __('ghi_danh_khoa_hoc_thanh_cong');

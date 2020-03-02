@@ -950,6 +950,145 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
     }
 }
 
+//enrol user to course improve
+//ghi danh học viên vào khóa học
+//cuonghq 02/03/2020
+function enrole_user_to_course_multiple($user_ids, $role_id, $course_id)
+{
+    $count_user = count($user_ids);
+    if ($count_user > 0) {
+
+        $context = DB::table('mdl_context')
+            ->where('instanceid', '=', $course_id)
+            ->where('contextlevel', '=', MdlUser::CONTEXT_COURSE)
+            ->first();
+        $context_id = $context ? $context->id : 0;
+
+
+        //Check enrol
+        $check_enrol = MdlEnrol::where([
+            'mdl_enrol.enrol' => 'manual',
+            'mdl_enrol.courseid' => $course_id,
+            'mdl_enrol.roleid' => $role_id
+        ])
+            ->leftJoin('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+            ->select('mdl_enrol.id', 'mdl_user_enrolments.userid')
+            ->get()
+            ->toArray();
+        //Insert missing
+
+
+        if(empty($check_enrol)) {
+            $new_enrol = MdlEnrol::create(
+                [
+                    'enrol' => 'manual',
+                    'courseid' => $course_id,
+                    'roleid' => $role_id,
+                    'sortorder' => 0,
+                    'status' => 0,
+                    'expirythreshold' => 86400,
+                    'timecreated' => strtotime(Carbon::now()),
+                    'timemodified' => strtotime(Carbon::now())
+                ]
+            );
+            $enrol_id =  $new_enrol->id;
+            $need_to_insert_users = $user_ids;
+        } else {
+            $existed_enrol = array();
+            $enrol_id = 0;
+            foreach ($check_enrol as $existed) {
+                $enrol_id = $existed['id'];
+                if (!empty($existed['userid'])) {
+                    $existed_enrol[] = $existed['userid'];
+                }
+            }
+            $need_to_insert_users = array_diff($user_ids, $existed_enrol);
+        }
+
+        $insert_enrolment_data = array();
+        foreach ($need_to_insert_users as $user_id) {
+            $insert_enrolment_data[] = [
+                'enrolid' => $enrol_id,
+                'userid' => $user_id,
+                'timestart' => strtotime(Carbon::now()),
+                'modifierid' => Auth::user()->id,
+                'timecreated' => strtotime(Carbon::now()),
+                'timemodified' => strtotime(Carbon::now())
+            ];
+        }
+        if (!empty($insert_enrolment_data)) {
+            MdlUserEnrolments::insert($insert_enrolment_data);
+        }
+
+        //Check role assignment
+        $check_assignment = MdlRoleAssignments::where([
+            'roleid' => $role_id,
+            'contextid' => $context_id
+        ])
+            ->whereIn('userid', $user_ids)
+            ->select('userid')
+            ->get()
+            ->toArray();
+
+        //Insert missing
+        if(empty($check_assignment)) {
+            $need_to_insert_assigment_users = $user_ids;
+        } else {
+            $existed_ass = array();
+            foreach ($check_assignment as $existed) {
+                $existed_ass[] = $existed['userid'];
+            }
+            $need_to_insert_assigment_users = array_diff($user_ids, $existed_ass);
+        }
+
+        $insert_assignment_data = array();
+        foreach ($need_to_insert_assigment_users as $user_id) {
+            $insert_assignment_data[] = [
+                'roleid' => $role_id,
+                'userid' => $user_id,
+                'contextid' => $context_id
+            ];
+        }
+        if (!empty($insert_assignment_data)) {
+            MdlRoleAssignments::insert($insert_assignment_data);
+        }
+
+        //lay gia trị trong bang mdl_grade_items
+        $mdl_grade_item = MdlGradeItem::where('courseid', $course_id)->first();
+
+        if ($mdl_grade_item) {
+            //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+            $check_grade = MdlGradeGrade::where('itemid', $mdl_grade_item->id)
+                ->whereIn('userid', $user_ids)
+                ->select('userid')
+                ->get()
+                ->toArray();
+
+            //Insert missing
+            if(empty($check_grade)) {
+                $need_to_insert_grade_users = $user_ids;
+            } else {
+                $existed_grd = array();
+                foreach ($check_grade as $existed) {
+                    $existed_grd[] = $existed['userid'];
+                }
+                $need_to_insert_grade_users = array_diff($user_ids, $existed_grd);
+            }
+
+            $insert_grd_data = array();
+            foreach ($need_to_insert_grade_users as $user_id) {
+                $insert_grd_data[] = [
+                    'userid' => $user_id,
+                    'itemid' => $mdl_grade_item->id
+                ];
+            }
+            if(!empty($insert_grd_data)) {
+                MdlGradeGrade::insert($insert_grd_data);
+            }
+        }
+    }
+}
+
 
 //remove enrol user to course
 // xóa ghi danh học viên vào khóa học khi đã có khóa học
