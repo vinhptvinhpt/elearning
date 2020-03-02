@@ -1726,19 +1726,21 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
+            //Update performance 02/03/2020 by cuonghq
+            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
 
-            $count_user = count($lstUserIDs);
-            if ($count_user > 0) {
-                \DB::beginTransaction();
-                for ($i = 0; $i < $count_user; $i++) {
-
-                    enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id, $course->category);
-                    sleep(0.01);
-
-                    insert_single_notification(\App\TmsNotification::MAIL, $lstUserIDs[$i], \App\TmsNotification::ENROL, $course_id);
-                }
-                \DB::commit();
-            }
+//            $count_user = count($lstUserIDs);
+//            if ($count_user > 0) {
+//                \DB::beginTransaction();
+//                for ($i = 0; $i < $count_user; $i++) {
+//
+//                    enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id, $course->category);
+//                    sleep(0.01);
+//
+//                    insert_single_notification(\App\TmsNotification::MAIL, $lstUserIDs[$i], \App\TmsNotification::ENROL, $course_id);
+//                }
+//                \DB::commit();
+//            }
 
             $response->status = true;
             $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
@@ -13389,14 +13391,17 @@ class BussinessRepository implements IBussinessInterface
                 ->where('r.id', '=', $role->id)
                 ->select('u.id')->groupBy('u.id')->pluck('u.id');
 
-            $count_dt = count($lstData);
+            //Update performance 02/03/2020 by cuonghq
+            enrole_user_to_course_multiple($lstData,  $role->id, $course_id);
 
-            if ($count_dt > 0) {
-                foreach ($lstData as $data) {
-                    enrole_user_to_course($data, $role->id, $course_id, 0);
-                    sleep(0.01);
-                }
-            }
+//            $count_dt = count($lstData);
+//            if ($count_dt > 0) {
+//                foreach ($lstData as $data) {
+//                    enrole_user_to_course($data, $role->id, $course_id, 0);
+//                    sleep(0.01);
+//                }
+//            }
+
             $response->status = true;
             $response->message = 'success';
         } catch (\Exception $e) {
