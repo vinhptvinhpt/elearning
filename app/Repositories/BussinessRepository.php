@@ -2124,7 +2124,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Update performance 02/03/2020 by cuonghq
-            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id);
+            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
 
 //            $count_user = count($lstUserIDs);
 //            if ($count_user > 0) {
@@ -13794,14 +13794,17 @@ class BussinessRepository implements IBussinessInterface
                 ->where('r.id', '=', $role->id)
                 ->select('u.id')->groupBy('u.id')->pluck('u.id');
 
-            $count_dt = count($lstData);
+            //Update performance 02/03/2020 by cuonghq
+            enrole_user_to_course_multiple($lstData,  $role->id, $course_id);
 
-            if ($count_dt > 0) {
-                foreach ($lstData as $data) {
-                    enrole_user_to_course($data, $role->id, $course_id, 0);
-                    sleep(0.01);
-                }
-            }
+//            $count_dt = count($lstData);
+//            if ($count_dt > 0) {
+//                foreach ($lstData as $data) {
+//                    enrole_user_to_course($data, $role->id, $course_id, 0);
+//                    sleep(0.01);
+//                }
+//            }
+
             $response->status = true;
             $response->message = 'success';
         } catch (\Exception $e) {

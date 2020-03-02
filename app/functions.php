@@ -953,7 +953,13 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
 //enrol user to course improve
 //ghi danh học viên vào khóa học
 //cuonghq 02/03/2020
-function enrole_user_to_course_multiple($user_ids, $role_id, $course_id)
+/**
+ * @param $user_ids
+ * @param $role_id
+ * @param $course_id
+ * @param bool $notify
+ */
+function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify = false)
 {
     $count_user = count($user_ids);
     if ($count_user > 0) {
@@ -1015,6 +1021,9 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id)
                 'timecreated' => strtotime(Carbon::now()),
                 'timemodified' => strtotime(Carbon::now())
             ];
+            if ($notify) {
+                insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+            }
         }
         if (!empty($insert_enrolment_data)) {
             MdlUserEnrolments::insert($insert_enrolment_data);
