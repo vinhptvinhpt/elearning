@@ -4,10 +4,10 @@
         <div class="row">
             <div class="col-md-4 login-sec" style="display: block;margin: 0 auto;">
                 <div class="logo_box">
-                    <img src="/assets/dist/img/logo-light.png" class="img-fluid" alt=""
+                    <img src="/assets/dist/img/logo-black.png" class="img-fluid" alt=""
                          style="margin-right: auto; margin-left: auto;">
                 </div>
-                <h3 class="login_title">Đào tạo trực tuyến <br>nhân viên bán hàng</h3>
+                <h3 class="login_title">Đào tạo trực tuyến </h3>
                 <div class="form_box">
 
                     <form method="POST" class="login-form" id="loginform">
@@ -375,22 +375,22 @@
                         localStorage.setItem('auth.user', JSON.stringify(userinfo));
                         localStorage.setItem('auth.lang', 'vi');
                         sslssso.login(data.jwt);
-                        // loginLMS(data, callback);
+                        loginLMS(data, callback);
                         // // [VinhPT]
                         // // Check if description is student => bgt.tinhvan.com/lms else => bgt.tinhvan.com
-                        if (data.redirect_type.includes("lms")) {
-                            if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
-                                window.location.href = '{{Config::get('constants.domain.LMS')}}';
-                            } else {
-                                window.location.href = callback;
-                            }
-                        } else {
-                            if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
-                                window.location.href = '/tms/dashboard';
-                            } else {
-                                window.location.href = callback;
-                            }
-                        }
+                        {{--if (data.redirect_type.includes("lms")) {--}}
+                        {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
+                        {{--        window.location.href = '{{Config::get('constants.domain.LMS')}}';--}}
+                        {{--    } else {--}}
+                        {{--        window.location.href = callback;--}}
+                        {{--    }--}}
+                        {{--} else {--}}
+                        {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
+                        {{--        window.location.href = '/tms/dashboard';--}}
+                        {{--    } else {--}}
+                        {{--        window.location.href = callback;--}}
+                        {{--    }--}}
+                        {{--}--}}
 
                     } else if (
                         data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" ||
