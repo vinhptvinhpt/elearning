@@ -78,11 +78,12 @@
                                                         </div>
                                                         <div class="col-12 form-group">
                                                             <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-<!--                                                            <textarea v-model="description" class="form-control"-->
-<!--                                                                      :config="editorConfig"-->
-<!--                                                                      rows="3" id="article_ckeditor"-->
-<!--                                                                      :placeholder="trans.get('keys.noi_dung')"></textarea>-->
-                                                            <ckeditor v-model="description" :config="editorConfig"></ckeditor>
+                                                            <!--                                                            <textarea v-model="description" class="form-control"-->
+                                                            <!--                                                                      :config="editorConfig"-->
+                                                            <!--                                                                      rows="3" id="article_ckeditor"-->
+                                                            <!--                                                                      :placeholder="trans.get('keys.noi_dung')"></textarea>-->
+                                                            <ckeditor v-model="description"
+                                                                      :config="editorConfig"></ckeditor>
                                                         </div>
                                                     </form>
                                                     <div class="button-list text-right">
@@ -313,7 +314,7 @@
                 this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
                 this.formData.append('category_id', 2); //gắn cứng giá trị quy định đây là id danh mục mãu
                 this.formData.append('sample', 1);// truyền giá trị để nhận biết đây là khóa học mẫu
-
+                let current_pos = this;
                 axios.post('/api/courses/create', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -328,7 +329,7 @@
                         }
                     })
                     .catch(error => {
-                        toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.thong_bao'));
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 
 
@@ -355,6 +356,7 @@
                 this.getCourses();
             },
             deletePost(id) {
+                let current_pos = this;
                 swal({
                     title: this.trans.get('keys.thong_bao'),
                     text: this.trans.get('keys.press_ok'),
@@ -366,16 +368,16 @@
                     axios.post('/api/courses/delete', {course_id: id})
                         .then(response => {
                             if (response.data.status) {
-                                console.log('123');
-                                toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
-                                this.getCourses(this.current);
+                                toastr['success'](response.data.message, current_pos.trans.get('keys.thong_bao'));
+                                current_pos.getCourses(this.current);
                             } else {
-                                toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.thong_bao'));
                             }
+                            swal.close();
                         })
                         .catch(error => {
                             swal.close();
-                            toastr['error']("Lỗi hệ thống", "Thông báo");
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
 
