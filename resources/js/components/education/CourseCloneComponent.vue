@@ -127,9 +127,10 @@
                       </div>
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-                        <textarea v-model="description" class="form-control" rows="3"
-                                  id="article_ckeditor"
-                                  :placeholder="trans.get('keys.noi_dung')"></textarea>
+                        <ckeditor v-model="description" :config="editorConfig"></ckeditor>
+                        <!--                        <textarea v-model="description" class="form-control" rows="3"-->
+<!--                                  id="article_ckeditor"-->
+<!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->
                       </div>
                     </form>
                     <div class="button-list text-right">
@@ -158,7 +159,12 @@
 </template>
 
 <script>
+    import CKEditor from 'ckeditor4-vue';
+
     export default {
+        components: {
+          CKEditor,
+        },
         props: ['course_id'],
         data() {
             return {
@@ -177,7 +183,16 @@
                 libraryid: 0,
                 sample: '', //khóa học mẫu được chọn
                 coursesamples: [], //danh sách khóa học mẫu,
-                language: this.trans.get('keys.language')
+                language: this.trans.get('keys.language'),
+                editorConfig: {
+                  filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+                  // The configuration of the editor.
+                  //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+                  filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                  filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                  filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                  filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+                }
             }
         },
         methods: {
@@ -204,7 +219,8 @@
                 this.avatar = this.sample.avatar;
                 this.allow_register = this.sample.allow_register;
                 this.total_date_course = this.sample.total_date_course;
-                CKEDITOR.instances.article_ckeditor.setData(this.description);
+                //CKEDITOR.instances.article_ckeditor.setData(this.description);
+                this.description = this.sample.description;
                 this.pass_score = Math.floor(this.sample.pass_score);
                 this.is_end_quiz = this.sample.is_end_quiz;
             },
@@ -250,7 +266,8 @@
                         this.allow_register = response.data.allow_register;
                         this.total_date_course = response.data.total_date_course;
                         this.is_end_quiz = response.data.is_end_quiz;
-                        CKEDITOR.instances.article_ckeditor.setData(this.description);
+                        //CKEDITOR.instances.article_ckeditor.setData(this.description);
+                        this.description = response.data.description;
                         this.avatar = response.data.avatar;
                     })
                     .catch(error => {
@@ -301,7 +318,8 @@
                     quiz_test = 1;
                 }
 
-                var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+                //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
@@ -310,7 +328,8 @@
                 this.formData.append('startdate', this.startdate);
                 this.formData.append('enddate', this.enddate);
                 this.formData.append('pass_score', this.pass_score);
-                this.formData.append('description', editor_data);
+                //this.formData.append('description', editor_data);
+                this.formData.append('description', this.description);
                 this.formData.append('category_id', this.category_id);
                 this.formData.append('is_end_quiz', quiz_test);
                 this.formData.append('total_date_course', this.total_date_course);
@@ -324,42 +343,15 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                            var language = this.language;
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    this.$router.push({ name: 'CourseIndex'});
-                                }
-                            );
+                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          this.$router.push({ name: 'CourseIndex'});
                         } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                          toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
-
-
             },
             goBack() {
                 // window.location.href = '/education/course/list';

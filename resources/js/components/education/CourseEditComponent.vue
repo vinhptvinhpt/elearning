@@ -75,6 +75,7 @@
                         <label v-if="!course.pass_score"
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
                         <input v-model="course.estimate_duration" id="estimate_duration"
