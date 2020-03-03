@@ -159,6 +159,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $allow_register = $request->input('allow_register');
         $total_date_course = $request->input('total_date_course');
         $is_end_quiz = $request->input('is_end_quiz');
+        $estimate_duration = $request->input('estimate_duration');
+        $course_budget = $request->input('course_budget');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -180,7 +182,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $path_avatar = '/storage/upload/course/default_course.jpg';
         }
 
-        \DB::beginTransaction();
         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
         $course->category = $category_id;
         $course->shortname = $shortname;
@@ -211,7 +212,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         $course->allow_register = $allow_register;
         $course->enablecompletion = 1;
-
+        $course->estimate_duration = $estimate_duration;
+        $course->course_budget = $course_budget;
         $course->save();
 
         //insert dữ liệu điểm qua môn

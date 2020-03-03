@@ -23,6 +23,7 @@ class MdlCourse extends Model
         'is_certificate',
         'total_date_course',
         'is_end_quiz',
-        'estimate_duration'
+        'estimate_duration',
+        'course_budget'
     ];
 }

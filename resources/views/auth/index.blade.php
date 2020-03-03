@@ -4,10 +4,10 @@
         <div class="row">
             <div class="col-md-4 login-sec" style="display: block;margin: 0 auto;">
                 <div class="logo_box">
-                    <img src="/assets/dist/img/logo-light.png" class="img-fluid" alt=""
+                    <img src="/assets/dist/img/logo-black.png" class="img-fluid" alt=""
                          style="margin-right: auto; margin-left: auto;">
                 </div>
-                <h3 class="login_title">Đào tạo trực tuyến <br>nhân viên bán hàng</h3>
+                <h3 class="login_title">Đào tạo trực tuyến</h3>
                 <div class="form_box">
 
                     <form method="POST" class="login-form" id="loginform">
