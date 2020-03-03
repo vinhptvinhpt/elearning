@@ -105,6 +105,7 @@ class CourseController extends Controller
     {
         $response = new ResponseModel();
         try {
+
             $param = [
                 'fullname' => 'text',
                 'shortname' => 'code',
@@ -115,7 +116,9 @@ class CourseController extends Controller
                 'course_place' => 'text',
                 'allow_register' => 'number',
                 'total_date_course' => 'number',
-                'is_end_quiz' => 'number'
+                'is_end_quiz' => 'number',
+                'estimate_duration' => 'number',
+                'course_budget' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -151,7 +154,6 @@ class CourseController extends Controller
 
             $key_app = encrypt_key($app_name);
 
-
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
@@ -169,13 +171,19 @@ class CourseController extends Controller
 
             //call api write log
             callAPI('POST', $url, $data_write, false, '');
+
             \DB::commit();
 
-        } catch (Exception $e) {
+            $response->otherData = $course->id;
+            $response->status = true;
+            $response->message = __('tao_moi_khoa_hoc_thanh_cong');
+        } catch (\Exception $e) {
+
             \DB::rollBack();
             $response->status = false;
             $response->message = $e->getMessage();
         }
+
         return response()->json($response);
 
     }

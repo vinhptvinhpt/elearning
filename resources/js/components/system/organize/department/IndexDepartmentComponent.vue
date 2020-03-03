@@ -50,7 +50,7 @@
                         <div class="input-group">
                           <div class="wrap_search_box">
                             <div class="btn_search_box" @click="listDataSearchBoxUser()">
-                              <span>{{trans.get('keys.giam_doc_chi_nhanh')}} *</span>
+                              <span class="selected_content">{{trans.get('keys.giam_doc_chi_nhanh')}} *</span>
                             </div>
                             <div class="content_search_box">
                               <input @input="listDataSearchBoxUser()" type="text" v-model="search_box_user" class="form-control search_box">
@@ -247,7 +247,7 @@
                     $('.code_required').show();
                     return;
                 }
-                if(this.department.manage == 0){
+                if(this.department.manage === 0){
                     $('.manage_required').show();
                     return;
                 }
@@ -264,9 +264,10 @@
                             $('#department_'+response.data.key).addClass('error');
                         }else{
                             roam_message(response.data.status,response.data.message);
-                            if(response.data.status == 'success'){
+                            if(response.data.status === 'success'){
                                 this.department.des = this.department.name = this.department.code = '';
                                 this.department.manage = 0;
+                                $(".selected_content").text(this.trans.get('keys.giam_doc_chi_nhanh') + '*');
                                 $('.form-control').removeClass('error');
                             }
                         }

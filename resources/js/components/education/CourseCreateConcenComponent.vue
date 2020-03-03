@@ -15,6 +15,7 @@
         </nav>
       </div>
     </div>
+
     <div class="row mb-4">
       <div class="col-sm">
         <div class="accordion" id="accordion_1">
@@ -73,6 +74,16 @@
                         <label v-if="!pass_score"
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
+                        <input v-model="estimate_duration" id="estimate_duration"
+                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
+                               class="form-control mb-4">
+                        <label v-if="!estimate_duration"
+                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      </div>
+
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
                         <input v-model="startdate" type="datetime-local"
@@ -108,6 +119,12 @@
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
+                        <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                        <input v-model="course_budget" id="course_budget" :placeholder="trans.get('keys.nhap_chi_phi')"
+                               class="form-control mb-4">
+                      </div>
+
+                      <div class="col-md-4 col-sm-6 form-group">
                         <div class="d-sm-block pt-40" style="display:none;"></div>
                         <input v-model="allow_register" type="checkbox"
                                style="width:20px; height:20px;"
@@ -115,11 +132,14 @@
                         <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                       </div>
 
+
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
-                        <textarea v-model="description" class="form-control" rows="10"
-                                  id="article_ckeditor"
-                                  :placeholder="trans.get('keys.noi_dung')"></textarea>
+                        <ckeditor v-model="description" :config="editorConfig"></ckeditor>
+
+<!--                        <textarea v-model="description" class="form-control" rows="10"-->
+<!--                                  id="article_ckeditor"-->
+<!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->
                       </div>
                     </form>
                     <div class="button-list text-right">
@@ -142,14 +162,22 @@
       </div>
     </div>
   </div>
+
+
 </template>
 
 <script>
+  import CKEditor from 'ckeditor4-vue';
+
     export default {
+        components: {
+          CKEditor
+        },
         data() {
             return {
                 fullname: '',
                 shortname: '',
+                estimate_duration: '',
                 startdate: '',
                 enddate: '',
                 pass_score: '',
@@ -160,7 +188,17 @@
                 categories: [],
                 allow_register: 1,
                 total_date_course: '',
-                language : this.trans.get('keys.language')
+                language: this.trans.get('keys.language'),
+                course_budget: 0,
+                editorConfig: {
+                  filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+                  // The configuration of the editor.
+                  //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+                  filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                  filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                  filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                  filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+                }
             }
         },
         methods: {
@@ -199,6 +237,10 @@
                     $('.fullname_required').show();
                     return;
                 }
+                if (!this.estimate_duration) {
+                  $('.estimate_duration_required').show();
+                  return;
+                }
                 if (!this.startdate) {
                     $('.startdate_required').show();
                     return;
@@ -227,7 +269,7 @@
                     allow_reg = 1;
                 }
 
-                var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+                //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
@@ -235,13 +277,16 @@
                 this.formData.append('startdate', this.startdate);
                 this.formData.append('enddate', this.enddate);
                 this.formData.append('pass_score', this.pass_score);
-                this.formData.append('description', editor_data);
+                //this.formData.append('description', editor_data);
+                this.formData.append('description', this.description);
                 this.formData.append('course_place', this.course_place);
                 this.formData.append('is_end_quiz', 0);
                 this.formData.append('category_id', 5);
                 this.formData.append('total_date_course', this.total_date_course);// truyền giá trị để nhận biết đây không phải khóa học tập trung
                 this.formData.append('allow_register', allow_reg);
                 this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
+                this.formData.append('estimate_duration', this.estimate_duration);
+                this.formData.append('course_budget', this.course_budget);
 
                 axios.post('/api/courses/create', this.formData, {
                     headers: {
@@ -251,38 +296,14 @@
                     .then(response => {
                         var language =  this.language;
                         if (response.data.status) {
-                            swal({
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }
-                                , function () {
-                                    this.$router.push({ name: 'CourseEnrol', params: {id: response.data.otherData, come_from: 'offline'} });
-                                }
-                            );
+                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          this.$router.push({ name: 'CourseEnrol', params: {id: response.data.otherData, come_from: 'offline'} });
                         } else {
-                            swal({
-                                title: response.data.message,
-                                // text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                          toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 
 
