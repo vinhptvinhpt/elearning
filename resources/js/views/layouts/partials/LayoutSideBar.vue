@@ -13,10 +13,10 @@
                     </li>
 
                     <li class="nav-item">
-                        <router-link to="/lms" class="nav-link">
+                        <a class="nav-link" :href="lms_url">
                             <i class="fa fa-graduation-cap" aria-hidden="true"></i>
                             <span class="nav-link-text">{{ trans.get('keys.elearning') }}</span>
-                        </router-link>
+                        </a>
                     </li>
 
                     <li class="nav-item" v-if="slug_can('tms-system-user-view') || slug_can('tms-system-organize-view')
@@ -470,7 +470,8 @@
                 has_master_agency: false,
                 has_role_agency: false,
                 has_role_pos: false,
-                root_user: false
+                root_user: false,
+                lms_url: '/lms'
             }
         },
 
