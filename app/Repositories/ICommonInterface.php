@@ -12,7 +12,9 @@ interface ICommonInterface
 
     public function store(Request $request);
 
-    public function update($id);
+    public function update(Request $request);
 
     public function delete($id);
+
+    public function detail($id);
 }
