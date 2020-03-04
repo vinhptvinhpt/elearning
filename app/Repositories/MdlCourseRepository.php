@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\Imports\UsersImport;
 use App\MdlContext;
 use App\MdlCourse;
 use App\MdlCourseCompletionCriteria;
@@ -11,6 +12,8 @@ use App\MdlEnrol;
 use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\MdlRole;
+use App\MdlUser;
+use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -294,6 +297,205 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         // TODO: Implement update() method.
     }
 
+    public function updateCourse($id, Request $request)
+    {
+        // TODO: Implement updateCourse() method.
+
+        $response = new ResponseModel();
+        try {
+
+            $avatar = $request->file('file');
+            $fullname = $request->input('fullname');
+            $shortname = $request->input('shortname');
+            $startdate = $request->input('startdate');
+            $enddate = $request->input('enddate');
+            $pass_score = $request->input('pass_score');
+            $description = $request->input('description');
+            $category_id = $request->input('category_id');
+            $course_place = $request->input('course_place');
+            $offline = $request->input('offline');
+            $allow_register = $request->input('allow_register');
+            $total_date_course = $request->input('total_date_course');
+            $is_end_quiz = $request->input('is_end_quiz');
+            $estimate_duration = $request->input('estimate_duration');
+            $course_budget = $request->input('course_budget');
+            //thực hiện insert dữ liệu
+            $param = [
+                'shortname' => 'code',
+                'description' => 'longtext',
+                'pass_score' => 'number',
+                'category_id' => 'number',
+                'offline' => 'number',
+                'course_place' => 'text',
+                'allow_register' => 'number',
+                'total_date_course' => 'number',
+                'is_end_quiz' => 'number',
+                'fullname' => 'text',
+                'estimate_duration' => 'number',
+                'course_budget' => 'decimal'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = 'Định dạng dữ liệu không hợp lệ';
+                $response->otherData = $validator;
+                $response->error = $description;
+                return response()->json($response);
+            }
+
+
+            $course = MdlCourse::findOrFail($id);
+
+            if (!$course) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+
+            //Check course code
+            $checkCourse = MdlCourse::select('id')->whereNotIn('id', [$course->id])->where('shortname', $shortname)->first();
+
+            if ($checkCourse) {
+                $response->status = false;
+                $response->message = __('ma_khoa_hoc_da_ton_tai');
+                return response()->json($response);
+            }
+
+
+            //            $path_avatar = '';
+            if ($avatar) {
+                $name_file = str_replace(' ', '', $shortname);
+                $name_file = str_replace('/', '', $name_file);
+                $name_file = str_replace('\\', '', $name_file);
+                $name_file = utf8convert($name_file);
+                $name = $name_file . '.' . $avatar->getClientOriginalExtension();
+
+                if (file_exists(storage_path('app/public/upload/course/' . $name))) {
+                    Storage::delete('app/public/upload/course/' . $name);
+                }
+
+                // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
+                Storage::putFileAs(
+                    'public/upload/course',
+                    $avatar,
+                    $name
+                );
+
+                $path_avatar = '/storage/upload/course/' . $name;
+
+                $course->course_avatar = $path_avatar;
+            }
+
+            if ($offline == 1) {
+                $startdate = new Carbon($startdate);
+                $startdate = $startdate->subHour(7);
+
+                $enddate = new Carbon($enddate);
+                $enddate = $enddate->subHour(7);
+            }
+
+            if ($category_id == 3) {
+                $course->is_certificate = 1;
+                $course->is_end_quiz = $is_end_quiz;
+            }
+
+
+            if ($category_id != 2) { //nếu là thư viện khóa học thì không check thời gian
+                $stdate = strtotime($startdate);
+                $eddate = strtotime($enddate);
+                if ($stdate > $eddate) {
+                    $response->status = false;
+                    $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
+                    return response()->json($response);
+                }
+
+                $course->startdate = $stdate;
+                $course->enddate = $eddate;
+            }
+
+
+            $course->total_date_course = $total_date_course;
+            $course->course_place = $course_place;
+            $course->category = $category_id;
+            $course->shortname = $shortname;
+            $course->fullname = $fullname;
+            $course->summary = $description;
+            $course->estimate_duration = $estimate_duration;
+            $course->course_budget = $course_budget;
+
+            $course->allow_register = $allow_register;
+
+            $course->save();
+
+
+            MdlCourseCompletionCriteria::where('course', '=', $id)->delete();
+
+            //insert dữ liệu điểm qua môn
+            MdlCourseCompletionCriteria::create(array(
+                'course' => $course->id,
+                'criteriatype' => 6, //default là 6 trong trường hợp này
+                'gradepass' => $pass_score
+            ));
+
+
+            if ($allow_register == 1) {
+                MdlEnrol::firstOrCreate(
+                    [
+                        'enrol' => 'self',
+                        'courseid' => $course->id,
+                        'roleid' => 5,
+                        'sortorder' => 2,
+                        'customint6' => 1
+                    ],
+                    [
+                        'expirythreshold' => 86400,
+                        'timecreated' => strtotime(Carbon::now()),
+                        'timemodified' => strtotime(Carbon::now())
+                    ]
+                );
+                //                }
+            } else {
+                //xóa dữ liệu enrol của course
+                DB::table('mdl_enrol')
+                    ->where('courseid', '=', $course->id)
+                    ->where('enrol', '=', 'self')
+                    ->where('roleid', '=', 5)//quyền học viên
+                    ->delete();
+            }
+
+            //write log to mdl_logstore_standard_log
+            $app_name = Config::get('constants.domain.APP_NAME');
+
+            $key_app = encrypt_key($app_name);
+
+            $dataLog = array(
+                'app_key' => $key_app,
+                'courseid' => $course->id,
+                'action' => 'create',
+                'description' => json_encode($course),
+            );
+
+            $dataLog = createJWT($dataLog, 'data');
+
+            $data_write = array(
+                'data' => $dataLog,
+            );
+
+            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+
+            //call api write log
+            callAPI('POST', $url, $data_write, false, '');
+
+            $response->status = true;
+            $response->message = __('sua_khoa_hoc_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+    }
+
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -346,4 +548,117 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
+
+    public $arrError = [];
+    //api import enrol học viên vào khóa học
+    //ThoLD 15/09/2019
+    public function importExcelEnrol(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $this->courseCurrent_id = $request->input('course_id');
+            $file_excel = $request->file('file');
+
+            $param = [
+                'course_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            if (!$file_excel) {
+                $response->status = false;
+                $response->message = __('vui_long_nhap_excel');
+                return json_encode($response);
+            }
+
+            $course = MdlCourse::findOrFail($this->courseCurrent_id);
+
+            if (empty($course)) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_khoa_hoc');
+                return json_encode($response);
+            }
+
+            $this->category_id = $course->category;
+
+            $path = $file_excel->getRealPath();
+            $extension = $file_excel->getClientOriginalExtension();
+            if ($extension != 'xls' && $extension != 'xlsx') {
+                $response->status = false;
+                $response->message = __('dinh_dang_file');
+                return json_encode($response);
+            }
+
+            \DB::beginTransaction();
+            $array = (new UsersImport)->toArray($request->file('file'), '', '');
+            foreach ($array as $key => $rows) {
+                if (!empty($rows) && count($rows) > 1) {
+                    //loại bỏ hàng đầu tiên
+                    $first_element = array_shift($rows);
+                    //                    unset($rows[count($rows)-1]);
+                    foreach ($rows as $user) {
+
+                        $row = array_combine($first_element, $user);
+                        //
+                        $importModel = new ImportModel();
+                        $username = $row['username'];
+
+                        $user = MdlUser::select('id')->where('username', $username)->first();
+
+                        if ($user) {
+                            $isStudent = $row['isstudent'];
+                            if ($isStudent == 1) {
+                                $role_id = 5; //user có quyền học sinh
+                            } else {
+                                $role_id = 4; //user có quyền giáo viên
+                            }
+
+                            $checkUserAndRole = DB::table('model_has_roles')
+                                ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
+                                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                                ->where('mdl_user.username', '=', $username)
+                                ->where('roles.id', '=', $role_id)
+                                ->select('mdl_user.id')
+                                ->first();
+
+
+                            if ($checkUserAndRole) {
+
+                                enrole_user_to_course($user['id'], $role_id, $this->courseCurrent_id, $this->category_id);
+
+                                $importModel->username = $username;
+                                $importModel->status = 'success';
+                                $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
+
+                                array_push($this->arrError, $importModel);
+                            } else {
+                                $importModel->username = $username;
+                                $importModel->status = 'error';
+                                $importModel->message = __('tai_khoan_khong_co_quyen');
+
+                                array_push($this->arrError, $importModel);
+                            }
+
+                            sleep(0.01);
+                        }
+                    }
+                }
+            }
+            \DB::commit();
+
+            $response->error = $this->arrError;
+            $response->status = true;
+            $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
+
 }

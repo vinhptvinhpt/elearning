@@ -911,20 +911,32 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
 //        );
 //    }
 
-    $checkEnrole = DB::table('mdl_user_enrolments')
-        ->where('enrolid', '=', $enrole->id)
-        ->where('userid', '=', $user_id)
-        ->first();
-    if (!$checkEnrole) {
-        DB::table('mdl_user_enrolments')->insert([
+    MdlUserEnrolments::firstOrCreate(
+        [
             'enrolid' => $enrole->id,
-            'userid' => $user_id,
+            'userid' => $user_id
+        ],
+        [
             'timestart' => strtotime(Carbon::now()),
             'modifierid' => Auth::user()->id,
             'timecreated' => strtotime(Carbon::now()),
             'timemodified' => strtotime(Carbon::now())
         ]);
-    }
+
+//    $checkEnrole = DB::table('mdl_user_enrolments')
+//        ->where('enrolid', '=', $enrole->id)
+//        ->where('userid', '=', $user_id)
+//        ->first();
+//    if (!$checkEnrole) {
+//        DB::table('mdl_user_enrolments')->insert([
+//            'enrolid' => $enrole->id,
+//            'userid' => $user_id,
+//            'timestart' => strtotime(Carbon::now()),
+//            'modifierid' => Auth::user()->id,
+//            'timecreated' => strtotime(Carbon::now()),
+//            'timemodified' => strtotime(Carbon::now())
+//        ]);
+//    }
 
     $context = DB::table('mdl_context')
         ->where('instanceid', '=', $course_id)
@@ -984,7 +996,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
         //Insert missing
 
 
-        if(empty($check_enrol)) {
+        if (empty($check_enrol)) {
             $new_enrol = MdlEnrol::create(
                 [
                     'enrol' => 'manual',
@@ -997,7 +1009,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                     'timemodified' => strtotime(Carbon::now())
                 ]
             );
-            $enrol_id =  $new_enrol->id;
+            $enrol_id = $new_enrol->id;
             $need_to_insert_users = $user_ids;
         } else {
             $existed_enrol = array();
@@ -1040,7 +1052,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
             ->toArray();
 
         //Insert missing
-        if(empty($check_assignment)) {
+        if (empty($check_assignment)) {
             $need_to_insert_assigment_users = $user_ids;
         } else {
             $existed_ass = array();
@@ -1074,7 +1086,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                 ->toArray();
 
             //Insert missing
-            if(empty($check_grade)) {
+            if (empty($check_grade)) {
                 $need_to_insert_grade_users = $user_ids;
             } else {
                 $existed_grd = array();
@@ -1091,7 +1103,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                     'itemid' => $mdl_grade_item->id
                 ];
             }
-            if(!empty($insert_grd_data)) {
+            if (!empty($insert_grd_data)) {
                 MdlGradeGrade::insert($insert_grd_data);
             }
         }
@@ -2532,6 +2544,21 @@ function validate_fails($request, $param)
                     $validator = Validator::make($request->all(), [
                         $key => [
                             "regex:/^[0-9]*$/i"
+                        ],
+                    ]);
+                    if ($validator->fails() && $request->input($key))
+                        return [
+                            'key' => $key,
+                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
+                            'message' => $message
+                        ];
+                    //array_push($check, $key);
+                    break;
+
+                case 'decimal':
+                    $validator = Validator::make($request->all(), [
+                        $key => [
+                            "regex:/^\d+(\.\d{1,2})?$/"
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key))
