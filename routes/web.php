@@ -669,6 +669,13 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/bridge/fetch', 'BridgeController@fetch');
     Route::post('/bridge/bonus', 'BridgeController@bonus');
 
+    //Organization new
+    Route::post('/organization/list', 'Backend\OrganizationController@apiListOrganization');
+    Route::post('/organization/create', 'Backend\OrganizationController@apiCreateOrganization');
+    Route::post('/organization/delete/{id}', 'Backend\OrganizationController@apiDeleteOrganization');
+    Route::post('/organization/paged-list', 'Backend\OrganizationController@apiPagedListOrganization');
+    Route::post('/organization/detail/{id}', 'Backend\OrganizationController@apiOrganizationDetail');
+    Route::post('/organization/update', 'Backend\OrganizationController@apiEditOrganization');
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 

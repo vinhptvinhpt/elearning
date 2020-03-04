@@ -873,6 +873,8 @@ class BussinessRepository implements IBussinessInterface
             $allow_register = $request->input('allow_register');
             $total_date_course = $request->input('total_date_course');
             $is_end_quiz = $request->input('is_end_quiz');
+            $estimate_duration = $request->input('estimate_duration');
+            $course_budget = $request->input('course_budget');
 
             $param = [
                 'course_avatar' => 'text',
@@ -884,7 +886,9 @@ class BussinessRepository implements IBussinessInterface
                 'course_place' => 'text',
                 'allow_register' => 'number',
                 'total_date_course' => 'number',
-                'is_end_quiz' => 'number'
+                'is_end_quiz' => 'number',
+                'estimate_duration' => 'number',
+                'course_budget' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -932,6 +936,8 @@ class BussinessRepository implements IBussinessInterface
             $course->fullname = $fullname;
             $course->summary = $description;
             $course->course_avatar = $path_avatar;
+            $course->estimate_duration = $estimate_duration;
+            $course->course_budget = $course_budget;
 
             if ($category_id == 3) {
                 $course->is_certificate = 1;
@@ -4035,7 +4041,7 @@ class BussinessRepository implements IBussinessInterface
                 \DB::commit();
 
                 $response->status = true;
-                $response->message = 'tao_mau_chung_chi_thanh_cong';
+                $response->message = __('tao_mau_chung_chi_thanh_cong');
             }
         } catch (\Exception $e) {
             \DB::rollBack();

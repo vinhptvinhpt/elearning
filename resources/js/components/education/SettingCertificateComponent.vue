@@ -143,34 +143,27 @@
                     });
             },
             deleteCertificate(url) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn xóa mục đã chọn",
                     text: "Chọn 'ok' để thực hiện thao tác.",
                     type: "error",
                     showCancelButton: true,
-                    closeOnConfirm: false,
+                    closeOnConfirm: true,
                     showLoaderOnConfirm: true
                 }, function () {
                     axios.post(url)
                         .then(response => {
                             console.log(response);
-                            if(response.data == 'exists'){
-                                swal("Thông báo!", "Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!", "error")
+                            if(response.data === 'exists'){
+                                toastr['error']("Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!", current_pos.trans.get('keys.that_bai'));
                             }else{
-                                swal({
-                                    title: "Thông báo!",
-                                    text: "Xóa thành công!",
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }, function () {
-                                    location.reload();
-                                });
+                                toastr['success'](this.trans.get('keys.xoa_thanh_cong'), this.trans.get('keys.thanh_cong'));
+                                this.getListImages();
                             }
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             console.log(error);
                         });
                 });

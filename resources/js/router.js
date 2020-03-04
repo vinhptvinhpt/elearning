@@ -37,9 +37,9 @@ import EditSaleRoomComponent from "./components/system/organize/EditSaleRoomComp
 import BranchSaleroomComponent from "./components/system/organize/BranchSaleroomComponent";
 import BranchListUserComponent from "./components/system/organize/BranchListUserComponent";
 import BranchAddUserComponent from "./components/system/organize/BranchAddUserComponent";
-import IndexDepartmentComponent from "./components/system/organize/department/IndexDepartmentComponent";
-import EditDepartmentComponent from "./components/system/organize/department/EditDepartmentComponent";
-import DepartmentCityComponent from "./components/system/organize/department/DepartmentCityComponent";
+import IndexDepartmentComponent from "./components/system/organize/IndexDepartmentComponent";
+import EditDepartmentComponent from "./components/system/organize/EditDepartmentComponent";
+import DepartmentCityComponent from "./components/system/organize/DepartmentCityComponent";
 import IndexCityComponent from "./components/system/organize/IndexCityComponent";
 import CityBranchComponent from "./components/system/organize/CityBranchComponent";
 import EditCityComponent from "./components/system/organize/EditCityComponent";
@@ -91,6 +91,8 @@ import EditCertificateComponent from "./components/education/EditCertificateComp
 import ListUserExam from "./components/education/ListUserExam";
 import ProfileComponent from "./components/system/user/ProfileComponent";
 import ProfileEditComponent from "./components/system/user/ProfileEditComponent";
+import IndexOrganizationComponent from "./components/system/organization/IndexOrganizationComponent";
+import EditOrganizationComponent from "./components/system/organization/EditOrganizationComponent";
 
 
 Vue.use(VueRouter);
@@ -619,6 +621,21 @@ const routes = [
         path: 'education/resetexam',
         component: ListUserExam,
         name: 'UserExam'
+      },
+      //Organization new
+      {
+        path: 'organization',
+        component: IndexOrganizationComponent,
+        name: 'IndexOrganization'
+      },
+      {
+        path: 'organization/edit/:id',
+        component: EditOrganizationComponent,
+        name: 'EditOrganization',
+        props: (route) => ({
+          id: route.params.id,
+          source_page: route.query.source_page ? route.query.source_page : 0
+        })
       },
     ]
   },

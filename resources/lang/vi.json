@@ -280,5 +280,8 @@
     "quan_tri_he_thong": "Quản trị hệ thống",
     "danh_sach_nguoi_dung_thi_lai": "Danh sách học viên thi lại lý thuyết",
     "ten_dang_nhap_da_ton_tai_va_dang_bi_khoa": "Tên đăng nhập đã tồn tại và đang bị khóa!",
-    "quan_ly_nhan_vien_ban_hang": "Quản lý nhân viên bán hàng"
+    "quan_ly_nhan_vien_ban_hang": "Quản lý nhân viên bán hàng",
+    "them_moi_to_chuc_thanh_cong": "Thêm mới tổ chức thành công",
+    "xoa_to_chuc_thanh_cong": "Xóa tổ chức thành công",
+    "cap_nhat_to_chuc_thanh_cong": "Cập nhật tổ chức thành công"
 }

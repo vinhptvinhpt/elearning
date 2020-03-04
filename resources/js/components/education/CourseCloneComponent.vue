@@ -85,6 +85,15 @@
                       </div>
 
                       <div class="col-sm-6 col-md-4 form-group">
+                        <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
+                        <input v-model="estimate_duration" id="estimate_duration"
+                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
+                               class="form-control mb-4">
+                        <label v-if="!estimate_duration"
+                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      </div>
+
+                      <div class="col-sm-6 col-md-4 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
                         <input v-model="startdate" type="date"
                                id="inputText7"
@@ -107,20 +116,28 @@
                         <label v-if="!pass_score"
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                        <input v-model="course_budget" id="course_budget" :placeholder="trans.get('keys.nhap_chi_phi')"
+                               class="form-control mb-4">
+                      </div>
+
+
                       <div class="col-sm-6 col-md-4 form-group">
                         <div class="pt-40 d-sm-block" style="display: none;">
-
                         </div>
                         <input v-model="allow_register" type="checkbox"
                                style="width:20px; height:20px;"
                                id="inputText9">
                         <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
-                      </div>
+                        </div>
 
                       <div class="col-sm-6 col-md-4 form-group" id="is_end_quiz" style="display:none;">
-                        <div class="pt-40 d-sm-block" style="display: none;">
 
+                        <div class="pt-40 d-sm-block" style="display: none;">
                         </div>
+
                         <input v-model="is_end_quiz" type="checkbox"
                                style="width:20px; height:20px;">
                         <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
@@ -170,6 +187,7 @@
             return {
                 fullname: '',
                 shortname: '',
+                estimate_duration: '',
                 startdate: '',
                 enddate: '',
                 pass_score: '',
@@ -184,6 +202,7 @@
                 sample: '', //khóa học mẫu được chọn
                 coursesamples: [], //danh sách khóa học mẫu,
                 language: this.trans.get('keys.language'),
+                course_budget: 0,
                 editorConfig: {
                   filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
                   // The configuration of the editor.
@@ -197,6 +216,7 @@
         },
         methods: {
             previewImage: function (event) {
+              console.log(event);
                 var input = event.target;
                 // Ensure that you have a file before attempting to read it
                 if (input.files && input.files[0]) {
@@ -295,6 +315,11 @@
                     return;
                 }
 
+                if (!this.estimate_duration) {
+                  $('.estimate_duration_required').show();
+                  return;
+                }
+
                 if (!this.startdate) {
                     $('.startdate_required').show();
                     return;
@@ -335,6 +360,8 @@
                 this.formData.append('total_date_course', this.total_date_course);
                 this.formData.append('allow_register', allow_reg);
                 this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
+                this.formData.append('estimate_duration', this.estimate_duration);
+                this.formData.append('course_budget', this.course_budget);
 
                 axios.post('/api/courses/clone', this.formData, {
                     headers: {

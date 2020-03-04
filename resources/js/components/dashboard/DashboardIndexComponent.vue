@@ -8,7 +8,19 @@
                             <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.theo_doi_so_nvbh_duoc_dao_tao_theo_thang')}}</span>
                             <div class="hk-row justify-content-center">
                                 <div class="form-inline">
-                                    <datepicker id="inputStart" clear-button="true" v-model="startdate" format="dd-MM-yyyy" input-class="form-control" @input="listData()"></datepicker>&nbsp;<datepicker id="inputEnd" clear-button="true" v-model="enddate" format="dd-MM-yyyy" input-class="form-control" @input="listData()"></datepicker>
+                                    <datepicker
+                                      id="inputStart"
+                                      :clear-button=true
+                                      v-model="startdate"
+                                      format="dd-MM-yyyy"
+                                      input-class="form-control"
+                                      @input="listData()"></datepicker>&nbsp;<datepicker
+                                  id="inputEnd"
+                                  :clear-button=true
+                                  v-model="enddate"
+                                  format="dd-MM-yyyy"
+                                  input-class="form-control"
+                                  @input="listData()"></datepicker>
 <!--                                    <input type="date" id="inputStart" v-model="startdate" class="form-control" @change="listData()">&nbsp;<input type="date" id="inputEnd" v-model="enddate" class="form-control" @change="listData()">-->
                                 </div>
                             </div>
@@ -371,7 +383,13 @@
                 return year + '-' + month + '-' + ('0' + date).slice(-2);
             },
             listData() {
-                if (this.startdate.length === 0 || this.enddate.length === 0) {
+                if (this.startdate === null || this.startdate === 'undefined') {
+                  $('#startdate-warning').show();
+                  return;
+                } else if (this.enddate === null || this.enddate === 'undefined') {
+                  $('#enddate-warning').show();
+                }
+                else if (this.startdate.length === 0 || this.enddate.length === 0) {
                     $('#logic-warning').hide();
                     if (this.startdate.length === 0) {
                         $('#startdate-warning').show();
