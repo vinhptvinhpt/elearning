@@ -324,6 +324,11 @@
                         if (response.data.status) {
                             toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
                             this.getCourses(this.current);
+                            this.fullname = '';
+                            this.shortname = '';
+                            this.pass_score = '';
+                            this.description = '';
+                            this.avatar = '';
                         } else {
                             toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
                         }

@@ -118,7 +118,7 @@ class CourseController extends Controller
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'estimate_duration' => 'number',
-                'course_budget' => 'number'
+                'course_budget' => 'decimal'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -188,6 +188,13 @@ class CourseController extends Controller
 
     }
 
+    //api update khóa học
+    //ThoLD (22/08/2019)
+    public function apiEditCourse($id, Request $request)
+    {
+        return $this->mdlCourseRepository->updateCourse($id, $request);
+    }
+
     //api chuyển trạng thái khóa học
     // mục đích cho việc phê duyệt khóa học
     //ThoLD (22/08/2019)
@@ -248,7 +255,7 @@ class CourseController extends Controller
 
     public function apiImportExcelEnrol(Request $request)
     {
-        return $this->bussinessRepository->apiRemoveEnrolUser($request);
+        return $this->mdlCourseRepository->importExcelEnrol($request);
     }
 
     public function apiGetTotalActivityCourse(Request $request)
@@ -318,13 +325,5 @@ class CourseController extends Controller
     {
         return $this->bussinessRepository->apiGetListCategoryRestore();
     }
-
-    //api update khóa học
-    //ThoLD (22/08/2019)
-    public function apiEditCourse($id, Request $request)
-    {
-        return $this->bussinessRepository->apiEditCourse($id, $request);
-    }
-
 
 }
