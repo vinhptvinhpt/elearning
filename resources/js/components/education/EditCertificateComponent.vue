@@ -101,29 +101,22 @@
                 $('#'+element).removeClass('notValidate');
             },
             deleteCertificate(url) {
+                let current_pos = this;
                 swal({
                     title: "Bạn muốn xóa mục đã chọn",
                     text: "Chọn 'ok' để thực hiện thao tác.",
                     type: "error",
                     showCancelButton: true,
-                    closeOnConfirm: false,
+                    closeOnConfirm: true,
                     showLoaderOnConfirm: true
                 }, function () {
                     axios.post(url)
                         .then(response => {
-                            swal({
-                                title: "Thông báo!",
-                                text: "Xóa thành công!",
-                                type: "success",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            }, function () {
-                                location.reload();
-                            });
+                            toastr['success'](this.trans.get('keys.xoa_thanh_cong'), this.trans.get('keys.thanh_cong'));
+                            current_pos.$router.push({name: 'SettingCertificate'});
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             console.log(error);
                         });
                 });
@@ -143,8 +136,7 @@
                     })
             },
             updateCertificate(){
-                console.log("vào r");
-
+                //console.log("vào r");
                 if(!this.certificate.name){
                     $('.name_required').show();
                     return;
@@ -162,7 +154,7 @@
                 this.formData.append('description', this.certificate.description);
                 this.formData.append('id', this.id);
 
-                console.log(this.certificate.is_active);
+                //console.log(this.certificate.is_active);
 
                 axios.post('/certificate/update', this.formData, {
                     headers: {
@@ -172,41 +164,16 @@
                     .then(response => {
                         var language =  this.language;
                         if (response.data.status) {
-                            swal(
-                                {
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                },
-                                function() {
-                                    this.$router.push({ name: 'SettingCertificate' });
-                                }
-                            );
+                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          this.$router.push({ name: 'SettingCertificate' });
                         }else{
                             $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');
-                            swal({
-                                title: "Thông báo",
-                                text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             setFileInput() {

@@ -49,8 +49,6 @@ interface IBussinessInterface
 
     public function apiRemoveEnrolUser(Request $request);
 
-    public function apiImportExcelEnrol(Request $request);
-
     public function apiGetTotalActivityCourse(Request $request);
 
     public function apiStatisticUserInCourse(Request $request);

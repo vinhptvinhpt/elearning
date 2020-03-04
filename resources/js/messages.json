@@ -724,7 +724,23 @@
         "danh_sach_giao_vien_kha_dung": "Available teacher list",
         "danh_sach_giao_vien_giang_day": "Enrolled teacher list",
         "ban_chua_chon_nguoi_dung": "You did not select user",
-        "ban_chua_chon_giao_vien": "You did not select teacher"
+        "ban_chua_chon_giao_vien": "You did not select teacher",
+        "to_chuc": "Organization",
+        "ten_to_chuc": "Organization name",
+        "ma_to_chuc": "Organization code",
+        "truc_thuoc": "Inherit from",
+        "ma_to_chuc_da_ton_tai": "Organization code existed",
+        "them_moi_to_chuc_thanh_cong": "Add organization successfully",
+        "nhap_ten_to_chuc": "Input organization name",
+        "xoa_to_chuc": "Delete organization",
+        "vui_long_nhap_ngay_ket_thuc": "Please input end date",
+        "sua_to_chuc": "Edit organization",
+        "danh_sach_to_chuc": "Organization list",
+        "chon_to_chuc": "Select organization",
+        "kich_hoat": "Activate",
+        "ban_co_muon_xoa_to_chuc_nay": "Do you want to delete this organization?",
+        "cap_to_chuc": "Organization level",
+        "chon_cap": "Select level"
     },
     "vi.keys": {
         "language": "",
@@ -1451,6 +1467,22 @@
         "danh_sach_giao_vien_kha_dung": "Danh sách giáo viên khả dụng",
         "danh_sach_giao_vien_giang_day": "Danh sách giáo viên giảng dạy",
         "ban_chua_chon_ngươi_dung": "Bạn chưa chọn người dùng",
-        "ban_chua_chon_giao_vien": "Bạn chưa chọn giáo viên"
+        "ban_chua_chon_giao_vien": "Bạn chưa chọn giáo viên",
+        "to_chuc": "Tổ chức",
+        "ten_to_chuc": "Tên tổ chức",
+        "ma_to_chuc": "Mã tổ chức",
+        "truc_thuoc": "Trực thuộc",
+        "ma_to_chuc_da_ton_tai": "Mã tổ chức đã tồn tại",
+        "them_moi_to_chuc_thanh_cong": "Thêm mới tổ chức thành công",
+        "nhap_ten_to_chuc": "Nhập tên tổ chức",
+        "xoa_to_chuc": "Xóa tổ chức",
+        "vui_long_nhap_ngay_ket_thuc": "Vui lòng nhập ngày kết thúc",
+        "sua_to_chuc": "Sửa tổ chức",
+        "danh_sach_to_chuc": "Danh sách tổ chức",
+        "chon_to_chuc": "Chọn tổ chức",
+        "kich_hoat": "Kích hoạt",
+        "ban_co_muon_xoa_to_chuc_nay": "Bạn có muốn xóa tổ chức này?",
+        "cap_to_chuc": "Cấp tổ chức",
+        "chon_cap": "Chọn cấp"
     }
 }
