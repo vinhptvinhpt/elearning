@@ -33,7 +33,8 @@
 
                         <ul id="auth_drp"
                             class="nav flex-column collapse collapse-level-1">
-                            <li class="nav-item" v-if="has_user_market && slug_can('tms-access-market-view')">
+
+                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
                                 <router-link
                                         :to="{ path: '/tms/system/organize/branchsystem/organize/branch', name: 'BranchIndex', query: { city: '0' } }"
                                         class="nav-link">
@@ -41,45 +42,43 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/view_user_market" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item"
-                                v-if="has_master_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="has_master_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.dai_ly_cua_toi') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item"
-                                v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/saleroom/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/sale_room_user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
@@ -125,8 +124,7 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-item"
-                                v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
+                            <li class="nav-item" v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
                                 <a class="nav-link  has-submenu collapse-level-2" id="quan_tri_nguoi_dung"
                                    @click="toggleMenu('quan_tri_nguoi_dung','signup_organize')"
                                    href="javascript:void(0);" data-level="collapse-level-2">

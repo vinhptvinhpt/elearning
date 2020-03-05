@@ -93,6 +93,7 @@ import ProfileComponent from "./components/system/user/ProfileComponent";
 import ProfileEditComponent from "./components/system/user/ProfileEditComponent";
 import IndexOrganizationComponent from "./components/system/organization/IndexOrganizationComponent";
 import EditOrganizationComponent from "./components/system/organization/EditOrganizationComponent";
+import IndexEmployeeComponent from "./components/system/organization/IndexEmployeeComponent";
 
 
 Vue.use(VueRouter);
@@ -635,6 +636,14 @@ const routes = [
         props: (route) => ({
           id: route.params.id,
           source_page: route.query.source_page ? route.query.source_page : 0
+        })
+      },
+      {
+        path: 'organization-employee',
+        component: IndexEmployeeComponent,
+        name: 'IndexEmployee',
+        props: (route) => ({
+          organization_id: route.query.organization_id,
         })
       },
     ]

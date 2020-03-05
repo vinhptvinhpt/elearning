@@ -3,27 +3,28 @@
 namespace App\Repositories;
 
 use App\TmsOrganization;
+use App\TmsOrganizationEmployee;
+use App\TmsUserDetail;
 use Exception;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class TmsOrganizationRepository implements ICommonInterface
+class TmsOrganizationEmployeeRepository implements ICommonInterface
 {
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
         $keyword = $request->input('keyword');
-        $paginated = $request->input('paginated');
         $row = $request->input('row');
-        $parent_id = $request->input('parent_id');
-        $exclude = $request->input('exclude');
-        $level = $request->input('level');
+        $organization_id = $request->input('organization_id');
+        $position = $request->input('position');
 
         $param = [
             'keyword' => 'text',
             'row' => 'number',
-            'parent_id' => 'number',
-            'level' => 'number'
+            'organization_id' => 'number'
         ];
 
         $validator = validate_fails($request, $param);
@@ -31,11 +32,7 @@ class TmsOrganizationRepository implements ICommonInterface
             return response()->json([]);
         }
 
-        $list = TmsOrganization::with('employees')->with('parent')
-        ->select(
-            "*",
-            DB::raw(' (select MAX(level) from tms_organization) as max_level')
-        );
+        $list = TmsOrganizationEmployee::with('organization')->with('user');
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -46,33 +43,24 @@ class TmsOrganizationRepository implements ICommonInterface
                     $keyword = substr($keyword, 1, $total_len - 1);
                 }
             }
-
-            $list = $list->whereRaw('( name like "%' . $keyword . '%" )');
+            $list = $list->whereHas('user', function($q) use($keyword) {
+                // Query the name field in status table
+                $q->where('fullname', 'like', '%' . $keyword . '%');
+            });
         }
 
-        if (strlen($parent_id) != 0) {
-            $list = $list->where('parent_id', $parent_id);
+        if (is_numeric($organization_id) && $organization_id != 0) {
+            $list = $list->where('organization_id', $organization_id);
         }
 
-        if (is_numeric($exclude) && $exclude != 0) {
-            $list = $list->where('id', '<>', $exclude);
+        if (strlen($position) != 0) {
+            $list = $list->where('position', $position);
         }
 
-        if (is_numeric($level) && $level != 0) {
-            $list = $list->where('level', $level);
-        }
-
-        $list = $list->orderBy('level', 'asc');
-
-        //Filter or not paginated
-
-        if (isset($paginated) && $paginated == 0) {
-            return $list->get();
-        }
+        $list = $list->orderBy('created_at', 'asc');
 
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
         $list = $list->paginate($row);
-        $arrayList =  $list->toArray();
         $total = ceil($list->total() / $row);
 
         $response = [
@@ -82,7 +70,6 @@ class TmsOrganizationRepository implements ICommonInterface
             ],
             'data' => $list,
             'total' => $total_all,
-            'max_level' => $arrayList['data'] &&  !empty($arrayList['data']) ? $arrayList['data'][0]['max_level'] : 0
         ];
 
         return response()->json($response);
@@ -91,44 +78,39 @@ class TmsOrganizationRepository implements ICommonInterface
     public function store(Request $request)
     {
         try {
-            $name = $request->input('name');
-            $description = $request->input('description');
-            $parent_id = $request->input('parent_id');
-            $code = $request->input('code');
+            $user_id = $request->input('user_id');
+            $organization_id = $request->input('organization_id');
+            $position = $request->input('position');
 
             $param = [
-                'name' => 'text',
-                'code' => 'code',
-                'description' => 'text',
+                'user_id' => 'number',
+                'organization_id' => 'number',
             ];
+
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 return response()->json($validator);
             }
 
             //Check exist
-            $check = TmsOrganization::where('code', $code)->count();
+            $check = TmsOrganizationEmployee::where('organization_id', $organization_id)->where('user_id', $user_id)->count();
             if ($check > 0)
+            {
                 return response()->json([
-                    'key' => 'code',
-                    'message' => __('ma_to_chuc_da_ton_tai')
+                    'key' => 'user_id',
+                    'message' => __('nhan_vien_da_ton_tai_trong_to_chuc')
                 ]);
-
-
-            $course = new TmsOrganization();
-            if (strlen($parent_id) != 0 && $parent_id != 0) {
-                $course->parent_id = $parent_id;
-                $parent = TmsOrganization::where('id', $parent_id)->first();
-                $parent_level = $parent->level;
-                $course->level = $parent_level + 1;
             }
-            $course->name = $name;
-            $course->code = $code;
-            $course->description = $description;
+
+            $course = new TmsOrganizationEmployee();
+            $course->organization_id = $organization_id;
+            $course->user_id = $user_id;
+            $course->position = $position;
             $course->save();
 
-            return response()->json(status_message('success', __('them_moi_to_chuc_thanh_cong')));
+            return response()->json(status_message('success', __('them_moi_nhan_vien_thanh_cong')));
         } catch (\Exception $e) {
+            dd($e);
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
@@ -193,15 +175,13 @@ class TmsOrganizationRepository implements ICommonInterface
             if (!is_numeric($id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
-            $item = TmsOrganization::findOrFail($id);
+            $item = TmsOrganizationEmployee::findOrFail($id);
             if ($item) {
                 $item->delete();
                 //TmsOrganization::where('parent_id', $id)->delete();
-                TmsOrganization::where('parent_id', $id)
-                    ->update(['parent_id' => 0]);
             }
             \DB::commit();
-            return response()->json(status_message('success', __('xoa_to_chuc_thanh_cong')));
+            return response()->json(status_message('success', __('xoa_nhan_vien_thanh_cong')));
         } catch (Exception $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
@@ -226,5 +206,44 @@ class TmsOrganizationRepository implements ICommonInterface
             ->where('to.id', '=', $id)
             ->first();
         return response()->json($data);
+    }
+
+    public function getUser(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'keyword' => 'text'
+        ];
+
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $list = TmsUserDetail::query();
+
+        if (isset($organization_id) && $organization_id != 0) {
+            $list->whereNotIn('user_id', function ($query) use ($organization_id) {
+                $query->select('user_id')->from('tms_organization_employee')->where('organization_id', $organization_id);
+            });
+        }
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $list = $list->whereRaw('( fullname like "%' . $keyword . '%" )');
+        }
+
+        return $list->limit(10)->get();
     }
 }

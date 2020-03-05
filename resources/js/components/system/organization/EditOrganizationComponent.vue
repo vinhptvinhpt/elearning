@@ -133,7 +133,8 @@
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list',{
           keyword: this.parent_keyword,
-          exclude: this.organization.id
+          exclude: this.organization.id,
+          paginated: 0
         })
           .then(response => {
             this.organization_parent_list = response.data;

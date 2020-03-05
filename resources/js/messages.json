@@ -740,7 +740,12 @@
         "kich_hoat": "Activate",
         "ban_co_muon_xoa_to_chuc_nay": "Do you want to delete this organization?",
         "cap_to_chuc": "Organization level",
-        "chon_cap": "Select level"
+        "chon_cap": "Select level",
+        "tong_so_nhan_vien_hien_tai": "Total employee",
+        "ban_co_muon_xoa_nhan_vien_nay": "Are you sure to delete this employee?",
+        "nhap_ten_nhan_vien": "Input employee name",
+        "sua_nhan_vien": "Edit employee",
+        "xoa_nhan_vien": "Delete employee"
     },
     "vi.keys": {
         "language": "",
@@ -889,8 +894,8 @@
         "ten_ma_khoa_hoc_hinh_thuc_dao_tao": "Tên, mã khóa học, hình thức đào tạo",
         "ma_khoa_hoc": "Mã Khóa Học",
         "thoi_gian_bat_dau": "Thời gian bắt đầu",
-        "thoi_gian_ket_thuc": "Thời Gian Kết Thúc",
-        "vai_tro": "Vai Trò",
+        "thoi_gian_ket_thuc": "Thời gian kết thúc",
+        "vai_tro": "Vai trò",
         "khung_nang_luc": "Khung năng lực",
         "khoa_hoc_lay_chung_chi": "Khóa học lấy chứng chỉ",
         "diem_khoa_hoc": "Điểm khóa học",
@@ -1483,6 +1488,11 @@
         "kich_hoat": "Kích hoạt",
         "ban_co_muon_xoa_to_chuc_nay": "Bạn có muốn xóa tổ chức này?",
         "cap_to_chuc": "Cấp tổ chức",
-        "chon_cap": "Chọn cấp"
+        "chon_cap": "Chọn cấp",
+        "tong_so_nhan_vien_hien_tai": "Tổng số nhân viên hiện tại",
+        "ban_co_muon_xoa_nhan_vien_nay": "Bạn có muốn xóa nhân viên này",
+        "nhap_ten_nhan_vien": "Nhập tên nhân viên",
+        "sua_nhan_vien": "Sửa nhân viên",
+        "xoa_nhan_vien": "Xóa nhân viên"
     }
 }
