@@ -98,8 +98,9 @@ function core_myprofile_navigation(core_user\output\myprofile\tree $tree, $user,
                 // }
                 // [VinhPT] Replace url edit profile to TMS
                 $root_url = $CFG->wwwroot;
+                // [VinhPT][Easia] Change url to tms
                 $root_url = trim($root_url, "lms");
-                $profile_url = "profile/";
+                $profile_url = "tms/profile/";
                 $url = $root_url.$profile_url;
                 $node = new core_user\output\myprofile\node('contact', 'editprofile',
                         get_string('editmyprofile'), null, $url, null, null, 'editprofile');
