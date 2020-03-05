@@ -85,7 +85,13 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item"
+                            <li class="nav-item">
+                              <router-link to="/tms/organization" class="nav-link">
+                                <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
+                              </router-link>
+                            </li>
+
+                            <li class="nav-item hide"
                                 v-if="slug_can('tms-system-organize-view') && (!has_user_market ||root_user)">
                                 <a class="nav-link  has-submenu collapse-level-2" id="co_cau_to_chuc"
                                    @click="toggleMenu('co_cau_to_chuc','signup_organize12')"

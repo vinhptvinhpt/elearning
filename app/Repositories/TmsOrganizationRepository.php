@@ -123,7 +123,7 @@ class TmsOrganizationRepository implements ICommonInterface
 
 
             $course = new TmsOrganization();
-            if (strlen($parent_id) != 0) {
+            if (strlen($parent_id) != 0 && $parent_id != 0) {
                 $course->parent_id = $parent_id;
                 $parent = TmsOrganization::where('id', $parent_id)->first();
                 $parent_level = $parent->level;
