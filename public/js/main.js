@@ -1,12 +1,5 @@
 (function($) {
     $(document).ready(function() {
-        $('#navbar_toggle_btn').click(function(){
-            if($('.hk-wrapper').hasClass('hk-nav-toggle')){
-                $('.hk-wrapper').removeClass('hk-nav-toggle');
-            }else{
-                $('.hk-wrapper').addClass('hk-nav-toggle');
-            }
-        });
 
         $('ul.navbar-nav .nav-item .nav-link.has-submenu').click(function(){
         	//var level = $(this).attr('data-level');
@@ -65,15 +58,15 @@
 
         $('body').on('click','.btn_open_select',function(){
             var parent = $(this).parents('tr');
-            if($(this).hasClass('active')){
-                $(this).removeClass('active');
+            if($(this).hasClass('actives')){
+                $(this).removeClass('actives');
                 $('.wrap_select > span',parent).show();
                 $('.wrap_select > div',parent).hide();
             }else{
-                $('.btn_open_select').removeClass('active');
+                $('.btn_open_select').removeClass('actives');
                 $('.wrap_select > div').hide();
                 $('.wrap_select > span').show();
-                $(this).addClass('active');
+                $(this).addClass('actives');
                 $('.wrap_select > span',parent).hide();
                 $('.wrap_select > div',parent).show();
             }

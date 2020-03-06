@@ -60,7 +60,8 @@ class course_summary_exporter extends \core\external\exporter {
         $course_picture_url = "select * from {course} where id = " . $this->data->id;
         $img_url_DB = array_values($DB->get_records_sql($course_picture_url))[0]->course_avatar;
         $root_url = $CFG->wwwroot;
-        $root_url = trim($root_url, "lms");
+        // [VinhPT][Easia] Change url to tms
+        $root_url = trim($root_url, "lms")."tms";
         if($img_url_DB){
             $courseimage = $root_url.$img_url_DB;
         }else{

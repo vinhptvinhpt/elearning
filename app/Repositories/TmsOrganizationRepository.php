@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\DB;
 
 class TmsOrganizationRepository implements ICommonInterface
 {
-    public function getall(Request $request, $paginated = true)
+    public function getall(Request $request)
     {
         // TODO: Implement getall() method.
         $keyword = $request->input('keyword');
+        $paginated = $request->input('paginated');
         $row = $request->input('row');
         $parent_id = $request->input('parent_id');
         $exclude = $request->input('exclude');
@@ -30,17 +31,9 @@ class TmsOrganizationRepository implements ICommonInterface
             return response()->json([]);
         }
 
-        $listCourses = DB::table('tms_organization as to')
-        ->leftJoin('tms_organization as parent', 'to.parent_id', '=', 'parent.id')
+        $list = TmsOrganization::with('employees')->with('parent')
         ->select(
-            'to.id',
-            'to.name',
-            'to.code',
-            'to.parent_id',
-            'to.level',
-            'to.enabled',
-            'to.description',
-            'parent.name as parent_name',
+            "*",
             DB::raw(' (select MAX(level) from tms_organization) as max_level')
         );
 
@@ -54,42 +47,42 @@ class TmsOrganizationRepository implements ICommonInterface
                 }
             }
 
-            $listCourses = $listCourses->whereRaw('( to.name like "%' . $keyword . '%" )');
+            $list = $list->whereRaw('( name like "%' . $keyword . '%" )');
         }
 
         if (strlen($parent_id) != 0) {
-            $listCourses = $listCourses->where('parent_id', $parent_id);
+            $list = $list->where('parent_id', $parent_id);
         }
 
         if (is_numeric($exclude) && $exclude != 0) {
-            $listCourses = $listCourses->where('to.id', '<>', $exclude);
+            $list = $list->where('id', '<>', $exclude);
         }
 
         if (is_numeric($level) && $level != 0) {
-            $listCourses = $listCourses->where('to.level', $level);
+            $list = $list->where('level', $level);
         }
 
-        $listCourses = $listCourses->orderBy('level', 'asc');
+        $list = $list->orderBy('level', 'asc');
 
         //Filter or not paginated
-        if (!$paginated) {
-            return $listCourses->get();
+
+        if (isset($paginated) && $paginated == 0) {
+            return $list->get();
         }
 
-
-        $totalCourse = $listCourses->count(); //lấy tổng số khóa học hiện tại
-        $listCourses = $listCourses->paginate($row);
-        $arrayListCourses =  $listCourses->toArray();
-        $total = ceil($listCourses->total() / $row);
+        $total_all = $list->count(); //lấy tổng số khóa học hiện tại
+        $list = $list->paginate($row);
+        $arrayList =  $list->toArray();
+        $total = ceil($list->total() / $row);
 
         $response = [
             'pagination' => [
                 'total' => $total,
-                'current_page' => $listCourses->currentPage(),
+                'current_page' => $list->currentPage(),
             ],
-            'data' => $listCourses,
-            'total_course' => $totalCourse,
-            'max_level' => $arrayListCourses['data'] &&  !empty($arrayListCourses['data']) ? $arrayListCourses['data'][0]->max_level : 0
+            'data' => $list,
+            'total' => $total_all,
+            'max_level' => $arrayList['data'] &&  !empty($arrayList['data']) ? $arrayList['data'][0]['max_level'] : 0
         ];
 
         return response()->json($response);
@@ -123,7 +116,7 @@ class TmsOrganizationRepository implements ICommonInterface
 
 
             $course = new TmsOrganization();
-            if (strlen($parent_id) != 0) {
+            if (strlen($parent_id) != 0 && $parent_id != 0) {
                 $course->parent_id = $parent_id;
                 $parent = TmsOrganization::where('id', $parent_id)->first();
                 $parent_level = $parent->level;

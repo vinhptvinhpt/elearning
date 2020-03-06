@@ -1,6 +1,7 @@
 body {
     font-family: 'Roboto', sans-serif;
     background: #f1f3f9;
+    font-size: 14px;
 }
 
 button, select,.form-control {
@@ -764,6 +765,8 @@ button.btn.dropdown-toggle {
 }
 .dataTables_length select.custom-select {
     margin-bottom: 0 !important;
+    width: 70px;
+    margin-left: 5px;
 }
 .fillterConfirm {
     position: relative;
@@ -953,12 +956,12 @@ ul.select_val li a {
     border-radius: 3px;
 }
 
-.btn_open_select.active{
+.btn_open_select.actives{
     background: #f83f37 !important;
     border-color: #f83f37 !important;
 }
 
-.btn_open_select.active i:before{
+.btn_open_select.actives i:before{
     content: "\f00d";
 }
 

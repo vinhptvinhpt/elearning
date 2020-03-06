@@ -19,8 +19,19 @@
 
     export default {
         components: {TopBar, SideBar},
-
+      methods:{
+          openMenu(){
+            $('#navbar_toggle_btn').click(function(){
+              if($('.hk-wrapper').hasClass('hk-nav-toggle')){
+                $('.hk-wrapper').removeClass('hk-nav-toggle');
+              }else{
+                $('.hk-wrapper').addClass('hk-nav-toggle');
+              }
+            });
+          }
+      },
         mounted() {
+          this.openMenu();
             // this.$utils.setLayout('default')
         }
     }

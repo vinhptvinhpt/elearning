@@ -38,10 +38,11 @@ class TaskController extends Controller
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
             ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
-            ->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            //->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', function ($join) {
-                $join->on('ttc.category_id', '=', 'c.category');
+                $join->on('ttc.course_id', '=', 'c.id');
                 $join->on('e.courseid', '=', 'c.id');
             })
             //->join('mdl_course as c', 'c.id', '=', 'e.courseid')
@@ -116,15 +117,15 @@ class TaskController extends Controller
     #endregion
 
     #region insert student to course_final from courses certificate
-    public function finalizeCourseForStudent()
+    public function finalizeCourseForRole()
     {
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
             ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
-            ->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
+            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', function ($join) {
-                $join->on('ttc.category_id', '=', 'c.category');
+                $join->on('ttc.course_id', '=', 'c.id');
                 $join->on('e.courseid', '=', 'c.id');
             })
             /*->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
@@ -488,95 +489,15 @@ class TaskController extends Controller
 
     #endregion
 
-    public function autoEnrolTrainning()
-    {
-        #region code cu enrol
-//        $role = \App\Role::select('mdl_role_id')->where('name', \App\Role::STUDENT)->first();
-//        $user_list = DB::table('tms_traninning_users as ttu')
-//            ->select('ttu.user_id as user_id')
-//            ->get();
-//        if ($user_list) {
-//            foreach ($user_list as $user) {
-//                $category_id = \App\TmsTrainningUser::with('category')->where('user_id', $user->user_id)->first();
-//                $category_id = $category_id['category']['category_id'];
-//                $courses = DB::table('mdl_course_categories as cate')
-//                    ->join('mdl_course as course', 'course.category', '=', 'cate.id')
-//                    ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'course.id')
-//                    ->select('course.id as course_id')
-//                    ->where('cate.id', '=', $category_id)
-//                    ->get();
-//
-//                if ($courses) {
-//                    foreach ($courses as $course) {
-//                        $enrole = MdlEnrol::firstOrCreate(
-//                            [
-//                                'enrol' => 'manual',
-//                                'courseid' => $course->course_id,
-//                                'roleid' => $role['mdl_role_id']
-//                            ],
-//                            [
-//                                'sortorder' => 0,
-//                                'status' => 0,
-//                                'expirythreshold' => 86400,
-//                                'timecreated' => strtotime(Carbon::now()),
-//                                'timemodified' => strtotime(Carbon::now()),
-//                            ]
-//                        );
-////                        $checkEnrole = DB::table('mdl_user_enrolments')
-////                            ->where('enrolid', '=', $enrole->id)
-////                            ->where('userid', '=', $user->user_id)
-////                            ->first();
-////                        if (!$checkEnrole) {
-////                            DB::table('mdl_user_enrolments')->insert([
-////                                'enrolid' => $enrole->id,
-////                                'userid' => $user->user_id
-////                            ]);
-////                        }
-//
-//                        MdlUserEnrolments::firstOrCreate([
-//                            'enrolid' => $enrole->id,
-//                            'userid' => $user->user_id
-//                        ]);
-//
-//                        $context = DB::table('mdl_context')
-//                            ->where('instanceid', '=', $course->course_id)
-//                            ->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE)
-//                            ->first();
-//                        $context_id = $context ? $context->id : 0;
-//                        MdlRoleAssignments::firstOrCreate([
-//                            'roleid' => $role['mdl_role_id'],
-//                            'userid' => $user->user_id,
-//                            'contextid' => $context_id
-//                        ]);
-//
-//                        //lay gia trị trong bang mdl_grade_items
-//                        $mdl_grade_item = MdlGradeItem::where('courseid', $course->course_id)->first();
-//
-//                        if ($mdl_grade_item) {
-//                            //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
-//                            MdlGradeGrade::firstOrCreate([
-//                                'userid' => $user->user_id,
-//                                'itemid' => $mdl_grade_item->id
-//                            ]);
-//                        }
-//
-//                        //write log to notifications
-//                        $this->insert_single_notification(\App\TmsNotification::MAIL, $user->user_id, \App\TmsNotification::ENROL, $course->course_id);
-//                    }
-//                }
-//            }
-//        }
-        #endregion
-
+    public function autoEnrolTrainning(){
         //ThoLd 31/12/2019
         //optimize query
         $courses = DB::table('tms_traninning_users as ttu')
             ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
-            ->join('mdl_course as c', 'c.id', '=', 'ttc.course_id')
             ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'ttu.user_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->select('ttu.user_id', 'c.id as course_id', 'r.mdl_role_id')
-            ->where('r.name', '=', \App\Role::STUDENT)
+            ->select('ttu.user_id', 'ttc.course_id as course_id', 'r.mdl_role_id')
+            //->where('r.name', '=', \App\Role::STUDENT)
             ->where('ttc.deleted', '=', 0)
             ->get();
 
@@ -637,7 +558,7 @@ class TaskController extends Controller
             'type' => $type,
             'sendto' => $sendto,
             'target' => $target,
-            'status_send' => \Illuminate\Support\Facades\Auth::user()->id ? \Illuminate\Support\Facades\Auth::user()->id : 0,
+            'status_send' => isset(\Illuminate\Support\Facades\Auth::user()->id) ? \Illuminate\Support\Facades\Auth::user()->id : 0,
             'course_id' => $course_id
         ]);
 //        $tms_notif = new \App\TmsNotification();

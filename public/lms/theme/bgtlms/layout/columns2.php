@@ -289,7 +289,7 @@ if (is_siteadmin($USER)) {
 if ($can_access_tms) {
     $first_node_final = "myhome";
     $root_url = $CFG->wwwroot;
-    $root_url = trim($root_url, "lms") . "dashboard";
+    $root_url = trim($root_url, "lms") . "tms/dashboard";
     $urltms = new moodle_url($root_url);
     $itemarray = array(
         'text' => get_string("tmssite"),
