@@ -94,17 +94,15 @@
                             <option value="50">50</option>
                             <option value="100">100</option>
                           </select>
-
-
-
                         </label>
-                        <label>{{trans.get('keys.cap_to_chuc')}}
+                      </div>
+                      <div v-if="max_level > 0" class="fillterConfirm" style="display: inline-block;">
+                        <label>
                           <select v-if="max_level > 0" v-model="level" class="custom-select custom-select-sm form-control form-control-sm" @change="getDataList(1)">
                             <option value="0">{{ trans.get('keys.chon_cap') }}</option>
                             <option v-for="n in max_level" :value="n">{{ n }}</option>
                           </select>
                         </label>
-
                       </div>
                     </div>
                     <div class="col-sm-4">
@@ -130,6 +128,7 @@
                       <th>{{trans.get('keys.ma_to_chuc')}}</th>
                       <th>{{trans.get('keys.ten_to_chuc')}}</th>
                       <th>{{trans.get('keys.truc_thuoc')}}</th>
+                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
                       <th>{{trans.get('keys.hanh_dong')}}</th>
                       </thead>
                       <tbody>
@@ -140,7 +139,14 @@
                         <td>{{ (current-1)*row+(index+1) }}</td>
                         <td>{{ item.code }}</td>
                         <td>{{ item.name }}</td>
-                        <td>{{ item.parent_name }}</td>
+                        <td v-if="item.parent">{{ item.parent.code }} - {{ item.parent.name }}</td>
+                        <td v-else></td>
+                        <td class="text-center">
+                          <router-link :title="trans.get('keys.xem_nhan_vien')"
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}}">
+                            {{ item.employees.length }}
+                          </router-link>
+                        </td>
                         <td>
                           <router-link :title="trans.get('keys.sua_to_chuc')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
@@ -162,6 +168,7 @@
                       <th>{{trans.get('keys.ma_to_chuc')}}</th>
                       <th>{{trans.get('keys.ten_to_chuc')}}</th>
                       <th>{{trans.get('keys.truc_thuoc')}}</th>
+                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
                       <th>{{trans.get('keys.hanh_dong')}}</th>
                       </tfoot>
                     </table>
@@ -215,6 +222,7 @@
                 $('.content_search_box').addClass('loadding');
                 axios.post('/organization/list', {
                   keyword: this.parent_keyword,
+                  paginated: 0 //không phân trang
                 })
                     .then(response => {
                         this.organization_parent_list = response.data;
@@ -225,17 +233,18 @@
                     })
             },
             getDataList(paged) {
-                axios.post('/organization/paged-list', {
+                axios.post('/organization/list', {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    level: this.level
+                    level: this.level,
+                    paginated: 1 // có phân trang
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
                         this.current = response.data.pagination ? response.data.pagination.current_page : 1;
                         this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
-                        this.totalRow = response.data.pagination ? response.data.pagination.totalRow : 0;
+                        this.totalRow = response.data ? response.data.total : 0;
                         this.max_level = response.data.max_level ? response.data.max_level : 0;
                     })
                     .catch(error => {
