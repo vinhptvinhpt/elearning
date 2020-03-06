@@ -91,6 +91,9 @@ import EditCertificateComponent from "./components/education/EditCertificateComp
 import ListUserExam from "./components/education/ListUserExam";
 import ProfileComponent from "./components/system/user/ProfileComponent";
 import ProfileEditComponent from "./components/system/user/ProfileEditComponent";
+import TrainningListComponent from "./components/trainning/TrainningListComponent";
+import TrainningEditComponent from "./components/trainning/TrainningEditComponent";
+import ListUserComponent from "./components/trainning/ListUserComponent";
 
 
 Vue.use(VueRouter);
@@ -106,7 +109,7 @@ const routes = [
   {
     path: '/tms',
     component: LayoutDashboard, // Change the desired Layout here
-    meta: { requiresAuth: true },
+    meta: {requiresAuth: true},
     children: [
       // Dashboard
       {
@@ -125,7 +128,7 @@ const routes = [
         path: 'system/organize/department/edit/:id',
         component: EditDepartmentComponent,
         name: 'EditDepartment',
-        props: (route) => ({ id: route.params.id})
+        props: (route) => ({id: route.params.id})
       },
       //-city
       {
@@ -140,13 +143,13 @@ const routes = [
         path: 'system/organize/city/edit/:city_id',
         component: EditCityComponent,
         name: 'EditCity',
-        props: (route) => ({ id: route.params.city_id})
+        props: (route) => ({id: route.params.city_id})
       },
       {
         path: 'system/organize/departments/city/:id',
         component: DepartmentCityComponent,
         name: 'DepartmentCityIndex',
-        props: (route) => ({ id: route.params.id})
+        props: (route) => ({id: route.params.id})
       },
       //-branch
       {
@@ -339,7 +342,8 @@ const routes = [
         name: 'EditUserById',
         props: (route) => ({
           type: route.query.type,
-          user_id: route.params.user_id})
+          user_id: route.params.user_id
+        })
       },
       {
         path: 'system/user/edit_detail/:user_id',
@@ -354,13 +358,13 @@ const routes = [
         path: 'system/user',
         component: IndexComponent,
         name: 'SystemUserList',
-        props: (route) => ({ type: route.query.type})
+        props: (route) => ({type: route.query.type})
       },
       {
         path: 'system/view_user_market',
         component: IndexUserMarketComponent,
         name: 'SystemUserMarketList',
-        props: (route) => ({ type: route.query.type})
+        props: (route) => ({type: route.query.type})
       },
       {
         path: 'system/user_market',
@@ -371,7 +375,7 @@ const routes = [
         path: 'system/user_market/organize/:user_id',
         component: UserMarketOrganizeComponent,
         name: 'UserMarketOrganize',
-        props: (route) => ({ user_id: route.params.user_id})
+        props: (route) => ({user_id: route.params.user_id})
       },
       {
         path: 'system/branch_master',
@@ -382,25 +386,25 @@ const routes = [
         path: 'education/user_teacher',
         component: IndexComponent,
         name: 'TeacherIndex',
-        props: (route) => ({ type: 'teacher'})
+        props: (route) => ({type: 'teacher'})
       },
       {
         path: 'education/user_student',
         component: IndexComponent,
         name: 'StudentIndex',
-        props: (route) => ({ type: 'student'})
+        props: (route) => ({type: 'student'})
       },
       {
         path: 'system/user/trash',
         component: UserTrashComponent,
         name: 'userTrashIndex',
-        props: (route) => ({ type: 'system'})
+        props: (route) => ({type: 'system'})
       },
       {
         path: 'system/organize/branch/user_list/:branch_id',
         component: BranchListUserComponent,
         name: 'ListUserByBranch',
-        props: (route) => ({ id: route.params.branch_id})
+        props: (route) => ({id: route.params.branch_id})
       },
       {
         path: 'system/organize/saleroom/user/:saleroom_id',
@@ -416,13 +420,13 @@ const routes = [
         path: 'system/organize/branch/add_user/:branch_id',
         component: BranchAddUserComponent,
         name: 'AddUserByBranch',
-        props: (route) => ({ id: route.params.branch_id})
+        props: (route) => ({id: route.params.branch_id})
       },
       {
         path: 'excel/import/user',
         component: ImportIndexComponent,
         name: 'ImportIndex',
-        props: (route) => ({ query: route.params.type ? route.params.type : 'system' })
+        props: (route) => ({query: route.params.type ? route.params.type : 'system'})
       },
       //Roles
       {
@@ -434,13 +438,13 @@ const routes = [
         path: 'role/edit/:role_id',
         component: RoleEditComponent,
         name: 'RoleEdit',
-        props: (route) => ({ role_id: route.params.role_id})
+        props: (route) => ({role_id: route.params.role_id})
       },
       {
         path: 'role/list_user/:role_id',
         component: RoleListUserComponent,
         name: 'RoleUserIndex',
-        props: (route) => ({ role_id: route.params.role_id})
+        props: (route) => ({role_id: route.params.role_id})
       },
       //Activity log
       {
@@ -474,19 +478,19 @@ const routes = [
         path: 'survey/viewlayout/:survey_id',
         component: SurveyPresentComponent,
         name: 'SurveyPresent',
-        props: (route) => ({ survey_id: route.params.survey_id})
+        props: (route) => ({survey_id: route.params.survey_id})
       },
       {
         path: 'survey/statistic/:survey_id',
         component: SurveyStatisticComponent,
         name: 'SurveyStatistic',
-        props: (route) => ({ survey_id: route.params.survey_id})
+        props: (route) => ({survey_id: route.params.survey_id})
       },
       {
         path: 'survey/statistic/:survey_id',
         component: SurveyEditComponent,
         name: 'SurveyDetail',
-        props: (route) => ({ survey_id: route.params.survey_id})
+        props: (route) => ({survey_id: route.params.survey_id})
       },
       {
         path: 'survey/restore',
@@ -497,7 +501,7 @@ const routes = [
         path: 'question/create/:survey_id',
         component: QuestionAddComponent,
         name: 'QuestionCreate',
-        props: (route) => ({ sur_id: route.params.survey_id})
+        props: (route) => ({sur_id: route.params.survey_id})
       },
       {
         path: 'question/list',
@@ -508,7 +512,7 @@ const routes = [
         path: 'question/detail/:question_id',
         component: QuestionEditComponent,
         name: 'QuestionDetail',
-        props: (route) => ({ ques_id: route.params.question_id})
+        props: (route) => ({ques_id: route.params.question_id})
       },
       //Settings
       //-configuration
@@ -534,25 +538,25 @@ const routes = [
         path: 'education/course/detail_sample/:id',
         component: CourseSampleEditComponent,
         name: 'SampleCourseDetail',
-        props: (route) => ({ course_id: route.params.id})
+        props: (route) => ({course_id: route.params.id})
       },
       {
         path: 'education/course/detail/:id',
         component: CourseEditComponent,
         name: 'CourseDetail',
-        props: (route) => ({ course_id: route.params.id})
+        props: (route) => ({course_id: route.params.id})
       },
       {
         path: 'education/course/detail_concentrate/:id',
         component: CourseEditConcentComponent,
         name: 'CourseConcentrateDetail',
-        props: (route) => ({ course_id: route.params.id})
+        props: (route) => ({course_id: route.params.id})
       },
       {
         path: 'education/course/clone/:course_id',
         component: CourseCloneComponent,
         name: 'CourseClone',
-        props: (route) => ({ course_id: route.params.course_id})
+        props: (route) => ({course_id: route.params.course_id})
       },
       {
         path: 'education/course/list',
@@ -620,11 +624,33 @@ const routes = [
         component: ListUserExam,
         name: 'UserExam'
       },
+
+
+      //Trainning
+      {
+        path: 'trainning/list',
+        component: TrainningListComponent,
+        name: 'TrainningIndex'
+      },
+      {
+        path: 'trainning/detail/:id',
+        component: TrainningEditComponent,
+        name: 'TrainningEdit',
+        props: (route) => ({
+          id: route.params.id,
+        })
+      },
+      {
+        path: 'trainning/list_user',
+        component: ListUserComponent,
+        name: 'ListUserTrainning'
+      },
     ]
   },
 
+
   //  DEFAULT ROUTE
-  { path: '*', component: NotFoundPage }
+  {path: '*', component: NotFoundPage}
 ];
 
 const router = new VueRouter({
@@ -645,7 +671,7 @@ router.beforeEach((to, from, next) => {
   if (to.matched.some(m => m.meta.requiresAuth)) {
     return AuthService.check().then(authenticated => {
       if (!authenticated) {
-        let baseUrl = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: '');
+        let baseUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
         let fullUrl = location.href;
         window.location.replace(baseUrl + '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + fullUrl);
         //return next({ path: '/login' }); //not working

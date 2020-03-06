@@ -3,16 +3,18 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\TrainningRepository;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 
 class TrainningController extends Controller
 {
     private $bussinessRepository;
-
-    public function __construct(BussinessRepository $bussinessRepository)
+    private $trainningRepository;
+    public function __construct(BussinessRepository $bussinessRepository,TrainningRepository $trainningRepository)
     {
         $this->bussinessRepository = $bussinessRepository;
+        $this->trainningRepository = $trainningRepository;
     }
 
     private $keyword;
@@ -43,28 +45,28 @@ class TrainningController extends Controller
     //lay danh sach khoa hoc mau chua co trong khung nang luc
     public function apiGetListSampleCourse(Request $request)
     {
-        return $this->bussinessRepository->apiGetListSampleCourse($request);
+        return $this->trainningRepository->apiGetListSampleCourse($request);
     }
 
     //lay danh sach khoa hoc mau da co trong khung nang luc
     public function apiGetCourseSampleTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiGetCourseSampleTrainning($request);
+        return $this->trainningRepository->apiGetCourseSampleTrainning($request);
     }
 
     public function apiGetListTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiGetCourseSampleTrainning($request);
+        return $this->trainningRepository->apiGetListTrainning($request);
     }
 
     public function apiCreateTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiCreateTrainning($request);
+        return $this->trainningRepository->store($request);
     }
 
     public function apiGetDetailTrainning($id)
     {
-        return $this->bussinessRepository->apiGetDetailTrainning($id);
+        return $this->trainningRepository->apiGetDetailTrainning($id);
     }
 
     public function apiEditTrainning($id, Request $request)
@@ -80,19 +82,19 @@ class TrainningController extends Controller
     //them khoa hoc vao khung nang luc
     public function apiAddCourseTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiAddCourseTrainning($request);
+        return $this->trainningRepository->apiAddCourseTrainning($request);
     }
 
 
     //xoa khoa hoc khoi khung nang luc
     public function apiRemoveCourseTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiRemoveCourseTrainning($request);
+        return $this->trainningRepository->apiRemoveCourseTrainning($request);
     }
 
     public function apiTrainningListUser(Request $request)
     {
-        return $this->bussinessRepository->apiTrainningListUser($request);
+        return $this->trainningRepository->apiTrainningListUser($request);
     }
 
     public function apiTrainningList(Request $request)
