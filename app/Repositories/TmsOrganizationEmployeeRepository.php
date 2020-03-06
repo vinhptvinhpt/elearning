@@ -119,46 +119,39 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
     {
         try {
             $id = $request->input('id');
-            $name = $request->input('name');
-            $description = $request->input('description');
-            $parent_id = $request->input('parent_id');
-            $code = $request->input('code');
+            $organization_id = $request->input('organization_id');
+            $position = $request->input('position');
             $enabled = $request->input('enabled');
+            $user_id = $request->input('user_id');
 
             $param = [
                 'id' => 'number',
-                'name' => 'text',
-                'code' => 'code',
-                'description' => 'text',
+                'organization_id' => 'number',
+                'position' => 'code',
+                'enabled' => 'number',
             ];
+
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 return response()->json($validator);
             }
 
-            $item = TmsOrganization::where('id', $id)->first();
-
             //Check exist
-            $check = TmsOrganization::where('code', $code)->first();
-            if ($check && $check->id != $id)
+            $check = TmsOrganizationEmployee::where('organization_id', $organization_id)->where('user_id', $user_id)->first();
+            if (isset($check) && $check->id != $id) {
                 return response()->json([
                     'key' => 'code',
-                    'message' => __('ma_to_chuc_da_ton_tai')
+                    'message' => __('nhan_vien_da_ton_tai')
                 ]);
-
-            if (strlen($parent_id) != 0) {
-                $item->parent_id = $parent_id;
-                $parent = TmsOrganization::where('id', $parent_id)->first();
-                $parent_level = $parent->level;
-                $item->level = $parent_level + 1;
             }
-            $item->name = $name;
-            $item->code = $code;
-            $item->description = $description;
+
+            $item = TmsOrganizationEmployee::where('id', $id)->first();
+            $item->organization_id = $organization_id;
+            $item->position = $position;
             $item->enabled = $enabled;
             $item->save();
 
-            return response()->json(status_message('success', __('cap_nhat_to_chuc_thanh_cong')));
+            return response()->json(status_message('success', __('cap_nhat_nhan_vien_thanh_cong')));
         } catch (\Exception $e) {
             dd($e);
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
@@ -191,19 +184,8 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
     {
         if (!is_numeric($id))
             return response()->json([]);
-        $data = DB::table('tms_organization as to')
-            ->leftJoin('tms_organization as parent', 'to.parent_id', '=', 'parent.id')
-            ->select(
-                'to.id',
-                'to.name',
-                'to.code',
-                'to.parent_id',
-                'to.level',
-                'to.enabled',
-                'to.description',
-                'parent.name as parent_name'
-            )
-            ->where('to.id', '=', $id)
+        $data = TmsOrganizationEmployee::with('user')->with('organization')
+            ->where('id', '=', $id)
             ->first();
         return response()->json($data);
     }

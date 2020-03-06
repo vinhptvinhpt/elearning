@@ -97,6 +97,7 @@ import IndexEmployeeComponent from "./components/system/organization/IndexEmploy
 import TrainningListComponent from "./components/trainning/TrainningListComponent";
 import TrainningEditComponent from "./components/trainning/TrainningEditComponent";
 import ListUserComponent from "./components/trainning/ListUserComponent";
+import EditEmployeeComponent from "./components/system/organization/EditEmployeeComponent";
 
 
 Vue.use(VueRouter);
@@ -651,7 +652,16 @@ const routes = [
           organization_id: route.query.organization_id,
         })
       },
-
+      {
+        path: 'organization-employee/edit/:id',
+        component: EditEmployeeComponent,
+        name: 'EditEmployee',
+        props: (route) => ({
+          id: route.params.id,
+          source_page: route.query.source_page ? route.query.source_page : 0,
+          organization_id: route.query.organization_id ? route.query.organization_id : 0,
+        })
+      },
       //Trainning
       {
         path: 'trainning/list',

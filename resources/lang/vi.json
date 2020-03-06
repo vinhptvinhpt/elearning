@@ -272,5 +272,7 @@
     "cap_nhat_to_chuc_thanh_cong": "Cập nhật tổ chức thành công",
     "nhan_vien_da_ton_tai_trong_to_chuc": "Nhân viên đã tồn tại trong tổ chức",
     "them_moi_nhan_vien_thanh_cong": "Thêm mới nhân viên thành công",
-    "xoa_nhan_vien_thanh_cong": "Xóa nhân viên thành công"
+    "xoa_nhan_vien_thanh_cong": "Xóa nhân viên thành công",
+    "cap_nhat_nhan_vien_thanh_cong": "Cập nhật nhân viên thành công",
+    "nhan_vien_da_ton_tai": "Nhân viên đã tồn tại"
 }
