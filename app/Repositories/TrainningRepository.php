@@ -20,7 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 
-class TrainningRepository implements ITranningInterface,ICommonInterface
+class TrainningRepository implements ITranningInterface, ICommonInterface
 {
 
     public function getall(Request $request)
@@ -138,14 +138,14 @@ class TrainningRepository implements ITranningInterface,ICommonInterface
     //lay danh sach khoa hoc mau da co trong khung nang luc
     public function apiGetCourseSampleTrainning(Request $request)
     {
-        $this->keyword  = $request->input('keyword');
-        $row            = $request->input('row');
-        $trainning_id   = $request->input('trainning_id');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $trainning_id = $request->input('trainning_id');
 
         $param = [
-            'keyword'       => 'text',
-            'row'           => 'number',
-            'trainning_id'  => 'number',
+            'keyword' => 'text',
+            'row' => 'number',
+            'trainning_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -153,7 +153,7 @@ class TrainningRepository implements ITranningInterface,ICommonInterface
         }
 
         $lstData = DB::table('tms_trainning_courses as ttc')
-            ->join('mdl_course as mc','mc.id','=','ttc.course_id')
+            ->join('mdl_course as mc', 'mc.id', '=', 'ttc.course_id')
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
             ->select('mc.id', 'mc.fullname', 'mc.shortname');
@@ -235,8 +235,8 @@ class TrainningRepository implements ITranningInterface,ICommonInterface
     {
         $response = new ResponseModel();
         try {
-            $trainning_id   = $request->input('trainning_id');
-            $lstCourseId    = $request->input('lst_course');
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
 
             \DB::beginTransaction();
             $count_course = count($lstCourseId);
@@ -409,8 +409,8 @@ class TrainningRepository implements ITranningInterface,ICommonInterface
     {
         $response = new ResponseModel();
         try {
-            $trainning_id   = $request->input('trainning_id');
-            $lstCourseId    = $request->input('lst_course');
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
 
             //\DB::beginTransaction();
             $count_course = count($lstCourseId);
@@ -501,4 +501,8 @@ class TrainningRepository implements ITranningInterface,ICommonInterface
         }
     }
 
+    public function detail($id)
+    {
+        // TODO: Implement detail() method.
+    }
 }
