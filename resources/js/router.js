@@ -650,6 +650,7 @@ const routes = [
         props: (route) => ({
           organization_id: route.query.organization_id,
         })
+      },
 
       //Trainning
       {
