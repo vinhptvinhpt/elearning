@@ -661,4 +661,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    public function detail($id)
+    {
+        // TODO: Implement detail() method.
+    }
 }
