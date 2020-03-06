@@ -679,6 +679,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/list-user', 'Backend\OrganizationController@apiListUser');
     Route::post('/organization-employee/create', 'Backend\OrganizationController@apiCreateEmployee');
     Route::post('/organization-employee/delete/{id}', 'Backend\OrganizationController@apiDeleteEmployee');
+    Route::post('/organization-employee/detail/{id}', 'Backend\OrganizationController@apiEmployeeDetail');
+    Route::post('/organization-employee/update', 'Backend\OrganizationController@apiEditEmployee');
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 

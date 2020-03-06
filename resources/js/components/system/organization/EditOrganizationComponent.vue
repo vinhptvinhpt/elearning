@@ -27,7 +27,7 @@
 
                   <div class="col-sm-6">
                     <div class="form-group">
-                      <label ><strong>{{trans.get('keys.ten_to_chuc')}} *</strong></label>
+                      <label for="organization_name"><strong>{{trans.get('keys.ten_to_chuc')}} *</strong></label>
                       <div class="input-group">
                         <input type="text" id="organization_name" class="form-control form-control-line" :placeholder="trans.get('keys.ten_to_chuc')+' *'" required v-model="organization.name">
                       </div>
@@ -37,7 +37,7 @@
 
                   <div class="col-sm-6">
                     <div class="form-group">
-                      <label ><strong>{{trans.get('keys.ma_to_chuc')}} *</strong></label>
+                      <label for="organization_code"><strong>{{trans.get('keys.ma_to_chuc')}} *</strong></label>
                       <div class="input-group">
                         <input type="text" id="organization_code" class="form-control form-control-line" v-model="organization.code">
                       </div>
@@ -48,7 +48,7 @@
 
                   <div class="col-sm-6">
                     <div class="form-group">
-                      <label ><strong>{{trans.get('keys.mo_ta')}}</strong></label>
+                      <label><strong>{{trans.get('keys.mo_ta')}}</strong></label>
                       <div class="input-group">
                         <textarea id="organization_description" class="form-control form-control-line" :placeholder="trans.get('keys.mo_ta')" required v-model="organization.description"></textarea>
                       </div>
@@ -57,7 +57,7 @@
 
                   <div class="col-sm-6">
                     <div class="form-group">
-                      <label ><strong>{{trans.get('keys.truc_thuoc')}}</strong></label>
+                      <label for="organization_parent_id" ><strong>{{trans.get('keys.truc_thuoc')}}</strong></label>
                       <div class="input-group">
                         <div class="wrap_search_box">
                           <div class="btn_search_box" @click="selectParent()">
@@ -65,7 +65,7 @@
                             <span v-else>{{organization.parent_name}}</span>
                           </div>
                           <div class="content_search_box">
-                            <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box">
+                            <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box" id="organization_parent_id">
                             <i class="fa fa-spinner" aria-hidden="true"></i>
                             <ul>
                               <li @click="selectParentItem(0)" >{{trans.get('keys.chon_to_chuc')}}</li>
@@ -78,8 +78,8 @@
                   </div>
 
                   <div class="col-sm-6">
-                    <input v-model="organization.enabled" type="checkbox" id="enabled" style="width:20px; height:20px;">
-                    <label for="enabled">{{trans.get('keys.kich_hoat')}}</label>
+                    <input v-model="organization.enabled" type="checkbox" id="organization_enabled" style="width:20px; height:20px;">
+                    <label for="organization_enabled">{{trans.get('keys.kich_hoat')}}</label>
                   </div>
 
                 </div>
@@ -172,11 +172,11 @@
         })
           .then(response => {
             if(response.data.key) {
-              roam_message('error',response.data.message);
+              toastr['error'](response.data.message, this.trans.get('keys.loi'));
               $('.form-control').removeClass('error');
               $('#organization_'+response.data.key).addClass('error');
             }else{
-              roam_message(response.data.status,response.data.message);
+              toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
               if(response.data.status === 'success'){
                 $('.form-control').removeClass('error');
               }

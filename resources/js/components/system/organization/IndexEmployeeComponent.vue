@@ -166,7 +166,7 @@
                         <td>
                           <router-link :title="trans.get('keys.sua_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'EditEmployee', params: { id: item.id }, query: { source_page: current}}">
+                                       :to="{ name: 'EditEmployee', params: { id: item.id }, query: { source_page: current, organization_id: organization_id}}">
                             <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                           </router-link>
 
@@ -272,7 +272,8 @@
           page: paged || this.current,
           keyword: this.keyword,
           row: this.row,
-          position: this.position,
+          organization_id: this.organization_id,
+          position: this.position
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];

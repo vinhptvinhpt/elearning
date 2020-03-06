@@ -62,4 +62,12 @@ class OrganizationController extends Controller
         return $this->tmsOrganizationEmployeeRepository->delete($id);
     }
 
+    public function apiEmployeeDetail($id)
+    {
+        return $this->tmsOrganizationEmployeeRepository->detail($id);
+    }
+
+    public function apiEditEmployee(Request $request) {
+        return $this->tmsOrganizationEmployeeRepository->update($request);
+    }
 }

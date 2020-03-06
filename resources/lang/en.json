@@ -272,5 +272,7 @@
     "cap_nhat_to_chuc_thanh_cong": "Update organization successfully",
     "nhan_vien_da_ton_tai_trong_to_chuc": "Employee existed in this organization",
     "them_moi_nhan_vien_thanh_cong": "Add employee successfully",
-    "xoa_nhan_vien_thanh_cong": "Delete employee successfully"
+    "xoa_nhan_vien_thanh_cong": "Delete employee successfully",
+    "cap_nhat_nhan_vien_thanh_cong": "Edit employee successfully",
+    "nhan_vien_da_ton_tai": "Employee existed"
 }

@@ -21,6 +21,10 @@ class TmsOrganization extends Model
      */
     public function parent()
     {
-        return $this->hasOne('App\TmsOrganization', 'id', 'parent_id');
+        return $this->hasOne('App\TmsOrganization', 'id', 'parent_id');//->with('parent');
+    }
+
+    public function children() {
+        return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children');
     }
 }
