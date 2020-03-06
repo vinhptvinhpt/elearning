@@ -483,15 +483,6 @@ interface IBussinessInterface
 
     public function apiGetDepartmentList(Request $request);
 
-    //------------TrainningController--------------------//
-    //lay danh sach khoa hoc mau chua co trong khung nang luc
-    public function apiGetListSampleCourse(Request $request);
-
-    //lay danh sach khoa hoc mau da co trong khung nang luc
-    public function apiGetCourseSampleTrainning(Request $request);
-
-    public function apiGetListTrainning(Request $request);
-
     public function apiCreateTrainning(Request $request);
 
     public function apiGetDetailTrainning($id);
@@ -499,14 +490,6 @@ interface IBussinessInterface
     public function apiEditTrainning($id, Request $request);
 
     public function apiDeteleTrainning(Request $request);
-
-    //them khoa hoc vao khung nang luc
-    public function apiAddCourseTrainning(Request $request);
-
-    //xoa khoa hoc khoi khung nang luc
-    public function apiRemoveCourseTrainning(Request $request);
-
-    public function apiTrainningListUser(Request $request);
 
     public function apiTrainningList(Request $request);
 

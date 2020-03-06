@@ -570,18 +570,17 @@ function UrlActive($slug, $stt)
     return $check;
 }
 
-function training_enrole($user_id, $category_id = null)
+function training_enrole($user_id, $trainning_id = null)
 {
     $role = Role::select('mdl_role_id')->where('name', Role::STUDENT)->first();
-    if (!$category_id) {
-        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
-        $category_id = $category_id['category']['category_id'];
+    if (!$trainning_id) {
+        $trainning = TmsTrainningUser::where('user_id', $user_id)->first();
+        $trainning_id = $trainning['trainning_id'];
     }
-    $courses = DB::table('mdl_course_categories as cate')
-        ->join('mdl_course as course', 'course.category', '=', 'cate.id')
-        ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'course.id')
-        ->select('course.id as course_id')
-        ->where('cate.id', '=', $category_id)
+    $courses = DB::table('tms_trainning_courses as ttc')
+        ->select('ttc.course_id as course_id')
+        ->where('ttc.trainning_id', '=', $trainning_id)
+        ->where('ttc.deleted','=',0)
         ->get();
 
     /*

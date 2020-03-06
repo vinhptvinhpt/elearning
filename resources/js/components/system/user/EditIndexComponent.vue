@@ -59,11 +59,11 @@
                 <p>ID: <strong>{{users.username}}</strong></p>
                 <p v-if="role_type != 'market'">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ?
                   users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>
-                <div v-if="type == 'student' && role_type != 'market' && users.confirm == 0">
-                  <hr>
-                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>
-                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>
-                </div>
+<!--                <div v-if="type == 'student' && role_type != 'market' && users.confirm == 0">-->
+<!--                  <hr>-->
+<!--                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>-->
+<!--                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>-->
+<!--                </div>-->
               </div>
             </div>
           </div>
