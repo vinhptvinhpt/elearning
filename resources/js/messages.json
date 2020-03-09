@@ -1493,6 +1493,8 @@
         "ban_co_muon_xoa_nhan_vien_nay": "Bạn có muốn xóa nhân viên này",
         "nhap_ten_nhan_vien": "Nhập tên nhân viên",
         "sua_nhan_vien": "Sửa nhân viên",
-        "xoa_nhan_vien": "Xóa nhân viên"
+        "xoa_nhan_vien": "Xóa nhân viên",
+        "xem_nhan_vien":  "Xem nhân viên",
+        "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ"
     }
 }

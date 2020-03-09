@@ -21,7 +21,7 @@
           <div class="card">
             <div class="card-body">
               <div class="edit_city_form form-material">
-                <h5 class="mb-20">{{trans.get('keys.sua_chi_nhanh')}}: {{organization.name}}</h5>
+                <h5 class="mb-20">{{trans.get('keys.sua_to_chuc')}}: {{organization.name}}</h5>
 
                 <div class="row">
 
@@ -58,22 +58,26 @@
                   <div class="col-sm-6">
                     <div class="form-group">
                       <label for="organization_parent_id" ><strong>{{trans.get('keys.truc_thuoc')}}</strong></label>
-                      <div class="input-group">
-                        <div class="wrap_search_box">
-                          <div class="btn_search_box" @click="selectParent()">
-                            <span v-if="!organization.parent_name">{{trans.get('keys.chon_to_chuc')}}</span>
-                            <span v-else>{{organization.parent_name}}</span>
-                          </div>
-                          <div class="content_search_box">
-                            <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box" id="organization_parent_id">
-                            <i class="fa fa-spinner" aria-hidden="true"></i>
-                            <ul>
-                              <li @click="selectParentItem(0)" >{{trans.get('keys.chon_to_chuc')}}</li>
-                              <li @click="selectParentItem(item.id)" v-for="item in organization_parent_list">{{item.name}}</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
+
+<!--                      <div class="input-group">-->
+<!--                        <div class="wrap_search_box">-->
+<!--                          <div class="btn_search_box" @click="selectParent()">-->
+<!--                            <span v-if="!organization.parent_name">{{trans.get('keys.chon_to_chuc')}}</span>-->
+<!--                            <span v-else>{{organization.parent_name}}</span>-->
+<!--                          </div>-->
+<!--                          <div class="content_search_box">-->
+<!--                            <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box" id="organization_parent_id">-->
+<!--                            <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                            <ul>-->
+<!--                              <li @click="selectParentItem(0)" >{{trans.get('keys.chon_to_chuc')}}</li>-->
+<!--                              <li @click="selectParentItem(item.id)" v-for="item in organization_parent_list">{{item.name}}</li>-->
+<!--                            </ul>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
+
+                      <treeselect v-model="organization.parent_id" :multiple="false" :options="options" id="organization_parent_id"/>
+
                     </div>
                   </div>
 
@@ -123,31 +127,66 @@
         },
         organization_parent_list:[],
         parent_keyword:'',
+        //Treeselect options
+        options: [
+          {
+            id: 0,
+            label: this.trans.get('keys.chon_to_chuc')
+          }
+        ]
       }
     },
     methods: {
       selectParentItem(parent_id){
         this.organization.parent_id = parent_id;
       },
-      selectParent(){
+      selectParent(current_id){
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list',{
           keyword: this.parent_keyword,
           exclude: this.organization.id,
+          level: 1,
           paginated: 0
         })
           .then(response => {
             this.organization_parent_list = response.data;
+            //Set options recursive
+            //this.options = this.options.concat(this.setOptions(response.data));
+            this.options = this.setOptions(response.data, current_id);
             $('.content_search_box').removeClass('loadding');
           })
           .catch(error => {
             $('.content_search_box').removeClass('loadding');
           })
       },
+      setOptions(list, current_id) {
+        let outPut = [];
+        for (const [key, item] of Object.entries(list)) {
+          let newOption = {
+            id: item.id,
+            label: item.name,
+          };
+          if (item.children.length > 0) {
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          if (item.id === current_id) {
+            newOption.isDisabled = true;
+          }
+          outPut.push(newOption);
+        }
+        return outPut;
+      },
       getData(){
         axios.post('/organization/detail/'+this.id)
           .then(response => {
             this.organization = response.data;
+            this.selectParent(this.organization.parent_id);
           })
           .catch(error => {
             console.log(error.response.data);
