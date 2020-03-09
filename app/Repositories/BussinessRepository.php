@@ -3016,6 +3016,7 @@ class BussinessRepository implements IBussinessInterface
             $role->mdl_role_id = $mdlRole->id;
             $role->name = $name;
             $role->description = $description;
+            $role->status = 1;
             $role->save();
 
             $type = 'role';
@@ -5675,8 +5676,14 @@ class BussinessRepository implements IBussinessInterface
     // SystemController
     public function apiListRole()
     {
+        $special_role = Role::arr_role_special;
+        $default_role = Role::arr_role_default;
+        $excluded = array_merge($special_role, $default_role);
+
+        Role::whereNotIn('name', $excluded)
+            ->update(['status' => 0]);
+
         $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
-                ->where('status', 1)
             ->select('id', 'name', 'status')
             ->get()->toArray();
         return response()->json($roles);
