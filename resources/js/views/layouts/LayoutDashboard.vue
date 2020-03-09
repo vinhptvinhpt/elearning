@@ -6,7 +6,7 @@
             <side-bar></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
-                <router-view/>
+              <router-view :key="$route.fullPath"></router-view>
             </div>
         </div>
     </div>
@@ -15,7 +15,6 @@
 <script>
     import TopBar from './partials/LayoutTopBar.vue'
     import SideBar from './partials/LayoutSideBar.vue'
-
 
     export default {
         components: {TopBar, SideBar},

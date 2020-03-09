@@ -51,20 +51,22 @@
 
                     <div class="col-sm-6">
                       <div class="form-group">
-                        <div class="input-group">
-                          <div class="wrap_search_box">
-                            <div class="btn_search_box" @click="selectParent()">
-                              <span class="selected_content">{{trans.get('keys.truc_thuoc')}}</span>
-                            </div>
-                            <div class="content_search_box">
-                              <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box">
-                              <i class="fa fa-spinner" aria-hidden="true"></i>
-                              <ul>
-                                <li @click="selectParentItem(item.id)" v-for="item in organization_parent_list" :data-value="item.id">{{item.name}}</li>
-                              </ul>
-                            </div>
-                          </div>
-                        </div>
+
+<!--                        <div class="input-group">-->
+<!--                          <div class="wrap_search_box">-->
+<!--                            <div class="btn_search_box" @click="selectParent()">-->
+<!--                              <span class="selected_content">{{trans.get('keys.truc_thuoc')}}</span>-->
+<!--                            </div>-->
+<!--                            <div class="content_search_box">-->
+<!--                              <input @input="selectParent()" type="text" v-model="parent_keyword" class="form-control search_box">-->
+<!--                              <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                              <ul>-->
+<!--                                <li @click="selectParentItem(item.id)" v-for="item in organization_parent_list" :data-value="item.id">{{item.name}}</li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                        </div>-->
+                        <treeselect v-model="organization.parent_id" :multiple="false" :options="options" id="organization_parent_id"/>
                       </div>
                     </div>
 
@@ -212,6 +214,13 @@
                 parent_keyword: '',
                 max_level: 0,
                 level: 0,
+                //Treeselect options
+                options: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ]
             }
         },
         methods: {
@@ -222,16 +231,33 @@
                 $('.content_search_box').addClass('loadding');
                 axios.post('/organization/list', {
                   keyword: this.parent_keyword,
-                  paginated: 0 //không phân trang
+                  level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                  paginated: 0 //không phân trang,
                 })
                     .then(response => {
                         this.organization_parent_list = response.data;
+                        //Set options recursive
+                        this.options = this.setOptions(response.data);
                         $('.content_search_box').removeClass('loadding');
                     })
                     .catch(error => {
                         $('.content_search_box').removeClass('loadding');
                     })
             },
+            setOptions(list) {
+            let outPut = [];
+            for (const [key, item] of Object.entries(list)) {
+              let newOption = {
+                id: item.id,
+                label: item.name
+              };
+              if (item.children.length > 0) {
+                newOption.children = this.setOptions(item.children);
+              }
+              outPut.push(newOption);
+            }
+            return outPut;
+          },
             getDataList(paged) {
                 axios.post('/organization/list', {
                     page: paged || this.current,
@@ -289,6 +315,7 @@
             onPageChange() {
               let page = this.getParamsPage();
               this.getDataList(page);
+              this.selectParent();
             },
             getParamsPage() {
               return this.$route.params.page;

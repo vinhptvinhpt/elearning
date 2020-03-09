@@ -139,20 +139,20 @@
                                         </router-link>
                                     </li>
 
-                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">
-                                        <router-link to="/tms/system/user_market" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.chuyen_vien_kinh_doanh') }}</span>
-                                        </router-link>
-                                    </li>
+<!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
+<!--                                        <router-link to="/tms/system/user_market" class="nav-link">-->
+<!--                                            <span class="nav-link-text"> {{ trans.get('keys.chuyen_vien_kinh_doanh') }}</span>-->
+<!--                                        </router-link>-->
+<!--                                    </li>-->
 
-                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">
-                                        <router-link to="/tms/system/branch_master" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.chu_dai_ly') }}</span>
-                                        </router-link>
-                                    </li>
+<!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
+<!--                                        <router-link to="/tms/system/branch_master" class="nav-link">-->
+<!--                                            <span class="nav-link-text"> {{ trans.get('keys.chu_dai_ly') }}</span>-->
+<!--                                        </router-link>-->
+<!--                                    </li>-->
 
                                     <li class="nav-item" v-if="slug_can('tms-system-teacher-view')">
-                                        <router-link to="/tms/education/user_teacher" class="nav-link">
+                                        <router-link to="/tms/education/user_teacher/teacher" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.giang_vien') }}</span>
                                         </router-link>
                                     </li>

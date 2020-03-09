@@ -4257,9 +4257,6 @@ class BussinessRepository implements IBussinessInterface
         $confirm = $request->input('confirm');
         $user_id = $request->input('user');
 
-        echo $user_id;
-        die;
-
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -5678,7 +5675,10 @@ class BussinessRepository implements IBussinessInterface
     // SystemController
     public function apiListRole()
     {
-        $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])->select('id', 'name')->get()->toArray();
+        $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
+                ->where('status', 1)
+            ->select('id', 'name', 'status')
+            ->get()->toArray();
         return response()->json($roles);
     }
 
@@ -6483,12 +6483,12 @@ class BussinessRepository implements IBussinessInterface
             $dob = $request->input('dob');
             $email = $request->input('email');
             $username = $request->input('username');
-            //$password       = $request->input('password');
+            //$password = $request->input('password');
             $phone = $request->input('phone');
             $cmtnd = $request->input('cmtnd');
             $address = $request->input('address');
             $roles = $request->input('role');
-            //            $type = $request->input('type');
+            //$type = $request->input('type');
             $user_id = $request->input('user_id');
 
             $sex = $request->input('sex');
@@ -6499,8 +6499,8 @@ class BussinessRepository implements IBussinessInterface
             $confirm = $request->input('confirm');
             $certificate_code = $request->input('certificate_code');
             $certificate_date = $request->input('certificate_date');
-            //            $branch = $request->input('branch');
-            //            $saleroom = $request->input('saleroom');
+            //$branch = $request->input('branch');
+            //$saleroom = $request->input('saleroom');
             $branch_select = $request->input('branch_select');
             $saleroom_select = $request->input('saleroom_select');
             $trainning_id = $request->input('trainning_id');
