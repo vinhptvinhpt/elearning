@@ -5683,6 +5683,9 @@ class BussinessRepository implements IBussinessInterface
         Role::whereNotIn('name', $excluded)
             ->update(['status' => 0]);
 
+        Role::whereIn('name', $excluded)
+            ->update(['status' => 1]);
+
         $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
             ->select('id', 'name', 'status')
             ->get()->toArray();
