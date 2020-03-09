@@ -80,9 +80,9 @@
                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                       </router-link>
 
-<!--                      <button v-if="ro.status == 0" @click="deleteRole(ro.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2" :title="trans.get('keys.xoa')">-->
-<!--                        <span  class="btn-icon-wrap"><i class="fal fa-trash"></i></span>-->
-<!--                      </button>-->
+                      <button v-if="ro.status == 0" @click="deleteRole(ro.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2" :title="trans.get('keys.xoa')">
+                        <span  class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                      </button>
 
                     </td>
                   </tr>
