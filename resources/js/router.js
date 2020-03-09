@@ -362,7 +362,7 @@ const routes = [
         path: 'system/user',
         component: IndexComponent,
         name: 'SystemUserList',
-        props: (route) => ({type: route.query.type})
+        props: (route) => ({type: 'system'})
       },
       {
         path: 'system/view_user_market',
@@ -387,7 +387,7 @@ const routes = [
         name: 'BranchMasterIndex',
       },
       {
-        path: 'education/user_teacher',
+        path: 'education/user_teacher/teacher',
         component: IndexComponent,
         name: 'TeacherIndex',
         props: (route) => ({type: 'teacher'})

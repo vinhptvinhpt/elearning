@@ -48,8 +48,8 @@
     <div>
         <div class="row mx-0">
             <div class="col-12 hk-sec-wrapper">
-                <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.chinh_sua_thong_tin_nguoi_dung')}}</h5>
-                <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.chinh_sua_thong_tin_giang_vien')}}</h5>
+                <h5 class="hk-sec-title" v-if="type === 'system'">{{trans.get('keys.chinh_sua_thong_tin_nguoi_dung')}}</h5>
+                <h5 class="hk-sec-title" v-else-if="type === 'teacher'">{{trans.get('keys.chinh_sua_thong_tin_giang_vien')}}</h5>
                 <h5 class="hk-sec-title" v-else>{{trans.get('keys.chinh_sua_thong_tin_hoc_vien')}}</h5>
                 <div class="row">
                     <div class="col-12 col-lg-3">
@@ -138,7 +138,6 @@
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputDob">{{trans.get('keys.ngay_sinh')}} </label>
                                 <input type="date" id="inputDob" v-model="users.dob" class="form-control mb-4">
-                                <label for="inputDob">(dd/mm/yyyy)</label>
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputAddress">{{trans.get('keys.dia_chi')}}</label>
@@ -163,30 +162,24 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type == 'market'">
-                                <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
-                                <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
-                                <label for="inputTimeStart">(dd/mm/yyyy)</label>
-                            </div>
-
-                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
+                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type !== 'market'">
                                 <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>
                                 <input v-model="users.code" type="text" id="inputCode" placeholder="" class="form-control mb-4">
                             </div>
 
-                            <div v-if="roles && type == 'system'" class="col-12 form-group">
+                            <div v-if="roles && type === 'system'" class="col-12 form-group">
                                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                                 <select v-model="users.role" class="form-control selectpicker" id="inputRole" multiple >
                                     <option v-for="role in roles" :value="role.id">{{role.name}}</option>
                                 </select>
                             </div>
 
-                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
+                            <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                                 <input v-model="users.start_time" type="date" id="inputTimeStart" class="form-control mb-4">
                             </div>
 
-                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type != 'market'">
+                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type !== 'market'">
                                 <label for="inputWorkingStatus">{{trans.get('keys.tinh_trang_lam_viec')}}</label>
                                 <select id="inputWorkingStatus" class="form-control custom-select" v-model="users.working_status">
                                     <option value="0">{{trans.get('keys.dang_cong_tac')}}</option>
@@ -200,125 +193,126 @@
                                     <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>
                                     <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>
                                 </select>
-                                <label v-if="users.training.trainning_id == 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                                <label v-if="users.training.trainning_id === 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
-                            <div class="col-12" v-if="role_type != 'market'">
-                                <div class="working_address">
-                                    <div class="form-group">
-                                        <label>{{trans.get('keys.noi_lam_viec')}}</label>
-                                        <select class="form-control custom-select" v-model="option_work" @change="changeOption()">
-                                            <option value="">{{trans.get('keys.chon_noi_lam_viec')}}</option>
-                                            <option value="age">{{trans.get('keys.them_dai_ly')}}</option>
-                                            <option value="pos">{{trans.get('keys.them_diem_ban')}}</option>
-                                        </select>
-                                        <hr>
-                                        <div class="col-12" v-if="option_work == 'age'">
-                                            <div class="row">
-                                                <div class="form-group" style="width: 100%;">
-                                                    <div class="input-group">
-                                                        <div class="wrap_search_box multi">
-                                                            <div class="btn_search_box search_branch" @click="get_branch()">
-                                                                <span>{{trans.get('keys.chon_dai_ly')}}</span>
-                                                            </div>
-                                                            <div class="content_search_box">
-                                                                <input @input="get_branch()" type="text" v-model="branch_input"
-                                                                       class="form-control search_box">
-                                                                <i class="fa fa-spinner" aria-hidden="true"></i>
-                                                                <ul>
-                                                                    <li @click="selectBranch(0)">{{trans.get('keys.chon_dai_ly')}}</li>
-                                                                    <li @click="selectBranch(item.id)"
-                                                                        v-for="item in branchs" :data-value="item.id">
-                                                                        {{item.name}} ( {{ item.code }} )
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="col-12" v-if="option_work == 'pos'">
-                                            <div class="row">
-                                                <div class="form-group" style="width: 100%;">
-                                                    <div class="input-group">
-                                                        <div class="wrap_search_box multi">
-                                                            <div class="btn_search_box search_sale_room" @click="get_saleroom()">
-                                                                <span>{{trans.get('keys.chon_diem_ban')}}</span>
-                                                            </div>
-                                                            <div class="content_search_box">
-                                                                <input @input="get_saleroom()" type="text" v-model="saleroom_input"
-                                                                       class="form-control search_box">
-                                                                <i class="fa fa-spinner" aria-hidden="true"></i>
-                                                                <ul>
-                                                                    <li @click="selectSaleRoom(0)">{{trans.get('keys.chon_diem_ban')}}</li>
-                                                                    <li @click="selectSaleRoom(item.id)"
-                                                                        v-for="item in salerooms" :data-value="item.id">
-                                                                        {{item.name}} ( {{ item.code }} )
-                                                                    </li>
-                                                                </ul>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
+<!--                            <div class="col-12" v-if="role_type !== 'market'">-->
+<!--                                <div class="working_address">-->
+<!--                                    <div class="form-group">-->
+<!--                                        <label>{{trans.get('keys.noi_lam_viec')}}</label>-->
+<!--                                        <select class="form-control custom-select" v-model="option_work" @change="changeOption()">-->
+<!--                                            <option value="">{{trans.get('keys.chon_noi_lam_viec')}}</option>-->
+<!--                                            <option value="age">{{trans.get('keys.them_dai_ly')}}</option>-->
+<!--                                            <option value="pos">{{trans.get('keys.them_diem_ban')}}</option>-->
+<!--                                        </select>-->
+<!--                                        <hr>-->
+<!--                                        <div class="col-12" v-if="option_work === 'age'">-->
+<!--                                            <div class="row">-->
+<!--                                                <div class="form-group" style="width: 100%;">-->
+<!--                                                    <div class="input-group">-->
+<!--                                                        <div class="wrap_search_box multi">-->
+<!--                                                            <div class="btn_search_box search_branch" @click="get_branch()">-->
+<!--                                                                <span>{{trans.get('keys.chon_dai_ly')}}</span>-->
+<!--                                                            </div>-->
+<!--                                                            <div class="content_search_box">-->
+<!--                                                                <input @input="get_branch()" type="text" v-model="branch_input"-->
+<!--                                                                       class="form-control search_box">-->
+<!--                                                                <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                                                                <ul>-->
+<!--                                                                    <li @click="selectBranch(0)">{{trans.get('keys.chon_dai_ly')}}</li>-->
+<!--                                                                    <li @click="selectBranch(item.id)"-->
+<!--                                                                        v-for="item in branchs" :data-value="item.id">-->
+<!--                                                                        {{item.name}} ( {{ item.code }} )-->
+<!--                                                                    </li>-->
+<!--                                                                </ul>-->
+<!--                                                            </div>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
 
-                                        <div class="col-12">
-                                            <div class="row">
-                                                <div v-if="branch_list.length > 0" style="width: 100%;">
-                                                    <label style="font-weight:500;">{{trans.get('keys.dai_ly_da_chon')}}</label>
-                                                    <ul class="select_val">
-                                                        <li v-for="item in branch_list">
-                                                            {{item.name}}
-                                                            <a @click="removeBranch(item.id)" :title="trans.get('keys.bo_chon_dai_ly')"><i class="fal fa-remove"></i></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                                <div v-if="saleroom_list.length > 0" style="width: 100%;">
-                                                    <label style="font-weight:500;">{{trans.get('keys.diem_ban_da_chon')}}</label>
-                                                    <ul class="select_val">
-                                                        <li v-for="item in saleroom_list">
-                                                            {{item.name}}
-                                                            <a @click="removeSaleRoom(item.id)" :title="trans.get('keys.bo_chon_diem_ban')"><i class="fal fa-remove"></i></a>
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+<!--                                        <div class="col-12" v-if="option_work === 'pos'">-->
+<!--                                            <div class="row">-->
+<!--                                                <div class="form-group" style="width: 100%;">-->
+<!--                                                    <div class="input-group">-->
+<!--                                                        <div class="wrap_search_box multi">-->
+<!--                                                            <div class="btn_search_box search_sale_room" @click="get_saleroom()">-->
+<!--                                                                <span>{{trans.get('keys.chon_diem_ban')}}</span>-->
+<!--                                                            </div>-->
+<!--                                                            <div class="content_search_box">-->
+<!--                                                                <input @input="get_saleroom()" type="text" v-model="saleroom_input"-->
+<!--                                                                       class="form-control search_box">-->
+<!--                                                                <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                                                                <ul>-->
+<!--                                                                    <li @click="selectSaleRoom(0)">{{trans.get('keys.chon_diem_ban')}}</li>-->
+<!--                                                                    <li @click="selectSaleRoom(item.id)"-->
+<!--                                                                        v-for="item in salerooms" :data-value="item.id">-->
+<!--                                                                        {{item.name}} ( {{ item.code }} )-->
+<!--                                                                    </li>-->
+<!--                                                                </ul>-->
+<!--                                                            </div>-->
+<!--                                                        </div>-->
+<!--                                                    </div>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+
+<!--                                        <div class="col-12">-->
+<!--                                            <div class="row">-->
+<!--                                                <div v-if="branch_list.length > 0" style="width: 100%;">-->
+<!--                                                    <label style="font-weight:500;">{{trans.get('keys.dai_ly_da_chon')}}</label>-->
+<!--                                                    <ul class="select_val">-->
+<!--                                                        <li v-for="item in branch_list">-->
+<!--                                                            {{item.name}}-->
+<!--                                                            <a @click="removeBranch(item.id)" :title="trans.get('keys.bo_chon_dai_ly')"><i class="fal fa-remove"></i></a>-->
+<!--                                                        </li>-->
+<!--                                                    </ul>-->
+<!--                                                </div>-->
+<!--                                                <div v-if="saleroom_list.length > 0" style="width: 100%;">-->
+<!--                                                    <label style="font-weight:500;">{{trans.get('keys.diem_ban_da_chon')}}</label>-->
+<!--                                                    <ul class="select_val">-->
+<!--                                                        <li v-for="item in saleroom_list">-->
+<!--                                                            {{item.name}}-->
+<!--                                                            <a @click="removeSaleRoom(item.id)" :title="trans.get('keys.bo_chon_diem_ban')"><i class="fal fa-remove"></i></a>-->
+<!--                                                        </li>-->
+<!--                                                    </ul>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
 
                         </form>
-                        <div class="button-list" v-if="users.deleted == 0">
+                        <div class="button-list" v-if="users.deleted === 0">
                             <button type="button" class="btn btn-primary btn-sm" @click="updateUser()">{{trans.get('keys.cap_nhat_thong_tin')}}</button>
 
-                            <router-link v-if="type == 'view_user_market'"
+                            <router-link v-if="type === 'view_user_market'"
                                          to="/tms/system/view_user_market"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
-                            <router-link v-else-if="type == 'sale_room_user'"
+                            <router-link v-else-if="type === 'sale_room_user'"
                                          to="/tms/sale_room_user"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
-                            <router-link v-else-if="type == 'user_market'"
+                            <router-link v-else-if="type === 'user_market'"
                                          to="/tms/system/user_market"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
-                            <router-link v-else-if="type == 'teacher'"
+                            <router-link v-else-if="type === 'teacher'"
                                          to="/tms/education/user_teacher"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
-                            <router-link v-else-if="type == 'student'"
+                            <router-link v-else-if="type === 'student'"
                                          to="/tms/education/user_student"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
@@ -388,10 +382,10 @@
         },
         methods:{
             changeOption(){
-                if(this.option_work == 'pos'){
+                if(this.option_work === 'pos'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
                 }
-                if(this.option_work == 'age'){
+                if(this.option_work === 'age'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_dai_ly'));
                 }
             },
@@ -498,7 +492,7 @@
                     })
                         .then(response => {
                             roam_message(response.data.status,response.data.message);
-                            if(response.data.status == 'success'){
+                            if(response.data.status === 'success'){
                                 $('.user_avatar').attr('src','');
                             }
                         })
@@ -554,15 +548,15 @@
             },
             updatePassword(){
                 $('.message.error').hide();
-                if(this.password.length == 0){
+                if(this.password.length === 0){
                     $('.passError').show();
                     return;
                 }
-                if( this.passwordConf.length == 0 ){
+                if( this.passwordConf.length === 0 ){
                     $('.passConfError').show();
                     return;
                 }
-                if( this.password != this.passwordConf){
+                if( this.password !== this.passwordConf){
                     $('.passwordError').show();
                     return;
                 }
@@ -572,24 +566,24 @@
                     passwordConf:this.passwordConf,
                 })
                     .then(response => {
-                        if(response.data == 'success'){
+                        if(response.data === 'success'){
                             roam_message('success','Cập nhật mật khẩu thành công!');
                             $('.showChangePass').slideUp();
                             $('.btnShowChangePass').removeClass('active');
-                        }else if(response.data == 'passwordFail'){
+                        }else if(response.data === 'passwordFail'){
                             $('.passwordError').show();
                             roam_message('error','Mật khẩu không khớp nhau!');
-                        }else if(response.data == 'passFail'){
+                        }else if(response.data === 'passFail'){
                             $('.passStyleError').show();
                             roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
-                        }else if(response.data == 'passConfFail'){
+                        }else if(response.data === 'passConfFail'){
                             $('.passConfStyleError').show();
                             roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
-                        }else if(response.data == 'passwordExist'){
+                        }else if(response.data === 'passwordExist'){
                             $('.wrap_password').removeClass('success');
                             $('.wrap_password').addClass('warning');
                             roam_message('error','Mật khẩu mới trùng mật khẩu đang sử dụng.');
-                        }else if(response.data == 'validateFail'){
+                        }else if(response.data === 'validateFail'){
                             roam_message('error','Lỗi định dạng. Một số trường nhập vào chứa ký tự đặc biệt!');
                         }else{
                             roam_message('error','Lỗi hệ thống. Thao tác thất bại!');
@@ -605,18 +599,18 @@
                     passwordConf:this.passwordConf,
                 })
                     .then(response => {
-                        if(response.data.password == 'password_success'){
+                        if(response.data.password === 'password_success'){
                             $('span.wrap_password.pass').removeClass('warning');
                             $('span.wrap_password.pass').addClass('success');
-                        }else if(response.data.password == 'password_warning'){
+                        }else if(response.data.password === 'password_warning'){
                             $('span.wrap_password.pass').removeClass('success');
                             $('span.wrap_password.pass').addClass('warning');
                         }
 
-                        if(response.data.passwordConf == 'passwordConf_success'){
+                        if(response.data.passwordConf === 'passwordConf_success'){
                             $('span.wrap_password.pass_conf').removeClass('warning');
                             $('span.wrap_password.pass_conf').addClass('success');
-                        }else if(response.data.passwordConf == 'passwordConf_warning'){
+                        }else if(response.data.passwordConf === 'passwordConf_warning'){
                             $('span.wrap_password.pass_conf').removeClass('success');
                             $('span.wrap_password.pass_conf').addClass('warning');
                         }
@@ -626,7 +620,7 @@
                     });
             },
             changeConfirm(){
-                if(this.confirm == 1){
+                if(this.confirm === 1){
                     $('#inputConfirmAddress').attr('disabled',false);
                     $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_ma_chung_nhan'));
                 }else{
@@ -636,7 +630,7 @@
 
             },
             getRoles() {
-                if(this.type == 'system') {
+                if(this.type === 'system') {
                     axios.post('/system/user/list_role')
                         .then(response => {
                             this.roles = response.data;
@@ -671,7 +665,7 @@
                             var branch_a = [];
                             var saleroom_a = [];
                             for (var i=0;i < workplaces.length;i++) {
-                                if(workplaces[i].type == 'agents'){
+                                if(workplaces[i].type === 'agents'){
                                     branch_a = {
                                         'id' : workplaces[i].branch_id,
                                         'name' : workplaces[i].branch_name
@@ -679,7 +673,7 @@
                                     this.branch_list.push(branch_a);
                                     this.branch_select.push(workplaces[i].branch_id);
                                 }
-                                if(workplaces[i].type == 'pos'){
+                                if(workplaces[i].type === 'pos'){
                                     saleroom_a = {
                                         'id' : workplaces[i].id,
                                         'name' : workplaces[i].name
@@ -722,7 +716,7 @@
                     $('.fullname_required').show();
                     return;
                 }
-                if(this.users.training.trainning_id == 0){
+                if(this.users.training.trainning_id === 0){
                     $('.training_required').show();
                     return;
                 }

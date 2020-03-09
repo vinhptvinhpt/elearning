@@ -112,32 +112,6 @@
         organization_list:[],
         organization_keyword:'',
         //Treeselect options
-        value_array: [],
-        value: 'a',
-        template_options: [
-          {
-            id: 'a',
-            label: 'a',
-            children: [
-              {
-              id: 'aa',
-              label: 'aa',
-              },
-              {
-                id: 'ab',
-                label: 'ab',
-              }
-            ],
-          },
-          {
-            id: 'b',
-            label: 'b',
-          },
-          {
-            id: 'c',
-            label: 'c',
-          }
-        ],
         options: []
       }
     },
@@ -145,34 +119,42 @@
       selectOrganizationItem(id) {
         this.employee.organization_id = id;
       },
-      selectOrganization() {
+      selectOrganization(current_id) {
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list',{
           keyword: this.organization_keyword,
           exclude: this.employee.organization_id,
-          level: 1,
-          paginated: 0
+          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+          paginated: 0 //không phân trang
         })
           .then(response => {
             this.organization_list = response.data;
             //Set options recursive
-            this.options = this.setOptions(response.data);
-
+            this.options = this.setOptions(response.data, current_id);
             $('.content_search_box').removeClass('loadding');
           })
           .catch(error => {
             $('.content_search_box').removeClass('loadding');
           })
       },
-      setOptions(list) {
+      setOptions(list, current_id) {
         let outPut = [];
         for (const [key, item] of Object.entries(list)) {
           let newOption = {
             id: item.id,
-            label: item.name
+            label: item.name,
           };
           if (item.children.length > 0) {
-            newOption.children = this.setOptions(item.children);
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          if (item.id === current_id) {
+            newOption.isDisabled = true;
           }
           outPut.push(newOption);
         }
@@ -182,6 +164,7 @@
         axios.post('/organization-employee/detail/'+this.id)
           .then(response => {
             this.employee = response.data;
+            this.selectOrganization(this.employee.organization_id);
           })
           .catch(error => {
             console.log(error.response.data);
@@ -222,10 +205,7 @@
       }
     },
     mounted() {
-    },
-    created() {
       this.getData();
-      this.selectOrganization();
     }
   }
 </script>
