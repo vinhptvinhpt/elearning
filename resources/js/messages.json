@@ -745,7 +745,12 @@
         "ban_co_muon_xoa_nhan_vien_nay": "Are you sure to delete this employee?",
         "nhap_ten_nhan_vien": "Input employee name",
         "sua_nhan_vien": "Edit employee",
-        "xoa_nhan_vien": "Delete employee"
+        "xoa_nhan_vien": "Delete employee",
+        "khung_nang_luc_theo_tg": "Time-based Competency",
+        "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
+        "tu_dong_chay_cron": "Auto Enrol Student",
+        "tu_dong_cap_chung_chi": "Auto Certification",
+        "them_co_cau_to_chuc": "Add Organization"
     },
     "vi.keys": {
         "language": "",
@@ -1495,6 +1500,11 @@
         "sua_nhan_vien": "Sửa nhân viên",
         "xoa_nhan_vien": "Xóa nhân viên",
         "xem_nhan_vien":  "Xem nhân viên",
-        "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ"
+        "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ",
+        "khung_nang_luc_theo_tg": "Khung năng lực theo thời gian",
+        "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
+        "tu_dong_chay_cron": "Tự động Enrol học viên",
+        "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
+        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức"
     }
 }

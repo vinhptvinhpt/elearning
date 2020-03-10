@@ -13,7 +13,9 @@ use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\TmsTrainningCategory;
 use App\TmsTrainningCourse;
+use App\TmsTrainningOrganization;
 use App\TmsTrainningProgram;
+use App\TmsTrainningRole;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -33,18 +35,36 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         // TODO: Implement store() method.
         $response = new ResponseModel();
         try {
-            $code = $request->input('code');
-            $name = $request->input('name');
+            $code               = $request->input('code');
+            $name               = $request->input('name');
+            $style              = $request->input('style');
+            $run_cron           = $request->input('run_cron');
+            $auto_certificate   = $request->input('auto_certificate');
+            $time_start         = $request->input('time_start');
+            $time_end           = $request->input('time_end');
+            $role_id            = $request->input('role_id');
+            $organization_id    = $request->input('organization_id');
 
             $param = [
-                'code' => 'code',
-                'name' => 'text',
+                'code'              => 'code',
+                'name'              => 'text',
+                'time_start'        => 'text',
+                'time_end'          => 'text',
+                'role_id'           => 'number',
+                'organization_id'   => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
                 $response->message = __('dinh_dang_du_lieu_khong_hop_le');
                 return response()->json($response);
+            }
+            if($style == 1){
+                if(!$time_start || $time_start == 0){
+                    $response->status = false;
+                    $response->message = __('ban_chua_nhap_ngay_bat_dau');
+                    return response()->json($response);
+                }
             }
 
             \DB::beginTransaction();
@@ -57,10 +77,41 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json($response);
             }
 
+            if($style == 1){
+                $time_start = strtotime($time_start);
+                if(!$time_end){
+                    $time_end = $time_start + 365*24*60*60;
+                }else{
+                    $time_end = strtotime($time_end);
+                }
+            }else{
+                $time_start = 0;
+                $time_end = 0;
+            }
+
             $tms_trainning = TmsTrainningProgram::firstOrCreate([
-                'code' => $code,
-                'name' => $name
+                'code'              => $code,
+                'name'              => $name,
+                'style'             => $style ? 1 : 0,
+                'run_cron'          => $run_cron ? 1 : 0,
+                'time_start'        => $time_start,
+                'time_end'          => $time_end,
+                'auto_certificate'  => $auto_certificate ? 1 : 0
             ]);
+
+            if($role_id && $role_id != 0 && $tms_trainning){
+                $trainning_role = TmsTrainningRole::firstOrCreate([
+                    'trainning_id'  => $tms_trainning->id,
+                    'role_id'       => $role_id,
+                ]);
+            }
+
+            if($organization_id && $organization_id != 0 && $tms_trainning){
+                $trainning_organization = TmsTrainningOrganization::firstOrCreate([
+                    'trainning_id'      => $tms_trainning->id,
+                    'organization_id'   => $organization_id,
+                ]);
+            }
 
             \DB::commit();
             $response->status = true;
@@ -74,9 +125,93 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    public function update($id)
+    public function update(Request $request)
     {
         // TODO: Implement update() method.
+        $response = new ResponseModel();
+        try {
+            $id                  = $request->input('id');
+            $code               = $request->input('code');
+            $name               = $request->input('name');
+            $style              = $request->input('style');
+            $auto_certificate   = $request->input('auto_certificate');
+            $run_cron           = $request->input('run_cron');
+            $time_start         = $request->input('time_start');
+            $time_end           = $request->input('time_end');
+            $role_id            = $request->input('role_id');
+            $organization_id    = $request->input('organization_id');
+
+            $param = [
+                'code'              => 'code',
+                'name'              => 'text',
+                'time_start'        => 'text',
+                'time_end'          => 'text',
+                'role_id'           => 'number',
+                'organization_id'   => 'number',
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            \DB::beginTransaction();
+            $trainning = TmsTrainningProgram::findOrFail($id);
+
+            $trainningInfo = TmsTrainningProgram::select('id')->whereNotIn('id', [$trainning->id])->where('code', $code)->first();
+            if ($trainningInfo) {
+                $response->status = false;
+                $response->message = __('ma_trainning_da_ton_tai');
+                return response()->json($response);
+            }
+
+            if($style == 1){
+                $time_start = strtotime($time_start);
+                if(!$time_end){
+                    $time_end = $time_start + 365*24*60*60;
+                }else{
+                    $time_end = strtotime($time_end);
+                }
+            }else{
+                $time_start = 0;
+                $time_end = 0;
+            }
+
+            $trainning->code                = $code;
+            $trainning->name                = $name;
+            $trainning->style               = $style;
+            $trainning->auto_certificate    = $auto_certificate;
+            $trainning->run_cron            = $run_cron;
+            $trainning->time_start          = $time_start;
+            $trainning->time_end            = $time_end;
+            $trainning->save();
+
+            TmsTrainningRole::where('trainning_id',$id)->delete();
+            TmsTrainningOrganization::where('trainning_id',$id)->delete();
+            if($role_id && $role_id != 0){
+                $trainning_role = TmsTrainningRole::firstOrCreate([
+                    'trainning_id'  => $id,
+                    'role_id'       => $role_id,
+                ]);
+            }
+
+            if($organization_id && $organization_id != 0){
+                $trainning_organization = TmsTrainningOrganization::firstOrCreate([
+                    'trainning_id'      => $id,
+                    'organization_id'   => $organization_id,
+                ]);
+            }
+
+            \DB::commit();
+            $response->status = true;
+            $response->message = __('sua_khung_nang_luc_thanh_cong');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
     }
 
     public function delete($id)
@@ -127,10 +262,20 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $id = is_numeric($id) ? $id : 0;
         $trainning = DB::table('tms_traninning_programs as ttp')
-            //->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttp.id')
+            ->join('tms_trainning_role as ttr', 'ttr.trainning_id', '=', 'ttp.id')
+            ->join('tms_trainning_organization as tto', 'tto.trainning_id', '=', 'ttp.id')
             ->where('ttp.id', '=', $id)
-            ->select('ttp.id', 'ttp.code', 'ttp.name')
+            ->select(
+                'ttp.id', 'ttp.code', 'ttp.name', 'ttp.style', 'ttp.run_cron', 'ttp.auto_certificate',
+                'ttp.time_start', 'ttp.time_end','tto.organization_id', 'ttr.role_id'
+            )
             ->first();
+        if($trainning->time_start){
+            $trainning->time_start = date('d-m-Y',$trainning->time_start);
+        }
+        if($trainning->time_end){
+            $trainning->time_end = date('d-m-Y',$trainning->time_end);
+        }
 
         return response()->json($trainning);
     }

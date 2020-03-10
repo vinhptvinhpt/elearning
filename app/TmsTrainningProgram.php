@@ -10,6 +10,6 @@ class TmsTrainningProgram extends Model
 
     protected $table = 'tms_traninning_programs';
     protected $fillable = [
-        'name', 'code', 'deleted'
+        'name', 'code', 'deleted','time_start','time_end','run_cron','style','auto_certificate'
     ];
 }

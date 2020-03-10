@@ -536,7 +536,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/trainning/detail/{id}', 'Backend\TrainningController@viewDetail')->name('trainning.detail');
     Route::post('/api/trainning/list', 'Backend\TrainningController@apiGetListTrainning');
     Route::post('/api/trainning/create', 'Backend\TrainningController@apiCreateTrainning');
-    Route::post('/api/trainning/edit/{id}', 'Backend\TrainningController@apiEditTrainning');
+    Route::post('/api/trainning/update', 'Backend\TrainningController@apiEditTrainning');
     Route::post('/api/trainning/delete', 'Backend\TrainningController@apiDeteleTrainning');
     Route::post('/api/trainning/getlstsamplecourse', 'Backend\TrainningController@apiGetListSampleCourse');
     Route::get('/api/trainning/detail/{id}', 'Backend\TrainningController@apiGetDetailTrainning');
