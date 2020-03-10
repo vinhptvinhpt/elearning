@@ -2653,7 +2653,7 @@ class core_renderer extends renderer_base
         if ($url_picture != NULL && $user->picture == 0) {
             $root_url = $CFG->wwwroot;
             // [VinhPT][Easia] change url to tms
-            $root_url = trim($root_url, "lms")."tms";
+            $root_url = trim($root_url, "lms");
             $url_avatar = $root_url.$url_picture;
             if (getimagesize($url_avatar) !== false) {
                 $src = $url_avatar;
