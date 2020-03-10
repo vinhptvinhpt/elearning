@@ -1,4 +1,4 @@
-body {
+html body {
     font-family: 'Roboto', sans-serif;
     background: #f1f3f9;
     font-size: 14px;
@@ -86,8 +86,29 @@ table td, table th {
 table th {
     font-weight: 500;
     color: #324148;
-    font-size: 14px;
+    font-size: 13px;
     text-transform: capitalize;
+}
+
+.table-sm td {
+    font-size: 14px;
+}
+
+.dropdown-toggle.btn-light{
+    border-color: #ddd;
+    border-radius: 4px;
+}
+
+.vue-treeselect__control{
+    height: 40px !Important;
+}
+
+.vue-treeselect__single-value{
+    line-height: 40px !important;
+}
+
+.form-control {
+    font-size: 14px !important;
 }
 
 .panel-heading {
@@ -1056,4 +1077,17 @@ ul.user_detail_wrap li > div > div:first-child{
 }
 .v-select.vs--open span.vs__selected + input.vs__search {
     position: relative;
+}
+.card-header > a:hover{
+    text-decoration: none !important;
+    -webkit-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+label.custom-control-label{
+    cursor: pointer;
+}
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #fff;
+    border-color: #28a745 !important;
+    background-color: #28a745 !important;
 }
