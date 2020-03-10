@@ -5,7 +5,7 @@
                 <nav class="breadcrumb" aria-label="breadcrumb">
                     <ol class="breadcrumb bg-transparent px-0">
                         <li class="breadcrumb-item">
-                            <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link
+                            <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                         <li class="breadcrumb-item">
                             <router-link to="/tms/education/course/list">{{ trans.get('keys.khoa_dao_tao_online') }}

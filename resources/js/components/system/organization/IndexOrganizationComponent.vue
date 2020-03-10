@@ -131,7 +131,7 @@
                       <th>{{trans.get('keys.ten_to_chuc')}}</th>
                       <th>{{trans.get('keys.truc_thuoc')}}</th>
                       <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
-                      <th>{{trans.get('keys.hanh_dong')}}</th>
+                      <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                       </thead>
                       <tbody>
                       <tr v-if="posts.length == 0">
@@ -149,7 +149,13 @@
                             {{ item.employees.length }}
                           </router-link>
                         </td>
-                        <td>
+                        <td class="text-center">
+                          <router-link :title="trans.get('keys.xem_nhan_vien')"
+                                       class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}}">
+                          <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
+                          </router-link>
+
                           <router-link :title="trans.get('keys.sua_to_chuc')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
                                        :to="{ name: 'EditOrganization', params: { id: item.id }, query: { source_page: current}}">
@@ -171,7 +177,7 @@
                       <th>{{trans.get('keys.ten_to_chuc')}}</th>
                       <th>{{trans.get('keys.truc_thuoc')}}</th>
                       <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
-                      <th>{{trans.get('keys.hanh_dong')}}</th>
+                      <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                       </tfoot>
                     </table>
                     <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
@@ -245,19 +251,19 @@
                     })
             },
             setOptions(list) {
-            let outPut = [];
-            for (const [key, item] of Object.entries(list)) {
-              let newOption = {
-                id: item.id,
-                label: item.name
-              };
-              if (item.children.length > 0) {
-                newOption.children = this.setOptions(item.children);
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name
+                };
+                if (item.children.length > 0) {
+                  newOption.children = this.setOptions(item.children);
+                }
+                outPut.push(newOption);
               }
-              outPut.push(newOption);
-            }
-            return outPut;
-          },
+              return outPut;
+            },
             getDataList(paged) {
                 axios.post('/organization/list', {
                     page: paged || this.current,
@@ -305,6 +311,8 @@
                                 this.organization.parent_id = 0;
                                 $(".selected_content").text(this.trans.get('keys.truc_thuoc'));
                                 $('.form-control').removeClass('error');
+                                //reload form
+                                this.selectParent();
                             }
                         }
                     })

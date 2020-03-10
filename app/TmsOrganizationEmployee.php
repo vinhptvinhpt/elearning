@@ -25,6 +25,6 @@ class TmsOrganizationEmployee extends Model
      */
     public function organization()
     {
-        return $this->hasOne('App\TmsOrganization', 'id', 'organization_id');
+        return $this->belongsTo('App\TmsOrganization', 'organization_id', 'id');
     }
 }

@@ -3005,7 +3005,6 @@ class BussinessRepository implements IBussinessInterface
             }
             //Tạo quyền bên LMS
             $mdlRole = new MdlRole;
-            //dd($mdlRole);
             $mdlRole->shortname = $name;
             $mdlRole->description = $description;
             $mdlRole->sortorder = $lastRole['sortorder'] + 1;
@@ -3016,6 +3015,7 @@ class BussinessRepository implements IBussinessInterface
             $role->mdl_role_id = $mdlRole->id;
             $role->name = $name;
             $role->description = $description;
+            $role->guard_name = 'web';
             $role->status = 1;
             $role->save();
 
@@ -5687,7 +5687,7 @@ class BussinessRepository implements IBussinessInterface
             ->update(['status' => 1]);
 
         $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
-            ->select('id', 'name', 'status')
+            ->select('id', 'name', 'description', 'status')
             ->get()->toArray();
         return response()->json($roles);
     }
