@@ -51,6 +51,7 @@ Route::group([
         Route::get('/question/list', 'Backend\SurveyController@viewQuesttion')->name('question.list');
         Route::get('/api/question/listsurvey', 'Backend\SurveyController@apiGetListSurveyQuestion');
         Route::get('/api/survey/getlstprovinces', 'Backend\SurveyController@apiGetProvinces');
+        Route::get('/api/survey/getlstorganizations', 'Backend\SurveyController@apiGetOrganizations');
         Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
         Route::get('/education/user_teacher/trash', 'Backend\EducationController@viewTrashUserTeacher')->name('system.user.teacher.trash');
         Route::get('/education/user_student', 'Backend\EducationController@viewIndexStudent')->name('education.user_student');
@@ -173,7 +174,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/en/api/survey/statistic_view', 'Backend\SurveyController@apiStatisticSurveyView');
     Route::get('/en/api/survey/getlstbranchs/{province_id}', 'Backend\SurveyController@apiGetBarnchs');
     Route::get('/en/api/survey/getlstsalerooms/{branch_id}', 'Backend\SurveyController@apiGetSaleRooms');
-    Route::get('/en/survey/export_file/{survey_id}/{branch_id}/{saleroom_id}/{type_file}', 'Backend\SurveyController@apiExportFile');
+    Route::post('/en/api/survey/export_file', 'Backend\SurveyController@apiExportFile');
 
     Route::get('/en/education/user_teacher/edit/{user_id}', 'Backend\EducationController@viewEditTeacher')->name('system.user_teacher.edit');
     Route::get('/en/education/user_teacher/edit_detail/{user_id}', 'Backend\EducationController@viewEditDetailTeacher')->name('system.user_teacher.edit');
@@ -466,6 +467,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_list_restore', 'Backend\CourseController@apiGetListCourseRestore');
     Route::post('/api/courses/get_list_category_restore', 'Backend\CourseController@apiGetListCategoryRestore');
     Route::post('/api/courses/restore', 'Backend\CourseController@apiRestoreCourse');
+    Route::post('/api/courses/delete_forever', 'Backend\CourseController@apiDeleteCourseForever');
     Route::get('/education/course/enrol/{id}/{come_from}', 'Backend\CourseController@viewEnrolUser');
     Route::post('/api/course/current_user_enrol', 'Backend\CourseController@apiUserCurrentEnrol');
     Route::post('/api/course/user_need_enrol', 'Backend\CourseController@apiUserNeedEnrol');
@@ -509,9 +511,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/survey/statistic_view', 'Backend\SurveyController@apiStatisticSurveyView');
     Route::post('/api/survey/statistic_exam', 'Backend\SurveyController@apiStatisticSurveyExam');
     Route::get('/api/survey/getlstprovinces', 'Backend\SurveyController@apiGetProvinces');
+    Route::get('/api/survey/getlstorganizations', 'Backend\SurveyController@apiGetOrganizations');
     Route::get('/api/survey/getlstbranchs/{province_id}', 'Backend\SurveyController@apiGetBarnchs');
     Route::get('/api/survey/getlstsalerooms/{branch_id}', 'Backend\SurveyController@apiGetSaleRooms');
-    Route::get('/survey/export_file/{survey_id}/{branch_id}/{saleroom_id}/{type_file}', 'Backend\SurveyController@apiExportFile');
+    Route::post('/api/survey/export_file', 'Backend\SurveyController@apiExportFile');
+    Route::get('/downloadexcelsurvey/{type_file}', 'Backend\SurveyController@downloadExportSurvey');
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
     Route::post('/education/user/list_teacher', 'Backend\EducationController@apiListUserTeacher');
