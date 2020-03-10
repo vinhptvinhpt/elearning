@@ -24,6 +24,7 @@ class MdlCourse extends Model
         'total_date_course',
         'is_end_quiz',
         'estimate_duration',
-        'course_budget'
+        'course_budget',
+        'deleted'
     ];
 }

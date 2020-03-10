@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\MdlContext;
 use App\MdlCourse;
 use App\Repositories\MdlCourseRepository;
 use App\ViewModel\ResponseModel;
@@ -324,6 +325,42 @@ class CourseController extends Controller
     public function apiGetListCategoryRestore()
     {
         return $this->bussinessRepository->apiGetListCategoryRestore();
+    }
+
+    public function apiDeleteCourseForever(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+
+            $id = $request->input('course_id');
+
+            $param = [
+                'course_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            $course = MdlCourse::findOrFail($id);
+            $course->delete();
+
+            $result = 1;
+
+            if ($result == 1) {
+                $response->status = true;
+                $response->message = __('thao_tac_thanh_cong');
+            } else {
+                $response->status = false;
+                $response->message = __('thao_tac_khong_thanh_cong');
+            }
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
     }
 
 }
