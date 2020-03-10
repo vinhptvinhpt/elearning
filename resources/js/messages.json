@@ -745,7 +745,11 @@
         "ban_co_muon_xoa_nhan_vien_nay": "Are you sure to delete this employee?",
         "nhap_ten_nhan_vien": "Input employee name",
         "sua_nhan_vien": "Edit employee",
-        "xoa_nhan_vien": "Delete employee"
+        "xoa_nhan_vien": "Delete employee",
+        "xem_nhan_vien":  "View employee",
+        "dinh_dang_file_khong_hop_le": "File format is not acceptable",
+        "them_nhieu": "Assign batch employee",
+        "nhap_username_email_fullname": "Input username, fullname, email..."
     },
     "vi.keys": {
         "language": "",
@@ -1495,6 +1499,8 @@
         "sua_nhan_vien": "Sửa nhân viên",
         "xoa_nhan_vien": "Xóa nhân viên",
         "xem_nhan_vien":  "Xem nhân viên",
-        "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ"
+        "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ",
+        "them_nhieu": "Thêm nhiều",
+        "nhap_username_email_fullname": "Nhập username, fullname, email..."
     }
 }

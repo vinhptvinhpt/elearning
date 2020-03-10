@@ -70,4 +70,12 @@ class OrganizationController extends Controller
     public function apiEditEmployee(Request $request) {
         return $this->tmsOrganizationEmployeeRepository->update($request);
     }
+
+    public function apiAssignEmployee(Request $request) {
+        return $this->tmsOrganizationEmployeeRepository->assignEmployee($request);
+    }
+
+    public function apiDetailUser($id) {
+        return $this->tmsOrganizationEmployeeRepository->userDetail($id);
+    }
 }

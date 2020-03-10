@@ -123,7 +123,6 @@
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list',{
           keyword: this.organization_keyword,
-          exclude: this.employee.organization_id,
           level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
           paginated: 0 //không phân trang
         })
@@ -152,9 +151,6 @@
               }
             }
             newOption.children = this.setOptions(item.children, current_id);
-          }
-          if (item.id === current_id) {
-            newOption.isDisabled = true;
           }
           outPut.push(newOption);
         }
@@ -192,15 +188,19 @@
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
             }else{
-              toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
-              if(response.data.status === 'success'){
-                $('.form-control').removeClass('error');
+              if (response.data.message === 'success') {
+                toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
+                if(response.data.status === 'success'){
+                  $('.form-control').removeClass('error');
+                }
+              } else {
+                toastr[response.data.status](response.data.message, this.trans.get('keys.that_bai'));
               }
             }
           })
           .catch(error => {
-            console.log(error);
-            roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            //console.log(error);
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           })
       }
     },

@@ -153,6 +153,8 @@
             //Set options recursive
             //this.options = this.options.concat(this.setOptions(response.data));
             this.options = this.setOptions(response.data, current_id);
+
+            console.log(this.options);
             $('.content_search_box').removeClass('loadding');
           })
           .catch(error => {
@@ -175,7 +177,7 @@
             }
             newOption.children = this.setOptions(item.children, current_id);
           }
-          if (item.id === current_id) {
+          if (item.id === parseInt(this.id)) {
             newOption.isDisabled = true;
           }
           outPut.push(newOption);

@@ -300,7 +300,8 @@
                 })
                     .then(response => {
                         if(response.data.status){
-                            roam_message(response.data.status,response.data.message);
+                            roam_message(response.data.status, response.data.message);
+                            this.$parent.renderTopBarAgain();
                         }else{
                             roam_message('error',response.data.message);
                             $('.form-control').removeClass('notValidate');
@@ -308,6 +309,7 @@
                         }
                     })
                     .catch(error => {
+                        console.log(error);
                         roam_message('error','Lỗi hệ thống. Thao tác thất bại');
                     });
             },
