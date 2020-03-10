@@ -749,7 +749,12 @@
         "xem_nhan_vien":  "View employee",
         "dinh_dang_file_khong_hop_le": "File format is not acceptable",
         "them_nhieu": "Assign batch employee",
-        "nhap_username_email_fullname": "Input username, fullname, email..."
+        "nhap_username_email_fullname": "Input username, fullname, email...",
+        "khung_nang_luc_theo_tg": "Time-based Competency",
+        "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
+        "tu_dong_chay_cron": "Auto Enrol Student",
+        "tu_dong_cap_chung_chi": "Auto Certification",
+        "them_co_cau_to_chuc": "Add Organization"
     },
     "vi.keys": {
         "language": "",
@@ -1501,6 +1506,11 @@
         "xem_nhan_vien":  "Xem nhân viên",
         "dinh_dang_file_khong_hop_le": "Định dạng file không hợp lệ",
         "them_nhieu": "Thêm nhiều",
-        "nhap_username_email_fullname": "Nhập username, fullname, email..."
+        "nhap_username_email_fullname": "Nhập username, fullname, email...",
+        "khung_nang_luc_theo_tg": "Khung năng lực theo thời gian",
+        "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
+        "tu_dong_chay_cron": "Tự động Enrol học viên",
+        "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
+        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức"
     }
 }

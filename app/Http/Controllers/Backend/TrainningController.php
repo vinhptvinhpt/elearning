@@ -69,9 +69,9 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiGetDetailTrainning($id);
     }
 
-    public function apiEditTrainning($id, Request $request)
+    public function apiEditTrainning(Request $request)
     {
-        return $this->bussinessRepository->apiEditTrainning($id, $request);
+        return $this->trainningRepository->update($request);
     }
 
     public function apiDeteleTrainning(Request $request)
