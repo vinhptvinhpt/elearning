@@ -4,7 +4,7 @@
 namespace App\Repositories;
 
 
-use App\Repositories\IBussinessInterface;
+use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -65,6 +65,7 @@ use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use App\MdlRoleAssignments;
 use Maatwebsite\Excel\Facades\Excel;
@@ -5231,9 +5232,11 @@ class BussinessRepository implements IBussinessInterface
         $survey_id = $request->input('survey_id');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
+        $organization_id = $request->input('organization_id');
 
         $param = [
             'survey_id' => 'number',
+            'organization_id' => 'number'
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -5244,6 +5247,12 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user as u', 'u.id', '=', 'uv.user_id')
             ->where('uv.survey_id', '=', $survey_id)
             ->select('u.id as user_id');
+
+        if ($organization_id) {
+            $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'u.id')
+                ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
+                ->where('tor.id', '=', $organization_id);
+        }
 
         if ($startdate) {
             $full_start_date = $startdate . " 00:00:00";
@@ -5269,77 +5278,71 @@ class BussinessRepository implements IBussinessInterface
     public function apiStatisticSurveyExam(Request $request)
     {
         $survey_id = $request->input('survey_id');
-        $province_id = $request->input('province_id');
-        $branch_id = $request->input('branch_id');
-        $saleroom_id = $request->input('saleroom_id');
+        $organization_id = $request->input('organization_id');
 
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
         $param = [
             'survey_id' => 'number',
-            'province_id' => 'text',
-            'branch_id' => 'text',
-            'saleroom_id' => 'text'
+            'organization_id' => 'number'
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
         }
 
-        $leftjoin_query = 'tms_survey_users';
-        if ($saleroom_id != 'nohave') {
-            $leftjoin_query = '(SELECT su.survey_id, su.user_id,ru.sale_room_id,su.answer_id, su.created_at FROM tms_survey_users su
-                                join tms_sale_room_user ru
-                                on ru.user_id = su.user_id where  ru.sale_room_id = ' . $saleroom_id . ')';
-        } else if ($branch_id != 'nohave') {
-            $leftjoin_query = '(SELECT su.survey_id, su.user_id,ru.sale_room_id,su.answer_id, su.created_at FROM tms_survey_users su
-                                join tms_sale_room_user ru
-                                on ru.user_id = su.user_id
-                                 join tms_sale_rooms sr
-                                on sr.id = ru.sale_room_id
-                                join tms_branch_sale_room bs
-                                on bs.sale_room_id = sr.id
-                                 join tms_branch b
-                                on b.id = bs.branch_id
-                                where  b.id = ' . $branch_id . ')';
-        }
-
-
-        $query = 'select
-                    ques_a.ques_pid,
-                    ques_a.qpid_content,
-                    ques_a.qp_type,
-                    ques_a.ques_id,
-                    ques_a.content,
-                    ques_a.an_id ,
-                    ques_a.ans_content,
-                    count(su.answer_id) total_choice
-                    from
-                    (select s.id survey_id, s.name sur_name, q.id ques_pid,q.content qpid_content,q.type_question qp_type, qd.id ques_id,qd.content qd_content,qa.id an_id, qd.content, qa.content ans_content  from tms_question_answers qa
+        $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
+                    q.type_question as qp_type, qd.id as ques_id,
+                    qd.content as qd_content,qa.id as an_id, qd.content, 
+                    qa.content as ans_content  from tms_question_answers qa
                     join tms_question_datas qd
                     on qd.id = qa.question_id
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) ques_a
+                    on s.id = q.survey_id) as ques_a';
 
-                    LEFT JOIN ' . $leftjoin_query . ' su
-                    on su.answer_id = ques_a.an_id
-                    where ques_a.survey_id = ' . $survey_id . '';
-        // GROUP by ques_a.an_id';
+
+        $join_tables = 'tms_survey_users as su';
+
+        if ($organization_id) {
+            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join tms_organization_employee toe 
+                                on toe.user_id = su.user_id
+                                join tms_organization tor 
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
+            $join_tables = DB::raw($join_tables);
+        }
+
+        $dataStatisctics = DB::table(DB::raw($main_tables))
+            ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
+            ->where('ques_a.survey_id', '=', $survey_id)
+            ->select(
+                'ques_a.ques_pid',
+                'ques_a.qpid_content',
+                'ques_a.qp_type',
+                'ques_a.ques_id',
+                'ques_a.content',
+                'ques_a.an_id', 'ques_a.ans_content',
+                DB::raw('(count(su.answer_id)) as total_choice')
+            );
 
         if ($startdate) {
-            $query .= ' and su.created_at >= ' . "'" . $startdate . "'";
-        }
+            $full_start_date = $startdate . " 00:00:00";
+            $start_time = strtotime($full_start_date);
 
+            $dataStatisctics = $dataStatisctics->where('su.created_at', ">=", date("Y-m-d H:i:s", $start_time));
+        }
         if ($enddate) {
-            $query .= ' and su.created_at <= ' . "'" . $enddate . "'";
+            $full_end_date = $enddate . " 23:59:59";
+            $end_time = strtotime($full_end_date);
+
+            $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
         }
 
-        $query .= ' GROUP by ques_a.an_id';
+        $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
 
-        $lstData = DB::select(DB::raw($query));
         $datas = array();
         $count_data = count($lstData);
         if ($count_data > 0) {
@@ -5438,6 +5441,7 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($dataProvinces);
     }
 
+
     //api lay danh sach dai ly theo tinh thanh
     //ThoLD (08/10/2019)
     public function apiGetBarnchs($province_id)
@@ -5474,55 +5478,67 @@ class BussinessRepository implements IBussinessInterface
 
     public $dataResult;
 
-    public function apiExportFile($survey_id, $branch_id, $saleroom_id, $type_file)
+    public function apiExportFile(Request $request)
     {
-        if (!is_numeric($survey_id) && !is_numeric($branch_id) && !is_numeric($saleroom_id)) {
-            return '';
-        }
-
-        $leftjoin_query = 'tms_survey_users';
-        if ($saleroom_id != 'nohave') {
-            $leftjoin_query = '(SELECT su.survey_id, su.user_id,ru.sale_room_id,su.answer_id FROM `tms_survey_users` su
-                                join tms_sale_room_user ru
-                                on ru.user_id = su.user_id where  ru.sale_room_id = ' . $saleroom_id . ')';
-        } else if ($branch_id != 'nohave') {
-            $leftjoin_query = '(SELECT su.survey_id, su.user_id,ru.sale_room_id,su.answer_id FROM `tms_survey_users` su
-                                join tms_sale_room_user ru
-                                on ru.user_id = su.user_id
-                                 join tms_sale_rooms sr
-                                on sr.id = ru.sale_room_id
-                                join tms_branch_sale_room bs
-                                on bs.sale_room_id = sr.id
-                                 join tms_branch b
-                                on b.id = bs.branch_id
-                                where  b.id = ' . $branch_id . ')';
-        }
+        $survey_id = $request->input('survey_id');
+        $organization_id = $request->input('organization_id');
+        $type_file = $request->input('type_file');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
 
 
-        $query = 'select
-                    ques_a.ques_pid,
-                    ques_a.qpid_content,
-                    ques_a.qp_type,
-                    ques_a.ques_id,
-                    ques_a.content,
-                    ques_a.an_id ,
-                    ques_a.ans_content,
-                    count(su.answer_id) total_choice
-                    from
-                    (select s.id survey_id, s.name sur_name, q.id ques_pid,q.content qpid_content,q.type_question qp_type, qd.id ques_id,qd.content qd_content,qa.id an_id, qd.content, qa.content ans_content  from tms_question_answers qa
+        $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
+                    q.type_question as qp_type, qd.id as ques_id,
+                    qd.content as qd_content,qa.id as an_id, qd.content, 
+                    qa.content as ans_content  from tms_question_answers qa
                     join tms_question_datas qd
                     on qd.id = qa.question_id
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) ques_a
+                    on s.id = q.survey_id) as ques_a';
 
-                    LEFT JOIN ' . $leftjoin_query . ' su
-                    on su.answer_id = ques_a.an_id
-                    where ques_a.survey_id = ' . $survey_id . '
-                    GROUP by ques_a.an_id';
 
-        $lstData = DB::select(DB::raw($query));
+        $join_tables = 'tms_survey_users as su';
+
+        if ($organization_id) {
+            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join tms_organization_employee toe 
+                                on toe.user_id = su.user_id
+                                join tms_organization tor 
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
+            $join_tables = DB::raw($join_tables);
+        }
+
+        $dataStatisctics = DB::table(DB::raw($main_tables))
+            ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
+            ->where('ques_a.survey_id', '=', $survey_id)
+            ->select(
+                'ques_a.ques_pid',
+                'ques_a.qpid_content',
+                'ques_a.qp_type',
+                'ques_a.ques_id',
+                'ques_a.content',
+                'ques_a.an_id', 'ques_a.ans_content',
+                DB::raw('(count(su.answer_id)) as total_choice')
+            );
+
+        if ($startdate) {
+            $full_start_date = $startdate . " 00:00:00";
+            $start_time = strtotime($full_start_date);
+
+            $dataStatisctics = $dataStatisctics->where('su.created_at', ">=", date("Y-m-d H:i:s", $start_time));
+        }
+        if ($enddate) {
+            $full_end_date = $enddate . " 23:59:59";
+            $end_time = strtotime($full_end_date);
+
+            $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
+        }
+
+
+        $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
+
         $datas = array();
 
         #region sort data
@@ -5660,14 +5676,23 @@ class BussinessRepository implements IBussinessInterface
 
         $dataModel->lstFeedback = $lstFeedback;
 
+//        $filename = '';
         if ($type_file == 'pdf') {
-
+            $filename = 'report_survey.pdf';
             $pdf = PDF::loadView('survey.survey_export', compact('dataModel'));
-            return $pdf->download($survey->code . '-' . $survey->name . '.pdf');
+//            $pdf->save(storage_path($filename));
+            Storage::put($filename, $pdf->output());
+//            return $pdf->download($survey->code . '-' . $survey->name . '.pdf');
         } else {
             $this->dataResult = $dataModel;
-            return Excel::download(new SurveyExportView($this->dataResult), $survey->code . '-' . $survey->name . '.xlsx', 'Xlsx');
+            // $exportExcel = new SurveyExportView($this->dataResult);
+            $filename = 'report_survey.xlsx';
+            // $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+            Excel::store(new SurveyExportView($this->dataResult), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
+
         }
+        return response()->json(storage_path($filename));
     }
 
     #endregion
@@ -12681,7 +12706,7 @@ class BussinessRepository implements IBussinessInterface
                 ->select('u.id')->groupBy('u.id')->pluck('u.id');
 
             //Update performance 02/03/2020 by cuonghq
-            enrole_user_to_course_multiple($lstData,  $role->id, $course_id);
+            enrole_user_to_course_multiple($lstData, $role->id, $course_id);
 
 //            $count_dt = count($lstData);
 //            if ($count_dt > 0) {

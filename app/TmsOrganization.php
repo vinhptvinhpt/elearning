@@ -8,6 +8,10 @@ class TmsOrganization extends Model
 {
     protected $table = 'tms_organization';
 
+    protected $fillable = [
+        'id', 'name', 'code', 'parent_id', 'description', 'level', 'enabled'
+    ];
+
     /**
      * Get employees for the organization.
      */
@@ -24,7 +28,8 @@ class TmsOrganization extends Model
         return $this->hasOne('App\TmsOrganization', 'id', 'parent_id');//->with('parent');
     }
 
-    public function children() {
+    public function children()
+    {
         return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children');
     }
 }
