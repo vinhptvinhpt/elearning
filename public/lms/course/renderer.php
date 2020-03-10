@@ -122,7 +122,7 @@ class core_course_renderer extends plugin_renderer_base
         $img_url_DB = array_values($DB->get_records_sql($course_picture_url))[0]->course_avatar;
         $root_url = $CFG->wwwroot;
         // [VinhPT][Easia] Change url to tms
-        $root_url = trim($root_url, "lms")."tms";
+        $root_url = trim($root_url, "lms");
         // $module_course = $DB->get_records_sql($course_picture_url);
 
         $noimg_url = $OUTPUT->pix_url('no-image', 'theme');
@@ -1329,7 +1329,7 @@ class core_course_renderer extends plugin_renderer_base
         $img_url_DB = array_values($DB->get_records_sql($course_picture_url))[0]->course_avatar;
         $root_url = $CFG->wwwroot;
         // [VinhPT][Easia] Change url to tms
-        $root_url = trim($root_url, "lms")."tms";
+        $root_url = trim($root_url, "lms");
         if ($img_url_DB){
             $contentimages .= html_writer::tag(
                 'div',
