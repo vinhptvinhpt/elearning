@@ -785,24 +785,29 @@ class BussinessRepository implements IBussinessInterface
                 $result = 10;
             } else {
 
-                $app_name = Config::get('constants.domain.APP_NAME');
+//                $app_name = Config::get('constants.domain.APP_NAME');
+//
+//                $key_app = encrypt_key($app_name);
+//
+//                $data = array(
+//                    'courseid' => $id,
+//                    'app_key' => $key_app
+//                );
+//
+//                $data = createJWT($data, 'data');
+//
+//                $data_del = array(
+//                    'data' => $data
+//                );
+//
+//                $url = Config::get('constants.domain.LMS') . '/course/delete_course.php';
+//                //call api write log
+//                $result = callAPI('POST', $url, $data_del, false, '');
+                $course = MdlCourse::findOrFail($id);
+                $course->deleted = 1;
+                $course->save();
 
-                $key_app = encrypt_key($app_name);
-
-                $data = array(
-                    'courseid' => $id,
-                    'app_key' => $key_app
-                );
-
-                $data = createJWT($data, 'data');
-
-                $data_del = array(
-                    'data' => $data
-                );
-
-                $url = Config::get('constants.domain.LMS') . '/course/delete_course.php';
-                //call api write log
-                $result = callAPI('POST', $url, $data_del, false, '');
+                $result = 1;
             }
 
             if ($result == 1) {
@@ -848,7 +853,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course_completion_criteria.gradepass as pass_score'
             );
 
-        $listCourses = $listCourses->where('mdl_course.category', '=', 2); //2 là khóa học mẫu
+        $listCourses = $listCourses->where('mdl_course.category', '=', 2)->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
 
         $listCourses = $listCourses->orderBy('id', 'desc')->get();
 
@@ -1161,6 +1166,7 @@ class BussinessRepository implements IBussinessInterface
             $cv_endDate = strtotime($enddate);
             $listCourses = $listCourses->where('mdl_course.enddate', '<=', $cv_endDate);
         }
+        $listCourses = $listCourses->where('mdl_course.deleted', '=', 0);
 
         if ($status_course) {
             $unix_now = strtotime(Carbon::now());
@@ -1214,19 +1220,21 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-
-        $listCourses = DB::table('mdl_tool_recyclebin_category')
-            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_tool_recyclebin_category.categoryid')
+        $listCourses = DB::table('mdl_course')
+            ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
             ->select(
-                'mdl_tool_recyclebin_category.id',
-                'mdl_tool_recyclebin_category.fullname',
-                'mdl_tool_recyclebin_category.shortname',
-                'mdl_tool_recyclebin_category.timecreated',
+                'mdl_course.id',
+                'mdl_course.fullname',
+                'mdl_course.shortname',
+                'mdl_course.updated_at as timecreated',
                 'mdl_course_categories.name as category_name',
-                'mdl_tool_recyclebin_category.categoryid'
+                'mdl_course_categories.id as categoryid'
             );
 
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
+        if ($category_id) {
+            $listCourses = $listCourses->where('mdl_course.category', '=', $category_id);
+        }
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -1238,22 +1246,23 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
-            $listCourses = $listCourses->whereRaw('( mdl_tool_recyclebin_category.fullname like "%' . $keyword . '%" OR mdl_tool_recyclebin_category.shortname like "%' . $keyword . '%" )');
-        }
-
-        if ($category_id) {
-            $listCourses = $listCourses->where('mdl_tool_recyclebin_category.categoryid', '=', $category_id);
+            $listCourses = $listCourses->whereRaw('( mdl_course.fullname like "%' . $keyword . '%" OR mdl_course.shortname like "%' . $keyword . '%" )');
         }
 
         if ($timecreated) {
             $cv_startDate = strtotime($timecreated);
-            $listCourses = $listCourses->where('mdl_tool_recyclebin_category.timecreated', '>=', $cv_startDate);
+            $listCourses = $listCourses->where('mdl_course.updated_at', '>=', date("Y-m-d H:i:s", $cv_startDate));
         }
 
         if ($enddate) {
             $cv_endDate = strtotime($enddate . " 23:59:59");
-            $listCourses = $listCourses->where('mdl_tool_recyclebin_category.timecreated', '<=', $cv_endDate);
+            $listCourses = $listCourses->where('mdl_course.updated_at', '<=', date("Y-m-d H:i:s", $cv_endDate));
         }
+
+        $listCourses = $listCourses->where('mdl_course.deleted', '=', 1);
+
+
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         $listCourses = $listCourses->orderBy('id', 'desc');
 
@@ -1296,38 +1305,43 @@ class BussinessRepository implements IBussinessInterface
             }
 
 
-            $contextData = MdlContext::query();
-            $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT);
-            $contextData = $contextData->where('instanceid', '=', $instance_id);
-            $contextData = $contextData->orderBy('id', 'desc')->first();
+//            $contextData = MdlContext::query();
+//            $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT);
+//            $contextData = $contextData->where('instanceid', '=', $instance_id);
+//            $contextData = $contextData->orderBy('id', 'desc')->first();
+//
+//            if (!$contextData) {
+//                $response->status = false;
+//                $response->message = __('khoi_phuc_khoa_hoc');
+//                return response()->json($response);
+//            }
 
-            if (!$contextData) {
-                $response->status = false;
-                $response->message = __('khoi_phuc_khoa_hoc');
-                return response()->json($response);
-            }
+//            $app_name = Config::get('constants.domain.APP_NAME');
+//
+//            $key_app = encrypt_key($app_name);
+//
+//            $data = array(
+//                'contextid' => $contextData->id,
+//                'itemid' => $id,
+//                'action' => $action,
+//                'app_key' => $key_app
+//            );
+//
+//            $data = createJWT($data, 'data');
+//
+//            $data_res = array(
+//                'data' => $data
+//            );
+//
+//            $url = Config::get('constants.domain.LMS') . '/admin/tool/recyclebin/recyclebin.php';
+//
+//            //call api write log
+//            $result = callAPI('POST', $url, $data_res, false, '');
+            $course = MdlCourse::findOrFail($id);
+            $course->deleted = 0;
+            $course->save();
 
-            $app_name = Config::get('constants.domain.APP_NAME');
-
-            $key_app = encrypt_key($app_name);
-
-            $data = array(
-                'contextid' => $contextData->id,
-                'itemid' => $id,
-                'action' => $action,
-                'app_key' => $key_app
-            );
-
-            $data = createJWT($data, 'data');
-
-            $data_res = array(
-                'data' => $data
-            );
-
-            $url = Config::get('constants.domain.LMS') . '/admin/tool/recyclebin/recyclebin.php';
-
-            //call api write log
-            $result = callAPI('POST', $url, $data_res, false, '');
+            $result = 1;
 
             if ($result == 1) {
                 $response->status = true;

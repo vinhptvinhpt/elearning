@@ -467,6 +467,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_list_restore', 'Backend\CourseController@apiGetListCourseRestore');
     Route::post('/api/courses/get_list_category_restore', 'Backend\CourseController@apiGetListCategoryRestore');
     Route::post('/api/courses/restore', 'Backend\CourseController@apiRestoreCourse');
+    Route::post('/api/courses/delete_forever', 'Backend\CourseController@apiDeleteCourseForever');
     Route::get('/education/course/enrol/{id}/{come_from}', 'Backend\CourseController@viewEnrolUser');
     Route::post('/api/course/current_user_enrol', 'Backend\CourseController@apiUserCurrentEnrol');
     Route::post('/api/course/user_need_enrol', 'Backend\CourseController@apiUserNeedEnrol');
