@@ -3,19 +3,6 @@
         <!--hien thi cau hoi theo dang cau hoi phia tren, dap an o duoi -->
         <h6>{{trans.get('keys.cau_hoi')}} {{index_question + 1}}: <label v-html="question.question_content"></label>
         </h6><br/>
-        <!--        <div class="col-12 col-lg-9">-->
-        <!--            <div class="col-12 form-group">-->
-        <!--                <div class="custom-control custom-control-inline mb-3"-->
-        <!--                     v-for="(ans,index) in question.lstAnswers">-->
-        <!--                    <span class="badge badge-primary badge-indicator"-->
-        <!--                          style="height: 12px; width: 12px; margin:4px 3px 0 0;"></span>-->
-        <!--                    <label>{{trans.get('keys.dap_an')}} {{index + 1}} ( {{ans.total_choice}} / {{question.total_choice}} )</label>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-<!--        <br/>-->
-<!--        <button class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"><span-->
-<!--                class="btn-icon-wrap"><i class="fal fa-spin"></i></span></button>-->
         <div class="col-12">
             <div class="col-12">
                 <div class="col-12" v-if="question.total_choice>0">

@@ -233,7 +233,7 @@ interface IBussinessInterface
 
     public function apiGetSaleRooms($branch_id);
 
-    public function apiExportFile($survey_id, $branch_id, $saleroom_id, $type_file);
+    public function apiExportFile(Request $request);
 
 
     //------------SystemController-----------------------//

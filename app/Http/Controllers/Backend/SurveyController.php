@@ -6,7 +6,8 @@ use App\Http\Controllers\Controller;
 use App\TmsSurveyUserView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use PDF;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 use App\Repositories\BussinessRepository;
 
 //Quản lý thông tin survey
@@ -116,92 +117,125 @@ class SurveyController extends Controller
     {
         return $this->bussinessRepository->apiCreateSurvey($request);
     }
+
     public function apiGetDetailSurvey($id)
     {
         return $this->bussinessRepository->apiGetDetailSurvey($id);
     }
+
     public function apiEditSurvey($id, Request $request)
     {
         return $this->bussinessRepository->apiEditSurvey($id, $request);
     }
+
     public function apiDeleteSurvey(Request $request)
     {
         return $this->bussinessRepository->apiDeleteSurvey($request);
     }
+
     public function apiGetListSurveyRestore(Request $request)
     {
         return $this->bussinessRepository->apiGetListSurveyRestore($request);
     }
+
     public function apiRestoreSurvey(Request $request)
     {
         return $this->bussinessRepository->apiRestoreSurvey($request);
     }
+
     public function apiDeleteSurveyRestore(Request $request)
     {
         return $this->bussinessRepository->apiDeleteSurveyRestore($request);
     }
+
     public function apiGetListQuestion(Request $request)
     {
         return $this->bussinessRepository->apiGetListQuestion($request);
     }
+
     public function apiGetListSurveyQuestion()
     {
         return $this->bussinessRepository->apiGetListSurveyQuestion();
     }
+
     public function apiCreateQuestion(Request $request)
     {
         return $this->bussinessRepository->apiCreateQuestion($request);
     }
+
     public function apiGetDetailQuestion($id)
     {
         return $this->bussinessRepository->apiGetDetailQuestion($id);
     }
+
     public function apiGetListAnswerQuestion($id)
     {
         return $this->bussinessRepository->apiGetListAnswerQuestion($id);
     }
+
     public function apiGetListQuestionChild($id)
     {
         return $this->bussinessRepository->apiGetListQuestionChild($id);
     }
+
     public function apiUpdateQuestion($id, Request $request)
     {
         return $this->bussinessRepository->apiUpdateQuestion($id, $request);
     }
+
     public function apiDeleteQuestion(Request $request)
     {
         return $this->bussinessRepository->apiDeleteQuestion($request);
     }
+
     public function apiPresentSurvey($id)
     {
         return $this->bussinessRepository->apiPresentSurvey($id);
     }
+
     public function apiSubmitSurvey($id, Request $request)
     {
         return $this->bussinessRepository->apiSubmitSurvey($id, $request);
     }
+
     public function apiStatisticSurveyView(Request $request)
     {
         return $this->bussinessRepository->apiStatisticSurveyView($request);
     }
+
     public function apiStatisticSurveyExam(Request $request)
     {
         return $this->bussinessRepository->apiStatisticSurveyExam($request);
     }
+
     public function apiGetProvinces()
     {
         return $this->bussinessRepository->apiGetProvinces();
     }
+
+
     public function apiGetBarnchs($province_id)
     {
         return $this->bussinessRepository->apiGetBarnchs($province_id);
     }
+
     public function apiGetSaleRooms($branch_id)
     {
         return $this->bussinessRepository->apiGetSaleRooms($branch_id);
     }
-    public function apiExportFile($survey_id, $branch_id, $saleroom_id, $type_file)
+
+    public function apiExportFile(Request $request)
     {
-        return $this->bussinessRepository->apiExportFile($survey_id, $branch_id, $saleroom_id, $type_file);
+        return $this->bussinessRepository->apiExportFile($request);
+    }
+
+    public function downloadExportSurvey($type_file)
+    {
+        $filename = "report_survey.xlsx";
+        if ($type_file == 'pdf') {
+            $filename = "report_survey.pdf";
+        }
+
+        return Storage::download($filename);
     }
 }
