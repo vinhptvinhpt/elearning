@@ -766,7 +766,7 @@
                   }
                 }
                 if (organization_roles_selected.length > 1) {
-                  toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhóm'), this.trans.get('keys.that_bai'));
+                  toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                   return;
                 }
                 if (organization_roles_selected.length > 0) {
