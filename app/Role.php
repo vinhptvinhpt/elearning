@@ -18,6 +18,10 @@ class Role extends Model
     const ROLE_TEACHER = 4;
     const ROLE_STUDENT = 5;
 
+    const ROLE_MANAGER = 'manager';
+    const ROLE_LEADER = 'leader';
+    const ROLE_EMPLOYEE = 'employee';
+
 
     const arr_role_special = [
         'managemarket',
@@ -28,11 +32,26 @@ class Role extends Model
         'employee'
     ]; // mảng chứa danh sách quyền nvkd, trưởng đại lý, trưởng điểm bán
 
+
     const arr_role_default = [
         self::TEACHER,
         self::STUDENT,
-        self::ROOT,
         self::ADMIN
+    ];
+
+    const arr_role_hidden = [
+        self::ROOT,
+        self::MANAGE_AGENTS,
+        self::MANAGE_POS,
+        self::MANAGE_MARKET,
+        self::COURSE_CREATOR,
+        self::EDITING_TEACHER,
+    ];
+
+    const arr_role_organization = [
+        Role::ROLE_EMPLOYEE,
+        Role::ROLE_LEADER,
+        Role::ROLE_MANAGER
     ];
 
     protected $table = 'roles';

@@ -145,15 +145,16 @@
                         <td v-else></td>
                         <td class="text-center">
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}}">
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id, source_page: current}}">
                             {{ item.employees.length }}
                           </router-link>
                         </td>
                         <td class="text-center">
+
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}}">
-                          <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id, source_page: current}}">
+                            <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
                           </router-link>
 
                           <router-link :title="trans.get('keys.sua_to_chuc')"
@@ -168,6 +169,7 @@
                              class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
                             <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                           </a>
+
                         </td>
                       </tr>
                       </tbody>
