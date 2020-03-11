@@ -633,7 +633,10 @@ const routes = [
       {
         path: 'organization',
         component: IndexOrganizationComponent,
-        name: 'IndexOrganization'
+        name: 'IndexOrganization',
+        props: (route) => ({
+          source_page: route.query.source_page ? route.query.source_page : 0
+        })
       },
       {
         path: 'organization/edit/:id',
@@ -650,6 +653,7 @@ const routes = [
         name: 'IndexEmployee',
         props: (route) => ({
           organization_id: route.query.organization_id,
+          source_page: route.query.source_page ? route.query.source_page : 0
         })
       },
       {

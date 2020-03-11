@@ -198,6 +198,9 @@
                     <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
                       <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                     </div>
+                    <router-link :to="{ name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm"  v-if="organization_id !== false">
+                      {{trans.get('keys.quay_lai')}}
+                    </router-link>
                   </div>
                 </div>
               </div>
@@ -221,7 +224,7 @@
       //vPagination,
       AssignEmployee
     },
-    props: ['organization_id'],
+    props: ['organization_id', 'source_page'],
     data() {
       return {
         employee: {
