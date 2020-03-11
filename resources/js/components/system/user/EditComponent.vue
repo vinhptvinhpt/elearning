@@ -144,7 +144,7 @@
                                 <input type="text" id="inputAddress" v-model="users.address" class="form-control mb-4">
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
-                                <label for="inputEmail">{{trans.get('keys.email')}}</label>
+                                <label for="inputEmail">{{trans.get('keys.email')}} *</label>
                                 <input type="text" id="inputEmail" v-model="users.email" class="form-control mb-4" @input="changeRequired('inputEmail')">
                                 <label v-if="!users.email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
@@ -170,8 +170,9 @@
                             <div v-if="roles && type === 'system'" class="col-12 form-group">
                                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                                 <select v-model="users.role" class="form-control selectpicker" id="inputRole" multiple >
-                                    <option v-for="role in roles" :value="role.id">{{role.name}}</option>
+                                    <option v-for="role in roles" :value="role.id">{{ role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                                 </select>
+                                <label v-if="!users.role" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group">
@@ -188,13 +189,19 @@
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group">
-                                <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>
-                                <select id="inputTraining" class="form-control custom-select" v-model="users.training.trainning_id">
-                                    <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>
-                                    <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>
-                                </select>
-                                <label v-if="users.training.trainning_id === 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                              <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
+                              <treeselect v-model="users.employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                              <label v-if="!users.employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
+
+<!--                            <div class="col-md-4 col-sm-6 form-group">-->
+<!--                                <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>-->
+<!--                                <select id="inputTraining" class="form-control custom-select" v-model="users.training.trainning_id">-->
+<!--                                    <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>-->
+<!--                                    <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>-->
+<!--                                </select>-->
+<!--                                <label v-if="users.training.trainning_id === 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                            </div>-->
 
 <!--                            <div class="col-12" v-if="role_type !== 'market'">-->
 <!--                                <div class="working_address">-->
@@ -360,8 +367,11 @@
                     training: {
                         trainning_id: 0,
                     },
+                    employee: {
+                      organization_id: 0,
+                    }
                 },
-                roles:{},
+                roles:[],
                 citys:[],
                 passwordConf:'',
                 password:'',
@@ -377,7 +387,19 @@
                 saleroom_select:[],
                 training_list:[],
                 training:0,
-                role_type: ''
+                role_type: '',
+                //Treeselect options
+                options: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_roles: [
+                  'manager',
+                  'employee',
+                  'leader'
+                ]
             }
         },
         methods:{
@@ -660,7 +682,16 @@
                                 timecertificate: '',
                             }
                         }
-                        if(response.data.salerooms.length > 0){
+
+                        if (!this.users.employee) {
+                          this.users.employee = {
+                            organization_id: 0
+                          };
+                        }
+
+                        this.selectOrganization(this.users.employee.organization_id);
+
+                        if (response.data.salerooms.length > 0) {
                             var workplaces = response.data.salerooms;
                             var branch_a = [];
                             var saleroom_a = [];
@@ -704,10 +735,10 @@
                     $('.username_required').show();
                     return;
                 }
-                /*if(!this.users.email){
+                if(!this.users.email){
                     $('.email_required').show();
                     return;
-                }*/
+                }
                 if(!this.users.cmtnd){
                     $('.cmtnd_required').show();
                     return;
@@ -716,10 +747,42 @@
                     $('.fullname_required').show();
                     return;
                 }
-                if(this.users.training.trainning_id === 0){
-                    $('.training_required').show();
-                    return;
+                // if(this.users.training.trainning_id === 0){
+                //     $('.training_required').show();
+                //     return;
+                // }
+
+                if (!this.users.role) {
+                  $('.user_role_required').show();
+                  return;
                 }
+
+                let organization_roles_selected = [];
+                for (const [key, item] of Object.entries(this.roles)) {
+                  if (this.users.role.indexOf(item.id) !== -1) {
+                    if (this.organization_roles.indexOf(item.name) !== -1) {
+                      organization_roles_selected.push(item.name);
+                    }
+                  }
+                }
+                if (organization_roles_selected.length > 1) {
+                  toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                  return;
+                }
+                if (organization_roles_selected.length > 0) {
+                  if (!this.users.employee.organization_id) {
+                    toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                    $('.organization_required').show();
+                    return;
+                  }
+                }
+                if (this.users.employee.organization_id) {
+                  if (organization_roles_selected.length === 0) {
+                    toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                    return;
+                  }
+                }
+
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.users.fullname);
@@ -746,6 +809,7 @@
                 this.formData.append('branch_select', this.branch_select);
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('trainning_id', this.users.training.trainning_id);
+                this.formData.append('organization_id', this.users.employee.organization_id);
 
                 axios.post('/system/user/update', this.formData, {
                     headers: {
@@ -809,7 +873,44 @@
             },
             setFileInput() {
               $('.dropify').dropify();
-            }
+            },
+            setOptions(list, current_id) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name,
+                };
+                if (item.children.length > 0) {
+                  for (const [key, child] of Object.entries(item.children)) {
+                    if (child.id === current_id) {
+                      newOption.isDefaultExpanded = true;
+                      break;
+                    }
+                  }
+                  newOption.children = this.setOptions(item.children, current_id);
+                }
+                outPut.push(newOption);
+              }
+              return outPut;
+            },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list',{
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.options = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
         },
         mounted() {
             this.fetch();

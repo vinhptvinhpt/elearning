@@ -39,13 +39,13 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputUsername">{{trans.get('keys.ten_dang_nhap')}} *</label>
-                    <input autocomplete="false" v-model="username" type="text" id="inputUsername" :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')" class="form-control mb-4" @input="changeRequired('inputUsername')" readonly>
+                    <input autocomplete="false" v-model="username" type="text" id="inputUsername" :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')" class="form-control mb-4" @input="changeRequired('inputUsername')">
                     <label v-if="!username" class="required text-danger username_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputPassword">{{trans.get('keys.mat_khau')}} *</label>
                     <span class="wrap_password pass">
-                        <input autocomplete="false" v-model="password" type="password" id="inputPassword" placeholder="" class="form-control mb-4" @input="validate_password" readonly>
+                        <input autocomplete="false" v-model="password" type="password" id="inputPassword" placeholder="" class="form-control mb-4" @input="validate_password">
                         <i class="fa fa-check-circle-o label_validate" aria-hidden="true"></i>
                     </span>
                     <label v-if="!password" class="required text-danger password_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -72,7 +72,7 @@
                     <input v-model="dob" type="date" id="inputDob" class="form-control mb-4">
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputEmail">{{trans.get('keys.email')}}</label>
+                    <label for="inputEmail">{{trans.get('keys.email')}} *</label>
                     <input v-model="email" type="text" id="inputEmail" :placeholder="trans.get('keys.dia_chi_email')" class="form-control mb-4" @input="changeRequired('inputEmail')">
                     <label v-if="!email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
@@ -94,8 +94,9 @@
                     <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                     <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>
                         <option value="">{{trans.get('keys.chon_vai_tro')}}</option>
-                        <option v-for="role in roles" :value="role.id">{{role.name}}</option>
+                        <option v-for="role in roles" :value="role.id">{{ role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                     </select>
+                    <label v-if="!inputRole" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
                 <div class="col-md-4 col-sm-6  form-group">
@@ -123,103 +124,114 @@
                         <option value="1">{{trans.get('keys.nghi_cong_tac')}}</option>
                     </select>
                 </div>
-                <div class="col-sm-6 form-group">
-                    <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>
-                    <select id="inputTraining" class="form-control custom-select" v-model="training">
-                        <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>
-                        <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>
-                    </select>
-                    <label v-if="training == 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                </div>
-                <div class="col-12">
-                    <div class="working_address">
-                        <div class="form-group">
-                            <label>{{trans.get('keys.noi_lam_viec')}}</label>
-                            <select class="form-control custom-select" v-model="option_work" @change="changeOption()">
-                                <option value="">{{trans.get('keys.chon_noi_lam_viec')}}</option>
-                                <option value="age">{{trans.get('keys.them_dai_ly')}}</option>
-                                <option value="pos">{{trans.get('keys.them_diem_ban')}}</option>
-                            </select>
-                            <label v-if="branch_select.length == 0 && saleroom_select.length == 0" class="required text-danger work_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                            <hr>
-                            <div class="col-12" v-if="option_work == 'age'">
-                                <div class="row">
-                                    <div class="form-group" style="width: 100%;">
-                                        <div class="input-group">
-                                            <div class="wrap_search_box multi">
-                                                <div class="btn_search_box search_branch" @click="get_branch()">
-                                                    <span>{{trans.get('keys.chon_dai_ly')}}</span>
-                                                </div>
-                                                <div class="content_search_box">
-                                                    <input @input="get_branch()" type="text" v-model="branch_input"
-                                                           class="form-control search_box">
-                                                    <i class="fa fa-spinner" aria-hidden="true"></i>
-                                                    <ul>
-                                                        <li @click="selectBranch(0)">{{trans.get('keys.chon_dai_ly')}}</li>
-                                                        <li @click="selectBranch(item.id)"
-                                                            v-for="item in branchs" :data-value="item.id">
-                                                            {{item.name}} ( {{ item.code }} )
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="col-12" v-if="option_work == 'pos'">
-                                <div class="row">
-                                    <div class="form-group" style="width: 100%;">
-                                        <div class="input-group">
-                                            <div class="wrap_search_box multi">
-                                                <div class="btn_search_box search_sale_room" @click="get_saleroom()">
-                                                    <span>{{trans.get('keys.chon_diem_ban')}}</span>
-                                                </div>
-                                                <div class="content_search_box">
-                                                    <input @input="get_saleroom()" type="text" v-model="saleroom_input"
-                                                           class="form-control search_box">
-                                                    <i class="fa fa-spinner" aria-hidden="true"></i>
-                                                    <ul>
-                                                        <li @click="selectSaleRoom(0)">{{trans.get('keys.chon_diem_ban')}}</li>
-                                                        <li @click="selectSaleRoom(item.id)"
-                                                            v-for="item in salerooms" :data-value="item.id">
-                                                            {{item.name}} ( {{ item.code }} )
-                                                        </li>
-                                                    </ul>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-12">
-                                <div class="row">
-                                    <div v-if="branch_list.length > 0" style="width: 100%;">
-                                        <label style="font-weight:500;">{{trans.get('keys.dai_ly_da_chon')}}</label>
-                                        <ul class="select_val">
-                                            <li v-for="item in branch_list">
-                                                {{item.name}}
-                                                <a @click="removeBranch(item.id)" :title="trans.get('keys.bo_chon_dai_ly')"><i class="fal fa-remove"></i></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div v-if="saleroom_list.length > 0" style="width: 100%;">
-                                        <label style="font-weight:500;">{{trans.get('keys.diem_ban_da_chon')}}</label>
-                                        <ul class="select_val">
-                                            <li v-for="item in saleroom_list">
-                                                {{item.name}}
-                                                <a @click="removeSaleRoom(item.id)" :title="trans.get('keys.bo_chon_diem_ban')"><i class="fal fa-remove"></i></a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="col-md-4 col-sm-6 form-group">
+                    <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
+                    <treeselect v-model="organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                    <label v-if="!organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
+                <!--Training-->
+<!--                <div class="col-sm-6 form-group">-->
+<!--                    <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>-->
+<!--                    <select id="inputTraining" class="form-control custom-select" v-model="training">-->
+<!--                        <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>-->
+<!--                        <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>-->
+<!--                    </select>-->
+<!--                    <label v-if="training == 0" class="required text-danger training_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                </div>-->
+
+                <!--Working at-->
+<!--                <div class="col-12">-->
+<!--                    <div class="working_address">-->
+<!--                        <div class="form-group">-->
+<!--                            <label>{{trans.get('keys.noi_lam_viec')}}</label>-->
+<!--                            <select class="form-control custom-select" v-model="option_work" @change="changeOption()">-->
+<!--                                <option value="">{{trans.get('keys.chon_noi_lam_viec')}}</option>-->
+<!--                                <option value="age">{{trans.get('keys.them_dai_ly')}}</option>-->
+<!--                                <option value="pos">{{trans.get('keys.them_diem_ban')}}</option>-->
+<!--                            </select>-->
+<!--                            <label v-if="branch_select.length == 0 && saleroom_select.length == 0" class="required text-danger work_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                            <hr>-->
+<!--                            <div class="col-12" v-if="option_work == 'age'">-->
+<!--                                <div class="row">-->
+<!--                                    <div class="form-group" style="width: 100%;">-->
+<!--                                        <div class="input-group">-->
+<!--                                            <div class="wrap_search_box multi">-->
+<!--                                                <div class="btn_search_box search_branch" @click="get_branch()">-->
+<!--                                                    <span>{{trans.get('keys.chon_dai_ly')}}</span>-->
+<!--                                                </div>-->
+<!--                                                <div class="content_search_box">-->
+<!--                                                    <input @input="get_branch()" type="text" v-model="branch_input"-->
+<!--                                                           class="form-control search_box">-->
+<!--                                                    <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                                                    <ul>-->
+<!--                                                        <li @click="selectBranch(0)">{{trans.get('keys.chon_dai_ly')}}</li>-->
+<!--                                                        <li @click="selectBranch(item.id)"-->
+<!--                                                            v-for="item in branchs" :data-value="item.id">-->
+<!--                                                            {{item.name}} ( {{ item.code }} )-->
+<!--                                                        </li>-->
+<!--                                                    </ul>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-12" v-if="option_work == 'pos'">-->
+<!--                                <div class="row">-->
+<!--                                    <div class="form-group" style="width: 100%;">-->
+<!--                                        <div class="input-group">-->
+<!--                                            <div class="wrap_search_box multi">-->
+<!--                                                <div class="btn_search_box search_sale_room" @click="get_saleroom()">-->
+<!--                                                    <span>{{trans.get('keys.chon_diem_ban')}}</span>-->
+<!--                                                </div>-->
+<!--                                                <div class="content_search_box">-->
+<!--                                                    <input @input="get_saleroom()" type="text" v-model="saleroom_input"-->
+<!--                                                           class="form-control search_box">-->
+<!--                                                    <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                                                    <ul>-->
+<!--                                                        <li @click="selectSaleRoom(0)">{{trans.get('keys.chon_diem_ban')}}</li>-->
+<!--                                                        <li @click="selectSaleRoom(item.id)"-->
+<!--                                                            v-for="item in salerooms" :data-value="item.id">-->
+<!--                                                            {{item.name}} ( {{ item.code }} )-->
+<!--                                                        </li>-->
+<!--                                                    </ul>-->
+<!--                                                </div>-->
+<!--                                            </div>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+
+<!--                            <div class="col-12">-->
+<!--                                <div class="row">-->
+<!--                                    <div v-if="branch_list.length > 0" style="width: 100%;">-->
+<!--                                        <label style="font-weight:500;">{{trans.get('keys.dai_ly_da_chon')}}</label>-->
+<!--                                        <ul class="select_val">-->
+<!--                                            <li v-for="item in branch_list">-->
+<!--                                                {{item.name}}-->
+<!--                                                <a @click="removeBranch(item.id)" :title="trans.get('keys.bo_chon_dai_ly')"><i class="fal fa-remove"></i></a>-->
+<!--                                            </li>-->
+<!--                                        </ul>-->
+<!--                                    </div>-->
+<!--                                    <div v-if="saleroom_list.length > 0" style="width: 100%;">-->
+<!--                                        <label style="font-weight:500;">{{trans.get('keys.diem_ban_da_chon')}}</label>-->
+<!--                                        <ul class="select_val">-->
+<!--                                            <li v-for="item in saleroom_list">-->
+<!--                                                {{item.name}}-->
+<!--                                                <a @click="removeSaleRoom(item.id)" :title="trans.get('keys.bo_chon_diem_ban')"><i class="fal fa-remove"></i></a>-->
+<!--                                            </li>-->
+<!--                                        </ul>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
+
+                <!--Submit-->
                 <div class="col-12">
                     <div class="button-list text-right mt-2">
                         <button type="button" class="btn btn-secondary btn-sm collapsed closeForm" data-toggle="collapse" href="#collapse_1" aria-expanded="true">{{trans.get('keys.huy')}}</button>
@@ -246,7 +258,7 @@
                 cmtnd:'',
                 address:'',
                 inputRole:[],
-                roles:{},
+                roles:[],
                 sex: 1,
                 code: '',
                 start_time: '',
@@ -270,6 +282,19 @@
                 saleroom_list:[],
                 branch_select:[],
                 saleroom_select:[],
+                organization_id: 0,
+                //Treeselect options
+                options: [
+                    {
+                        id: 0,
+                        label: this.trans.get('keys.chon_to_chuc')
+                    }
+                ],
+                organization_roles: [
+                'manager',
+                'employee',
+                'leader'
+                ]
             }
         },
         methods: {
@@ -468,24 +493,56 @@
                     $('.fullname_required').show();
                     return;
                 }
-                /*if(!this.email){
+                if(!this.email){
                     $('.email_required').show();
                     return;
-                }*/
+                }
                 if(!this.cmtnd){
                     $('.cmtnd_required').show();
                     return;
                 }
-                if(this.training == 0) {
-                    $('.training_required').show();
-                    return;
-                }
+                // if(this.training == 0) {
+                //     $('.training_required').show();
+                //     return;
+                // }
                 if(this.role_login == 'user_market'){
                     if(this.branch_select.length == 0 && this.saleroom_select.length == 0){
                         $('.work_required').show();
                         return;
                     }
                 }
+                if (!this.inputRole) {
+                    $('.user_role_required').show();
+                    return;
+                }
+
+                let organization_roles_selected = [];
+                for (const [key, item] of Object.entries(this.roles)) {
+                    if (this.inputRole.indexOf(item.id) !== -1) {
+                        if (this.organization_roles.indexOf(item.name) !== -1) {
+                            organization_roles_selected.push(item.name);
+                        }
+                    }
+                }
+                if (organization_roles_selected.length > 1) {
+                    toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                    return;
+                }
+                if (organization_roles_selected.length > 0) {
+                    if (!this.organization_id) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                        $('.organization_required').show();
+                        return;
+                    }
+                }
+                if (this.organization_id) {
+                    if (organization_roles_selected.length === 0) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                        return;
+                    }
+                }
+
+
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
@@ -512,6 +569,7 @@
                 this.formData.append('branch_select', this.branch_select);
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('training_id', this.training);
+                this.formData.append('organization_id', this.organization_id);
 
                 axios.post('/system/user/create', this.formData, {
                     headers: {
@@ -564,14 +622,52 @@
             },
             setFileInput() {
               $('.dropify').dropify();
-            }
+            },
+            setOptions(list, current_id) {
+                let outPut = [];
+                for (const [key, item] of Object.entries(list)) {
+                    let newOption = {
+                        id: item.id,
+                        label: item.name,
+                    };
+                    if (item.children.length > 0) {
+                        for (const [key, child] of Object.entries(item.children)) {
+                            if (child.id === current_id) {
+                                newOption.isDefaultExpanded = true;
+                                break;
+                            }
+                        }
+                        newOption.children = this.setOptions(item.children, current_id);
+                    }
+                    outPut.push(newOption);
+                }
+                return outPut;
+            },
+            selectOrganization(current_id) {
+                $('.content_search_box').addClass('loadding');
+                axios.post('/organization/list',{
+                    keyword: this.organization_keyword,
+                    level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                    paginated: 0 //không phân trang
+                })
+                    .then(response => {
+                        this.organization_list = response.data;
+                        //Set options recursive
+                        this.options = this.setOptions(response.data, current_id);
+                        $('.content_search_box').removeClass('loadding');
+                    })
+                    .catch(error => {
+                        $('.content_search_box').removeClass('loadding');
+                    })
+            },
         },
         mounted() {
             this.getRoles();
             this.getCitys();
             //this.get_branch();
-            this.getTrainingProgram();
+            //this.getTrainingProgram();
             this.setFileInput();
+            this.selectOrganization();
         }
     }
 </script>

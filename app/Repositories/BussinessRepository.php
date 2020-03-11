@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\TmsOrganizationEmployee;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -474,48 +475,42 @@ class BussinessRepository implements IBussinessInterface
 
             $sru = DB::table('model_has_roles as mhr')
                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
-                ->where('roles.name', '=', Role::MANAGE_MARKET)
-                ->where('mhr.model_id', '=', $user_id)
-                ->count();
-            if ($sru > 0)
-                $checkRole->has_user_market = true;
+                //->where('roles.name', '=', Role::MANAGE_MARKET)
+                ->where('mhr.model_id', $user_id)
+                ->where('mhr.model_type', 'App/MdlUser')
+                ->get();
 
-            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
-            if ($my_branches > 0)
-                $checkRole->has_master_agency = true;
+            if (count($sru) != 0) {
+                foreach ($sru as $role) {
+                    if ($role->name == Role::ROLE_MANAGER) {
+                        $checkRole->has_role_manager = true;
+                    } elseif ($role->name == Role::ROLE_LEADER) {
+                        $checkRole->has_role_leader = true;
+                    } elseif ($role->name == Role::MANAGE_MARKET) {
+                        $checkRole->has_user_market = true;
+                    } elseif ($role->name == Role::MANAGE_AGENTS) {
+                        $checkRole->has_role_agency = true;
+                    } elseif ($role->name == Role::MANAGE_POS) {
+                        $checkRole->has_role_pos = true;
+                    } elseif ($role->name == Role::ROOT) {
+                        $checkRole->root_user = true;
+                    }
+                }
+            }
 
-            $count = DB::table('model_has_roles as mhr')
-                ->select('mhr.id')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)
-                ->where('r.name', '=', Role::MANAGE_AGENTS)
-                ->count();
-            if ($count > 0)
-                $checkRole->has_role_agency = true;
+//            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
+//            if ($my_branches > 0)
+//                $checkRole->has_master_agency = true;
 
-            $count_role = DB::table('model_has_roles as mhr')
-                ->select('mhr.id')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)
-                ->where('r.name', '=', Role::MANAGE_POS)
-                ->count();
-            if ($count_role > 0)
-                $checkRole->has_role_pos = true;
 
-            $roleName = ['Root', 'root'];
-
-            $roleCheck = DB::table('model_has_roles as mhr')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)->whereIn('r.name', $roleName)->first();
-
-            if ($roleCheck)
-                $checkRole->root_user = true;
         } catch (Exception $e) {
             $checkRole->has_user_market = false;
             $checkRole->has_master_agency = false;
             $checkRole->has_role_agency = false;
             $checkRole->has_role_pos = false;
             $checkRole->root_user = false;
+            $checkRole->has_role_manager = false;
+            $checkRole->has_role_leader = false;
         }
         return response()->json($checkRole);
     }
@@ -5308,7 +5303,7 @@ class BussinessRepository implements IBussinessInterface
 
         $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
                     q.type_question as qp_type, qd.id as ques_id,
-                    qd.content as qd_content,qa.id as an_id, qd.content, 
+                    qd.content as qd_content,qa.id as an_id, qd.content,
                     qa.content as ans_content  from tms_question_answers qa
                     join tms_question_datas qd
                     on qd.id = qa.question_id
@@ -5322,9 +5317,9 @@ class BussinessRepository implements IBussinessInterface
 
         if ($organization_id) {
             $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
-                                join tms_organization_employee toe 
+                                join tms_organization_employee toe
                                 on toe.user_id = su.user_id
-                                join tms_organization tor 
+                                join tms_organization tor
                                 on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
             $join_tables = DB::raw($join_tables);
         }
@@ -5503,7 +5498,7 @@ class BussinessRepository implements IBussinessInterface
 
         $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
                     q.type_question as qp_type, qd.id as ques_id,
-                    qd.content as qd_content,qa.id as an_id, qd.content, 
+                    qd.content as qd_content,qa.id as an_id, qd.content,
                     qa.content as ans_content  from tms_question_answers qa
                     join tms_question_datas qd
                     on qd.id = qa.question_id
@@ -5517,9 +5512,9 @@ class BussinessRepository implements IBussinessInterface
 
         if ($organization_id) {
             $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
-                                join tms_organization_employee toe 
+                                join tms_organization_employee toe
                                 on toe.user_id = su.user_id
-                                join tms_organization tor 
+                                join tms_organization tor
                                 on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
             $join_tables = DB::raw($join_tables);
         }
@@ -5725,7 +5720,9 @@ class BussinessRepository implements IBussinessInterface
         Role::whereIn('name', $excluded)
             ->update(['status' => 1]);
 
-        $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
+        $hidden = Role::arr_role_hidden;
+
+        $roles = Role::whereNotIn('name', $hidden)
             ->select('id', 'name', 'description', 'status')
             ->get()->toArray();
         return response()->json($roles);
@@ -5857,6 +5854,7 @@ class BussinessRepository implements IBussinessInterface
             $branch_select = $request->input('branch_select');
             $saleroom_select = $request->input('saleroom_select');
             $training_id = $request->input('training_id');
+            $organization_id = $request->input('organization_id');
 
             $param = [
                 'fullname' => 'text',
@@ -5954,6 +5952,25 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->lastname = $convert_name['lastname'];
             $mdlUser->password = bcrypt($password);
             $mdlUser->save();
+
+            //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
+            if (strlen($organization_id) != 0) {
+
+                $input_roles = explode(',', $inputRole);
+
+                $selected_roles = Role::whereIn('id', $input_roles)->whereIn('name', Role::arr_role_organization)->get();
+
+
+                if (count($selected_roles) != 0) {
+                    foreach ($selected_roles as $selected_role) {
+                        $employee = new TmsOrganizationEmployee();
+                        $employee->user_id = $mdlUser->id;
+                        $employee->organization_id = $organization_id;
+                        $employee->position = $selected_role->name;
+                        $employee->save();
+                    }
+                }
+            }
 
             //Thêm nơi làm việc cho tài khoản
             $arr_data = [];
@@ -6466,6 +6483,7 @@ class BussinessRepository implements IBussinessInterface
         $mdlUser = MdlUser::select('username')->findOrFail($user_id);
         $users = TmsUserDetail::with('city', 'training.training_detail')
             ->with('certificate')
+            ->with('employee')
             ->where([
                 'user_id' => $user_id,
             ])->first();
@@ -6553,6 +6571,7 @@ class BussinessRepository implements IBussinessInterface
             $branch_select = $request->input('branch_select');
             $saleroom_select = $request->input('saleroom_select');
             $trainning_id = $request->input('trainning_id');
+            $organization_id = $request->input('organization_id');
 
             $param = [
                 'fullname' => 'text',
@@ -6681,6 +6700,27 @@ class BussinessRepository implements IBussinessInterface
                 enrole_lms($user_id,$role['mdl_role_id'],$confirm);
             }*/
             $mdlUser->save();
+
+            //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
+            if (strlen($organization_id) != 0) {
+
+                $selected_roles = Role::whereIn('id', $roles)->whereIn('name', Role::arr_role_organization)->get();
+
+                $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
+
+                if (!isset($employee)) {
+                    $employee = new TmsOrganizationEmployee();
+                }
+
+                if (count($selected_roles) != 0) {
+                    foreach ($selected_roles as $selected_role) {
+                        $employee->user_id = $user_id;
+                        $employee->organization_id = $organization_id;
+                        $employee->position = $selected_role->name;
+                        $employee->save();
+                    }
+                }
+            }
 
             //Thêm nơi làm việc cho tài khoản
             TmsSaleRoomUser::where('user_id', $mdlUser->id)->delete();

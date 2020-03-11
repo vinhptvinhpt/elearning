@@ -1006,9 +1006,8 @@ function enrol_get_my_courses_softskill(
             }
         }
     }
-    // VinhPT
-    // Filter category = 4 for KHOÁ H?C K? NANG M?M
-    $wheres .= " and c.category = 4";
+    // [VinhPT] Filter category = 4 for soft skill courses
+    $wheres .= " and c.category = 4 and c.deleted = 0";
 
     // Note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why
     // we have the subselect there.
@@ -1253,9 +1252,8 @@ function enrol_get_my_courses_offline(
             }
         }
     }
-    // VinhPT
-    // Filter category = 5 for KHOÁ H?C T?P TRUNG
-    $wheres .= " and c.category = 5";
+    // [VinhPT] Filter category = 5 for offline courses
+    $wheres .= " and c.category = 5 and c.deleted = 0";
 
     // Note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why
     // we have the subselect there.
@@ -1501,9 +1499,8 @@ function enrol_get_my_courses_certificate(
             }
         }
     }
-    // VinhPT
-    // Filter category = 3 for KHOÁ H?C L?Y CH?NG CH?
-    $wheres .= " and c.category = 3";
+    // [VinhPT] Filter category = 3 for certificate courses
+    $wheres .= " and c.category = 3 and c.deleted = 0";
 
     // Note: we can not use DISTINCT + text fields due to Oracle and MS limitations, that is why
     // we have the subselect there.

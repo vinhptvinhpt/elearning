@@ -17,10 +17,17 @@ class ClearanceMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (tvHasRole(auth('web')->user()->id, 'Root') || tvHasRole(auth('web')->user()->id, 'root')) {
+        if (
+            tvHasRole(auth('web')->user()->id, 'Root')
+            || tvHasRole(auth('web')->user()->id, 'root')
+            //Bypass for organization roles
+            || tvHasRole(auth('web')->user()->id, 'manager')
+            || tvHasRole(auth('web')->user()->id, 'leader')
+            ) {
             return $next($request);
         } else {
-            $roleIdArray = \App\ModelHasRole::where('model_id', auth('web')->user()->id)->pluck('role_id');
+            $roleIdArray = \App\ModelHasRole::where('model_id', auth('web')->with('role')->user()->id)->pluck('role_id');
+
             $permissionArray = \App\RoleHasPermission::whereIn('role_id', $roleIdArray)->pluck('permission_id');
 
             $permissions = Permission::select('url')

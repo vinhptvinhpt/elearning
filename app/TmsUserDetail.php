@@ -30,6 +30,15 @@ class TmsUserDetail extends Model
         return $this->hasOne('App\TmsCity','id', 'confirm_address');
     }
 
+    /**
+     * Get organization.
+     */
+    public function employee()
+    {
+        return $this->belongsTo('App\TmsOrganizationEmployee', 'user_id', 'user_id')->with('organization');
+    }
+
+
     public function completion(){
         $completion = false;
         $completion_count = \App\MdlCourseCompletions::where('userid',$this->user_id)->count();

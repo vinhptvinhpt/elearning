@@ -754,7 +754,10 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Auto Enrol Student",
         "tu_dong_cap_chung_chi": "Auto Certification",
-        "them_co_cau_to_chuc": "Add Organization"
+        "them_co_cau_to_chuc": "Add Organization",
+        "ban_chi_duoc_chon_1_quyen_trong_nhom": "You can choose only one role in group (Manager/Leader/Employee)",
+        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Must select working place when role in group (Manager/Leader/Employee) is selected",
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Employee) before select working place"
     },
     "vi.keys": {
         "language": "",
@@ -1511,6 +1514,9 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Tự động Enrol học viên",
         "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
-        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức"
+        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức",
+        "ban_chi_duoc_chon_1_quyen_trong_nhom": "Bạn chỉ được chọn 1 quyền trong nhóm (Manager/Leader/Employee)",
+        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Bắt buộc chọn nơi làm việc khi đã chọn quyền trong nhóm (Manager/Leader/Employee)",
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Employee) trước khi chọn nơi làm việc"
     }
 }

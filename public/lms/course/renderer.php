@@ -2256,9 +2256,9 @@ class core_course_renderer extends plugin_renderer_base
         //$totalcount = core_course_category::top()->get_courses_count($chelper->get_courses_display_options());
         $list_display_category = array("3","4","5");
         foreach($courses as $courseinlist){
-            if(!in_array($courseinlist->category, $list_display_category) || $courseinlist->is_end_quiz == "1"){
+            if(!in_array($courseinlist->category, $list_display_category) || $courseinlist->is_end_quiz == "1" || $courseinlist->deleted == "1"){
                 unset($courses[$courseinlist->id]);
-            }  
+            }
         }
         $totalcount = count($courses);
         if (!$totalcount && !$this->page->user_is_editing() && has_capability('moodle/course:create', context_system::instance())) {
