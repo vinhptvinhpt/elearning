@@ -274,5 +274,7 @@
     "them_moi_nhan_vien_thanh_cong": "Add employee successfully",
     "xoa_nhan_vien_thanh_cong": "Delete employee successfully",
     "cap_nhat_nhan_vien_thanh_cong": "Edit employee successfully",
-    "nhan_vien_da_ton_tai": "Employee existed"
+    "nhan_vien_da_ton_tai": "Employee existed",
+    "thanh_cong": "Thành công",
+    "nguoi_dung_khong_co_quuyen_cho_vi_tri_nay": "User mising role for this position"
 }

@@ -15,14 +15,16 @@
       <div class="col-12">
         <div>
           <div class="accordion" id="accordion_1">
+
             <div class="card">
               <div class="card-header d-flex justify-content-between">
-                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi')}}</a>
+                <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true">
+                  <i class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi_thu_cong')}}
+                </a>
               </div>
               <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                 <div class="card-body">
                   <div class="row">
-
 
                     <div v-if="organization_selected === false" class="col-sm-6">
                       <div class="form-group">
@@ -69,9 +71,10 @@
                         <div class="input-group">
                           <select class="form-control" v-model="employee.position">
                             <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>
-                            <option value="manager">Manager</option>
-                            <option value="leader">Leader</option>
-                            <option value="employee">Employee</option>
+<!--                            <option value="manager">Manager</option>-->
+<!--                            <option value="leader">Leader</option>-->
+<!--                            <option value="employee">Employee</option>-->
+                            <option v-for="item in position_list" :value="item.name">{{ item.name.charAt(0).toUpperCase() + item.name.slice(1) }}</option>
                           </select>
                         </div>
                         <label v-if="!employee.position" class="text-danger position_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -87,13 +90,18 @@
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             </div>
+
+            <assign-employee v-if="organization_id !== false" :key="assignBatch" :organization_id="organization_id"></assign-employee>
+
             <div class="card">
               <div class="card-body">
                 <div class="listData">
-                  <h5 class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{ organization_name }}</h5>
+                  <h5 v-if="organization_selected === false" class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}}</h5>
+                  <h5 v-else class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{ organization_name }}</h5>
                   <div class="row">
                     <div class="col-sm-8 dataTables_wrapper">
 
@@ -194,6 +202,7 @@
                 </div>
               </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -205,16 +214,20 @@
   //import VSwitch from 'v-switch-case'
   //Vue.use(VSwitch)
   //import vPagination from 'vue-plain-pagination'
+  import AssignEmployee from './AssignEmployeeComponent'
 
   export default {
-    //components: {vPagination},
+    components: {
+      //vPagination,
+      AssignEmployee
+    },
     props: ['organization_id'],
     data() {
       return {
         employee: {
           input_organization_id: 0,
           input_user_id: 0,
-          position: 'employee',
+          position: '',
         },
         data:[],
         posts: {},
@@ -229,7 +242,9 @@
         organization_keyword: '',
         position: 0,
         organization_selected: false,
-        organization_name: ''
+        organization_name: '',
+        position_list: [],
+        assignBatch: 0
       }
     },
     methods: {
@@ -238,6 +253,7 @@
       },
       selectUserItem(input_id) {
         this.employee.input_user_id = input_id;
+        this.fetchRole();
       },
       selectOrganization(){
         $('.content_search_box').addClass('loadding');
@@ -308,19 +324,19 @@
         })
           .then(response => {
             if(response.data.key) {
-              roam_message('error', response.data.message);
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
             }else{
               if(response.data.status === 'success'){
-                roam_message(response.data.status, response.data.message);
+                toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                 //reset form
                 if (this.organization_selected === false) {
                   this.employee.input_organization_id = 0;
                 }
                 this.employee.input_user_id = 0;
-                this.employee.position = 'employee';
-
+                this.employee.position = '';
+                this.getDataList(this.current);
                 $(".selected_organization_content").text(this.trans.get('keys.to_chuc'));
                 $(".selected_user_content").text(this.trans.get('keys.nhan_vien'));
 
@@ -329,7 +345,17 @@
             }
           })
           .catch(error => {
-            roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+          })
+      },
+      fetchRole() {
+        axios.post('/organization-employee/get-user-detail/'+ this.employee.input_user_id)
+          .then(response => {
+            this.position_list = response.data;
+            console.log(this.position_list);
+          })
+          .catch(error => {
+            console.log(error.response.data);
           })
       },
       onPageChange() {
@@ -343,6 +369,7 @@
         this.$route.params.page = value;
       },
       deletePost(url) {
+        let current_pos = this;
         swal({
           title: this.trans.get('keys.thong_bao'),
           text: this.trans.get('keys.ban_co_muon_xoa_nhan_vien_nay'),
@@ -353,10 +380,13 @@
         }, function () {
           axios.post(url)
             .then(response => {
-              roam_message(response.data.status, response.data.message);
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+              current_pos.getDataList(current_pos.current);
+              //reload assign batch
+              this.assignBatch += 1;
             })
             .catch(error => {
-              roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
 

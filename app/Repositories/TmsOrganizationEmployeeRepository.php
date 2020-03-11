@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -57,7 +58,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $list = $list->where('position', $position);
         }
 
-        $list = $list->orderBy('created_at', 'asc');
+        $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
 
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
         $list = $list->paginate($row);
@@ -110,7 +111,6 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 
             return response()->json(status_message('success', __('them_moi_nhan_vien_thanh_cong')));
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
@@ -145,6 +145,15 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 ]);
             }
 
+            $check_role = TmsUserDetail::where('user_id', $user_id)
+                ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tms_user_detail.user_id')
+                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+                ->where('r.name', $position)->count();
+
+            if ($check_role == 0) {
+                return response()->json(status_message('error', __('nguoi_dung_khong_co_quuyen_cho_vi_tri_nay')));
+            }
+
             $item = TmsOrganizationEmployee::where('id', $id)->first();
             $item->organization_id = $organization_id;
             $item->position = $position;
@@ -153,7 +162,6 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 
             return response()->json(status_message('success', __('cap_nhat_nhan_vien_thanh_cong')));
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
         // TODO: Implement update() method.
@@ -190,11 +198,28 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         return response()->json($data);
     }
 
+    public function userDetail($id)
+    {
+        if (!is_numeric($id))
+            return response()->json([]);
+        $data = TmsUserDetail::where('user_id', $id)
+            ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tms_user_detail.user_id')
+            ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+            ->whereIn('r.name', ['manager', 'leader', 'employee'])
+            ->select('r.name')
+            ->get();
+
+        return response()->json($data);
+    }
+
     public function getUser(Request $request)
     {
         // TODO: Implement getall() method.
         $keyword = $request->input('keyword');
         $organization_id = $request->input('organization_id');
+        //List paged by position
+        $position = $request->input('position');
+        $row = $request->input('row');
 
         $param = [
             'keyword' => 'text'
@@ -226,6 +251,66 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $list = $list->whereRaw('( fullname like "%' . $keyword . '%" )');
         }
 
-        return $list->limit(10)->get();
+        $list->join('mdl_user as mu', 'mu.id', '=', 'tms_user_detail.user_id')
+            ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tms_user_detail.user_id')
+            ->join('roles as r', 'r.id', '=', 'mhr.role_id');
+
+        if (strlen($position) != 0) {
+            $list->where('r.name', $position);
+        } else {
+            $list->whereIn('r.name', ['manager', 'leader', 'employee']);
+        }
+
+        $list->whereNotIn('tms_user_detail.user_id', function ($query) {
+            $query->select('user_id')->from('tms_organization_employee');
+        });
+        $list->select('user_id', 'username', 'fullname', 'r.name as position');
+
+
+        if (!$row) {
+            return $list->limit(10)->get();
+        } else {
+            $total_all = $list->count(); //lấy tổng số khóa học hiện tại
+            $list = $list->paginate($row);
+            $total = ceil($list->total() / $row);
+            $response = [
+                'pagination' => [
+                    'total' => $total,
+                    'current_page' => $list->currentPage(),
+                ],
+                'data' => $list,
+                'total' => $total_all,
+            ];
+            return response()->json($response);
+        }
+    }
+
+    public function assignEmployee(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $users = $request->input('users');
+        $organization_id = $request->input('organization_id');
+        try {
+            $data = array();
+            foreach($users as $user) {
+                $split = explode('/', $user);
+                $user_id = $split[0];
+                $position = $split[1];
+                $time = Carbon::now();
+                $data[] = array(
+                    'user_id' => $user_id,
+                    'organization_id' => $organization_id,
+                    'position' => $position,
+                    'created_at' => $time->toDateTimeString(),
+                    'updated_at' => $time->toDateTimeString(),
+                );
+            }
+            if (!empty($data)) {
+                TmsOrganizationEmployee::insert($data);
+            }
+            return response()->json(status_message('success', __('them_nhan_vien_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
     }
 }
