@@ -475,48 +475,42 @@ class BussinessRepository implements IBussinessInterface
 
             $sru = DB::table('model_has_roles as mhr')
                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
-                ->where('roles.name', '=', Role::MANAGE_MARKET)
-                ->where('mhr.model_id', '=', $user_id)
-                ->count();
-            if ($sru > 0)
-                $checkRole->has_user_market = true;
+                //->where('roles.name', '=', Role::MANAGE_MARKET)
+                ->where('mhr.model_id', $user_id)
+                ->where('mhr.model_type', 'App/MdlUser')
+                ->get();
 
-            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
-            if ($my_branches > 0)
-                $checkRole->has_master_agency = true;
+            if (count($sru) != 0) {
+                foreach ($sru as $role) {
+                    if ($role->name == Role::ROLE_MANAGER) {
+                        $checkRole->has_role_manager = true;
+                    } elseif ($role->name == Role::ROLE_LEADER) {
+                        $checkRole->has_role_leader = true;
+                    } elseif ($role->name == Role::MANAGE_MARKET) {
+                        $checkRole->has_user_market = true;
+                    } elseif ($role->name == Role::MANAGE_AGENTS) {
+                        $checkRole->has_role_agency = true;
+                    } elseif ($role->name == Role::MANAGE_POS) {
+                        $checkRole->has_role_pos = true;
+                    } elseif ($role->name == Role::ROOT) {
+                        $checkRole->root_user = true;
+                    }
+                }
+            }
 
-            $count = DB::table('model_has_roles as mhr')
-                ->select('mhr.id')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)
-                ->where('r.name', '=', Role::MANAGE_AGENTS)
-                ->count();
-            if ($count > 0)
-                $checkRole->has_role_agency = true;
+//            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
+//            if ($my_branches > 0)
+//                $checkRole->has_master_agency = true;
 
-            $count_role = DB::table('model_has_roles as mhr')
-                ->select('mhr.id')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)
-                ->where('r.name', '=', Role::MANAGE_POS)
-                ->count();
-            if ($count_role > 0)
-                $checkRole->has_role_pos = true;
 
-            $roleName = ['Root', 'root'];
-
-            $roleCheck = DB::table('model_has_roles as mhr')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('mhr.model_id', '=', $user_id)->whereIn('r.name', $roleName)->first();
-
-            if ($roleCheck)
-                $checkRole->root_user = true;
         } catch (Exception $e) {
             $checkRole->has_user_market = false;
             $checkRole->has_master_agency = false;
             $checkRole->has_role_agency = false;
             $checkRole->has_role_pos = false;
             $checkRole->root_user = false;
+            $checkRole->has_role_manager = false;
+            $checkRole->has_role_leader = false;
         }
         return response()->json($checkRole);
     }

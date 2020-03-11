@@ -19,11 +19,16 @@
                         </a>
                     </li>
 
-                    <li class="nav-item" v-if="slug_can('tms-system-user-view') || slug_can('tms-system-organize-view')
-                        || slug_can('tms-access-manage-branch-view') || slug_can('tms-access-manage-saleroom-view')
+                    <li class="nav-item" v-if="slug_can('tms-system-user-view')
+                    || slug_can('tms-system-organize-view')
+                        || slug_can('tms-access-manage-branch-view')
+                        || slug_can('tms-access-manage-saleroom-view')
                         || slug_can('tms-access-market-view')
-                        || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view')
-                        || slug_can('tms-system-market-view')">
+                        || slug_can('tms-system-teacher-view')
+                        || slug_can('tms-system-student-view')
+                        || slug_can('tms-system-market-view')
+                        || has_role_leader || has_role_manager
+                        ">
                         <a class="nav-link has-submenu collapse-level-1" id="quan_ly_he_thong"
                            @click="toggleMenu('quan_ly_he_thong','auth_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
@@ -474,6 +479,8 @@
                 has_master_agency: false,
                 has_role_agency: false,
                 has_role_pos: false,
+                has_role_manager: false,
+                has_role_leader: false,
                 root_user: false,
                 lms_url: '/lms'
             }
@@ -498,6 +505,8 @@
                         this.has_role_agency = response.data.has_role_agency;
                         this.has_role_pos = response.data.has_role_pos;
                         this.root_user = response.data.root_user;
+                        this.has_role_leader = response.data.has_role_leader;
+                        this.has_role_manager = response.data.has_role_manager;
 
                         if (this.has_user_market === null)
                             this.has_user_market = false;
@@ -510,6 +519,12 @@
 
                         if (this.has_role_pos === null)
                             this.has_role_pos = false;
+
+                        if (this.has_role_manager === null)
+                          this.has_role_manager = false;
+
+                        if (this.has_role_leader === null)
+                          this.has_role_leader = false;
                     })
                     .catch(error => {
                         console.log(error.response.data);
