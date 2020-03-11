@@ -1123,8 +1123,8 @@ class core_course_category implements renderable, cacheable_object, IteratorAggr
         //     $list = $DB->get_records_sql($sql,
         //     array('contextcourse' => CONTEXT_COURSE) + $params);
         // }
-        // [VinhPT][15.11.2019] Hide final exam in list courses
-        $sql = "SELECT ". join(',', $fields). ", $ctxselect ,c.is_end_quiz
+		// [VinhPT][11.03.2020] Add deleted status to hide course deleted
+        $sql = "SELECT ". join(',', $fields). ", $ctxselect ,c.is_end_quiz, c.deleted
         FROM {course} c
         JOIN {context} ctx ON c.id = ctx.instanceid AND ctx.contextlevel = :contextcourse
         WHERE ". $whereclause." ORDER BY c.sortorder";
