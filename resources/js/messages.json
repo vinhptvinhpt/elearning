@@ -754,7 +754,10 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Auto Enrol Student",
         "tu_dong_cap_chung_chi": "Auto Certification",
-        "them_co_cau_to_chuc": "Add Organization"
+        "them_co_cau_to_chuc": "Add Organization",
+        "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
+        "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "You want remove Trainning program assigned to this user!"
     },
     "vi.keys": {
         "language": "",
@@ -1511,6 +1514,9 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Tự động Enrol học viên",
         "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
-        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức"
+        "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức",
+        "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
+        "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "Bạn muốn loại khung năng lực gán cho người dùng này!"
     }
 }

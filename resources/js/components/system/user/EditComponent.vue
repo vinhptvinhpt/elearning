@@ -188,7 +188,7 @@
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group">
-                                <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>
+                                <label for="inputTraining">{{trans.get('keys.vi_tri')}}</label>
                                 <select id="inputTraining" class="form-control custom-select" v-model="users.training.trainning_id">
                                     <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>
                                     <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>
@@ -716,10 +716,10 @@
                     $('.fullname_required').show();
                     return;
                 }
-                if(this.users.training.trainning_id === 0){
-                    $('.training_required').show();
-                    return;
-                }
+                // if(this.users.training.trainning_id === 0){
+                //     $('.training_required').show();
+                //     return;
+                // }
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.users.fullname);

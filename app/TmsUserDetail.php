@@ -13,6 +13,11 @@ class TmsUserDetail extends Model
         'last_login_ip', 'deleted','sex','code','time_start','working_status',
         'department','department_type','confirm','confirm_address', 'confirm_time'
     ];
+    public function trainning_user()
+    {
+        return $this->hasMany('App\TmsTrainningUser','user_id', 'user_id');
+    }
+
     public function user()
     {
         return $this->hasOne('App\MdlUser','id', 'user_id');

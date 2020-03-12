@@ -124,7 +124,7 @@
                     </select>
                 </div>
                 <div class="col-sm-6 form-group">
-                    <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>
+                    <label for="inputTraining">{{trans.get('keys.vi_tri')}}</label>
                     <select id="inputTraining" class="form-control custom-select" v-model="training">
                         <option value="0">{{trans.get('keys.chon_vi_tri')}}</option>
                         <option v-for="(item,index) in training_list" :value="item.id">{{item.name}}</option>
@@ -476,10 +476,10 @@
                     $('.cmtnd_required').show();
                     return;
                 }
-                if(this.training == 0) {
-                    $('.training_required').show();
-                    return;
-                }
+                // if(this.training == 0) {
+                //     $('.training_required').show();
+                //     return;
+                // }
                 if(this.role_login == 'user_market'){
                     if(this.branch_select.length == 0 && this.saleroom_select.length == 0){
                         $('.work_required').show();
