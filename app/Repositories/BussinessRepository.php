@@ -1361,6 +1361,9 @@ class BussinessRepository implements IBussinessInterface
         $keyword = $request->input('keyword');
         $row = $request->input('row');
         $role_id = $request->input('role_id');
+        $organization_id = $request->input('organization_id');
+
+
         $param = [
             'course_id' => 'number',
             'row' => 'number',
@@ -1382,6 +1385,11 @@ class BussinessRepository implements IBussinessInterface
             ->select('mdl_user.id', 'mdl_user.username', 'mdl_user.firstname', 'mdl_user.lastname', 'mdl_enrol.id as enrol_id');
         if ($keyword) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
 
         if ($role_id) {
@@ -1415,6 +1423,7 @@ class BussinessRepository implements IBussinessInterface
         $keyword = $request->input('keyword');
         $row = $request->input('row');
         $role_id = $request->input('role_id');
+        $organization_id = $request->input('organization_id');
 
         $param = [
             'course_id' => 'number',
@@ -1483,6 +1492,11 @@ class BussinessRepository implements IBussinessInterface
 
         if ($keyword) {
             $userNeedEnrol = $userNeedEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
 
         if ($role_id) {
