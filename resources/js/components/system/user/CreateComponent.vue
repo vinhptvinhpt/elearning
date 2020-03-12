@@ -129,6 +129,7 @@
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
                     <treeselect v-model="organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="organization_id !== 0"/>
                     <label v-if="!organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+
                 </div>
 
                 <!--Training-->

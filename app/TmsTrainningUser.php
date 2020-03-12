@@ -16,4 +16,7 @@ class TmsTrainningUser extends Model
     public function training_detail(){
         return $this->hasOne('\App\TmsTrainningProgram', 'id','trainning_id');
     }
+    public function user_detail(){
+        return $this->hasOne('\App\TmsUserDetail', 'user_id','user_id')->where('deleted','=',0);
+    }
 }

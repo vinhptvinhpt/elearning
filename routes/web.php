@@ -541,7 +541,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/trainning/list', 'Backend\TrainningController@apiGetListTrainning');
     Route::post('/api/trainning/create', 'Backend\TrainningController@apiCreateTrainning');
     Route::post('/api/trainning/update', 'Backend\TrainningController@apiEditTrainning');
-    Route::post('/api/trainning/delete', 'Backend\TrainningController@apiDeteleTrainning');
+    Route::post('/api/trainning/delete/{id}', 'Backend\TrainningController@apiDeteleTrainning');
     Route::post('/api/trainning/getlstsamplecourse', 'Backend\TrainningController@apiGetListSampleCourse');
     Route::get('/api/trainning/detail/{id}', 'Backend\TrainningController@apiGetDetailTrainning');
     Route::post('/api/trainning/getlstcoursetrainning', 'Backend\TrainningController@apiGetCourseSampleTrainning');
@@ -551,6 +551,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/trainning/api_list_user', 'Backend\TrainningController@apiTrainningListUser');
     Route::post('/trainning/api_trainning_list', 'Backend\TrainningController@apiTrainningList');
     Route::post('/trainning/api_trainning_change', 'Backend\TrainningController@apiTrainningChange');
+    Route::post('/trainning/api_remove_trainning', 'Backend\TrainningController@apiTrainningRemove');
 //    Route::get('/api/trainning/update_user_trainning/{trainning_id}', 'Backend\TrainningController@apiUpdateUserTrainning');
 //    Route::get('/api/trainning/update_user_market/{trainning_id}', 'Backend\TrainningController@apiUpdateUserMarket');
 //    Route::get('/api/trainning/update_user_course/{course_id}', 'Backend\TrainningController@apiUpdateUserMarketCourse');
