@@ -757,7 +757,10 @@
         "them_co_cau_to_chuc": "Add Organization",
         "ban_chi_duoc_chon_1_quyen_trong_nhom": "You can choose only one role in group (Manager/Leader/Employee)",
         "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Must select working place when role in group (Manager/Leader/Employee) is selected",
-        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Employee) before select working place"
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Employee) before select working place",
+        "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
+        "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "You want remove Trainning program assigned to this user!"
     },
     "vi.keys": {
         "language": "",
@@ -1517,6 +1520,9 @@
         "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức",
         "ban_chi_duoc_chon_1_quyen_trong_nhom": "Bạn chỉ được chọn 1 quyền trong nhóm (Manager/Leader/Employee)",
         "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Bắt buộc chọn nơi làm việc khi đã chọn quyền trong nhóm (Manager/Leader/Employee)",
-        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Employee) trước khi chọn nơi làm việc"
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Employee) trước khi chọn nơi làm việc",
+        "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
+        "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "Bạn muốn loại khung năng lực gán cho người dùng này!"
     }
 }

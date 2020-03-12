@@ -14,8 +14,10 @@ use App\MdlUser;
 use App\MdlUserEnrolments;
 use App\ModelHasRole;
 use App\Role;
+use App\StudentCertificate;
 use App\TmsLog;
 use App\TmsSaleRoomUser;
+use App\TmsTrainningUser;
 use App\TmsUserDetail;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
@@ -496,8 +498,10 @@ class TaskController extends Controller
             ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'ttu.user_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+            ->join('tms_traninning_programs as ttp','ttp.id','=','ttu.trainning_id')//uydd check auto enrol
             ->select('ttu.user_id', 'ttc.course_id as course_id', 'r.mdl_role_id')
             //->where('r.name', '=', \App\Role::STUDENT)
+            ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
             ->get();
 
@@ -1026,5 +1030,174 @@ class TaskController extends Controller
             ->get();
 
         return $all_courses;
+    }
+
+    /**
+     *
+     * uydd Auto add user from TmsTrainningUser Table
+     *
+     */
+    function autoAddTrainningUser(){
+        $queryArray = [];
+        $num = 0;
+        $limit = 300;
+        //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
+        $trainningArray = DB::table('tms_traninning_programs as ttp')
+            ->select('ttp.id', 'ttg.id as ttg_id')
+            ->leftJoin('tms_trainning_groups as ttg','ttg.trainning_id','=','ttp.id')
+            ->where('ttp.deleted','=',0)
+            ->whereNull('ttg.id')
+            ->pluck('ttp.id');
+
+
+        if(!empty($trainningArray)){
+            foreach ($trainningArray as $trainning){
+                $leftjoin = '(SELECT ttu.trainning_id,ttu.user_id
+                    FROM tms_traninning_users ttu
+                     where ttu.trainning_id ='.$trainning.') as ttpp';
+                $leftjoin = DB::raw($leftjoin);
+                $users = DB::table('tms_user_detail as tud')
+                    ->select('ttpp.trainning_id','tud.user_id')
+                    ->leftJoin($leftjoin,'ttpp.user_id','=','tud.user_id')
+                    ->where('tud.deleted','0',0)
+                    ->whereNull('ttpp.trainning_id')
+                    ->pluck('tud.user_id');
+                if(!empty($users)){
+                    foreach ($users as $user){
+                        $queryItem = [];
+                        $queryItem['trainning_id']  = $trainning;
+                        $queryItem['user_id']       = $user;
+                        array_push($queryArray, $queryItem);
+                        $num++;
+                        if ($num >= $limit) {
+                            TmsTrainningUser::insert($queryArray);
+                            $num = 0;
+                            $queryArray = [];
+                        }
+                    }
+                }
+            }
+            TmsTrainningUser::insert($queryArray);
+            $num = 0;
+            $queryArray = [];
+        }
+
+        //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
+        //Nhóm quyền
+        $users = DB::table('tms_traninning_programs as ttp')
+            ->select(
+                'ttp.id as trainning_id','mhr.model_id as user_id'
+            )
+            ->leftJoin('tms_trainning_groups as ttg',function($join){
+                $join->on('ttg.trainning_id','=','ttp.id')->where('ttg.type','=',0);
+            })
+            ->leftJoin('model_has_roles as mhr','mhr.role_id','=','ttg.group_id')
+            ->leftJoin('tms_traninning_users as ttu',function($join){
+                $join->on('ttu.trainning_id','=','ttp.id');
+                $join->on('ttu.user_id','=','mhr.model_id');
+            })
+            ->where('ttp.deleted','=',0)
+            ->whereNotNull('ttg.group_id')
+            ->whereNull('ttu.id')
+            ->get();
+
+        if(!empty($users)){
+            foreach ($users as $user){
+                $queryItem = [];
+                if($user->trainning_id && $user->user_id){
+                    $queryItem['trainning_id']  = $user->trainning_id;
+                    $queryItem['user_id']       = $user->user_id;
+                    array_push($queryArray, $queryItem);
+                    $num++;
+                }
+                if ($num >= $limit) {
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+            }//endforeach
+            TmsTrainningUser::insert($queryArray);
+            $num = 0;
+            $queryArray = [];
+        }
+
+        //Cơ cấu tổ chức
+        $users = DB::table('tms_traninning_programs as ttp')
+            ->select(
+                'ttp.id as trainning_id','toe.user_id'
+            )
+            ->leftJoin('tms_trainning_groups as ttg',function($join){
+                $join->on('ttg.trainning_id','=','ttp.id')->where('ttg.type','=',1);
+            })
+            ->leftJoin('tms_organization_employee as toe','toe.organization_id','=','ttg.group_id')
+            ->leftJoin('tms_traninning_users as ttu',function($join){
+                $join->on('ttu.trainning_id','=','ttp.id');
+                $join->on('ttu.user_id','=','toe.user_id');
+            })
+            ->where('ttp.deleted','=',0)
+            ->whereNotNull('ttg.group_id')
+            ->whereNull('ttu.id')
+            ->get();
+
+        if(!empty($users)){
+            foreach ($users as $user){
+                $queryItem = [];
+                if($user->trainning_id && $user->user_id){
+                    $queryItem['trainning_id']  = $user->trainning_id;
+                    $queryItem['user_id']       = $user->user_id;
+                    array_push($queryArray, $queryItem);
+                    $num++;
+                }
+                if ($num >= $limit) {
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+            }//endforeach
+            TmsTrainningUser::insert($queryArray);
+            $num = 0;
+            $queryArray = [];
+        }
+    }
+    /**
+     *
+     * uydd Tự động cấp chứng chỉ
+     *
+     */
+    function autoCertificate(){
+//        try {
+//            $user_selected = $request->input('user_selected');
+//            \DB::beginTransaction();
+//
+//            $arr_data = [];
+//            $data_item = [];
+//
+//            foreach ($user_selected as $user_id) {
+//                $student = StudentCertificate::where('userid', $user_id)->first();
+//                //nếu học viên đã có mã thì không làm gì cả
+//                if (!$student) {
+//                    //check role: if role managemarket => dont generate code
+//                    $checkRole = tvHasRole($user_id, 'managemarket');
+//                    if (!$checkRole) {
+//                        //update status to 1
+//                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
+//
+//                        $data_item['userid'] = $user_id;
+//                        $data_item['code'] = $certificatecode;
+//                        $data_item['status'] = 1;
+//                        $data_item['timecertificate'] = time();
+//
+//                        array_push($arr_data, $data_item);
+//                    }
+//                }
+//                usleep(100); //sleep tranh tinh trang query db lien tiep
+//            }
+//
+//            StudentCertificate::insert($arr_data);
+//
+//            \DB::commit();
+//        } catch (\Exception  $e) {
+//
+//        }
     }
 }

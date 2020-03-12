@@ -26,4 +26,6 @@ interface ITranningInterface
     public function apiRemoveCourseTrainning(Request $request);
 
     public function apiTrainningListUser(Request $request);
+
+    public function apiTrainningRemove(Request $request);
 }

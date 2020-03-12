@@ -1091,3 +1091,45 @@ label.custom-control-label{
     border-color: #28a745 !important;
     background-color: #28a745 !important;
 }
+table table tr:first-child td {
+    border-top: 0;
+}
+table table tr td {
+    font-size: 90%;
+}
+.wrap_select td {
+    position: relative;
+    padding-right: 30px;
+}
+.remove_trainning {
+    position: absolute;
+    right: 0;
+    top: 50%;
+    margin-top: -12px;
+    width: 25px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    cursor: pointer;
+    color: #f83f37;
+}
+.wrap_select.show .remove_trainning {
+    display: block !important;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -192,6 +192,7 @@
                               <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
                               <treeselect v-model="users.employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                               <label v-if="!users.employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+
                             </div>
 
 <!--                            <div class="col-md-4 col-sm-6 form-group">-->
