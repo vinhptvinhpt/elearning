@@ -57,7 +57,7 @@
                                class="form-control search_text"
                                :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_knl')+' ...'"/>
                         <button type="button" id="btnFilter"
-                                class="btn btn-primary btn-sm"
+                                class="btn btn-primary btn-sm btn_fillter"
                                 @click="getTrainnings(1)">
                           {{trans.get('keys.tim')}}
                         </button>
@@ -73,6 +73,8 @@
                     <th>{{trans.get('keys.stt')}}</th>
                     <th>{{trans.get('keys.ma_knl')}}</th>
                     <th>{{trans.get('keys.ten_knl')}}</th>
+                    <th>{{trans.get('keys.quyen')}}</th>
+                    <th>{{trans.get('keys.co_cau_to_chuc')}}</th>
                     <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                   </tr>
                   </thead>
@@ -83,6 +85,12 @@
                       {{ sur.code }}
                     </td>
                     <td>{{ sur.name }}</td>
+                    <td>
+                      {{ sur.group_role ? sur.group_role.role.name : '' }}
+                    </td>
+                    <td>
+                      {{ sur.group_organize ? sur.group_organize.organize.name : '' }}
+                    </td>
 
                     <td class="text-center">
 
@@ -132,7 +140,12 @@
     components: {TrainningCreate},
     data() {
       return {
-        trainnings: [],
+        trainnings: {
+          code: '',
+          name: '',
+          group_role:[],
+          group_organize:[]
+        },
         keyword: '',
         current: 1,
         totalPages: 0,
@@ -160,39 +173,24 @@
       },
       deletePost(id) {
         swal({
-          title: "Khung năng lực đang có học viên theo học. Bạn có chắc chắn muốn xóa khung năng lực đã chọn",
+          title: "Bạn có chắc muốn xóa khung năng lực này.",
           text: "Chọn 'ok' để thực hiện thao tác.",
-          type: "success",
+          type: "warning",
           showCancelButton: true,
-          closeOnConfirm: false,
-          showLoaderOnConfirm: true
+          closeOnConfirm: true,
+          showLoaderOnConfirm: false
         }, function () {
-          axios.post('/api/trainning/delete', {id: id})
+          axios.post('/api/trainning/delete/'+id)
             .then(response => {
               if (response.data.status) {
-                swal({
-                  title: response.data.message,
-                  type: "success",
-                  showCancelButton: false,
-                  closeOnConfirm: false,
-                  showLoaderOnConfirm: true
-                }, function () {
-                  location.reload();
-                });
+                roam_message('success',response.data.message);
               } else {
-                swal({
-                  title: response.data.message,
-                  type: "error",
-                  showCancelButton: false,
-                  closeOnConfirm: false,
-                  showLoaderOnConfirm: true
-                });
+                roam_message('error',response.data.message);
               }
 
             })
             .catch(error => {
-              swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
-              console.log(error);
+              roam_message('error',"Lỗi hệ thống. Thao tác thất bại!");
             });
         });
 

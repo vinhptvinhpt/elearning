@@ -74,9 +74,9 @@ class TrainningController extends Controller
         return $this->trainningRepository->update($request);
     }
 
-    public function apiDeteleTrainning(Request $request)
+    public function apiDeteleTrainning($id)
     {
-        return $this->bussinessRepository->apiDeteleTrainning($request);
+        return $this->trainningRepository->delete($id);
     }
 
     //them khoa hoc vao khung nang luc
@@ -105,6 +105,11 @@ class TrainningController extends Controller
     public function apiTrainningChange(Request $request)
     {
         return $this->bussinessRepository->apiTrainningChange($request);
+    }
+
+    public function apiTrainningRemove(Request $request)
+    {
+        return $this->trainningRepository->apiTrainningRemove($request);
     }
 
     public function apiUpdateUserTrainning($trainning_id)

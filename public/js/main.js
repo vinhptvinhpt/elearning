@@ -60,15 +60,12 @@
             var parent = $(this).parents('tr');
             if($(this).hasClass('actives')){
                 $(this).removeClass('actives');
-                $('.wrap_select > span',parent).show();
-                $('.wrap_select > div',parent).hide();
+                $('.wrap_select',parent).removeClass('show');
             }else{
                 $('.btn_open_select').removeClass('actives');
-                $('.wrap_select > div').hide();
-                $('.wrap_select > span').show();
+                $('.wrap_select').removeClass('show');
                 $(this).addClass('actives');
-                $('.wrap_select > span',parent).hide();
-                $('.wrap_select > div',parent).show();
+                $('.wrap_select',parent).addClass('show');
             }
             return false;
         });

@@ -471,6 +471,7 @@
 <script>
 
     export default {
+        props: ['current_roles'],
         components: {},
         data() {
             return {
@@ -495,41 +496,15 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
-
             },
-            checkRoleSidebar() {
-                axios.get('/api/checkrolesidebar')
-                    .then(response => {
-                        this.has_user_market = response.data.has_user_market;
-                        this.has_master_agency = response.data.has_master_agency;
-                        this.has_role_agency = response.data.has_role_agency;
-                        this.has_role_pos = response.data.has_role_pos;
-                        this.root_user = response.data.root_user;
-                        this.has_role_leader = response.data.has_role_leader;
-                        this.has_role_manager = response.data.has_role_manager;
-
-                        if (this.has_user_market === null)
-                            this.has_user_market = false;
-
-                        if (this.has_master_agency === null)
-                            this.has_master_agency = false;
-
-                        if (this.has_role_agency === null)
-                            this.has_role_agency = false;
-
-                        if (this.has_role_pos === null)
-                            this.has_role_pos = false;
-
-                        if (this.has_role_manager === null)
-                          this.has_role_manager = false;
-
-                        if (this.has_role_leader === null)
-                          this.has_role_leader = false;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-
+            fetchRoles() {
+                this.has_user_market = this.current_roles.has_user_market;
+                this.has_master_agency = this.current_roles.has_master_agency;
+                this.has_role_agency = this.current_roles.has_role_agency;
+                this.has_role_pos = this.current_roles.has_role_pos;
+                this.root_user = this.current_roles.root_user;
+                this.has_role_leader = this.current_roles.has_role_leader;
+                this.has_role_manager = this.current_roles.has_role_manager;
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
@@ -552,7 +527,7 @@
         },
         mounted() {
             this.getinfoSidebar();
-            this.checkRoleSidebar();
+            this.fetchRoles();
         }
     }
 </script>

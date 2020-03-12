@@ -99,6 +99,7 @@
                                   <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-left"></i></span>
                                 </button>
                               </div>
+
                               <div class="col-lg-5">
                                 <h6 class="hk-sec-title">
                                   {{trans.get('keys.danh_sach_giao_vien_giang_day')}}</h6>

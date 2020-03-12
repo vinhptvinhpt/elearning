@@ -13,11 +13,13 @@ use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\TmsTrainningCategory;
 use App\TmsTrainningCourse;
-use App\TmsTrainningOrganization;
+use App\TmsTrainningGroup;
 use App\TmsTrainningProgram;
-use App\TmsTrainningRole;
+use App\TmsTrainningUser;
+use App\TmsUserDetail;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
+use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -100,16 +102,18 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ]);
 
             if($role_id && $role_id != 0 && $tms_trainning){
-                $trainning_role = TmsTrainningRole::firstOrCreate([
+                $trainning_role = TmsTrainningGroup::firstOrCreate([
                     'trainning_id'  => $tms_trainning->id,
-                    'role_id'       => $role_id,
+                    'group_id'      => $role_id,
+                    'type'          => 0
                 ]);
             }
 
             if($organization_id && $organization_id != 0 && $tms_trainning){
-                $trainning_organization = TmsTrainningOrganization::firstOrCreate([
+                $trainning_organization = TmsTrainningGroup::firstOrCreate([
                     'trainning_id'      => $tms_trainning->id,
-                    'organization_id'   => $organization_id,
+                    'group_id'          => $organization_id,
+                    'type'              => 1
                 ]);
             }
 
@@ -187,19 +191,27 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->time_end            = $time_end;
             $trainning->save();
 
-            TmsTrainningRole::where('trainning_id',$id)->delete();
-            TmsTrainningOrganization::where('trainning_id',$id)->delete();
+            TmsTrainningGroup::where([
+                'trainning_id'  => $id,
+                'type'          => 0
+            ])->delete();
+            TmsTrainningGroup::where([
+                'trainning_id'  => $id,
+                'type'          => 1
+            ])->delete();
             if($role_id && $role_id != 0){
-                $trainning_role = TmsTrainningRole::firstOrCreate([
+                $trainning_role = TmsTrainningGroup::firstOrCreate([
                     'trainning_id'  => $id,
-                    'role_id'       => $role_id,
+                    'group_id'      => $role_id,
+                    'type'          => 0
                 ]);
             }
 
             if($organization_id && $organization_id != 0){
-                $trainning_organization = TmsTrainningOrganization::firstOrCreate([
+                $trainning_organization = TmsTrainningGroup::firstOrCreate([
                     'trainning_id'      => $id,
-                    'organization_id'   => $organization_id,
+                    'group_id'          => $organization_id,
+                    'type'              => 1
                 ]);
             }
 
@@ -217,6 +229,32 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     public function delete($id)
     {
         // TODO: Implement delete() method.
+        $response = new ResponseModel();
+        try {
+            if (!is_numeric($id)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            $check = TmsTrainningUser::where('trainning_id',$id)->count();
+            if($check > 0){
+                $response->status = false;
+                $response->message = __('ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa');
+                return response()->json($response);
+            }
+
+            $trainning = TmsTrainningProgram::findOrFail($id);
+            $trainning->deleted = 1;
+            $trainning->save();
+
+            $response->status = true;
+            $response->message = __('xoa_khung_nang_luc_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
     }
 
     public function apiGetListTrainning(Request $request)
@@ -233,7 +271,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json([]);
         }
 
-        $lstData = TmsTrainningProgram::select('id', 'code', 'name')->where('deleted', '=', 0);
+        $lstData = TmsTrainningProgram::with([
+            'group_role.role',
+            'group_organize.organize'
+        ])
+        ->select('id', 'code', 'name')->where('deleted', '=', 0);
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -262,12 +304,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $id = is_numeric($id) ? $id : 0;
         $trainning = DB::table('tms_traninning_programs as ttp')
-            ->join('tms_trainning_role as ttr', 'ttr.trainning_id', '=', 'ttp.id')
-            ->join('tms_trainning_organization as tto', 'tto.trainning_id', '=', 'ttp.id')
             ->where('ttp.id', '=', $id)
             ->select(
                 'ttp.id', 'ttp.code', 'ttp.name', 'ttp.style', 'ttp.run_cron', 'ttp.auto_certificate',
-                'ttp.time_start', 'ttp.time_end','tto.organization_id', 'ttr.role_id'
+                'ttp.time_start', 'ttp.time_end',
+                DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where
+                ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
+                DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where
+                tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')
             )
             ->first();
         if($trainning->time_start){
@@ -600,34 +644,28 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json([]);
             }
 
-            $data = DB::table('tms_user_detail as tud')
-                ->select(
-                    'tud.fullname',
-                    'tud.email',
-                    'tud.cmtnd',
-                    'mu.username',
-                    'mu.id',
-                    'ttp.name as trainning_name',
-                    'ttp.id as trainning_id'
-                )
-                ->join('mdl_user as mu', 'mu.id', '=', 'tud.user_id')
-                ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'mu.id')
-                ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')
-                ->where('tud.deleted', '=', 0);
+            $data = TmsTrainningUser::with([
+                'user_detail.user',
+                'user_detail.trainning_user.training_detail'
+            ]);
 
             if ($trainning != 0) {
-                $data = $data->where('ttp.id', '=', $trainning);
+                $data = $data->where('trainning_id', '=', $trainning);
             }
 
             if ($keyword) {
-                $data = $data->where(function ($query) use ($keyword) {
-                    $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
-                        ->orWhere('tud.email', 'like', "%{$keyword}%")
-                        ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
-                        ->orWhere('mu.username', 'like', "%{$keyword}%");
+                $data = $data->whereHas('user_detail.user', function($query) use($keyword) {
+                    // Query the name field in status table
+                    $query->where(function ($q) use ($keyword) {
+                        $q->where('fullname', 'like', "%{$keyword}%")
+                            ->orWhere('email', 'like', "%{$keyword}%")
+                            ->orWhere('username', 'like', "%{$keyword}%");
+                    });
                 });
             }
-            $data = $data->orderBy('tud.created_at', 'desc');
+
+            $data = $data->orderBy('user_id', 'desc');
+            $data = $data->groupBy('user_id');
             $data = $data->paginate($row);
 
             $total = ceil($data->total() / $row);
@@ -643,6 +681,20 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json($response);
         } catch (\Exception $e) {
             return response()->json([]);
+        }
+    }
+
+    public function apiTrainningRemove(Request $request){
+        try{
+            $id = $request->input('id');
+            if(!$id || !is_numeric($id)){
+                return response()->json(status_message('error', __('dinh_dang_du_lieu_khong_hop_le')));
+            }
+            TmsTrainningUser::find($id)->delete();
+            return response()->json(status_message('success', __('cap_nhat_khung_nang_luc_thanh_cong')));
+        }catch (\Exception $e){
+            \DB::rollBack();
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
 
