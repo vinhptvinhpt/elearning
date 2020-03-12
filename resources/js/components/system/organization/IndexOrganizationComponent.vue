@@ -145,7 +145,7 @@
                         <td v-else></td>
                         <td class="text-center">
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id, source_page: current}}">
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
                             {{ item.employees.length }}
                           </router-link>
                         </td>
@@ -153,13 +153,13 @@
 
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id, source_page: current}}">
+                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
                             <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
                           </router-link>
 
                           <router-link :title="trans.get('keys.sua_to_chuc')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'EditOrganization', params: { id: item.id }, query: { source_page: current}}">
+                                       :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
                             <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                           </router-link>
 

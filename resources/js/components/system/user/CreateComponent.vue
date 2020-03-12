@@ -90,7 +90,7 @@
                     <input v-model="address" type="text" id="inputAddress" :placeholder="trans.get('keys.dia_chi')" class="form-control mb-4">
                 </div>
 
-                <div v-if="roles && type == 'system'" class="col-12 form-group">
+                <div v-if="roles && type === 'system'" class="col-12 form-group">
                     <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                     <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>
                         <option value="">{{trans.get('keys.chon_vai_tro')}}</option>
@@ -127,7 +127,7 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
-                    <treeselect v-model="organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                    <treeselect v-model="organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="organization_id !== 0"/>
                     <label v-if="!organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
@@ -245,7 +245,7 @@
 
 <script>
     export default {
-        props: ['type','role_login'],
+        props: ['type','role_login', 'organization_id'],
         data() {
             return {
                 fullname: '',
@@ -282,7 +282,6 @@
                 saleroom_list:[],
                 branch_select:[],
                 saleroom_select:[],
-                organization_id: 0,
                 //Treeselect options
                 options: [
                     {
@@ -579,6 +578,7 @@
                     .then(response => {
                         if(response.data.status && response.data.status == 'success'){
                             roam_message(response.data.status,response.data.message);
+
                             this.fullname = '';
                             this.dob = '';
                             this.email = '';
@@ -606,6 +606,8 @@
                             });
                             $('.search_sale_room span').html(this.trans.get('keys.chon_diem_ban'));
                             $('.search_branch span').html(this.trans.get('keys.chon_dai_ly'));
+
+                            this.$parent.assignBatch += 1;
                         }else{
                             if(response.data.status){
                                 roam_message(response.data.status,response.data.message);
@@ -662,12 +664,18 @@
             },
         },
         mounted() {
+
+            console.log(this.$route.selected_role);
+
+            if (!this.organization_id) {
+              this.organization_id = 0;
+            }
             this.getRoles();
             this.getCitys();
             //this.get_branch();
             //this.getTrainingProgram();
             this.setFileInput();
-            this.selectOrganization();
+            this.selectOrganization(this.organization_id);
         }
     }
 </script>

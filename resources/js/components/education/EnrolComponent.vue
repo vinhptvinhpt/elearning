@@ -91,8 +91,7 @@
 
                                                         <div class="row">
                                                             <div class="col-lg-5 col-sm-10 mb-3">
-                                                                <h6 class="hk-sec-title">
-                                                                    {{trans.get('keys.danh_sach_nguoi_dung_can_ghi_danh')}}</h6>
+                                                                <h6 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung_can_ghi_danh')}}</h6>
                                                                 <div class="row">
                                                                     <div class="col-12">
                                                                         <form v-on:submit.prevent="getUserNeedEnrol(1)">
@@ -107,11 +106,9 @@
                                                                                 </button>
                                                                             </div>
                                                                         </form>
-
                                                                     </div>
                                                                 </div>
-
-                                                                <div class="row">
+                                                                <div class="row mb-3">
                                                                     <div class="col-6 dataTables_wrapper">
                                                                         <div class="dataTables_length"
                                                                              style="display:block;">
@@ -126,9 +123,10 @@
                                                                             </label>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-6">
+                                                                      <treeselect v-model="organization_id_1" :multiple="false" :options="options" @input="getUserNeedEnrol(1)"/>
+                                                                    </div>
                                                                 </div>
-                                                                <br/>
-
                                                                 <table id="datable_1" class="table_res">
                                                                     <thead>
                                                                     <tr>
@@ -137,10 +135,7 @@
                                                                         <th class=" mobile_hide" style="width: 30%;">
                                                                             {{trans.get('keys.ho_ten')}}
                                                                         </th>
-                                                                        <th class="text-center"><input type="checkbox"
-                                                                                                       v-model="allSelected"
-                                                                                                       @click="selectAllEnrol()"
-                                                                        ></th>
+                                                                        <th class="text-center"><input type="checkbox" v-model="allSelected" @click="selectAllEnrol()"></th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -151,10 +146,7 @@
                                                                             user.firstname }}
                                                                         </td>
                                                                         <td class="text-center">
-                                                                            <input type="checkbox" :value="user.id"
-                                                                                   v-model="userEnrols"
-                                                                                   @change="onCheckboxEnrol()"/>
-
+                                                                            <input type="checkbox" :value="user.id" v-model="userEnrols" @change="onCheckboxEnrol()"/>
                                                                         </td>
                                                                     </tr>
                                                                     </tbody>
@@ -162,37 +154,28 @@
 
                                                                     </tfoot>
                                                                 </table>
-
-                                                                <v-pagination v-model="current" @input="onPageChange"
-                                                                              :page-count="totalPages"
-                                                                              :classes=$pagination.classes></v-pagination>
-
+                                                                <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes></v-pagination>
                                                             </div>
-                                                            <div class="col-sm-2" style="text-align: center;">
-                                                                <button :title="trans.get('keys.ghi_danh')"
-                                                                        data-toggle="modal"
-                                                                        style="margin-top: 30px;"
-                                                                        data-target="#delete-ph-modal"
-                                                                        @click="enrolUserToCourse()"
-                                                                        class="btn btn-icon btn-primary btn-icon-style-2 mt-sm-15">
-                                                                <span class="btn-icon-wrap"><i
-                                                                        class="fal fa-arrow-alt-right"></i></span>
-                                                                </button>
-                                                                <br/><br/>
-                                                                <button :title="trans.get('keys.huy_ghi_danh')"
-                                                                        data-toggle="modal"
-                                                                        style="margin-bottom: 30px;"
-                                                                        data-target="#delete-ph-modal"
-                                                                        @click="removeEnrolUserToCourse()"
-                                                                        class="btn btn-icon btn-danger btn-icon-style-2 mb-sm-0">
-                                                                <span class="btn-icon-wrap"><i
-                                                                        class="fal fa-arrow-alt-left"></i></span>
-                                                                </button>
 
+                                                            <div class="col-sm-2" style="text-align: center; margin-top: 11rem;">
+                                                              <button :title="trans.get('keys.ghi_danh')"
+                                                                      data-toggle="modal"
+                                                                      data-target="#delete-ph-modal"
+                                                                      @click="enrolUserToCourse()"
+                                                                      class="btn btn-icon btn-primary btn-icon-style-2">
+                                                                <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-right"></i></span>
+                                                              </button>
+                                                              <button :title="trans.get('keys.huy_ghi_danh')"
+                                                                      data-toggle="modal"
+                                                                      data-target="#delete-ph-modal"
+                                                                      @click="removeEnrolUserToCourse()"
+                                                                      class="btn btn-icon btn-danger btn-icon-style-2">
+                                                                <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-left"></i></span>
+                                                              </button>
                                                             </div>
+
                                                             <div class="col-lg-5">
-                                                                <h6 class="hk-sec-title">
-                                                                    {{trans.get('keys.danh_sach_nguoi_dung_da_ghi_danh_khoa_dao_tao')}}</h6>
+                                                                <h6 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung_da_ghi_danh_khoa_dao_tao')}}</h6>
                                                                 <div class="row">
                                                                     <div class="col-12">
                                                                         <form v-on:submit.prevent="getCurrentUserEnrol(1)">
@@ -211,10 +194,9 @@
                                                                     </div>
                                                                 </div>
 
-                                                                <div class="row">
+                                                                <div class="row mb-3">
                                                                     <div class="col-6 dataTables_wrapper">
-                                                                        <div class="dataTables_length"
-                                                                             style="display:block;">
+                                                                        <div class="dataTables_length" style="display:block;">
                                                                             <label>{{trans.get('keys.hien_thi')}}
                                                                                 <select v-model="row_crr"
                                                                                         class="custom-select custom-select-sm form-control form-control-sm"
@@ -226,8 +208,10 @@
                                                                             </label>
                                                                         </div>
                                                                     </div>
+                                                                    <div class="col-6">
+                                                                      <treeselect v-model="organization_id_2" :multiple="false" :options="options" @input="getCurrentUserEnrol(1)"/>
+                                                                    </div>
                                                                 </div>
-                                                                <br/>
 
                                                                 <table id="datable_2" class="table_res">
                                                                     <thead>
@@ -237,10 +221,7 @@
                                                                         <th class=" mobile_hide" style="width: 30%;">
                                                                             {{trans.get('keys.ho_ten')}}
                                                                         </th>
-                                                                        <th class="text-center"><input type="checkbox"
-                                                                                                       v-model="allSelectedRemove"
-                                                                                                       @click="selectAllRemoveEnrol()"
-                                                                        ></th>
+                                                                        <th class="text-center"><input type="checkbox" v-model="allSelectedRemove" @click="selectAllRemoveEnrol()"></th>
                                                                     </tr>
                                                                     </thead>
                                                                     <tbody>
@@ -264,15 +245,9 @@
                                                                     </tfoot>
                                                                 </table>
 
-                                                                <v-pagination v-model="current_page"
-                                                                              @input="onPageChangeCurr"
-                                                                              :page-count="totalPages_crr"
-                                                                              :classes=$pagination.classes></v-pagination>
-
+                                                                <v-pagination v-model="current_page" @input="onPageChangeCurr" :page-count="totalPages_crr" :classes=$pagination.classes></v-pagination>
                                                             </div>
                                                         </div>
-                                                        <br/>
-
                                                     </div>
                                                 </div>
                                             </div>
@@ -336,7 +311,17 @@
                     "message": "Ghi danh thành công",
                     "status": "success",
                     "username": "hoangkhang"
-                }, {"message": "Ghi danh thành công", "status": "success", "username": "hocvien4"}]
+                }, {"message": "Ghi danh thành công", "status": "success", "username": "hocvien4"}],
+
+                //Treeselect options
+                options: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_id_1: 0,
+                organization_id_2: 0
             }
         },
         methods: {
@@ -385,7 +370,8 @@
                     keyword: this.keyword,
                     row: this.row,
                     role_id: this.role_id,
-                    course_id: this.course_id
+                    course_id: this.course_id,
+                    organization_id: this.organization_id_1
                 })
                     .then(response => {
                         this.userNeedEnrols = response.data.data.data;
@@ -403,7 +389,8 @@
                     keyword: this.keyword_curr,
                     row: this.row_crr,
                     role_id: this.role_id,
-                    course_id: this.course_id
+                    course_id: this.course_id,
+                    organization_id: this.organization_id_2
                 })
                     .then(response => {
                         this.currentUserEnrols = response.data.data.data;
@@ -523,12 +510,50 @@
             uncheckRemoveEnrolAll() {
                 this.allSelectedRemove = true;
                 this.selectAllRemoveEnrol();
+            },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list',{
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.options = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+            setOptions(list, current_id) {
+            let outPut = [];
+            for (const [key, item] of Object.entries(list)) {
+              let newOption = {
+                id: item.id,
+                label: item.name,
+              };
+              if (item.children.length > 0) {
+                for (const [key, child] of Object.entries(item.children)) {
+                  if (child.id === current_id) {
+                    newOption.isDefaultExpanded = true;
+                    break;
+                  }
+                }
+                newOption.children = this.setOptions(item.children, current_id);
+              }
+              outPut.push(newOption);
             }
+            return outPut;
+          },
         },
         mounted() {
             this.getUserNeedEnrol();
             this.getCurrentUserEnrol();
             this.setFileInput();
+            this.selectOrganization();
         }
     }
 </script>
