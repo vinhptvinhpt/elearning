@@ -24,78 +24,80 @@
               </div>
               <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                 <div class="card-body">
-                  <div class="row">
 
-                    <div v-if="organization_selected === false" class="col-sm-6">
-                      <div class="form-group">
-                        <div class="input-group">
-                          <div class="wrap_search_box">
-                            <div class="btn_search_box" @click="selectOrganization()">
-                              <span class="selected_organization_content">{{trans.get('keys.to_chuc')}}</span>
-                            </div>
-                            <div class="content_search_box">
-                              <input @input="selectOrganization()" type="text" v-model="organization_keyword" class="form-control search_box">
-                              <i class="fa fa-spinner" aria-hidden="true"></i>
-                              <ul>
-                                <li @click="selectOrganizationItem(item.id)" v-for="item in organization_list" :data-value="item.id">{{item.name}}</li>
-                              </ul>
-                            </div>
-                          </div>
-                          <label v-if="!employee.input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                        </div>
-                      </div>
-                    </div>
+                  <system-user-create :type="'system'" :organization_id="organization_id"></system-user-create>
 
-                    <div class="col-sm-6">
-                      <div class="form-group">
-                        <div class="input-group">
-                          <div class="wrap_search_box">
-                            <div class="btn_search_box" @click="selectUser()">
-                              <span class="selected_user_content">{{trans.get('keys.nguoi_dung')}}</span>
-                            </div>
-                            <div class="content_search_box">
-                              <input @input="selectUser()" type="text" v-model="user_keyword" class="form-control search_box">
-                              <i class="fa fa-spinner" aria-hidden="true"></i>
-                              <ul>
-                                <li @click="selectUserItem(item.user_id)" v-for="item in user_list" :data-value="item.user_id">{{item.fullname}}</li>
-                              </ul>
-                            </div>
-                          </div>
-                          <label v-if="!employee.input_user_id" class="text-danger user_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                        </div>
-                      </div>
-                    </div>
+                  <!-- Gán người dùng vào tổ chức one by one -->
 
-                    <div class="col-sm-6">
-                      <div class="form-group">
-                        <div class="input-group">
-                          <select class="form-control" v-model="employee.position">
-                            <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>
-<!--                            <option value="manager">Manager</option>-->
-<!--                            <option value="leader">Leader</option>-->
-<!--                            <option value="employee">Employee</option>-->
-                            <option v-for="item in position_list" :value="item.name">{{ item.name.charAt(0).toUpperCase() + item.name.slice(1) }}</option>
-                          </select>
-                        </div>
-                        <label v-if="!employee.position" class="text-danger position_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                      </div>
-                    </div>
-
-                  </div>
-
-                  <div class="row">
-                    <div class="col-12">
-                      <div class="form-group text-right">
-                        <button type="submit" class="btn btn-primary btn-sm" @click="createEmployee()">{{trans.get('keys.them')}}</button>
-                      </div>
-                    </div>
-                  </div>
+<!--                  <div class="row">-->
+<!--                    <div v-if="organization_selected === false" class="col-sm-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <div class="input-group">-->
+<!--                          <div class="wrap_search_box">-->
+<!--                            <div class="btn_search_box" @click="selectOrganization()">-->
+<!--                              <span class="selected_organization_content">{{trans.get('keys.to_chuc')}}</span>-->
+<!--                            </div>-->
+<!--                            <div class="content_search_box">-->
+<!--                              <input @input="selectOrganization()" type="text" v-model="organization_keyword" class="form-control search_box">-->
+<!--                              <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                              <ul>-->
+<!--                                <li @click="selectOrganizationItem(item.id)" v-for="item in organization_list" :data-value="item.id">{{item.name}}</li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                          <label v-if="!employee.input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-sm-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <div class="input-group">-->
+<!--                          <div class="wrap_search_box">-->
+<!--                            <div class="btn_search_box" @click="selectUser()">-->
+<!--                              <span class="selected_user_content">{{trans.get('keys.nguoi_dung')}}</span>-->
+<!--                            </div>-->
+<!--                            <div class="content_search_box">-->
+<!--                              <input @input="selectUser()" type="text" v-model="user_keyword" class="form-control search_box">-->
+<!--                              <i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                              <ul>-->
+<!--                                <li @click="selectUserItem(item.user_id)" v-for="item in user_list" :data-value="item.user_id">{{item.fullname}}</li>-->
+<!--                              </ul>-->
+<!--                            </div>-->
+<!--                          </div>-->
+<!--                          <label v-if="!employee.input_user_id" class="text-danger user_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                    <div class="col-sm-6">-->
+<!--                      <div class="form-group">-->
+<!--                        <div class="input-group">-->
+<!--                          <select class="form-control" v-model="employee.position">-->
+<!--                            <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>-->
+<!--&lt;!&ndash;                            <option value="manager">Manager</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <option value="leader">Leader</option>&ndash;&gt;-->
+<!--&lt;!&ndash;                            <option value="employee">Employee</option>&ndash;&gt;-->
+<!--                            <option v-for="item in position_list" :value="item.name">{{ item.name.charAt(0).toUpperCase() + item.name.slice(1) }}</option>-->
+<!--                          </select>-->
+<!--                        </div>-->
+<!--                        <label v-if="!employee.position" class="text-danger position_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                  <div class="row">-->
+<!--                    <div class="col-12">-->
+<!--                      <div class="form-group text-right">-->
+<!--                        <button type="submit" class="btn btn-primary btn-sm" @click="createEmployee()">{{trans.get('keys.them')}}</button>-->
+<!--                      </div>-->
+<!--                    </div>-->
+<!--                  </div>-->
 
                 </div>
               </div>
             </div>
 
-            <assign-employee v-if="organization_id !== false" :key="assignBatch" :organization_id="organization_id"></assign-employee>
+              <!-- Gán người dùng vào tổ chức batch -->
+
+              <assign-employee v-if="organization_id !== false" :key="assignBatch" :organization_id="organization_id"></assign-employee>
 
             <div class="card">
               <div class="card-body">
@@ -174,7 +176,7 @@
                         <td>
                           <router-link :title="trans.get('keys.sua_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'EditEmployee', params: { id: item.id }, query: { source_page: current, organization_id: organization_id}}">
+                                       :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current }, query: {organization_id: organization_id}}">
                             <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                           </router-link>
 
@@ -218,11 +220,13 @@
   //Vue.use(VSwitch)
   //import vPagination from 'vue-plain-pagination'
   import AssignEmployee from './AssignEmployeeComponent'
+  import SystemUserCreate from '../user/CreateComponent'
 
   export default {
     components: {
       //vPagination,
-      AssignEmployee
+      AssignEmployee,
+      SystemUserCreate
     },
     props: ['organization_id', 'source_page'],
     data() {
@@ -355,7 +359,6 @@
         axios.post('/organization-employee/get-user-detail/'+ this.employee.input_user_id)
           .then(response => {
             this.position_list = response.data;
-            console.log(this.position_list);
           })
           .catch(error => {
             console.log(error.response.data);
@@ -386,7 +389,7 @@
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               current_pos.getDataList(current_pos.current);
               //reload assign batch
-              this.assignBatch += 1;
+              current_pos.assignBatch += 1;
             })
             .catch(error => {
               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));

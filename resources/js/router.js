@@ -635,7 +635,7 @@ const routes = [
         component: IndexOrganizationComponent,
         name: 'IndexOrganization',
         props: (route) => ({
-          source_page: route.query.source_page ? route.query.source_page : 0
+          source_page: route.params.source_page ? route.params.source_page : 0
         })
       },
       {
@@ -644,7 +644,7 @@ const routes = [
         name: 'EditOrganization',
         props: (route) => ({
           id: route.params.id,
-          source_page: route.query.source_page ? route.query.source_page : 0
+          source_page: route.params.source_page ? route.params.source_page : 0
         })
       },
       {
@@ -653,7 +653,7 @@ const routes = [
         name: 'IndexEmployee',
         props: (route) => ({
           organization_id: route.query.organization_id,
-          source_page: route.query.source_page ? route.query.source_page : 0
+          source_page: route.params.source_page ? route.params.source_page : 0
         })
       },
       {
@@ -662,7 +662,7 @@ const routes = [
         name: 'EditEmployee',
         props: (route) => ({
           id: route.params.id,
-          source_page: route.query.source_page ? route.query.source_page : 0,
+          source_page: route.params.source_page ? route.params.source_page : 0,
           organization_id: route.query.organization_id ? route.query.organization_id : 0,
         })
       },
