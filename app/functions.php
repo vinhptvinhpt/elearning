@@ -580,7 +580,7 @@ function training_enrole($user_id, $trainning_id = null)
     $courses = DB::table('tms_trainning_courses as ttc')
         ->select('ttc.course_id as course_id')
         ->where('ttc.trainning_id', '=', $trainning_id)
-        ->where('ttc.deleted','=',0)
+        ->where('ttc.deleted', '=', 0)
         ->get();
 
     /*
