@@ -42,13 +42,6 @@ class BridgeController extends Controller
             'base_url' => url("/tms")
         ];
 
-        if ($view == 'Profile') {
-            $user_id = Auth()->user()->id;
-            $role = ModelHasRole::with('role')->where('model_id', $user_id)->first();
-            $response['user_id'] = $user_id;
-            $response['role_name'] = $role ? $role['role']['name'] : '';
-        }
-
         if ($view == 'IndexSaleroom') {
             $response['is_user_market'] = has_user_market();
         }

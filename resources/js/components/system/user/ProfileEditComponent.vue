@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body">
                   <p>
-                    <input  type="file" ref="file" name="file" class="dropify" />
+                    <input type="file" ref="file" name="file" class="dropify" />
                   </p>
                 </div>
                 <div class="form-group">
@@ -111,6 +111,8 @@
 </template>
 
 <script>
+    import Ls from '../../../services/ls'
+
     export default {
         props: ['type'],
         data() {
@@ -120,21 +122,10 @@
                 citys:[],
                 passwordConf:'',
                 password:'',
-                user_id: 0,
+                user_id: 0
             }
         },
-        methods:{ fetch() {
-            axios.post('/bridge/fetch', {
-              view: 'Profile'
-              })
-                .then(response => {
-                  this.user_id = response.data.user_id;
-                  this.userData();
-                })
-                .catch(error => {
-                  console.log(error);
-                })
-            },
+        methods:{
             changeRequired(element){
                 console.log(element);
                 $('#'+element).removeClass('notValidate');
@@ -243,8 +234,7 @@
                 }
 
             },
-            getRoles()
-            {
+            getRoles(){
                 if(this.type == 'system') {
                     axios.post('/system/user/list_role')
                         .then(response => {
@@ -256,14 +246,12 @@
                 }
             },
             userData(){
-                axios.post('/system/user/detail',{
-                    user_id:this.user_id
-                })
+                axios.post('/system/user/profile',)
                     .then(response => {
                         this.users = response.data;
                     })
                     .catch(error => {
-
+                        //console.log(error);
                     })
             },
             getCitys() {
@@ -276,6 +264,12 @@
                     });
             },
             updateUser(){
+                let userJson = Ls.get('auth.user');
+                let auth = {
+                  username: this.users.username,
+                  avatar: this.users.avatar
+                };
+
                 /*if(!this.users.email){
                     $('.email_required').show();
                     return;
@@ -300,25 +294,37 @@
                 })
                     .then(response => {
                         if(response.data.status){
-                            roam_message(response.data.status, response.data.message);
-                            this.$parent.renderTopBarAgain();
+                          toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
+                          let fileUploaded = this.$refs.file.files[0];
+                          this.clearFileInput();
+                          if (fileUploaded && fileUploaded !== 'undefined') {
+                            if (response.data.avatar) {
+                              auth.avatar = response.data.avatar;
+                              Ls.set('auth.user', JSON.stringify(auth));
+                            }
+                          }
+                          this.userData();
+                          this.$parent.renderTopBarAgain();
                         }else{
-                            roam_message('error',response.data.message);
-                            $('.form-control').removeClass('notValidate');
+                          toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                          $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');
                         }
                     })
                     .catch(error => {
-                        console.log(error);
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                      //console.log(error);
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
             setFileInput() {
               $('.dropify').dropify();
+            },
+            clearFileInput() {
+              $('.dropify-clear').click();
             }
         },
         mounted() {
-            this.fetch();
+            this.userData();
             this.getRoles();
             this.getCitys();
             this.setFileInput();

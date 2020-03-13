@@ -252,6 +252,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/update', 'Backend\SystemController@apiUpdate')->name('system.user.update');
     Route::post('/system/user/updatePassword', 'Backend\SystemController@apiUpdatePassword');
     Route::post('/system/user/detail', 'Backend\SystemController@apiUserDetail');
+    Route::post('/system/user/profile', 'Backend\SystemController@apiProfile');
     Route::post('/system/user/list_sale_room', 'Backend\SystemController@apiGetListSaleRoom');
     Route::post('/system/user/delete/{user_id}', 'Backend\SystemController@apidelete')->name('system.user.delete');
     Route::post('/system/user/delete_list_user', 'Backend\SystemController@apideleteListUser');

@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\TmsOrganization;
+use App\TmsOrganizationEmployee;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -207,10 +208,16 @@ class TmsOrganizationRepository implements ICommonInterface
         }
     }
 
-    public function detail($id)
+    public function customDetail($id, Request $request)
     {
         if (!is_numeric($id))
             return response()->json([]);
+
+        if ($id == 0) {
+            $role = $request->input('roles');
+            //dd($role);
+        }
+
         $data = DB::table('tms_organization as to')
             ->leftJoin('tms_organization as parent', 'to.parent_id', '=', 'parent.id')
             ->select(
@@ -226,5 +233,10 @@ class TmsOrganizationRepository implements ICommonInterface
             ->where('to.id', '=', $id)
             ->first();
         return response()->json($data);
+    }
+
+    public function detail($id)
+    {
+        // TODO: Implement detail() method.
     }
 }

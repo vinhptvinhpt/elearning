@@ -3,10 +3,10 @@
         <div class="overwrap_search_box"></div>
         <div class="hk-wrapper hk-vertical-nav">
             <top-bar :key="topBarKey"></top-bar>
-            <side-bar :current_roles="current_roles" v-if="current_roles !== null"></side-bar>
+            <side-bar :current_roles="current_roles"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
-              <router-view :key="$route.fullPath"></router-view>
+              <router-view :key="$route.fullPath" :current_roles="current_roles" :roles_ready="roles_ready"></router-view>
             </div>
         </div>
     </div>
@@ -21,8 +21,16 @@
       data() {
         return {
           topBarKey: 0,
-          current_roles: null,
-          selected_role: 'userxxx'
+          current_roles: {
+            has_user_market: false,
+            has_master_agency: false,
+            has_role_agency: false,
+            has_role_pos: false,
+            has_role_manager: false,
+            has_role_leader: false,
+            root_user: false,
+          },
+          roles_ready: false
         }
       },
       methods:{
@@ -39,13 +47,7 @@
             axios.get('/api/checkrolesidebar')
               .then(response => {
                 this.current_roles = response.data;
-                // $checkRole->has_user_market = false;
-                // $checkRole->has_master_agency = false;
-                // $checkRole->has_role_agency = false;
-                // $checkRole->has_role_pos = false;
-                // $checkRole->root_user = false;
-                // $checkRole->has_role_manager = false;
-                // $checkRole->has_role_leader = false;
+                //Pass to sidebar
                 if (response.data.root_user === true) {
                   this.selected_role = 'root';
                 } else if (response.data.has_role_manager === true) {
@@ -57,6 +59,7 @@
                 } else {
                   this.selected_role = 'user';
                 }
+                this.roles_ready = true;
               })
               .catch(error => {
                 console.log(error.response.data);

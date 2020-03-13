@@ -121,9 +121,7 @@
         },
         methods:{
             userData(){
-                axios.post('/system/user/detail',{
-                    user_id:this.user_id
-                })
+                axios.post('/system/user/profile')
                     .then(response => {
                         this.users = response.data;
                         if(response.data.training){
@@ -131,7 +129,7 @@
                         }
                     })
                     .catch(error => {
-
+                        //console.log(error);
                     })
             },
             restoreUser(user_id){
@@ -166,22 +164,10 @@
                         });
                 });
                 return false;
-            },
-            fetch() {
-              axios.post('/bridge/fetch', {
-                view: 'Profile'
-              })
-                .then(response => {
-                  this.user_id = response.data.user_id;
-                  this.userData();
-                })
-                .catch(error => {
-                  console.log(error);
-                })
-            },
+            }
         },
         mounted() {
-            this.fetch();
+          this.userData();
         }
     }
 </script>
