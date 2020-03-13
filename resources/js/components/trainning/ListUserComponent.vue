@@ -81,7 +81,7 @@
                       <td>
                         <router-link
                           :to="{ name: 'EditUserById', params: { user_id: user.user_id,type:'system' } }">
-                          {{ user.user_detail.user.username }}
+                          {{ user.user_detail.user ? user.user_detail.user.username : '' }}
                         </router-link>
                       </td>
 

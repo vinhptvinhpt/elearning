@@ -9,6 +9,6 @@ class StudentCertificate extends Model
     //
     protected $table = 'student_certificate';
     protected $fillable = [
-        'userid', 'code', 'timecertificate', 'status', 'create_at', 'update_at'
+        'userid', 'code', 'timecertificate', 'status', 'create_at', 'update_at','trainning_id'
     ];
 }
