@@ -145,7 +145,7 @@
 
 
               //  var editor_data = CKEDITOR.instances.article_ckeditor.getData();
-
+                let current_pos = this;
                 axios.post('/api/survey/create', {
                     sur_code: this.sur_code,
                     sur_name: this.sur_name,
@@ -155,25 +155,18 @@
                 })
                     .then(response => {
                             if (response.data.status) {
-                                toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                                toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                                 this.$router.push({
                                     name: 'QuestionCreate',
                                     params: {survey_id: response.data.otherData}
                                 });
                             } else {
-                                toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
                         }
                     )
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 
 

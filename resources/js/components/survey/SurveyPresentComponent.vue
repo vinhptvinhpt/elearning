@@ -93,40 +93,22 @@
                     });
             },
             submitAnswer() {
+              let current_pos = this;
+
                 axios.post('/api/survey/submit_result/' + this.survey_id, {
                     question_answers: this.question_answers,
                     ddtotext: this.survey
                 })
                     .then(response => {
                         if (response.data.status) {
-                            swal({
-                                title: response.data.message,
-                                type: "success",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            }, function () {
-                                window.history.back();
-                            });
+                          toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                          window.history.back();
                         } else {
-                            swal({
-                                title: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                          toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             viewSurvey() {
