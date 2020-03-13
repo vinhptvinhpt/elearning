@@ -175,6 +175,7 @@
                     $('.enddate_required').show();
                     return;
                 }
+                let current_pos = this;
 
                 axios.post('/api/survey/edit/' + +this.survey_id, {
                     sur_code: this.survey.code,
@@ -184,21 +185,14 @@
                     description: this.survey.description
                 }).then(response => {
                     if (response.data.status) {
-                        toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                        toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                         this.$router.push({name: 'SurveyIndex'});
                     } else {
-                        toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                        toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                     }
                 })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 
 

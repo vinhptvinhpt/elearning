@@ -339,7 +339,7 @@
                 this.formData.append('allow_register', allow_reg);
                 this.formData.append('offline', 0); //ko phai khoa hoc tap trung
                 this.formData.append('course_budget', this.course.course_budget);
-
+                let current_pos = this;
                 axios.post('/api/courses/update/' + this.course_id, this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -348,14 +348,14 @@
                     .then(response => {
                         var language = this.language;
                         if (response.data.status) {
-                            toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             this.$router.push({name: 'CourseIndex'});
                         } else {
-                            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                        toastr['error'](this.trans.get('keys.loi_he_thong'), this.trans.get('keys.that_bai'));
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             goBack() {
