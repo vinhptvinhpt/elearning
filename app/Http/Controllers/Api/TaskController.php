@@ -1162,42 +1162,73 @@ class TaskController extends Controller
     /**
      *
      * uydd Tự động cấp chứng chỉ
-     *
+     * Tự động thêm học viên vào bảng StudentCertificate
      */
     function autoCertificate(){
-//        try {
-//            $user_selected = $request->input('user_selected');
-//            \DB::beginTransaction();
-//
-//            $arr_data = [];
-//            $data_item = [];
-//
-//            foreach ($user_selected as $user_id) {
-//                $student = StudentCertificate::where('userid', $user_id)->first();
-//                //nếu học viên đã có mã thì không làm gì cả
-//                if (!$student) {
-//                    //check role: if role managemarket => dont generate code
-//                    $checkRole = tvHasRole($user_id, 'managemarket');
-//                    if (!$checkRole) {
-//                        //update status to 1
-//                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
-//
-//                        $data_item['userid'] = $user_id;
-//                        $data_item['code'] = $certificatecode;
-//                        $data_item['status'] = 1;
-//                        $data_item['timecertificate'] = time();
-//
-//                        array_push($arr_data, $data_item);
-//                    }
-//                }
-//                usleep(100); //sleep tranh tinh trang query db lien tiep
-//            }
-//
-//            StudentCertificate::insert($arr_data);
-//
-//            \DB::commit();
-//        } catch (\Exception  $e) {
-//
-//        }
+        try {
+            $users = DB::table('mdl_user as mu')
+                ->select('mu.id as user_id','ttc.trainning_id','ttp.code as trainning_code')
+                ->join('course_final as cf', 'cf.userid', '=', 'mu.id')
+                ->join('tms_trainning_courses as ttc','ttc.course_id','=','cf.courseid')
+                ->join('tms_traninning_programs as ttp','ttp.id','=','ttc.trainning_id')
+                ->leftJoin('student_certificate as sc', function($join){
+                    $join->on('sc.userid', '=', 'mu.id');
+                    $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
+                })
+                ->whereNull('sc.id')
+                ->where('ttp.auto_certificate','=',1)
+                ->get();
+
+            \DB::beginTransaction();
+
+            $num = 0;
+            $arr_data = [];
+            $limit = 300;
+
+            foreach ($users as $user) {
+                $student = StudentCertificate::where([
+                    'userid'        => $user->user_id,
+                    'trainning_id'  => $user->trainning_id
+                ])->first();
+                //nếu học viên đã có mã thì không làm gì cả
+                if (!$student) {
+                    $data_item = [];
+                    //update status to 1
+                    $certificatecode = $user->trainning_code . $this->randomNumber(7 - strlen($user->user_id));
+
+                    $data_item['userid']            = $user->user_id;
+                    $data_item['trainning_id']      = $user->trainning_id;
+                    $data_item['code']              = $certificatecode;
+                    $data_item['status']            = 1;
+                    $data_item['timecertificate']   = time();
+
+                    array_push($arr_data, $data_item);
+                    $num++;
+                }
+                usleep(100); //sleep tranh tinh trang query db lien tiep
+                if ($num >= $limit) {
+                    StudentCertificate::insert($arr_data);
+                    $num = 0;
+                    $arr_data = [];
+                }
+            }
+
+            StudentCertificate::insert($arr_data);
+
+            \DB::commit();
+        } catch (\Exception  $e) {
+
+        }
+    }
+
+    public function randomNumber($length)
+    {
+        $result = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $result .= mt_rand(0, 9);
+        }
+
+        return $result;
     }
 }
