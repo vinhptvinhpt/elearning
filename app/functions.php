@@ -2815,11 +2815,12 @@ function validate_fields($array, $keys)
     return $check;
 }
 
-function status_message($status, $message)
+function status_message($status, $message, $additional_data = [])
 {
     $data = [];
     $data['status'] = $status;
     $data['message'] = $message;
+    $data = array_merge($data, $additional_data);
     return $data;
 }
 

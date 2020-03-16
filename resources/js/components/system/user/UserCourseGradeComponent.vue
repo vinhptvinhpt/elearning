@@ -35,7 +35,7 @@
                                             <input v-model="keyword" type="text"
                                                    class="form-control search_text"
                                                    :placeholder="trans.get('keys.nhap_khoa_hoc')+ ' ...'">
-                                            <button type="button" id="btnFilter" class="btn btn-primary btn-sm"
+                                            <button type="button" id="btnFilterGrade" class="btn btn-primary btn-sm"
                                                     @click="getGradeByCourse(1)">
                                                 {{trans.get('keys.tim')}}
                                             </button>

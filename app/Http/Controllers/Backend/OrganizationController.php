@@ -23,9 +23,9 @@ class OrganizationController extends Controller
         return $this->tmsOrganizationRepository->getall($request);
     }
 
-    public function apiOrganizationDetail($id)
+    public function apiOrganizationDetail($id, Request $request)
     {
-        return $this->tmsOrganizationRepository->detail($id);
+        return $this->tmsOrganizationRepository->customDetail($id, $request);
     }
 
     public function apiCreateOrganization(Request $request)

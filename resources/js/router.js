@@ -98,6 +98,9 @@ import TrainningListComponent from "./components/trainning/TrainningListComponen
 import TrainningEditComponent from "./components/trainning/TrainningEditComponent";
 import ListUserComponent from "./components/trainning/ListUserComponent";
 import EditEmployeeComponent from "./components/system/organization/EditEmployeeComponent";
+import PermissionIndexComponent from "./roles/PermissionIndexComponent";
+import PermissionAddComponent from "./roles/PermissionAddComponent";
+import PermissionDetailComponent from "./roles/PermissionDetailComponent";
 
 
 Vue.use(VueRouter);
@@ -449,6 +452,23 @@ const routes = [
         component: RoleListUserComponent,
         name: 'RoleUserIndex',
         props: (route) => ({role_id: route.params.role_id})
+      },
+      {
+        path: 'permission',
+        component: PermissionIndexComponent,
+        name: 'IndexPermission'
+      },
+      {
+        path: 'permission/slug_info/:slug',
+        component: PermissionAddComponent,
+        name: 'AddPermission',
+        props: (route) => ({slug: route.params.slug})
+      },
+      {
+        path: 'permission/detail/:id',
+        component: PermissionDetailComponent,
+        name: 'DetailPermission',
+        props: (route) => ({permission_id: route.params.id})
       },
       //Activity log
       {

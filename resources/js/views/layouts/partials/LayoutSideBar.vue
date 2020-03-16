@@ -27,7 +27,7 @@
                         || slug_can('tms-system-teacher-view')
                         || slug_can('tms-system-student-view')
                         || slug_can('tms-system-market-view')
-                        || has_role_leader || has_role_manager
+                        || current_roles.has_role_leader || current_roles.has_role_manager
                         ">
                         <a class="nav-link has-submenu collapse-level-1" id="quan_ly_he_thong"
                            @click="toggleMenu('quan_ly_he_thong','auth_drp')"
@@ -39,7 +39,7 @@
                         <ul id="auth_drp"
                             class="nav flex-column collapse collapse-level-1">
 
-                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link
                                         :to="{ path: '/tms/system/organize/branchsystem/organize/branch', name: 'BranchIndex', query: { city: '0' } }"
                                         class="nav-link">
@@ -47,56 +47,62 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/view_user_market" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_master_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_master_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.dai_ly_cua_toi') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/saleroom/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide" v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/sale_room_user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="current_roles.root_user">
                               <router-link to="/tms/organization" class="nav-link">
                                 <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
                               </router-link>
                             </li>
 
+                            <li class="nav-item" v-if="current_roles.has_role_manager || current_roles.has_role_leader">
+                              <router-link to="/tms/organization-employee" class="nav-link">
+                                <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
+                              </router-link>
+                            </li>
+
                             <li class="nav-item hide"
-                                v-if="slug_can('tms-system-organize-view') && (!has_user_market ||root_user)">
+                                v-if="slug_can('tms-system-organize-view') && (!current_roles.has_user_market || current_roles.root_user)">
                                 <a class="nav-link  has-submenu collapse-level-2" id="co_cau_to_chuc"
                                    @click="toggleMenu('co_cau_to_chuc','signup_organize12')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
@@ -189,7 +195,7 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="root_user">
+                            <li class="nav-item" v-if="current_roles.root_user">
                                 <router-link to="/tms/activity_log" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.activity_log') }}</span>
                                 </router-link>
@@ -476,13 +482,6 @@
         data() {
             return {
                 slugs: [],
-                has_user_market: false,
-                has_master_agency: false,
-                has_role_agency: false,
-                has_role_pos: false,
-                has_role_manager: false,
-                has_role_leader: false,
-                root_user: false,
                 lms_url: '/lms'
             }
         },
@@ -496,15 +495,6 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
-            },
-            fetchRoles() {
-                this.has_user_market = this.current_roles.has_user_market;
-                this.has_master_agency = this.current_roles.has_master_agency;
-                this.has_role_agency = this.current_roles.has_role_agency;
-                this.has_role_pos = this.current_roles.has_role_pos;
-                this.root_user = this.current_roles.root_user;
-                this.has_role_leader = this.current_roles.has_role_leader;
-                this.has_role_manager = this.current_roles.has_role_manager;
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
@@ -527,7 +517,6 @@
         },
         mounted() {
             this.getinfoSidebar();
-            this.fetchRoles();
         }
     }
 </script>

@@ -149,6 +149,10 @@ class SystemController extends Controller
     {
         return $this->bussinessRepository->apiUserDetail($request);
     }
+    public function apiProfile(Request $request)
+    {
+        return $this->bussinessRepository->apiProfile($request);
+    }
     public function apiUpdate(Request $request)
     {
         return $this->bussinessRepository->apiUpdate($request);

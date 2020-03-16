@@ -127,9 +127,8 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
-                    <treeselect v-model="organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="organization_id !== 0"/>
-                    <label v-if="!organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-
+                    <treeselect v-model="input_organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="input_organization_id !== 0"/>
+                    <label v-if="!input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
                 <!--Training-->
@@ -245,8 +244,14 @@
 </template>
 
 <script>
+
     export default {
-        props: ['type','role_login', 'organization_id'],
+        props: [
+          'type',
+          'role_login',
+          'organization_id',
+          'current_roles'
+        ],
         data() {
             return {
                 fullname: '',
@@ -535,7 +540,7 @@
                         return;
                     }
                 }
-                if (this.organization_id) {
+                if (this.input_organization_id) {
                     if (organization_roles_selected.length === 0) {
                         toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
                         return;
@@ -569,7 +574,7 @@
                 this.formData.append('branch_select', this.branch_select);
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('training_id', this.training);
-                this.formData.append('organization_id', this.organization_id);
+                this.formData.append('organization_id', this.input_organization_id);
 
                 axios.post('/system/user/create', this.formData, {
                     headers: {
@@ -580,6 +585,7 @@
                         if(response.data.status && response.data.status == 'success'){
                             roam_message(response.data.status,response.data.message);
 
+                            this.clearFileInput();
                             this.fullname = '';
                             this.dob = '';
                             this.email = '';
@@ -626,6 +632,9 @@
             setFileInput() {
               $('.dropify').dropify();
             },
+            clearFileInput() {
+              $('.dropify-clear').click();
+            },
             setOptions(list, current_id) {
                 let outPut = [];
                 for (const [key, item] of Object.entries(list)) {
@@ -665,18 +674,17 @@
             },
         },
         mounted() {
-
-            console.log(this.$route.selected_role);
-
-            if (!this.organization_id) {
-              this.organization_id = 0;
-            }
             this.getRoles();
             this.getCitys();
             //this.get_branch();
             //this.getTrainingProgram();
             this.setFileInput();
             this.selectOrganization(this.organization_id);
+        },
+        computed: {
+          input_organization_id: function(){
+            return this.organization_id ? this.organization_id : 0;
+          },
         }
     }
 </script>

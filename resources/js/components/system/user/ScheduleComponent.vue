@@ -33,7 +33,7 @@
                                     <div class="d-flex flex-row form-group">
                                         <input v-model="keyword" type="text"
                                                class="form-control search_text" :placeholder="trans.get('keys.ten_ma_khoa_hoc_hinh_thuc_dao_tao') + ' ...'">
-                                        <button type="button" id="btnFilter" class="btn btn-primary btn-sm"
+                                        <button type="button" id="btnFilterSchedule" class="btn btn-primary btn-sm"
                                                 @click="getSchedule(1)">
                                             {{trans.get('keys.tim')}}
                                         </button>
