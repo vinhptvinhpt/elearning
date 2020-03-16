@@ -258,7 +258,8 @@ if ($pagetype == "my-index") {
 }
 
 // [VinhPT][2019.12.05] Filter list access tms
-$list_access_tms = array('Root', 'coursecreator', 'editingteacher', 'teacher', 'managemarket', 'manageagents', 'managepos', 'Admin', 'TPTCNS', 'PPTCNS', 'CVDT', 'TPQLCN', 'TPHCTH');
+// [VinhPT][EAsia] Change list user has permission to access TMS
+$list_access_tms = array('Root', 'Admin', 'Manager', 'Leader');
 $can_access_tms = false;
 global $DB;
 $sql_check_role = "select
