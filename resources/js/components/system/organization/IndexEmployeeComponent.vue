@@ -25,7 +25,7 @@
               <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                 <div class="card-body">
 
-                  <system-user-create :type="'system'" :organization_id="organization_id"></system-user-create>
+                  <system-user-create :type="'system'" :organization_id="organization_id" :current_roles="current_roles"></system-user-create>
 
                   <!-- Gán người dùng vào tổ chức one by one -->
 
@@ -228,7 +228,12 @@
       AssignEmployee,
       SystemUserCreate
     },
-    props: ['organization_id', 'source_page'],
+    props: [
+      'organization_id',
+      'source_page',
+      'current_roles',
+      'roles_ready'
+    ],
     data() {
       return {
         employee: {
@@ -399,14 +404,16 @@
         return false;
       },
       setOrganization() {
-        if (this.organization_id && this.organization_id !== 0) {
+        if (this.organization_id) {
           this.employee.input_organization_id = this.organization_id;
           this.organization_selected =  true;
           this.fetchOrganizationInfo(this.organization_id);
         }
       },
       fetchOrganizationInfo(organization_id) {
-        axios.post('/organization/detail/' + organization_id)
+        axios.post('/organization/detail/' + organization_id, {
+            roles: this.current_roles
+        })
           .then(response => {
             this.organization_name = response.data.name;
           })
@@ -416,6 +423,12 @@
       }
     },
     updated() {
+      if (this.roles_ready) {
+        //run after role ready = true
+        //console.log(this.current_roles);
+        //gán organization_id nếu có trong prop
+        //this.setOrganization();
+      }
       this.setParamsPage(false);
     },
     mounted() {

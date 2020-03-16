@@ -6469,7 +6469,7 @@ class BussinessRepository implements IBussinessInterface
             devcpt_log_system('user', '/system/user/edit/' . $mdlUser['id'], 'update_profile', $infoLog);
 
             \DB::commit();
-            return response()->json(status_message('success', __('cap_nhat_tai_khoan_thanh_cong')));
+            return response()->json(status_message('success', __('cap_nhat_tai_khoan_thanh_cong'), ['avatar' => $user->avatar]));
         } catch (Exception $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
@@ -6488,6 +6488,86 @@ class BussinessRepository implements IBussinessInterface
         $param = [
             'user_id' => 'number',
         ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $now = Carbon::now();
+        $mdlUser = MdlUser::select('username')->findOrFail($user_id);
+        $users = TmsUserDetail::with('city', 'training.training_detail')
+            ->with('certificate')
+            ->with('employee')
+            ->where([
+                'user_id' => $user_id,
+            ])->first();
+        $users['username'] = $mdlUser['username'];
+        if ($users['dob']) {
+            $dob = date('Y-m-d', $users['dob']);
+            $users['dob'] = $dob;
+        }
+
+        if ($users['certificate']) {
+            if (strlen($users['certificate']->timecertificate) != 0) {
+                $tc = date('Y-m-d', $users['certificate']->timecertificate);
+                $users['certificate']->timecertificate = $tc;
+            }
+        }
+
+        if ($users['start_time']) {
+            $start_time = date('Y-m-d', $users['start_time']);
+            $users['start_time'] = $start_time;
+        }
+        //$created_at = date('Y-m-d',strtotime($users['created_at']));
+        //$create_time = (strtotime($created_at.' 00:00') + 2592000‬ - strtotime($now));
+        $diffs = strtotime($users['created_at']) - strtotime($now);
+        $diff = abs(30 * 60 * 60 * 24 + $diffs);
+        $years = floor($diff / (365 * 60 * 60 * 24));
+        $months = floor(($diff - $years * 365 * 60 * 60 * 24) / (30 * 60 * 60 * 24));
+        $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
+        $hours = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24) / (60 * 60));
+        $minutes = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24 - $hours * 60 * 60) / 60);
+        $diff_time = ($diffs + 30 * 60 * 60 * 24) < 0 ? 'Đã hết hạn' : $days . ' Ngày, ' . $hours . 'Giờ';
+        $diff_time_class = ($diffs + 30 * 60 * 60 * 24) < 0 ? 'text-danger' : 'text-warning';
+        $users['diff_time'] = $diff_time;
+        $users['diff_time_class'] = $diff_time_class;
+        $roless = ModelHasRole::with('role')->where('model_id', $user_id)->get()->toArray();
+        $roles = ModelHasRole::where('model_id', $user_id)->pluck('role_id');
+        $studentRoleCount = Role::whereIn('id', $roles)->where('name', 'student')->count();
+        $users['role'] = $roles;
+        $users['roles'] = $roless;
+        $users['student_role'] = $studentRoleCount;
+        $salerooms = DB::table('tms_sale_room_user as tsru')
+            ->select(
+                'tb.id as branch_id',
+                'tb.name as branch_name',
+                'tb.code as branch_code',
+                'tsr.id',
+                'tsr.name',
+                'tsr.code',
+                'tsru.type'
+            )
+            ->leftJoin('tms_branch as tb', 'tb.id', '=', 'tsru.sale_room_id')
+            ->leftJoin('tms_sale_rooms as tsr', 'tsr.id', '=', 'tsru.sale_room_id')
+            ->where('tsru.user_id', '=', $user_id)
+            ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
+            ->get();
+        $users['salerooms'] = $salerooms;
+        return response()->json($users);
+    }
+
+    public function apiProfile(Request $request)
+    {
+        $user_id = Auth()->user()->id;
+
+        if (!$user_id) {
+            return response()->json([]);
+        }
+
+        $param = [
+            'user_id' => 'number',
+        ];
+
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
