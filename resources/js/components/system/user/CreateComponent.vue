@@ -127,7 +127,7 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
-                    <treeselect v-model="input_organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="input_organization_id !== 0"/>
+                    <treeselect :value="input_organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="input_organization_id !== 0"/>
                     <label v-if="!input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
@@ -250,7 +250,8 @@
           'type',
           'role_login',
           'organization_id',
-          'current_roles'
+          'current_roles',
+          'roles_ready'
         ],
         data() {
             return {
@@ -299,11 +300,13 @@
                 'manager',
                 'employee',
                 'leader'
-                ]
+                ],
+                roles_set: 0,
+                role_selected: 'user'
             }
         },
         methods: {
-            changeOption(){
+            changeOption() {
                 if(this.option_work == 'pos'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
                 }
@@ -311,7 +314,7 @@
                     $('.btn_search_box span').html(this.trans.get('keys.chon_dai_ly'));
                 }
             },
-            getTrainingProgram(){
+            getTrainingProgram() {
                 axios.post('/system/user/get_training_list')
                     .then(response => {
                         this.training_list = response.data;
@@ -333,7 +336,7 @@
                         this.branch_list = [];
                     })
             },
-            removeBranch(id){
+            removeBranch(id) {
                 for( var i = 0; i < this.branch_select.length; i++){
                     if ( this.branch_select[i] === id) {
                         this.branch_select.splice(i, 1);
@@ -392,7 +395,7 @@
                         this.saleroom_list = [];
                     })
             },
-            removeSaleRoom(id){
+            removeSaleRoom(id) {
                 for( var i = 0; i < this.saleroom_select.length; i++){
                     if ( this.saleroom_select[i] === id) {
                         this.saleroom_select.splice(i, 1);
@@ -408,10 +411,10 @@
                         this.saleroom_list = [];
                     })
             },
-            changeRequired(element){
+            changeRequired(element) {
                 $('#'+element).removeClass('notValidate');
             },
-            viewPassword(){
+            viewPassword() {
                 var inputPassword = document.getElementById("inputPassword");
                 var inputPasswordConfirm = document.getElementById("inputPasswordConfirm");
                 if (inputPassword.type === "password") {
@@ -422,7 +425,7 @@
                     inputPasswordConfirm.type = "password";
                 }
             },
-            validate_password(){
+            validate_password() {
                 axios.post('/validate_password',{
                     password:this.password,
                     passwordConf:this.passwordConf,
@@ -448,7 +451,7 @@
                         console.log(error.response.data);
                     });
             },
-            changeConfirm(){
+            changeConfirm() {
                 if(this.confirm == 1){
                     $('#inputConfirmAddress').attr('disabled',false);
                     $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_ma_chung_nhan'));
@@ -463,6 +466,10 @@
                     axios.post('/system/user/list_role')
                         .then(response => {
                             this.roles = response.data;
+                            this.getRoleFromCurrentRoles(this.current_roles);
+                            if (this.role_selected === 'manager' || this.role_selected === 'leader') {
+                              this.setRoles(this.roles);
+                            }
                             this.$nextTick(function(){
                                 $('.selectpicker').selectpicker('refresh');
                             });
@@ -481,7 +488,7 @@
                         console.log(error.response.data);
                     });
             },
-            createUser(){
+            createUser() {
                 if(!this.username) {
                     $('.username_required').show();
                     return;
@@ -659,7 +666,7 @@
                 $('.content_search_box').addClass('loadding');
                 axios.post('/organization/list',{
                     keyword: this.organization_keyword,
-                    level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                    level: 1, // lấy cấp lớn nhất only, vì đã đệ quy
                     paginated: 0 //không phân trang
                 })
                     .then(response => {
@@ -672,19 +679,61 @@
                         $('.content_search_box').removeClass('loadding');
                     })
             },
+            setRoles(list) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  name: item.name,
+                };
+                if (this.role_selected === 'leader' || this.role_selected === 'manager') {
+                    if (item.name === 'employee') {
+                      outPut.push(newOption);
+                    }
+                }
+                if (this.role_selected === 'manager') {
+                  if (item.name === 'leader') {
+                    outPut.push(newOption);
+                  }
+                }
+              }
+              this.roles = outPut;
+            },
+            getRoleFromCurrentRoles(current_roles) {
+                if (current_roles.root_user === true) {
+                  this.role_selected = 'root';
+                } else if (current_roles.has_role_manager === true) {
+                  this.role_selected = 'manager';
+                } else if (current_roles.has_role_leader === true) {
+                  this.role_selected = 'leader';
+                } else if (current_roles.has_user_market === true) {
+                  this.role_selected = 'user_market';
+                } else {
+                  this.role_selected = 'user';
+                }
+            }
         },
         mounted() {
-            this.getRoles();
             this.getCitys();
             //this.get_branch();
             //this.getTrainingProgram();
             this.setFileInput();
             this.selectOrganization(this.organization_id);
         },
+        updated() {
+          if (this.roles_ready) {
+            //run after role ready = true
+            if (this.roles_set === 0) {
+              //run only one time
+              this.getRoles();
+              this.roles_set = 1;
+            }
+          }
+        },
         computed: {
           input_organization_id: function(){
             return this.organization_id ? this.organization_id : 0;
-          },
+          }
         }
     }
 </script>
