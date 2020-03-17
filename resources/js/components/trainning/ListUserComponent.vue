@@ -32,14 +32,14 @@
                         </select>
                       </label>
                     </div>
-                    <div class="fillterConfirm" style="display: inline-block;">
+                    <!--<div class="fillterConfirm" style="display: inline-block;">
                       <label>
                         <select v-model="trainning" class="custom-select custom-select-sm form-control form-control-sm" @change="getUser(1)">
                           <option value="0">{{trans.get('keys.khung_nang_luc')}}</option>
                           <option v-for="value in trainning_list" :value="value.id">{{value.name}}</option>
                         </select>
                       </label>
-                    </div>
+                    </div>-->
                   </div>
                   <div class="col-sm-4">
                     <form v-on:submit.prevent="getUser(1)">
@@ -68,7 +68,6 @@
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class=" mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
-                      <th>{{trans.get('keys.khung_nang_luc')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
@@ -76,7 +75,7 @@
                     <tr v-if="posts.length == 0">
                       <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
                     </tr>
-                    <tr v-else v-for="(user,index) in posts">
+                    <tr v-else v-for="(user,index) in posts" v-if="user.user_detail">
                       <td>{{ (current-1)*row+(index+1) }}</td>
                       <td>
                         <router-link
@@ -87,16 +86,16 @@
 
                       <td class=" mobile_hide">{{ user.user_detail.fullname }}</td>
                       <td class=" mobile_hide">{{ user.user_detail.email }}</td>
-                      <td class="wrap_select">
-                        <table v-if="user.user_detail.trainning_user.length > 0" style="margin-bottom: 0;">
-                          <tr v-for="trainning in user.user_detail.trainning_user">
-                            <td>
-                              {{ trainning.training_detail.name }}
-                              <span style="display: none;" class="remove_trainning" :title="trans.get('keys.go_khung_nang_luc')"
-                                    @click="remove_trainning(trainning.id)"><i class="fas fa-times"></i></span>
-                            </td>
-                          </tr>
-                        </table>
+<!--                      <td class="wrap_select">-->
+<!--                        <table v-if="user.user_detail.trainning_user.length > 0" style="margin-bottom: 0;">-->
+<!--                          <tr v-for="trainning in user.user_detail.trainning_user">-->
+<!--                            <td>-->
+<!--                              {{ trainning.training_detail.name }}-->
+<!--                              <span style="display: none;" class="remove_trainning" :title="trans.get('keys.go_khung_nang_luc')"-->
+<!--                                    @click="remove_trainning(trainning.id)"><i class="fas fa-times"></i></span>-->
+<!--                            </td>-->
+<!--                          </tr>-->
+<!--                        </table>-->
 <!--                        <span>{{ user.trainning_name }}</span>-->
 <!--                        <div style="display: none;">-->
 <!--                          <div style="display: flex;min-width: 100px;">-->
@@ -109,10 +108,10 @@
 <!--                            </button>-->
 <!--                          </div>-->
 <!--                        </div>-->
-                      </td>
+<!--                      </td>-->
                       <td class="text-center">
-                        <button class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2 btn_open_select" type="button">
-                          <span class="btn-icon-wrap"><i class="fal fa-wrench"></i></span>
+                        <button @click="remove_trainning(user.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select" type="button">
+                          <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                         </button>
                       </td>
                     </tr>
@@ -123,7 +122,6 @@
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class=" mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
-                      <th>{{trans.get('keys.khung_nang_luc')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </tfoot>
@@ -147,6 +145,7 @@
   //import vPagination from 'vue-plain-pagination'
   import EditIndexComponent from '../system/user/EditIndexComponent'
   export default {
+    props: ['trainning_id'],
     components: {EditIndexComponent},
     data() {
       return {
@@ -219,7 +218,7 @@
           page: paged || this.current,
           keyword: this.keyword,
           row: this.row,
-          trainning: this.trainning
+          trainning: this.trainning_id
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];
@@ -236,7 +235,7 @@
       },
     },
     mounted() {
-      this.getTrainning();
+      //this.getTrainning();
     }
   }
 </script>

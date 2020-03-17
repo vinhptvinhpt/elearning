@@ -16,6 +16,9 @@ class TmsTrainningProgram extends Model
     public function group(){
         return $this->hasMany('\App\TmsTrainningGroup', 'trainning_id','id');
     }
+    public function users(){
+        return $this->hasMany('\App\TmsTrainningUser', 'trainning_id','id');
+    }
     public function group_role(){
         return $this->hasOne('\App\TmsTrainningGroup', 'trainning_id','id')->where('type',0);
     }
