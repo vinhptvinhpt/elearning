@@ -1161,13 +1161,14 @@ class TaskController extends Controller
     }
     /**
      *
-     * uydd Tự động cấp chứng chỉ
+     * uydd Tự động cấp chứng chỉ và huy hiệu
      * Tự động thêm học viên vào bảng StudentCertificate
      */
     function autoCertificate(){
         try {
+            //Tự động cấp chứng chỉ
             $users = DB::table('mdl_user as mu')
-                ->select('mu.id as user_id','ttc.trainning_id','ttp.code as trainning_code')
+                ->select('mu.id as user_id','ttc.trainning_id','ttp.code as trainning_code','ttp.style as style','ttp.time_start','ttp.time_end','cf.timecompleted')
                 ->join('course_final as cf', 'cf.userid', '=', 'mu.id')
                 ->join('tms_trainning_courses as ttc','ttc.course_id','=','cf.courseid')
                 ->join('tms_traninning_programs as ttp','ttp.id','=','ttc.trainning_id')
@@ -1184,41 +1185,88 @@ class TaskController extends Controller
             $num = 0;
             $arr_data = [];
             $limit = 300;
-
+dd($users);
             foreach ($users as $user) {
-                $student = StudentCertificate::where([
-                    'userid'        => $user->user_id,
-                    'trainning_id'  => $user->trainning_id
-                ])->first();
-                //nếu học viên đã có mã thì không làm gì cả
-                if (!$student) {
-                    $data_item = [];
-                    //update status to 1
-                    $certificatecode = $user->trainning_code . $this->randomNumber(7 - strlen($user->user_id));
+                if(
+                    ( $user->style == 1 && intval($user->time_start) <= intval($user->timecompleted) && intval($user->time_end) >= intval($user->timecompleted) ) ||
+                    $user->style == 0
+                ){
+                    $student = StudentCertificate::where([
+                        'userid'        => $user->user_id,
+                        'trainning_id'  => $user->trainning_id
+                    ])->first();
+                    //nếu học viên đã có mã thì không làm gì cả
+                    if (!$student) {
+                        $data_item = [];
+                        //update status to 1
+                        $certificatecode = $user->trainning_code . $this->randomNumber(7 - strlen($user->user_id));
 
-                    $data_item['userid']            = $user->user_id;
-                    $data_item['trainning_id']      = $user->trainning_id;
-                    $data_item['code']              = $certificatecode;
-                    $data_item['status']            = 1;
-                    $data_item['timecertificate']   = time();
+                        $data_item['userid']            = $user->user_id;
+                        $data_item['trainning_id']      = $user->trainning_id;
+                        $data_item['code']              = $certificatecode;
+                        $data_item['status']            = 1;
+                        $data_item['timecertificate']   = time();
 
-                    array_push($arr_data, $data_item);
-                    $num++;
-                }
-                usleep(100); //sleep tranh tinh trang query db lien tiep
-                if ($num >= $limit) {
-                    StudentCertificate::insert($arr_data);
-                    $num = 0;
-                    $arr_data = [];
+                        array_push($arr_data, $data_item);
+                        $num++;
+                    }
+                    usleep(100); //sleep tranh tinh trang query db lien tiep
+                    if ($num >= $limit) {
+                        //$arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
+                        StudentCertificate::insert($arr_data);
+                        $num = 0;
+                        $arr_data = [];
+                    }
                 }
             }
-
+//            array_push($arr_data, [
+//                'userid'    => 1571,
+//                'trainning_id'    => 1,
+//                'code'    => 'KHCC700000',
+//                'status'    => 1,
+//                'timecertificate'    => time()
+//            ]);
+//            array_push($arr_data, [
+//                'userid'    => 1571,
+//                'trainning_id'    => 2,
+//                'code'    => 'KHCC700000',
+//                'status'    => 1,
+//                'timecertificate'    => time()
+//            ]);
+//            $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
+//            dd($arr_data);
             StudentCertificate::insert($arr_data);
-
             \DB::commit();
+
         } catch (\Exception  $e) {
 
         }
+    }
+
+    public function unique_multi_array($array, $keyArray) {
+        $temp_array = array();
+        $i = 0;
+        $val_array = array();
+
+        foreach($array as $val) {
+            dd($val);
+            $check = false;
+            foreach ($keyArray as $key){
+                if($val[$key]){
+
+                }
+                $val_array[$i][$key] = $val[$key];
+
+            }
+//            if (!in_array($val[$key1], $key_array) && !in_array($val[$key2], $key_array)) {
+//                $key_array[$i][$key1] = $val[$key1];
+//                $key_array[$i][$key2] = $val[$key2];
+//                $temp_array[$i] = $val;
+//            }
+            $i++;
+        }
+        dd($val_array);
+        return $temp_array;
     }
 
     public function randomNumber($length)

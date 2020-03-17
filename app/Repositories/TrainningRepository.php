@@ -261,6 +261,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
+        $style = $request->input('style');
 
         $param = [
             'keyword' => 'text',
@@ -273,7 +274,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstData = TmsTrainningProgram::with([
             'group_role.role',
-            'group_organize.organize'
+            'group_organize.organize',
+            'users'
         ])
         ->select('id', 'code', 'name')->where('deleted', '=', 0);
 
@@ -282,6 +284,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $query->orWhere('code', 'like', "%{$this->keyword}%")
                     ->orWhere('name', 'like', "%{$this->keyword}%");
             });
+        }
+
+        if($style){
+            $lstData = $lstData->where('style',1);
+        }else{
+            $lstData = $lstData->where('style',0);
         }
 
         $lstData = $lstData->orderBy('id', 'desc');
@@ -646,7 +654,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
             $data = TmsTrainningUser::with([
                 'user_detail.user',
-                'user_detail.trainning_user.training_detail'
+//                'user_detail.trainning_user.training_detail'
             ]);
 
             if ($trainning != 0) {
