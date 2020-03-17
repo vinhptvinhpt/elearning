@@ -288,7 +288,7 @@
       <user-schedule :user_id="user_id"></user-schedule>
 
       <div class="col-12 hk-sec-wrapper" v-if="has_student == 'yes' || type == 'student'">
-        <user-course-grade :user_id="user_id" :training_name="training_name"></user-course-grade>
+        <user-course-grade :user_id="user_id" :training_name="training_name" :username="users.username" :fullname="users.fullname"></user-course-grade>
       </div>
 
     </div>
@@ -432,9 +432,8 @@
               swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
             });
         });
-
         return false;
-      },
+      }
     },
     mounted() {
       this.userData();
