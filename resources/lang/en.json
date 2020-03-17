@@ -275,6 +275,15 @@
     "xoa_nhan_vien_thanh_cong": "Delete employee successfully",
     "cap_nhat_nhan_vien_thanh_cong": "Edit employee successfully",
     "nhan_vien_da_ton_tai": "Employee existed",
-    "thanh_cong": "Thành công",
-    "nguoi_dung_khong_co_quuyen_cho_vi_tri_nay": "User mising role for this position"
+    "thanh_cong": "Successfully",
+    "nguoi_dung_khong_co_quuyen_cho_vi_tri_nay": "User mising role for this position",
+    "hoan_thanh": "Finished",
+    "chua_hoan_thanh": "Not yet finished",
+    "trang_thai": "Status",
+    "ma_khoa_hoc": "Course code",
+    "ten_khoa_hoc": "Course name",
+    "diem": "Mark",
+    "tien_do": "Progress",
+    "them_vao_danh_sach_thanh_cong": "Add user to list successfully",
+    "xoa_khoi_danh_sach_thanh_cong": "Remove user from list successfully"
 }

@@ -239,9 +239,19 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserCurrentEnrol($request);
     }
 
+    public function apiUserCurrentInvite(Request $request)
+    {
+        return $this->bussinessRepository->apiUserCurrentInvite($request);
+    }
+
     public function apiUserNeedEnrol(Request $request)
     {
         return $this->bussinessRepository->apiUserNeedEnrol($request);
+    }
+
+    public function apiUserNeedInvite(Request $request)
+    {
+        return $this->bussinessRepository->apiUserNeedInvite($request);
     }
 
     public function apiEnrolUser(Request $request)
@@ -249,9 +259,19 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiEnrolUser($request);
     }
 
+    public function apiInviteUser(Request $request)
+    {
+        return $this->bussinessRepository->apiInviteUser($request);
+    }
+
     public function apiRemoveEnrolUser(Request $request)
     {
         return $this->bussinessRepository->apiRemoveEnrolUser($request);
+    }
+
+    public function apiRemoveInviteUser(Request $request)
+    {
+        return $this->bussinessRepository->apiRemoveInviteUser($request);
     }
 
     public function apiImportExcelEnrol(Request $request)

@@ -760,7 +760,13 @@
         "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Employee) before select working place",
         "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
         "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
-        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "You want remove Trainning program assigned to this user!"
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "You want remove Trainning program assigned to this user!",
+        "excel": "Excel",
+        "moi_ghi_danh_khoa_hoc": "Invite student",
+        "danh_sach_nhan_su": "Student list",
+        "danh_sach_moi_ghi_danh": "Invite list",
+        "chon_vao_danh_sach": "Add to invite list",
+        "huy_khoi_danh_sach": "Remove from list"
     },
     "vi.keys": {
         "language": "",
@@ -1523,6 +1529,12 @@
         "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Employee) trước khi chọn nơi làm việc",
         "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
         "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
-        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "Bạn muốn loại khung năng lực gán cho người dùng này!"
+        "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "Bạn muốn loại khung năng lực gán cho người dùng này!",
+        "excel": "Excel",
+        "moi_ghi_danh_khoa_hoc": "Mời ghi danh khóa học",
+        "danh_sach_nhan_su": "Danh sách nhân sự",
+        "danh_sach_moi_ghi_danh": "Danh sách mời ghi danh",
+        "chon_vao_danh_sach": "Chọn vào danh sách",
+        "huy_khoi_danh_sach": "Hủy khỏi danh sách"
     }
 }

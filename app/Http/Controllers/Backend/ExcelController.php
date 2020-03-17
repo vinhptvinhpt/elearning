@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Exports\ListMismatchSaleroom;
 use App\Exports\ReportSheet;
+use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request;
@@ -276,8 +277,6 @@ class ExcelController extends Controller
             }
         }
 
-        //dd($export_data);
-
         $exportExcel = new ReportSheet('Report Detail', $selected_level, $export_data);
 
         $filename = "report_detail.xlsx";
@@ -287,8 +286,53 @@ class ExcelController extends Controller
         return response()->json(storage_path($filename));
     }
 
+    public function exportResult(Request $request)
+    {
+
+        $username = $request->input('username');
+        $fullname = $request->input('fullname');
+
+        $data = $request->input('data');
+
+        $export_data = array();
+
+        $export_data[] = array(
+            __('stt'),
+            __('ma_khoa_hoc'),
+            __('ten_khoa_hoc'),
+            __('tien_do'),
+            __('diem'),
+            __('trang_thai'),
+        );
+
+        foreach ($data as $key => $item) {
+            $export_data[] = array(
+                $key + 1,
+                isset($item['shortname']) ? $item['shortname'] : '',
+                isset($item['fullname']) ? $item['fullname'] : '',
+                $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 |
+                0.00) . "%)",
+                isset($item['finalgrade']) ? number_format((float)$item['finalgrade'], 2, '.', '') : 0,
+                $item['status_user'] == 1 && floatval($item['finalgrade']) >= floatval($item['gradepass']) && $item['user_course_completionstate'] == $item['user_course_learn'] && $item['user_course_completionstate'] > 0 ? __('hoan_thanh') : __('chua_hoan_thanh')
+            );
+        }
+
+
+        $exportExcel = new ResultSheet($fullname, $export_data);
+
+        $filename = $username . "_result.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json($filename);
+    }
+
     public function downloadExportReport() {
         $filename = "report_detail.xlsx";
         return Storage::download($filename);
+    }
+
+    public function downloadExportResult($file_name) {
+        return Storage::download($file_name);
     }
 }
