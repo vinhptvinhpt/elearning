@@ -2,7 +2,7 @@
     <div>
         <div v-if="course_radio == 0">
             <div class="row">
-                <div class="col-12 col-lg-6 form-group">
+                <div class="col-6 form-group">
                     <h5 class="hk-sec-title">{{trans.get('keys.khung_nang_luc')}}</h5>
                     <select class="form-control" disabled>
                         <option value="3">{{training_name ? training_name : trans.get('keys.chua_co_khung_nang_luc')}}
@@ -16,7 +16,7 @@
                     <div class="col-sm">
                         <div class="table-wrap">
                             <div class="row">
-                                <div class="col-sm-8 dataTables_wrapper">
+                                <div class="col-sm-6 dataTables_wrapper">
                                     <div class="dataTables_length">
                                         <label>{{trans.get('keys.hien_thi')}}
                                             <select @change="getGradeByCourse(1)" v-model="row"
@@ -29,7 +29,7 @@
                                         </label>
                                     </div>
                                 </div>
-                                <div class="col-sm-4">
+                                <div class="col-sm-6">
                                     <form v-on:submit.prevent="getGradeByCourse(1)">
                                         <div class="d-flex flex-row form-group">
                                             <input v-model="keyword" type="text"
@@ -39,6 +39,9 @@
                                                     @click="getGradeByCourse(1)">
                                                 {{trans.get('keys.tim')}}
                                             </button>
+                                            <a style="color: #fff" class="btn btn-sm btn-primary" v-on:click="exportExcel(posts)" :title="trans.get('keys.xuat_excel')">
+                                              <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
+                                            </a>
                                         </div>
                                     </form>
                                 </div>
@@ -168,7 +171,7 @@
     //import vPagination from 'vue-plain-pagination'
 
     export default {
-        props: ['user_id', 'training_name'],
+        props: ['user_id', 'training_name', 'username', 'fullname'],
         //components: {vPagination},
         data() {
             return {
@@ -230,6 +233,25 @@
             },
             onPageChange() {
                 this.getGradeByCourse();
+            },
+            exportExcel(data) {
+                axios.post('/exportResult', {
+                  data: data,
+                  username: this.username,
+                  fullname: this.fullname
+                })
+                  .then(response => {
+                    let file_name = response.data;
+                    console.log(file_name);
+                    let a = $("<a>")
+                      .prop("href", "/downloadExportResult/" + file_name)
+                      .appendTo("body");
+                    a[0].click();
+                    a.remove();
+                  })
+                  .catch(error => {
+                    toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                  });
             },
         },
         mounted() {

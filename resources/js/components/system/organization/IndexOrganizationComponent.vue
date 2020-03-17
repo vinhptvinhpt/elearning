@@ -354,10 +354,8 @@
                 return false;
             }
         },
-        updated() {
-          this.setParamsPage(false);
-        },
         mounted() {
+          this.setParamsPage(false);
         }
     }
 </script>

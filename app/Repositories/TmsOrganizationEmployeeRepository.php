@@ -2,13 +2,11 @@
 
 namespace App\Repositories;
 
-use App\TmsOrganization;
+use App\Role;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
 use Carbon\Carbon;
 use Exception;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -21,6 +19,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         $row = $request->input('row');
         $organization_id = $request->input('organization_id');
         $position = $request->input('position');
+        $role = $request->input('role');
 
         $param = [
             'keyword' => 'text',
@@ -56,6 +55,14 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 
         if (strlen($position) != 0) {
             $list = $list->where('position', $position);
+        }
+
+        if (strlen($role) != 0) {
+            if ($role == Role::ROLE_MANAGER) {
+                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
+            } elseif ($role == Role::ROLE_LEADER) {
+                $list = $list->whereNotIn('position', [Role::ROLE_MANAGER, Role::ROLE_LEADER]);
+            }
         }
 
         $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
