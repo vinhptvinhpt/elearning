@@ -153,8 +153,6 @@
             //Set options recursive
             //this.options = this.options.concat(this.setOptions(response.data));
             this.options = this.setOptions(response.data, current_id);
-
-            console.log(this.options);
             $('.content_search_box').removeClass('loadding');
           })
           .catch(error => {
@@ -191,7 +189,7 @@
             this.selectParent(this.organization.parent_id);
           })
           .catch(error => {
-            console.log(error.response.data);
+            //console.log(error);
           })
       },
       update(){
@@ -224,7 +222,7 @@
             }
           })
           .catch(error => {
-            console.log(error);
+            //console.log(error);
             roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
           })
       }

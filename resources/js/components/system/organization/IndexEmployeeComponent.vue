@@ -5,7 +5,7 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li v-if="organization_selected !== false" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: organization_id}}">{{ organization_name }}</router-link></li>
+            <li v-if="organization_selected !== false" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{ organization_name }}</router-link></li>
             <li class="breadcrumb-item active">{{ trans.get('keys.nhan_vien') }}</li>
           </ol>
         </nav>
@@ -25,7 +25,11 @@
               <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                 <div class="card-body">
 
-                  <system-user-create :type="'system'" :organization_id="organization_id" :current_roles="current_roles"></system-user-create>
+                  <system-user-create
+                    :type="'system'"
+                    :organization_id="query_organization_id"
+                    :current_roles="current_roles"
+                    :roles_ready="roles_ready"></system-user-create>
 
                   <!-- Gán người dùng vào tổ chức one by one -->
 
@@ -96,8 +100,10 @@
             </div>
 
               <!-- Gán người dùng vào tổ chức batch -->
-
-              <assign-employee v-if="organization_id !== false" :key="assignBatch" :organization_id="organization_id"></assign-employee>
+              <assign-employee
+                v-if="selected_role == 'root'"
+                :key="assignBatch"
+                :organization_id="query_organization_id"></assign-employee>
 
             <div class="card">
               <div class="card-body">
@@ -122,9 +128,9 @@
                         <label>
                           <select v-model="position" class="custom-select custom-select-sm form-control form-control-sm" @change="getDataList(1)">
                             <option value="0">{{ trans.get('keys.chon_vi_tri') }}</option>
-                            <option value="manager">Manager</option>
-                            <option value="leader">Leader</option>
-                            <option value="employee">Employee</option>
+                            <option v-for="position in filterPosition" :value="filterPosition.key">
+                              {{position.value}}
+                            </option>
                           </select>
                         </label>
                       </div>
@@ -176,7 +182,7 @@
                         <td>
                           <router-link :title="trans.get('keys.sua_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current }, query: {organization_id: organization_id}}">
+                                       :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current }, query: {organization_id: query_organization_id}}">
                             <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                           </router-link>
 
@@ -256,7 +262,25 @@
         organization_selected: false,
         organization_name: '',
         position_list: [],
-        assignBatch: 0
+        assignBatch: 0,
+        selected_role: 'user',
+        organization_ready: 0,
+        position_ready: 0,
+        query_organization_id: this.organization_id,
+        filterPosition: [
+          {
+            key: 'manager',
+            value: 'Manager'
+          },
+          {
+            key: 'leader',
+            value: 'Leader'
+          },
+          {
+            key: 'employee',
+            value: 'Employee'
+          }
+        ]
       }
     },
     methods: {
@@ -285,7 +309,7 @@
         $('.content_search_box').addClass('loadding');
         axios.post('/organization-employee/list-user', {
           keyword: this.user_keyword,
-          organization_id: this.organization_id, //không phân trang
+          organization_id: this.query_organization_id
         })
           .then(response => {
             this.user_list = response.data;
@@ -300,8 +324,9 @@
           page: paged || this.current,
           keyword: this.keyword,
           row: this.row,
-          organization_id: this.organization_id,
-          position: this.position
+          organization_id: this.query_organization_id,
+          position: this.position,
+          role: this.selected_role
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];
@@ -370,8 +395,10 @@
           })
       },
       onPageChange() {
-        let page = this.getParamsPage();
-        this.getDataList(page);
+        if (this.organization_id) {
+          let page = this.getParamsPage();
+          this.getDataList(page);
+        }
       },
       getParamsPage() {
         return this.$route.params.page;
@@ -404,36 +431,87 @@
         return false;
       },
       setOrganization() {
-        if (this.organization_id) {
-          this.employee.input_organization_id = this.organization_id;
-          this.organization_selected =  true;
-          this.fetchOrganizationInfo(this.organization_id);
-        }
+        this.organization_selected =  true;
+        this.fetchOrganizationInfo(this.query_organization_id);
       },
       fetchOrganizationInfo(organization_id) {
         axios.post('/organization/detail/' + organization_id, {
-            roles: this.current_roles
+            role: this.selected_role
         })
           .then(response => {
             this.organization_name = response.data.name;
+            this.query_organization_id = response.data.id;
+            this.employee.input_organization_id = response.data.id;
+
+            // gọi list sau trong trường hợp manager / leader
+            if (this.roles_ready) {
+              let page = this.getParamsPage();
+              this.getDataList(page);
+            }
           })
           .catch(error => {
             console.log(error.response.data);
           })
+      },
+      getRoleFromCurrentRoles(current_roles) {
+        if (current_roles.root_user === true) {
+          this.selected_role = 'root';
+        } else if (current_roles.has_role_manager === true) {
+          this.selected_role = 'manager';
+        } else if (current_roles.has_role_leader === true) {
+          this.selected_role = 'leader';
+        } else if (current_roles.has_user_market === true) {
+          this.selected_role = 'user_market';
+        } else {
+          this.selected_role = 'user';
+        }
+      },
+      updatePositionFilter() {
+        if (this.selected_role === 'manager') {
+          this.filterPosition = [
+            {
+              key: 'leader',
+              value: 'Leader'
+            },
+            {
+              key: 'employee',
+              value: 'Employee'
+            }
+          ]
+        }
+        if (this.selected_role === 'leader') {
+          this.filterPosition = [
+            {
+              key: 'employee',
+              value: 'Employee'
+            }
+          ]
+        }
       }
     },
     updated() {
       if (this.roles_ready) {
         //run after role ready = true
-        //console.log(this.current_roles);
-        //gán organization_id nếu có trong prop
-        //this.setOrganization();
+        if (this.position_ready === 0) {
+          //run only one time
+          this.getRoleFromCurrentRoles(this.current_roles);
+          this.updatePositionFilter();
+          this.position_ready = 1;
+        }
+        if (this.organization_ready === 0) {
+          //run only one time
+          this.query_organization_id = 0;
+          this.setOrganization(); //gọi sau khi bắt được role
+          this.organization_ready = 1;
+        }
       }
-      this.setParamsPage(false);
     },
     mounted() {
-      //gán organization_id nếu có trong prop
-      this.setOrganization();
+      if (this.organization_id && this.organization_id !== 0) { //gọi luôn nếu có organization_id
+        this.setOrganization();
+        this.organization_ready = 1;
+      }
+      this.setParamsPage(false);
     }
   }
 </script>
