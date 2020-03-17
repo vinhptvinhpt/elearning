@@ -754,6 +754,7 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Auto Enrol Student",
         "tu_dong_cap_chung_chi": "Auto Certification",
+        "tu_dong_cap_huy_hieu": "Tự động cấp huy hiệu",
         "them_co_cau_to_chuc": "Add Organization",
         "ban_chi_duoc_chon_1_quyen_trong_nhom": "You can choose only one role in group (Manager/Leader/Employee)",
         "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Must select working place when role in group (Manager/Leader/Employee) is selected",
@@ -766,7 +767,10 @@
         "danh_sach_nhan_su": "Student list",
         "danh_sach_moi_ghi_danh": "Invite list",
         "chon_vao_danh_sach": "Add to invite list",
-        "huy_khoi_danh_sach": "Remove from list"
+        "huy_khoi_danh_sach": "Remove from list",
+        "khung_nang_luc_cap_chung_chi": "Khung năng lực cấp chứng chỉ",
+        "khung_nang_luc_cap_huy_hieu": "Khung năng lực cấp huy hiệu",
+        "thoi_gian_hoan_thanh": "Completion time"
     },
     "vi.keys": {
         "language": "",
@@ -1523,6 +1527,7 @@
         "khung_nang_luc_khong_gioi_han_tg": "Khung năng lực không giới hạn thời gian",
         "tu_dong_chay_cron": "Tự động Enrol học viên",
         "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
+        "tu_dong_cap_huy_hieu": "Tự động cấp huy hiệu",
         "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức",
         "ban_chi_duoc_chon_1_quyen_trong_nhom": "Bạn chỉ được chọn 1 quyền trong nhóm (Manager/Leader/Employee)",
         "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Bắt buộc chọn nơi làm việc khi đã chọn quyền trong nhóm (Manager/Leader/Employee)",
@@ -1535,6 +1540,9 @@
         "danh_sach_nhan_su": "Danh sách nhân sự",
         "danh_sach_moi_ghi_danh": "Danh sách mời ghi danh",
         "chon_vao_danh_sach": "Chọn vào danh sách",
-        "huy_khoi_danh_sach": "Hủy khỏi danh sách"
+        "huy_khoi_danh_sach": "Hủy khỏi danh sách",
+        "khung_nang_luc_cap_chung_chi": "Khung năng lực cấp chứng chỉ",
+        "khung_nang_luc_cap_huy_hieu": "Khung năng lực cấp huy hiệu",
+        "thoi_gian_hoan_thanh": "Thời gian hoàn thành"
     }
 }

@@ -66,19 +66,22 @@
                         </div>
                       </div>
 
-                      <div class="form-row">
-                        <div class="col-sm-6 form-group">
-                          <label>{{trans.get('keys.khung_nang_luc_theo_tg')}}</label>
-                          <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="style"
-                                   :checked="trainning.style==1?true:false" v-model="trainning.style">
-                            <label v-if="trainning.style == 1" class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_hoan_thanh_trong_khoang_tg')}}</label>
-                            <label v-else class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_khong_gioi_han_tg')}}</label>
-                          </div>
-                        </div>
-                      </div>
+<!--                      <div class="form-row">-->
+<!--                        <div class="col-sm-6 form-group">-->
+<!--                          <label>{{trans.get('keys.khung_nang_luc_theo_tg')}}</label>-->
+<!--                          <div class="custom-control custom-switch">-->
+<!--                            <input type="checkbox" class="custom-control-input" id="style"-->
+<!--                                   :checked="trainning.style==1?true:false" v-model="trainning.style">-->
+<!--                            <label v-if="trainning.style == 1" class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_hoan_thanh_trong_khoang_tg')}}</label>-->
+<!--                            <label v-else class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_khong_gioi_han_tg')}}</label>-->
+<!--                          </div>-->
+<!--                        </div>-->
+<!--                      </div>-->
 
                       <div class="form-row" v-if="trainning.style == 1">
+                        <div class="col-12">
+                          <label for="inputText1-1">{{trans.get('keys.thoi_gian_hoan_thanh')}}</label>
+                        </div>
                         <div class="col-sm-6 form-group">
                           <date-picker v-model="trainning.time_start" :config="options"
                                        :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
@@ -102,7 +105,8 @@
                           </div>
                         </div>
                         <div class="col-sm-6 form-group">
-                          <label>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
+                          <label v-if="type == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+                          <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
                           <div class="custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input" id="auto_certificate"
                                    :checked="trainning.auto_certificate==1?true:false" v-model="trainning.auto_certificate">
@@ -116,10 +120,18 @@
                       <div class="form-row">
                         <div class="col-12 form-group">
                           <div class="button-list text-right">
-                            <button type="button" @click="goBack()"
-                                    class="btn btn-danger btn-sm">
-                              {{trans.get('keys.huy')}}
-                            </button>
+                            <router-link v-if="trainning.style == 1"
+                              :to="trans.get('keys.language') + '/tms/trainning/list/'+trainning.style"
+                              class="btn btn-danger btn-sm"
+                            >
+                              {{ trans.get('keys.huy') }}
+                            </router-link>
+                            <router-link v-else
+                                         :to="trans.get('keys.language') + '/tms/trainning/list/'"
+                                         class="btn btn-danger btn-sm"
+                            >
+                              {{ trans.get('keys.huy') }}
+                            </router-link>
                             <button @click="editTrainning()" type="button"
                                     class="btn btn-primary btn-sm">
                               {{trans.get('keys.sua')}}
@@ -685,7 +697,7 @@
       },
 
       goBack() {
-        window.location.href = this.trans.get('keys.language') + '/tms/trainning/list';
+        window.location.href = this.trans.get('keys.language') + '/tms/trainning/list/'+this.style;
       }
     },
     mounted() {
