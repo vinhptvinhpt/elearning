@@ -283,5 +283,7 @@
     "ma_khoa_hoc": "Course code",
     "ten_khoa_hoc": "Course name",
     "diem": "Mark",
-    "tien_do": "Progress"
+    "tien_do": "Progress",
+    "them_vao_danh_sach_thanh_cong": "Add user to list successfully",
+    "xoa_khoi_danh_sach_thanh_cong": "Remove user from list successfully"
 }
