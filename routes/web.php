@@ -657,6 +657,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::get('/downloadExportReport', 'Backend\ExcelController@downloadExportReport');
+    Route::post('/exportResult', 'Backend\ExcelController@exportResult');
+    Route::get('/downloadExportResult/{file_name}', 'Backend\ExcelController@downloadExportResult');
 
     Route::get('/support/manage-market', 'Backend\BackendController@viewSupportMarket');
     Route::get('/support/admin', 'Backend\BackendController@viewSupportAdmin');

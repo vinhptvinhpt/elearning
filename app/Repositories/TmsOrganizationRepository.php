@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\TmsOrganization;
-use App\TmsOrganizationEmployee;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -213,10 +212,6 @@ class TmsOrganizationRepository implements ICommonInterface
         if (!is_numeric($id))
             return response()->json([]);
 
-        if ($id == 0) {
-            $role = $request->input('roles');
-            //dd($role);
-        }
 
         $data = DB::table('tms_organization as to')
             ->leftJoin('tms_organization as parent', 'to.parent_id', '=', 'parent.id')
@@ -229,9 +224,21 @@ class TmsOrganizationRepository implements ICommonInterface
                 'to.enabled',
                 'to.description',
                 'parent.name as parent_name'
-            )
-            ->where('to.id', '=', $id)
-            ->first();
+            );
+
+        if ($id == 0) {
+            $user_id = Auth()->user()->id;
+            $role = $request->input('role');
+            $data = $data->whereIn('to.id', function($query) use ($role, $user_id){
+                $query->select('organization_id')
+                    ->from('tms_organization_employee')
+                    ->where('position', $role)
+                    ->where('user_id', $user_id);
+            })->first();
+        } else {
+            $data = $data->where('to.id', '=', $id)->first();
+        }
+
         return response()->json($data);
     }
 

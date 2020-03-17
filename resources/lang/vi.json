@@ -276,5 +276,12 @@
     "cap_nhat_nhan_vien_thanh_cong": "Cập nhật nhân viên thành công",
     "nhan_vien_da_ton_tai": "Nhân viên đã tồn tại",
     "thanh_cong": "Thành công",
-    "nguoi_dung_khong_co_quuyen_cho_vi_tri_nay": "Người dùng không có quyền cho vị trí này"
+    "nguoi_dung_khong_co_quuyen_cho_vi_tri_nay": "Người dùng không có quyền cho vị trí này",
+    "hoan_thanh": "Hoàn thành",
+    "chua_hoan_thanh": "Chưa hoàn thành",
+    "trang_thai": "Trạng thái",
+    "ma_khoa_hoc": "Mã khóa học",
+    "ten_khoa_hoc": "Tên khóa học",
+    "diem": "Điểm",
+    "tien_do": "Tiến độ"
 }
