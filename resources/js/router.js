@@ -101,6 +101,7 @@ import EditEmployeeComponent from "./components/system/organization/EditEmployee
 import PermissionIndexComponent from "./roles/PermissionIndexComponent";
 import PermissionAddComponent from "./roles/PermissionAddComponent";
 import PermissionDetailComponent from "./roles/PermissionDetailComponent";
+import InviteStudentComponent from "./components/education/InviteStudentComponent";
 
 
 Vue.use(VueRouter);
@@ -647,6 +648,15 @@ const routes = [
         path: 'education/resetexam',
         component: ListUserExam,
         name: 'UserExam'
+      },
+      {
+        path: 'education/invite/:id/:come_from',
+        component: InviteStudentComponent,
+        name: 'InviteStudent',
+        props: (route) => ({
+          course_id: route.params.id,
+          come_from: route.params.come_from
+        })
       },
 
       //Organization new

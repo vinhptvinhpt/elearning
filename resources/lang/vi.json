@@ -283,5 +283,7 @@
     "ma_khoa_hoc": "Mã khóa học",
     "ten_khoa_hoc": "Tên khóa học",
     "diem": "Điểm",
-    "tien_do": "Tiến độ"
+    "tien_do": "Tiến độ",
+    "them_vao_danh_sach_thanh_cong": "Thêm vào danh sách thành công",
+    "xoa_khoi_danh_sach_thanh_cong": "Xóa khỏi danh sách thành công"
 }

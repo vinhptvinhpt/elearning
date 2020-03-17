@@ -32,7 +32,7 @@
                     <textarea v-model="setting_object.content" :id="'textarea'+index" class="form-control" rows="3"></textarea>
                   </template>
                   <template v-else-if="setting_object.editor === 'checkbox'">
-                    <h6 class="mb-5 d-inline-flex">
+                    <h6 class="d-inline-flex">
                                         <span class="inline-checkbox ml-3">
                                             <span class="custom-control custom-checkbox custom-control-inline">
                                                 <input v-model="setting_object.content" type="checkbox" class="custom-control-input" :id="'checkbox'+index">

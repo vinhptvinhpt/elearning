@@ -342,8 +342,8 @@
             }
         },
         mounted() {
-            this.getUserNeedEnrol();
-            this.getCurrentUserEnrol();
+            //this.getUserNeedEnrol();
+            //this.getCurrentUserEnrol();
         }
     }
 </script>

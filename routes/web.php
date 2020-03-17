@@ -481,6 +481,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_list_category_clone', 'Backend\CourseController@apiGetListCategoryForClone');
     Route::post('/api/courses/get_list_category_edit', 'Backend\CourseController@apiGetListCategoryForEdit');
 
+    Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
+    Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
+    Route::post('/api/course/invite_user_to_course', 'Backend\CourseController@apiInviteUser');
+    Route::post('/api/course/remove_invite_user_to_course', 'Backend\CourseController@apiRemoveInviteUser');
+
     Route::get('/survey/list', 'Backend\SurveyController@viewIndex')->name('survey.list');
     Route::get('/survey/create', 'Backend\SurveyController@viewCreateCourse')->name('survey.create');
     Route::get('/survey/detail/{id}', 'Backend\SurveyController@viewSurveyDetail')->name('survey.detail');
