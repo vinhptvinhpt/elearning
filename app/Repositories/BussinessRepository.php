@@ -1759,12 +1759,15 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $insert_data = [];
+            $dt = Carbon::now();
+
             foreach ($lstUserIDs as $user_id) {
                 $insert_data[] = [
                     'course_id' => $course_id,
                     'user_id' => $user_id,
                     'replied' => 0,
-                    'accepted' => 0
+                    'accepted' => 0,
+                    'created_at' => $dt->toDateTimeString()
                 ];
             }
             if (!empty($insert_data)) {
@@ -2337,6 +2340,43 @@ class BussinessRepository implements IBussinessInterface
             ->where('permission_slug', $slug)
             ->get()->toArray();
         return response()->json($permissions);
+    }
+
+    public function apiInvitationDetail($id)
+    {
+        $invitation = TmsInvitation::with('course')->where('id', $id)->first();
+
+        return response()->json($invitation);
+    }
+
+    public function apiInvitationConfirm(Request $request)
+    {
+        $id = $request->input('id');
+        $accepted = $request->input('accepted');
+        $reason = $request->input('reason');
+
+        try {
+            $invitation = TmsInvitation::where('id', $id)->first();
+            if (isset($invitation)) {
+                $invitation->replied = 1;
+                $invitation->accepted = $accepted;
+                if($accepted == 'false') {
+                    $invitation->accepted = 0;
+                    $invitation->reason = $reason;
+                } else {
+                    $invitation->accepted = 1;
+                }
+                $invitation->save();
+            }
+            $data['status'] = 'success';
+            $data['message'] = __('xac_nhan_thanh_cong');
+        } catch (\Exception $e) {
+            dd($e);
+            $data['status'] = 'error';
+            $data['message'] = __('xac_nhan_that_bai');
+        }
+        return response()->json($data);
+
     }
 
     public function apiPermissionDelete($permission_id)

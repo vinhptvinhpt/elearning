@@ -264,6 +264,16 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiInviteUser($request);
     }
 
+    public function apiInvitationDetail($id)
+    {
+        return $this->bussinessRepository->apiInvitationDetail($id);
+    }
+
+    public function apiInvitationConfirm(Request $request)
+    {
+        return $this->bussinessRepository->apiInvitationConfirm($request);
+    }
+
     public function apiRemoveEnrolUser(Request $request)
     {
         return $this->bussinessRepository->apiRemoveEnrolUser($request);

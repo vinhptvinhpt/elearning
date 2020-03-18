@@ -22,6 +22,7 @@ import NotFoundPage from './views/errors/404.vue';
  */
 
 import LayoutDashboard from "./views/layouts/LayoutDashboard";
+import LayoutPage from "./views/layouts/LayoutPage";
 import DashboardIndexComponent from "./components/dashboard/DashboardIndexComponent";
 import ActivityLogComponent from "./components/system/activity/ActivityLogComponent";
 import SettingIndexComponent from "./components/setting/SettingIndexComponent";
@@ -102,7 +103,9 @@ import PermissionIndexComponent from "./roles/PermissionIndexComponent";
 import PermissionAddComponent from "./roles/PermissionAddComponent";
 import PermissionDetailComponent from "./roles/PermissionDetailComponent";
 import InviteStudentComponent from "./components/education/InviteStudentComponent";
-
+import TemplateIndexComponent from "./components/email/IndexComponent";
+import TemplateDetailComponent from "./components/email/DetailComponent";
+import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -659,6 +662,21 @@ const routes = [
         })
       },
 
+      //Email
+      {
+        path: 'email_template/list',
+        component: TemplateIndexComponent,
+        name: 'EmailTemplateIndex'
+      },
+      {
+        path: 'email_template/detail/:name_file',
+        component: TemplateDetailComponent,
+        name: 'EmailTemplateDetail',
+        props: (route) => ({
+          name_file: route.params.name_file ? route.params.name_file : 0
+        })
+      },
+
       //Organization new
       {
         path: 'organization',
@@ -728,7 +746,26 @@ const routes = [
       },
     ]
   },
-
+  /*
+   |--------------------------------------------------------------------------
+   | Single Page Routes
+   |--------------------------------------------------------------------------|
+   */
+  {
+    path: '/page',
+    component: LayoutPage, // Change the desired Layout here
+    meta: {requiresAuth: false},
+    children: [
+      {
+        path: 'invitation/confirm/:invitation_id',
+        component: ConfirmInvitationComponent,
+        name: 'ConfirmInvitation',
+        props: (route) => ({
+          invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
+        })
+      },
+    ]
+  },
 
   //  DEFAULT ROUTE
   {path: '*', component: NotFoundPage}
