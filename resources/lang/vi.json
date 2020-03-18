@@ -285,5 +285,9 @@
     "diem": "Điểm",
     "tien_do": "Tiến độ",
     "them_vao_danh_sach_thanh_cong": "Thêm vào danh sách thành công",
-    "xoa_khoi_danh_sach_thanh_cong": "Xóa khỏi danh sách thành công"
+    "xoa_khoi_danh_sach_thanh_cong": "Xóa khỏi danh sách thành công",
+    "moi_hoc_vien_tham_gia_khoa_học": "Mời học viên tham gia khóa học",
+    "thu_moi_tham_gia_khoa_hoc": "Thư mời tham gia khóa học",
+    "xac_nhan_thanh_cong": "Xác nhận thành công",
+    "xac_nhan_that_bai": "Xác nhận thất bại"
 }

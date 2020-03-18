@@ -766,7 +766,15 @@
         "danh_sach_nhan_su": "Student list",
         "danh_sach_moi_ghi_danh": "Invite list",
         "chon_vao_danh_sach": "Add to invite list",
-        "huy_khoi_danh_sach": "Remove from list"
+        "huy_khoi_danh_sach": "Remove from list",
+        "xac_nhan_loi_moi_tham_gia_khoa_hoc": "Confirm invitation to enrol course",
+        "tham_gia": "Accept",
+        "tu_choi": "Deny",
+        "ly_do": "Reason",
+        "xac_nhan": "Confirm",
+        "neu_lua_chon_tu_choi_vui_long_nhap_ly_do": "If you denied, please input reason",
+        "ban_phai_lua_chon_tham_gia_hoac_tu_choi": "You must select accept or deny",
+        "ban_da_xac_nhan_loi_moi_nay": "You had confirmed this invitation"
     },
     "vi.keys": {
         "language": "",
@@ -1535,6 +1543,14 @@
         "danh_sach_nhan_su": "Danh sách nhân sự",
         "danh_sach_moi_ghi_danh": "Danh sách mời ghi danh",
         "chon_vao_danh_sach": "Chọn vào danh sách",
-        "huy_khoi_danh_sach": "Hủy khỏi danh sách"
+        "huy_khoi_danh_sach": "Hủy khỏi danh sách",
+        "xac_nhan_loi_moi_tham_gia_khoa_hoc": "Xác nhận lời mời tham gia khóa học",
+        "tham_gia": "Tham gia",
+        "tu_choi": "Từ chối",
+        "ly_do": "Lý do",
+        "xac_nhan": "Xác nhận",
+        "neu_lua_chon_tu_choi_vui_long_nhap_ly_do": "Nếu lựa chọn từ chối, vui lòng nhập lý do",
+        "ban_phai_lua_chon_tham_gia_hoac_tu_choi": "Bạn phải lựa chọn tham gia hoặc từ chối",
+        "ban_da_xac_nhan_loi_moi_nay": "Bạn đã xác nhận lời mời này"
     }
 }

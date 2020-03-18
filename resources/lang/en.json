@@ -285,5 +285,9 @@
     "diem": "Mark",
     "tien_do": "Progress",
     "them_vao_danh_sach_thanh_cong": "Add user to list successfully",
-    "xoa_khoi_danh_sach_thanh_cong": "Remove user from list successfully"
+    "xoa_khoi_danh_sach_thanh_cong": "Remove user from list successfully",
+    "moi_hoc_vien_tham_gia_khoa_học": "Invite student to course",
+    "thu_moi_tham_gia_khoa_hoc": "Course enrolment invitation email",
+    "xac_nhan_thanh_cong": "Confirm successfully",
+    "xac_nhan_that_bai": "Confirm fail"
 }
