@@ -11,6 +11,10 @@ Route::get('/tms/{vue?}', function () {
     return view('layouts.dashboard');
 })->where('vue', '[\/\w\.-]*')->name('home');
 
+Route::get('/page/{vue?}', function () {
+    return view('layouts.page');
+})->where('vue', '[\/\w\.-]*')->name('page');
+
 Route::group([
     'prefix' => '{locale}'
 ], function () {
@@ -598,7 +602,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/email_template/detail/{name_file}', 'Backend\EmailTemplateController@viewEmailTemplateDetail');
     Route::post('/email_template/detail/update', 'Backend\EmailTemplateController@writeToJson');
     Route::get('/email_template/detail/readJson/{name_file}', 'Backend\EmailTemplateController@readJson');
-    Route::get('/email_template/getContentFile', 'Backend\EmailTemplateController@getContentFile');
+    Route::get('/email_template/getContentFile/{name_file}', 'Backend\EmailTemplateController@getContentFile');
     Route::get('/email_template/sendDemo/{name_file}', 'Backend\EmailTemplateController@demoSendMail');
     Route::post('/course/demo/create', 'Backend\EmailTemplateController@apiCreateCourse');
     Route::get('/course/autoEnrol', 'Backend\EmailTemplateController@autoEnrol');

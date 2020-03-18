@@ -380,8 +380,9 @@
                     </li>
 
 
-                    <li class="nav-item" v-if="slug_can('tms-setting-configuration-view') || slug_can('tms-setting-email_template-view') ||
-                    slug_can('tms-setting-notification-view')">
+                    <li class="nav-item" v-if="slug_can('tms-setting-configuration-view')
+                    || slug_can('tms-setting-email_template-view')
+                    || slug_can('tms-setting-notification-view')">
                         <a class="nav-link has-submenu collapse-level-1"
                            @click="toggleMenu('cau_hinh_he_thong','bc_drp23')"
                            href="javascript:void(0);" id="cau_hinh_he_thong"

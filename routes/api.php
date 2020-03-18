@@ -32,6 +32,10 @@ Route::get('/cron/task/finalizeCourse', 'Api\TaskController@finalizeCourseForRol
 Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->middleware(['App\Http\Middleware\CheckToken']);
 
+Route::get('/cron/mail/invite', 'Api\MailController@inviteStudent');
+Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
+Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
+
 // admin route
 Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function (){
 //    Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning');

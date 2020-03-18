@@ -28,6 +28,7 @@ class CourseSendMail extends Mailable
     const QUIZEND = "[QUIZEND]";
     const QUIZPOINT = "[QUIZPOINT]";
     const NEWPASS = "[NEWPASS]";
+    const ACCEPT_INVITE_URL = "[ACCEPT_INVITE_URL]";
 
     private $activity;
     private $fullname;
@@ -58,7 +59,19 @@ class CourseSendMail extends Mailable
      * @param array $course_list
      *
      */
-    public function __construct($activity, $username, $fullname, $course_code = '', $course_name = '', $start_date = '', $end_date = '', $course_place = '', $quiz_date = '', $content = '', $course_list = array())
+    public function __construct(
+        $activity,
+        $username,
+        $fullname,
+        $course_code = '',
+        $course_name = '',
+        $start_date = '',
+        $end_date = '',
+        $course_place = '',
+        $quiz_date = '',
+        $content = '',
+        $course_list = array()
+    )
     {
         $this->activity = $activity;
         $this->username = $username;
@@ -80,118 +93,24 @@ class CourseSendMail extends Mailable
      */
     public function build()
     {
-        $message_content = '';
-
-
-        if ($this->activity == TmsNotification::ENROL
-            || $this->activity == TmsNotification::QUIZ_START
-            || $this->activity == TmsNotification::QUIZ_END
-            || $this->activity == TmsNotification::QUIZ_COMPLETED
-            || $this->activity == TmsNotification::REMIND_CERTIFICATE
-        ) {
-            switch ($this->activity) {
-                case TmsNotification::ENROL:
-                    $subject = '[BGT ELEARNING] Thông báo học viên được ghi danh vào khóa học';
-                    $view = 'email.enrol_course';
-                    break;
-                case TmsNotification::QUIZ_START:
-                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra mới';
-                    $view = 'email.quiz_start';
-                    break;
-                case TmsNotification::QUIZ_END:
-                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra sắp hết hạn';
-                    $view = 'email.quiz_end';
-                    break;
-                case TmsNotification::QUIZ_COMPLETED:
-                    $subject = '[BGT ELEARNING] Thông báo kết quả kiểm tra';
-                    $view = 'email.quiz_completed';
-                    break;
-                case TmsNotification::REMIND_CERTIFICATE:
-                    $subject = '[BGT ELEARNING] Thông báo về việc cấp chứng chỉ';
-                    $view = 'email.remind_certificate';
-                    break;
-                case TmsNotification::FORGOT_PASSWORD:
-                    $subject = '[BGT ELEARNING] Thông báo lấy lại mật khẩu';
-                    $view = 'email.forgot_password';
-                    break;
-                default:
-                    $subject = '';
-                    $view = '';
-            }
-            if (strlen($subject) != 0 AND strlen($view) != 0) {
-                $this->subject($subject)
-                    ->with('fullname', $this->fullname)
-                    ->with('username', $this->username)
-                    ->with('course_code', $this->course_code)
-                    ->with('course_name', $this->course_name)
-                    ->with('start_date', $this->start_date)
-                    ->with('end_date', $this->end_date)
-                    ->with('end_date', $this->end_date)
-                    ->with('course_place', $this->course_place)
-                    ->with('quiz_date', $this->quiz_date)
-                    ->with('content',  $this->content)
-                    ->view($view);
-            }
-        } elseif ($this->activity == TmsNotification::SUGGEST) {
-            $message_content = $this->subject('[BGT ELEARNING] Giới thiệu một số khóa học kĩ năng mềm')
+        $subject = '';
+        $view = '';
+        if ($this->activity == TmsNotification::INVITE_STUDENT) {
+            $subject = __('thu_moi_tham_gia_khoa_hoc');
+            $view = 'email.invite_student';
+        }
+        if (strlen($subject) != 0 AND strlen($view) != 0) {
+            $this->subject($subject)
                 ->with('fullname', $this->fullname)
                 ->with('username', $this->username)
-                ->with('course_list', $this->course_list)
-                ->view('email.suggest_course');
-        } elseif ($this->activity == TmsNotification::REMIND_UPCOMING_COURSE) {
-            $message_content = $this->subject('[BGT ELEARNING] Giới thiệu một số khóa học sắp bắt đầu')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $this->course_list)
-                ->view('email.upcoming_course');
-        } elseif ($this->activity == TmsNotification::REMIND_ACCESS_COURSE) {
-            $course_array = json_decode($this->content);
-            $message_content = $this->subject('[BGT ELEARNING] Bạn đã lâu không tương tác với khóa học chưa hoàn thành')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $course_array)
-                ->view('email.remind_access_course');
-        } elseif ($this->activity == TmsNotification::REMIND_LOGIN) {
-            $course_array = json_decode($this->content);
-            $message_content = $this->subject('[BGT ELEARNING] Bạn đã lâu không đăng nhập vào hệ thống')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $course_array)
-                ->view('email.remind_login');
-        } elseif ($this->activity == TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE) {
-            $course_array = json_decode($this->content);
-            $message_content = $this->subject('[BGT ELEARNING] Khóa học bắt buộc sắp hết hạn')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $course_array)
-                ->view('email.remind_expire_required_course');
-        } elseif ($this->activity == TmsNotification::REMIND_EDUCATION_SCHEDULE) {
-            $course_array = json_decode($this->content);
-            $message_content = $this->subject('[BGT ELEARNING] Bạn có một số khóa học trong lộ trình chưa hoàn thành')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $course_array)
-                ->view('email.remind_education_schedule');
-        }elseif ($this->activity == TmsNotification::REMIND_CERTIFICATE) {
-            $course_array = json_decode($this->content);
-            $message_content = $this->subject('[BGT ELEARNING] Thông báo về việc cấp chứng chỉ')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
-                ->with('course_list', $course_array)
-                ->view('email.remind_certificate');
-        }elseif ($this->activity == TmsNotification::FORGOT_PASSWORD) {
-            $message_content = $this->subject('[BGT ELEARNING] Thông báo về lấy lại mật khẩu')
-                ->with('fullname', $this->fullname)
-                ->with('username', $this->username)
+                ->with('course_code', $this->course_code)
+                ->with('course_name', $this->course_name)
+                ->with('start_date', $this->start_date)
+                ->with('end_date', $this->end_date)
+                ->with('course_place', $this->course_place)
                 ->with('content', $this->content)
-                ->view('email.forgot_password');
+                ->view($view);
         }
-        else {
-            $message_content = $this->subject('[BGT ELEARNING] Welcome')
-                ->view('email.sample_mail');
-        }
-
-        return $message_content;
-
+        return $this;
     }
 }
