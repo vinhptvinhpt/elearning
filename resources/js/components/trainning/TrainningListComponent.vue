@@ -15,7 +15,8 @@
     <div class="row">
       <div class="col-xl-12">
         <section class="hk-sec-wrapper">
-          <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_khung_nang_luc')}}</h5>
+          <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_cap_huy_hieu')}}</h5>
+          <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc_cap_chung_chi')}}</h5>
           <div class="row mb-4">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
@@ -26,7 +27,7 @@
                   </div>
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
-                      <trainning-create></trainning-create>
+                      <trainning-create :type="type"></trainning-create>
                     </div>
                   </div>
                 </div>
@@ -43,7 +44,6 @@
                       <select v-model="row"
                               class="custom-select custom-select-sm form-control form-control-sm d-inline-block"
                               @change="getTrainnings(1)">
-                        <option value="5">5</option>
                         <option value="10">10</option>
                         <option value="20">20</option>
                         <option value="50">50</option>
@@ -75,6 +75,7 @@
                     <th>{{trans.get('keys.ten_knl')}}</th>
                     <th>{{trans.get('keys.quyen')}}</th>
                     <th>{{trans.get('keys.co_cau_to_chuc')}}</th>
+                    <th>{{trans.get('keys.hoc_vien')}}</th>
                     <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                   </tr>
                   </thead>
@@ -91,8 +92,16 @@
                     <td>
                       {{ sur.group_organize ? sur.group_organize.organize.name : '' }}
                     </td>
+                    <td>
+                      {{ sur.users ? sur.users.length : 0 }}
+                    </td>
 
                     <td class="text-center">
+                      <router-link :title="trans.get('keys.xem_nhan_vien')"
+                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                   :to="{ name: 'ListUserTrainning', params: {trainning_id: sur.id}}">
+                        <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
+                      </router-link>
 
                       <router-link
                         class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
@@ -136,6 +145,7 @@
   import TrainningCreate from './TrainningCreateComponent'
 
   export default {
+    props: ['type'],
     //components: {vPagination},
     components: {TrainningCreate},
     data() {
@@ -149,7 +159,7 @@
         keyword: '',
         current: 1,
         totalPages: 0,
-        row: 5
+        row: 10
       }
     },
     methods: {
@@ -157,7 +167,8 @@
         axios.post('/api/trainning/list', {
           page: paged || this.current,
           keyword: this.keyword,
-          row: this.row
+          row: this.row,
+          style:this.type
         })
           .then(response => {
             this.trainnings = response.data.data.data;

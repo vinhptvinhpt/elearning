@@ -39,7 +39,8 @@
                         <ul id="auth_drp"
                             class="nav flex-column collapse collapse-level-1">
 
-                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link
                                         :to="{ path: '/tms/system/organize/branchsystem/organize/branch', name: 'BranchIndex', query: { city: '0' } }"
                                         class="nav-link">
@@ -47,58 +48,65 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_user_market && slug_can('tms-access-market-view')">
                                 <router-link to="/tms/system/view_user_market" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_master_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_master_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.dai_ly_cua_toi') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/saleroom/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_role_agency && slug_can('tms-access-manage-branch-view')">
                                 <router-link to="/tms/branch/user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/system/organize/saleroom" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_diem_ban') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item hide" v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
+                            <li class="nav-item hide"
+                                v-if="current_roles.has_role_pos && slug_can('tms-access-manage-saleroom-view')">
                                 <router-link to="/tms/sale_room_user" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien_ban_hang') }}</span>
                                 </router-link>
                             </li>
 
                             <li class="nav-item" v-if="current_roles.root_user">
-                              <router-link to="/tms/organization" class="nav-link">
-                                <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
-                              </router-link>
+                                <router-link to="/tms/organization" class="nav-link">
+                                    <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
+                                </router-link>
                             </li>
 
                             <li class="nav-item" v-if="current_roles.has_role_manager || current_roles.has_role_leader">
-                              <router-link to="/tms/organization-employee" class="nav-link">
-                                <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
-                              </router-link>
+                                <router-link to="/tms/organization-employee" class="nav-link">
+                                    <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
+                                </router-link>
                             </li>
 
                             <li class="nav-item hide"
@@ -135,7 +143,8 @@
                                 </ul>
                             </li>
 
-                            <li class="nav-item" v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
+                            <li class="nav-item"
+                                v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
                                 <a class="nav-link  has-submenu collapse-level-2" id="quan_tri_nguoi_dung"
                                    @click="toggleMenu('quan_tri_nguoi_dung','signup_organize')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
@@ -150,17 +159,17 @@
                                         </router-link>
                                     </li>
 
-<!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
-<!--                                        <router-link to="/tms/system/user_market" class="nav-link">-->
-<!--                                            <span class="nav-link-text"> {{ trans.get('keys.chuyen_vien_kinh_doanh') }}</span>-->
-<!--                                        </router-link>-->
-<!--                                    </li>-->
+                                    <!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
+                                    <!--                                        <router-link to="/tms/system/user_market" class="nav-link">-->
+                                    <!--                                            <span class="nav-link-text"> {{ trans.get('keys.chuyen_vien_kinh_doanh') }}</span>-->
+                                    <!--                                        </router-link>-->
+                                    <!--                                    </li>-->
 
-<!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
-<!--                                        <router-link to="/tms/system/branch_master" class="nav-link">-->
-<!--                                            <span class="nav-link-text"> {{ trans.get('keys.chu_dai_ly') }}</span>-->
-<!--                                        </router-link>-->
-<!--                                    </li>-->
+                                    <!--                                    <li class="nav-item" v-if="slug_can('tms-system-market-view')">-->
+                                    <!--                                        <router-link to="/tms/system/branch_master" class="nav-link">-->
+                                    <!--                                            <span class="nav-link-text"> {{ trans.get('keys.chu_dai_ly') }}</span>-->
+                                    <!--                                        </router-link>-->
+                                    <!--                                    </li>-->
 
                                     <li class="nav-item" v-if="slug_can('tms-system-teacher-view')">
                                         <router-link to="/tms/education/user_teacher/teacher" class="nav-link">
@@ -277,14 +286,19 @@
                                     class="nav flex-column collapse collapse-level-2">
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
                                         <router-link to="/tms/trainning/list" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_khung_nang_luc') }}</span>
+                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_chung_chi') }}</span>
                                         </router-link>
                                     </li>
-                                    <li class="nav-item">
-                                        <router-link to="/tms/trainning/list_user" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung') }}</span>
+                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
+                                        <router-link to="/tms/trainning/list/1" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_huy_hieu') }}</span>
                                         </router-link>
                                     </li>
+                                    <!--                                    <li class="nav-item">-->
+                                    <!--                                        <router-link to="/tms/trainning/list_user" class="nav-link">-->
+                                    <!--                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung') }}</span>-->
+                                    <!--                                        </router-link>-->
+                                    <!--                                    </li>-->
                                 </ul>
                             </li>
 
@@ -483,6 +497,13 @@
         data() {
             return {
                 slugs: [],
+                has_user_market: false,
+                has_master_agency: false,
+                has_role_agency: false,
+                has_role_pos: false,
+                has_role_manager: false,
+                has_role_leader: false,
+                root_user: false,
                 lms_url: '/lms'
             }
         },
@@ -496,6 +517,15 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
+            },
+            fetchRoles() {
+                this.has_user_market = this.current_roles.has_user_market;
+                this.has_master_agency = this.current_roles.has_master_agency;
+                this.has_role_agency = this.current_roles.has_role_agency;
+                this.has_role_pos = this.current_roles.has_role_pos;
+                this.root_user = this.current_roles.root_user;
+                this.has_role_leader = this.current_roles.has_role_leader;
+                this.has_role_manager = this.current_roles.has_role_manager;
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
@@ -512,12 +542,12 @@
                         $('#' + parent_id).removeClass("active");
                         y.style.display = "none";
                     }
-
                 }
             }
         },
         mounted() {
             this.getinfoSidebar();
+            this.fetchRoles();
         }
     }
 </script>

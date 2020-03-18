@@ -721,6 +721,14 @@ const routes = [
         name: 'TrainningIndex'
       },
       {
+        path: 'trainning/list/:type',
+        component: TrainningListComponent,
+        name: 'TrainningIndex',
+        props: (route) => ({
+          type: route.params.type,
+        })
+      },
+      {
         path: 'trainning/detail/:id',
         component: TrainningEditComponent,
         name: 'TrainningEdit',
@@ -729,9 +737,12 @@ const routes = [
         })
       },
       {
-        path: 'trainning/list_user',
+        path: 'trainning/list_user/:trainning_id',
         component: ListUserComponent,
-        name: 'ListUserTrainning'
+        name: 'ListUserTrainning',
+        props: (route) => ({
+          trainning_id: route.params.trainning_id,
+        })
       },
     ]
   },

@@ -35,22 +35,24 @@
           </div>
         </div>
 
-        <div class="form-row">
-          <div class="col-sm-6 form-group">
-            <label>{{trans.get('keys.khung_nang_luc_theo_tg')}}</label>
-            <div class="custom-control custom-switch">
-              <input type="checkbox" class="custom-control-input" id="style" :checked="style==1?true:false" v-model="style">
-              <label v-if="style == 1" class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_hoan_thanh_trong_khoang_tg')}}</label>
-              <label v-else class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_khong_gioi_han_tg')}}</label>
-            </div>
+<!--        <div class="form-row">-->
+<!--          <div class="col-sm-6 form-group">-->
+<!--            <label>{{trans.get('keys.khung_nang_luc_theo_tg')}}</label>-->
+<!--            <div class="custom-control custom-switch">-->
+<!--              <input type="checkbox" class="custom-control-input" id="style" :checked="type==1?true:false" v-model="type">-->
+<!--              <label v-if="type == 1" class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_hoan_thanh_trong_khoang_tg')}}</label>-->
+<!--              <label v-else class="custom-control-label" for="style">{{trans.get('keys.khung_nang_luc_khong_gioi_han_tg')}}</label>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+        <div class="form-row" v-if="type == 1">
+          <div class="col-12">
+            <label for="inputText1-1">{{trans.get('keys.thoi_gian_hoan_thanh')}}</label>
           </div>
-        </div>
-
-        <div class="form-row" v-if="style == 1">
           <div class="col-sm-6 form-group">
             <date-picker v-model="time_start" :config="options"
-                         :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
-            <label v-if="style == 1 && !time_start"
+                         :placeholder="trans.get('keys.ngay_bat_dau')+ ' *'"></date-picker>
+            <label v-if="type == 1 && !time_start"
                    class="required text-danger time_start_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
           </div>
           <div class="col-sm-6 form-group">
@@ -69,7 +71,8 @@
             </div>
           </div>
           <div class="col-sm-6 form-group">
-            <label>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
+            <label v-if="type == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+            <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
             <div class="custom-control custom-switch">
               <input type="checkbox" class="custom-control-input" id="auto_certificate" :checked="auto_certificate==1?true:false" v-model="auto_certificate">
               <label v-if="auto_certificate == 1" class="custom-control-label" for="auto_certificate">Yes</label>
@@ -88,14 +91,13 @@
         </div>
       </form>
     </div>
-
-
   </div>
 </template>
 
 <script>
   import datePicker from 'vue-bootstrap-datetimepicker'
   export default {
+    props: ['type'],
     components: {
       datePicker
     },
@@ -103,7 +105,6 @@
       return {
         code: '',
         name: '',
-        style: 0,
         run_cron: 1,
         auto_certificate: 1,
         time_start: '',
@@ -189,7 +190,7 @@
           return;
         }
 
-        if (this.style == 1 && this.time_start == 0) {
+        if (this.type == 1 && this.time_start == 0) {
           $('.time_start_required').show();
           return;
         }
@@ -197,7 +198,7 @@
         axios.post('/api/trainning/create', {
           code: this.code,
           name: this.name,
-          style: this.style,
+          style: this.type,
           run_cron: this.run_cron,
           auto_certificate: this.auto_certificate,
           time_start: this.time_start,
