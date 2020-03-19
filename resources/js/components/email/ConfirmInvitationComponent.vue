@@ -6,11 +6,11 @@
           <h5 class="hk-sec-title">{{trans.get('keys.xac_nhan_loi_moi_tham_gia_khoa_hoc')}}</h5>
           <div class="row">
             <div class="col-12">
-              {{ trans.get('keys.ten_khoa_hoc') }}: {{ course_name }}<br>
-              {{ trans.get('keys.ma_khoa_hoc') }}: {{ course_code }}<br>
-              {{ trans.get('keys.dia_diem') }}: {{ course_place }}<br>
-              {{ trans.get('keys.ngay_bat_dau') }}: {{ start_date }}<br>
-              {{ trans.get('keys.ngay_ket_thuc') }}: {{ end_date }}
+              {{ trans.get('keys.ten_khoa_hoc') }}: <b>{{ course_name }}</b><br>
+              {{ trans.get('keys.ma_khoa_hoc') }}: <b>{{ course_code }}</b><br>
+              {{ trans.get('keys.dia_diem') }}: <b>{{ course_place }}</b><br>
+              {{ trans.get('keys.ngay_bat_dau') }}: <b>{{ convertUnixTimeToDate(start_date) }}</b><br>
+              {{ trans.get('keys.ngay_ket_thuc') }}: <b>{{ convertUnixTimeToDate(end_date) }}</b>
             </div>
           </div>
           <div class="row mt-20" v-if="replied === 0">
@@ -129,6 +129,10 @@
                   toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                 });
 
+            },
+            convertUnixTimeToDate(timestamp) {
+              let date = new Date(timestamp * 1000);
+              return date.toLocaleString();
             }
         },
         mounted() {

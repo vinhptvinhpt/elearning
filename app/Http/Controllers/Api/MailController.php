@@ -92,7 +92,7 @@ class MailController extends Controller
                     $course_place = $item->course->course_place;
                     $invite_id = $item->id;
 
-                    $email = "immrhy@gmail.com";
+                    //$email = "immrhy@gmail.com";
 
                     try {
                         //send mail can not continue if has fake email
