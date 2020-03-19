@@ -778,7 +778,8 @@
         "xac_nhan": "Confirm",
         "neu_lua_chon_tu_choi_vui_long_nhap_ly_do": "If you denied, please input reason",
         "ban_phai_lua_chon_tham_gia_hoac_tu_choi": "You must select accept or deny",
-        "ban_da_xac_nhan_loi_moi_nay": "You had confirmed this invitation"
+        "ban_da_xac_nhan_loi_moi_nay": "You had confirmed this invitation",
+        "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu"
     },
     "vi.keys": {
         "language": "",
@@ -1558,6 +1559,7 @@
         "xac_nhan": "Xác nhận",
         "neu_lua_chon_tu_choi_vui_long_nhap_ly_do": "Nếu lựa chọn từ chối, vui lòng nhập lý do",
         "ban_phai_lua_chon_tham_gia_hoac_tu_choi": "Bạn phải lựa chọn tham gia hoặc từ chối",
-        "ban_da_xac_nhan_loi_moi_nay": "Bạn đã xác nhận lời mời này"
+        "ban_da_xac_nhan_loi_moi_nay": "Bạn đã xác nhận lời mời này",
+        "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu"
     }
 }

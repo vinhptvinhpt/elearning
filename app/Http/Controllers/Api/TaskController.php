@@ -1185,7 +1185,7 @@ class TaskController extends Controller
             $num = 0;
             $arr_data = [];
             $limit = 300;
-dd($users);
+//dd($users);
             foreach ($users as $user) {
                 if(
                     ( $user->style == 1 && intval($user->time_start) <= intval($user->timecompleted) && intval($user->time_end) >= intval($user->timecompleted) ) ||
@@ -1210,31 +1210,16 @@ dd($users);
                         array_push($arr_data, $data_item);
                         $num++;
                     }
-                    usleep(100); //sleep tranh tinh trang query db lien tiep
                     if ($num >= $limit) {
-                        //$arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
+                        $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
                         StudentCertificate::insert($arr_data);
                         $num = 0;
                         $arr_data = [];
+                        usleep(100); //sleep tranh tinh trang query db lien tiep
                     }
                 }
             }
-//            array_push($arr_data, [
-//                'userid'    => 1571,
-//                'trainning_id'    => 1,
-//                'code'    => 'KHCC700000',
-//                'status'    => 1,
-//                'timecertificate'    => time()
-//            ]);
-//            array_push($arr_data, [
-//                'userid'    => 1571,
-//                'trainning_id'    => 2,
-//                'code'    => 'KHCC700000',
-//                'status'    => 1,
-//                'timecertificate'    => time()
-//            ]);
-//            $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
-//            dd($arr_data);
+            $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
             StudentCertificate::insert($arr_data);
             \DB::commit();
 
@@ -1245,27 +1230,18 @@ dd($users);
 
     public function unique_multi_array($array, $keyArray) {
         $temp_array = array();
-        $i = 0;
         $val_array = array();
 
         foreach($array as $val) {
-            dd($val);
-            $check = false;
+            $val_check = '';
             foreach ($keyArray as $key){
-                if($val[$key]){
-
-                }
-                $val_array[$i][$key] = $val[$key];
-
+                $val_check .= $val[$key].':';
             }
-//            if (!in_array($val[$key1], $key_array) && !in_array($val[$key2], $key_array)) {
-//                $key_array[$i][$key1] = $val[$key1];
-//                $key_array[$i][$key2] = $val[$key2];
-//                $temp_array[$i] = $val;
-//            }
-            $i++;
+            if(!in_array($val_check,$val_array)){
+                array_push($val_array,$val_check);
+                array_push($temp_array,$val);
+            }
         }
-        dd($val_array);
         return $temp_array;
     }
 

@@ -32,39 +32,108 @@
                 <div class="row">
                   <div class="col-12 col-lg-12">
                     <form action="">
-                      <div class="form-row">
-                        <div class="col-sm-6 form-group">
-                          <label for="inputText1-2">{{trans.get('keys.ma_knl')}} *</label>
-                          <input v-model="trainning.code" type="text" id="inputText1-2"
-                                 :placeholder="trans.get('keys.ma_knl')"
-                                 class="form-control">
-                          <label v-if="!trainning.code"
-                                 class="required text-danger code_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      <div class="row">
+                        <div class="col-12 col-lg-3">
+                          <div class="card">
+                            <div class="card-body">
+                              <p>
+                                <input  type="file" ref="file" name="file" class="dropify" :data-default-file="'http://127.0.0.1:8000'+trainning.logo" />
+                              </p>
+                            </div>
+                          </div>
                         </div>
-                        <div class="col-sm-6 form-group">
-                          <label for="inputText1-1">{{trans.get('keys.ten_knl')}} *</label>
-                          <input v-model="trainning.name" type="text" id="inputText1-1"
-                                 :placeholder="trans.get('keys.ten_knl')"
-                                 class="form-control">
-                          <label v-if="!trainning.name"
-                                 class="required text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <div class="col-12 col-lg-9">
+                          <div class="form-row">
+                            <div class="col-sm-6 form-group">
+                              <label for="inputText1-2">{{trans.get('keys.ma_knl')}} *</label>
+                              <input v-model="trainning.code" type="text" id="inputText1-2"
+                                     :placeholder="trans.get('keys.ma_knl')"
+                                     class="form-control">
+                              <label v-if="!trainning.code"
+                                     class="required text-danger code_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                              <label for="inputText1-1">{{trans.get('keys.ten_knl')}} *</label>
+                              <input v-model="trainning.name" type="text" id="inputText1-1"
+                                     :placeholder="trans.get('keys.ten_knl')"
+                                     class="form-control">
+                              <label v-if="!trainning.name"
+                                     class="required text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="col-sm-6 form-group">
+                              <label for="inputRole">{{trans.get('keys.quyen')}}</label>
+                              <select v-model="trainning.role_id" class="form-control selectpicker" id="inputRole" autocomplete="false">
+                                <option value="0">{{trans.get('keys.chon_vai_tro')}}</option>
+                                <option v-for="item in roles" :value="item.id">{{item.name}}</option>
+                              </select>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                              <label>{{trans.get('keys.them_co_cau_to_chuc')}}</label>
+                              <treeselect v-model="trainning.organization_id" :multiple="false" :options="tree_options"
+                                          id="organization_parent_id"/>
+                            </div>
+                          </div>
+                          <div class="form-row" v-if="trainning.style == 1">
+                            <div class="col-12">
+                              <label for="inputText1-1">{{trans.get('keys.thoi_gian_hoan_thanh')}}</label>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                              <date-picker v-model="trainning.time_start" :config="options"
+                                           :placeholder="trans.get('keys.ngay_bat_dau')+' *'"></date-picker>
+                              <label v-if="trainning.style == 1 && !trainning.time_start"
+                                     class="required text-danger time_start_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                              <date-picker v-model="trainning.time_end" :config="options"
+                                           :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                            </div>
+                          </div>
+                          <div class="form-row">
+                            <div class="col-sm-6 form-group">
+                              <label>{{trans.get('keys.tu_dong_chay_cron')}}</label>
+                              <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="run_cron"
+                                       :checked="trainning.run_cron==1?true:false" v-model="trainning.run_cron">
+                                <label v-if="trainning.run_cron == 1" class="custom-control-label" for="run_cron">Yes</label>
+                                <label v-else class="custom-control-label" for="run_cron">No</label>
+                              </div>
+                            </div>
+                            <div class="col-sm-6 form-group">
+                              <label v-if="trainning.auto_certificate == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+                              <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
+                              <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="auto_certificate"
+                                       :checked="trainning.auto_certificate==1?true:false" v-model="trainning.auto_certificate">
+                                <label v-if="trainning.auto_certificate == 1" class="custom-control-label" for="auto_certificate">Yes</label>
+                                <label v-else class="custom-control-label"
+                                       for="auto_certificate">No</label>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="form-row">
+                            <div class="col-12 form-group">
+                              <div class="button-list text-right">
+                                <router-link
+                                 :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: trainning.style } }"
+                                 class="btn btn-danger btn-sm"
+                                >
+                                  {{ trans.get('keys.huy') }}
+                                </router-link>
+                                <button @click="editTrainning()" type="button"
+                                        class="btn btn-primary btn-sm">
+                                  {{trans.get('keys.sua')}}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
 
-                      <div class="form-row">
-                        <div class="col-sm-6 form-group">
-                          <label for="inputRole">{{trans.get('keys.quyen')}}</label>
-                          <select v-model="trainning.role_id" class="form-control selectpicker" id="inputRole" autocomplete="false">
-                            <option value="0">{{trans.get('keys.chon_vai_tro')}}</option>
-                            <option v-for="item in roles" :value="item.id">{{item.name}}</option>
-                          </select>
-                        </div>
-                        <div class="col-sm-6 form-group">
-                          <label>{{trans.get('keys.them_co_cau_to_chuc')}}</label>
-                          <treeselect v-model="trainning.organization_id" :multiple="false" :options="tree_options"
-                                      id="organization_parent_id"/>
-                        </div>
-                      </div>
+
+
 
 <!--                      <div class="form-row">-->
 <!--                        <div class="col-sm-6 form-group">-->
@@ -78,67 +147,9 @@
 <!--                        </div>-->
 <!--                      </div>-->
 
-                      <div class="form-row" v-if="trainning.style == 1">
-                        <div class="col-12">
-                          <label for="inputText1-1">{{trans.get('keys.thoi_gian_hoan_thanh')}}</label>
-                        </div>
-                        <div class="col-sm-6 form-group">
-                          <date-picker v-model="trainning.time_start" :config="options"
-                                       :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
-                          <label v-if="trainning.style == 1 && !trainning.time_start"
-                                 class="required text-danger time_start_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                        </div>
-                        <div class="col-sm-6 form-group">
-                          <date-picker v-model="trainning.time_end" :config="options"
-                                       :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
-                        </div>
-                      </div>
 
-                      <div class="form-row">
-                        <div class="col-sm-6 form-group">
-                          <label>{{trans.get('keys.tu_dong_chay_cron')}}</label>
-                          <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="run_cron"
-                                   :checked="trainning.run_cron==1?true:false" v-model="trainning.run_cron">
-                            <label v-if="trainning.run_cron == 1" class="custom-control-label" for="run_cron">Yes</label>
-                            <label v-else class="custom-control-label" for="run_cron">No</label>
-                          </div>
-                        </div>
-                        <div class="col-sm-6 form-group">
-                          <label v-if="type == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
-                          <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
-                          <div class="custom-control custom-switch">
-                            <input type="checkbox" class="custom-control-input" id="auto_certificate"
-                                   :checked="trainning.auto_certificate==1?true:false" v-model="trainning.auto_certificate">
-                            <label v-if="trainning.auto_certificate == 1" class="custom-control-label" for="auto_certificate">Yes</label>
-                            <label v-else class="custom-control-label"
-                                   for="auto_certificate">No</label>
-                          </div>
-                        </div>
-                      </div>
 
-                      <div class="form-row">
-                        <div class="col-12 form-group">
-                          <div class="button-list text-right">
-                            <router-link v-if="trainning.style == 1"
-                              :to="trans.get('keys.language') + '/tms/trainning/list/'+trainning.style"
-                              class="btn btn-danger btn-sm"
-                            >
-                              {{ trans.get('keys.huy') }}
-                            </router-link>
-                            <router-link v-else
-                                         :to="trans.get('keys.language') + '/tms/trainning/list/'"
-                                         class="btn btn-danger btn-sm"
-                            >
-                              {{ trans.get('keys.huy') }}
-                            </router-link>
-                            <button @click="editTrainning()" type="button"
-                                    class="btn btn-primary btn-sm">
-                              {{trans.get('keys.sua')}}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
+
                     </form>
                   </div>
                 </div>
@@ -344,7 +355,7 @@
   export default {
     props: ['id'],
     components: {
-      datePicker
+      datePicker,
     },
     data() {
       return {
@@ -352,10 +363,13 @@
           code: '',
           name: '',
           style: 0,
+          role_id: 0,
+          organization_id: 0,
           run_cron: 1,
           auto_certificate: 1,
           time_start: '',
           time_end: '',
+          logo:''
         },
 
         sampleCourses: [],
@@ -486,6 +500,8 @@
         axios.get('/api/trainning/detail/' + this.id)
           .then(response => {
             this.trainning = response.data;
+            setTimeout(function(){ $('.dropify').dropify(); }, 500);
+
           })
           .catch(error => {
             console.log(error.response.data);
@@ -535,17 +551,28 @@
           return;
         }
 
-        axios.post('/api/trainning/update', {
-          id: this.id,
-          code: this.trainning.code,
-          name: this.trainning.name,
-          style: this.trainning.style,
-          auto_certificate: this.trainning.auto_certificate,
-          run_cron: this.trainning.run_cron,
-          time_start: this.trainning.time_start,
-          time_end: this.trainning.time_end,
-          role_id: this.trainning.role_id,
-          organization_id: this.trainning.organization_id
+        if (this.trainning.style == 1 && !this.trainning.time_start) {
+          $('.time_start_required').show();
+          return;
+        }
+
+        this.formData = new FormData();
+        this.formData.append('id', this.id);
+        this.formData.append('code', this.trainning.code);
+        this.formData.append('name', this.trainning.name);
+        this.formData.append('style', this.trainning.style);
+        this.formData.append('auto_certificate', this.trainning.auto_certificate);
+        this.formData.append('run_cron', this.trainning.run_cron);
+        this.formData.append('time_start', this.trainning.time_start);
+        this.formData.append('time_end', this.trainning.time_end);
+        this.formData.append('role_id', this.trainning.role_id ? this.trainning.role_id : 0);
+        this.formData.append('organization_id', this.trainning.organization_id ? this.trainning.organization_id : 0);
+        this.formData.append('file', this.$refs.file.files[0]);
+
+        axios.post('/api/trainning/update', this.formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
         })
           .then(response => {
             var language = this.language;
@@ -698,12 +725,16 @@
 
       goBack() {
         window.location.href = this.trans.get('keys.language') + '/tms/trainning/list/'+this.style;
+      },
+      setFileInput() {
+        $('.dropify').dropify();
       }
     },
     mounted() {
       this.getDetailTrainning();
       this.listOrganization();
       this.getRoles();
+      //this.setFileInput();
     }
   }
 </script>
