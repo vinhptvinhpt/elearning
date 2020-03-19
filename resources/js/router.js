@@ -106,6 +106,7 @@ import InviteStudentComponent from "./components/education/InviteStudentComponen
 import TemplateIndexComponent from "./components/email/IndexComponent";
 import TemplateDetailComponent from "./components/email/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
+import AttendanceComponent from "./components/education/AttendanceComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -635,6 +636,16 @@ const routes = [
         })
       },
       {
+        path: 'education/attendance',
+        component: AttendanceComponent,
+        name: 'Attendance',
+        props: (route) => ({
+          course_id: route.params.course_id,
+          course_name: route.params.course_name,
+          come_form: route.params.come_form
+        })
+      },
+      {
         path: 'certificate/setting',
         component: SettingCertificateComponent,
         name: 'SettingCertificate'
@@ -658,7 +669,8 @@ const routes = [
         name: 'InviteStudent',
         props: (route) => ({
           course_id: route.params.id,
-          come_from: route.params.come_from
+          come_from: route.params.come_from,
+          course_name: route.params.course_name,
         })
       },
 
@@ -725,7 +737,7 @@ const routes = [
         component: TrainningListComponent,
         name: 'TrainningIndex',
         props: (route) => ({
-          type: route.query.type ? route.query.type : 0,
+          type: route.query.type ? route.query.type : 0
         })
       },
       {

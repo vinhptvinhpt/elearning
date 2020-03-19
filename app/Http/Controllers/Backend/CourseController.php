@@ -249,6 +249,10 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserNeedEnrol($request);
     }
 
+    public function apiAttendanceList(Request $request) {
+        return $this->mdlCourseRepository->apiAttendanceList($request);
+    }
+
     public function apiUserNeedInvite(Request $request)
     {
         return $this->bussinessRepository->apiUserNeedInvite($request);

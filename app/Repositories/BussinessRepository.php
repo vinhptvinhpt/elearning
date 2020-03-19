@@ -6241,7 +6241,7 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->save();
 
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
-            if (strlen($organization_id) != 0) {
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
 
                 $input_roles = explode(',', $inputRole);
 
@@ -7068,25 +7068,29 @@ class BussinessRepository implements IBussinessInterface
             }*/
             $mdlUser->save();
 
+
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
-            if (strlen($organization_id) != 0) {
-
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
                 $selected_roles = Role::whereIn('id', $roles)->whereIn('name', Role::arr_role_organization)->get();
-
                 $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
-
-                if (!isset($employee)) {
-                    $employee = new TmsOrganizationEmployee();
-                }
-
                 if (count($selected_roles) != 0) {
+                    if (!isset($employee)) {
+                        $employee = new TmsOrganizationEmployee();
+                    }
                     foreach ($selected_roles as $selected_role) {
                         $employee->user_id = $user_id;
                         $employee->organization_id = $organization_id;
                         $employee->position = $selected_role->name;
                         $employee->save();
                     }
+                } else {
+                    if (isset($employee)) {
+                        $employee->delete();
+                    }
                 }
+            } else {
+                $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
+                $employee->delete();
             }
 
             //Thêm nơi làm việc cho tài khoản

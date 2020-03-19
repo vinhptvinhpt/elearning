@@ -292,5 +292,11 @@
     "xac_nhan_that_bai": "Confirm fail",
     "tao_moi_csvc_thanh_cong": "Add infrastructure successfully",
     "capnhat_csvc_thanh_cong": "Update infrastructure successfully",
-    "xoa_csvc_thanh_cong": "Delete infrastructure successfully"
+    "xoa_csvc_thanh_cong": "Delete infrastructure successfully",
+    "ten_dang_nhap": "Username",
+    "dang_cho": "Pending",
+    "dong_y": "Accepted",
+    "tu_choi": "Denied",
+    "ly_do": "Reason",
+    "so_buoi_diem_danh": "Attendance Total"
 }

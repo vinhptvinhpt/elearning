@@ -220,36 +220,14 @@
           .then(response => {
             var language = this.language;
             if (response.data.status) {
-              swal({
-                  title: response.data.message,
-                  type: "success",
-                  showCancelButton: false,
-                  closeOnConfirm: false,
-                  showLoaderOnConfirm: true
-                }
-                , function () {
-                  window.location.href = language + '/tms/trainning/detail/' + response.data.otherData;
-                }
-              );
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+              this.$router.push({ name: 'TrainningEdit', params: {id: response.data.otherData} });
             } else {
-              swal({
-                title: response.data.message,
-                type: "error",
-                showCancelButton: false,
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true
-              });
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
           })
           .catch(error => {
-            swal({
-              title: "Thông báo",
-              text: " Lỗi hệ thống.",
-              type: "error",
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            });
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
 
       },

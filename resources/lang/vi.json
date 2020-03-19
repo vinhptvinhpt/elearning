@@ -292,5 +292,11 @@
     "xac_nhan_that_bai": "Xác nhận thất bại",
     "tao_moi_csvc_thanh_cong": "Thêm mới cơ sở vật chất thành công",
     "capnhat_csvc_thanh_cong": "Cập nhật cơ sở vật chất thành công",
-    "xoa_csvc_thanh_cong": "Xóa cơ sở vật chất thành công"
+    "xoa_csvc_thanh_cong": "Xóa cơ sở vật chất thành công",
+    "ten_dang_nhap": "Tên đăng nhập",
+    "dang_cho": "Đang chờ",
+    "dong_y": "Đồng ý",
+    "tu_choi": "Từ chối",
+    "ly_do": "Lý do",
+    "so_buoi_diem_danh": "Số buổi điểm danh"
 }
