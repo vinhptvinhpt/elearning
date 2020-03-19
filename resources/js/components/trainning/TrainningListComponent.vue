@@ -87,10 +87,10 @@
                     </td>
                     <td>{{ sur.name }}</td>
                     <td>
-                      {{ sur.group_role ? sur.group_role.role.name : '' }}
+                      {{ sur.group_role && sur.group_role.role ? sur.group_role.role.name : '' }}
                     </td>
                     <td>
-                      {{ sur.group_organize ? sur.group_organize.organize.name : '' }}
+                      {{ sur.group_organize && sur.group_organize.organize ? sur.group_organize.organize.name : '' }}
                     </td>
                     <td>
                       {{ sur.users ? sur.users.length : 0 }}
@@ -106,10 +106,7 @@
                       <router-link
                         class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                         :title="trans.get('keys.sua_thong_tin_knl')"
-                        :to="{
-                         name: 'TrainningEdit',
-                         params: { id: sur.id }
-                          }">
+                        :to="{ name: 'TrainningEdit', params: { id: sur.id }}">
                         <span class="btn-icon-wrap"><i
                           class="fal fa-pencil"></i></span>
                       </router-link>
@@ -123,12 +120,10 @@
                   </tr>
                   </tbody>
                   <tfoot>
-
                   </tfoot>
                 </table>
 
-                <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
-                              :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
+                <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
 
               </div>
             </div>
@@ -150,12 +145,7 @@
     components: {TrainningCreate},
     data() {
       return {
-        trainnings: {
-          code: '',
-          name: '',
-          group_role:[],
-          group_organize:[]
-        },
+        trainnings: [],
         keyword: '',
         current: 1,
         totalPages: 0,
@@ -183,6 +173,7 @@
         this.getTrainnings();
       },
       deletePost(id) {
+        let current_pos = this;
         swal({
           title: "Bạn có chắc muốn xóa khung năng lực này.",
           text: "Chọn 'ok' để thực hiện thao tác.",
@@ -194,22 +185,19 @@
           axios.post('/api/trainning/delete/'+id)
             .then(response => {
               if (response.data.status) {
-                roam_message('success',response.data.message);
+                toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               } else {
-                roam_message('error',response.data.message);
+                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
               }
-
             })
             .catch(error => {
-              roam_message('error',"Lỗi hệ thống. Thao tác thất bại!");
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
-
         return false;
       }
     },
     mounted() {
-      this.getTrainnings();
     }
   }
 </script>

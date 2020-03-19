@@ -8,7 +8,7 @@
                 <i class="fal fa-plus mr-3"></i>{{trans.get('keys.ghi_danh_giao_vien_giang_day')}}
               </a>
             </div>
-            <div id="collapse_2" class="collapse" data-parent="#accordion_2" role="tabpanel">
+            <div id="collapse_2" class="collapse show" data-parent="#accordion_2" role="tabpanel">
               <div class="card-body">
                 <div class="row">
                   <div class="col-xl-12">

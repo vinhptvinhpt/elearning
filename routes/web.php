@@ -666,8 +666,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::get('/downloadExportReport', 'Backend\ExcelController@downloadExportReport');
-    Route::post('/exportResult', 'Backend\ExcelController@exportResult');
-    Route::get('/downloadExportResult/{file_name}', 'Backend\ExcelController@downloadExportResult');
+
+    Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
+    Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
+    Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
+    Route::get('/api/downloadExport/{file_name}', 'Backend\ExcelController@apiDownloadExport');
 
     Route::get('/support/manage-market', 'Backend\BackendController@viewSupportMarket');
     Route::get('/support/admin', 'Backend\BackendController@viewSupportAdmin');
@@ -701,7 +704,20 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/assign', 'Backend\OrganizationController@apiAssignEmployee');
     Route::post('/organization-employee/get-user-detail/{id}', 'Backend\OrganizationController@apiDetailUser');
 
+    //Attendance
+    Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');
+
+
+
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
+
+
+    //Infrastructer in course offline
+    Route::post('/api/infrastructer/getall', 'Backend\InfrastructureController@apiGetall');
+    Route::post('/api/infrastructer/create', 'Backend\InfrastructureController@apiStore');
+    Route::post('/api/infrastructer/update', 'Backend\InfrastructureController@apiUpdate');
+    Route::post('/api/infrastructer/delete', 'Backend\InfrastructureController@apiDelete');
+    Route::get('/api/infrastructer/detail/{id}', 'Backend\InfrastructureController@apiGetbyid');
 
 });
 // [VinhPT][26.12.2019] Login first screen

@@ -13,6 +13,7 @@ use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\MdlRole;
 use App\MdlUser;
+use App\Role;
 use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Illuminate\Http\Request;
@@ -293,7 +294,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     }
 
-    public function update($id)
+    public function update(Request $request)
     {
         // TODO: Implement update() method.
     }
@@ -665,5 +666,56 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
     public function detail($id)
     {
         // TODO: Implement detail() method.
+    }
+
+    public function apiAttendanceList(Request $request) { //Skipped
+        // TODO: Implement getall() method.
+        $row = $request->input('row');
+        $course_id = $request->input('course_id');
+        $date = $request->input('date');
+
+        $param = [
+            'row' => 'number',
+            'course_id' => 'number',
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $list = DB::table('mdl_user_enrolments')
+            ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
+            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+            ->leftJoin('mdl_attendance', function ($join) {
+                $join->on('mdl_course.id', '=', 'mdl_attendance.courseid')
+                    ->andOn('mdl_user.id', '=', 'mdl_attendance.userid');
+            })
+            ->join('tms_user_detail',  'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->where('mdl_attendance.attendance', '=', $date)
+            ->where('mdl_course.id', '=', $course_id)
+            ->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT)
+            ->select('mdl_user.id',
+                 'mdl_user.username',
+                 'tms_user_detail.fullname',
+                 'mdl_attendance.attendance',
+                 'mdl_attendance.note',
+                 'mdl_attendance.present'
+             );
+
+        $total_items = count($list->get()); //lấy tổng số khóa học hiện tại
+
+        $list = $list->paginate($row);
+        $total = ceil($list->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $list->currentPage(),
+            ],
+            'data' => $list,
+            'total_items' => $total_items
+        ];
+
+        return response()->json($response);
     }
 }

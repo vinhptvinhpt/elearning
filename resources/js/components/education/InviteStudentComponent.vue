@@ -18,6 +18,11 @@
                 {{ trans.get('keys.khoa_dao_tao_tap_trung') }}
               </router-link>
             </li>
+            <li class="breadcrumb-item">
+              <router-link :to="{ name: 'CourseDetail', params: {id: course_id} }">
+                {{ course_name }}
+              </router-link>
+            </li>
             <li class="breadcrumb-item active">{{ trans.get('keys.moi_ghi_danh_khoa_hoc') }}</li>
           </ol>
         </nav>
@@ -140,6 +145,9 @@
                                                 @click="getCurrentUserEnrol(1)">
                                           {{trans.get('keys.tim')}}
                                         </button>
+                                        <a style="color: #fff" class="btn btn-sm btn-primary" v-on:click="exportExcel()" :title="trans.get('keys.xuat_excel')">
+                                          <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
+                                        </a>
                                       </div>
                                     </form>
                                   </div>
@@ -238,7 +246,16 @@
   //import vPagination from 'vue-plain-pagination'
 
   export default {
-    props: ['course_id', 'come_from'],
+    props: {
+      course_id: {
+        required: true
+      },
+      come_from: String,
+      course_name: {
+        type: String,
+        default: 'Course Name'
+      },
+    },
     //components: {vPagination},
     data() {
       return {
@@ -401,9 +418,6 @@
           this.$router.push({name: 'CourseConcentrateIndex'});
         }
       },
-      setFileInput() {
-        $('.dropify').dropify();
-      },
       uncheckEnrolAll() {
         this.allSelected = true;
         this.selectAllEnrol();
@@ -449,11 +463,27 @@
         }
         return outPut;
       },
+      exportExcel() {
+        axios.post('/api/exportInvite', {
+          keyword: this.keyword_curr,
+          course_id: this.course_id,
+          organization_id: this.organization_id_2,
+          course_name: this.course_name
+        })
+          .then(response => {
+            let file_name = response.data;
+            let a = $("<a>")
+              .prop("href", "/api/downloadExport/" + file_name)
+              .appendTo("body");
+            a[0].click();
+            a.remove();
+          })
+          .catch(error => {
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+          });
+      },
     },
     mounted() {
-      //this.getUserNeedEnrol();
-      //this.getCurrentUserEnrol();
-      this.setFileInput();
       this.selectOrganization();
       $('[data-toggle="tooltip"]').tooltip()
     }

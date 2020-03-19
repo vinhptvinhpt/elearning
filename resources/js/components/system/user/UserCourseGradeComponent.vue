@@ -235,16 +235,15 @@
                 this.getGradeByCourse();
             },
             exportExcel(data) {
-                axios.post('/exportResult', {
+                axios.post('/api/exportResult', {
                   data: data,
                   username: this.username,
                   fullname: this.fullname
                 })
                   .then(response => {
                     let file_name = response.data;
-                    console.log(file_name);
                     let a = $("<a>")
-                      .prop("href", "/downloadExportResult/" + file_name)
+                      .prop("href", "/api/downloadExport/" + file_name)
                       .appendTo("body");
                     a[0].click();
                     a.remove();

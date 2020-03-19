@@ -182,17 +182,20 @@
             </div>
         </div>
         <enrol-teacher :course_id="course_id"></enrol-teacher>
+        <course-infra :course_id="course_id"></course-infra>
     </div>
 </template>
 
 <script>
     import CKEditor from 'ckeditor4-vue';
     import EnrolTeacher from './EnrolTeacherComponent'
+    import CourseInfra from './CourseInfrastructureComponent'
 
     export default {
         components: {
             CKEditor,
-            EnrolTeacher
+            EnrolTeacher,
+            CourseInfra
         },
         props: ['course_id'],
         data() {

@@ -131,10 +131,10 @@
               </div>
               <div class="text-right">
                 <router-link v-if="this.come_from === 'online'"
-                   :to="{name: 'CourseDetail', params: {id: course.id}}"
+                   :to="{name: 'CourseDetail', params: {id: course_id}}"
                    class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
                 <router-link v-else
-                   :to="{name: 'CourseConcentrateDetail', params: {id: course.id}}"
+                   :to="{name: 'CourseConcentrateDetail', params: {id: course_id}}"
                    class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
               </div>
             </div>
@@ -284,13 +284,16 @@
                         <form v-on:submit.prevent="getStatictisUserAttendance(1)">
                           <div class="d-flex flex-row form-group">
                             <input v-model="keywordAtt" type="text"
-                                   class="form-control"
+                                   class="form-control search_text"
                                    :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+'...'">
                             <button type="button" id="btnFilterAtt"
-                                    class="btn btn-primary d-none d-lg-block"
+                                    class="btn btn-primary btn-sm"
                                     @click="getStatictisUserAttendance(1)">
                               {{trans.get('keys.tim')}}
                             </button>
+                            <a style="color: #fff" class="btn btn-primary btn-sm" v-on:click="exportExcelAttendance()" :title="trans.get('keys.xuat_excel')">
+                              <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
+                            </a>
                           </div>
                         </form>
                       </div>
@@ -438,7 +441,25 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
-            }
+            },
+            exportExcelAttendance() {
+              axios.post('/api/exportAttendance', {
+                keyword: this.keywordAtt,
+                course_id: this.course_id,
+                course_name: this.course.fullname
+              })
+                .then(response => {
+                  let file_name = response.data;
+                  let a = $("<a>")
+                    .prop("href", "/api/downloadExport/" + file_name)
+                    .appendTo("body");
+                  a[0].click();
+                  a.remove();
+                })
+                .catch(error => {
+                  toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                });
+          },
         },
         mounted() {
             this.getCourseDetail();
