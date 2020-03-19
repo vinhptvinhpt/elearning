@@ -12,7 +12,8 @@
             <div class="row"><!--hien thi cau hoi theo dang hang ngang -->
                 <div class="col-12">
                     <div class="col-12" v-if="ques_data.total_choice>0">
-                        <chart-statistics :question="ques_data" :index_question="index"></chart-statistics>
+                        <chart-statistics :question="ques_data" :index_question="index"
+                                          :chart_type="chart_type"></chart-statistics>
                     </div>
                 </div>
             </div>
@@ -28,7 +29,7 @@
     import ChartStatistics from './StatisticsChartComponent'
 
     export default {
-        props: ['question', 'index_question'],
+        props: ['question', 'index_question', 'chart_type'],
         components: {highcharts: Chart, ChartStatistics},
         data() {
             return {}

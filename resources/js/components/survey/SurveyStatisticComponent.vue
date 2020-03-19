@@ -99,6 +99,25 @@
                                     </button>
                                     <!--                                </a>-->
                                 </div>
+                                <div class="col-2 form-group">
+                                    <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
+
+                                    <button type="button" v-if="chart_type==='bar'"
+                                            class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                            @click="changeChartFormat('pie')">
+                                        {{trans.get('keys.pie_chart')}} <i class="fa fa-spinner"
+                                                                           aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" v-else
+                                            class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                            @click="changeChartFormat('bar')">
+                                        {{trans.get('keys.bar_chart')}} <i class="fa fa-spinner"
+                                                                           aria-hidden="true"></i>
+                                    </button>
+
+
+                                    <!--                                </a>-->
+                                </div>
                             </div>
                             <br/>
                             <div class="row">
@@ -108,11 +127,12 @@
                                         <div v-for="(question,index) in survey_exam">
                                             <div v-if="question.type_question=='multiplechoice'">
                                                 <question-statistic :question="question.lstQuesChild[0]"
-                                                                    :index_question="index"
+                                                                    :index_question="index" :chart_type="chart_type"
                                                 ></question-statistic>
                                             </div>
                                             <div v-else>
                                                 <group-question-statistic :question="question" :index_question="index"
+                                                                          :chart_type="chart_type"
                                                 ></group-question-statistic>
                                             </div>
                                         </div>
@@ -164,10 +184,16 @@
 
                 startdate: '',
                 enddate: '',
-                base_url: ''
+                base_url: '',
+                chart_type: 'pie'
             }
         },
         methods: {
+            changeChartFormat(type) {
+                this.chart_type = type;
+                this.survey_exam = [];
+                this.getStatictisSurveyExam();
+            },
 
             selectParentItem(parent_id) {
                 this.organization.parent_id = parent_id;
