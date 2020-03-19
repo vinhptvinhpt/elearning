@@ -131,10 +131,10 @@
               </div>
               <div class="text-right">
                 <router-link v-if="this.come_from === 'online'"
-                   :to="{name: 'CourseDetail', params: {id: course.id}}"
+                   :to="{name: 'CourseDetail', params: {id: course_id}}"
                    class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
                 <router-link v-else
-                   :to="{name: 'CourseConcentrateDetail', params: {id: course.id}}"
+                   :to="{name: 'CourseConcentrateDetail', params: {id: course_id}}"
                    class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
               </div>
             </div>
