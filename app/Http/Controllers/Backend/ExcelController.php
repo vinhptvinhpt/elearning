@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Backend;
 
+use App\Exports\AttendanceSheet;
+use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -286,7 +289,7 @@ class ExcelController extends Controller
         return response()->json(storage_path($filename));
     }
 
-    public function exportResult(Request $request)
+    public function apiExportResult(Request $request)
     {
 
         $username = $request->input('username');
@@ -310,8 +313,7 @@ class ExcelController extends Controller
                 $key + 1,
                 isset($item['shortname']) ? $item['shortname'] : '',
                 isset($item['fullname']) ? $item['fullname'] : '',
-                $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 |
-                0.00) . "%)",
+                $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)",
                 isset($item['finalgrade']) ? number_format((float)$item['finalgrade'], 2, '.', '') : 0,
                 $item['status_user'] == 1 && floatval($item['finalgrade']) >= floatval($item['gradepass']) && $item['user_course_completionstate'] == $item['user_course_learn'] && $item['user_course_completionstate'] > 0 ? __('hoan_thanh') : __('chua_hoan_thanh')
             );
@@ -327,12 +329,180 @@ class ExcelController extends Controller
         return response()->json($filename);
     }
 
+    public function apiExportInvite(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $course_id = $request->input('course_id');
+        $course_name = $request->input('course_name');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'course_id' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        $currentUserEnrol = DB::table('tms_invitation')
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_invitation.user_id')
+            ->leftJoin('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->where('tms_invitation.course_id', '=', $course_id)
+            ->select(
+                'mdl_user.id',
+                'mdl_user.username',
+                'mdl_user.firstname',
+                'mdl_user.lastname',
+                'tms_user_detail.fullname',
+                'tms_invitation.replied',
+                'tms_invitation.accepted',
+                'tms_invitation.reason'
+            );
+        if ($keyword) {
+            $currentUserEnrol->where(function($q) use ($keyword) {
+                $q->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        $data = $currentUserEnrol->get();
+
+        $export_data = array();
+
+        $export_data[] = array(
+            __('stt'),
+            __('tai_khoan'),
+            __('ho_va_ten'),
+            __('trang_thai'),
+            __('ly_do'),
+        );
+
+        foreach ($data as $key => $item) {
+            if ($item->replied == 0) {
+                $status = __('dang_cho');
+            } else {
+                if ($item->accepted == 1) {
+                    $status = __('dong_y');
+                } else {
+                    $status = __('tu_choi');
+                }
+            }
+            $export_data[] = array(
+                $key + 1,
+                $item->username,
+                isset($item->fullname) ? $item->fullname : $item->lastname . " " . $item->firstname,
+                $status,
+                $item->reason
+            );
+        }
+
+
+        $exportExcel = new InvitationSheet($course_name, $export_data);
+
+        $filename = $course_name . " Invitation List.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json($filename);
+    }
+
+    public function apiExportAttendance(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $course_id = $request->input('course_id');
+        $course_name = $request->input('course_name');
+
+        $param = [
+            'course_id' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
+        $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
+            ->leftJoin('tms_user_detail as tud', 'u.id', '=', 'tud.user_id')
+            ->where('c.id', '=', $course_id)
+            ->select(
+                'u.id as user_id',
+                'u.username',
+                'u.firstname',
+                'u.lastname',
+                'tud.fullname',
+                'c.total_date_course',
+                DB::raw('(SELECT count(att.id) FROM `mdl_attendance` att where att.courseid = c.id and att.userid = u.id) as count_attendance')
+            );
+
+        //search
+        if ($keyword) {
+            $lstUserAttendance->where(function($q) use ($keyword) {
+                $q->where('u.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tud.fullname', 'like', '%' . $keyword . '%');
+            });
+        }
+        //order by
+        $lstUserAttendance = $lstUserAttendance->orderBy('u.id', 'desc')->groupBy('u.id');
+
+        $data = $lstUserAttendance->get();
+
+        $export_data = array();
+
+        $export_data[] = array(
+            __('stt'),
+            __('tai_khoan'),
+            __('ho_va_ten'),
+            __('so_buoi_diem_danh')
+        );
+
+        foreach ($data as $key => $item) {
+            $attendance = $item->count_attendance . "/" . $item->total_date_course;
+            $export_data[] = array(
+                $key + 1,
+                $item->username,
+                isset($item->fullname) ? $item->fullname : $item->lastname . " " . $item->firstname,
+                $attendance
+            );
+        }
+
+        $exportExcel = new AttendanceSheet($course_name, $export_data);
+
+        $filename = $course_name . " Attendance List.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json($filename);
+    }
+
     public function downloadExportReport() {
         $filename = "report_detail.xlsx";
         return Storage::download($filename);
     }
 
-    public function downloadExportResult($file_name) {
+    public function apiDownloadExport($file_name) {
         return Storage::download($file_name);
     }
 }

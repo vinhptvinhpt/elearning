@@ -289,5 +289,11 @@
     "moi_hoc_vien_tham_gia_khoa_học": "Invite student to course",
     "thu_moi_tham_gia_khoa_hoc": "Course enrolment invitation email",
     "xac_nhan_thanh_cong": "Confirm successfully",
-    "xac_nhan_that_bai": "Confirm fail"
+    "xac_nhan_that_bai": "Confirm fail",
+    "ten_dang_nhap": "Username",
+    "dang_cho": "Pending",
+    "dong_y": "Accepted",
+    "tu_choi": "Denied",
+    "ly_do": "Reason",
+    "so_buoi_diem_danh": "Attendance Total"
 }
