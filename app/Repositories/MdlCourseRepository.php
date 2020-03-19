@@ -293,7 +293,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     }
 
-    public function update($id)
+    public function update(Request $request)
     {
         // TODO: Implement update() method.
     }

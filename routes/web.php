@@ -703,6 +703,14 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 
+
+    //Infrastructer in course offline
+    Route::post('/api/infrastructer/getall', 'Backend\InfrastructureController@apiGetall');
+    Route::post('/api/infrastructer/create', 'Backend\InfrastructureController@apiStore');
+    Route::post('/api/infrastructer/update', 'Backend\InfrastructureController@apiUpdate');
+    Route::post('/api/infrastructer/delete', 'Backend\InfrastructureController@apiDelete');
+    Route::get('/api/infrastructer/detail/{id}', 'Backend\InfrastructureController@apiGetbyid');
+
 });
 // [VinhPT][26.12.2019] Login first screen
 Route::get('/loginfirst', 'Backend\loginfirst\LoginFirstController@viewLoginFirst');

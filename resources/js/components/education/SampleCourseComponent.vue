@@ -403,7 +403,7 @@
         },
         mounted() {
             this.setEditor();
-            this.getCourses();
+           // this.getCourses();
             this.fetch();
         }
     }
