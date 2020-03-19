@@ -786,7 +786,8 @@
     "danh_sach_co_so_vat_chat": "Infrastructures of Course",
     "tim_kiem_theo_ten_csvc": "Find by Infrastructure name",
     "tao_moi_co_so_vat_chat_khoa_hoc": "Create Infrastructure of Course",
-    "sua_csvc": "Update Infrastructure of Course"
+    "sua_csvc": "Update Infrastructure of Course",
+ "tu_dong_cap_huy_hieu": "Auto generate badge"
   },
   "vi.keys": {
     "language": "",
@@ -1574,6 +1575,7 @@
     "danh_sach_co_so_vat_chat": "Danh sách cơ sở vật chất của khóa học",
     "tim_kiem_theo_ten_csvc": "Tìm kiếm theo tên cơ sở vật chất",
     "tao_moi_co_so_vat_chat_khoa_hoc": "Thêm mới cơ sở vật chất của khóa học",
-    "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học"
+    "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học",
+ "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu"
   }
 }

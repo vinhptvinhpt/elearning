@@ -209,7 +209,7 @@
       }
     },
     mounted() {
-      this.getTrainnings();
+      //this.getTrainnings();
     }
   }
 </script>

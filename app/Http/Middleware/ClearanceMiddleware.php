@@ -21,8 +21,8 @@ class ClearanceMiddleware
             tvHasRole(auth('web')->user()->id, 'Root')
             || tvHasRole(auth('web')->user()->id, 'root')
             //Bypass for organization roles
-            || tvHasRole(auth('web')->user()->id, 'admin')
-            || tvHasRole(auth('web')->user()->id, 'Admin')
+            //|| tvHasRole(auth('web')->user()->id, 'admin')
+            //|| tvHasRole(auth('web')->user()->id, 'Admin')
             || tvHasRole(auth('web')->user()->id, 'manager')
             || tvHasRole(auth('web')->user()->id, 'leader')
             ) {

@@ -23,6 +23,7 @@ use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class TrainningRepository implements ITranningInterface, ICommonInterface
 {
@@ -46,6 +47,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $time_end           = $request->input('time_end');
             $role_id            = $request->input('role_id');
             $organization_id    = $request->input('organization_id');
+            $logo               = $request->file('file');
 
             $param = [
                 'code'              => 'code',
@@ -91,13 +93,27 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $time_end = 0;
             }
 
+            $path_logo = '';
+            if ($logo) {
+                $name_logo = time() . '.' . $logo->getClientOriginalExtension();
+
+                // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
+                Storage::putFileAs(
+                    'public/upload/certificate',
+                    $logo,
+                    $name_logo
+                );
+                $path_logo = '/storage/upload/certificate/' . $name_logo;
+            }
+
             $tms_trainning = TmsTrainningProgram::firstOrCreate([
                 'code'              => $code,
                 'name'              => $name,
-                'style'             => $style ? 1 : 0,
+                'style'             => $style,
                 'run_cron'          => $run_cron ? 1 : 0,
                 'time_start'        => $time_start,
                 'time_end'          => $time_end,
+                'logo'              => $path_logo,
                 'auto_certificate'  => $auto_certificate ? 1 : 0
             ]);
 
@@ -134,7 +150,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         // TODO: Implement update() method.
         $response = new ResponseModel();
         try {
-            $id                  = $request->input('id');
+            $id                 = $request->input('id');
             $code               = $request->input('code');
             $name               = $request->input('name');
             $style              = $request->input('style');
@@ -144,6 +160,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $time_end           = $request->input('time_end');
             $role_id            = $request->input('role_id');
             $organization_id    = $request->input('organization_id');
+            $logo               = $request->file('file');
 
             $param = [
                 'code'              => 'code',
@@ -189,6 +206,20 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->run_cron            = $run_cron;
             $trainning->time_start          = $time_start;
             $trainning->time_end            = $time_end;
+
+            if ($logo) {
+                $name_logo = time() . '.' . $logo->getClientOriginalExtension();
+
+                // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
+                Storage::putFileAs(
+                    'public/upload/certificate',
+                    $logo,
+                    $name_logo
+                );
+                $path_logo = '/storage/upload/certificate/' . $name_logo;
+                $trainning->logo = $path_logo;
+            }
+
             $trainning->save();
 
             TmsTrainningGroup::where([
@@ -315,18 +346,22 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('ttp.id', '=', $id)
             ->select(
                 'ttp.id', 'ttp.code', 'ttp.name', 'ttp.style', 'ttp.run_cron', 'ttp.auto_certificate',
-                'ttp.time_start', 'ttp.time_end',
+                'ttp.time_start', 'ttp.time_end','ttp.logo',
                 DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where
                 ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
                 DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where
                 tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')
             )
             ->first();
-        if($trainning->time_start){
+        if($trainning->time_start && $trainning->time_start != 0){
             $trainning->time_start = date('d-m-Y',$trainning->time_start);
+        }else{
+            $trainning->time_start = '';
         }
-        if($trainning->time_end){
+        if($trainning->time_end && $trainning->time_end != 0){
             $trainning->time_end = date('d-m-Y',$trainning->time_end);
+        }else{
+            $trainning->time_end = '';
         }
 
         return response()->json($trainning);
