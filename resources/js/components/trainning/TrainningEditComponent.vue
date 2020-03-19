@@ -105,7 +105,7 @@
                           </div>
                         </div>
                         <div class="col-sm-6 form-group">
-                          <label v-if="type == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+                          <label v-if="trainning.style == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
                           <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
                           <div class="custom-control custom-switch">
                             <input type="checkbox" class="custom-control-input" id="auto_certificate"
@@ -120,16 +120,10 @@
                       <div class="form-row">
                         <div class="col-12 form-group">
                           <div class="button-list text-right">
-                            <router-link v-if="trainning.style == 1"
-                              :to="trans.get('keys.language') + '/tms/trainning/list/'+trainning.style"
-                              class="btn btn-danger btn-sm"
-                            >
+                            <router-link v-if="trainning.style == 1" :to="{name: 'TrainningIndex', query: {type: trainning.style}}" class="btn btn-danger btn-sm">
                               {{ trans.get('keys.huy') }}
                             </router-link>
-                            <router-link v-else
-                                         :to="trans.get('keys.language') + '/tms/trainning/list/'"
-                                         class="btn btn-danger btn-sm"
-                            >
+                            <router-link v-else :to="{name: 'TrainningIndex'}" class="btn btn-danger btn-sm">
                               {{ trans.get('keys.huy') }}
                             </router-link>
                             <button @click="editTrainning()" type="button"
@@ -316,9 +310,7 @@
                               </tfoot>
                             </table>
 
-                            <v-pagination v-model="current_tn" @input="onPageChangeCurr"
-                                          :page-count="totalPages_tn"
-                                          :classes=$pagination.classes></v-pagination>
+                            <v-pagination v-model="current_tn" @input="onPageChangeCurr" :page-count="totalPages_tn" :classes=$pagination.classes></v-pagination>
                           </div>
 
                         </div>
@@ -450,7 +442,6 @@
       onPageChangeCurr() {
         this.getListCourseTrainning();
       },
-
       selectAllEnrol: function () {
         this.userEnrols = [];
         this.allSelected = !this.allSelected;
@@ -481,7 +472,6 @@
       onCheckboxRemoveEnrol() {
         this.allSelectedRemove = false;
       },
-
       getDetailTrainning() {
         axios.get('/api/trainning/detail/' + this.id)
           .then(response => {
@@ -548,49 +538,19 @@
           organization_id: this.trainning.organization_id
         })
           .then(response => {
-            var language = this.language;
             if (response.data.status) {
-              swal({
-                  title: response.data.message,
-                  type: "success",
-                  showCancelButton: false,
-                  closeOnConfirm: false,
-                  showLoaderOnConfirm: true
-                }
-              );
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
             } else {
-              swal({
-                title: response.data.message,
-                type: "error",
-                showCancelButton: false,
-                closeOnConfirm: false,
-                showLoaderOnConfirm: true
-              });
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
           })
           .catch(error => {
-            swal({
-              title: "Thông báo",
-              text: " Lỗi hệ thống.",
-              type: "error",
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            });
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
-
-
       },
-
       enrolUserToCourse() {
         if (this.userEnrols.length === 0) {
-          swal({
-            title: 'Bạn chưa chọn khóa học',
-            type: "error",
-            showCancelButton: false,
-            closeOnConfirm: false,
-            showLoaderOnConfirm: true
-          });
+          toastr['warning']('Bạn chưa chọn khóa học', this.trans.get('keys.thong_bao'));
           return;
         }
         axios.post('/api/trainning/addcoursetotrainning', {
@@ -599,105 +559,44 @@
         })
           .then(response => {
             if (response.data.status) {
-              swal({
-                  title: response.data.message,
-                  type: "success",
-                  showCancelButton: false,
-                  closeOnConfirm: true,
-                  showLoaderOnConfirm: false
-                }
-                , function () {
-                  $('#btnFilter1').trigger('click');
-                }
-              );
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+              $('#btnFilter1').trigger('click');
             } else {
-              swal({
-                title: response.data.message,
-                type: "error",
-                showCancelButton: false,
-                closeOnConfirm: true,
-                showLoaderOnConfirm: false
-              });
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
-
           })
           .catch(error => {
-            swal({
-              title: "Thông báo",
-              text: " Lỗi hệ thống.",
-              type: "error",
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            });
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
       },
-
       removeEnrolUserToCourse() {
         if (this.userRemoveEnrol.length === 0) {
-          swal({
-            title: 'Bạn chưa chọn khóa học',
-            type: "error",
-            showCancelButton: false,
-            closeOnConfirm: false,
-            showLoaderOnConfirm: true
-          });
+          toastr['warning']('Bạn chưa chọn khóa học', this.trans.get('keys.thong_bao'));
           return;
         }
-
-        // swal({
-        //     title: "Khóa học đang có học viên tham gia học, bạn có chắc chắn muốn gỡ bỏ khóa học khỏi khung năng lực",
-        //     text: "Chọn 'ok' để thực hiện thao tác.",
-        //     type: "error",
-        //     showCancelButton: true,
-        //     closeOnConfirm: false,
-        //     showLoaderOnConfirm: true
-        // }, function () {
         axios.post('/api/trainning/removecoursetotrainning', {
           lst_course: this.userRemoveEnrol,
           trainning_id: this.id
         })
           .then(response => {
             if (response.data.status) {
-              swal({
-                  title: response.data.message,
-                  type: "success",
-                  showCancelButton: false,
-                  closeOnConfirm: true,
-                  showLoaderOnConfirm: false
-                }
-                , function () {
-                  $('#btnFilter1').trigger('click');
-                }
-              );
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+              $('#btnFilter1').trigger('click');
             } else {
-              swal({
-                title: response.data.message,
-                type: "error",
-                showCancelButton: false,
-                closeOnConfirm: true,
-                showLoaderOnConfirm: false
-              });
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
-
           })
           .catch(error => {
-            swal({
-              title: "Thông báo",
-              text: " Lỗi hệ thống.",
-              type: "error",
-              showCancelButton: false,
-              closeOnConfirm: false,
-              showLoaderOnConfirm: true
-            });
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
-        // });
-
 
       },
-
       goBack() {
-        window.location.href = this.trans.get('keys.language') + '/tms/trainning/list/'+this.style;
+        if (this.trainning.style == 1) {
+          this.$router.push({ name: 'TrainningIndex', query: {type: this.trainning.style} });
+        } else {
+          this.$router.push({ name: 'TrainningIndex' });
+        }
       }
     },
     mounted() {

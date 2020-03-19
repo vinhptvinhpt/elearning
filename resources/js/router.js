@@ -730,14 +730,9 @@ const routes = [
       {
         path: 'trainning/list',
         component: TrainningListComponent,
-        name: 'TrainningIndex'
-      },
-      {
-        path: 'trainning/list/:type',
-        component: TrainningListComponent,
         name: 'TrainningIndex',
         props: (route) => ({
-          type: route.params.type,
+          type: route.query.type,
         })
       },
       {

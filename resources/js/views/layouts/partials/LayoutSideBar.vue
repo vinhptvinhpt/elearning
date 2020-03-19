@@ -290,7 +290,7 @@
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link to="/tms/trainning/list/1" class="nav-link">
+                                        <router-link :to="{name: 'TrainningIndex', query: {type: 1}}" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_huy_hieu') }}</span>
                                         </router-link>
                                     </li>
