@@ -265,7 +265,7 @@
         selected_role: 'user',
         organization_ready: 0,
         //position_ready: 0,
-        query_organization_id: this.organization_id,
+        query_organization_id: this.organization_id ? this.organization_id : 0,
         // filterPosition: [
         //   {
         //     key: 'manager',

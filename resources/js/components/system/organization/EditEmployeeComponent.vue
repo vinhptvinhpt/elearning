@@ -47,7 +47,7 @@
 <!--                        <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
 <!--                      </div>-->
 
-                      <treeselect disv-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                      <treeselect :disabled="isOrgUpper" v-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                       <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
 
                     </div>
@@ -59,9 +59,9 @@
                       <div class="input-group">
                         <select class="form-control" v-model="employee.position" id="employee_position">
                           <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>
-                          <option value="manager">Manager</option>
-                          <option value="leader">Leader</option>
-                          <option value="employee">Employee</option>
+                          <option v-for="position in filterPosition" :value="position.key">
+                            {{position.value}}
+                          </option>
                         </select>
                       </div>
                       <label v-if="!employee.position" class="text-danger position_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -102,8 +102,8 @@
       'id',
       'source_page',
       'organization_id',
-      'role_ready',
-      'current_roles'
+      'roles_ready',
+      'selected_role'
     ],
     components: {
       //vPagination
@@ -173,6 +173,9 @@
           })
       },
       update() {
+
+        console.log(this.selected_role);
+
         if(!this.employee.organization_id){
           $('.organization_required').show();
           return;
@@ -208,6 +211,54 @@
             //console.log(error);
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           })
+      },
+    },
+    computed: { //Phải gọi trên html nó mới trigger computed value
+      filterPosition: function() {
+        let default_response = [
+          {
+            key: 'manager',
+            value: 'Manager'
+          },
+          {
+            key: 'leader',
+            value: 'Leader'
+          },
+          {
+            key: 'employee',
+            value: 'Employee'
+          }
+        ];
+        if (this.roles_ready) {
+          //overwrite filter for manager / leader
+          if (this.selected_role === 'root') {
+            return default_response;
+          }
+          let response = [];
+          if (this.selected_role === 'manager') {
+            response.push({
+              key: 'leader',
+              value: 'Leader'
+            });
+          }
+          if (this.selected_role === 'manager' || this.selected_role === 'leader') {
+            response.push({
+              key: 'employee',
+              value: 'Employee'
+            });
+          }
+          return response;
+        } else {
+          return default_response;
+        }
+      },
+      isOrgUpper: function() {
+        if (this.roles_ready) {
+          //overwrite filter for manager / leader
+          return this.selected_role === 'manager' || this.selected_role === 'leader';
+        } else {
+          return false;
+        }
       }
     },
     mounted() {
