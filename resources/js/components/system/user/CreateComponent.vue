@@ -91,12 +91,24 @@
                 </div>
 
                 <div v-if="roles && type === 'system'" class="col-12 form-group">
-                    <label for="inputRole">{{trans.get('keys.quyen')}}</label>
-                    <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>
-                        <option value="">{{trans.get('keys.chon_vai_tro')}}</option>
-                        <option v-for="role in roles" :value="role.id">{{ role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
-                    </select>
-                    <label v-if="!inputRole" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                    <label>{{trans.get('keys.quyen')}}</label>
+                    <v-select
+                      multiple
+                      :options="roleSelectOptions"
+                      :reduce="roleSelectOption => roleSelectOption.id"
+                      :placeholder="this.trans.get('keys.chon_vai_tro')"
+                      :filter-by="myFilterBy"
+                      :required="!inputRole"
+                      v-model="inputRole">
+                    </v-select>
+
+<!--                  <label for="inputRole">{{trans.get('keys.quyen')}}</label>-->
+<!--                    <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>-->
+<!--                        <option value="">{{trans.get('keys.chon_vai_tro')}}</option>-->
+<!--                        <option v-for="role in roles" :value="role.id">{{ role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>-->
+<!--                    </select>-->
+<!--                    <label v-if="!inputRole" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+
                 </div>
 
                 <div class="col-md-4 col-sm-6  form-group">
@@ -246,13 +258,15 @@
 <script>
 
     export default {
-        props: [
-          'type',
-          'role_login',
-          'organization_id',
-          'current_roles',
-          'roles_ready'
-        ],
+        props: {
+          type: {
+            type: String,
+            default: 'system'
+          },
+          role_login: String,
+          current_roles: Object,
+          organization_id: Number
+        },
         data() {
             return {
                 fullname: '',
@@ -301,11 +315,21 @@
                 'employee',
                 'leader'
                 ],
-                roles_set: 0,
-                role_selected: 'user'
+                role_selected: 'user',
+                roleSelectOptions: []
             }
         },
         methods: {
+            myFilterBy: (option, label, search) => {
+              if (!label) {
+                label = '';
+              }
+              let new_search = convertUtf8(search);
+              let new_label = convertUtf8(label);
+              //return this.filterBy(option, new_label, new_search); //can not call components function here
+              return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+            },
+
             changeOption() {
                 if(this.option_work == 'pos'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
@@ -462,14 +486,12 @@
 
             },
             getRoles() {
-                if(this.type == 'system') {
+                if(this.type === 'system') {
                     axios.post('/system/user/list_role')
                         .then(response => {
                             this.roles = response.data;
                             this.getRoleFromCurrentRoles(this.current_roles);
-                            if (this.role_selected === 'manager' || this.role_selected === 'leader') {
-                              this.setRoles(this.roles);
-                            }
+                            this.setRoles(this.roles);
                             this.$nextTick(function(){
                                 $('.selectpicker').selectpicker('refresh');
                             });
@@ -684,8 +706,12 @@
               for (const [key, item] of Object.entries(list)) {
                 let newOption = {
                   id: item.id,
-                  name: item.name,
+                  label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  //name: item.name
                 };
+                if (this.role_selected === 'root') {
+                  outPut.push(newOption);
+                }
                 if (this.role_selected === 'leader' || this.role_selected === 'manager') {
                     if (item.name === 'employee') {
                       outPut.push(newOption);
@@ -697,7 +723,8 @@
                   }
                 }
               }
-              this.roles = outPut;
+              this.roleSelectOptions = outPut;
+              //this.roles = outPut;
             },
             getRoleFromCurrentRoles(current_roles) {
                 if (current_roles.root_user === true) {
@@ -719,16 +746,7 @@
             //this.getTrainingProgram();
             this.setFileInput();
             this.selectOrganization(this.organization_id);
-        },
-        updated() {
-          if (this.roles_ready) {
-            //run after role ready = true
-            if (this.roles_set === 0) {
-              //run only one time
-              this.getRoles();
-              this.roles_set = 1;
-            }
-          }
+            this.getRoles();
         },
         computed: {
           input_organization_id: function(){
@@ -736,6 +754,22 @@
           }
         }
     }
+
+    function convertUtf8(str) {
+      str = str.toLowerCase();
+      str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+      str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+      str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+      str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+      str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+      str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+      str = str.replace(/đ/g, "d");
+      str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+      str = str.replace(/ + /g, " ");
+      str = str.trim();
+      return str;
+    }
+
 </script>
 
 <style scoped>
