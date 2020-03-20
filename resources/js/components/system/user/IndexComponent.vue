@@ -35,7 +35,10 @@
                   </div>
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
-                      <system-user-create :type="type"></system-user-create>
+                      <system-user-create v-if="roles_ready === true"
+                        :type="type"
+                        :current_roles="current_roles"
+                        :roles_ready="roles_ready"></system-user-create>
                     </div>
                   </div>
                 </div>
@@ -280,7 +283,14 @@
   import SystemUserCreate from './CreateComponent'
 
   export default {
-    props: ['type'],
+    props: {
+      type: {
+        type: String,
+        default: 'system'
+      },
+      current_roles: Object,
+      roles_ready: Boolean
+    },
     //components: {vPagination},
     components: {SystemUserCreate},
     data() {

@@ -26,10 +26,9 @@
                 <div class="card-body">
 
                   <system-user-create
-                    :type="'system'"
+                    v-if="roles_ready === true"
                     :organization_id="query_organization_id"
-                    :current_roles="current_roles"
-                    :roles_ready="roles_ready"></system-user-create>
+                    :current_roles="current_roles"></system-user-create>
 
                   <!-- Gán người dùng vào tổ chức one by one -->
 
@@ -127,8 +126,8 @@
                       <div class="fillterConfirm" style="display: inline-block;">
                         <label>
                           <select v-model="position" class="custom-select custom-select-sm form-control form-control-sm" @change="getDataList(1)">
-                            <option value="0">{{ trans.get('keys.chon_vi_tri') }}</option>
-                            <option v-for="position in filterPosition" :value="filterPosition.key">
+                            <option value="">{{ trans.get('keys.chon_vi_tri') }}</option>
+                            <option v-for="position in filterPosition" :value="position.key">
                               {{position.value}}
                             </option>
                           </select>
@@ -258,39 +257,39 @@
         user_keyword: '',
         organization_list:[],
         organization_keyword: '',
-        position: 0,
+        position: '',
         organization_selected: false,
         organization_name: '',
         position_list: [],
         assignBatch: 0,
         selected_role: 'user',
         organization_ready: 0,
-        position_ready: 0,
+        //position_ready: 0,
         query_organization_id: this.organization_id,
-        filterPosition: [
-          {
-            key: 'manager',
-            value: 'Manager'
-          },
-          {
-            key: 'leader',
-            value: 'Leader'
-          },
-          {
-            key: 'employee',
-            value: 'Employee'
-          }
-        ]
+        // filterPosition: [
+        //   {
+        //     key: 'manager',
+        //     value: 'Manager'
+        //   },
+        //   {
+        //     key: 'leader',
+        //     value: 'Leader'
+        //   },
+        //   {
+        //     key: 'employee',
+        //     value: 'Employee'
+        //   }
+        // ]
       }
     },
     methods: {
-      selectOrganizationItem(input_id){
-        this.employee.input_organization_id = input_id;
-      },
-      selectUserItem(input_id) {
-        this.employee.input_user_id = input_id;
-        this.fetchRole();
-      },
+      // selectOrganizationItem(input_id){
+      //   this.employee.input_organization_id = input_id;
+      // },
+      // selectUserItem(input_id) {
+      //   this.employee.input_user_id = input_id;
+      //   this.fetchRole();
+      // },
       selectOrganization(){
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list', {
@@ -305,20 +304,20 @@
             $('.content_search_box').removeClass('loadding');
           })
       },
-      selectUser(){
-        $('.content_search_box').addClass('loadding');
-        axios.post('/organization-employee/list-user', {
-          keyword: this.user_keyword,
-          organization_id: this.query_organization_id
-        })
-          .then(response => {
-            this.user_list = response.data;
-            $('.content_search_box').removeClass('loadding');
-          })
-          .catch(error => {
-            $('.content_search_box').removeClass('loadding');
-          })
-      },
+      // selectUser(){
+      //   $('.content_search_box').addClass('loadding');
+      //   axios.post('/organization-employee/list-user', {
+      //     keyword: this.user_keyword,
+      //     organization_id: this.query_organization_id
+      //   })
+      //     .then(response => {
+      //       this.user_list = response.data;
+      //       $('.content_search_box').removeClass('loadding');
+      //     })
+      //     .catch(error => {
+      //       $('.content_search_box').removeClass('loadding');
+      //     })
+      // },
       getDataList(paged) {
         axios.post('/organization-employee/list', {
           page: paged || this.current,
@@ -338,62 +337,62 @@
             console.log(error.response.data);
           });
       },
-      createEmployee(){
-        if(!this.employee.input_user_id){
-          $('.user_required').show();
-          return;
-        }
-
-        if((!this.organization_id || this.organization_id === 0) && !this.employee.organization_id){
-          $('.organization_required').show();
-          return;
-        }
-
-        if(!this.employee.position){
-          $('.position_required').show();
-          return;
-        }
-
-        axios.post('/organization-employee/create',{
-          organization_id: this.employee.input_organization_id,
-          user_id: this.employee.input_user_id,
-          position: this.employee.position
-        })
-          .then(response => {
-            if(response.data.key) {
-              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
-              $('.form-control').removeClass('error');
-              $('#employee_'+response.data.key).addClass('error');
-            }else{
-              if(response.data.status === 'success'){
-                toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-                //reset form
-                if (this.organization_selected === false) {
-                  this.employee.input_organization_id = 0;
-                }
-                this.employee.input_user_id = 0;
-                this.employee.position = '';
-                this.getDataList(this.current);
-                $(".selected_organization_content").text(this.trans.get('keys.to_chuc'));
-                $(".selected_user_content").text(this.trans.get('keys.nhan_vien'));
-
-                $('.form-control').removeClass('error');
-              }
-            }
-          })
-          .catch(error => {
-            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
-          })
-      },
-      fetchRole() {
-        axios.post('/organization-employee/get-user-detail/'+ this.employee.input_user_id)
-          .then(response => {
-            this.position_list = response.data;
-          })
-          .catch(error => {
-            console.log(error.response.data);
-          })
-      },
+      // createEmployee(){
+      //   if(!this.employee.input_user_id){
+      //     $('.user_required').show();
+      //     return;
+      //   }
+      //
+      //   if((!this.organization_id || this.organization_id === 0) && !this.employee.organization_id){
+      //     $('.organization_required').show();
+      //     return;
+      //   }
+      //
+      //   if(!this.employee.position){
+      //     $('.position_required').show();
+      //     return;
+      //   }
+      //
+      //   axios.post('/organization-employee/create',{
+      //     organization_id: this.employee.input_organization_id,
+      //     user_id: this.employee.input_user_id,
+      //     position: this.employee.position
+      //   })
+      //     .then(response => {
+      //       if(response.data.key) {
+      //         toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+      //         $('.form-control').removeClass('error');
+      //         $('#employee_'+response.data.key).addClass('error');
+      //       }else{
+      //         if(response.data.status === 'success'){
+      //           toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+      //           //reset form
+      //           if (this.organization_selected === false) {
+      //             this.employee.input_organization_id = 0;
+      //           }
+      //           this.employee.input_user_id = 0;
+      //           this.employee.position = '';
+      //           this.getDataList(this.current);
+      //           $(".selected_organization_content").text(this.trans.get('keys.to_chuc'));
+      //           $(".selected_user_content").text(this.trans.get('keys.nhan_vien'));
+      //
+      //           $('.form-control').removeClass('error');
+      //         }
+      //       }
+      //     })
+      //     .catch(error => {
+      //       toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+      //     })
+      // },
+      // fetchRole() {
+      //   axios.post('/organization-employee/get-user-detail/'+ this.employee.input_user_id)
+      //     .then(response => {
+      //       this.position_list = response.data;
+      //     })
+      //     .catch(error => {
+      //       console.log(error.response.data);
+      //     })
+      // },
       onPageChange() {
         if (this.organization_id) {
           let page = this.getParamsPage();
@@ -441,7 +440,8 @@
           .then(response => {
             this.organization_name = response.data.name;
             this.query_organization_id = response.data.id;
-            this.employee.input_organization_id = response.data.id;
+
+            //this.employee.input_organization_id = response.data.id;
 
             // gọi list sau trong trường hợp manager / leader
             if (this.roles_ready) {
@@ -466,38 +466,89 @@
           this.selected_role = 'user';
         }
       },
-      updatePositionFilter() {
-        if (this.selected_role === 'manager') {
-          this.filterPosition = [
-            {
+      // updatePositionFilter() {
+      //   if (this.selected_role === 'manager') {
+      //     this.filterPosition = [
+      //       {
+      //         key: 'leader',
+      //         value: 'Leader'
+      //       },
+      //       {
+      //         key: 'employee',
+      //         value: 'Employee'
+      //       }
+      //     ]
+      //   }
+      //   if (this.selected_role === 'leader') {
+      //     this.filterPosition = [
+      //       {
+      //         key: 'employee',
+      //         value: 'Employee'
+      //       }
+      //     ]
+      //   }
+      // }
+    },
+    computed: { //Phải gọi trên html nó mới trigger computed value
+      filterPosition: function() {
+        let default_response = [
+          {
+            key: 'manager',
+            value: 'Manager'
+          },
+          {
+            key: 'leader',
+            value: 'Leader'
+          },
+          {
+            key: 'employee',
+            value: 'Employee'
+          }
+        ];
+
+        if (this.roles_ready) {
+          this.getRoleFromCurrentRoles(this.current_roles);
+          //overwrite filter for manager / leader
+
+          if (this.selected_role === 'root') {
+            return default_response;
+          }
+
+          let response = [];
+          if (this.selected_role === 'manager') {
+            response.push({
               key: 'leader',
               value: 'Leader'
-            },
-            {
+            });
+          }
+          if (this.selected_role === 'manager' || this.selected_role === 'leader') {
+            response.push({
               key: 'employee',
               value: 'Employee'
-            }
-          ]
+            });
+          }
+          return response;
+        } else {
+          return default_response;
         }
-        if (this.selected_role === 'leader') {
-          this.filterPosition = [
-            {
-              key: 'employee',
-              value: 'Employee'
-            }
-          ]
-        }
+      }
+    },
+    created() {
+      if (this.roles_ready) {
+        this.query_organization_id = 0;
+        this.setOrganization(); //gọi sau khi bắt được role
       }
     },
     updated() {
       if (this.roles_ready) {
         //run after role ready = true
-        if (this.position_ready === 0) {
-          //run only one time
-          this.getRoleFromCurrentRoles(this.current_roles);
-          this.updatePositionFilter();
-          this.position_ready = 1;
-        }
+        // if (this.position_ready === 0) {
+        //   //run only one time
+        //   this.getRoleFromCurrentRoles(this.current_roles);
+        //   //overwrite filter for manager / leader
+        //   this.updatePositionFilter();
+        //   this.position_ready = 1;
+        // }
         if (this.organization_ready === 0) {
           //run only one time
           this.query_organization_id = 0;

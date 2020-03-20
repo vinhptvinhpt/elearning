@@ -47,7 +47,7 @@
 <!--                        <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
 <!--                      </div>-->
 
-                      <treeselect v-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                      <treeselect disv-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                       <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
 
                     </div>
@@ -98,7 +98,13 @@
 <script>
   //import vPagination from 'vue-plain-pagination'
   export default {
-    props: ['id', 'source_page', 'organization_id'],
+    props: [
+      'id',
+      'source_page',
+      'organization_id',
+      'role_ready',
+      'current_roles'
+    ],
     components: {
       //vPagination
     },
