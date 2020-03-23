@@ -36,11 +36,7 @@
                                                 <div class="col-12 col-lg-3">
                                                     <div class="card">
                                                         <div class="card-body">
-                                                            <p>
-                                                                <input type="file" ref="file" name="file"
-                                                                       class="dropify"
-                                                                       :data-default-file="'http://127.0.0.1:8000'+trainning.logo"/>
-                                                            </p>
+                                                            <input type="file" ref="file" name="file" class="dropify"/>
                                                         </div>
                                                     </div>
                                                 </div>

@@ -24,9 +24,7 @@
                   <img :src="users.avatar" alt="">
                 </div>
                 <div class="card-body">
-                  <p>
                     <input type="file" ref="file" name="file" class="dropify" />
-                  </p>
                 </div>
                 <div class="form-group">
                   <div class="card-body">
