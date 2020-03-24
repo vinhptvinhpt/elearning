@@ -6,7 +6,11 @@
             <side-bar :current_roles="current_roles"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
-              <router-view :key="$route.fullPath" :current_roles="current_roles" :roles_ready="roles_ready" :selected_role="selected_role"></router-view>
+              <router-view
+                :key="$route.fullPath"
+                :current_roles="current_roles"
+                :roles_ready="roles_ready"
+                :selected_role="selected_role"></router-view>
             </div>
         </div>
     </div>
@@ -58,7 +62,7 @@
                 } else if (response.data.has_user_market === true) {
                   this.selected_role = 'user_market';
                 } else {
-                  this.selected_role = 'user';
+                  this.selected_role = 'userxxxxxxxxx';
                 }
                 this.roles_ready = true;
               })
