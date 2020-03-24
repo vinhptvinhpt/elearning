@@ -99,6 +99,43 @@ class CourseSendMail extends Mailable
             $subject = __('thu_moi_tham_gia_khoa_hoc');
             $view = 'email.invite_student';
         }
+        else if ($this->activity == TmsNotification::ENROL
+        || $this->activity == TmsNotification::QUIZ_START
+        || $this->activity == TmsNotification::QUIZ_END
+        || $this->activity == TmsNotification::QUIZ_COMPLETED
+        || $this->activity == TmsNotification::REMIND_CERTIFICATE
+        ) {
+            switch ($this->activity) {
+                case TmsNotification::ENROL:
+                    $subject = '[BGT ELEARNING] Thông báo học viên được ghi danh vào khóa học';
+                    $view = 'email.enrol_course';
+                    break;
+                case TmsNotification::QUIZ_START:
+                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra mới';
+                    $view = 'email.quiz_start';
+                    break;
+                case TmsNotification::QUIZ_END:
+                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra sắp hết hạn';
+                    $view = 'email.quiz_end';
+                    break;
+                case TmsNotification::QUIZ_COMPLETED:
+                    $subject = '[BGT ELEARNING] Thông báo kết quả kiểm tra';
+                    $view = 'email.quiz_completed';
+                    break;
+                case TmsNotification::REMIND_CERTIFICATE:
+                    $subject = '[BGT ELEARNING] Thông báo về việc cấp chứng chỉ';
+                    $view = 'email.remind_certificate';
+                    break;
+                case TmsNotification::FORGOT_PASSWORD:
+                    $subject = '[BGT ELEARNING] Thông báo lấy lại mật khẩu';
+                    $view = 'email.forgot_password';
+                    break;
+                default:
+                    $subject = '';
+                    $view = '';
+            }
+        }
+
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)
                 ->with('fullname', $this->fullname)
@@ -109,6 +146,7 @@ class CourseSendMail extends Mailable
                 ->with('end_date', $this->end_date)
                 ->with('course_place', $this->course_place)
                 ->with('content', $this->content)
+                ->with('quiz_date', $this->quiz_date)
                 ->view($view);
         }
         return $this;
