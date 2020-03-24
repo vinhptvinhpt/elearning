@@ -6,7 +6,11 @@
             <side-bar :current_roles="current_roles"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
-              <router-view :key="$route.fullPath" :current_roles="current_roles" :roles_ready="roles_ready"></router-view>
+              <router-view
+                :key="$route.fullPath"
+                :current_roles="current_roles"
+                :roles_ready="roles_ready"
+                :selected_role="selected_role"></router-view>
             </div>
         </div>
     </div>
@@ -30,7 +34,8 @@
             has_role_leader: false,
             root_user: false,
           },
-          roles_ready: false
+          roles_ready: false,
+          selected_role: 'user'
         }
       },
       methods:{

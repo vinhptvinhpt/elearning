@@ -668,8 +668,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         // TODO: Implement detail() method.
     }
 
-    public function apiAttendanceList(Request $request)
-    { //Skipped
+    public function apiAttendanceList(Request $request) { //Skipped
         // TODO: Implement getall() method.
         $row = $request->input('row');
         $course_id = $request->input('course_id');
@@ -692,17 +691,17 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $join->on('mdl_course.id', '=', 'mdl_attendance.courseid')
                     ->andOn('mdl_user.id', '=', 'mdl_attendance.userid');
             })
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->join('tms_user_detail',  'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->where('mdl_attendance.attendance', '=', $date)
             ->where('mdl_course.id', '=', $course_id)
             ->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT)
             ->select('mdl_user.id',
-                'mdl_user.username',
-                'tms_user_detail.fullname',
-                'mdl_attendance.attendance',
-                'mdl_attendance.note',
-                'mdl_attendance.present'
-            );
+                 'mdl_user.username',
+                 'tms_user_detail.fullname',
+                 'mdl_attendance.attendance',
+                 'mdl_attendance.note',
+                 'mdl_attendance.present'
+             );
 
         $total_items = count($list->get()); //lấy tổng số khóa học hiện tại
 

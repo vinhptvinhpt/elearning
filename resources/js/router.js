@@ -22,6 +22,7 @@ import NotFoundPage from './views/errors/404.vue';
  */
 
 import LayoutDashboard from "./views/layouts/LayoutDashboard";
+import LayoutPage from "./views/layouts/LayoutPage";
 import DashboardIndexComponent from "./components/dashboard/DashboardIndexComponent";
 import ActivityLogComponent from "./components/system/activity/ActivityLogComponent";
 import SettingIndexComponent from "./components/setting/SettingIndexComponent";
@@ -101,7 +102,11 @@ import EditEmployeeComponent from "./components/system/organization/EditEmployee
 import PermissionIndexComponent from "./roles/PermissionIndexComponent";
 import PermissionAddComponent from "./roles/PermissionAddComponent";
 import PermissionDetailComponent from "./roles/PermissionDetailComponent";
-
+import InviteStudentComponent from "./components/education/InviteStudentComponent";
+import TemplateIndexComponent from "./components/email/IndexComponent";
+import TemplateDetailComponent from "./components/email/DetailComponent";
+import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
+import AttendanceComponent from "./components/education/AttendanceComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -631,6 +636,16 @@ const routes = [
         })
       },
       {
+        path: 'education/attendance',
+        component: AttendanceComponent,
+        name: 'Attendance',
+        props: (route) => ({
+          course_id: route.params.course_id,
+          course_name: route.params.course_name,
+          come_form: route.params.come_form
+        })
+      },
+      {
         path: 'certificate/setting',
         component: SettingCertificateComponent,
         name: 'SettingCertificate'
@@ -647,6 +662,31 @@ const routes = [
         path: 'education/resetexam',
         component: ListUserExam,
         name: 'UserExam'
+      },
+      {
+        path: 'education/invite/:id/:come_from',
+        component: InviteStudentComponent,
+        name: 'InviteStudent',
+        props: (route) => ({
+          course_id: route.params.id,
+          come_from: route.params.come_from,
+          course_name: route.params.course_name,
+        })
+      },
+
+      //Email
+      {
+        path: 'email_template/list',
+        component: TemplateIndexComponent,
+        name: 'EmailTemplateIndex'
+      },
+      {
+        path: 'email_template/detail/:name_file',
+        component: TemplateDetailComponent,
+        name: 'EmailTemplateDetail',
+        props: (route) => ({
+          name_file: route.params.name_file ? route.params.name_file : 0
+        })
       },
 
       //Organization new
@@ -687,10 +727,18 @@ const routes = [
         })
       },
       //Trainning
+      // {
+      //   path: 'trainning/list',
+      //   component: TrainningListComponent,
+      //   name: 'TrainningIndex'
+      // },
       {
         path: 'trainning/list',
         component: TrainningListComponent,
-        name: 'TrainningIndex'
+        name: 'TrainningIndex',
+        props: (route) => ({
+          type: route.query.type ? route.query.type : 0
+        })
       },
       {
         path: 'trainning/detail/:id',
@@ -701,13 +749,35 @@ const routes = [
         })
       },
       {
-        path: 'trainning/list_user',
+        path: 'trainning/list_user/:trainning_id',
         component: ListUserComponent,
-        name: 'ListUserTrainning'
+        name: 'ListUserTrainning',
+        props: (route) => ({
+          trainning_id: route.params.trainning_id,
+        })
       },
     ]
   },
-
+  /*
+   |--------------------------------------------------------------------------
+   | Single Page Routes
+   |--------------------------------------------------------------------------|
+   */
+  {
+    path: '/page',
+    component: LayoutPage, // Change the desired Layout here
+    meta: {requiresAuth: false},
+    children: [
+      {
+        path: 'invitation/confirm/:invitation_id',
+        component: ConfirmInvitationComponent,
+        name: 'ConfirmInvitation',
+        props: (route) => ({
+          invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
+        })
+      },
+    ]
+  },
 
   //  DEFAULT ROUTE
   {path: '*', component: NotFoundPage}

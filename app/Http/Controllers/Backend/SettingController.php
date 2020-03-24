@@ -114,6 +114,9 @@ class SettingController extends Controller
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('thong_bao_chung_chi');
                 break;
+            case TmsNotification::INVITE_STUDENT:
+                $label = __('moi_hoc_vien_tham_gia_khoa_học');
+                break;
             default:
                 $label = $attr;
                 break;

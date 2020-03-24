@@ -10,11 +10,14 @@ class TmsTrainningProgram extends Model
 
     protected $table = 'tms_traninning_programs';
     protected $fillable = [
-        'name', 'code', 'deleted','time_start','time_end','run_cron','style','auto_certificate'
+        'name', 'code', 'deleted','time_start','time_end','run_cron','style','auto_certificate','logo'
     ];
 
     public function group(){
         return $this->hasMany('\App\TmsTrainningGroup', 'trainning_id','id');
+    }
+    public function users(){
+        return $this->hasMany('\App\TmsTrainningUser', 'trainning_id','id');
     }
     public function group_role(){
         return $this->hasOne('\App\TmsTrainningGroup', 'trainning_id','id')->where('type',0);

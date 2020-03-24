@@ -11,9 +11,7 @@ use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use mod_lti\local\ltiservice\response;
+
 
 //Quản lý thông tin khóa học
 //ThoLD (21/08/2019)
@@ -252,8 +250,7 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserNeedEnrol($request);
     }
 
-    public function apiAttendanceList(Request $request)
-    {
+    public function apiAttendanceList(Request $request) {
         return $this->mdlCourseRepository->apiAttendanceList($request);
     }
 
@@ -398,70 +395,6 @@ class CourseController extends Controller
             $response->status = false;
             $response->message = $e->getMessage();
         }
-        return response()->json($response);
-    }
-
-    /*
-     * Lấy danh sách module từ course_id
-     */
-    public function apiGetListModule($course_id)
-    {
-        return $this->mdlCourseRepository->apiGetListModule($course_id);
-    }
-
-    /*
-     * Lấy danh sách tài liệu từ module + dourse
-     */
-    public function apiGetListDocument(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $module_id = $request->input('module_id');
-        $keyword = $request->input('keyword');
-        $page = $request->input('page');
-        $pageSize = $request->input('row');
-        $action = $request->input('action');
-
-        // Ghi log của course
-        $content_level = 70;
-        $documents = DB::table('mdl_logstore_standard_log as lsl')
-            ->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
-            ->join('mdl_user as u', 'u.id', '=', 'lsl.userid')
-            ->where('lsl.contextlevel', '=', $content_level)
-            ->where('lsl.courseid', '=', $course_id);
-
-        if ($keyword) {
-            $documents = $documents
-                ->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
-        }
-
-        if ($action) {
-            $documents = $documents
-                ->where('lsl.action', '=', $action);
-        }
-
-        if ($module_id > 0) {
-            $documents = $documents->where('cm.module', '=', $module_id);
-        }
-
-        $total_Data = $documents->count();
-
-        $documents = $documents
-            ->select('lsl.action', 'lsl.other', 'lsl.timecreated', 'u.username')
-            ->orderBy('lsl.timecreated', 'desc')
-            ->skip(($page - 1) * $pageSize)->take($pageSize)
-            ->get();
-
-        $total = ceil($total_Data / $pageSize);
-
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $page,
-            ],
-            'data' => $documents,
-            'total_course' => $total_Data
-        ];
-
         return response()->json($response);
     }
 

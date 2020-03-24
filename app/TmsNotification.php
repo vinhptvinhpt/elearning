@@ -29,6 +29,7 @@ class TmsNotification extends Model
     const REMIND_UPCOMING_COURSE ='remind_upcoming_course';
     const REMIND_CERTIFICATE ='remind_certificate';
     const FORGOT_PASSWORD ='forgot_password';
+    const INVITE_STUDENT ='invite_student';
 
 
     //declare status send mail

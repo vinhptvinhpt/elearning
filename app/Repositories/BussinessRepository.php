@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
 use PDF;
 use Illuminate\Http\Request;
@@ -1412,6 +1413,59 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
+    public function apiUserCurrentInvite(Request $request)
+    {
+        $course_id = $request->input('course_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'role_id' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        $currentUserEnrol = DB::table('tms_invitation')
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_invitation.user_id')
+            ->where('tms_invitation.course_id', '=', $course_id)
+            ->select(
+                'mdl_user.id',
+                'mdl_user.username',
+                'mdl_user.firstname',
+                'mdl_user.lastname',
+                'tms_invitation.replied',
+                'tms_invitation.accepted',
+                'tms_invitation.reason'
+            );
+        if ($keyword) {
+            $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        $currentUserEnrol = $currentUserEnrol->paginate($row);
+        $total = ceil($currentUserEnrol->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $currentUserEnrol->currentPage(),
+            ],
+            'data' => $currentUserEnrol
+        ];
+
+        return response()->json($response);
+    }
+
     //api lấy danh sách người dùng cần ghi danh
     //ThoLD 14/09/2019
     public $courseCurrent_id;
@@ -1519,6 +1573,112 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
+    public function apiUserNeedInvite(Request $request)
+    {
+        $this->courseCurrent_id = $request->input('course_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $role_id = $request->input('role_id');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'role_id' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //xử lý lấy dữ liệu người dùng bên diva
+        //        if ($keyword) {
+        //            \DB::beginTransaction();
+        //            $checkUser = MdlUser::where('username', $keyword);
+        //            $checkUser = $checkUser->where('deleted', 0)->first();
+        //            if (!$checkUser) {
+        //
+        //                $url = Config::get('constants.domain.DIVA') . 'user/search?term=' . $keyword;
+        //
+        //                $result = callAPI('GET', $url, '', true, '');
+        //
+        //                $result = json_decode($result, true);
+        //
+        //                if ($result['code'] == 0 && !empty($result['data'])) {
+        //
+        //                    $mdl_user = new MdlUser();
+        //                    insert_user_search($result, $mdl_user, 'Bgt@2109');
+        //
+        //                    //Assign TMS
+        //                    //mặc định add tài khoản từ diva có quyền học viên
+        //                    $modelHasRole = ModelHasRole::where([
+        //                        'role_id' => 5,
+        //                        'model_id' => $mdl_user->id
+        //                    ])->first();
+        //                    if (!$modelHasRole) {
+        //                        $userRole = new ModelHasRole;
+        //                        $userRole->role_id = 5;
+        //                        $userRole->model_id = $mdl_user->id;
+        //                        $userRole->model_type = 'App/MdlUser';
+        //                        $userRole->save();
+        //
+        //                        enrole_lms($mdl_user->id, 5, 0); //mặc định set người dùng diva có quyền học viên
+        //                    }
+        //                }
+        //            }
+        //            \DB::commit();
+        //        }
+
+
+        //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
+        $userNeedEnrol = DB::table('model_has_roles')
+            ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('mdl_user.deleted', '=', 0)
+            ->select('mdl_user.id', 'mdl_user.username', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('mdl_user_enrolments')
+                    ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                    ->where('mdl_course.id', '=', $this->courseCurrent_id)
+                    ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
+            })->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tms_invitation')
+                    ->where('course_id', '=', $this->courseCurrent_id)
+                    ->whereRaw('tms_invitation.user_id = mdl_user.id');
+            });
+
+        if ($keyword) {
+            $userNeedEnrol = $userNeedEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        if ($role_id) {
+            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
+        }
+
+        $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
+
+        $userNeedEnrol = $userNeedEnrol->paginate($row);
+        $total = ceil($userNeedEnrol->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $userNeedEnrol->currentPage(),
+            ],
+            'data' => $userNeedEnrol
+        ];
+
+        return response()->json($response);
+    }
+
     //api enrol học viên vào khóa học
     //ThoLD 15/09/2019
     public function apiEnrolUser(Request $request)
@@ -1573,6 +1733,56 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
+    public function apiInviteUser(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $course_id = $request->input('course_id');
+            $lstUserIDs = $request->input('users');
+
+            $param = [
+                'course_id' => 'number',
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            $course = MdlCourse::findOrFail($course_id);
+
+            if (empty($course)) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_khoa_hoc');
+                return json_encode($response);
+            }
+
+            $insert_data = [];
+            $dt = Carbon::now();
+
+            foreach ($lstUserIDs as $user_id) {
+                $insert_data[] = [
+                    'course_id' => $course_id,
+                    'user_id' => $user_id,
+                    'replied' => 0,
+                    'accepted' => 0,
+                    'created_at' => $dt->toDateTimeString()
+                ];
+            }
+            if (!empty($insert_data)) {
+                TmsInvitation::insert($insert_data);
+            }
+
+            $response->status = true;
+            $response->message = __('them_vao_danh_sach_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
+
     //api enrol học viên vào khóa học
     //ThoLD 15/09/2019
     public function apiRemoveEnrolUser(Request $request)
@@ -1613,6 +1823,32 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
+    public function apiRemoveInviteUser(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $course_id = $request->input('course_id');
+            $lstUserIDs = $request->input('users');
+            $param = [
+                'course_id' => 'number',
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            TmsInvitation::whereIn('user_id', $lstUserIDs)->where('course_id', $course_id)->delete();
+
+            $response->status = true;
+            $response->message = __('xoa_khoi_danh_sach_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
 
     public function apiGetTotalActivityCourse(Request $request)
     {
@@ -2104,6 +2340,43 @@ class BussinessRepository implements IBussinessInterface
             ->where('permission_slug', $slug)
             ->get()->toArray();
         return response()->json($permissions);
+    }
+
+    public function apiInvitationDetail($id)
+    {
+        $invitation = TmsInvitation::with('course')->where('id', $id)->first();
+
+        return response()->json($invitation);
+    }
+
+    public function apiInvitationConfirm(Request $request)
+    {
+        $id = $request->input('id');
+        $accepted = $request->input('accepted');
+        $reason = $request->input('reason');
+
+        try {
+            $invitation = TmsInvitation::where('id', $id)->first();
+            if (isset($invitation)) {
+                $invitation->replied = 1;
+                $invitation->accepted = $accepted;
+                if($accepted == 'false') {
+                    $invitation->accepted = 0;
+                    $invitation->reason = $reason;
+                } else {
+                    $invitation->accepted = 1;
+                }
+                $invitation->save();
+            }
+            $data['status'] = 'success';
+            $data['message'] = __('xac_nhan_thanh_cong');
+        } catch (\Exception $e) {
+            dd($e);
+            $data['status'] = 'error';
+            $data['message'] = __('xac_nhan_that_bai');
+        }
+        return response()->json($data);
+
     }
 
     public function apiPermissionDelete($permission_id)
@@ -5968,13 +6241,9 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->save();
 
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
-            if (strlen($organization_id) != 0) {
-
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
                 $input_roles = explode(',', $inputRole);
-
                 $selected_roles = Role::whereIn('id', $input_roles)->whereIn('name', Role::arr_role_organization)->get();
-
-
                 if (count($selected_roles) != 0) {
                     foreach ($selected_roles as $selected_role) {
                         $employee = new TmsOrganizationEmployee();
@@ -6795,24 +7064,30 @@ class BussinessRepository implements IBussinessInterface
             }*/
             $mdlUser->save();
 
+
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
-            if (strlen($organization_id) != 0) {
-
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
                 $selected_roles = Role::whereIn('id', $roles)->whereIn('name', Role::arr_role_organization)->get();
-
                 $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
-
-                if (!isset($employee)) {
-                    $employee = new TmsOrganizationEmployee();
-                }
-
                 if (count($selected_roles) != 0) {
+                    if (!isset($employee)) {
+                        $employee = new TmsOrganizationEmployee();
+                    }
                     foreach ($selected_roles as $selected_role) {
                         $employee->user_id = $user_id;
                         $employee->organization_id = $organization_id;
                         $employee->position = $selected_role->name;
                         $employee->save();
                     }
+                } else {
+                    if (isset($employee)) {
+                        $employee->delete();
+                    }
+                }
+            } else {
+                $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
+                if (isset($employee)) {
+                    $employee->delete();
                 }
             }
 

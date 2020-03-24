@@ -6,10 +6,13 @@ use App\Http\Controllers\Controller;
 use App\Mail\CourseSendMail;
 use App\MdlUser;
 use App\TmsConfigs;
+use App\TmsInvitation;
 use App\TmsNotification;
 use App\TmsUserDetail;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\URL;
 
 class MailController extends Controller
 {
@@ -17,17 +20,7 @@ class MailController extends Controller
     public function loadConfiguration()
     {
         $configs = array(
-            TmsNotification::ENROL => TmsConfigs::ENABLE,
-            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
+            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
@@ -69,6 +62,75 @@ class MailController extends Controller
             '',
             ''
         ));
+    }
+
+    public function inviteStudent() {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::INVITE_STUDENT] == TmsConfigs::ENABLE) {
+            $invite_list = TmsInvitation::with('course')->with('user.user')
+                ->where('sent', \App\TmsNotification::UN_SENT)
+                //->whereHas('user')
+                //->whereHas('course')
+                ->limit(100)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $missing_info = 0;
+            $sent = 0;
+            $fail = 0;
+
+            foreach ($invite_list as $item) {
+                if (!$item->user || !$item->course) {
+                    $missing_info += 1;
+                } else {
+                    $username = $item->user->user->username;
+                    $fullname = $item->user->fullname;
+                    $email = $item->user->email;
+                    $course_code = $item->course->shortname;
+                    $course_name = $item->course->fullname;
+                    $start_date = $item->course->startdate;
+                    $end_date = $item->course->enddate;
+                    $course_place = $item->course->course_place;
+                    $invite_id = $item->id;
+
+                    //$email = "immrhy@gmail.com";
+
+                    try {
+                        //send mail can not continue if has fake email
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::INVITE_STUDENT,
+                                $username,
+                                $fullname,
+                                $course_code,
+                                $course_name,
+                                $start_date,
+                                $end_date,
+                                $course_place,
+                                '',
+                                $invite_id
+                            ));
+                            $sent += 1;
+
+                            $item->sent = TmsNotification::SENT;
+                            $item->save();
+                        } else {
+                            $missing_info += 1;
+                        }
+                    } catch (Exception $e) {
+                        $fail += 1;
+                    }
+                }
+            }
+
+            return response()->json(
+                [
+                    'missing_info' => $missing_info,
+                    'sent' => $sent,
+                    'fail' => $fail
+                ]
+            );
+
+        }
     }
 
     //Insert notification records to db for remind access course activity

@@ -10,7 +10,7 @@
     import {Chart} from 'highcharts-vue'
 
     export default {
-        props: ['question', 'index_question'],
+        props: ['question', 'index_question', 'chart_type'],
         components: {highcharts: Chart},
         data() {
             return {
@@ -19,7 +19,7 @@
                         plotBackgroundColor: null,
                         plotBorderWidth: null,
                         plotShadow: false,
-                        type: 'pie'
+                        type: this.chart_type
                     },
                     title: {
                         text: ''
@@ -49,8 +49,9 @@
                 var count_ans = this.question.lstAnswers.length;
                 var data_ans = [];
                 if (count_ans > 0) {
+                    var data = {};
                     for (var i = 0; i < count_ans; i++) {
-                        var data = {
+                        data = {
                             name: '(' + this.question.lstAnswers[i].total_choice + '/' + this.question.total_choice + ') ' + this.question.lstAnswers[i].answer_content,
                             y: parseFloat(((this.question.lstAnswers[i].total_choice * 100) / this.question.total_choice).toFixed(2))
                         };

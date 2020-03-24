@@ -5,6 +5,12 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
+            <li v-if="selected_role === 'root'" class="breadcrumb-item">
+              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" >
+                {{ trans.get('keys.to_chuc') }}
+              </router-link>
+            </li>
+            <li v-if="selected_role === 'root'" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: employee.organization_id}}">{{ employee.organization.name }}</router-link></li>
             <li class="breadcrumb-item">
               <router-link :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" >
                 {{ trans.get('keys.nhan_vien') }}
@@ -47,7 +53,7 @@
 <!--                        <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
 <!--                      </div>-->
 
-                      <treeselect v-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
+                      <treeselect :disabled="isOrgUpper" v-model="employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                       <label v-if="!employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
 
                     </div>
@@ -59,9 +65,9 @@
                       <div class="input-group">
                         <select class="form-control" v-model="employee.position" id="employee_position">
                           <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>
-                          <option value="manager">Manager</option>
-                          <option value="leader">Leader</option>
-                          <option value="employee">Employee</option>
+                          <option v-for="position in filterPosition" :value="position.key">
+                            {{position.value}}
+                          </option>
                         </select>
                       </div>
                       <label v-if="!employee.position" class="text-danger position_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -98,15 +104,26 @@
 <script>
   //import vPagination from 'vue-plain-pagination'
   export default {
-    props: ['id', 'source_page', 'organization_id'],
+    props: [
+      'id',
+      'source_page',
+      'organization_id',
+      'roles_ready',
+      'selected_role'
+    ],
     components: {
       //vPagination
     },
     data() {
       return {
         employee: {
+          organization_id: 0,
           user: {
-            fullname: ''
+            fullname: '',
+          },
+          organization: {
+            id: 0,
+            name: ''
           }
         },
         organization_list:[],
@@ -188,11 +205,9 @@
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
             }else{
-              if (response.data.message === 'success') {
+              if (response.data.status === 'success') {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
-                if(response.data.status === 'success'){
-                  $('.form-control').removeClass('error');
-                }
+                $('.form-control').removeClass('error');
               } else {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.that_bai'));
               }
@@ -202,6 +217,54 @@
             //console.log(error);
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           })
+      },
+    },
+    computed: { //Phải gọi trên html nó mới trigger computed value
+      filterPosition: function() {
+        let default_response = [
+          {
+            key: 'manager',
+            value: 'Manager'
+          },
+          {
+            key: 'leader',
+            value: 'Leader'
+          },
+          {
+            key: 'employee',
+            value: 'Employee'
+          }
+        ];
+        if (this.roles_ready) {
+          //overwrite filter for manager / leader
+          if (this.selected_role === 'root') {
+            return default_response;
+          }
+          let response = [];
+          if (this.selected_role === 'manager') {
+            response.push({
+              key: 'leader',
+              value: 'Leader'
+            });
+          }
+          if (this.selected_role === 'manager' || this.selected_role === 'leader') {
+            response.push({
+              key: 'employee',
+              value: 'Employee'
+            });
+          }
+          return response;
+        } else {
+          return default_response;
+        }
+      },
+      isOrgUpper: function() {
+        if (this.roles_ready) {
+          //overwrite filter for manager / leader
+          return this.selected_role === 'manager' || this.selected_role === 'leader';
+        } else {
+          return false;
+        }
       }
     },
     mounted() {
