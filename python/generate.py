@@ -17,8 +17,8 @@ path = os.getcwd()
 # connect to db
 #path = 'D:\\Job\\elearning-easia\\python'
 #path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
-path = 'D:\\Job\\elearning-easia\\python'
-path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
+path = '/home/easia/elearning-easia/python'
+path_gen_img = '/home/easia/elearning-easia/storage/app/public/upload'
 bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 160
