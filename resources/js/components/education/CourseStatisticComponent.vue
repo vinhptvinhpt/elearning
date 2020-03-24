@@ -4,7 +4,9 @@
       <div class="col">
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
-            <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
+            <li class="breadcrumb-item">
+              <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
+            </li>
             <li v-if="come_from === 'online'" class="breadcrumb-item">
               <router-link :to="{ name: 'CourseIndex' }">
                 {{ trans.get('keys.khoa_dao_tao_online') }}
@@ -131,11 +133,13 @@
               </div>
               <div class="text-right">
                 <router-link v-if="this.come_from === 'online'"
-                   :to="{name: 'CourseDetail', params: {id: course_id}}"
-                   class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
+                             :to="{name: 'CourseDetail', params: {id: course_id}}"
+                             class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}
+                </router-link>
                 <router-link v-else
-                   :to="{name: 'CourseConcentrateDetail', params: {id: course_id}}"
-                   class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}</router-link>
+                             :to="{name: 'CourseConcentrateDetail', params: {id: course_id}}"
+                             class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}
+                </router-link>
               </div>
             </div>
           </div>
@@ -155,7 +159,8 @@
                         <div class="dataTables_length">
                           <label>{{trans.get('keys.hien_thi')}}
                             <select v-model="row"
-                                    class="custom-select custom-select-sm form-control form-control-sm" @change="getStatictisUserCourse(1)">
+                                    class="custom-select custom-select-sm form-control form-control-sm"
+                                    @change="getStatictisUserCourse(1)">
                               <option value="5">5</option>
                               <option value="10">10</option>
                               <option value="20">20</option>
@@ -247,7 +252,8 @@
                         </tfoot>
                       </table>
 
-                      <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
+                      <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
+                                    :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                     </div>
                   </div>
                 </div>
@@ -271,7 +277,8 @@
                         <div class="dataTables_length">
                           <label>{{trans.get('keys.hien_thi')}}
                             <select v-model="rowAtt"
-                                    class="custom-select custom-select-sm form-control form-control-sm" @click="getStatictisUserAttendance(1)">
+                                    class="custom-select custom-select-sm form-control form-control-sm"
+                                    @click="getStatictisUserAttendance(1)">
                               <option value="5">5</option>
                               <option value="10">10</option>
                               <option value="20">20</option>
@@ -291,7 +298,8 @@
                                     @click="getStatictisUserAttendance(1)">
                               {{trans.get('keys.tim')}}
                             </button>
-                            <a style="color: #fff" class="btn btn-primary btn-sm" v-on:click="exportExcelAttendance()" :title="trans.get('keys.xuat_excel')">
+                            <a style="color: #fff" class="btn btn-primary btn-sm" v-on:click="exportExcelAttendance()"
+                               :title="trans.get('keys.xuat_excel')">
                               <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
                             </a>
                           </div>
@@ -341,7 +349,8 @@
           <div class="col-12">
             <section class="hk-sec-wrapper">
               <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_tai_lieu_trong_khoa_hoc')}}</h5>
-              <label style="font-size: 12px;">Chọn loại học liệu để hiển thị danh sách tài liệu theo loại học liệu được chọn</label>
+              <label style="font-size: 12px;">Chọn loại học liệu để hiển thị danh sách tài liệu theo loại học liệu được
+                chọn</label>
               <div class="row">
                 <!--                Danh sách module trong course -->
                 <div class="col-sm-3">
@@ -460,29 +469,29 @@
 </template>
 
 <script>
-    //import vPagination from 'vue-plain-pagination'
+  //import vPagination from 'vue-plain-pagination'
 
-    export default {
-        props: ['course_id', 'come_from'],
-        //components: {vPagination},
-        data() {
-            return {
-                course: {
-                    avatar: ''
-                },
-                keyword: '',
-                row: 5,
-                keywordAtt: '',
-                rowAtt: 5,
-                current: 1,
-                currentAtt: 1,
-                courseUsers: [],
-                attendanceUsers: [],
-                total_course: 0,
-                total_attendance: 0,
-                totalPages: 1,
-                totalPagesAtt: 1,
-modules: [],
+  export default {
+    props: ['course_id', 'come_from'],
+    //components: {vPagination},
+    data() {
+      return {
+        course: {
+          avatar: ''
+        },
+        keyword: '',
+        row: 5,
+        keywordAtt: '',
+        rowAtt: 5,
+        current: 1,
+        currentAtt: 1,
+        courseUsers: [],
+        attendanceUsers: [],
+        total_course: 0,
+        total_attendance: 0,
+        totalPages: 1,
+        totalPagesAtt: 1,
+        modules: [],
         documents: [],
         keywordDoc: '',
         rowDoc: 5,
@@ -491,19 +500,19 @@ modules: [],
         totalPagesDoc: 1,
         module_id: 0,
         actionDoc: ''
-            }
-        },
-        filters: {
-            convertPercent(value) {
-                return (value * 100);
-            },
+      }
+    },
+    filters: {
+      convertPercent(value) {
+        return (value * 100);
+      },
       convertDateTime(value) {
         var time = new Date(value * 1000);
         return time.toLocaleDateString();
       }
-        },
-        methods: {
-reset() {
+    },
+    methods: {
+      reset() {
         this.keywordDoc = '';
         this.rowDoc = 5;
         this.actionDoc = '';
@@ -538,106 +547,106 @@ reset() {
             console.log(error.response.data);
           });
       },
-            getCourseDetail() {
-                axios.get('/api/courses/get_course_detail/' + this.course_id)
-                    .then(response => {
-                        this.course = response.data;
+      getCourseDetail() {
+        axios.get('/api/courses/get_course_detail/' + this.course_id)
+          .then(response => {
+            this.course = response.data;
 
-                        var startdate = new Date(response.data.startdate * 1000);
+            var startdate = new Date(response.data.startdate * 1000);
 
-                        var ten = function (i) {
-                            return (i < 10 ? '0' : '') + i;
-                        };
-                        var YYYY = startdate.getFullYear();
-                        var MM = ten(startdate.getMonth() + 1);
-                        var DD = ten(startdate.getDate());
+            var ten = function (i) {
+              return (i < 10 ? '0' : '') + i;
+            };
+            var YYYY = startdate.getFullYear();
+            var MM = ten(startdate.getMonth() + 1);
+            var DD = ten(startdate.getDate());
 
 
-                        this.course.startdate = DD + '/' + MM + '/' + YYYY;
+            this.course.startdate = DD + '/' + MM + '/' + YYYY;
 
-                        var endate = new Date(response.data.enddate * 1000);
+            var endate = new Date(response.data.enddate * 1000);
 
-                        var YYYY_end = endate.getFullYear();
-                        var MM_end = ten(endate.getMonth() + 1);
-                        var DD_end = ten(endate.getDate());
+            var YYYY_end = endate.getFullYear();
+            var MM_end = ten(endate.getMonth() + 1);
+            var DD_end = ten(endate.getDate());
 
-                        this.course.enddate = DD_end + '/' + MM_end + '/' + YYYY_end;
+            this.course.enddate = DD_end + '/' + MM_end + '/' + YYYY_end;
 
-                        this.course.pass_score = Math.floor(response.data.pass_score);
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
+            this.course.pass_score = Math.floor(response.data.pass_score);
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
 
-            },
-            onPageChange() {
-                this.getStatictisUserCourse();
-                this.getStatictisUserAttendance();
-            },
-            getStatictisUserCourse(paged) {
-                axios.post('/api/course/statistic', {
-                    course_id: this.course_id,
-                    row: this.row,
-                    keyword: this.keyword,
-                    page: paged || this.current,
-                })
-                    .then(response => {
-                        this.total_course = response.data.total_course;
-                        this.courseUsers = response.data.data.data;
-                        this.current = response.data.pagination.current_page;
-                        this.totalPages = response.data.pagination.total;
+      },
+      onPageChange() {
+        this.getStatictisUserCourse();
+        this.getStatictisUserAttendance();
+      },
+      getStatictisUserCourse(paged) {
+        axios.post('/api/course/statistic', {
+          course_id: this.course_id,
+          row: this.row,
+          keyword: this.keyword,
+          page: paged || this.current,
+        })
+          .then(response => {
+            this.total_course = response.data.total_course;
+            this.courseUsers = response.data.data.data;
+            this.current = response.data.pagination.current_page;
+            this.totalPages = response.data.pagination.total;
 
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
 
-            },
-            getStatictisUserAttendance(paged){
-                axios.post('/course/student/attendance', {
-                    course_id: this.course_id,
-                    row: this.rowAtt,
-                    keyword: this.keywordAtt,
-                    page: paged || this.currentAtt,
-                })
-                    .then(response => {
-                        this.total_attendance = response.data.total_attendance;
-                        this.attendanceUsers = response.data.data.data;
-                        this.currentAtt = response.data.pagination.current_page;
-                        this.totalPagesAtt = response.data.pagination.total;
+      },
+      getStatictisUserAttendance(paged) {
+        axios.post('/course/student/attendance', {
+          course_id: this.course_id,
+          row: this.rowAtt,
+          keyword: this.keywordAtt,
+          page: paged || this.currentAtt,
+        })
+          .then(response => {
+            this.total_attendance = response.data.total_attendance;
+            this.attendanceUsers = response.data.data.data;
+            this.currentAtt = response.data.pagination.current_page;
+            this.totalPagesAtt = response.data.pagination.total;
 
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-            },
-            exportExcelAttendance() {
-              axios.post('/api/exportAttendance', {
-                keyword: this.keywordAtt,
-                course_id: this.course_id,
-                course_name: this.course.fullname
-              })
-                .then(response => {
-                  let file_name = response.data;
-                  let a = $("<a>")
-                    .prop("href", "/api/downloadExport/" + file_name)
-                    .appendTo("body");
-                  a[0].click();
-                  a.remove();
-                })
-                .catch(error => {
-                  toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
-                });
-          },
-        },
-        mounted() {
-            this.getCourseDetail();
-            this.getStatictisUserCourse(1);
-            this.getStatictisUserAttendance(1);
- this.getModule();
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+      },
+      exportExcelAttendance() {
+        axios.post('/api/exportAttendance', {
+          keyword: this.keywordAtt,
+          course_id: this.course_id,
+          course_name: this.course.fullname
+        })
+          .then(response => {
+            let file_name = response.data;
+            let a = $("<a>")
+              .prop("href", "/api/downloadExport/" + file_name)
+              .appendTo("body");
+            a[0].click();
+            a.remove();
+          })
+          .catch(error => {
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+          });
+      },
+    },
+    mounted() {
+      this.getCourseDetail();
+      this.getStatictisUserCourse(1);
+      this.getStatictisUserAttendance(1);
+      this.getModule();
       this.getLogCourse(0, 1);
-        }
     }
+  }
 </script>
 
 <style scoped>
