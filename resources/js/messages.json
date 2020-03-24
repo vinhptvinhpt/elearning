@@ -746,7 +746,7 @@
         "nhap_ten_nhan_vien": "Input employee name",
         "sua_nhan_vien": "Edit employee",
         "xoa_nhan_vien": "Delete employee",
-        "xem_nhan_vien": "View employee",
+        "xem_nhan_vien":  "View employee",
         "dinh_dang_file_khong_hop_le": "File format is not acceptable",
         "them_nhieu": "Assign batch employee",
         "nhap_username_email_fullname": "Input username, fullname, email...",
@@ -789,7 +789,15 @@
         "tao_moi_co_so_vat_chat_khoa_hoc": "Create Infrastructure of Course",
         "sua_csvc": "Update Infrastructure of Course",
         "tu_dong_cap_huy_hieu": "Auto generate badge",
-        "diem_danh": "Attendance"
+        "diem_danh": "Attendance",
+        "danh_sach_tai_lieu_trong_khoa_hoc": "Documents in course",
+        "ten_module": "Module type",
+        "ten_du_lieu": "Document name",
+        "kieu_hanh_dong": "Action",
+        "nguoi_tao": "Created user",
+        "ngay_tao": "Created date",
+        "lam_moi_bang_tai_lieu": "Reset",
+        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Find by module, document name or username"
     },
     "vi.keys": {
         "language": "",
@@ -1580,14 +1588,22 @@
         "tao_moi_co_so_vat_chat_khoa_hoc": "Thêm mới cơ sở vật chất của khóa học",
         "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học",
         "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu",
-        "diem_danh": "Điểm danh",
 
         "toa_do_chung_chi": "Tọa độ chứng chỉ",
         "toa_do_logo": "Tọa độ logo",
         "toa_do_ten": "Tọa độ tên",
         "toa_do_ten_khung_nang_luc": "Tọa độ khung năng lực",
         "toa_do_ngay_cap": "Tọa độ ngày cấp",
-        "toa_do_khung_nl": "Tọa độ khung NL"
+        "toa_do_khung_nl": "Tọa độ khung NL",
 
+        "diem_danh": "Điểm danh",
+        "danh_sach_tai_lieu_trong_khoa_hoc": "Danh sách tài liệu trong khóa học",
+        "ten_module": "Loại học liệu",
+        "ten_du_lieu": "Tên dữ liệu",
+        "kieu_hanh_dong": "Kiểu",
+        "nguoi_tao": "Người tạo",
+        "ngay_tao": "Ngày tạo",
+        "lam_moi_bang_tai_lieu": "Reset",
+        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo"
     }
 }

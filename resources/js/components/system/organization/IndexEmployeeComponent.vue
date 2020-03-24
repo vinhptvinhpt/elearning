@@ -5,6 +5,11 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
+            <li class="breadcrumb-item">
+              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" >
+                {{ trans.get('keys.to_chuc') }}
+              </router-link>
+            </li>
             <li v-if="organization_selected !== false" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{ organization_name }}</router-link></li>
             <li class="breadcrumb-item active">{{ trans.get('keys.nhan_vien') }}</li>
           </ol>
@@ -233,12 +238,14 @@
       AssignEmployee,
       SystemUserCreate
     },
-    props: [
-      'organization_id',
-      'source_page',
-      'current_roles',
-      'roles_ready'
-    ],
+    props: {
+      source_page: Number,
+      current_roles: Object,
+      roles_ready: Boolean,
+      organization_id: { //query string
+        default: '0'
+      }
+    },
     data() {
       return {
         employee: {
@@ -248,6 +255,7 @@
         },
         data:[],
         posts: {},
+        organization: {},
         keyword: '',
         current: 1,
         totalPages: 0,
@@ -258,31 +266,15 @@
         organization_list:[],
         organization_keyword: '',
         position: '',
-        organization_selected: false,
+        query_organization_id: 0,
         organization_name: '',
         position_list: [],
         assignBatch: 0,
         selected_role: 'user',
-        organization_ready: 0,
-        //position_ready: 0,
-        query_organization_id: this.organization_id ? this.organization_id : 0,
-        // filterPosition: [
-        //   {
-        //     key: 'manager',
-        //     value: 'Manager'
-        //   },
-        //   {
-        //     key: 'leader',
-        //     value: 'Leader'
-        //   },
-        //   {
-        //     key: 'employee',
-        //     value: 'Employee'
-        //   }
-        // ]
+        organization_selected: false
       }
     },
-    methods: {
+    methods:     {
       // selectOrganizationItem(input_id){
       //   this.employee.input_organization_id = input_id;
       // },
@@ -394,9 +386,13 @@
       //     })
       // },
       onPageChange() {
-        if (this.organization_id) {
-          let page = this.getParamsPage();
-          this.getDataList(page);
+        if (this.organization_id !== '0') {
+          //Truyền organization_id
+          this.query_organization_id = parseInt(this.organization_id);
+          this.fetchOrganizationInfo(this.query_organization_id);
+        } else if (this.query_organization_id !== '0' && this.query_organization_id !== 0 && this.query_organization_id !== 'undefined') {
+          //Chuyển trang khi đã có query_organization_id
+          this.fetchOrganizationInfo(this.query_organization_id);
         }
       },
       getParamsPage() {
@@ -430,7 +426,6 @@
         return false;
       },
       setOrganization() {
-        this.organization_selected =  true;
         this.fetchOrganizationInfo(this.query_organization_id);
       },
       fetchOrganizationInfo(organization_id) {
@@ -440,9 +435,8 @@
           .then(response => {
             this.organization_name = response.data.name;
             this.query_organization_id = response.data.id;
-
+            this.organization_selected = true;
             //this.employee.input_organization_id = response.data.id;
-
             // gọi list sau trong trường hợp manager / leader
             if (this.roles_ready) {
               let page = this.getParamsPage();
@@ -533,36 +527,13 @@
         }
       }
     },
-    created() {
-      if (this.roles_ready) {
-        this.query_organization_id = 0;
-        this.setOrganization(); //gọi sau khi bắt được role
-      }
-    },
-    updated() {
-      if (this.roles_ready) {
-        //run after role ready = true
-        // if (this.position_ready === 0) {
-        //   //run only one time
-        //   this.getRoleFromCurrentRoles(this.current_roles);
-        //   //overwrite filter for manager / leader
-        //   this.updatePositionFilter();
-        //   this.position_ready = 1;
-        // }
-        if (this.organization_ready === 0) {
-          //run only one time
-          this.query_organization_id = 0;
-          this.setOrganization(); //gọi sau khi bắt được role
-          this.organization_ready = 1;
+    watch: {
+      roles_ready: function(newVal, oldVal) {
+        if (newVal === true && oldVal === false) {
+          this.getRoleFromCurrentRoles(this.current_roles);
+          this.setOrganization(0);
         }
       }
-    },
-    mounted() {
-      if (this.organization_id && this.organization_id !== 0) { //gọi luôn nếu có organization_id
-        this.setOrganization();
-        this.organization_ready = 1;
-      }
-      this.setParamsPage(false);
     }
   }
 </script>
