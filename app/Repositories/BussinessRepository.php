@@ -7090,7 +7090,9 @@ class BussinessRepository implements IBussinessInterface
                 }
             } else {
                 $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
-                $employee->delete();
+                if (isset($employee)) {
+                    $employee->delete();
+                }
             }
 
             //Thêm nơi làm việc cho tài khoản

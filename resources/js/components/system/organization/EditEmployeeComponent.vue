@@ -173,9 +173,6 @@
           })
       },
       update() {
-
-        console.log(this.selected_role);
-
         if(!this.employee.organization_id){
           $('.organization_required').show();
           return;
@@ -197,11 +194,9 @@
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
             }else{
-              if (response.data.message === 'success') {
+              if (response.data.status === 'success') {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
-                if(response.data.status === 'success'){
-                  $('.form-control').removeClass('error');
-                }
+                $('.form-control').removeClass('error');
               } else {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.that_bai'));
               }
