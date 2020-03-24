@@ -32,14 +32,8 @@
                                 <div class="row">
                                     <div class="col-12 col-lg-3 mb-2">
                                         <div class="card">
-                                            <div href="" class="image-box ratio-16-9" v-if="avatar.length > 0">
-                                                <img :src="avatar" class="image"/>
-                                            </div>
                                             <div class="card-body">
-                                                <p>
-                                                    <input type="file" @change="previewImage()" ref="file" name="file"
-                                                           class="dropify"/>
-                                                </p>
+                                                <input type="file" ref="file" name="file" class="dropify"/>
                                             </div>
                                         </div>
                                     </div>
@@ -191,7 +185,6 @@
                 enddate: '',
                 pass_score: '',
                 description: '',
-                avatar: '',
                 category_id: '',
                 categories: [],
                 allow_register: 1,
@@ -210,22 +203,6 @@
             }
         },
         methods: {
-            previewImage: function (event) {
-                var input = event.target;
-                // Ensure that you have a file before attempting to read it
-                if (input.files && input.files[0]) {
-                    // create a new FileReader to read this image and convert to base64 format
-                    var reader = new FileReader();
-                    // Define a callback function to run, when FileReader finishes its job
-                    reader.onload = (e) => {
-                        // Note: arrow function used here, so that "this.imageData" refers to the imageData of Vue component
-                        // Read image as base64 and set to imageData
-                        this.avatar = e.target.result;
-                    };
-                    // Start the reader job - read file as a data url (base64 format)
-                    reader.readAsDataURL(input.files[0]);
-                }
-            },
             getCategories() {
                 axios.post('/api/courses/get_list_category')
                     .then(response => {
@@ -246,7 +223,6 @@
                 }
             },
             createCourse() {
-
                 if (!this.shortname) {
                     $('.shortname_required').show();
                     return;
@@ -255,17 +231,14 @@
                     $('.fullname_required').show();
                     return;
                 }
-
                 if (!this.category_id) {
                     $('.category_id_required').show();
                     return;
                 }
-
                 if (!this.estimate_duration) {
                     $('.estimate_duration_required').show();
                     return;
                 }
-
                 if (!this.startdate) {
                     $('.startdate_required').show();
                     return;
@@ -274,22 +247,18 @@
                     $('.enddate_required').show();
                     return;
                 }
-
                 if (!this.pass_score && this.category_id != 3) {
                     $('.pass_score_required').show();
                     return;
                 }
-
                 var allow_reg = 0;
                 if (this.allow_register) {
                     allow_reg = 1;
                 }
-
                 var quiz_test = 0;
                 if (this.is_end_quiz) {
                     quiz_test = 1;
                 }
-
 
                 //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 

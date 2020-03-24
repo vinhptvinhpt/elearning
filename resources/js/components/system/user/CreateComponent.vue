@@ -139,7 +139,7 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
-                    <treeselect :value="input_organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="input_organization_id !== 0"/>
+                    <treeselect v-model="input_organization_id" :multiple="false" :options="options" id="employee_organization_id" :disabled="input_organization_id !== 0"/>
                     <label v-if="!input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
@@ -265,7 +265,10 @@
           },
           role_login: String,
           current_roles: Object,
-          organization_id: Number
+          organization_id: {
+            type: Number,
+            default: 0
+          }
         },
         data() {
             return {
@@ -316,7 +319,8 @@
                 'leader'
                 ],
                 role_selected: 'user',
-                roleSelectOptions: []
+                roleSelectOptions: [],
+                last_organization_id: 0
             }
         },
         methods: {
@@ -329,7 +333,6 @@
               //return this.filterBy(option, new_label, new_search); //can not call components function here
               return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
             },
-
             changeOption() {
                 if(this.option_work == 'pos'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
@@ -569,13 +572,12 @@
                 //         return;
                 //     }
                 // }
-                if (this.input_organization_id) {
+                if (this.last_organization_id) {
                     if (organization_roles_selected.length === 0) {
                         toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
                         return;
                     }
                 }
-
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
@@ -603,7 +605,7 @@
                 this.formData.append('branch_select', this.branch_select);
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('training_id', this.training);
-                this.formData.append('organization_id', this.input_organization_id);
+                this.formData.append('organization_id', this.last_organization_id);
 
                 axios.post('/system/user/create', this.formData, {
                     headers: {
@@ -749,8 +751,13 @@
             this.getRoles();
         },
         computed: {
-          input_organization_id: function(){
-            return this.organization_id ? this.organization_id : 0;
+          input_organization_id: {
+            get () {
+              return this.organization_id;
+            },
+            set (value) {
+              this.last_organization_id = value;
+            }
           }
         }
     }

@@ -5,6 +5,12 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
+            <li v-if="selected_role === 'root'" class="breadcrumb-item">
+              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" >
+                {{ trans.get('keys.to_chuc') }}
+              </router-link>
+            </li>
+            <li v-if="selected_role === 'root'" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: employee.organization_id}}">{{ employee.organization.name }}</router-link></li>
             <li class="breadcrumb-item">
               <router-link :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" >
                 {{ trans.get('keys.nhan_vien') }}
@@ -111,8 +117,13 @@
     data() {
       return {
         employee: {
+          organization_id: 0,
           user: {
-            fullname: ''
+            fullname: '',
+          },
+          organization: {
+            id: 0,
+            name: ''
           }
         },
         organization_list:[],
@@ -173,9 +184,6 @@
           })
       },
       update() {
-
-        console.log(this.selected_role);
-
         if(!this.employee.organization_id){
           $('.organization_required').show();
           return;
@@ -197,11 +205,9 @@
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
             }else{
-              if (response.data.message === 'success') {
+              if (response.data.status === 'success') {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
-                if(response.data.status === 'success'){
-                  $('.form-control').removeClass('error');
-                }
+                $('.form-control').removeClass('error');
               } else {
                 toastr[response.data.status](response.data.message, this.trans.get('keys.that_bai'));
               }
