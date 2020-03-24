@@ -3455,8 +3455,6 @@ class BussinessRepository implements IBussinessInterface
                 }
 
                 PermissionSlugRole::insert($arr_data);
-            } else {
-                return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
 
             removePermissionTo($role_id); //Remove permission to role
@@ -3466,8 +3464,9 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Thêm quyền bên LMS
-            apply_role_lms($role_id, $per_slug_input);
-
+            if (!empty($per_slug_input)) {
+                apply_role_lms($role_id, $per_slug_input);
+            }
 
             $type = 'role';
             $url = '/roles/edit/' . $role_id;

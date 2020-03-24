@@ -164,7 +164,7 @@ class TmsOrganizationRepository implements ICommonInterface
                     'message' => __('ma_to_chuc_da_ton_tai')
                 ]);
 
-            if (strlen($parent_id) != 0) {
+            if (strlen($parent_id) != 0 && $parent_id != 0) {
                 $item->parent_id = $parent_id;
                 $parent = TmsOrganization::where('id', $parent_id)->first();
                 $parent_level = $parent->level;
