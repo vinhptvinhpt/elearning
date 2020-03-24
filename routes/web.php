@@ -11,6 +11,10 @@ Route::get('/tms/{vue?}', function () {
     return view('layouts.dashboard');
 })->where('vue', '[\/\w\.-]*')->name('home');
 
+Route::get('/page/{vue?}', function () {
+    return view('layouts.page');
+})->where('vue', '[\/\w\.-]*')->name('page');
+
 Route::group([
     'prefix' => '{locale}'
 ], function () {
@@ -481,6 +485,14 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_list_category_clone', 'Backend\CourseController@apiGetListCategoryForClone');
     Route::post('/api/courses/get_list_category_edit', 'Backend\CourseController@apiGetListCategoryForEdit');
 
+    Route::post('/api/courses/get_list_document_course', 'Backend\CourseController@apiGetListDocument');
+    Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
+
+    Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
+    Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
+    Route::post('/api/course/invite_user_to_course', 'Backend\CourseController@apiInviteUser');
+    Route::post('/api/course/remove_invite_user_to_course', 'Backend\CourseController@apiRemoveInviteUser');
+
     Route::get('/survey/list', 'Backend\SurveyController@viewIndex')->name('survey.list');
     Route::get('/survey/create', 'Backend\SurveyController@viewCreateCourse')->name('survey.create');
     Route::get('/survey/detail/{id}', 'Backend\SurveyController@viewSurveyDetail')->name('survey.detail');
@@ -593,7 +605,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/email_template/detail/{name_file}', 'Backend\EmailTemplateController@viewEmailTemplateDetail');
     Route::post('/email_template/detail/update', 'Backend\EmailTemplateController@writeToJson');
     Route::get('/email_template/detail/readJson/{name_file}', 'Backend\EmailTemplateController@readJson');
-    Route::get('/email_template/getContentFile', 'Backend\EmailTemplateController@getContentFile');
+    Route::get('/email_template/getContentFile/{name_file}', 'Backend\EmailTemplateController@getContentFile');
     Route::get('/email_template/sendDemo/{name_file}', 'Backend\EmailTemplateController@demoSendMail');
     Route::post('/course/demo/create', 'Backend\EmailTemplateController@apiCreateCourse');
     Route::get('/course/autoEnrol', 'Backend\EmailTemplateController@autoEnrol');
@@ -657,8 +669,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::get('/downloadExportReport', 'Backend\ExcelController@downloadExportReport');
-    Route::post('/exportResult', 'Backend\ExcelController@exportResult');
-    Route::get('/downloadExportResult/{file_name}', 'Backend\ExcelController@downloadExportResult');
+
+    Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
+    Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
+    Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
+    Route::get('/api/downloadExport/{file_name}', 'Backend\ExcelController@apiDownloadExport');
 
     Route::get('/support/manage-market', 'Backend\BackendController@viewSupportMarket');
     Route::get('/support/admin', 'Backend\BackendController@viewSupportAdmin');
@@ -692,7 +707,20 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/assign', 'Backend\OrganizationController@apiAssignEmployee');
     Route::post('/organization-employee/get-user-detail/{id}', 'Backend\OrganizationController@apiDetailUser');
 
+    //Attendance
+    Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');
+
+
+
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
+
+
+    //Infrastructer in course offline
+    Route::post('/api/infrastructer/getall', 'Backend\InfrastructureController@apiGetall');
+    Route::post('/api/infrastructer/create', 'Backend\InfrastructureController@apiStore');
+    Route::post('/api/infrastructer/update', 'Backend\InfrastructureController@apiUpdate');
+    Route::post('/api/infrastructer/delete', 'Backend\InfrastructureController@apiDelete');
+    Route::get('/api/infrastructer/detail/{id}', 'Backend\InfrastructureController@apiGetbyid');
 
 });
 // [VinhPT][26.12.2019] Login first screen
