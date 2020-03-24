@@ -718,4 +718,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         return response()->json($response);
     }
+
+    public function apiGetListModule($course_id)
+    {
+        $modules = DB::table('mdl_course_modules as cm')
+            ->join('mdl_modules as m', 'm.id', '=', 'cm.module')
+            ->where('cm.course', '=', $course_id)
+            ->select('m.id', 'm.name')
+            ->distinct()
+            ->get();
+        return response()->json($modules);
+    }
 }
