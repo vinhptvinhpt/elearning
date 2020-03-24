@@ -6242,12 +6242,8 @@ class BussinessRepository implements IBussinessInterface
 
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
             if (strlen($organization_id) != 0 && $organization_id != 0) {
-
                 $input_roles = explode(',', $inputRole);
-
                 $selected_roles = Role::whereIn('id', $input_roles)->whereIn('name', Role::arr_role_organization)->get();
-
-
                 if (count($selected_roles) != 0) {
                     foreach ($selected_roles as $selected_role) {
                         $employee = new TmsOrganizationEmployee();
