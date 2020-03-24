@@ -6,6 +6,7 @@ import sys
 import os.path
 import datetime
 import time
+import json
 
 # !/usr/bin/python
 sys.path.append('/venv/Lib/site-packages')
@@ -36,7 +37,7 @@ if __name__ == '__main__':
     try:
          if connection.is_connected():
             cursor = connection.cursor()
-            sql_select_image = "select path from image_certificate where is_active = 1"
+            sql_select_image = "select path, position from image_certificate where is_active = 1"
             cursor = connection.cursor()
             cursor.execute(sql_select_image)
             record_image = cursor.fetchone()
@@ -65,7 +66,31 @@ if __name__ == '__main__':
             font_training = ImageFont.truetype(os.path.join(path, 'Lato-Bold.ttf'), size=35)
             font_date = ImageFont.truetype(os.path.join(path, 'Lato-Bold.ttf'), size=17)
             #endregion
+            coordinates = json.loads(record_image[1])
+            logoX = coordinates["logoX"]
+            logoY = coordinates["logoY"]
+            fullnameX = coordinates["fullnameX"]
+            fullnameY = coordinates["fullnameY"]
+            dateX = coordinates["dateX"]
+            dateY = coordinates["dateY"]
+            programX = coordinates["programX"]
+            programY = coordinates["programY"]
+            image_new_width = coordinates["image_width"]
+            image_new_height = coordinates["image_height"]
 
+            #region get new position
+            positon_name_X = image_width * fullnameX / image_new_width
+            positon_name_Y = image_height * fullnameY / image_new_height
+
+            positon_program_X = image_width * programX / image_new_width
+            positon_program_Y = image_height * programY / image_new_height
+
+            positon_logo_X = image_width * logoX / image_new_width
+            positon_logo_Y = image_height * logoY / image_new_height
+
+            positon_date_X = image_width * dateX / image_new_width
+            positon_date_Y = image_height * dateY / image_new_height
+            #endregion
             if(get_user_id == 0):
                 if(get_training_id == 0):
                     sql_select_Query = "select tms_user_detail.user_id, tms_user_detail.fullname as fullname, tms_traninning_programs.name as name, tms_traninning_programs.logo as logo, student_certificate.timecertificate as timecertificate, student_certificate.code as code, student_certificate.id as student_certificate_id from student_certificate join tms_user_detail on student_certificate.userid = tms_user_detail.user_id join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 "
@@ -100,10 +125,8 @@ if __name__ == '__main__':
 
                         # set datetime
                         now = datetime.datetime.now()
-                        canvas.text((390, 730), str(now.day) + '/', font=font_date, fill='#111111')
-                        canvas.text((419, 730), str(now.month) + '/', font=font_date, fill='#111111')
-                        x_year = 440 if len(str(now.month)) == 1 else 448
-                        canvas.text((x_year, 730), str(now.year), font=font_date, fill='#111111')
+                        strDate = str(now.day) + '/' + str(now.month) + '/' + str(now.year)
+                        canvas.text((positon_date_X, positon_date_Y), strDate, font=font_date, fill='#111111')
                         # endregion
 
                         # get width and height of text
@@ -111,12 +134,12 @@ if __name__ == '__main__':
                         training_width, training_height = canvas.textsize(name_utf8_training, font=font_training)
 
                         # set name to position
-                        canvas.text(((image_width - training_width) / 2, 560), name_utf8_training,
+                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training,
                                     font=font_training, fill='#111111')
                         # canvas.text((2105, 1585), address_utf8_branch, font=font_name, fill='#060836')
-                        canvas.text(((image_width - name_width - 20) / 2, 440),
+                        canvas.text((positon_name_X, positon_name_Y),
                                     name_utf8.upper(), font=font_name, fill='#111111')
-                        img.paste(logo, (90, 70))
+                        img.paste(logo, (positon_logo_X, positon_logo_Y))
                         # save image
                         img.save(os.path.join(path_gen_img, 'certificate', code + '.png'))
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
@@ -134,6 +157,8 @@ if __name__ == '__main__':
                 # cursor = connection.cursor()
                 cursor.execute(sql_select_Query)
                 row = cursor.fetchone()
+
+
                 if cursor.rowcount == 1:
                     # 2/11/2019
                     now = datetime.datetime.now()
@@ -160,10 +185,8 @@ if __name__ == '__main__':
 
                         # set datetime
                         now = datetime.datetime.now()
-                        canvas.text((390, 730), str(now.day) + '/', font=font_date, fill='#111111')
-                        canvas.text((419, 730), str(now.month) + '/', font=font_date, fill='#111111')
-                        x_year = 440 if len(str(now.month)) == 1 else 448
-                        canvas.text((x_year, 730), str(now.year), font=font_date, fill='#111111')
+                        strDate = str(now.day) + '/' + str(now.month) + '/' + str(now.year)
+                        canvas.text((positon_date_X, positon_date_Y), strDate, font=font_date, fill='#111111')
                         # endregion
 
                         # get width and height of text
@@ -171,13 +194,13 @@ if __name__ == '__main__':
                         training_width, training_height = canvas.textsize(name_utf8_training, font=font_training)
 
                         # set name to position
-                        canvas.text(((image_width - training_width) / 2, 560), name_utf8_training,
+                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training,
                                     font=font_training, fill='#111111')
                         # canvas.text((2105, 1585), address_utf8_branch, font=font_name, fill='#060836')
-                        canvas.text(((image_width - name_width - 20) / 2, 440),
+                        canvas.text((positon_name_X, positon_name_Y),
                                     name_utf8, font=font_name, fill='#111111')
 
-                        img.paste(logo, (90, 70))
+                        img.paste(logo, (positon_logo_X, positon_logo_Y))
 
                         # save image
                         img.save(os.path.join(path_gen_img, 'certificate', code + '.png'))
@@ -185,10 +208,9 @@ if __name__ == '__main__':
                         cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
                         cursor.execute(sql_update_confirm, (get_user_id,))
-                    except:  # xu ly chuyen trang thai cho cac ban ghi bi loi
+                    except Error as e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
                         cursor.execute(sql, (student_certificate_id,))
-                        print('error')
                 connection.commit()
                 print('luu anh thanh cong')
     except Error as e:

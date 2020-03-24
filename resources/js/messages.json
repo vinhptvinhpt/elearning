@@ -1580,6 +1580,14 @@
         "tao_moi_co_so_vat_chat_khoa_hoc": "Thêm mới cơ sở vật chất của khóa học",
         "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học",
         "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu",
-        "diem_danh": "Điểm danh"
+        "diem_danh": "Điểm danh",
+
+        "toa_do_chung_chi": "Tọa độ chứng chỉ",
+        "toa_do_logo": "Tọa độ logo",
+        "toa_do_ten": "Tọa độ tên",
+        "toa_do_ten_khung_nang_luc": "Tọa độ khung năng lực",
+        "toa_do_ngay_cap": "Tọa độ ngày cấp",
+        "toa_do_khung_nl": "Tọa độ khung NL"
+
     }
 }
