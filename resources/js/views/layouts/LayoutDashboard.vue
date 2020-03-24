@@ -62,7 +62,7 @@
                 } else if (response.data.has_user_market === true) {
                   this.selected_role = 'user_market';
                 } else {
-                  this.selected_role = 'userxxxxxxxxx';
+                  this.selected_role = 'user';
                 }
                 this.roles_ready = true;
               })
