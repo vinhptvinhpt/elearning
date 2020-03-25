@@ -237,7 +237,7 @@ interface IBussinessInterface
 
 
     //------------SystemController-----------------------//
-    public function apiListRole();
+    public function apiListRole(Request $request);
 
     public function apiListUser(Request $request);
 

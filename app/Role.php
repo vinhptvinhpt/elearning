@@ -57,4 +57,9 @@ class Role extends Model
     protected $table = 'roles';
     // bang chua danh sach quyen trong he thong
     protected $fillable = ['mdl_role_id', 'name', 'description', 'guard_name'];
+
+    public function roleOrganization()
+    {
+        return $this->hasOne('App\TmsRoleOrganization', 'role_id', 'id');
+    }
 }

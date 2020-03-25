@@ -137,7 +137,9 @@
                     });
             },
             listRoles(){
-                axios.post('/role/list_role')
+                axios.post('/role/list_role', {
+                  type: 'all'
+                })
                     .then(response => {
                         this.roles = response.data;
                     })

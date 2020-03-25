@@ -1,6 +1,6 @@
 <?php
 
-require_once('config.php');
+//require_once('config.php');
 
 define("API_KEY_SEC", "ELEARNING");
 

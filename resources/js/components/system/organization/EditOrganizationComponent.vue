@@ -85,6 +85,10 @@
                     <input v-model="organization.enabled" type="checkbox" id="organization_enabled" style="width:20px; height:20px;">
                     <label for="organization_enabled">{{trans.get('keys.kich_hoat')}}</label>
                   </div>
+                  <div class="col-sm-6">
+                    <input v-model="organization.is_role" type="checkbox" id="organization_is_role" style="width:20px; height:20px;">
+                    <label for="organization_is_role">{{trans.get('keys.su_dung_phan_quyen')}}</label>
+                  </div>
 
                 </div>
                 <div class="row">
@@ -123,7 +127,8 @@
           description: '',
           parent_id: 0,
           parent_name: '',
-          enabled: true
+          enabled: true,
+          is_role: false
         },
         organization_parent_list:[],
         parent_keyword:'',
@@ -137,10 +142,10 @@
       }
     },
     methods: {
-      selectParentItem(parent_id){
+      selectParentItem(parent_id) {
         this.organization.parent_id = parent_id;
       },
-      selectParent(current_id){
+      selectParent(current_id) {
         $('.content_search_box').addClass('loadding');
         axios.post('/organization/list',{
           keyword: this.parent_keyword,
@@ -182,17 +187,24 @@
         }
         return outPut;
       },
-      getData(){
+      getData() {
         axios.post('/organization/detail/'+this.id)
           .then(response => {
             this.organization = response.data;
+            if (response.data.role_organization) {
+              this.organization.is_role = true;
+            }
+            if (response.data.parent) {
+              this.organization.parent_id = response.data.parent.id;
+              this.organization.parent_name = response.data.parent.name;
+            }
             this.selectParent(this.organization.parent_id);
           })
           .catch(error => {
             //console.log(error);
           })
       },
-      update(){
+      update() {
         if(!this.organization.name){
           $('.name_required').show();
           return;
@@ -207,7 +219,8 @@
           parent_id: this.organization.parent_id,
           description: this.organization.description,
           id: this.organization.id,
-          enabled: this.organization.enabled
+          enabled: this.organization.enabled,
+          is_role: this.organization.is_role
         })
           .then(response => {
             if(response.data.key) {

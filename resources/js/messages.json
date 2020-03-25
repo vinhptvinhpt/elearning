@@ -813,7 +813,8 @@
         "hay_nhap_co_chu_ten_nguoi_dung": "Please enter username font size",
         "hay_nhap_co_chu_ten_khung_nang_luc": "Please enter the font size of the capacity frame name competency framework",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Choose the coordinates showing information when displaying on a certificate image",
-        "co_chu": "Font size"
+        "co_chu": "Font size",
+        "su_dung_phan_quyen": "Use as role"
     },
     "vi.keys": {
         "language": "",
@@ -1629,6 +1630,7 @@
         "nguoi_tao": "Người tạo",
         "ngay_tao": "Ngày tạo",
         "lam_moi_bang_tai_lieu": "Reset",
-        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo"
+        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo",
+        "su_dung_phan_quyen": "Sử dụng phân quyền"
     }
 }

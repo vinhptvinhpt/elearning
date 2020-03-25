@@ -390,7 +390,11 @@
           //Truyền organization_id
           this.query_organization_id = parseInt(this.organization_id);
           this.fetchOrganizationInfo(this.query_organization_id);
-        } else if (this.query_organization_id !== '0' && this.query_organization_id !== 0 && this.query_organization_id !== 'undefined') {
+        } else if (
+          this.query_organization_id !== '0'
+          && this.query_organization_id !== 0
+          && typeof this.query_organization_id !== 'undefined'
+        ) {
           //Chuyển trang khi đã có query_organization_id
           this.fetchOrganizationInfo(this.query_organization_id);
         }
@@ -425,17 +429,16 @@
 
         return false;
       },
-      setOrganization() {
-        this.fetchOrganizationInfo(this.query_organization_id);
-      },
       fetchOrganizationInfo(organization_id) {
         axios.post('/organization/detail/' + organization_id, {
             role: this.selected_role
         })
           .then(response => {
             this.organization_name = response.data.name;
-            this.query_organization_id = response.data.id;
-            this.organization_selected = true;
+            this.query_organization_id = response.data.id ? response.data.id : 0;
+            if (this.query_organization_id !== 0) {
+              this.organization_selected = true;
+            }
             //this.employee.input_organization_id = response.data.id;
             // gọi list sau trong trường hợp manager / leader
             if (this.roles_ready) {
@@ -531,7 +534,7 @@
       roles_ready: function(newVal, oldVal) {
         if (newVal === true && oldVal === false) {
           this.getRoleFromCurrentRoles(this.current_roles);
-          this.setOrganization(0);
+          this.fetchOrganizationInfo(0);
         }
       }
     }
