@@ -125,9 +125,9 @@ class SystemController extends Controller
         return $this->bussinessRepository->apiFilterFetch($request);
     }
 
-    public function apiListRole()
+    public function apiListRole(Request $request)
     {
-        return $this->bussinessRepository->apiListRole();
+        return $this->bussinessRepository->apiListRole($request);
     }
     public function apiListUser(Request $request)
     {

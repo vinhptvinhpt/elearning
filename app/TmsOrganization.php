@@ -32,4 +32,9 @@ class TmsOrganization extends Model
     {
         return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children');
     }
+
+    public function roleOrganization()
+    {
+        return $this->hasOne('App\TmsRoleOrganization', 'organization_id', 'id');
+    }
 }
