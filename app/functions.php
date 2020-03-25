@@ -3147,3 +3147,27 @@ function api_has_permission()
     }
     return json_encode($has_per);
 }
+
+// Kiểm tra user có thể enrol
+function checkUserEnrol($user_id, $start_date, $end_date)
+{
+    $courses = DB::table('mdl_user_enrolments as ue')
+        ->join('mdl_enrol as e', 'e.id', '=', 'ue.enrolid')
+        ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+        ->where('e.enrol', '=', 'manual')
+        ->where('ue.userid', '=', $user_id);
+
+    $maxDate = $courses->max('c.enddate');
+    $minDate = $courses->min('c.startdate');
+
+    // Nếu k có $maxDate return true
+    if (empty($maxDate) || (empty($maxDate) && empty($minDate))) {
+        return true;
+    }
+    // Xử lý tồn tại $minDate và $maxDate
+    if ($maxDate && $minDate && ($start_date >= $maxDate || $end_date <= $minDate)) {
+        return true;
+    }
+
+    return false;
+}

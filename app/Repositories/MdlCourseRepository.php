@@ -668,7 +668,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         // TODO: Implement detail() method.
     }
 
-    public function apiAttendanceList(Request $request) { //Skipped
+    public function apiAttendanceList(Request $request)
+    { //Skipped
         // TODO: Implement getall() method.
         $row = $request->input('row');
         $course_id = $request->input('course_id');
@@ -691,17 +692,17 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $join->on('mdl_course.id', '=', 'mdl_attendance.courseid')
                     ->andOn('mdl_user.id', '=', 'mdl_attendance.userid');
             })
-            ->join('tms_user_detail',  'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->where('mdl_attendance.attendance', '=', $date)
             ->where('mdl_course.id', '=', $course_id)
             ->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT)
             ->select('mdl_user.id',
-                 'mdl_user.username',
-                 'tms_user_detail.fullname',
-                 'mdl_attendance.attendance',
-                 'mdl_attendance.note',
-                 'mdl_attendance.present'
-             );
+                'mdl_user.username',
+                'tms_user_detail.fullname',
+                'mdl_attendance.attendance',
+                'mdl_attendance.note',
+                'mdl_attendance.present'
+            );
 
         $total_items = count($list->get()); //lấy tổng số khóa học hiện tại
 
@@ -714,6 +715,69 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ],
             'data' => $list,
             'total_items' => $total_items
+        ];
+
+        return response()->json($response);
+    }
+
+    public function apiGetListModule($course_id)
+    {
+        $modules = DB::table('mdl_course_modules as cm')
+            ->join('mdl_modules as m', 'm.id', '=', 'cm.module')
+            ->where('cm.course', '=', $course_id)
+            ->select('m.id', 'm.name')
+            ->distinct()
+            ->get();
+        return response()->json($modules);
+    }
+
+    public function apiGetListDocument(Request $request)
+    {
+        $course_id = $request->input('course_id');
+        $module_id = $request->input('module_id');
+        $keyword = $request->input('keyword');
+        $page = $request->input('page');
+        $pageSize = $request->input('row');
+        $action = $request->input('action');
+
+        // Ghi log của course
+        $documents = DB::table('mdl_logstore_standard_log as lsl')
+            ->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
+            ->join('mdl_user as u', 'u.id', '=', 'lsl.userid')
+            ->where('lsl.contextlevel', '=', MdlUser::CONTEXT_MODULE)
+            ->where('lsl.courseid', '=', $course_id);
+
+        if ($keyword) {
+            $documents = $documents
+                ->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+        }
+
+        if ($action) {
+            $documents = $documents
+                ->where('lsl.action', '=', $action);
+        }
+
+        if ($module_id > 0) {
+            $documents = $documents->where('cm.module', '=', $module_id);
+        }
+
+        $total_Data = $documents->count();
+
+        $documents = $documents
+            ->select('lsl.action', 'lsl.other', 'lsl.timecreated', 'u.username')
+            ->orderBy('lsl.timecreated', 'desc')
+            ->skip(($page - 1) * $pageSize)->take($pageSize)
+            ->get();
+
+        $total = ceil($total_Data / $pageSize);
+
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $page,
+            ],
+            'data' => $documents,
+            'total_course' => $total_Data
         ];
 
         return response()->json($response);

@@ -11,6 +11,9 @@ use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use mod_lti\local\ltiservice\response;
 
 //Quản lý thông tin khóa học
 //ThoLD (21/08/2019)
@@ -249,7 +252,8 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserNeedEnrol($request);
     }
 
-    public function apiAttendanceList(Request $request) {
+    public function apiAttendanceList(Request $request)
+    {
         return $this->mdlCourseRepository->apiAttendanceList($request);
     }
 
@@ -395,6 +399,26 @@ class CourseController extends Controller
             $response->message = $e->getMessage();
         }
         return response()->json($response);
+    }
+
+    /*
+     * Lấy danh sách module từ course_id
+     */
+    public function apiGetListModule($course_id)
+    {
+        return $this->mdlCourseRepository->apiGetListModule($course_id);
+    }
+
+    /*
+     * Lấy danh sách tài liệu từ module + dourse
+     */
+    public function apiGetListDocument(Request $request)
+    {
+        return $this->mdlCourseRepository->apiGetListDocument($request);
+    }
+
+    public function apiEnrolUserCourseConcent(Request $request){
+        return $this->bussinessRepository->apiEnrolUserCourseConcent($request);
     }
 
 }

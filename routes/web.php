@@ -477,6 +477,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/course/current_user_enrol', 'Backend\CourseController@apiUserCurrentEnrol');
     Route::post('/api/course/user_need_enrol', 'Backend\CourseController@apiUserNeedEnrol');
     Route::post('/api/course/enrol_user_to_course', 'Backend\CourseController@apiEnrolUser');
+    Route::post('/api/course/enrol_user_to_course_concent', 'Backend\CourseController@apiEnrolUserCourseConcent');
     Route::post('/api/course/remove_enrol_user_to_course', 'Backend\CourseController@apiRemoveEnrolUser');
     Route::post('/api/course/import_enrol', 'Backend\CourseController@apiImportExcelEnrol');
     Route::get('/education/course/statistic/{id}/{come_from}', 'Backend\CourseController@viewStatisticCourse');
@@ -484,6 +485,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/course/total_activity', 'Backend\CourseController@apiGetTotalActivityCourse');
     Route::post('/api/courses/get_list_category_clone', 'Backend\CourseController@apiGetListCategoryForClone');
     Route::post('/api/courses/get_list_category_edit', 'Backend\CourseController@apiGetListCategoryForEdit');
+
+    Route::post('/api/courses/get_list_document_course', 'Backend\CourseController@apiGetListDocument');
+    Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
 
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
@@ -666,11 +670,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::get('/downloadExportReport', 'Backend\ExcelController@downloadExportReport');
-
-    Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
-    Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
-    Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
-    Route::get('/api/downloadExport/{file_name}', 'Backend\ExcelController@apiDownloadExport');
+    Route::post('/exportResult', 'Backend\ExcelController@exportResult');
+    Route::get('/downloadExportResult/{file_name}', 'Backend\ExcelController@downloadExportResult');
 
     Route::get('/support/manage-market', 'Backend\BackendController@viewSupportMarket');
     Route::get('/support/admin', 'Backend\BackendController@viewSupportAdmin');
@@ -710,14 +711,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
-
-
-    //Infrastructer in course offline
-    Route::post('/api/infrastructer/getall', 'Backend\InfrastructureController@apiGetall');
-    Route::post('/api/infrastructer/create', 'Backend\InfrastructureController@apiStore');
-    Route::post('/api/infrastructer/update', 'Backend\InfrastructureController@apiUpdate');
-    Route::post('/api/infrastructer/delete', 'Backend\InfrastructureController@apiDelete');
-    Route::get('/api/infrastructer/detail/{id}', 'Backend\InfrastructureController@apiGetbyid');
 
 });
 // [VinhPT][26.12.2019] Login first screen

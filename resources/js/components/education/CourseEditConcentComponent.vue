@@ -178,7 +178,7 @@
                 </div>
             </div>
         </div>
-        <enrol-teacher :course_id="course_id"></enrol-teacher>
+        <enrol-teacher :course_id="course_id" :course_type="course_type"></enrol-teacher>
         <course-infra :course_id="course_id"></course-infra>
     </div>
 </template>
@@ -210,7 +210,8 @@
                     filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
                     filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
                     filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
-                }
+                },
+                course_type: 1
             }
         },
         methods: {
