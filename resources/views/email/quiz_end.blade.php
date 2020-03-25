@@ -4,7 +4,7 @@
 </head>
 <body>
 <div>
-    <?php 
+    <?php
         //using class
         use App\Mail\CourseSendMail;
 
@@ -17,6 +17,18 @@
         // //decode content of file above=
         $data = json_decode($string, true);
         $text = $data['quiz_end'];
+
+        /**
+         * @var $fullname string
+         * @var $username string
+         * @var $course_name string
+         * @var $fullname string
+         * @var $course_code string
+         * @var $content object
+         * @var $quiz_date string
+         *
+         * */
+
         //replace values
         $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
         $text = str_replace(CourseSendMail::USERNAME, $username, $text);

@@ -4,7 +4,7 @@
 </head>
 <body>
 <div>
-    <?php 
+    <?php
         //using class
         use App\Mail\CourseSendMail;
 
@@ -18,6 +18,16 @@
         $data = json_decode($string, true);
         $text = $data['quiz_completed'];
 
+        /**
+         * @var $fullname string
+         * @var $username string
+         * @var $course_name string
+         * @var $fullname string
+         * @var $course_code string
+         * @var $content object
+         *
+         * */
+
         //replace values
         $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
         $text = str_replace(CourseSendMail::USERNAME, $username, $text);
@@ -25,8 +35,7 @@
         $text = str_replace(CourseSendMail::COURSECODE, $course_code, $text);
         $text = str_replace(CourseSendMail::QUIZNAME, $content->name, $text);
         $point = ($content->attempt_sumgrades / $content->sumgrades) * 10;
-        echo $point;
-        die;
+
         $point_up = round($point, 1);
         $text = str_replace(CourseSendMail::QUIZPOINT, $point_up, $text);
         //
