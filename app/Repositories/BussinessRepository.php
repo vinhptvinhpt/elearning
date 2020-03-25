@@ -4398,6 +4398,7 @@ class BussinessRepository implements IBussinessInterface
             $name = $request->input('name');
             $description = $request->input('description');
             $is_active = $request->input('is_active');
+            $position = $request->input('position');
 
             $validates = validate_fails($request, [
                 'id' => 'number',
@@ -4415,6 +4416,7 @@ class BussinessRepository implements IBussinessInterface
             $cer->name = $name;
             $cer->description = $description;
             $cer->is_active = $is_active;
+            $cer->position = $position;
 
             if ($avatar) {
                 $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();

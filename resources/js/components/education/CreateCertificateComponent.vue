@@ -1,6 +1,6 @@
 <template>
     <div class="row">
-        <div class="col-12 col-lg-3">
+        <div class="col-12 col-lg-7">
             <div class="card">
                 <div class="card-body">
                     <p>
@@ -9,7 +9,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-lg-9">
+        <div class="col-12 col-lg-5">
             <form action="" class="form-row hk-sec-wrapper">
                 <div class="col-12 form-group">
                     <label for="inputName">{{trans.get('keys.ten_chung_chi')}}</label>
@@ -23,17 +23,17 @@
                     <label v-if="!description" class="required text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
-                <div class="col-6 form-group">
-                    <h6 class="mb-5 d-inline-flex">
-                        {{trans.get('keys.chon_lam_chung_chi_mau')}}
-                        <span class="inline-checkbox ml-3">
-                            <span class="custom-control custom-checkbox custom-control-inline">
-                                <input v-model="confirm" type="checkbox" class="custom-control-input" :id="'inputCheck'">
-                                <label class="custom-control-label" :for="'inputCheck'"></label>
-                            </span>
-                        </span>
-                    </h6>
-                </div>
+<!--                <div class="col-6 form-group">-->
+<!--                    <h6 class="mb-5 d-inline-flex">-->
+<!--                        {{trans.get('keys.chon_lam_chung_chi_mau')}}-->
+<!--                        <span class="inline-checkbox ml-3">-->
+<!--                            <span class="custom-control custom-checkbox custom-control-inline">-->
+<!--                                <input v-model="confirm" type="checkbox" class="custom-control-input" :id="'inputCheck'">-->
+<!--                                <label class="custom-control-label" :for="'inputCheck'"></label>-->
+<!--                            </span>-->
+<!--                        </span>-->
+<!--                    </h6>-->
+<!--                </div>-->
 
                 <div class="col-12">
                     <div class="button-list">
