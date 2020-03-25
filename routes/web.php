@@ -685,7 +685,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/education/resetexam/resetuser', 'Backend\UserExamController@apiRestUserExam');
 
     Route::get('/api/getinfosidebar', 'Backend\LanguageController@getInfoSidebar');
-    Route::post('/sso/checklogin', 'Backend\BackendController@checklogin');
+//    Route::post('/sso/checklogin', 'Backend\BackendController@checklogin');
 
     Route::get('/api/checkrolesidebar', 'Backend\BackendController@checkRoleSidebar');
 
