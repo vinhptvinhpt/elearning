@@ -401,7 +401,7 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.cau_hinh_chung') }}</span>
                                 </router-link>
                             </li>
-                            <li class="nav-item" v-if="slug_can('tms-setting-email_template-view')">
+                            <li class="nav-item" v-if="slug_can('tms-setting-email-template-view')">
                                 <router-link to="/tms/email_template/list" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.cau_hinh_template_email') }}</span>
                                 </router-link>
