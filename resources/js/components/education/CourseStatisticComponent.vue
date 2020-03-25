@@ -519,7 +519,9 @@
         this.getLogCourse(0, 1);
       },
       getLogCourse(idModule, paged) {
-        this.module_id = idModule;
+        if (idModule != undefined) {
+          this.module_id = idModule;
+        }
         axios.post('/api/courses/get_list_document_course', {
           course_id: this.course_id,
           module_id: this.module_id,
@@ -582,6 +584,7 @@
       onPageChange() {
         this.getStatictisUserCourse();
         this.getStatictisUserAttendance();
+        this.getLogCourse();
       },
       getStatictisUserCourse(paged) {
         axios.post('/api/course/statistic', {
