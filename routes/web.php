@@ -477,6 +477,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/course/current_user_enrol', 'Backend\CourseController@apiUserCurrentEnrol');
     Route::post('/api/course/user_need_enrol', 'Backend\CourseController@apiUserNeedEnrol');
     Route::post('/api/course/enrol_user_to_course', 'Backend\CourseController@apiEnrolUser');
+    Route::post('/api/course/enrol_user_to_course_concent', 'Backend\CourseController@apiEnrolUserCourseConcent');
     Route::post('/api/course/remove_enrol_user_to_course', 'Backend\CourseController@apiRemoveEnrolUser');
     Route::post('/api/course/import_enrol', 'Backend\CourseController@apiImportExcelEnrol');
     Route::get('/education/course/statistic/{id}/{come_from}', 'Backend\CourseController@viewStatisticCourse');
