@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
+use App\User;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -2360,7 +2361,7 @@ class BussinessRepository implements IBussinessInterface
             if (isset($invitation)) {
                 $invitation->replied = 1;
                 $invitation->accepted = $accepted;
-                if($accepted == 'false') {
+                if ($accepted == 'false') {
                     $invitation->accepted = 0;
                     $invitation->reason = $reason;
                 } else {
@@ -13243,4 +13244,64 @@ class BussinessRepository implements IBussinessInterface
     }
     // End UserExamController
 
+    //api enrol học viên vào khóa học tập trung
+    //NamNT 24/03/2020
+    public function apiEnrolUserCourseConcent(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $course_id = $request->input('course_id');
+            $role_id = $request->input('role_id');
+            $lstUserIDs = $request->input('Users');
+
+            $param = [
+                'course_id' => 'number',
+                'role_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            $course = MdlCourse::findOrFail($course_id);
+
+            if (empty($course)) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_khoa_hoc');
+                return json_encode($response);
+            }
+
+            $start_date = $course->startdate;
+            $end_date = $course->enddate;
+
+            $ids = array();
+            $ids_error = '';
+            // End_date rỗng insert bình thường
+            if(empty($end_date)){
+                $ids = $lstUserIDs;
+            }
+            else{
+                foreach ($lstUserIDs as $user_id) {
+                    if(checkUserEnrol($user_id, $start_date, $end_date)){
+                        array_push($ids, $user_id);
+                    }
+                    else{
+                        $ids_error .= MdlUser::find($user_id)->username . ', ';
+                    }
+                }
+            }
+
+            enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
+
+            $response->otherData = $ids_error;
+            $response->status = true;
+            $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
 }
