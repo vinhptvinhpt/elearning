@@ -134,6 +134,9 @@ class CourseSendMail extends Mailable
                     $subject = '';
                     $view = '';
             }
+        } elseif ($this->activity == TmsNotification::SUGGEST) {
+            $subject = '[ELEARNING] Giới thiệu một số khóa học kĩ năng mềm';
+            $view = 'email.suggest_course';
         }
 
         if (strlen($subject) != 0 AND strlen($view) != 0) {
@@ -147,6 +150,7 @@ class CourseSendMail extends Mailable
                 ->with('course_place', $this->course_place)
                 ->with('content', $this->content)
                 ->with('quiz_date', $this->quiz_date)
+                ->with('course_list', $this->course_list)
                 ->view($view);
         }
         return $this;

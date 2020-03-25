@@ -3330,7 +3330,12 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiListRoleRole()
     {
-        $roles = Role::whereNotIn('name', [\App\Role::EDITING_TEACHER, \App\Role::COURSE_CREATOR])->get()->toArray();
+        $roles = Role::whereNotIn('name', [\App\Role::EDITING_TEACHER, \App\Role::COURSE_CREATOR])
+            ->whereNotIn('id', function ($query) {
+                $query->select('role_id')
+                    ->from('tms_role_organization');
+            })
+            ->get()->toArray();
         return response()->json($roles);
     }
 
@@ -3340,9 +3345,9 @@ class BussinessRepository implements IBussinessInterface
         $role_id = $request->input('role_id');
         if (!is_numeric($role_id))
             return response()->json([]);
-        $role = Role::select('mdl_role_id')->findOrFail($role_id);
+        $role = Role::with('roleOrganization')->findOrFail($role_id);
         $data = [];
-        $data['roles'] = Role::select('name', 'description', 'status')->findOrFail($role_id);
+        $data['roles'] = $role;
         $data['permission_name'] = permission_cat_name();
         $data['permission_slug'] = permission_slug();
         $data['permission_select'] = PermissionSlugRole::where('role_id', $role_id)->pluck('permission_slug');
@@ -3508,7 +3513,7 @@ class BussinessRepository implements IBussinessInterface
             $type = 'role';
             $url = '*';
             $action = 'delete';
-            $info = 'Xóa quyền quyền: ' . $role_name;
+            $info = 'Xóa quyền: ' . $role_name;
             devcpt_log_system($type, $url, $action, $info);
             \DB::commit();
             return response()->json(status_message('success', __('xoa_vai_tro_thanh_cong')));
@@ -5997,8 +6002,10 @@ class BussinessRepository implements IBussinessInterface
     // End SurveyController
 
     // SystemController
-    public function apiListRole()
+    public function apiListRole(Request $request)
     {
+        $type = $request->input('type');
+
         $special_role = Role::arr_role_special;
         $default_role = Role::arr_role_default;
         $excluded = array_merge($special_role, $default_role);
@@ -6011,9 +6018,20 @@ class BussinessRepository implements IBussinessInterface
 
         $hidden = Role::arr_role_hidden;
 
-        $roles = Role::whereNotIn('name', $hidden)
-            ->select('id', 'name', 'description', 'status')
+        $roles = Role::whereNotIn('name', $hidden);
+
+        //Hide organization connected roles
+        if (strlen($type) == 0) {
+            $roles = $roles->whereNotIn('id', function ($query) {
+                $query->select('role_id')
+                    ->from('tms_role_organization');
+            });
+        }
+
+        $roles = $roles->select('id', 'name', 'description', 'status')
             ->get()->toArray();
+
+
         return response()->json($roles);
     }
 
@@ -9189,8 +9207,15 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiGetListRole()
     {
-        $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])->select('id', 'name')
+        $hidden = Role::arr_role_hidden;
+        $roles = Role::whereNotIn('name', [Role::EDITING_TEACHER, Role::COURSE_CREATOR])
+            ->whereNotIn('name', $hidden)
+            ->whereNotIn('id', function ($query) {
+                $query->select('role_id')
+                    ->from('tms_role_organization');
+            })
             //->whereNotIn('name',['teacher','student','managemarket'])
+            ->select('id', 'name')
             ->get()->toArray();
         return response()->json($roles);
     }

@@ -45,9 +45,9 @@ class RoleController extends Controller
     {
         return $this->bussinessRepository->apiCreateRole($request);
     }
-    public function apiListRole()
+    public function apiListRole(Request $request)
     {
-        return $this->bussinessRepository->apiListRole();
+        return $this->bussinessRepository->apiListRole($request);
     }
     public function apiListDataRole(Request $request)
     {
