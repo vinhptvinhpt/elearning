@@ -158,8 +158,8 @@
                             if(response.data === 'exists'){
                                 toastr['error']("Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!", current_pos.trans.get('keys.that_bai'));
                             }else{
-                                toastr['success'](this.trans.get('keys.xoa_thanh_cong'), this.trans.get('keys.thanh_cong'));
-                                this.getListImages();
+                                toastr['success'](current_pos.trans.get('keys.xoa_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
+                                current_pos.getListImages();
                             }
                         })
                         .catch(error => {
