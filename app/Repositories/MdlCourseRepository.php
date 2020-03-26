@@ -37,6 +37,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $enddate = $request->input('enddate');
         $status_course = $request->input('status_course');
         $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+        //Tích hợp phân quyền dữ liệu
+        $role_id = $request->input('role_id'); //quyền hệ thống
+        $is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
 
         $param = [
             'keyword' => 'text',
@@ -66,6 +69,52 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.visible',
                     'mdl_course_completion_criteria.gradepass as pass_score'
                 );
+            if (strlen($is_excluded) != 0) {
+                if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
+                   $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
+                       $query->select('course_id')
+                           ->from('tms_role_course')
+                           ->where('role_id', $role_id);
+                   });
+                } else { //List khóa học đã phân quyền cho role này
+                    $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
+                        $query->select('course_id')
+                            ->from('tms_role_course')
+                            ->where('role_id', $role_id);
+                    });
+                }
+            }
+        } else {
+            $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+            if ($checkRole === TRUE) {
+                $listCourses = DB::table('mdl_user_enrolments as mue')
+                    ->where('mue.userid', '=', \Auth::user()->id)
+                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                    ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->select(
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'mccc.gradepass as pass_score'
+                    );
+            } else {
+                $listCourses = DB::table('mdl_course as c')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
+                    ->select(
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'mccc.gradepass as pass_score'
+                    );
+            }
         }
         else {
             //Kiểm tra xem có phải role teacher hay không

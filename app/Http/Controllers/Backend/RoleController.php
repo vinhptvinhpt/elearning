@@ -105,4 +105,12 @@ class RoleController extends Controller
     {
         return $this->bussinessRepository->apiRemoveRoleOrganize($request);
     }
+    public function apiMappingCourse(Request $request)
+    {
+        return $this->bussinessRepository->apiMappingCourse($request);
+    }
+    public function apiRemoveMappingCourse(Request $request)
+    {
+        return $this->bussinessRepository->apiRemoveMappingCourse($request);
+    }
 }

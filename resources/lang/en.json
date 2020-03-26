@@ -298,5 +298,6 @@
     "dong_y": "Accepted",
     "tu_choi": "Denied",
     "ly_do": "Reason",
-    "so_buoi_diem_danh": "Attendance Total"
+    "so_buoi_diem_danh": "Attendance Total",
+    "phan_quyen_thanh_cong": "Assign successfully"
 }
