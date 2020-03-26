@@ -11,6 +11,9 @@
         </nav>
       </div>
     </div>
+
+    <mapping-course v-if="roles.role_organization" :role_id="role_id"></mapping-course>
+
     <div class="row">
       <div class="col-12">
         <div>
@@ -95,14 +98,21 @@
         </div>
       </div>
     </div>
+
   </div>
 </template>
 
 <script>
     //import vPagination from 'vue-plain-pagination'
+    import MappingCourse from './MappingCourseComponent'
+
+
     export default {
         props: ['role_id'],
-        //components: {vPagination},
+        components: {
+          //vPagination,
+          MappingCourse
+        },
         data(){
             return{
                 posts: {},

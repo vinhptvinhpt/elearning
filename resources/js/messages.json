@@ -814,7 +814,12 @@
         "hay_nhap_co_chu_ten_khung_nang_luc": "Please enter the font size of the capacity frame name competency framework",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Choose the coordinates showing information when displaying on a certificate image",
         "co_chu": "Font size",
-        "su_dung_phan_quyen": "Use as role"
+        "su_dung_phan_quyen": "Use as role",
+        "phan_quyen_du_lieu": "Data permission",
+        "danh_sach_khoa_hoc": "List courses",
+        "danh_sach_khoa_hoc_da_cap": "List assgined courses",
+        "huy_quyen": "Remove permission",
+        "ban_chua_chon_khoa_hoc": "Please select course"
     },
     "vi.keys": {
         "language": "",
@@ -1631,6 +1636,11 @@
         "ngay_tao": "Ngày tạo",
         "lam_moi_bang_tai_lieu": "Reset",
         "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo",
-        "su_dung_phan_quyen": "Sử dụng phân quyền"
+        "su_dung_phan_quyen": "Sử dụng phân quyền",
+        "phan_quyen_du_lieu": "Phân quyền dữ liệu",
+        "danh_sach_khoa_hoc": "Danh sách khóa học",
+        "danh_sach_khoa_hoc_da_cap": "Danh sách khóa học đã cấp",
+        "huy_quyen": "Hủy quyền",
+        "ban_chua_chon_khoa_hoc": "Bạn chưa chọn khóa học"
     }
 }

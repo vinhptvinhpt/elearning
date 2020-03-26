@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
+use App\TmsRoleCourse;
 use App\User;
 use PDF;
 use Illuminate\Http\Request;
@@ -3871,6 +3872,71 @@ class BussinessRepository implements IBussinessInterface
         TmsRoleOrganize::findOrFail($id)->delete();
         return 'success';
     }
+
+    public function apiMappingCourse(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $role_id = $request->input('role_id');
+            $lstUserIDs = $request->input('users');
+
+            $param = [
+                'role_id' => 'number'
+            ];
+
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            foreach ($lstUserIDs as $course_id) {
+                $assign = new TmsRoleCourse();
+                $assign->course_id = $course_id;
+                $assign->role_id = $role_id;
+                $assign->save();
+            }
+
+            $response->status = true;
+            $response->message = __('phan_quyen_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
+
+    public function apiRemoveMappingCourse(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $role_id = $request->input('role_id');
+            $lstUserIDs = $request->input('users');
+
+            $param = [
+                'role_id' => 'number'
+            ];
+
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            TmsRoleCourse::whereIn('course_id', $lstUserIDs)->delete();
+
+            $response->status = true;
+            $response->message = __('phan_quyen_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return json_encode($response);
+    }
+
+
     // End RoleController
 
     // SaleRoomController
