@@ -2,7 +2,15 @@
 
 namespace App\Repositories;
 
+use App\MdlRole;
+use App\MdlRoleAssignments;
+use App\MdlRoleCapabilities;
+use App\ModelHasRole;
+use App\PermissionSlugRole;
+use App\Role;
 use App\TmsOrganization;
+use App\TmsOrganizationEmployee;
+use App\TmsRoleOrganization;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -142,6 +150,7 @@ class TmsOrganizationRepository implements ICommonInterface
             $parent_id = $request->input('parent_id');
             $code = $request->input('code');
             $enabled = $request->input('enabled');
+            $is_role = $request->input('is_role');
 
             $param = [
                 'id' => 'number',
@@ -154,7 +163,8 @@ class TmsOrganizationRepository implements ICommonInterface
                 return response()->json($validator);
             }
 
-            $item = TmsOrganization::where('id', $id)->first();
+            $item = TmsOrganization::where('id', $id)
+                ->with('roleOrganization.role')->first();
 
             //Check exist
             $check = TmsOrganization::where('code', $code)->first();
@@ -164,6 +174,7 @@ class TmsOrganizationRepository implements ICommonInterface
                     'message' => __('ma_to_chuc_da_ton_tai')
                 ]);
 
+            //Parent selected
             if (strlen($parent_id) != 0 && $parent_id != 0) {
                 $item->parent_id = $parent_id;
                 $parent = TmsOrganization::where('id', $parent_id)->first();
@@ -176,9 +187,49 @@ class TmsOrganizationRepository implements ICommonInterface
             $item->enabled = $enabled;
             $item->save();
 
+            //Is role selected
+            if ($is_role) {
+                if (!$item->roleOrganization) {
+                    $lastRole = MdlRole::latest()->first();
+                    $checkRole = Role::where('name', $name)->first();
+                    if ($checkRole) {
+                        return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+                    }
+
+                    //Tạo quyền bên LMS
+                    $mdlRole = new MdlRole;
+                    $mdlRole->shortname = $code;
+                    $mdlRole->description = $name;
+                    $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+                    $mdlRole->archetype = 'user';
+                    $mdlRole->save();
+
+                    $role = new Role();
+                    $role->mdl_role_id = $mdlRole->id;
+                    $role->name = $code;
+                    $role->description = $name;
+                    $role->guard_name = 'web';
+                    $role->status = 1;
+                    $role->save();
+
+                    $new_role_organization = new TmsRoleOrganization();
+                    $new_role_organization->organization_id = $id;
+                    $new_role_organization->role_id = $role->id;
+                    $new_role_organization->save();
+                } else {
+                    $check = TmsRoleOrganization::where('organization_id', $id)->first();
+                    if ($check->role) {
+                        $check->role->name = $code;
+                        $check->role->description = $name;
+                        $check->role->save();
+                    }
+                }
+            } else {
+                self::clearRoleOrganization($id);
+            }
+
             return response()->json(status_message('success', __('cap_nhat_to_chuc_thanh_cong')));
         } catch (\Exception $e) {
-            dd($e);
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
         // TODO: Implement update() method.
@@ -197,8 +248,14 @@ class TmsOrganizationRepository implements ICommonInterface
             if ($item) {
                 $item->delete();
                 //TmsOrganization::where('parent_id', $id)->delete();
+                //Update con
                 TmsOrganization::where('parent_id', $id)
                     ->update(['parent_id' => 0]);
+                //Xoa nhan vien connected
+                TmsOrganizationEmployee::where('organization_id', $id)
+                    ->delete();
+                //Xóa role connected
+                self::clearRoleOrganization($id);
             }
             \DB::commit();
             return response()->json(status_message('success', __('xoa_to_chuc_thanh_cong')));
@@ -212,34 +269,46 @@ class TmsOrganizationRepository implements ICommonInterface
         if (!is_numeric($id))
             return response()->json([]);
 
-
-        $data = DB::table('tms_organization as to')
-            ->leftJoin('tms_organization as parent', 'to.parent_id', '=', 'parent.id')
-            ->select(
-                'to.id',
-                'to.name',
-                'to.code',
-                'to.parent_id',
-                'to.level',
-                'to.enabled',
-                'to.description',
-                'parent.name as parent_name'
-            );
+        $data = TmsOrganization::with('parent')->with('roleOrganization');
 
         if ($id == 0) {
             $user_id = Auth()->user()->id;
             $role = $request->input('role');
-            $data = $data->whereIn('to.id', function($query) use ($role, $user_id){
+            $data = $data->whereIn('id', function($query) use ($role, $user_id){
                 $query->select('organization_id')
                     ->from('tms_organization_employee')
                     ->where('position', $role)
                     ->where('user_id', $user_id);
             })->first();
         } else {
-            $data = $data->where('to.id', '=', $id)->first();
+            $data = $data->where('id', '=', $id)->first();
         }
 
         return response()->json($data);
+    }
+
+    public function clearRoleOrganization($id) {
+        $check_role = TmsRoleOrganization::with('role')->where('organization_id', $id)->first();
+        if (isset($check_role)) {
+            $role_id = $check_role->role_id;
+            if ($check_role->role) { //has role connected
+                $mdl_role_id = $check_role->role->mdl_role_id;
+                //Xóa role bên LMS
+                MdlRole::where('id', $mdl_role_id)->delete();
+                MdlRoleCapabilities::where('roleid', $mdl_role_id)->delete();
+                MdlRoleAssignments::where('roleid', $mdl_role_id)->delete();
+
+                //Clear cache
+                api_lms_clear_cache($mdl_role_id);
+
+                //Xóa role bên TMS
+                PermissionSlugRole::where('role_id', $role_id)->delete();
+                ModelHasRole::where('role_id', $role_id)->delete();
+                removePermissionTo($role_id); //Remove permission to role
+                $check_role->role->delete();
+            }
+            $check_role->delete();
+        }
     }
 
     public function detail($id)

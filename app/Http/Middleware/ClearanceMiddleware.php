@@ -23,8 +23,8 @@ class ClearanceMiddleware
             //Bypass for organization roles
             //|| tvHasRole(auth('web')->user()->id, 'admin')
             //|| tvHasRole(auth('web')->user()->id, 'Admin')
-            || tvHasRole(auth('web')->user()->id, 'manager')
-            || tvHasRole(auth('web')->user()->id, 'leader')
+//            || tvHasRole(auth('web')->user()->id, 'manager')
+//            || tvHasRole(auth('web')->user()->id, 'leader')
             ) {
             return $next($request);
         } else {
@@ -32,16 +32,22 @@ class ClearanceMiddleware
 
             $permissionArray = \App\RoleHasPermission::whereIn('role_id', $roleIdArray)->pluck('permission_id');
 
+            //Bypass for apis
+            $header = $request->server->getHeaders();
+            if (isset($header['ACCEPT']) && strpos($header['ACCEPT'], 'application/json') !== false) {
+                return $next($request);
+            }
+
             $permissions = Permission::select('url')
                 ->where('method', $request->method())
                 ->whereIn('id', $permissionArray)
                 ->get()->toArray();
-
-            foreach ($permissions as $permission) {
-                if ($request->is($permission['url'])) {
+            foreach ($permissions as $permission){
+                if ($request->is($permission['url'])){
                     return $next($request);
                 }
             }
+
         }
         abort('401');
     }

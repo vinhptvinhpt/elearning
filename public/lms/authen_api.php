@@ -1,8 +1,8 @@
 <?php
 
-require_once('config.php');
+//require_once('config.php');
 
-define("API_KEY_SEC", "ELEARNING_BGT");
+define("API_KEY_SEC", "ELEARNING");
 
 function encrypt_key($string)
 {
