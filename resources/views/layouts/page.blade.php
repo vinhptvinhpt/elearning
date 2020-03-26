@@ -137,53 +137,14 @@
     var jwtsso;
     var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
     var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
-    var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
 
     if (isSafariBrowser()) {
         jwtsso = getCookieByName(safariCookie);
     } else {
         jwtsso = getCookieByName(safariCookie);
     }
-    jQuery.ajax({
-        type: "POST",
-        url: '/sso/checklogin',
-        data: {
-            jwt: jwtsso
-        },
-        success: function (data) {
-            if (data.status === 'LOGOUT') {
-                window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + '{{$actual_link}}';
-            }
-        }
-    });
+
     $('.datepicker').datepicker();
-
-    function logout() {
-        $.ajax({
-            type: "POST",
-            url: '/bgtlogout',
-            data: {
-                _token: '{{csrf_token()}}'
-            },
-            success: function (data) {
-                if (data.status) {
-                    localStorage.setItem(logoutCookie, 'logout');
-                    sslssso.logout();
-                    window.location.href = "/";
-                } else {
-                    swal({
-                        title: "Lỗi hệ thống",
-                        text: "Logout Error!!!",
-                        type: "error",
-                        showCancelButton: false,
-                        closeOnConfirm: false,
-                        showLoaderOnConfirm: true
-                    });
-                }
-
-            }
-        });
-    }
 
     $('.preloader-it').fadeOut();
 </script>
