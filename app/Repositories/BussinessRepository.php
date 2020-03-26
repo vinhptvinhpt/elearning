@@ -3492,10 +3492,10 @@ class BussinessRepository implements IBussinessInterface
                 givePermissionToRole($role_id, $permissions); //Add permission to Role
             }
 
-            //Thêm quyền bên LMS
-            if (!empty($per_slug_input)) {
-                apply_role_lms($role_id, $per_slug_input);
-            }
+//            //Thêm quyền bên LMS
+//            if (!empty($per_slug_input)) {
+//                apply_role_lms($role_id, $per_slug_input);
+//            }
 
             $type = 'role';
             $url = '/roles/edit/' . $role_id;
