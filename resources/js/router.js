@@ -107,6 +107,7 @@ import TemplateIndexComponent from "./components/email/IndexComponent";
 import TemplateDetailComponent from "./components/email/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
 import AttendanceComponent from "./components/education/AttendanceComponent";
+import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -774,6 +775,15 @@ const routes = [
         name: 'ConfirmInvitation',
         props: (route) => ({
           invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
+        })
+      },
+      {
+        path: 'email/confirm/:no_id/:email',
+        component: ConfirmEmailComponent,
+        name: 'ConfirmEmail',
+        props: (route) => ({
+          no_id: route.params.no_id,
+          email: route.params.email
         })
       },
     ]

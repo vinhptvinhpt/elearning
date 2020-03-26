@@ -211,6 +211,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/en/excel/import/user', 'Backend\EmailTemplateController@viewTestIndex');
 //        Route::get('/en/certificate/student/uncertificate', 'Backend\StudentController@viewStudentUncertificate')->name('student.uncertificate');
 
+
+
 });
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
@@ -717,3 +719,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 Route::get('/loginfirst', 'Backend\loginfirst\LoginFirstController@viewLoginFirst');
 Route::post('/loginfirst/executelogin', 'Backend\loginfirst\LoginFirstController@executeLogin');
 //Route::get('/import', 'Backend\CourseController@importFile');
+
+// send mail xác nhận email trong tài khoản
+Route::get('/api/sendmailactive','Api\TaskController@sendMailActiveEmail');
+
+// active
+Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController@apiConfirmEmail');

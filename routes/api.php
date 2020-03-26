@@ -36,6 +36,9 @@ Route::get('/cron/mail/invite', 'Api\MailController@inviteStudent');
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
+// update email + active
+Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
+
 // admin route
 Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function (){
 //    Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning');

@@ -797,7 +797,8 @@
         "nguoi_tao": "Created user",
         "ngay_tao": "Created date",
         "lam_moi_bang_tai_lieu": "Reset",
-        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Find by module, document name or username"
+        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Find by module, document name or username",
+        "xac_nhan_email_nguoi_dung": "Confirm email"
     },
     "vi.keys": {
         "language": "",
@@ -1596,6 +1597,7 @@
         "nguoi_tao": "Người tạo",
         "ngay_tao": "Ngày tạo",
         "lam_moi_bang_tai_lieu": "Reset",
-        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo"
+        "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Tìm kiếm theo tên module, tài liệu hoặc người tạo",
+        "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng"
     }
 }
