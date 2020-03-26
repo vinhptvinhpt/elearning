@@ -7,6 +7,7 @@ import os.path
 import datetime
 import time
 import json
+import textwrap
 
 # !/usr/bin/python
 sys.path.append('/venv/Lib/site-packages')
@@ -63,29 +64,36 @@ if __name__ == '__main__':
             coordinates = json.loads(record_image[1])
             logoX = coordinates["logoX"]
             logoY = coordinates["logoY"]
+
             fullnameX = coordinates["fullnameX"]
             fullnameY = coordinates["fullnameY"]
+            fullnameSize = int(coordinates["fullnameSize"])
+            fullnameWidth =coordinates["fullnameWidth"]
+            fullnameHeight = coordinates["fullnameHeight"]
+
             dateX = coordinates["dateX"]
             dateY = coordinates["dateY"]
+
             programX = coordinates["programX"]
             programY = coordinates["programY"]
+            programSize = int(coordinates["programSize"])
+
             image_new_width = coordinates["image_width"]
             image_new_height = coordinates["image_height"]
-            fullnameSize = int(coordinates["fullnameSize"])
-            programSize = int(coordinates["programSize"])
+
 
             # region get new position
             positon_name_X = image_width * fullnameX / image_new_width - 20
-            positon_name_Y = image_height * fullnameY / image_new_height- 20
+            positon_name_Y = image_height * fullnameY / image_new_height
 
             positon_program_X = image_width * programX / image_new_width- 20
-            positon_program_Y = image_height * programY / image_new_height- 20
+            positon_program_Y = image_height * programY / image_new_height
 
             positon_logo_X = image_width * logoX / image_new_width
             positon_logo_Y = image_height * logoY / image_new_height
 
             positon_date_X = image_width * dateX / image_new_width- 20
-            positon_date_Y = image_height * dateY / image_new_height- 20
+            positon_date_Y = image_height * dateY / image_new_height
 
             font_size_name_new = image_width * fullnameSize / image_new_width
             font_size_program_new = image_width * programSize / image_new_width
@@ -98,7 +106,6 @@ if __name__ == '__main__':
             font_date = ImageFont.truetype(os.path.join(path, 'Lato-Bold.ttf'), size=font_size_date_new)
             # endregion
 
-            # endregion
             if (get_user_id == 0):
                 if (get_training_id == 0):
                     sql_select_Query = "select tms_user_detail.user_id, tms_user_detail.fullname as fullname, tms_traninning_programs.name as name, tms_traninning_programs.logo as logo, student_certificate.timecertificate as timecertificate, student_certificate.code as code, student_certificate.id as student_certificate_id from student_certificate join tms_user_detail on student_certificate.userid = tms_user_detail.user_id join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 "
@@ -138,13 +145,26 @@ if __name__ == '__main__':
                         canvas.text((positon_date_X, positon_date_Y), strDate, font=font_date, fill='#111111')
                         # endregion
 
+                        # # get width and height of text
+                        # name_width, name_height = canvas.textsize(name_utf8, font=font_name)
+                        # training_width, training_height = canvas.textsize(name_utf8_training, font=font_training)
+
                         # set name to position
-                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training,
-                                    font=font_training, fill='#111111')
+                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training, font=font_training, fill='#111111')
                         # canvas.text((2105, 1585), address_utf8_branch, font=font_name, fill='#060836')
-                        canvas.text((positon_name_X, positon_name_Y),
-                                    name_utf8.upper(), font=font_name, fill='#111111')
+                        # canvas.text((positon_name_X, positon_name_Y),name_utf8.upper(), font=font_name, fill='#111111')
+                        width_cut = int(fullnameWidth / fullnameSize) * 2 + 2
+                        height_text = positon_name_Y
+                        if fullnameHeight > fullnameSize:
+                            for line in textwrap.wrap(name_utf8.encode('utf8'), width=width_cut):
+                                canvas.text((positon_name_X, height_text), line.decode('utf8'), font=font_name,
+                                            fill='#111111')
+                                height_text += font_name.getsize(line)[1] + 15
+                        else:
+                            canvas.text((positon_name_X, positon_name_Y), name_utf8, font=font_name, fill='#111111')
+
                         img.paste(logo, (positon_logo_X, positon_logo_Y))
+
                         # save image
                         img.save(os.path.join(path_gen_img, 'certificate', code + '.png'))
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
@@ -154,6 +174,7 @@ if __name__ == '__main__':
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
                         cursor.execute(sql, (student_certificate_id,))
+                        print(e)
                 connection.commit()
                 print('luu nhieu anh thanh cong')
             else:
@@ -183,6 +204,7 @@ if __name__ == '__main__':
                         name_utf8 = name.decode('utf8')
                         name_utf8_training = training_name
 
+                        # region fill text
                         # create the canvas
                         canvas = ImageDraw.Draw(img)
 
@@ -192,12 +214,21 @@ if __name__ == '__main__':
                         canvas.text((positon_date_X, positon_date_Y), strDate, font=font_date, fill='#111111')
                         # endregion
 
-                        # set name to position
-                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training,
-                                    font=font_training, fill='#111111')
-                        # canvas.text((2105, 1585), address_utf8_branch, font=font_name, fill='#060836')
-                        canvas.text((positon_name_X, positon_name_Y),
-                                    name_utf8, font=font_name, fill='#111111')
+                        # # get width and height of text
+                        # name_width, name_height = canvas.textsize(name_utf8, font=font_name)
+                        # training_width, training_height = canvas.textsize(name_utf8_training, font=font_training)
+
+                        # set name program to position
+                        canvas.text((positon_program_X, positon_program_Y), name_utf8_training, font=font_training, fill='#111111')
+                        # set name user to postion
+                        # canvas.text((positon_name_X, positon_name_Y), name_utf8, font=font_name, fill='#111111')
+                        width_cut = int(fullnameWidth/fullnameSize)*2 + 2
+                        if fullnameHeight > fullnameSize:
+                            for line in textwrap.wrap(name_utf8.encode('utf8'), width=width_cut):
+                              canvas.text((positon_name_X, positon_name_Y), line.decode('utf8'), font=font_name, fill='#111111')
+                              positon_name_Y += font_name.getsize(line)[1]+15
+                        else:
+                            canvas.text((positon_name_X, positon_name_Y), name_utf8, font=font_name, fill='#111111')
 
                         img.paste(logo, (positon_logo_X, positon_logo_Y))
 

@@ -268,6 +268,7 @@
                 this.coordinates.image_height = $('#img_certificate')[0].clientHeight;
 
                 this.coordinates.fullnameWidth = $('#sp_inputFullName')[0].clientWidth;
+                this.coordinates.fullnameHeight = $('#sp_inputFullName')[0].clientHeight;
 
                 this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 this.coordinates.programSize = $('#ip_inputSizeProgram').val();
