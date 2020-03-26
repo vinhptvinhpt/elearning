@@ -32,12 +32,22 @@ Route::get('/cron/task/finalizeCourse', 'Api\TaskController@finalizeCourseForRol
 Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->middleware(['App\Http\Middleware\CheckToken']);
 
-Route::get('/cron/mail/invite', 'Api\MailController@inviteStudent');
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
-//mail
-Route::get('/cron/mail/suggestSoftSkillCourses', 'Api\MailController@suggestSoftSkillCourses');
+//Send mail
+Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation'); //every minute
+Route::get('/cron/mail/sendESEC', 'Api\MailController@sendEnrolQuizStartQuizEndQuizCompleted'); //every minute
+Route::get('/cron/mail/sendRemindCertificate', 'Api\MailController@sendRemindCertificate'); //every minute
+Route::get('/cron/mail/sendSuggestSSC', 'Api\MailController@sendSuggestSoftSkillCourses'); //every minute
+Route::get('/cron/mail/sendRemindERC', 'Api\MailController@sendRemindExpireRequiredCourses'); //every minute
+
+//Insert mail
+Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses'); //every minute
+Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses'); //every minute
+Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses'); //every minute
+Route::get('/cron/mail/removeRemindERC', 'Api\MailController@removeRemindExpireRequiredCourses'); //every week
+
 
 
 // admin route
