@@ -84,37 +84,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     });
                 }
             }
-        } else {
-            $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-            if ($checkRole === TRUE) {
-                $listCourses = DB::table('mdl_user_enrolments as mue')
-                    ->where('mue.userid', '=', \Auth::user()->id)
-                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                    ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
-                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                    ->select(
-                        'c.id',
-                        'c.fullname',
-                        'c.shortname',
-                        'c.startdate',
-                        'c.enddate',
-                        'c.visible',
-                        'mccc.gradepass as pass_score'
-                    );
-            } else {
-                $listCourses = DB::table('mdl_course as c')
-                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                    ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
-                    ->select(
-                        'c.id',
-                        'c.fullname',
-                        'c.shortname',
-                        'c.startdate',
-                        'c.enddate',
-                        'c.visible',
-                        'mccc.gradepass as pass_score'
-                    );
-            }
         }
         else {
             //Kiểm tra xem có phải role teacher hay không
@@ -148,8 +117,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         'mccc.gradepass as pass_score'
                     );
             }
-
         }
+
         //là khóa học mẫu
         if ($sample == 1) {
             $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
@@ -236,6 +205,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $is_end_quiz = $request->input('is_end_quiz');
         $estimate_duration = $request->input('estimate_duration');
         $course_budget = $request->input('course_budget');
+        $access_ip_string = $request->input('access_ip');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -289,6 +259,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course->enablecompletion = 1;
         $course->estimate_duration = $estimate_duration;
         $course->course_budget = $course_budget;
+
+        //access_ip
+        $access_ip = $this->spitIP($access_ip_string);
+
+        $course->access_ip = $access_ip;
         $course->save();
 
         //insert dữ liệu điểm qua môn
@@ -364,6 +339,21 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     }
 
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
+    }
+
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -391,6 +381,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
             //thực hiện insert dữ liệu
             $param = [
                 'shortname' => 'code',
@@ -404,7 +395,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 'is_end_quiz' => 'number',
                 'fullname' => 'text',
                 'estimate_duration' => 'number',
-                'course_budget' => 'decimal'
+                'course_budget' => 'decimal',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -497,7 +489,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course->course_budget = $course_budget;
 
             $course->allow_register = $allow_register;
-
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
             $course->save();
 
 

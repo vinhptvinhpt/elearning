@@ -136,6 +136,14 @@
                                                 <label for="inputText10">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                                             </div>
 
+                                          <div class="col-12 form-group">
+                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dai_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                            <input v-model="string_ip"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   class="form-control mb-4">
+                                          </div>
+
+
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                                                 <ckeditor v-model="course.summary" :config="editorConfig"></ckeditor>
@@ -184,6 +192,7 @@
                 course: {
                     avatar: ''
                 },
+                string_ip: "",
                 categories: [],
                 language: this.trans.get('keys.language'),
                 editorConfig: {
@@ -219,7 +228,12 @@
                 axios.get('/api/courses/get_course_detail/' + this.course_id)
                     .then(response => {
                         this.course = response.data;
-
+                        if(response.data.access_ip){
+                            var js_ip = JSON.parse(response.data.access_ip);
+                            js_ip['list_access_ip'].forEach(item => this.string_ip += item + ', ');
+                            this.string_ip = this.string_ip.substr(0, this.string_ip.length - 2);
+                        }
+                        // console.log(JSON.parse(response.data.access_ip));
                         var startdate = new Date(response.data.startdate * 1000);
 
                         var ten = function (i) {
@@ -251,6 +265,7 @@
                         //Convert text-area to ck editor
                         this.setEditor();
                         this.setFileInput();
+
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -322,6 +337,7 @@
                 this.formData.append('allow_register', allow_reg);
                 this.formData.append('offline', 0); //ko phai khoa hoc tap trung
                 this.formData.append('course_budget', this.course.course_budget);
+                this.formData.append('access_ip', this.string_ip);
                 let current_pos = this;
                 axios.post('/api/courses/update/' + this.course_id, this.formData, {
                     headers: {

@@ -746,7 +746,8 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.summary',
                 'mdl_course.course_place',
                 'mdl_course.estimate_duration',
-                'mdl_course.course_budget'
+                'mdl_course.course_budget',
+                'mdl_course.access_ip'
             )
             ->where('mdl_course.id', '=', $id)->first();
 
