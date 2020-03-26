@@ -3,7 +3,7 @@
         <div class="overwrap_search_box"></div>
         <div class="hk-wrapper hk-vertical-nav">
             <top-bar :key="topBarKey"></top-bar>
-            <side-bar :current_roles="current_roles"></side-bar>
+            <side-bar v-if="roles_ready" :current_roles="current_roles"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
               <router-view

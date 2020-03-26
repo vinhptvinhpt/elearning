@@ -48,13 +48,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+        //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
+        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
         if ($checkRole === TRUE) {
-            $listCourses = DB::table('mdl_user_enrolments as mue')
-                ->where('mue.userid', '=', \Auth::user()->id)
-                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+            $listCourses = DB::table('tms_organization_employee')
+                ->where('tms_organization_employee.user_id', '=', \Auth::user()->id)
+                ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                ->join('mdl_course as c', 'tms_role_course.course_id', '=', 'c.id')
+                ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'c.id')
                 ->select(
                     'c.id',
                     'c.fullname',
@@ -62,24 +64,43 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.startdate',
                     'c.enddate',
                     'c.visible',
-                    'mccc.gradepass as pass_score'
-                );
-        } else {
-            $listCourses = DB::table('mdl_course as c')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
-                ->select(
-                    'c.id',
-                    'c.fullname',
-                    'c.shortname',
-                    'c.startdate',
-                    'c.enddate',
-                    'c.visible',
-                    'mccc.gradepass as pass_score'
+                    'mdl_course_completion_criteria.gradepass as pass_score'
                 );
         }
+        else {
+            //Kiểm tra xem có phải role teacher hay không
+            $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+            if ($checkRole === TRUE) {
+                $listCourses = DB::table('mdl_user_enrolments as mue')
+                    ->where('mue.userid', '=', \Auth::user()->id)
+                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                    ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->select(
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'mccc.gradepass as pass_score'
+                    );
+            } else {
+                $listCourses = DB::table('mdl_course as c')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
+                    ->select(
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'mccc.gradepass as pass_score'
+                    );
+            }
 
-
+        }
         //là khóa học mẫu
         if ($sample == 1) {
             $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
