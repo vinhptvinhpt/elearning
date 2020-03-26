@@ -25,8 +25,11 @@ bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
 logo_size_height = 100
-
-# D:\\Job\\elearning-easia\\python\\generate.py  D:\\Job\\elearning-easia\\python\\certificate.jpg 1571 u:1 w:0 c:0
+#Statment:
+#python /path/to/file/generate.py user_id training_id
+#user_id = 0 && training_id = 0 => sẽ generate tất cả những user có status = 1.
+#user_id = 0 && training_id = 1 || 2 => sẽ generate tất cả những user có status = 1 và training_id = 1 || 2
+#user_id != 0 => generate theo thông tin của user_id
 if __name__ == '__main__':
     get_user_id = int(sys.argv[1])
     get_training_id = int(sys.argv[2])
