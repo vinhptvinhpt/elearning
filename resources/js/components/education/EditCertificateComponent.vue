@@ -267,8 +267,12 @@
                 this.coordinates.image_width = $('#img_certificate')[0].clientWidth;
                 this.coordinates.image_height = $('#img_certificate')[0].clientHeight;
 
+                this.coordinates.fullnameWidth = $('#sp_inputFullName')[0].clientWidth;
+
                 this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 this.coordinates.programSize = $('#ip_inputSizeProgram').val();
+
+
                 this.formData = new FormData();
                 this.certificate.is_active = this.certificate.confirm == true ? 1 : 0;
                 this.formData.append('file', this.$refs.file.files[0]);
@@ -429,6 +433,7 @@
                             $('#ip_inputSizeFullName').val(15);
                         else {
                             $('#sp_inputFullName').css('font-size', e.currentTarget.value+'px');
+                            $('#sp_inputFullName').css('line-height', e.currentTarget.value+'px');
                             this.currentChoose = "inputFullName";
                             this.coordinates.fullnameSize = e.currentTarget.value;
                         }
@@ -439,6 +444,7 @@
                             $('#ip_inputSizeProgram').val(15);
                         else {
                             $('#sp_inputProgram').css('font-size', e.currentTarget.value + 'px');
+                            $('#sp_inputProgram').css('line-height', e.currentTarget.value+'px');
                             this.currentChoose = "inputProgram";
                             this.coordinates.programSize = e.currentTarget.value;
                         }
@@ -468,6 +474,7 @@
                 }
 
                 $('#sp_inputFullName').css('font-size', this.coordinates.fullnameSize+'px');
+                $('#sp_inputFullName').css('line-height', this.coordinates.fullnameSize+'px');
                 $('#ip_inputSizeFullName').val(this.coordinates.fullnameSize);
             },
             SetShowTextProgram(){
@@ -481,6 +488,7 @@
                 }
 
                 $('#sp_inputProgram').css('font-size', this.coordinates.programSize+'px');
+                $('#sp_inputProgram').css('line-height', this.coordinates.programSize+'px');
                 $('#ip_inputSizeProgram').val(this.coordinates.programSize);
             },
         },
