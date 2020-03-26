@@ -710,7 +710,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     //Attendance
     Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');
-
+    //Phân quyền data
+    Route::post('/api/role/mapping_course', 'Backend\RoleController@apiMappingCourse');
+    Route::post('/api/role/remove_mapping_course', 'Backend\RoleController@apiRemoveMappingCourse');
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
