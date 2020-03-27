@@ -201,7 +201,7 @@ class enrol_self_plugin extends enrol_plugin {
                     $this->enrol_self($instance, $data);
                     // [VinhPT] Add notifiction for course enroll
                     $noti_type = "mail";
-                    $noti_target = "course_enroll";
+                    $noti_target = "enroll";
                     $noti_status = 0;
                     $noti_course_id = $data->id;
                     $noti_sendto = (int)$USER->id;
