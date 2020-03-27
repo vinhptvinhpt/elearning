@@ -11983,6 +11983,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $this->saleroom_id = $request->input('sale_room_id');
+        $this->city_id = 0;
 
         $param = [
             'keyword' => 'text',
@@ -11994,12 +11995,18 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        $city = DB::table('tms_city_branch as tcb')
-            ->select('tcb.city_id')
-            ->join('tms_branch_sale_room as tbsr', 'tbsr.branch_id', '=', 'tcb.branch_id')
-            ->where('tbsr.sale_room_id', '=', $this->saleroom_id)
-            ->get()->first();
-        $this->city_id = $city->city_id;
+
+        if (strlen($this->saleroom_id) != 0) {
+            $city = DB::table('tms_city_branch as tcb')
+                ->select('tcb.city_id')
+                ->join('tms_branch_sale_room as tbsr', 'tbsr.branch_id', '=', 'tcb.branch_id')
+                ->where('tbsr.sale_room_id', '=', $this->saleroom_id)
+                ->get()->first();
+            if ($city) {
+                $this->city_id = $city->city_id;
+            }
+        }
+
 
         $data = DB::table('tms_user_detail as tud')
             ->select(
