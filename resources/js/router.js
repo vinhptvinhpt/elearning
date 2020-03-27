@@ -395,7 +395,7 @@ const routes = [
         name: 'BranchMasterIndex',
       },
       {
-        path: 'education/user_teacher/teacher',
+        path: 'education/user_teacher',
         component: IndexComponent,
         name: 'TeacherIndex',
         props: (route) => ({type: 'teacher'})
