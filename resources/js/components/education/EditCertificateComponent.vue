@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-body">
                   <p>
-                    <input  type="file" ref="file" name="file" class="dropify" />
+                    <input  type="file" ref="file" name="file" class="dropify"  accept="image/*"  @change="selectedFile"/>
                   </p>
                 </div>
               </div>
@@ -175,6 +175,21 @@
             }
         },
         methods:{
+            selectedFile(e) {
+                console.log(e.target.value);
+                let file = this.$refs.file.files[0];
+                const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
+                if(!file || (validFileTypes.indexOf(file.type) == -1)){
+                    const input = this.$refs.file;
+                    input.type = 'file';
+                    this.$refs.file.value = '';
+                    toastr['error'](this.trans.get('keys.dinh_dang_file_khong_hop_le'), this.trans.get('keys.thong_bao'));
+                }
+                else{
+                    // this.certificate.path = e.target.value;
+                    // $('#img_certificate').attr('src', e.target.value);
+                }
+            },
             changeRequired(element){
                 $('#'+element).removeClass('notValidate');
             },
@@ -300,7 +315,7 @@
                         }
                     })
                     .catch(error => {
-                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
             setFileInput() {
