@@ -339,12 +339,14 @@
                 this.formData.append('course_budget', this.course.course_budget);
                 this.formData.append('access_ip', this.string_ip);
                 let current_pos = this;
+                console.log('123');
                 axios.post('/api/courses/update/' + this.course_id, this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
                     .then(response => {
+                        console.log('456');
                         var language = this.language;
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
@@ -354,6 +356,7 @@
                         }
                     })
                     .catch(error => {
+                        console.log('789');
                         toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
