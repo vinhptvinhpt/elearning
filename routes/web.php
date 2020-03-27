@@ -446,6 +446,13 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/education/user/list', 'Backend\EducationController@apiListUser');
     Route::post('/education/user/create', 'Backend\SystemController@apiStore');
 
+    //Infrastructer in course offline
+    Route::post('/api/infrastructer/getall', 'Backend\InfrastructureController@apiGetall');
+    Route::post('/api/infrastructer/create', 'Backend\InfrastructureController@apiStore');
+    Route::post('/api/infrastructer/update', 'Backend\InfrastructureController@apiUpdate');
+    Route::post('/api/infrastructer/delete', 'Backend\InfrastructureController@apiDelete');
+    Route::get('/api/infrastructer/detail/{id}', 'Backend\InfrastructureController@apiGetbyid');
+
 
     Route::get('/education/course/list', 'Backend\CourseController@viewIndex')->name('education.course');
     Route::post('/api/courses/list', 'Backend\CourseController@apiGetListCourse');
