@@ -149,6 +149,15 @@
                                                        style="width:20px; height:20px;">
                                                 <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                                             </div>
+
+                                          <div class="col-12 form-group">
+                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                            <input v-model="string_ip"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   class="form-control mb-4">
+                                          </div>
+
+
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                                                 <ckeditor v-model="description" :config="editorConfig"></ckeditor>
@@ -207,6 +216,7 @@
                 is_end_quiz: 0,
                 allow_register: 1,
                 libraryid: 0,
+                string_ip: "",
                 sample: '', //khóa học mẫu được chọn
                 coursesamples: [], //danh sách khóa học mẫu,
                 language: this.trans.get('keys.language'),
@@ -353,6 +363,9 @@
                 this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
                 this.formData.append('estimate_duration', this.estimate_duration);
                 this.formData.append('course_budget', this.course_budget);
+                this.formData.append('course_budget', this.course_budget);
+                this.formData.append('access_ip', this.string_ip);
+
                 let current_pos = this;
                 axios.post('/api/courses/clone', this.formData, {
                     headers: {
