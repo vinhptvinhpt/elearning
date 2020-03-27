@@ -814,6 +814,11 @@
         "hay_nhap_co_chu_ten_khung_nang_luc": "Please enter the font size of the capacity frame name competency framework",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Choose the coordinates showing information when displaying on a certificate image",
         "co_chu": "Font size",
+        "cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay": "The addresses are separated by commas",
+        "dia_chi_ip_cho_phep": "Allow ip address",
+        "nhap_dia_chi": "Enter the ip address",
+        "go_avatar": "Remove avatar",
+
         "su_dung_phan_quyen": "Use as role",
         "phan_quyen_du_lieu": "Data permission",
         "danh_sach_khoa_hoc": "List courses",
@@ -1626,6 +1631,10 @@
         "hay_nhap_co_chu_ten_khung_nang_luc": "Hãy nhập cỡ chữ tên khung năng lực",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Chọn tọa độ hiển thị thông tin khi hiển thị lên ảnh chứng chỉ",
         "co_chu": "Cỡ chữ",
+        "cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay": "Các địa chỉ ngăn cách nhau bởi dấu phẩy",
+        "dia_chi_ip_cho_phep": "Địa chỉ ip cho phép",
+        "nhap_dia_chi": "Nhập địa chỉ",
+        "go_avatar": "Gỡ avatar",
 
         "diem_danh": "Điểm danh",
         "danh_sach_tai_lieu_trong_khoa_hoc": "Danh sách tài liệu trong khóa học",

@@ -122,7 +122,8 @@ class CourseController extends Controller
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'estimate_duration' => 'number',
-                'course_budget' => 'decimal'
+                'course_budget' => 'decimal',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {

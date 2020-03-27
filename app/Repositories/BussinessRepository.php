@@ -746,7 +746,8 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.summary',
                 'mdl_course.course_place',
                 'mdl_course.estimate_duration',
-                'mdl_course.course_budget'
+                'mdl_course.course_budget',
+                'mdl_course.access_ip'
             )
             ->where('mdl_course.id', '=', $id)->first();
 
@@ -3492,10 +3493,10 @@ class BussinessRepository implements IBussinessInterface
                 givePermissionToRole($role_id, $permissions); //Add permission to Role
             }
 
-            //Thêm quyền bên LMS
-            if (!empty($per_slug_input)) {
-                apply_role_lms($role_id, $per_slug_input);
-            }
+//            //Thêm quyền bên LMS
+//            if (!empty($per_slug_input)) {
+//                apply_role_lms($role_id, $per_slug_input);
+//            }
 
             $type = 'role';
             $url = '/roles/edit/' . $role_id;

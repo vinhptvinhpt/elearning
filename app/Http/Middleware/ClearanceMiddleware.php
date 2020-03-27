@@ -23,8 +23,8 @@ class ClearanceMiddleware
             //Bypass for organization roles
             //|| tvHasRole(auth('web')->user()->id, 'admin')
             //|| tvHasRole(auth('web')->user()->id, 'Admin')
-            || tvHasRole(auth('web')->user()->id, 'manager')
-            || tvHasRole(auth('web')->user()->id, 'leader')
+//            || tvHasRole(auth('web')->user()->id, 'manager')
+//            || tvHasRole(auth('web')->user()->id, 'leader')
             ) {
             return $next($request);
         } else {

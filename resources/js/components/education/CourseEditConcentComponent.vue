@@ -143,6 +143,14 @@
                                                 <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                                             </div>
 
+                                          <div class="col-12 form-group">
+                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                            <input v-model="string_ip"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   class="form-control mb-4">
+                                          </div>
+
+
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                                                 <ckeditor v-model="course.summary" :config="editorConfig"></ckeditor>
@@ -200,6 +208,7 @@
                 course: {
                     avatar: ''
                 },
+                string_ip: "",
                 categories: [],
                 language: this.trans.get('keys.language'),
                 editorConfig: {
@@ -232,6 +241,12 @@
                 axios.get('/api/courses/get_course_detail/' + this.course_id)
                     .then(response => {
                         this.course = response.data;
+
+                        if(response.data.access_ip){
+                            var js_ip = JSON.parse(response.data.access_ip);
+                            js_ip['list_access_ip'].forEach(item => this.string_ip += item + ', ');
+                            this.string_ip = this.string_ip.substr(0, this.string_ip.length - 2);
+                        }
 
                         var startdate = new Date(response.data.startdate * 1000);
 

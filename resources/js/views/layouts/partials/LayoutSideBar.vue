@@ -220,9 +220,7 @@
                         || slug_can('tms-educate-exam-restore-add')
                         || slug_can('tms-educate-uncertificate-view')
                         || slug_can('tms-educate-certificate-view')
-                        || slug_can('tms-trainning-view')
-                          || has_role_manager
-                            || has_role_leader">
+                        || slug_can('tms-trainning-view')">
                         <a class="nav-link  has-submenu collapse-level-1" id="quan_ly_dao_tao"
                            @click="toggleMenu('quan_ly_dao_tao','pages_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
@@ -242,9 +240,7 @@
                             <li class="nav-item" v-if=" slug_can('tms-educate-exam-online-view')
                             || slug_can('tms-educate-exam-offline-view')
                             || slug_can('tms-educate-exam-clone-add')
-                            || slug_can('tms-educate-exam-restore-view')
-                            || has_role_manager
-                            || has_role_leader">
+                            || slug_can('tms-educate-exam-restore-view')">
                                 <a class="nav-link has-submenu" id="khoa_dao_tao"
                                    @click="toggleMenu('khoa_dao_tao','recover_drp12')"
                                    href="javascript:void(0);" data-toggle="collapse">
@@ -253,13 +249,13 @@
                                 <ul id="recover_drp12"
                                     class="nav flex-column collapse collapse-level-2">
 
-                                    <li class="nav-item" v-if="slug_can('tms-educate-exam-online-view') || has_role_manager || has_role_leader">
+                                    <li class="nav-item" v-if="slug_can('tms-educate-exam-online-view')">
                                         <router-link to="/tms/education/course/list" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khoa_dao_tao_online') }}</span>
                                         </router-link>
                                     </li>
 
-                                    <li class="nav-item" v-if="slug_can('tms-educate-exam-offline-view')|| has_role_manager || has_role_leader">
+                                    <li class="nav-item" v-if="slug_can('tms-educate-exam-offline-view')">
                                         <router-link to="/tms/education/course/list_concentrate" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khoa_dao_tao_tap_trung') }}</span>
                                         </router-link>

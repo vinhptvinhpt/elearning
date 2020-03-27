@@ -230,6 +230,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $is_end_quiz = $request->input('is_end_quiz');
         $estimate_duration = $request->input('estimate_duration');
         $course_budget = $request->input('course_budget');
+        $access_ip_string = $request->input('access_ip');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -283,6 +284,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course->enablecompletion = 1;
         $course->estimate_duration = $estimate_duration;
         $course->course_budget = $course_budget;
+
+        //access_ip
+        $access_ip = $this->spitIP($access_ip_string);
+
+        $course->access_ip = $access_ip;
         $course->save();
 
         //insert dữ liệu điểm qua môn
@@ -358,6 +364,21 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     }
 
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
+    }
+
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -385,6 +406,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
             //thực hiện insert dữ liệu
             $param = [
                 'shortname' => 'code',
@@ -398,7 +420,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 'is_end_quiz' => 'number',
                 'fullname' => 'text',
                 'estimate_duration' => 'number',
-                'course_budget' => 'decimal'
+                'course_budget' => 'decimal',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -491,7 +514,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course->course_budget = $course_budget;
 
             $course->allow_register = $allow_register;
-
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
             $course->save();
 
 

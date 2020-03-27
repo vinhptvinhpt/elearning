@@ -135,6 +135,13 @@
                                                 <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                                             </div>
 
+                                          <div class="col-12 form-group">
+                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                            <input v-model="access_ip"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   class="form-control mb-4">
+                                          </div>
+
 
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
@@ -193,6 +200,7 @@
                 categories: [],
                 allow_register: 1,
                 total_date_course: '',
+                access_ip: "",
                 language: this.trans.get('keys.language'),
                 course_budget: 0,
                 editorConfig: {
@@ -276,6 +284,7 @@
                 this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
                 this.formData.append('estimate_duration', this.estimate_duration);
                 this.formData.append('course_budget', this.course_budget);
+                this.formData.append('access_ip', this.access_ip);
 
                 axios.post('/api/courses/create', this.formData, {
                     headers: {
