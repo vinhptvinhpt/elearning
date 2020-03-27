@@ -172,7 +172,7 @@
                                     <!--                                    </li>-->
 
                                     <li class="nav-item" v-if="slug_can('tms-system-teacher-view')">
-                                        <router-link to="/tms/education/user_teacher/teacher" class="nav-link">
+                                        <router-link to="/tms/education/user_teacher" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.giang_vien') }}</span>
                                         </router-link>
                                     </li>

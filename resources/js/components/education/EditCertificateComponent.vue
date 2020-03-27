@@ -29,7 +29,7 @@
                 </div>
                 <div class="card-body">
                   <p>
-                    <input  type="file" ref="file" name="file" class="dropify" />
+                    <input  type="file" ref="file" name="file" class="dropify"  accept="image/*"  @change="selectedFile"/>
                   </p>
                 </div>
               </div>
@@ -175,6 +175,21 @@
             }
         },
         methods:{
+            selectedFile(e) {
+                console.log(e.target.value);
+                let file = this.$refs.file.files[0];
+                const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
+                if(!file || (validFileTypes.indexOf(file.type) == -1)){
+                    const input = this.$refs.file;
+                    input.type = 'file';
+                    this.$refs.file.value = '';
+                    toastr['error'](this.trans.get('keys.dinh_dang_file_khong_hop_le'), this.trans.get('keys.thong_bao'));
+                }
+                else{
+                    // this.certificate.path = e.target.value;
+                    // $('#img_certificate').attr('src', e.target.value);
+                }
+            },
             changeRequired(element){
                 $('#'+element).removeClass('notValidate');
             },
@@ -267,8 +282,13 @@
                 this.coordinates.image_width = $('#img_certificate')[0].clientWidth;
                 this.coordinates.image_height = $('#img_certificate')[0].clientHeight;
 
+                this.coordinates.fullnameWidth = $('#sp_inputFullName')[0].clientWidth;
+                this.coordinates.fullnameHeight = $('#sp_inputFullName')[0].clientHeight;
+
                 this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 this.coordinates.programSize = $('#ip_inputSizeProgram').val();
+
+
                 this.formData = new FormData();
                 this.certificate.is_active = this.certificate.confirm == true ? 1 : 0;
                 this.formData.append('file', this.$refs.file.files[0]);
@@ -295,7 +315,7 @@
                         }
                     })
                     .catch(error => {
-                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
             setFileInput() {
@@ -429,6 +449,7 @@
                             $('#ip_inputSizeFullName').val(15);
                         else {
                             $('#sp_inputFullName').css('font-size', e.currentTarget.value+'px');
+                            $('#sp_inputFullName').css('line-height', e.currentTarget.value+'px');
                             this.currentChoose = "inputFullName";
                             this.coordinates.fullnameSize = e.currentTarget.value;
                         }
@@ -439,6 +460,7 @@
                             $('#ip_inputSizeProgram').val(15);
                         else {
                             $('#sp_inputProgram').css('font-size', e.currentTarget.value + 'px');
+                            $('#sp_inputProgram').css('line-height', e.currentTarget.value+'px');
                             this.currentChoose = "inputProgram";
                             this.coordinates.programSize = e.currentTarget.value;
                         }
@@ -468,6 +490,7 @@
                 }
 
                 $('#sp_inputFullName').css('font-size', this.coordinates.fullnameSize+'px');
+                $('#sp_inputFullName').css('line-height', this.coordinates.fullnameSize+'px');
                 $('#ip_inputSizeFullName').val(this.coordinates.fullnameSize);
             },
             SetShowTextProgram(){
@@ -481,6 +504,7 @@
                 }
 
                 $('#sp_inputProgram').css('font-size', this.coordinates.programSize+'px');
+                $('#sp_inputProgram').css('line-height', this.coordinates.programSize+'px');
                 $('#ip_inputSizeProgram').val(this.coordinates.programSize);
             },
         },

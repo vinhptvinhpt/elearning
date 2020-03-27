@@ -130,6 +130,12 @@
                                                 <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                                             </div>
 
+                                          <div class="col-12 form-group">
+                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                            <input v-model="access_ip"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   class="form-control mb-4">
+                                          </div>
 
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
@@ -191,6 +197,7 @@
                 is_end_quiz: 0,
                 language: this.trans.get('keys.language'),
                 course_budget: 0,
+                access_ip: "",
                 editorConfig: {
                     filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
                     // The configuration of the editor.
@@ -279,6 +286,7 @@
                 this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
                 this.formData.append('estimate_duration', this.estimate_duration);
                 this.formData.append('course_budget', this.course_budget);
+                this.formData.append('access_ip', this.access_ip);
                 let current_pos = this;
                 axios.post('/api/courses/create', this.formData, {
                     headers: {

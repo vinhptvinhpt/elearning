@@ -494,6 +494,21 @@ function tvHasRole($user_id, $roleName)
     return false;
 }
 
+function tvHasRoles($user_id, $roleName)
+{
+//    $role_id = Role::where('name', $roleName)->pluck('id');
+//    $roleCheck = ModelHasRole::where('model_id', $user_id)
+//        ->whereIn('role_id', $role_id)->first();
+
+    $roleCheck = DB::table('model_has_roles as mhr')
+        ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+        ->where('mhr.model_id', '=', $user_id)
+        ->whereIn('r.name', $roleName)->first();
+    if ($roleCheck)
+        return true;
+    return false;
+}
+
 function slug_can($slug)
 {
     $check = false;

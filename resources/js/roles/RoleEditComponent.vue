@@ -11,6 +11,8 @@
         </nav>
       </div>
     </div>
+
+
     <div class="row">
       <div class="col-12">
         <div>
@@ -20,7 +22,7 @@
                 <div class="col-sm-8">
                   <h4 class="mb-3">{{trans.get('keys.sua_quyen')}}</h4>
                 </div>
-                <div class="col-sm-4 text-right">
+                <div v-if="!roles.role_organization" class="col-sm-4 text-right">
                   <router-link :to="{name: 'RoleUserIndex', params: {role_id: role_id}}" class="btn btn-default btn-sm mb-3">{{trans.get('keys.gan_nguoi_dung')}}</router-link>
                   <!--<a :href="'/role/edit/organize/'+role_id" class="btn btn-default btn-sm mb-3">Quản lý nhân lực</a>-->
                 </div>
@@ -29,7 +31,7 @@
                 <div class="col-12">
                   <div class="form-group">
                     <div class="input-group">
-                      <input v-if="roles.status == 0" type="text" class="form-control form-control-line" :placeholder="trans.get('keys.ten_quyen')+' *'" v-model="roles.name">
+                      <input v-if="roles.status === 0 && !roles.role_organization" type="text" class="form-control form-control-line" :placeholder="trans.get('keys.ten_quyen')+' *'" v-model="roles.name">
                       <input v-else type="text" class="form-control form-control-line" :placeholder="trans.get('keys.ten_quyen') + ' *'" v-model="roles.name" disabled>
                     </div>
                     <label v-if="!roles.name" class="text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -44,9 +46,9 @@
                   </div>
                 </div>
               </div>
-              <hr>
-              <h4 class="mb-10">{{trans.get('keys.chuc_nang')}}</h4>
-              <div class="row">
+              <hr v-if="!roles.role_organization">
+              <h4 v-if="!roles.role_organization" class="mb-10">{{trans.get('keys.chuc_nang')}}</h4>
+              <div v-if="!roles.role_organization" class="row">
                 <div class="col-12">
                   <div class="permission_panel pb-3 ">
                     <div class="permission_panel_item" v-for="(permissions,index1) in permission_slug">
@@ -72,8 +74,7 @@
                   </div>
                 </div>
               </div>
-              <p></p>
-              <div class="row">
+              <div v-if="!roles.role_organization" class="row">
                 <div class="col-6">
                   <div class="form-group">
 
@@ -95,14 +96,23 @@
         </div>
       </div>
     </div>
+
+    <mapping-course v-if="roles.role_organization" :role_id="role_id"></mapping-course>
+
   </div>
 </template>
 
 <script>
     //import vPagination from 'vue-plain-pagination'
+    import MappingCourse from './MappingCourseComponent'
+
+
     export default {
         props: ['role_id'],
-        //components: {vPagination},
+        components: {
+          //vPagination,
+          MappingCourse
+        },
         data(){
             return{
                 posts: {},

@@ -106,7 +106,7 @@ import InviteStudentComponent from "./components/education/InviteStudentComponen
 import TemplateIndexComponent from "./components/email/IndexComponent";
 import TemplateDetailComponent from "./components/email/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
-import AttendanceComponent from "./components/education/AttendanceComponent";
+import AttendanceComponent from "./components/education/AttendanceComponent"; //Không dùng nữa
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -395,7 +395,7 @@ const routes = [
         name: 'BranchMasterIndex',
       },
       {
-        path: 'education/user_teacher/teacher',
+        path: 'education/user_teacher',
         component: IndexComponent,
         name: 'TeacherIndex',
         props: (route) => ({type: 'teacher'})
@@ -635,7 +635,7 @@ const routes = [
           come_from: route.params.come_from
         })
       },
-      {
+      { //không dùng nữa
         path: 'education/attendance',
         component: AttendanceComponent,
         name: 'Attendance',

@@ -37,6 +37,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $enddate = $request->input('enddate');
         $status_course = $request->input('status_course');
         $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+        //Tích hợp phân quyền dữ liệu
+        $role_id = $request->input('role_id'); //quyền hệ thống
+        $is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
 
         $param = [
             'keyword' => 'text',
@@ -48,13 +51,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-        if ($checkRole === TRUE) {
-            $listCourses = DB::table('mdl_user_enrolments as mue')
-                ->where('mue.userid', '=', \Auth::user()->id)
-                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
+
+        $ready =  false;
+
+        if (strlen($role_id) != 0) {
+            $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
                 ->select(
                     'c.id',
                     'c.fullname',
@@ -64,7 +67,69 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.visible',
                     'mccc.gradepass as pass_score'
                 );
+            if (strlen($is_excluded) != 0) {
+                if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
+                   $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
+                       $query->select('course_id')
+                           ->from('tms_role_course')
+                           ->where('role_id', $role_id);
+                   });
+                    $ready =  true;
+                } else { //List khóa học đã phân quyền cho role này
+                    $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
+                        $query->select('course_id')
+                            ->from('tms_role_course')
+                            ->where('role_id', $role_id);
+                    });
+                    $ready =  true;
+                }
+            }
         } else {
+            //Kiểm tra xem có phải role thuộc organization hay không
+            $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+            if ($checkRole === TRUE) {
+                $listCourses = DB::table('tms_organization_employee')
+                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id)
+                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                    ->join('mdl_course as c', 'tms_role_course.course_id', '=', 'c.id')
+                    ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'c.id')
+                    ->select(
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'mdl_course_completion_criteria.gradepass as pass_score'
+                    );
+
+                $ready = true;
+            } else {
+                //Kiểm tra xem có phải role teacher hay không
+                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+                if ($checkRole === TRUE) {
+                    $listCourses = DB::table('mdl_user_enrolments as mue')
+                        ->where('mue.userid', '=', \Auth::user()->id)
+                        ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                        ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
+                        ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                        ->select(
+                            'c.id',
+                            'c.fullname',
+                            'c.shortname',
+                            'c.startdate',
+                            'c.enddate',
+                            'c.visible',
+                            'mccc.gradepass as pass_score'
+                        );
+                }
+                $ready = true;
+            }
+        }
+
+        if (!$ready) {
+            //Không thuộc các trường hợp trên
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
                 ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
@@ -78,7 +143,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'mccc.gradepass as pass_score'
                 );
         }
-
 
         //là khóa học mẫu
         if ($sample == 1) {
@@ -166,6 +230,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $is_end_quiz = $request->input('is_end_quiz');
         $estimate_duration = $request->input('estimate_duration');
         $course_budget = $request->input('course_budget');
+        $access_ip_string = $request->input('access_ip');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -219,6 +284,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course->enablecompletion = 1;
         $course->estimate_duration = $estimate_duration;
         $course->course_budget = $course_budget;
+
+        //access_ip
+        $access_ip = $this->spitIP($access_ip_string);
+
+        $course->access_ip = $access_ip;
         $course->save();
 
         //insert dữ liệu điểm qua môn
@@ -294,6 +364,21 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     }
 
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
+    }
+
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -321,6 +406,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
             //thực hiện insert dữ liệu
             $param = [
                 'shortname' => 'code',
@@ -334,7 +420,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 'is_end_quiz' => 'number',
                 'fullname' => 'text',
                 'estimate_duration' => 'number',
-                'course_budget' => 'decimal'
+                'course_budget' => 'decimal',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -427,7 +514,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course->course_budget = $course_budget;
 
             $course->allow_register = $allow_register;
-
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
             $course->save();
 
 
