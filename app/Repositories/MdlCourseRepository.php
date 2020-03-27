@@ -74,16 +74,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                            ->from('tms_role_course')
                            ->where('role_id', $role_id);
                    });
-                    $ready =  true;
                 } else { //List khóa học đã phân quyền cho role này
                     $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
                         $query->select('course_id')
                             ->from('tms_role_course')
                             ->where('role_id', $role_id);
                     });
-                    $ready =  true;
                 }
             }
+            $ready =  true;
         } else {
             //Kiểm tra xem có phải role thuộc organization hay không
             $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
@@ -103,7 +102,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         'c.visible',
                         'mdl_course_completion_criteria.gradepass as pass_score'
                     );
-
                 $ready = true;
             } else {
                 //Kiểm tra xem có phải role teacher hay không
@@ -123,8 +121,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                             'c.visible',
                             'mccc.gradepass as pass_score'
                         );
+                    $ready = true;
                 }
-                $ready = true;
             }
         }
 
