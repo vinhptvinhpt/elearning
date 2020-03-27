@@ -25,11 +25,8 @@ bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
 logo_size_height = 100
-#Statment:
-#python /path/to/file/generate.py user_id training_id
-#user_id = 0 && training_id = 0 => sẽ generate tất cả những user có status = 1.
-#user_id = 0 && training_id = 1 || 2 => sẽ generate tất cả những user có status = 1 và training_id = 1 || 2
-#user_id != 0 => generate theo thông tin của user_id
+
+# D:\\Job\\elearning-easia\\python\\generate.py  D:\\Job\\elearning-easia\\python\\certificate.jpg 1571 u:1 w:0 c:0
 if __name__ == '__main__':
     get_user_id = int(sys.argv[1])
     get_training_id = int(sys.argv[2])
@@ -42,6 +39,7 @@ if __name__ == '__main__':
         if connection.is_connected():
             cursor = connection.cursor()
             sql_select_image = "select path, position from image_certificate where is_active = 1"
+            # sql_select_image = "select path, position from image_certificate where id = 6"
             cursor = connection.cursor()
             cursor.execute(sql_select_image)
             record_image = cursor.fetchone()
@@ -56,6 +54,7 @@ if __name__ == '__main__':
 
             # width and height of image
             image_width, image_height = img.size
+            #
 
             # determined position of text to fill
             x_pos = (image_width) / 2
@@ -63,8 +62,11 @@ if __name__ == '__main__':
             x_code = (image_width) / 2
             y_code = (image_height) / 2
             # endregion
+            if len(record_image[1]) > 0:
+                coordinates = json.loads(record_image[1])
+            else:
+                coordinates = {"logoX": 90, "logoY": 70, "fullnameX": image_width / 2, "fullnameY": 430, "fullnameSize": 30, "fullnameWidth": image_width, "fullnameHeight": image_height/60, "dateX": 380, "dateY": 725, "programX": image_width / 2, "programY": 574, "programSize": 24, "image_width": image_width, "image_height": image_height}
 
-            coordinates = json.loads(record_image[1])
             logoX = coordinates["logoX"]
             logoY = coordinates["logoY"]
 
