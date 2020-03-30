@@ -88,10 +88,12 @@
                   <div class="col-sm-6">
                     <input v-model="organization.is_role" type="checkbox" id="organization_is_role" style="width:20px; height:20px;">
                     <label for="organization_is_role">{{trans.get('keys.su_dung_phan_quyen')}}</label>
+                    <br>
+                    <em>{{ trans.get('keys.cho_phep_phan_quyen_quan_ly_du_lieu_khoa_hoc_trong_giao_dien_chinh_sua_quyen') }}</em>
                   </div>
 
                 </div>
-                <div class="row">
+                <div class="row mt-3">
                   <div class="col-12">
                     <div class="form-group text-right">
                       <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
