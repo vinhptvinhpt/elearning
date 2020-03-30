@@ -1294,7 +1294,7 @@ class TaskController extends Controller
             $contents = DB::table('tms_nofitications as tn')
                 ->where('tn.type', '=', 'mail')
                 ->where('tn.target', '=', TmsNotification::ACTIVE_EMAIL)
-                ->where('tn.status_send', '=', '0')
+                ->where('tn.status_send', '=', TmsNotification::UN_SENT)
                 ->select('tn.id', 'tn.content')
                 ->get();
             if ($contents) {
@@ -1326,5 +1326,9 @@ class TaskController extends Controller
         }
     }
 
-
+    public function testCron()
+    {
+        Log::info('test cron: ' . time());
+        return 'SUCCESS';
+    }
 }
