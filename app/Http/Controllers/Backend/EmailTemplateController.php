@@ -101,6 +101,9 @@ class EmailTemplateController extends Controller
                     case TmsNotification::INVITE_STUDENT:
                         $label = __('moi_hoc_vien_tham_gia_khoa_học');
                         break;
+                    case TmsNotification::ACTIVE_EMAIL:
+                        $label = __('xac_nhan_email_nguoi_dung');
+                        break;
                     default:
                         $label = $config->target;
                         break;
@@ -153,6 +156,9 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('thong_bao_chung_chi');
+                break;
+            case TmsNotification::ACTIVE_EMAIL:
+                $label= __('xac_nhan_email_nguoi_dung');
                 break;
             default:
                 $label = '';
@@ -220,6 +226,9 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('thong_bao_chung_chi');
+                break;
+            case TmsNotification::ACTIVE_EMAIL:
+                $label = __('xac_nhan_email_nguoi_dung');
                 break;
             default:
                 $label = '';

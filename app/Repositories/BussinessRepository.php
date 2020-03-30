@@ -8,6 +8,7 @@ use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
+use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -880,6 +881,7 @@ class BussinessRepository implements IBussinessInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
 
             $param = [
                 'course_avatar' => 'text',
@@ -893,7 +895,8 @@ class BussinessRepository implements IBussinessInterface
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'estimate_duration' => 'number',
-                'course_budget' => 'number'
+                'course_budget' => 'number',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -966,6 +969,10 @@ class BussinessRepository implements IBussinessInterface
             $course->total_date_course = $total_date_course;
             $course->allow_register = $allow_register;
             $course->visible = 0;
+
+            //access_ip
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
 
             $course->save();
 
@@ -1070,6 +1077,21 @@ class BussinessRepository implements IBussinessInterface
             $response->message = $e->getMessage();
         }
         return response()->json($response);
+    }
+
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
     }
 
     //api lấy danh sách khóa học tập trung
@@ -6518,6 +6540,9 @@ class BussinessRepository implements IBussinessInterface
 
 
             devcpt_log_system('user', '/system/user/edit/' . $mdlUser->id, 'create', 'Tạo mới User: ' . $mdlUser->username);
+
+            createNofitication('{"email":"' . $email . '","fullname":"' . $fullname ? $fullname : $username . '","password":"' . $password . '"}');
+
             \DB::commit();
             return response()->json(status_message('success', __('tao_moi_tai_khoan_thanh_cong')));
         } catch (Exception $e) {
@@ -11983,6 +12008,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $this->saleroom_id = $request->input('sale_room_id');
+        $this->city_id = 0;
 
         $param = [
             'keyword' => 'text',
@@ -11994,12 +12020,18 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        $city = DB::table('tms_city_branch as tcb')
-            ->select('tcb.city_id')
-            ->join('tms_branch_sale_room as tbsr', 'tbsr.branch_id', '=', 'tcb.branch_id')
-            ->where('tbsr.sale_room_id', '=', $this->saleroom_id)
-            ->get()->first();
-        $this->city_id = $city->city_id;
+
+        if (strlen($this->saleroom_id) != 0) {
+            $city = DB::table('tms_city_branch as tcb')
+                ->select('tcb.city_id')
+                ->join('tms_branch_sale_room as tbsr', 'tbsr.branch_id', '=', 'tcb.branch_id')
+                ->where('tbsr.sale_room_id', '=', $this->saleroom_id)
+                ->get()->first();
+            if ($city) {
+                $this->city_id = $city->city_id;
+            }
+        }
+
 
         $data = DB::table('tms_user_detail as tud')
             ->select(
@@ -13394,15 +13426,13 @@ class BussinessRepository implements IBussinessInterface
             $ids = array();
             $ids_error = '';
             // End_date rỗng insert bình thường
-            if(empty($end_date)){
+            if (empty($end_date)) {
                 $ids = $lstUserIDs;
-            }
-            else{
+            } else {
                 foreach ($lstUserIDs as $user_id) {
-                    if(checkUserEnrol($user_id, $start_date, $end_date)){
+                    if (checkUserEnrol($user_id, $start_date, $end_date)) {
                         array_push($ids, $user_id);
-                    }
-                    else{
+                    } else {
                         $ids_error .= MdlUser::find($user_id)->username . ', ';
                     }
                 }
@@ -13419,4 +13449,35 @@ class BussinessRepository implements IBussinessInterface
         }
         return json_encode($response);
     }
+
+    // Confirm email
+    public function apiConfirmEmail($no_id, $email)
+    {
+        if (empty($no_id) || empty($email)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $no = TmsNotification::find($no_id);
+        if (empty($no)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $mail = base64_decode($email);
+
+        // Cập nhật status_send = 1
+        if(strlen($no->content)>0){
+            $u = json_decode($no->content);
+            if($u->email == $mail){
+                $no->status_send = 1;
+                $no->save();
+
+                // Cập nhật active = 1
+                DB::table('mdl_user')->where('email', '=', $mail)->update(['active' => 1]);
+                return 'Xác nhận email ' . $mail . ' thành công';
+            }
+        }
+
+        return 'Xác nhận thất bại';
+    }
+
 }

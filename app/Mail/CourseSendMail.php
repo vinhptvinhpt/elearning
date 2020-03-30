@@ -29,6 +29,8 @@ class CourseSendMail extends Mailable
     const QUIZPOINT = "[QUIZPOINT]";
     const NEWPASS = "[NEWPASS]";
     const ACCEPT_INVITE_URL = "[ACCEPT_INVITE_URL]";
+    const URL_CONFIRM_EMAIL = "[URL_CONFIRM_EMAIL]";
+    const PASSWORD = "[PASSWORD]";
 
     private $activity;
     private $fullname;
@@ -41,7 +43,8 @@ class CourseSendMail extends Mailable
     private $quiz_date;
     private $content;
     private $course_list = [];
-
+    private $url_confirm_email;
+    private $password;
 
     /**
      * Create a new message instance.
@@ -70,7 +73,9 @@ class CourseSendMail extends Mailable
         $course_place = '',
         $quiz_date = '',
         $content = '',
-        $course_list = array()
+        $course_list = array(),
+        $url_confirm_email = '',
+        $password = ''
     )
     {
         $this->activity = $activity;
@@ -84,6 +89,8 @@ class CourseSendMail extends Mailable
         $this->quiz_date = $quiz_date;
         $this->content = $content;
         $this->course_list = $course_list;
+        $this->url_confirm_email = $url_confirm_email;
+        $this->password = $password;
     }
 
     /**
@@ -98,12 +105,12 @@ class CourseSendMail extends Mailable
         if ($this->activity == TmsNotification::INVITE_STUDENT) {
             $subject = __('thu_moi_tham_gia_khoa_hoc');
             $view = 'email.invite_student';
-        }
-        else if ($this->activity == TmsNotification::ENROL
-        || $this->activity == TmsNotification::QUIZ_START
-        || $this->activity == TmsNotification::QUIZ_END
-        || $this->activity == TmsNotification::QUIZ_COMPLETED
-        || $this->activity == TmsNotification::REMIND_CERTIFICATE
+        } else if ($this->activity == TmsNotification::ENROL
+            || $this->activity == TmsNotification::QUIZ_START
+            || $this->activity == TmsNotification::QUIZ_END
+            || $this->activity == TmsNotification::QUIZ_COMPLETED
+            || $this->activity == TmsNotification::REMIND_CERTIFICATE
+            || $this->activity == TmsNotification::ACTIVE_EMAIL
         ) {
             switch ($this->activity) {
                 case TmsNotification::ENROL:
@@ -129,6 +136,10 @@ class CourseSendMail extends Mailable
                 case TmsNotification::FORGOT_PASSWORD:
                     $subject = '[BGT ELEARNING] Thông báo lấy lại mật khẩu';
                     $view = 'email.forgot_password';
+                    break;
+                case TmsNotification::ACTIVE_EMAIL:
+                    $subject = '[BGT ELEARNING] Thông báo xác nhận email';
+                    $view = 'email.active_email';
                     break;
                 default:
                     $subject = '';
@@ -156,6 +167,8 @@ class CourseSendMail extends Mailable
                 ->with('content', $this->content)
                 ->with('quiz_date', $this->quiz_date)
                 ->with('course_list', $this->course_list)
+                ->with('url_confirm_email', $this->url_confirm_email)
+                ->with('password', $this->password)
                 ->view($view);
         }
         return $this;

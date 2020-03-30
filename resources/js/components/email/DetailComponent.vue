@@ -141,6 +141,9 @@
                             case 'invite_student':
                               this.content_html = this.json_content.invite_student;
                               break;
+                            case 'active_email':
+                              this.content_html = this.json_content.active_email;
+                            break;
                             default:
                                 break;
                         }

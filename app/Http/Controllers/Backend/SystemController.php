@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\ModelHasRole;
 use App\TmsUserDetail;
+use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
+use Illuminate\Support\Facades\DB;
 
 class SystemController extends Controller
 {
@@ -121,7 +123,8 @@ class SystemController extends Controller
         return view('system.user.user_trash');
     }
 
-    public function apiFilterFetch(Request $request) {
+    public function apiFilterFetch(Request $request)
+    {
         return $this->bussinessRepository->apiFilterFetch($request);
     }
 
@@ -129,216 +132,274 @@ class SystemController extends Controller
     {
         return $this->bussinessRepository->apiListRole($request);
     }
+
     public function apiListUser(Request $request)
     {
         return $this->bussinessRepository->apiListUser($request);
     }
+
     public function apiStore(Request $request)
     {
         return $this->bussinessRepository->apiStore($request);
     }
+
     public function apiStoreSaleRoom(Request $request)
     {
         return $this->bussinessRepository->apiStoreSaleRoom($request);
     }
+
     public function apiUpdateProfile(Request $request)
     {
         return $this->bussinessRepository->apiUpdateProfile($request);
     }
+
     public function apiUserDetail(Request $request)
     {
         return $this->bussinessRepository->apiUserDetail($request);
     }
+
     public function apiProfile(Request $request)
     {
         return $this->bussinessRepository->apiProfile($request);
     }
+
     public function apiUpdate(Request $request)
     {
         return $this->bussinessRepository->apiUpdate($request);
     }
+
     public function apidelete($user_id)
     {
         return $this->bussinessRepository->apidelete($user_id);
     }
+
     public function apideleteListUser(Request $request)
     {
         return $this->bussinessRepository->apideleteListUser($request);
     }
+
     public function apiImportUser(Request $request)
     {
         return $this->bussinessRepository->apiImportUser($request);
     }
+
     public function apiImportExcel(Request $request)
     {
         return $this->bussinessRepository->apiImportExcel($request);
     }
+
     public function vn_to_str($str)
     {
         return $this->bussinessRepository->vn_to_str($str);
     }
+
     public function CreateUser($role_name, $username, $password, $email, $confirm, $cmtnd, $fullname, $phone, $code, $address, $sex, $timestamp, $start_date, $working_status)
     {
         return $this->bussinessRepository->CreateUser($role_name, $username, $password, $email, $confirm, $cmtnd, $fullname, $phone, $code, $address, $sex, $timestamp, $start_date, $working_status);
     }
+
     public function createUserOrg($usernameNew, $password, $firstname, $lastname, $email, $role_name, $confirm, $cmtnd, $fullname, $phone, $code, $address, $sex, $timestamp, $start_date, $working_status)
     {
         return $this->bussinessRepository->createUserOrg($usernameNew, $password, $firstname, $lastname, $email, $role_name, $confirm, $cmtnd, $fullname, $phone, $code, $address, $sex, $timestamp, $start_date, $working_status);
     }
+
     public function CreateSaleRoomUser($managementId, $user_id, $type)
     {
         return $this->bussinessRepository->CreateSaleRoomUser($managementId, $user_id, $type);
     }
+
     public function apiImportTeacher(Request $request)
     {
         return $this->bussinessRepository->apiImportTeacher($request);
     }
+
     public function apiImportStudent(Request $request)
     {
         return $this->bussinessRepository->apiImportStudent($request);
     }
+
     public function apiListUserTrash(Request $request)
     {
         return $this->bussinessRepository->apiListUserTrash($request);
     }
+
     public function apiUserRestore(Request $request)
     {
         return $this->bussinessRepository->apiUserRestore($request);
     }
+
     public function apiUserRestoreList(Request $request)
     {
         return $this->bussinessRepository->apiUserRestoreList($request);
     }
+
     public function apiClearUser(Request $request)
     {
         return $this->bussinessRepository->apiClearUser($request);
     }
+
     public function apiUpdatePassword(Request $request)
     {
         return $this->bussinessRepository->apiUpdatePassword($request);
     }
+
     public function apiUserSchedule(Request $request)
     {
         return $this->bussinessRepository->apiUserSchedule($request);
     }
+
     public function apiGradeCourseTotal(Request $request)
     {
         return $this->bussinessRepository->apiGradeCourseTotal($request);
     }
+
     public function apiCourseList()
     {
         return $this->bussinessRepository->apiCourseList();
     }
+
     public function apiCourseGradeDetail(Request $request)
     {
         return $this->bussinessRepository->apiCourseGradeDetail($request);
     }
+
     public function apiListUserMarket(Request $request)
     {
         return $this->bussinessRepository->apiListUserMarket($request);
     }
+
     public function apiListBranchMaster(Request $request)
     {
         return $this->bussinessRepository->apiListBranchMaster($request);
     }
+
     public function apiShowUserMarket(Request $request)
     {
         return $this->bussinessRepository->apiShowUserMarket($request);
     }
+
     public function apiGetListRole()
     {
         return $this->bussinessRepository->apiGetListRole();
     }
+
     public function apiUserMarketGetCity()
     {
         return $this->bussinessRepository->apiUserMarketGetCity();
     }
+
     public function apiUserMarketListOrganize(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketListOrganize($request);
     }
+
     public function apiUserMarketAddOrganize(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketAddOrganize($request);
     }
+
     public function apiUserMarketRemoveOrganize(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketRemoveOrganize($request);
     }
+
     public function apiUserMarketListRoleOrganize(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketListRoleOrganize($request);
     }
+
     public function apiUserMarketListBranch()
     {
         return $this->bussinessRepository->apiUserMarketListBranch();
     }
+
     public function apiSaleRoomSearchBox(Request $request)
     {
         return $this->bussinessRepository->apiSaleRoomSearchBox($request);
     }
+
     public function apiUserMarketListUserByRole(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketListUserByRole($request);
     }
+
     public function apiUserMarketRemove(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketRemove($request);
     }
+
     public function apiUserMarketAddRole(Request $request)
     {
         return $this->bussinessRepository->apiUserMarketAddRole($request);
     }
+
     public function apiCreateUserMarket(Request $request)
     {
         return $this->bussinessRepository->apiCreateUserMarket($request);
     }
+
     public function apiGetListSaleRoom(Request $request)
     {
         return $this->bussinessRepository->apiGetListSaleRoomSystem($request);
     }
+
     public function apiWordPlaceList(Request $request)
     {
         return $this->bussinessRepository->apiWordPlaceList($request);
     }
+
     public function apiWordPlaceAdd(Request $request)
     {
         return $this->bussinessRepository->apiWordPlaceAdd($request);
     }
+
     public function apiWordPlaceRemove(Request $request)
     {
         return $this->bussinessRepository->apiWordPlaceRemove($request);
     }
+
     public function apiRemoveAvatar(Request $request)
     {
         return $this->bussinessRepository->apiRemoveAvatar($request);
     }
+
     public function apiGetListBranch(Request $request)
     {
         return $this->bussinessRepository->apiGetListBranchSystem($request);
     }
+
     public function apiGetListBranchSelect(Request $request)
     {
         return $this->bussinessRepository->apiGetListBranchSelect($request);
     }
+
     public function apiGetListSaleRoomSelect(Request $request)
     {
         return $this->bussinessRepository->apiGetListSaleRoomSelect($request);
     }
+
     public function apiGetListSaleRoomSearch(Request $request)
     {
         return $this->bussinessRepository->apiGetListSaleRoomSearch($request);
     }
+
     public function apiGetBranchBySaleRoom(Request $request)
     {
         return $this->bussinessRepository->apiGetBranchBySaleRoom($request);
     }
+
     public function apiGetTrainingList(Request $request)
     {
         return $this->bussinessRepository->apiGetTrainingList($request);
     }
+
     public function apiRemoveMaster($id, Request $request)
     {
         return $this->bussinessRepository->apiRemoveMaster($id, $request);
+    }
+
+    public function apiConfirmEmail($no_id, $email)
+    {
+        return $this->bussinessRepository->apiConfirmEmail($no_id, $email);
     }
 }

@@ -48,7 +48,8 @@ Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftS
 Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses'); //every minute
 Route::get('/cron/mail/removeRemindERC', 'Api\MailController@removeRemindExpireRequiredCourses'); //every week
 
-
+// update email + active
+Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
 
 // admin route
 Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function (){
