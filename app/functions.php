@@ -3186,3 +3186,15 @@ function checkUserEnrol($user_id, $start_date, $end_date)
 
     return false;
 }
+
+// lưu thông tin tài khoản vào tms_nofitications
+function createNofitication($content)
+{
+    TmsNotification::create([
+        'type' => 'mail',
+        'target' => TmsNotification::ACTIVE_EMAIL,
+        'status_send' => 0,
+        'createdby' => Auth::id(),
+        'content' => $content
+    ]);
+}

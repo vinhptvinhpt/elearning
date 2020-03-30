@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Backend;
 
 // Import
 use App\Http\Controllers\Controller;
+use App\User;
+use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 
@@ -22,6 +24,7 @@ class UserExamController extends Controller
 
         return view('education.userexam.index');
     }
+
     public function getListUser(Request $request)
     {
         return $this->bussinessRepository->getListUser($request);
@@ -31,4 +34,5 @@ class UserExamController extends Controller
     {
         return $this->bussinessRepository->apiRestUserExam($request);
     }
+
 }
