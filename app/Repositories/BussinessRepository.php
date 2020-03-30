@@ -8,6 +8,7 @@ use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
+use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -6539,6 +6540,9 @@ class BussinessRepository implements IBussinessInterface
 
 
             devcpt_log_system('user', '/system/user/edit/' . $mdlUser->id, 'create', 'Tạo mới User: ' . $mdlUser->username);
+
+            createNofitication('{"email":"' . $email . '","fullname":"' . $fullname ? $fullname : $username . '","password":"' . $password . '"}');
+
             \DB::commit();
             return response()->json(status_message('success', __('tao_moi_tai_khoan_thanh_cong')));
         } catch (Exception $e) {
@@ -13422,15 +13426,13 @@ class BussinessRepository implements IBussinessInterface
             $ids = array();
             $ids_error = '';
             // End_date rỗng insert bình thường
-            if(empty($end_date)){
+            if (empty($end_date)) {
                 $ids = $lstUserIDs;
-            }
-            else{
+            } else {
                 foreach ($lstUserIDs as $user_id) {
-                    if(checkUserEnrol($user_id, $start_date, $end_date)){
+                    if (checkUserEnrol($user_id, $start_date, $end_date)) {
                         array_push($ids, $user_id);
-                    }
-                    else{
+                    } else {
                         $ids_error .= MdlUser::find($user_id)->username . ', ';
                     }
                 }
@@ -13447,4 +13449,35 @@ class BussinessRepository implements IBussinessInterface
         }
         return json_encode($response);
     }
+
+    // Confirm email
+    public function apiConfirmEmail($no_id, $email)
+    {
+        if (empty($no_id) || empty($email)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $no = TmsNotification::find($no_id);
+        if (empty($no)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $mail = base64_decode($email);
+
+        // Cập nhật status_send = 1
+        if(strlen($no->content)>0){
+            $u = json_decode($no->content);
+            if($u->email == $mail){
+                $no->status_send = 1;
+                $no->save();
+
+                // Cập nhật active = 1
+                DB::table('mdl_user')->where('email', '=', $mail)->update(['active' => 1]);
+                return 'Xác nhận email ' . $mail . ' thành công';
+            }
+        }
+
+        return 'Xác nhận thất bại';
+    }
+
 }

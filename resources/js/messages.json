@@ -798,7 +798,6 @@
         "ngay_tao": "Created date",
         "lam_moi_bang_tai_lieu": "Reset",
         "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Find by module, document name or username",
-
         "toa_do_chung_chi": "Certificate Coordinates",
         "toa_do_logo": "Logo coordinates",
         "toa_do_ten": "Name coordinates",
@@ -818,13 +817,13 @@
         "dia_chi_ip_cho_phep": "Allow ip address",
         "nhap_dia_chi": "Enter the ip address",
         "go_avatar": "Remove avatar",
-
         "su_dung_phan_quyen": "Use as role",
         "phan_quyen_du_lieu": "Data permission",
         "danh_sach_khoa_hoc": "List courses",
         "danh_sach_khoa_hoc_da_cap": "List assgined courses",
         "huy_quyen": "Remove permission",
-        "ban_chua_chon_khoa_hoc": "Please select course"
+        "ban_chua_chon_khoa_hoc": "Please select course",
+        "xac_nhan_email_nguoi_dung": "Confirm email"
     },
     "vi.keys": {
         "language": "",
@@ -1615,7 +1614,6 @@
         "tao_moi_co_so_vat_chat_khoa_hoc": "Thêm mới cơ sở vật chất của khóa học",
         "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học",
         "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu",
-
         "toa_do_chung_chi": "Tọa độ chứng chỉ",
         "toa_do_logo": "Tọa độ logo",
         "toa_do_ten": "Tọa độ tên",
@@ -1650,6 +1648,7 @@
         "danh_sach_khoa_hoc": "Danh sách khóa học",
         "danh_sach_khoa_hoc_da_cap": "Danh sách khóa học đã cấp",
         "huy_quyen": "Hủy quyền",
-        "ban_chua_chon_khoa_hoc": "Bạn chưa chọn khóa học"
+        "ban_chua_chon_khoa_hoc": "Bạn chưa chọn khóa học",
+        "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng"
     }
 }
