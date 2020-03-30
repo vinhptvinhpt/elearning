@@ -83,7 +83,7 @@
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputPhone">{{trans.get('keys.so_dien_thoai_lien_lac')}}</label>
-                    <input v-model="phone" type="text" id="inputPhone" :placeholder="trans.get('keys.nhap_so_dt')" class="form-control mb-4">
+                    <input v-model="phone" type="text" id="inputPhone" :placeholder="trans.get('keys.nhap_so_dt')" class="form-control mb-4" @input="acceptNumber">
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputAddress">{{trans.get('keys.dia_chi_thuong_tru')}}</label>
@@ -281,7 +281,7 @@
                 phone:'',
                 cmtnd:'',
                 address:'',
-                inputRole:[],
+                inputRole:["student"],
                 roles:[],
                 sex: 1,
                 code: '',
@@ -324,6 +324,10 @@
             }
         },
         methods: {
+            acceptNumber() {
+                var x = this.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                this.phone = !x[2] ? x[1] :  x[1] + '' + x[2] + (x[3] ? '' + x[3] : '');
+            },
             myFilterBy: (option, label, search) => {
               if (!label) {
                 label = '';

@@ -151,7 +151,7 @@
 
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputPhone">{{trans.get('keys.so_dt')}}</label>
-                                <input type="text" id="inputPhone" v-model="users.phone" class="form-control mb-4">
+                                <input type="text" id="inputPhone" v-model="users.phone" class="form-control mb-4" @input="acceptNumber">
                             </div>
 
                             <div class="col-md-4 col-sm-6 form-group">
@@ -404,6 +404,10 @@
             }
         },
         methods:{
+            acceptNumber() {
+                var x = this.users.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+                this.users.phone = !x[2] ? x[1] :  x[1] + '' + x[2] + (x[3] ? '' + x[3] : '');
+            },
             changeOption(){
                 if(this.option_work === 'pos'){
                     $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
