@@ -176,7 +176,6 @@
         },
         methods:{
             selectedFile(e) {
-                console.log(e.target.value);
                 let file = this.$refs.file.files[0];
                 const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
                 if(!file || (validFileTypes.indexOf(file.type) == -1)){
@@ -224,6 +223,16 @@
 
                         this.certificate = response.data;
                         this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
+                        try {
+                            var splitPath = this.certificate.path.split('/');
+                            let fileName = require("../../../../public/storage/upload/certificate/"+splitPath[splitPath.length - 1]);
+                            // do something
+                        } catch (e) {
+                            this.certificate.path = "/storage/upload/certificate/default_certificate.jpg";
+                            toastr['warning'](this.trans.get('keys.khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh'), this.trans.get('keys.thong_bao'));
+                        }
+
+
                         // this.coordinates = JSON.parse(response.data.position);
                         if(response.data.position !== '')
                             this.coordinates = JSON.parse(response.data.position);
@@ -322,7 +331,6 @@
               $('.dropify').dropify();
             },
             onClickImage(e){
-                console.log(this.currentChoose);
                 var posX_click = `${e.clientX}`;
                 var posY_click = `${e.clientY}`;
                 var posX = this.$refs.busstop.getBoundingClientRect().x;
@@ -410,7 +418,7 @@
                 else if(name == 'inputLogo' && this.certificate_img.pos_logo){
                     this.coordinates.logoX = coordinate_x;
                     this.coordinates.logoY = coordinate_y;
-                    this.logo_path = "/storage/upload/certificate/1584953796.jpg";
+                    this.logo_path = "/storage/upload/certificate/default_logo.jpg";
                 }
                 $('#sp_'+name).css('left', coordinate_x);
                 $('#sp_'+name).css('top', coordinate_y);
@@ -441,7 +449,6 @@
                 }
             },
             OnchangeTextBox(e){
-                console.log(e.currentTarget.id);
                 if(e.currentTarget.id.indexOf('Size') > -1){
                     if(e.currentTarget.id.indexOf('FullName') > -1 && this.certificate_img.pos_name)
                     {
@@ -524,7 +531,7 @@
     word-break: break-word;
   }
   #sp_inputDate{
-    font-size: 16px;
+    font-size: 12px;
   }
   #sp_inputFullName{
     font-size: 32px;

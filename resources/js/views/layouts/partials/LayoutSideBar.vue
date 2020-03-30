@@ -538,7 +538,6 @@
                 var x = document.getElementById(parent_id);
                 if (x) {
                     var y = document.getElementById(child_id);
-
                     if (y.style.display === "none" || y.style.display === '') {
                         x.classList.toggle("active");
                         y.style.display = "block";

@@ -8,6 +8,7 @@ use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
+use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -180,95 +181,8 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $response = array();
-            //        chart 1 data
-            //        So luong hoan thanh khoa hoc / thang
-            //        So luong enrol khoa hoc / thang
-            //        $completed = MdlCourseCompletions::where("timecompleted", ">=", $start_time)
-            //            ->where("timecompleted", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timecompleted)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timecompleted))'))
-            //            ->get()->toArray();
-            //
-            //        $completed = fillMissingMonthChartData($completed, $start_time, $end_time);
-            //        $response['completed'] = $completed;
-
-            //        $enrolled = MdlCourseCompletions::where("timeenrolled", ">=", $start_time)
-            //            ->where("timeenrolled", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timeenrolled)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timeenrolled))'))
-            //            ->get()->toArray();
-            //
-            //        $enrolled = fillMissingMonthChartData($enrolled, $start_time, $end_time);
-            //        $response['enrolled'] = $enrolled;
-
-
-            //chart 1,2 data
-            //Hoc viên enrol khóa offline/online trong tháng
 
             $role_id = 5;
-            //        $enrolled_all = MdlUserEnrolments::where('mdl_enrol.enrol', 'manual')
-            //            ->where('roles.id', '=', $role_id)
-            //            ->where(function ($q) use ($start_time, $end_time) {
-            //                $q
-            //                    ->where(function ($q1) use ($start_time, $end_time) {
-            //                    $q1->where("mdl_user_enrolments.timecreated", ">=", $start_time)->where("mdl_user_enrolments.timecreated", "<=", $now);
-            //                    })
-            //                    ->orWhere(function ($q2) use ($start_time, $end_time) {
-            //                        $q2->where("mdl_user_enrolments.timestart", ">=", $start_time)->where("mdl_user_enrolments.timestart", "<=", $now);
-            //                    });
-            //            })
-            //            ->select(
-            //                'mdl_course.id',
-            //                'mdl_user_enrolments.userid',
-            //                'mdl_course.category',
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth'),
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth2')
-            //            )
-            //            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-            //            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-            //            ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
-            //            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            //            ->get()->toArray();
-
-            //        $enrolled = array();
-
-            //        $this_month_offline = 0;
-            //        $this_month_online = 0;
-            //
-            //        foreach ($enrolled_all as $enrol) {
-            //            $mth = $enrol['mth'];
-            //            if (strlen($mth) == 0) {
-            //                $mth = $enrol['mth2'];
-            //            }
-            //
-            //            if ($mth == date('n', $now)) {
-            //                if ($enrol['category'] == 5) { //offline
-            //                    $this_month_offline += 1;
-            //                } elseif ($enrol['category'] != 5 && $enrol['category'] != 2) { //online
-            //                    $this_month_online += 1;
-            //                }
-            //            }
-            //
-            //            if (array_key_exists($mth, $enrolled)) {
-            //                $enrolled[$mth] += 1;
-            //            } else {
-            //                $enrolled[$mth] = 1;
-            //            }
-            //        }
-
-            //        $enrolled_source = array();
-            //        foreach ($enrolled as $key => $val) {
-            //            $enrolled_source[] = array(
-            //              'mth' => $key,
-            //              'total' => $val
-            //            );
-            //        }
 
             //chart 3 data
             //hoc vien dang ki moi
@@ -880,6 +794,7 @@ class BussinessRepository implements IBussinessInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
 
             $param = [
                 'course_avatar' => 'text',
@@ -893,7 +808,8 @@ class BussinessRepository implements IBussinessInterface
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'estimate_duration' => 'number',
-                'course_budget' => 'number'
+                'course_budget' => 'number',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -966,6 +882,10 @@ class BussinessRepository implements IBussinessInterface
             $course->total_date_course = $total_date_course;
             $course->allow_register = $allow_register;
             $course->visible = 0;
+
+            //access_ip
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
 
             $course->save();
 
@@ -1070,6 +990,21 @@ class BussinessRepository implements IBussinessInterface
             $response->message = $e->getMessage();
         }
         return response()->json($response);
+    }
+
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
     }
 
     //api lấy danh sách khóa học tập trung
@@ -6518,6 +6453,9 @@ class BussinessRepository implements IBussinessInterface
 
 
             devcpt_log_system('user', '/system/user/edit/' . $mdlUser->id, 'create', 'Tạo mới User: ' . $mdlUser->username);
+
+            createNofitication('{"email":"' . $email . '","fullname":"' . $fullname ? $fullname : $username . '","password":"' . $password . '"}');
+
             \DB::commit();
             return response()->json(status_message('success', __('tao_moi_tai_khoan_thanh_cong')));
         } catch (Exception $e) {
@@ -13401,15 +13339,13 @@ class BussinessRepository implements IBussinessInterface
             $ids = array();
             $ids_error = '';
             // End_date rỗng insert bình thường
-            if(empty($end_date)){
+            if (empty($end_date)) {
                 $ids = $lstUserIDs;
-            }
-            else{
+            } else {
                 foreach ($lstUserIDs as $user_id) {
-                    if(checkUserEnrol($user_id, $start_date, $end_date)){
+                    if (checkUserEnrol($user_id, $start_date, $end_date)) {
                         array_push($ids, $user_id);
-                    }
-                    else{
+                    } else {
                         $ids_error .= MdlUser::find($user_id)->username . ', ';
                     }
                 }
@@ -13426,4 +13362,35 @@ class BussinessRepository implements IBussinessInterface
         }
         return json_encode($response);
     }
+
+    // Confirm email
+    public function apiConfirmEmail($no_id, $email)
+    {
+        if (empty($no_id) || empty($email)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $no = TmsNotification::find($no_id);
+        if (empty($no)) {
+            return 'Xác nhận thất bại';
+        }
+
+        $mail = base64_decode($email);
+
+        // Cập nhật status_send = 1
+        if(strlen($no->content)>0){
+            $u = json_decode($no->content);
+            if($u->email == $mail){
+                $no->status_send = 1;
+                $no->save();
+
+                // Cập nhật active = 1
+                DB::table('mdl_user')->where('email', '=', $mail)->update(['active' => 1]);
+                return 'Xác nhận email ' . $mail . ' thành công';
+            }
+        }
+
+        return 'Xác nhận thất bại';
+    }
+
 }

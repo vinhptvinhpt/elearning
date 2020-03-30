@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Api;
 
 use App\CourseCompletion;
 use App\CourseFinal;
+use App\Http\Requests\Request;
+use App\Mail\CourseSendMail;
 use App\MdlCourse;
 use App\MdlCourseCompletions;
 use App\MdlEnrol;
@@ -16,12 +18,18 @@ use App\ModelHasRole;
 use App\Role;
 use App\StudentCertificate;
 use App\TmsLog;
+use App\TmsNotification;
 use App\TmsSaleRoomUser;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
+use App\User;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
+use Horde\Socket\Client\Exception;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
 
 class TaskController extends Controller
@@ -32,6 +40,23 @@ class TaskController extends Controller
             'password' => bcrypt("Bgt@2019")
         ]);
         echo "Success!";
+    }
+
+    // Update email và action cho toàn bộ user
+    public function apiUpdateEmailAndAction()
+    {
+        try {
+            // Xóa đi bản ghi trùng
+            $query = 'DELETE u1 FROM mdl_user as u1 INNER JOIN mdl_user as u2 WHERE u1.id < u2.id AND u1.username = u2.username';
+            $deleted = DB::delete($query);
+
+            // Cập nhật email + action
+            $query = 'UPDATE mdl_user SET email = CONCAT(username,"@gmail.com"), active = 1';
+            DB::update($query);
+            return "SUCCESS";
+        } catch (\Horde\Socket\Client\Exception $e) {
+            return "ERROR";
+        }
     }
 
     #region insert student to course_completion courses certificate
@@ -491,14 +516,15 @@ class TaskController extends Controller
 
     #endregion
 
-    public function autoEnrolTrainning(){
+    public function autoEnrolTrainning()
+    {
         //ThoLd 31/12/2019
         //optimize query
         $courses = DB::table('tms_traninning_users as ttu')
             ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'ttu.user_id')
             ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->join('tms_traninning_programs as ttp','ttp.id','=','ttu.trainning_id')//uydd check auto enrol
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')//uydd check auto enrol
             ->select('ttu.user_id', 'ttc.course_id as course_id', 'r.mdl_role_id')
             //->where('r.name', '=', \App\Role::STUDENT)
             ->where('ttp.run_cron', '=', 1)
@@ -1037,36 +1063,37 @@ class TaskController extends Controller
      * uydd Auto add user from TmsTrainningUser Table
      *
      */
-    function autoAddTrainningUser(){
+    function autoAddTrainningUser()
+    {
         $queryArray = [];
         $num = 0;
         $limit = 300;
         //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
         $trainningArray = DB::table('tms_traninning_programs as ttp')
             ->select('ttp.id', 'ttg.id as ttg_id')
-            ->leftJoin('tms_trainning_groups as ttg','ttg.trainning_id','=','ttp.id')
-            ->where('ttp.deleted','=',0)
+            ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
+            ->where('ttp.deleted', '=', 0)
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
 
-        if(!empty($trainningArray)){
-            foreach ($trainningArray as $trainning){
+        if (!empty($trainningArray)) {
+            foreach ($trainningArray as $trainning) {
                 $leftjoin = '(SELECT ttu.trainning_id,ttu.user_id
                     FROM tms_traninning_users ttu
-                     where ttu.trainning_id ='.$trainning.') as ttpp';
+                     where ttu.trainning_id =' . $trainning . ') as ttpp';
                 $leftjoin = DB::raw($leftjoin);
                 $users = DB::table('tms_user_detail as tud')
-                    ->select('ttpp.trainning_id','tud.user_id')
-                    ->leftJoin($leftjoin,'ttpp.user_id','=','tud.user_id')
-                    ->where('tud.deleted','0',0)
+                    ->select('ttpp.trainning_id', 'tud.user_id')
+                    ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
+                    ->where('tud.deleted', '0', 0)
                     ->whereNull('ttpp.trainning_id')
                     ->pluck('tud.user_id');
-                if(!empty($users)){
-                    foreach ($users as $user){
+                if (!empty($users)) {
+                    foreach ($users as $user) {
                         $queryItem = [];
-                        $queryItem['trainning_id']  = $trainning;
-                        $queryItem['user_id']       = $user;
+                        $queryItem['trainning_id'] = $trainning;
+                        $queryItem['user_id'] = $user;
                         array_push($queryArray, $queryItem);
                         $num++;
                         if ($num >= $limit) {
@@ -1086,27 +1113,27 @@ class TaskController extends Controller
         //Nhóm quyền
         $users = DB::table('tms_traninning_programs as ttp')
             ->select(
-                'ttp.id as trainning_id','mhr.model_id as user_id'
+                'ttp.id as trainning_id', 'mhr.model_id as user_id'
             )
-            ->leftJoin('tms_trainning_groups as ttg',function($join){
-                $join->on('ttg.trainning_id','=','ttp.id')->where('ttg.type','=',0);
+            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
             })
-            ->leftJoin('model_has_roles as mhr','mhr.role_id','=','ttg.group_id')
-            ->leftJoin('tms_traninning_users as ttu',function($join){
-                $join->on('ttu.trainning_id','=','ttp.id');
-                $join->on('ttu.user_id','=','mhr.model_id');
+            ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+            ->leftJoin('tms_traninning_users as ttu', function ($join) {
+                $join->on('ttu.trainning_id', '=', 'ttp.id');
+                $join->on('ttu.user_id', '=', 'mhr.model_id');
             })
-            ->where('ttp.deleted','=',0)
+            ->where('ttp.deleted', '=', 0)
             ->whereNotNull('ttg.group_id')
             ->whereNull('ttu.id')
             ->get();
 
-        if(!empty($users)){
-            foreach ($users as $user){
+        if (!empty($users)) {
+            foreach ($users as $user) {
                 $queryItem = [];
-                if($user->trainning_id && $user->user_id){
-                    $queryItem['trainning_id']  = $user->trainning_id;
-                    $queryItem['user_id']       = $user->user_id;
+                if ($user->trainning_id && $user->user_id) {
+                    $queryItem['trainning_id'] = $user->trainning_id;
+                    $queryItem['user_id'] = $user->user_id;
                     array_push($queryArray, $queryItem);
                     $num++;
                 }
@@ -1124,27 +1151,27 @@ class TaskController extends Controller
         //Cơ cấu tổ chức
         $users = DB::table('tms_traninning_programs as ttp')
             ->select(
-                'ttp.id as trainning_id','toe.user_id'
+                'ttp.id as trainning_id', 'toe.user_id'
             )
-            ->leftJoin('tms_trainning_groups as ttg',function($join){
-                $join->on('ttg.trainning_id','=','ttp.id')->where('ttg.type','=',1);
+            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 1);
             })
-            ->leftJoin('tms_organization_employee as toe','toe.organization_id','=','ttg.group_id')
-            ->leftJoin('tms_traninning_users as ttu',function($join){
-                $join->on('ttu.trainning_id','=','ttp.id');
-                $join->on('ttu.user_id','=','toe.user_id');
+            ->leftJoin('tms_organization_employee as toe', 'toe.organization_id', '=', 'ttg.group_id')
+            ->leftJoin('tms_traninning_users as ttu', function ($join) {
+                $join->on('ttu.trainning_id', '=', 'ttp.id');
+                $join->on('ttu.user_id', '=', 'toe.user_id');
             })
-            ->where('ttp.deleted','=',0)
+            ->where('ttp.deleted', '=', 0)
             ->whereNotNull('ttg.group_id')
             ->whereNull('ttu.id')
             ->get();
 
-        if(!empty($users)){
-            foreach ($users as $user){
+        if (!empty($users)) {
+            foreach ($users as $user) {
                 $queryItem = [];
-                if($user->trainning_id && $user->user_id){
-                    $queryItem['trainning_id']  = $user->trainning_id;
-                    $queryItem['user_id']       = $user->user_id;
+                if ($user->trainning_id && $user->user_id) {
+                    $queryItem['trainning_id'] = $user->trainning_id;
+                    $queryItem['user_id'] = $user->user_id;
                     array_push($queryArray, $queryItem);
                     $num++;
                 }
@@ -1159,25 +1186,27 @@ class TaskController extends Controller
             $queryArray = [];
         }
     }
+
     /**
      *
      * uydd Tự động cấp chứng chỉ và huy hiệu
      * Tự động thêm học viên vào bảng StudentCertificate
      */
-    function autoCertificate(){
+    function autoCertificate()
+    {
         try {
             //Tự động cấp chứng chỉ
             $users = DB::table('mdl_user as mu')
-                ->select('mu.id as user_id','ttc.trainning_id','ttp.code as trainning_code','ttp.style as style','ttp.time_start','ttp.time_end','cf.timecompleted')
+                ->select('mu.id as user_id', 'ttc.trainning_id', 'ttp.code as trainning_code', 'ttp.style as style', 'ttp.time_start', 'ttp.time_end', 'cf.timecompleted')
                 ->join('course_final as cf', 'cf.userid', '=', 'mu.id')
-                ->join('tms_trainning_courses as ttc','ttc.course_id','=','cf.courseid')
-                ->join('tms_traninning_programs as ttp','ttp.id','=','ttc.trainning_id')
-                ->leftJoin('student_certificate as sc', function($join){
+                ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'cf.courseid')
+                ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+                ->leftJoin('student_certificate as sc', function ($join) {
                     $join->on('sc.userid', '=', 'mu.id');
                     $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
                 })
                 ->whereNull('sc.id')
-                ->where('ttp.auto_certificate','=',1)
+                ->where('ttp.auto_certificate', '=', 1)
                 ->get();
 
             \DB::beginTransaction();
@@ -1187,13 +1216,13 @@ class TaskController extends Controller
             $limit = 300;
 //dd($users);
             foreach ($users as $user) {
-                if(
-                    ( $user->style == 1 && intval($user->time_start) <= intval($user->timecompleted) && intval($user->time_end) >= intval($user->timecompleted) ) ||
+                if (
+                    ($user->style == 1 && intval($user->time_start) <= intval($user->timecompleted) && intval($user->time_end) >= intval($user->timecompleted)) ||
                     $user->style == 0
-                ){
+                ) {
                     $student = StudentCertificate::where([
-                        'userid'        => $user->user_id,
-                        'trainning_id'  => $user->trainning_id
+                        'userid' => $user->user_id,
+                        'trainning_id' => $user->trainning_id
                     ])->first();
                     //nếu học viên đã có mã thì không làm gì cả
                     if (!$student) {
@@ -1201,17 +1230,17 @@ class TaskController extends Controller
                         //update status to 1
                         $certificatecode = $user->trainning_code . $this->randomNumber(7 - strlen($user->user_id));
 
-                        $data_item['userid']            = $user->user_id;
-                        $data_item['trainning_id']      = $user->trainning_id;
-                        $data_item['code']              = $certificatecode;
-                        $data_item['status']            = 1;
-                        $data_item['timecertificate']   = time();
+                        $data_item['userid'] = $user->user_id;
+                        $data_item['trainning_id'] = $user->trainning_id;
+                        $data_item['code'] = $certificatecode;
+                        $data_item['status'] = 1;
+                        $data_item['timecertificate'] = time();
 
                         array_push($arr_data, $data_item);
                         $num++;
                     }
                     if ($num >= $limit) {
-                        $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
+                        $arr_data = $this->unique_multi_array($arr_data, ['userid', 'trainning_id']);
                         StudentCertificate::insert($arr_data);
                         $num = 0;
                         $arr_data = [];
@@ -1219,7 +1248,7 @@ class TaskController extends Controller
                     }
                 }
             }
-            $arr_data = $this->unique_multi_array($arr_data,['userid','trainning_id']);
+            $arr_data = $this->unique_multi_array($arr_data, ['userid', 'trainning_id']);
             StudentCertificate::insert($arr_data);
             \DB::commit();
 
@@ -1228,18 +1257,19 @@ class TaskController extends Controller
         }
     }
 
-    public function unique_multi_array($array, $keyArray) {
+    public function unique_multi_array($array, $keyArray)
+    {
         $temp_array = array();
         $val_array = array();
 
-        foreach($array as $val) {
+        foreach ($array as $val) {
             $val_check = '';
-            foreach ($keyArray as $key){
-                $val_check .= $val[$key].':';
+            foreach ($keyArray as $key) {
+                $val_check .= $val[$key] . ':';
             }
-            if(!in_array($val_check,$val_array)){
-                array_push($val_array,$val_check);
-                array_push($temp_array,$val);
+            if (!in_array($val_check, $val_array)) {
+                array_push($val_array, $val_check);
+                array_push($temp_array, $val);
             }
         }
         return $temp_array;
@@ -1254,5 +1284,51 @@ class TaskController extends Controller
         }
 
         return $result;
+    }
+
+
+    // send mail active email_user
+    public function sendMailActiveEmail()
+    {
+        try {
+            $contents = DB::table('tms_nofitications as tn')
+                ->where('tn.type', '=', 'mail')
+                ->where('tn.target', '=', TmsNotification::ACTIVE_EMAIL)
+                ->where('tn.status_send', '=', TmsNotification::UN_SENT)
+                ->select('tn.id', 'tn.content')
+                ->get();
+            if ($contents) {
+                foreach ($contents as $c) {
+                    if (strlen($c->content) > 0) {
+                        $user = json_decode($c->content);
+                        $link = Config::get('constants.domain.TMS') . 'page/email/confirm/' . $c->id . '/' . base64_encode($user->email);
+                        Mail::to($user->email)->send(new CourseSendMail(
+                            TmsNotification::ACTIVE_EMAIL,
+                            $user->email,
+                            $user->fullname,
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            '',
+                            $link,
+                            $user->password
+                        ));
+                    }
+                }
+            }
+            return 'SUCCESS';
+        } catch (Exception $e) {
+            return 'ERROR';
+        }
+    }
+
+    public function testCron()
+    {
+        Log::info('test cron: ' . time());
+        return 'SUCCESS';
     }
 }
