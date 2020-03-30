@@ -817,6 +817,9 @@
         "dia_chi_ip_cho_phep": "Allow ip address",
         "nhap_dia_chi": "Enter the ip address",
         "go_avatar": "Remove avatar",
+        "khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh": "No certificate image found, we will select the default certificate image",
+        "vui_long_nhap_mat_khau_moi": "Please enter a new password",
+
         "su_dung_phan_quyen": "Use as role",
         "phan_quyen_du_lieu": "Data permission",
         "danh_sach_khoa_hoc": "List courses",
@@ -1634,6 +1637,7 @@
         "nhap_dia_chi": "Nhập địa chỉ",
         "go_avatar": "Gỡ avatar",
         "khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh": "Không tìm thấy ảnh chứng chỉ, chúng tôi sẽ chọn ảnh chứng chỉ mặc định",
+        "vui_long_nhap_mat_khau_moi": "Vui lòng nhập mật khẩu mới",
 
         "diem_danh": "Điểm danh",
         "danh_sach_tai_lieu_trong_khoa_hoc": "Danh sách tài liệu trong khóa học",
