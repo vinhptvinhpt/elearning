@@ -389,6 +389,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $response = new ResponseModel();
         try {
 
+            // [VinhPT][Fix_Bugs] Get wrong date time because of timezone => set default VN timezone
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
+
             $avatar = $request->file('file');
             $fullname = $request->input('fullname');
             $shortname = $request->input('shortname');
