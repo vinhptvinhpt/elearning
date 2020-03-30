@@ -1635,6 +1635,7 @@
         "dia_chi_ip_cho_phep": "Địa chỉ ip cho phép",
         "nhap_dia_chi": "Nhập địa chỉ",
         "go_avatar": "Gỡ avatar",
+        "khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh": "Không tìm thấy ảnh chứng chỉ, chúng tôi sẽ chọn ảnh chứng chỉ mặc định",
 
         "diem_danh": "Điểm danh",
         "danh_sach_tai_lieu_trong_khoa_hoc": "Danh sách tài liệu trong khóa học",
