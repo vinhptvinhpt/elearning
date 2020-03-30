@@ -880,6 +880,7 @@ class BussinessRepository implements IBussinessInterface
             $is_end_quiz = $request->input('is_end_quiz');
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
+            $access_ip_string = $request->input('access_ip');
 
             $param = [
                 'course_avatar' => 'text',
@@ -893,7 +894,8 @@ class BussinessRepository implements IBussinessInterface
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'estimate_duration' => 'number',
-                'course_budget' => 'number'
+                'course_budget' => 'number',
+                'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -966,6 +968,10 @@ class BussinessRepository implements IBussinessInterface
             $course->total_date_course = $total_date_course;
             $course->allow_register = $allow_register;
             $course->visible = 0;
+
+            //access_ip
+            $access_ip = $this->spitIP($access_ip_string);
+            $course->access_ip = $access_ip;
 
             $course->save();
 
@@ -1070,6 +1076,21 @@ class BussinessRepository implements IBussinessInterface
             $response->message = $e->getMessage();
         }
         return response()->json($response);
+    }
+
+    public function spitIP($ip){
+        $access_ip = '{"list_access_ip":[';
+        $splitAccessIP = "";
+        if($ip)
+            $splitAccessIP = explode(',', $ip);
+        if($splitAccessIP){
+            foreach ($splitAccessIP as $ip) {
+                $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
+            }
+            $access_ip = rtrim($access_ip, ",");
+        }
+        $access_ip .=  ']}';
+        return $access_ip;
     }
 
     //api lấy danh sách khóa học tập trung
