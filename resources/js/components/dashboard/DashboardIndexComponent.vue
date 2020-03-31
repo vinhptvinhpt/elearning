@@ -5,7 +5,7 @@
                 <div class="col-sm-8">
                     <div class="card card-sm" style="height: calc(100% - 15px);">
                         <div class="card-body text-center">
-                            <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.theo_doi_so_nvbh_duoc_dao_tao_theo_thang')}}</span>
+                            <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.theo_doi_so_nv_duoc_dao_tao_theo_thang')}}</span>
                             <div class="hk-row justify-content-center">
                                 <div class="form-inline">
                                     <datepicker
@@ -53,18 +53,18 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-sm-12">
-                    <div class="card card-sm">
-                        <div class="card-body text-center">
-                            <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.nvbh_moi_nvbh_cu')}}</span>
-                            <div class="row mt-35">
-                                <div class="col-sm">
-                                    <highcharts :options="option3" style="height:294px;"></highcharts>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+<!--                <div class="col-sm-12">-->
+<!--                    <div class="card card-sm">-->
+<!--                        <div class="card-body text-center">-->
+<!--                            <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.nvbh_moi_nvbh_cu')}}</span>-->
+<!--                            <div class="row mt-35">-->
+<!--                                <div class="col-sm">-->
+<!--                                    <highcharts :options="option3" style="height:294px;"></highcharts>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+<!--                </div>-->
             </div>
         </div>
         <div class="col-xl-12">
@@ -72,6 +72,51 @@
                 <div class="card-body text-center">
                     <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.cac_khoa_hoc_dang_tien_hanh')}}</span>
                 </div>
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="dataTables_length">
+                    <date-picker v-model="startdateSearch" :config="options"
+                                 :placeholder="trans.get('keys.ngay_bat_dau')" class="txtSearch"></date-picker>
+                  </div>
+                </div>
+                <div class="col-sm-3">
+                  <div class="dataTables_length">
+                    <date-picker v-model="enddatesearch" :config="options"
+                                 :placeholder="trans.get('keys.ngay_ket_thuc')" class="txtSearch"></date-picker>
+                  </div>
+                </div>
+                <div class="col-sm-6">
+                  <form v-on:submit.prevent="tableData(1)">
+                    <div class="d-flex flex-row form-group">
+                      <input v-model="keyword" type="text" class="form-control txtSearch"
+                             :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                      <button type="button" id="btnFilter" class="btn btn-primary"
+                              style="margin-left: 5px" @click="tableData(1)">
+                        {{trans.get('keys.tim')}}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <div class="dataTables_length" style="display: block;">
+                    <label>{{trans.get('keys.hien_thi')}}
+                      <select v-model="row"
+                              class="custom-select custom-select-sm form-control form-control-sm"
+                              @change="tableData(1)">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
                 <div class="row">
                     <div class="col-sm">
                         <div class="table-wrap table-responsive">
@@ -132,11 +177,14 @@
 </template>
 
 <script>
+    import datePicker from 'vue-bootstrap-datetimepicker'
     import {Chart} from 'highcharts-vue'
+
     //import vPagination from 'vue-plain-pagination'
     export default {
         components: {
             highcharts: Chart,
+            datePicker
             //vPagination,
         },
         data() {
@@ -352,10 +400,19 @@
                 },
                 current: 1,
                 totalPages: 0,
-                row: 2,
+                row: 5,
                 posts: {},
                 startdate: '',
                 enddate: '',
+                startdateSearch : '',
+                enddatesearch: '',
+                keyword: '',
+                options: {
+                    format: 'DD-MM-YYYY',
+                    useCurrent: false,
+                    showClear: true,
+                    showClose: true,
+                },
             }
         },
         methods: {
@@ -407,6 +464,10 @@
                     $('#startdate-warning').hide();
                     $('#enddate-warning').hide();
                     $('#logic-warning').hide();
+
+                    this.startdate = this.convertTime(this.startdate);
+                    this.enddate = this.convertTime(this.enddate);
+
                     axios.post('/dashboard/chart_data', {
                         startdate: this.startdate,
                         enddate: this.enddate,
@@ -430,7 +491,6 @@
                             // chart_data.enrolled.forEach(val => {
                             //     enrolled_array.push(val.total);
                             // });
-
                             chart_data.confirmed.forEach(val => {
                                 label_array.push('T ' + val.mthyr);
                                 confirmed_array.push(val.total);
@@ -446,7 +506,6 @@
                             chart_data.quit.forEach(val => {
                                 quit_array.push(val.total);
                             });
-
                             this.option1.xAxis.categories = label_array;
                             this.option1.series[0]['data'] = confirmed_array;
                             this.option1.series[1]['data'] = stack_registered_array;
@@ -468,7 +527,10 @@
             tableData(paged) {
                 axios.post('/dashboard/table_data', {
                     page: paged || this.current,
-                    row: this.row
+                    row: this.row,
+                    keyword: this.keyword,
+                    startdate: this.startdateSearch,
+                    enddate: this.enddatesearch,
                 })
                     .then(response => {
                         this.posts = response.data.data.data;
@@ -494,4 +556,7 @@
 </script>
 
 <style scoped>
+  .txtSearch{
+    height: calc(1.5em + 0.75rem + 6px);
+  }
 </style>
