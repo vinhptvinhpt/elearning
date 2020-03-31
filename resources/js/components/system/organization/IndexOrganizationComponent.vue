@@ -217,7 +217,7 @@
                 current: 1,
                 totalPages: 0,
                 totalRow: 0,
-                row: 10,
+                row: 2,
                 organization_parent_list:[],
                 parent_keyword: '',
                 max_level: 0,
