@@ -826,7 +826,14 @@
         "ban_chua_chon_khoa_hoc": "Please select course",
         "xac_nhan_email_nguoi_dung": "Confirm email",
         "cho_phep_phan_quyen_quan_ly_du_lieu_khoa_hoc_trong_giao_dien_chinh_sua_quyen": "Cho phép phân quyền quản lý dữ liệu khóa học trong giao diện chỉnh sửa quyền",
-        "loi_moi_khong_ton_tai": "Invitation does not exist"
+        "loi_moi_khong_ton_tai": "Invitation does not exist",
+        "executive": "Executive",
+        "manager": "Manager",
+        "leader": "Leader",
+        "employee": "Executive",
+        "student": "Student",
+        "teacher": "Teacher",
+        "admin": "Admin"
     },
     "vi.keys": {
         "language": "",
@@ -1655,6 +1662,13 @@
         "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng",
         "ban_chua_chon_khoa_hoc": "Bạn chưa chọn khóa học",
         "cho_phep_phan_quyen_quan_ly_du_lieu_khoa_hoc_trong_giao_dien_chinh_sua_quyen": "Cho phép phân quyền quản lý dữ liệu khóa học trong giao diện chỉnh sửa quyền",
-        "loi_moi_khong_ton_tai": "Lời mời không tồn tại"
+        "loi_moi_khong_ton_tai": "Lời mời không tồn tại",
+        "executive": "Executive",
+        "manager": "Manager",
+        "leader": "Leader",
+        "employee": "Executive",
+        "student": "Student",
+        "teacher": "Teacher",
+        "admin": "Admin"
     }
 }

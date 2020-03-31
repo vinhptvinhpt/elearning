@@ -281,7 +281,7 @@
                 phone:'',
                 cmtnd:'',
                 address:'',
-                inputRole:["student"],
+                inputRole: [5],
                 roles:[],
                 sex: 1,
                 code: '',
@@ -630,7 +630,7 @@
                             this.phone = '';
                             this.cmtnd = '';
                             this.address = '';
-                            this.inputRole = [];
+                            this.inputRole = [5];
                             this.sex = 1;
                             this.code = '';
                             this.start_time = '';
@@ -712,7 +712,8 @@
               for (const [key, item] of Object.entries(list)) {
                 let newOption = {
                   id: item.id,
-                  label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                  label: this.trans.get('keys.' + item.name),
+                  //label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
                   //name: item.name
                 };
                 if (this.role_selected === 'root') {
