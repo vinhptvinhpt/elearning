@@ -41,12 +41,15 @@ Route::get('/cron/mail/sendESEC', 'Api\MailController@sendEnrolQuizStartQuizEndQ
 Route::get('/cron/mail/sendRemindCertificate', 'Api\MailController@sendRemindCertificate'); //every minute
 Route::get('/cron/mail/sendSuggestSSC', 'Api\MailController@sendSuggestSoftSkillCourses'); //every minute
 Route::get('/cron/mail/sendRemindERC', 'Api\MailController@sendRemindExpireRequiredCourses'); //every minute
+Route::get('/cron/mail/sendRemindES', 'Api\MailController@sendRemindEducationSchedule'); //every minute
 
 //Insert mail
 Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses'); //every minute
 Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses'); //every minute
 Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses'); //every minute
-Route::get('/cron/mail/removeRemindERC', 'Api\MailController@removeRemindExpireRequiredCourses'); //every week
+Route::get('/cron/mail/insertRemindES', 'Api\MailController@insertRemindEducationSchedule'); //every minute
+Route::get('/cron/mail/insertRemindLogin', 'Api\MailController@insertRemindLogin'); //every minute
+Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind'); //every week
 
 // update email + active
 Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
