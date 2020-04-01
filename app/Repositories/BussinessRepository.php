@@ -1102,7 +1102,6 @@ class BussinessRepository implements IBussinessInterface
         //            $listCourses = $listCourses->where('mdl_course.category', '!=', 2);
         //        }
 
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -1146,6 +1145,8 @@ class BussinessRepository implements IBussinessInterface
 
         $listCourses = $listCourses->orderBy('id', 'desc');
 
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
+        
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
         $response = [

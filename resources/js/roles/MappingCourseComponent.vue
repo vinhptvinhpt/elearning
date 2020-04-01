@@ -213,7 +213,7 @@
     },
     methods: {
       getUserNeedEnrol(paged) {
-        axios.post('/api/courses/list', {
+        axios.post('/api/courses/list_permissiondata', {
           page: paged || this.current,
           keyword: this.keyword,
           row: this.row,
@@ -232,7 +232,7 @@
           });
       },
       getCurrentUserEnrol(paged) {
-        axios.post('/api/courses/list', {
+        axios.post('/api/courses/list_permissiondata', {
           page: paged || this.current_page,
           keyword: this.keyword_curr,
           row: this.row_crr,

@@ -458,6 +458,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::get('/education/course/list', 'Backend\CourseController@viewIndex')->name('education.course');
     Route::post('/api/courses/list', 'Backend\CourseController@apiGetListCourse');
+    Route::post('/api/courses/list_permissiondata', 'Backend\CourseController@apiGetListCoursePermissionData');
     Route::post('/api/courses/create', 'Backend\CourseController@apiCreateCourse');
     Route::post('/api/courses/get_list_teacher', 'Backend\CourseController@apiGetListTeacher');
     Route::get('/education/course/detail/{id}', 'Backend\CourseController@viewCourseDetail')->name('education.course.detail');
