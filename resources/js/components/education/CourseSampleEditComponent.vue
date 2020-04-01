@@ -205,7 +205,7 @@
                 this.formData.append('shortname', this.course.shortname);
                 this.formData.append('startdate', this.course.startdate);
                 this.formData.append('pass_score', this.course.pass_score);
-                this.formData.append('description', this.course.summary);
+                this.formData.append('description', this.course.summary === null ? '' : this.course.summary);
                 this.formData.append('category_id', this.course.category);
                 this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
                 this.formData.append('allow_register', 1);

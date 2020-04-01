@@ -32,9 +32,9 @@
                             <label>
                               <select v-model="position_ass" class="custom-select custom-select-sm form-control form-control-sm" @change="getUserNeedAssign(1)">
                                 <option value="">{{ trans.get('keys.chon_vi_tri') }}</option>
-                                <option value="manager">Manager</option>
-                                <option value="leader">Leader</option>
-                                <option value="employee">Employee</option>
+                                <option value="manager">{{ trans.get('keys.manager') }}</option>
+                                <option value="leader">{{ trans.get('keys.leader') }}</option>
+                                <option value="employee">{{ trans.get('keys.employee') }}</option>
                               </select>
                             </label>
                           </div>
@@ -77,7 +77,7 @@
                             <td>{{ (current_ass-1)*row_ass+(index+1) }}</td>
                             <td>{{ user.username }}</td>
                             <td class=" mobile_hide">{{ user.fullname }}</td>
-                            <td>{{ user.position }}</td>
+                            <td>{{ trans.get('keys.' + user.position) }}</td>
                             <td class="text-center">
                               <input class="selection-child" type="checkbox" :value="user.user_id + '/' + user.position" v-model="userAssigns" @change="onCheckboxEnrol()"/>
                             </td>
