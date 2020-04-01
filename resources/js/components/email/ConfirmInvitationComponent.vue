@@ -63,6 +63,8 @@
 
 <script>
 
+    import Ls from "../../services/ls";
+
     export default {
         props: ["invitation_id"],
         data() {
@@ -91,19 +93,20 @@
                     this.start_date = response.data.course.startdate;
                     this.end_date = response.data.course.enddate;
                   }
-                  if (response.data.replied) {
+
+                  if (!jQuery.isEmptyObject(response.data)) {
                     this.replied = response.data.replied ? response.data.replied : 0;
                     this.exist = 1;
                   } else {
                     this.redirect_timeout = 2500;
                     toastr['error'](this.trans.get('keys.loi_moi_khong_ton_tai'), this.trans.get('keys.thong_bao'));
                   }
-                  let current_pos = this;
-                  setTimeout(function () {
-                    if (current_pos.replied === 1 || current_pos.exist === 0) {
-                      window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17';
-                    }
-                  }, this.redirect_timeout);
+                  let callback_url = Ls.get('callback_url');
+                  if (this.replied === 1 || this.exist === 0) {
+                    setTimeout(function () {
+                      window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + callback_url;
+                    }, this.redirect_timeout);
+                  }
                 })
                 .catch(error => {
                   console.log(error);

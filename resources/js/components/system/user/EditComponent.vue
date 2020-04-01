@@ -170,7 +170,7 @@
                             <div v-if="roles && type === 'system'" class="col-12 form-group">
                                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                                 <select v-model="users.role" class="form-control selectpicker" id="inputRole" multiple >
-                                    <option v-for="role in roles" :value="role.id">{{ role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
+                                    <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                                 </select>
                                 <label v-if="!users.role" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
@@ -188,7 +188,7 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 col-sm-6 form-group">
+                            <div v-if="roles && type === 'system'" class="col-md-4 col-sm-6 form-group">
                               <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
                               <treeselect v-model="users.employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                               <label v-if="!users.employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
