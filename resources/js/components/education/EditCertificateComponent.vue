@@ -51,8 +51,8 @@
                     {{trans.get('keys.chung_chi_mau')}}
                     <span class="inline-checkbox ml-3">
                                     <span class="custom-control custom-checkbox custom-control-inline">
-                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.confirm" checked>
-                                        <input v-else type="checkbox" v-model="certificate.confirm"  class="custom-control-input" :id="'inputCheck'">
+                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.is_active" checked>
+                                        <input v-else type="checkbox" v-model="certificate.is_active"  class="custom-control-input" :id="'inputCheck'">
                                         <label class="custom-control-label" :for="'inputCheck'"></label>
                                     </span>
                                 </span>
@@ -222,7 +222,7 @@
                     .then(response => {
 
                         this.certificate = response.data;
-                        this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
+                        // this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
                         // try {
                         //     var splitPath = this.certificate.path.split('/');
                         //     let fileName = require("../../../../public/storage/upload/certificate/"+splitPath[splitPath.length - 1]);
@@ -253,38 +253,39 @@
                     $('.description_required').show();
                     return;
                 }
+                if(this.certificate.is_active){
+                    if(!this.certificate_img.pos_logo){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_logo){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_name){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_ten'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_name){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_ten'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_program){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_khung_nang_luc'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_program){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_khung_nang_luc'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_date)
+                    {
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_ngay_cap'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_date)
-                {
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_ngay_cap'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if($('#ip_inputSizeFullName').val() == '')
+                    {
+                        toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_nguoi_dung'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if($('#ip_inputSizeFullName').val() == '')
-                {
-                    toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_nguoi_dung'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
-
-                if($('#ip_inputSizeProgram').val() == '')
-                {
-                    toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_khung_nang_luc'), this.trans.get('keys.thong_bao'));
-                    return;
+                    if($('#ip_inputSizeProgram').val() == '')
+                    {
+                        toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_khung_nang_luc'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
                 }
 
 
@@ -299,7 +300,7 @@
 
 
                 this.formData = new FormData();
-                this.certificate.is_active = this.certificate.confirm == true ? 1 : 0;
+                this.certificate.is_active = this.certificate.is_active ? 1 : 0;
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('name', this.certificate.name);
                 this.formData.append('is_active', this.certificate.is_active);

@@ -4437,6 +4437,7 @@ class BussinessRepository implements IBussinessInterface
             $is_active = $request->input('is_active');
             $position = $request->input('position');
 
+
             $validates = validate_fails($request, [
                 'id' => 'number',
                 'name' => 'text',
@@ -4472,17 +4473,20 @@ class BussinessRepository implements IBussinessInterface
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
             }
-
-            if ($is_active == 0) {
-                $get_active = DB::table('image_certificate')
-                    ->where('is_active', 1)
-                    ->pluck('id')->toArray();
-                if (count($get_active) == 1 && in_array($id, $get_active)) {
-                    $response->status = false;
-                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
-                    return response()->json($response);
-                }
+            $get_active = DB::table('image_certificate')
+                ->where('is_active', 1)
+                ->pluck('id')->first();
+            if ($is_active == 0 && $get_active == null) {
+                $response->status = false;
+                $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
+                return response()->json($response);
             }
+            else if($is_active == 1){
+                DB::table('image_certificate')
+                    ->where('is_active', 1)
+                    ->update(['is_active' => 0]);
+            }
+
             $cer->save();
             \DB::commit();
             $response->status = true;
