@@ -53,7 +53,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
 
         $ready =  false;
-
         if (strlen($role_id) != 0) {
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
@@ -180,6 +179,130 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $listCourses = $listCourses->where('c.enddate', '<=', $cv_endDate);
         }
 
+
+        if ($status_course) {
+            $unix_now = strtotime(Carbon::now());
+            if ($status_course == 1) { //các khóa sắp diễn ra
+                $listCourses = $listCourses->where('c.startdate', '>', $unix_now);
+            } else if ($status_course == 2) { //các khóa đang diễn ra
+                $listCourses = $listCourses->where('c.startdate', '<=', $unix_now);
+                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
+            } else if ($status_course == 3) { //các khóa đã diễn ra
+                $listCourses = $listCourses->where('c.enddate', '<', $unix_now);
+            }
+        }
+
+
+        $listCourses = $listCourses->orderBy('id', 'desc');
+
+        $listCourses = $listCourses->paginate($row);
+        $total = ceil($listCourses->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $listCourses->currentPage(),
+            ],
+            'data' => $listCourses,
+            'total_course' => $totalCourse
+        ];
+
+
+        return response()->json($response);
+    }
+
+
+    public function getAllPermissionData(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $category_id = $request->input('category_id');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+        $status_course = $request->input('status_course');
+        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+        //Tích hợp phân quyền dữ liệu
+        $role_id = $request->input('role_id'); //quyền hệ thống
+        $is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number',
+            'category_id' => 'number',
+            'sample' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $listCourses = DB::table('mdl_course as c')
+            ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+            ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
+            ->select(
+                'c.id',
+                'c.fullname',
+                'c.shortname',
+                'c.startdate',
+                'c.enddate',
+                'c.visible',
+                'mccc.gradepass as pass_score'
+            );
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
+                $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
+                    $query->select('course_id')
+                        ->from('tms_role_course')
+                        ->where('role_id', $role_id);
+                });
+            }
+            else { //List khóa học đã phân quyền cho role này
+                $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
+                    $query->select('course_id')
+                        ->from('tms_role_course')
+                        ->where('role_id', $role_id);
+                });
+            }
+        }
+
+        //là khóa học mẫu
+        if ($sample == 1) {
+            $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
+        }
+        else {
+            $listCourses = $listCourses->where('c.category', '!=', 2);
+//            $listCourses = $listCourses->where('c.category', '!=', 5);
+        }
+        $listCourses = $listCourses->where('c.deleted', '=', 0);
+
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
+        }
+
+        if ($category_id) {
+            $listCourses = $listCourses->where('c.category', '=', $category_id);
+        }
+
+        if ($startdate) {
+            $cv_startDate = strtotime($startdate);
+            $listCourses = $listCourses->where('c.startdate', '>=', $cv_startDate);
+        }
+
+        if ($enddate) {
+            $cv_endDate = strtotime($enddate);
+            $listCourses = $listCourses->where('c.enddate', '<=', $cv_endDate);
+        }
 
         if ($status_course) {
             $unix_now = strtotime(Carbon::now());

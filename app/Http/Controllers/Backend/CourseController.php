@@ -103,6 +103,13 @@ class CourseController extends Controller
         return $this->mdlCourseRepository->getall($request);
     }
 
+    //api lấy danh sách khóa học phân quyền dữ liệu
+    //DatDT (01/04/2020)
+    public function apiGetListCoursePermissionData(Request $request)
+    {
+        return $this->mdlCourseRepository->getAllPermissionData($request);
+    }
+
     //api tạo mới khóa học
     //ThoLD (21/08/2019)
     public function apiCreateCourse(Request $request)
@@ -143,7 +150,7 @@ class CourseController extends Controller
                 return response()->json($response);
             }
 
-			
+
             $stdate = strtotime($request->input('startdate'));
             $eddate = strtotime($request->input('enddate'));
 

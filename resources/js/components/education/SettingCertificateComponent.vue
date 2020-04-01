@@ -29,41 +29,7 @@
                       </div>
                     </div>
                   </div>
-                  <div class="card">
-                    <!--                                    <div class="card-header d-flex justify-content-between">-->
-                    <!--                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2" aria-expanded="true"><i class="fa fa-cog mr-3" aria-hidden="true"></i> Cài đặt hiển thị trên chứng chỉ</a>-->
-                    <!--                                    </div>-->
-                    <!--                                    <div id="collapse_2" class="collapse" data-parent="#accordion_1" role="tabpanel">-->
-                    <!--                                        <div class="card-body">-->
-                    <!--                                            <setting_show_certificate></setting_show_certificate>-->
-                    <!--                                        </div>-->
-                    <!--                                    </div>-->
-                  </div>
                 </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-sm-8 dataTables_wrapper">
-                <div class="dataTables_length" style="display: inline-block;">
-                  <!--                                <label>Hiển thị-->
-                  <!--                                    <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getListUsers(1)">-->
-                  <!--                                        <option value="10">10</option>-->
-                  <!--                                        <option value="25">25</option>-->
-                  <!--                                        <option value="50">50</option>-->
-                  <!--                                        <option value="100">100</option>-->
-                  <!--                                    </select>-->
-                  <!--                                </label>-->
-                </div>
-              </div>
-              <div class="col-sm-4">
-                <!--                            <div class="d-flex flex-row form-group">-->
-                <!--                                <input  type="text"-->
-                <!--                                        class="form-control search_text" placeholder="Nhập từ khóa...">-->
-                <!--                                <button type="button" class="btn btn-primary btn-sm"-->
-                <!--                                        @click="getListStudents(1)">-->
-                <!--                                    Tìm-->
-                <!--                                </button>-->
-                <!--                            </div>-->
               </div>
             </div>
             <div class="row">
@@ -154,7 +120,6 @@
                 }, function () {
                     axios.post(url)
                         .then(response => {
-                            console.log(response);
                             if(response.data === 'exists'){
                                 toastr['error']("Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!", current_pos.trans.get('keys.that_bai'));
                             }else{
