@@ -158,8 +158,18 @@ class CourseSendMail extends Mailable
             $this->course_list = $course_array;
             $subject = '[ELEARNING] Bạn có một số khóa học trong lộ trình chưa hoàn thành';
             $view = 'email.remind_education_schedule';
+        } elseif ($this->activity == TmsNotification::REMIND_LOGIN) {
+            $subject = '[ELEARNING] Bạn đã lâu không đăng nhập vào hệ thống';
+            $view = 'email.remind_login';
+        } elseif ($this->activity == TmsNotification::REMIND_UPCOMING_COURSE) {
+            $subject = '[ELEARNING] Giới thiệu một số khóa học sắp bắt đầu';
+            $view = 'email.upcoming_course';
+        } elseif ($this->activity == TmsNotification::REMIND_ACCESS_COURSE) {
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] Bạn đã lâu không tương tác với khóa học chưa hoàn thành';
+            $view = 'email.remind_access_course';
         }
-
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)
                 ->with('fullname', $this->fullname)

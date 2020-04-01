@@ -628,6 +628,9 @@ class MailController extends Controller
     public function removeAllRemind() {
         TmsNotification::where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE)->delete();
         TmsNotification::where('target', '=', TmsNotification::REMIND_EDUCATION_SCHEDULE)->delete();
+        TmsNotification::where('target', '=', TmsNotification::REMIND_LOGIN)->delete();
+        TmsNotification::where('target', '=', TmsNotification::REMIND_UPCOMING_COURSE)->delete();
+        TmsNotification::where('target', '=', TmsNotification::REMIND_ACCESS_COURSE)->delete();
     }
 
     //Insert notification remind expired required courses
@@ -661,12 +664,11 @@ class MailController extends Controller
                             $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
                         })
                         ->whereIn('id', function ($query) use ($next_3_days) {
-                            //check exist in table tms_nofitications
                             $query->select('userid')
                                 ->from('mdl_course_completions')
                                 ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
                                 ->where('mdl_course.category', 3)
-                                //->where('mdl_course.enddate', "<", $next_3_days)
+                                ->where('mdl_course.enddate', "<", $next_3_days)
                                 ->whereNull('mdl_course_completions.timecompleted');
                         })
                         ->limit(self::DEFAULT_ITEMS_PER_SESSION);
@@ -705,8 +707,6 @@ class MailController extends Controller
                     'mdl_course.category'
                 )
                 ->get();
-
-
             if (count($userNeedRemindExpired) > 0) {
                 $data = array();
                 foreach ($userNeedRemindExpired as $user_item) {
@@ -853,7 +853,6 @@ class MailController extends Controller
                         $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EDUCATION_SCHEDULE);
                     })
                     ->whereIn('id', function ($query) use ($now) {
-                        //check exist in table tms_nofitications
                         $query->select('mu.id')
                             ->from('mdl_user as mu')
                             ->join('model_has_roles', 'mu.id', '=', 'model_has_roles.model_id')
@@ -1028,13 +1027,22 @@ class MailController extends Controller
         }
     }
 
-
-    //Checking
+    //Insert notification records to db for remind access course activity
+    //check course completion of user => get info and remind about those course
+    //Add limit
+    //Type repeat
+    //last check April 1, 2020
     public function insertRemindLogin() {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_LOGIN] == TmsConfigs::ENABLE) {
-            $check_login_duration = time() - 86400 * 7;
+
+            $check_login_duration = time() - 86400 * 7; //Prev 7 days
+
             $userNeedRemindLogin = DB::table('mdl_user')
+                ->whereNotIn('mdl_user.id', function ($query) {
+                    //check exist in table tms_nofitications
+                    $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_LOGIN);
+                })
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->where(DB::raw('GREATEST(lastlogin, currentlogin)'), '<', $check_login_duration)
@@ -1043,7 +1051,6 @@ class MailController extends Controller
                         ->orWhere('currentlogin', '<>', 0);
                 })
                 ->where('roles.id', '=', 5)//Role hoc vien
-
                 ->whereExists(function ($query) { // User da dang ki khoa hoc
                     $query->select(DB::raw(1))
                         ->from('mdl_user_enrolments')
@@ -1058,8 +1065,8 @@ class MailController extends Controller
                     'email',
                     DB::raw('GREATEST(lastlogin, currentlogin) AS truelastlogin')
                 )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get();
-
 
             if (count($userNeedRemindLogin) > 0) {
                 $data = array();
@@ -1078,37 +1085,248 @@ class MailController extends Controller
                     }
                 }
                 if (!empty($data)) {
-                    //Xoa notify cu
-                    TmsNotification::where('target', \App\TmsNotification::REMIND_LOGIN)
-                        ->delete();
                     //batch insert
                     TmsNotification::insert($data);
                 }
-            } else {
-                //Xoa notify cu
-                TmsNotification::where('target', \App\TmsNotification::REMIND_LOGIN)
-                    ->delete();
+            }
+        }
+    }
+
+    //Send email remind login
+    //Add limit, check exist
+    //last check April 1, 2020
+    public function sendRemindLogin() {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REMIND_LOGIN] == TmsConfigs::ENABLE) {
+            $listRemindLoginNotification = TmsNotification::where('status_send', \App\TmsNotification::UN_SENT)
+                ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('target', TmsNotification::REMIND_LOGIN)
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+                ->leftJoin('tms_device', 'mdl_user.id', '=', 'tms_device.user_id')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+
+                    'tms_device.token',
+                    'tms_device.type as device_type',
+
+                    'mdl_user.email',
+                    'mdl_user.firstname',
+                    'mdl_user.lastname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get();
+
+            if (count($listRemindLoginNotification) != 0) {
+                \DB::beginTransaction();
+                foreach ($listRemindLoginNotification as $itemNotif) {
+                    try {
+                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                            $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
+                            $email = $itemNotif->email;
+                            Mail::to($email)->send(new CourseSendMail(
+                                $itemNotif->target,
+                                $itemNotif->username,
+                                $fullname
+                            ));
+                            $this->update_notification($itemNotif, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                $this->sendPushNotification($listRemindLoginNotification);
+                \DB::commit();
+            }
+        }
+    }
+
+    //Insert notification records to db for upcoming courses
+    //mdl_user: all student / role = 5
+    //Add limit, check exist
+    //last check April 1, 2020
+    public function insertRemindUpcomingCourses() {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
+            $userNeedRemindUpcoming = MdlUser::where('roles.id', '=', 5)//Role hoc vien
+                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+                ->whereNotIn('mdl_user.id', function ($query) {
+                    //check exist in table tms_nofitications
+                    $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_UPCOMING_COURSE);
+                })
+                ->select(
+                    'mdl_user.id',
+                    'username',
+                    'firstname',
+                    'lastname',
+                    'email'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get();
+
+            if (count($userNeedRemindUpcoming) > 0) {
+                $data = array();
+                foreach ($userNeedRemindUpcoming as $user_item) {
+                    if (strlen($user_item->email) != 0) {
+                        $data[] = array(
+                            'type' => TmsNotification::MAIL,
+                            'target' => TmsNotification::REMIND_UPCOMING_COURSE,
+                            'status_send' => 0,
+                            'sendto' => $user_item->id,
+                            'createdby' => 0,
+                            'course_id' => 0,
+                            'created_at' => date('Y-m-d H:i:s', time()),
+                            'updated_at' => date('Y-m-d H:i:s', time()),
+                        );
+                    }
+                }
+                if (!empty($data)) {
+                    TmsNotification::insert($data);
+                }
+            }
+        }
+    }
+
+    //Send email remind upcoming courses
+    //Add status unsent
+    //Add limit
+    public function sendRemindUpcomingCourses() {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
+            $next_3_days = time() + 86400 * 3;
+            $next_7_days = time() + 86400 * 7;
+            $courses = MdlCourse::whereIn('category', [3, 4, 5])
+                ->where('startdate', '>', $next_3_days)
+                ->where('enddate', '<', $next_7_days)
+                ->get();
+            $countCourse = count($courses);
+
+            if ($countCourse > 0) {
+                $lstUpcomingNotif = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                    ->where('status_send', \App\TmsNotification::UN_SENT)
+                    ->where('tms_nofitications.target', \App\TmsNotification::REMIND_UPCOMING_COURSE)
+                    ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                    ->leftJoin('tms_device', 'mdl_user.id', '=', 'tms_device.user_id')
+                    ->select(
+                        'tms_nofitications.id',
+                        'tms_nofitications.target',
+                        'tms_nofitications.course_id',
+                        'tms_nofitications.type',
+                        'tms_nofitications.sendto',
+                        'tms_nofitications.createdby',
+
+                        'tms_device.token',
+                        'tms_device.type as device_type',
+
+                        'mdl_user.email',
+                        'mdl_user.firstname',
+                        'mdl_user.lastname',
+                        'mdl_user.username'
+                    )
+                    ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                    ->get(); //lay danh sach cac thong bao chua gui
+
+                if (count($lstUpcomingNotif) > 0) {
+                    \DB::beginTransaction();
+                    foreach ($lstUpcomingNotif as $itemNotif) {
+                        try {
+                            //send mail can not continue if has fake email
+                            $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
+                            $email = $itemNotif->email;
+
+                            if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                                Mail::to($email)->send(new CourseSendMail(
+                                    TmsNotification::REMIND_UPCOMING_COURSE,
+                                    $itemNotif->username,
+                                    $fullname,
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    $courses
+                                ));
+                                $object_content = [];
+                                foreach ($courses as $course_detail) {
+                                    $object_content[] = array(
+                                        'object_id' =>  $course_detail->id,
+                                        'object_name' => $course_detail->fullname,
+                                        'object_type' => 'course',
+                                        'parent_id' => '',
+                                        'parent_name' => '',
+                                        'start_date' => $course_detail->startdate,
+                                        'end_date' => $course_detail->enddate,
+                                        'code' => $course_detail->shortname,
+                                        'room' => $course_detail->course_place,
+                                        'grade' => '',
+                                    );
+                                }
+                                $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                                $this->update_notification($itemNotif, \App\TmsNotification::SENT);
+                            } else {
+                                $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                            }
+                        } catch (Exception $e) {
+                            $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                        }
+                        //(1);
+                    }
+                    $this->sendPushNotification($lstUpcomingNotif);
+                    \DB::commit();
+                }
             }
         }
     }
 
     //Insert notification records to db for remind access course activity
     //check course completion of user => get info and remind about those course
-
-    //user not in notification, insert 1000 each
+    //last check April 1, 2020
+    //Add limit by mdl_user left table
     public function insertRemindAccess() {
-        set_time_limit(0);
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {
             $prev_3_days = time() - 86400 * 3;
-
-            //Limit 1000 by left table before join
             $userNeedRemind =
-                DB::table(
-                    //'mdl_user'
-                    DB::raw('(select * from mdl_user limit ' . self::DEFAULT_ITEMS_PER_SESSION . ') mdl_user')
-                )
+                DB::query()->fromSub(function ($query) use ($prev_3_days) {
+                    $query->from('mdl_user')
+                        ->whereNotIn('id', function ($query) {
+                            //check exist in table tms_nofitications
+                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_ACCESS_COURSE);
+                        })
+                        ->whereIn('id', function ($query) use ($prev_3_days) {
+                            $query->select('mdl_course_completions.userid')
+                                ->from('mdl_course_completions')
+                                ->leftjoin('mdl_user_lastaccess', function ($join) {
+                                    $join->on('mdl_course_completions.course', '=', 'mdl_user_lastaccess.courseid');
+                                    $join->on('mdl_course_completions.userid', '=', 'mdl_user_lastaccess.userid');
+                                })
+                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course') //khoa hoc ton tai moi co du lieu
+                                ->where(function ($q) use ($prev_3_days) {
+                                    $q->where('mdl_user_lastaccess.timeaccess', '<', $prev_3_days)->orWhereNull('mdl_user_lastaccess.timeaccess');
+                                })
+                                ->whereNull('mdl_course_completions.timecompleted');
+                        })
+                        ->limit(self::DEFAULT_ITEMS_PER_SESSION);
+                }, 'mdl_user')
+                //MdlUser::query()
                 ->whereNull('mdl_course_completions.timecompleted')
+                ->whereNotIn('mdl_user.id', function ($query) {
+                    //check exist in table tms_nofitications
+                    $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_ACCESS_COURSE);
+                })
                 ->where(function ($q) use ($prev_3_days) {
                     $q->where('mdl_user_lastaccess.timeaccess', '<', $prev_3_days)->orWhereNull('mdl_user_lastaccess.timeaccess');
                 })
@@ -1117,14 +1335,7 @@ class MailController extends Controller
                     $join->on('mdl_course_completions.course', '=', 'mdl_user_lastaccess.courseid');
                     $join->on('mdl_course_completions.userid', '=', 'mdl_user_lastaccess.userid');
                 })
-                //khoa hoc ton tai moi co du lieu
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-                //chua co trong bang notification
-                ->whereNotIn('mdl_user.id', function ($query) {
-                    $query->select('sendto')->from('tms_nofitications')
-                        ->where('target', TmsNotification::REMIND_ACCESS_COURSE);
-                })
-
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')//khoa hoc ton tai moi co du lieu
                 ->select(
                     'mdl_course_completions.userid',
 
@@ -1134,15 +1345,13 @@ class MailController extends Controller
                     'mdl_user.email',
 
                     'mdl_course_completions.course',
-                    //'mdl_course_completions.timecompleted',
-                    //'mdl_user_lastaccess.timeaccess',
+                    'mdl_course_completions.timecompleted',
+                    'mdl_user_lastaccess.timeaccess',
 
                     'mdl_course.shortname',
                     'mdl_course.fullname'
                 )
                 ->get();
-
-            dd($userNeedRemind);
 
 
             if (count($userNeedRemind) > 0) {
@@ -1177,132 +1386,23 @@ class MailController extends Controller
                         }
                     }
                 }
-
-                dd($data);
-                //lấy x users để xử lý, 1000 is okay
-                //$data = array_slice($data, 0, 1000);
-
                 if (!empty($data)) {
                     $convert_to_json = array();
                     foreach ($data as $item) { //auto strip key of element, just use value = necessary data
                         $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
                         $convert_to_json[] = $item;
                     }
+                    //batch insert
                     TmsNotification::insert($convert_to_json);
                 }
-            }
-            else {
-                //Xoa notify cu
-                TmsNotification::where('target', \App\TmsNotification::REMIND_ACCESS_COURSE)
-                    ->delete();
             }
         }
     }
 
-    //user in notification, and sent, update 1000 each
-    public function updateRemindAccess() {
-        set_time_limit(0);
-        $configs = self::loadConfiguration();
-        if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {
-            $prev_3_days = time() - 86400 * 3;
-            $userNeedRemind = DB::table('mdl_user')
-                ->whereNull('mdl_course_completions.timecompleted')
-                ->where(function ($q) use ($prev_3_days) {
-                    $q->where('mdl_user_lastaccess.timeaccess', '<', $prev_3_days)->orWhereNull('mdl_user_lastaccess.timeaccess');
-                })
-                ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
-                ->leftjoin('mdl_user_lastaccess', function ($join) {
-                    $join->on('mdl_course_completions.course', '=', 'mdl_user_lastaccess.courseid');
-                    $join->on('mdl_course_completions.userid', '=', 'mdl_user_lastaccess.userid');
-                })
-                //khoa hoc ton tai moi co du lieu
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-                //chua co trong bang notification
-                ->whereNotIn('mdl_user.id', function ($query) {
-                    $query->select('sendto')->from('tms_nofitications')
-                        //->where('status_send', \App\TmsNotification::UN_SENT)
-                        ->where('target', TmsNotification::REMIND_ACCESS_COURSE);
-                })
-
-                ->select(
-                    'mdl_course_completions.userid',
-
-                    'mdl_user.username',
-                    'mdl_user.firstname',
-                    'mdl_user.lastname',
-                    'mdl_user.email',
-
-                    'mdl_course_completions.course',
-                    //'mdl_course_completions.timecompleted',
-                    //'mdl_user_lastaccess.timeaccess',
-
-                    'mdl_course.shortname',
-                    'mdl_course.fullname'
-                )
-                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
-                ->get();
-
-            echo count($userNeedRemind);die;
-
-            if (count($userNeedRemind) > 0) {
-                $data = array();
-                foreach ($userNeedRemind as $user_item) {
-                    if (strlen($user_item->email) != 0) {
-                        if (!array_key_exists($user_item->username, $data)) {
-                            $element = array(
-                                'type' => TmsNotification::MAIL,
-                                'target' => TmsNotification::REMIND_ACCESS_COURSE,
-                                'status_send' => 0,
-                                'sendto' => $user_item->userid,
-                                'createdby' => 0,
-                                'course_id' => 0,
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
-                            );
-                            $element['content'] = array(
-                                array(
-                                    'course_id' => $user_item->course,
-                                    'course_code' => $user_item->shortname,
-                                    'course_name' => $user_item->fullname,
-                                )
-                            );
-                            $data[$user_item->username] = $element;
-                        } else { // user exists in array, just update content element
-                            $data[$user_item->username]['content'][] = array(
-                                'course_id' => $user_item->course,
-                                'course_code' => $user_item->shortname,
-                                'course_name' => $user_item->fullname,
-                            );
-                        }
-                    }
-                }
-
-                //lấy x users để xử lý, 1000 is okay
-                $data = array_slice($data, 0, 1000);
-
-                dd($data);
-
-                if (!empty($data)) {
-                    $convert_to_json = array();
-                    foreach ($data as $item) { //auto strip key of element, just use value = necessary data
-                        $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
-                        $convert_to_json[] = $item;
-                    }
-                    TmsNotification::insert($convert_to_json);
-                }
-            }
-            else {
-                //Xoa notify cu
-                TmsNotification::where('target', \App\TmsNotification::REMIND_ACCESS_COURSE)
-                    ->delete();
-            }
-        }
-    }
-
-    //send remind to unsent user 1000 each
-    public function sendRemindAccess() { //mondays()->wednesdays()->fridays()->at('09:00');
-        //Send email remind user to access course
-        set_time_limit(0);
+    //Send email remind user to access course
+    //Add limit
+    //
+    public function sendRemindAccess() {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {
             $lstRemindNotif = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
@@ -1323,7 +1423,7 @@ class MailController extends Controller
                     'mdl_user.lastname',
                     'mdl_user.username'
                 )
-                ->limit(1) //giới hạn số thông báo trong phiên, tránh overload
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
 
             $countRemindNotif = count($lstRemindNotif);
@@ -1334,8 +1434,7 @@ class MailController extends Controller
                     try {
                         //send mail can not continue if has fake email
                         $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
-                        //$email = $itemNotif->email;
-                        $email = "innrhy@gmail.com";
+                        $email = $itemNotif->email;
                         if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::REMIND_ACCESS_COURSE,
