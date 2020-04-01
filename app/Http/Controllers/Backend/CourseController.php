@@ -109,6 +109,8 @@ class CourseController extends Controller
     {
         $response = new ResponseModel();
         try {
+            // [VinhPT][Fix_Bugs] Get wrong date time because of timezone => set default VN timezone
+            date_default_timezone_set('Asia/Ho_Chi_Minh');
 
             $param = [
                 'fullname' => 'text',
@@ -141,6 +143,7 @@ class CourseController extends Controller
                 return response()->json($response);
             }
 
+			
             $stdate = strtotime($request->input('startdate'));
             $eddate = strtotime($request->input('enddate'));
 

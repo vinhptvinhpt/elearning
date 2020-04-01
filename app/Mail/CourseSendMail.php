@@ -114,31 +114,31 @@ class CourseSendMail extends Mailable
         ) {
             switch ($this->activity) {
                 case TmsNotification::ENROL:
-                    $subject = '[BGT ELEARNING] Thông báo học viên được ghi danh vào khóa học';
+                    $subject = '[ELEARNING] Thông báo học viên được ghi danh vào khóa học';
                     $view = 'email.enrol_course';
                     break;
                 case TmsNotification::QUIZ_START:
-                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra mới';
+                    $subject = '[ELEARNING] Thông báo bài kiểm tra mới';
                     $view = 'email.quiz_start';
                     break;
                 case TmsNotification::QUIZ_END:
-                    $subject = '[BGT ELEARNING] Thông báo bài kiểm tra sắp hết hạn';
+                    $subject = '[ELEARNING] Thông báo bài kiểm tra sắp hết hạn';
                     $view = 'email.quiz_end';
                     break;
                 case TmsNotification::QUIZ_COMPLETED:
-                    $subject = '[BGT ELEARNING] Thông báo kết quả kiểm tra';
+                    $subject = '[ELEARNING] Thông báo kết quả kiểm tra';
                     $view = 'email.quiz_completed';
                     break;
                 case TmsNotification::REMIND_CERTIFICATE:
-                    $subject = '[BGT ELEARNING] Thông báo về việc cấp chứng chỉ';
+                    $subject = '[ELEARNING] Thông báo về việc cấp chứng chỉ';
                     $view = 'email.remind_certificate';
                     break;
                 case TmsNotification::FORGOT_PASSWORD:
-                    $subject = '[BGT ELEARNING] Thông báo lấy lại mật khẩu';
+                    $subject = '[ELEARNING] Thông báo lấy lại mật khẩu';
                     $view = 'email.forgot_password';
                     break;
                 case TmsNotification::ACTIVE_EMAIL:
-                    $subject = '[BGT ELEARNING] Thông báo xác nhận email';
+                    $subject = '[ELEARNING] Thông báo xác nhận email';
                     $view = 'email.active_email';
                     break;
                 default:
@@ -153,6 +153,11 @@ class CourseSendMail extends Mailable
             $this->course_list = $course_array;
             $subject = '[ELEARNING] Khóa học bắt buộc sắp hết hạn';
             $view = 'email.remind_expire_required_course';
+        } elseif ($this->activity == TmsNotification::REMIND_EDUCATION_SCHEDULE) {
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] Bạn có một số khóa học trong lộ trình chưa hoàn thành';
+            $view = 'email.remind_education_schedule';
         }
 
         if (strlen($subject) != 0 AND strlen($view) != 0) {

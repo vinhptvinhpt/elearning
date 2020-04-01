@@ -66,7 +66,7 @@
                         <select class="form-control" v-model="employee.position" id="employee_position">
                           <option value="">{{trans.get('keys.vi_tri') + ' *'}}</option>
                           <option v-for="position in filterPosition" :value="position.key">
-                            {{position.value}}
+                            {{ position.value }}
                           </option>
                         </select>
                       </div>
@@ -224,15 +224,15 @@
         let default_response = [
           {
             key: 'manager',
-            value: 'Manager'
+            value: this.trans.get('keys.manager')
           },
           {
             key: 'leader',
-            value: 'Leader'
+            value: this.trans.get('keys.leader')
           },
           {
             key: 'employee',
-            value: 'Employee'
+            value: this.trans.get('keys.employee')
           }
         ];
         if (this.roles_ready) {
@@ -244,13 +244,13 @@
           if (this.selected_role === 'manager') {
             response.push({
               key: 'leader',
-              value: 'Leader'
+              value: this.trans.get('keys.leader')
             });
           }
           if (this.selected_role === 'manager' || this.selected_role === 'leader') {
             response.push({
               key: 'employee',
-              value: 'Employee'
+              value: this.trans.get('keys.employee')
             });
           }
           return response;

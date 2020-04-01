@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\MdlUserEnrolments;
 use App\TmsInvitation;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
@@ -161,7 +162,6 @@ class BussinessRepository implements IBussinessInterface
     {
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
-
         $validates = validate_fails($request, [
             'startdate' => 'date',
             'enddate' => 'date',
@@ -181,109 +181,33 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $response = array();
-            //        chart 1 data
-            //        So luong hoan thanh khoa hoc / thang
-            //        So luong enrol khoa hoc / thang
-            //        $completed = MdlCourseCompletions::where("timecompleted", ">=", $start_time)
-            //            ->where("timecompleted", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timecompleted)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timecompleted))'))
-            //            ->get()->toArray();
-            //
-            //        $completed = fillMissingMonthChartData($completed, $start_time, $end_time);
-            //        $response['completed'] = $completed;
-
-            //        $enrolled = MdlCourseCompletions::where("timeenrolled", ">=", $start_time)
-            //            ->where("timeenrolled", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timeenrolled)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timeenrolled))'))
-            //            ->get()->toArray();
-            //
-            //        $enrolled = fillMissingMonthChartData($enrolled, $start_time, $end_time);
-            //        $response['enrolled'] = $enrolled;
-
-
-            //chart 1,2 data
-            //Hoc viên enrol khóa offline/online trong tháng
 
             $role_id = 5;
-            //        $enrolled_all = MdlUserEnrolments::where('mdl_enrol.enrol', 'manual')
-            //            ->where('roles.id', '=', $role_id)
-            //            ->where(function ($q) use ($start_time, $end_time) {
-            //                $q
-            //                    ->where(function ($q1) use ($start_time, $end_time) {
-            //                    $q1->where("mdl_user_enrolments.timecreated", ">=", $start_time)->where("mdl_user_enrolments.timecreated", "<=", $now);
-            //                    })
-            //                    ->orWhere(function ($q2) use ($start_time, $end_time) {
-            //                        $q2->where("mdl_user_enrolments.timestart", ">=", $start_time)->where("mdl_user_enrolments.timestart", "<=", $now);
-            //                    });
-            //            })
-            //            ->select(
-            //                'mdl_course.id',
-            //                'mdl_user_enrolments.userid',
-            //                'mdl_course.category',
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth'),
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth2')
-            //            )
-            //            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-            //            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-            //            ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
-            //            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            //            ->get()->toArray();
-
-            //        $enrolled = array();
-
-            //        $this_month_offline = 0;
-            //        $this_month_online = 0;
-            //
-            //        foreach ($enrolled_all as $enrol) {
-            //            $mth = $enrol['mth'];
-            //            if (strlen($mth) == 0) {
-            //                $mth = $enrol['mth2'];
-            //            }
-            //
-            //            if ($mth == date('n', $now)) {
-            //                if ($enrol['category'] == 5) { //offline
-            //                    $this_month_offline += 1;
-            //                } elseif ($enrol['category'] != 5 && $enrol['category'] != 2) { //online
-            //                    $this_month_online += 1;
-            //                }
-            //            }
-            //
-            //            if (array_key_exists($mth, $enrolled)) {
-            //                $enrolled[$mth] += 1;
-            //            } else {
-            //                $enrolled[$mth] = 1;
-            //            }
-            //        }
-
-            //        $enrolled_source = array();
-            //        foreach ($enrolled as $key => $val) {
-            //            $enrolled_source[] = array(
-            //              'mth' => $key,
-            //              'total' => $val
-            //            );
-            //        }
 
             //chart 3 data
             //hoc vien dang ki moi
-            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
-                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+//            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
+//                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
+//                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+//                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+//                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//                ->select(
+//                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
+//                    DB::raw('count(*) as total')
+//                )
+//                ->groupBy('mthyr')
+//                ->get()
+//                ->toArray();
+
+            $students = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", date("Y-m-d H:i:s", $start_time))
+                ->where("mdl_user_enrolments.timecreated", "<=", date("Y-m-d H:i:s", $end_time))
+                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->where('mdl_course_categories.id', '=', 4)// khoa hoc ky nang mem
                 ->select(
-                //                error strict mode laravel https://stackoverflow.com/a/44984930/3387087
-                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%m') mth"),
-                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%Y') yr"),
-                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
+                    DB::raw('CONCAT(MONTH(mdl_user_enrolments.timecreated), "/", DATE_FORMAT(mdl_user_enrolments.timecreated, "%y")) mthyr'),
                     DB::raw('count(*) as total')
                 )
                 ->groupBy('mthyr')
@@ -305,30 +229,6 @@ class BussinessRepository implements IBussinessInterface
                     'total' => $val
                 );
             }
-
-            //        $confirm_students = TmsUserDetail::where("confirm_time", ">=", $start_time)
-            //            ->where("confirm_time", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(confirm_time)) as mth')
-            //            )
-            //            ->get()->toArray();
-            //
-            //        $confirmed = array();
-            //        foreach ($confirm_students as $confirm) {
-            //            $mth = $confirm['mth'];
-            //            if (array_key_exists($mth, $confirmed)) {
-            //                $confirmed[$mth] += 1;
-            //            } else {
-            //                $confirmed[$mth] = 1;
-            //            }
-            //        }
-            //        $confirm_source = array();
-            //        foreach ($confirmed as $key => $val) {
-            //            $confirm_source[] = array(
-            //                'mth' => $key,
-            //                'total' => $val
-            //            );
-            //        }
 
             $confirm_students = StudentCertificate::where("student_certificate.created_at", ">=", date("Y-m-d H:i:s", $start_time))
                 ->join('course_final as cf', 'cf.userid', '=', 'student_certificate.userid')
@@ -397,13 +297,7 @@ class BussinessRepository implements IBussinessInterface
                     $online += 1;
                 }
             }
-            //chart1 bonus
-            //        $enrolled = fillMissingMonthChartData($enrolled_source, $start_time, $end_time);
-            //        $response['enrolled'] = $enrolled;
 
-            //chart2
-            //        $response['online'] = $this_month_online;
-            //        $response['offline'] = $this_month_offline;
             $response['online'] = $online;
             $response['offline'] = $offline;
 
@@ -434,9 +328,13 @@ class BussinessRepository implements IBussinessInterface
     {
         $now = time();
         $row = $request->input('row');
+        $keyword = $request->input('keyword');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
 
         $validates = validate_fails($request, [
             'row' => 'number',
+            'keyword' => 'text'
         ]);
         if (!empty($validates)) {
             return response()->json([]);
@@ -453,6 +351,30 @@ class BussinessRepository implements IBussinessInterface
                     'course_place',
                     'category'
                 );
+
+            if ($keyword) {
+                //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+                // code xử lý remove ký tự đầu tiên của keyword đi
+                if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                    $total_len = strlen($keyword);
+                    if ($total_len > 2) {
+                        $keyword = substr($keyword, 1, $total_len - 1);
+                    }
+                }
+
+                $data = $data->whereRaw('( mdl_course.fullname like "%' . $keyword . '%" OR mdl_course.shortname like "%' . $keyword . '%" )');
+            }
+
+            if ($startdate) {
+                $cv_startDate = strtotime($startdate);
+                $data = $data->where('mdl_course.startdate', '>=', $cv_startDate);
+            }
+
+            if ($enddate) {
+                $cv_endDate = strtotime($enddate);
+                $data = $data->where('mdl_course.enddate', '<=', $cv_endDate);
+            }
+
 
             $data = $data->paginate($row);
             $total = ceil($data->total() / $row);

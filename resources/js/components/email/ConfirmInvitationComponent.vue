@@ -75,7 +75,9 @@
                 accepted: false,
                 rejected: false,
                 reason: "",
-                replied: 0
+                replied: 0,
+                exist: 0,
+                redirect_timeout: 5000,
             };
         },
         methods: {
@@ -89,7 +91,19 @@
                     this.start_date = response.data.course.startdate;
                     this.end_date = response.data.course.enddate;
                   }
-                  this.replied = response.data.replied ? response.data.replied : 0;
+                  if (response.data.replied) {
+                    this.replied = response.data.replied ? response.data.replied : 0;
+                    this.exist = 1;
+                  } else {
+                    this.redirect_timeout = 2500;
+                    toastr['error'](this.trans.get('keys.loi_moi_khong_ton_tai'), this.trans.get('keys.thong_bao'));
+                  }
+                  let current_pos = this;
+                  setTimeout(function () {
+                    if (current_pos.replied === 1 || current_pos.exist === 0) {
+                      window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17';
+                    }
+                  }, this.redirect_timeout);
                 })
                 .catch(error => {
                   console.log(error);
@@ -120,7 +134,11 @@
                   var language = this.language;
                   if (response.data.status === 'success') {
                     toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                    this.redirect_timeout = 2500;
                     this.getInvitation();
+                    // setTimeout(function () {
+                    //     window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17';
+                    // }, 5000);
                   } else {
                     toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                   }
@@ -140,7 +158,7 @@
             let check_rejected = this;
             $(".chb").change(function() {
               $(".chb").not(this).prop('checked', false);
-              if(this.id == "checkbox_accepted"){
+              if(this.id === "checkbox_accepted"){
                 check_rejected.rejected = false;
               } else {
                 check_rejected.accepted = false;
@@ -148,6 +166,7 @@
             });
         }
     };
+
 </script>
 
 <style scoped>

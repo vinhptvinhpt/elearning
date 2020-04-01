@@ -10,8 +10,8 @@ class Role extends Model
     const MANAGE_POS = 'managepos'; //trưởng điểm bán
     const TEACHER = 'teacher';
     const STUDENT = 'student';
-    const ROOT = 'Root';
-    const ADMIN = 'Admin';
+    const ROOT = 'root';
+    const ADMIN = 'admin';
     const COURSE_CREATOR = 'coursecreator';
     const EDITING_TEACHER = 'editingteacher';
     const MANAGE_MARKET = 'managemarket'; //nhân viên quản lý thị trường

@@ -168,20 +168,20 @@
                       </thead>
                       <tbody>
                       <tr v-if="posts.length == 0">
-                        <td colspan="6">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
+                        <td colspan="6">{{ trans.get('keys.khong_tim_thay_du_lieu') }}</td>
                       </tr>
                       <tr v-else v-for="(item,index) in posts">
                         <td>{{ (current-1)*row+(index+1) }}</td>
                         <td>{{ item.user ? item.user.fullname : '' }}</td>
                         <td>{{ item.organization ? item.organization.name : '' }}</td>
                         <td v-if="item.position === 'manager'">
-                          <label class="badge badge-dark">{{ item.position }}</label>
+                          <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
                         </td>
                         <td v-else-if="item.position === 'leader'">
-                          <label class="badge badge-warning">{{ item.position }}</label>
+                          <label class="badge badge-warning">{{ trans.get('keys.leader') }}</label>
                         </td>
                         <td v-else>
-                          <label class="badge badge-info">{{ item.position }}</label>
+                          <label class="badge badge-info">{{ trans.get('keys.employee') }}</label>
                         </td>
                         <td>
                           <router-link :title="trans.get('keys.sua_nhan_vien')"
@@ -468,11 +468,11 @@
       //     this.filterPosition = [
       //       {
       //         key: 'leader',
-      //         value: 'Leader'
+      //         value: this.trans.get('keys.leader')
       //       },
       //       {
       //         key: 'employee',
-      //         value: 'Employee'
+      //         this.trans.get('keys.employee')
       //       }
       //     ]
       //   }
@@ -480,7 +480,7 @@
       //     this.filterPosition = [
       //       {
       //         key: 'employee',
-      //         value: 'Employee'
+      //         this.trans.get('keys.employee')
       //       }
       //     ]
       //   }
@@ -491,15 +491,15 @@
         let default_response = [
           {
             key: 'manager',
-            value: 'Manager'
+            value:  this.trans.get('keys.manager')
           },
           {
             key: 'leader',
-            value: 'Leader'
+            value: this.trans.get('keys.leader')
           },
           {
             key: 'employee',
-            value: 'Employee'
+            value: this.trans.get('keys.employee')
           }
         ];
 
@@ -515,13 +515,13 @@
           if (this.selected_role === 'manager') {
             response.push({
               key: 'leader',
-              value: 'Leader'
+              value: this.trans.get('keys.leader')
             });
           }
           if (this.selected_role === 'manager' || this.selected_role === 'leader') {
             response.push({
               key: 'employee',
-              value: 'Employee'
+              value: this.trans.get('keys.employee')
             });
           }
           return response;

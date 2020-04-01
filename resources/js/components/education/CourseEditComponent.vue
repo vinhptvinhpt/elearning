@@ -190,7 +190,8 @@
         data() {
             return {
                 course: {
-                    avatar: ''
+                    avatar: '',
+                    summary: ''
                 },
                 string_ip: "",
                 categories: [],
@@ -329,7 +330,7 @@
                 this.formData.append('enddate', this.course.enddate);
                 this.formData.append('pass_score', this.course.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.course.summary);
+                this.formData.append('description', this.course.summary === null ? '' : this.course.summary);
                 this.formData.append('category_id', this.course.category);
                 this.formData.append('course_place', '');
                 this.formData.append('is_end_quiz', quiz_test);
@@ -345,7 +346,6 @@
                     },
                 })
                     .then(response => {
-                        console.log('456');
                         var language = this.language;
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
@@ -355,7 +355,6 @@
                         }
                     })
                     .catch(error => {
-                        console.log('789');
                         toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
