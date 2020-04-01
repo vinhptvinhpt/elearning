@@ -712,7 +712,7 @@
               for (const [key, item] of Object.entries(list)) {
                 let newOption = {
                   id: item.id,
-                  label: this.trans.get('keys.' + item.name),
+                  label:  this.trans.has('keys.' + item.name) ? this.trans.get('keys.' + item.name) : item.name.charAt(0).toUpperCase() + item.name.slice(1),
                   //label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
                   //name: item.name
                 };
