@@ -405,7 +405,6 @@ class BussinessRepository implements IBussinessInterface
                 ->where('mhr.model_id', $user_id)
                 ->where('mhr.model_type', 'App/MdlUser')
                 ->get();
-
             if (count($sru) != 0) {
                 foreach ($sru as $role) {
                     if ($role->name == Role::ROLE_MANAGER) {
@@ -11894,30 +11893,48 @@ class BussinessRepository implements IBussinessInterface
         try {
             $sale_room_id = $request->input('sale_room_id');
             $user_id = $request->input('user_id');
-
+            $role_id = $request->input('role_id');
             $param = [
                 'sale_room_id' => 'number',
                 'user_id' => 'number',
+                'role_id' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
 
-            if ($sale_room_id && $user_id) {
+            if ($role_id && $user_id) {
+                //get role
+                $role = Role::select('mdl_role_id', 'name')->findOrFail($role_id);
+                $mdlUser = MdlUser::findOrFail($user_id);
                 \DB::beginTransaction();
-                TmsSaleRoomUser::where([
-                    'sale_room_id' => $sale_room_id,
-                    'user_id' => $user_id,
-                    'type' => TmsSaleRoomUser::POS
+                //delete user with role
+                ModelHasRole::where([
+                    'role_id' => $role_id,
+                    'model_id' => $user_id,
+                    'model_type' => 'App/MdlUser',
                 ])->delete();
+                if($sale_room_id){
+                    TmsSaleRoomUser::where([
+                        'sale_room_id' => $sale_room_id,
+                        'user_id' => $user_id,
+                        'type' => TmsSaleRoomUser::POS
+                    ])->delete();
 
-                $sale_room = TmsSaleRooms::select('name')->findOrFail($sale_room_id);
-                $userName = TmsUserDetail::select('fullname')->where('user_id', $user_id)->first();
-                devcpt_log_system('organize', '/system/organize/saleroom/edit/' . $sale_room_id, 'remove', 'Gỡ Nhân viên : ' . $userName['fullname'] . ' khỏi Điểm bán : ' . $sale_room['name']);
+                    $sale_room = TmsSaleRooms::select('name')->findOrFail($sale_room_id);
+                    $userName = TmsUserDetail::select('fullname')->where('user_id', $user_id)->first();
+                    devcpt_log_system('organize', '/system/organize/saleroom/edit/' . $sale_room_id, 'remove', 'Gỡ Nhân viên : ' . $userName['fullname'] . ' khỏi Điểm bán : ' . $sale_room['name']);
+                }
+                $type = 'role';
+                $url = '/roles/list_user/' . $role_id;
+                $action = 'delete';
+                $info = 'Xóa quyền  ' . $role['name'] . ' cho tài khoản' . $mdlUser['username'];
+                devcpt_log_system($type, $url, $action, $info);
                 \DB::commit();
                 return response()->json(status_message('success', __('go_nguoi_dung_thanh_cong')));
-            } else {
+            }
+            else {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
         } catch (Exception $e) {

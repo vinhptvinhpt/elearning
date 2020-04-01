@@ -223,14 +223,14 @@
 
                         this.certificate = response.data;
                         this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
-                        try {
-                            var splitPath = this.certificate.path.split('/');
-                            let fileName = require("../../../../public/storage/upload/certificate/"+splitPath[splitPath.length - 1]);
-                            // do something
-                        } catch (e) {
-                            this.certificate.path = "/storage/upload/certificate/default_certificate.jpg";
-                            toastr['warning'](this.trans.get('keys.khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh'), this.trans.get('keys.thong_bao'));
-                        }
+                        // try {
+                        //     var splitPath = this.certificate.path.split('/');
+                        //     let fileName = require("../../../../public/storage/upload/certificate/"+splitPath[splitPath.length - 1]);
+                        //     // do something
+                        // } catch (e) {
+                        //     this.certificate.path = "/storage/upload/certificate/default_certificate.jpg";
+                        //     toastr['warning'](this.trans.get('keys.khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh'), this.trans.get('keys.thong_bao'));
+                        // }
 
 
                         // this.coordinates = JSON.parse(response.data.position);
