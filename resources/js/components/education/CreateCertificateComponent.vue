@@ -59,10 +59,10 @@
         },
         methods: {
             changeRequired(element){
-                console.log(element);
                 $('#'+element).removeClass('notValidate');
             },
             createCertificate(){
+
                 if(!this.name) {
                     $('.name_required').show();
                     return;
@@ -79,53 +79,38 @@
                 this.formData.append('name', this.name);
                 this.formData.append('is_active', this.is_active);
                 this.formData.append('description', this.description);
+
                 axios.post('/certificate/create', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
                     .then(response => {
-                        if (response.data.status) {
-                            swal(
-                                {
-                                    title: response.data.message,
-                                    // text: response.data.message,
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                },
-                                function() {
-                                    window.location.reload();
-                                }
-                            );
-                        }else{
-                            $('.form-control').removeClass('notValidate');
-                            $('#'+response.data.id).addClass('notValidate');
-                            swal({
-                                title: "Thông báo",
-                                text: response.data.message,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
+                        if(response.data.status){
+                            toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
+                            this.clearFileInput();
+                            this.name = '';
+                            this.description = '';
+                            $('.closeForm').trigger('click');
+                            this.$parent.getListImages();
+                        }
+                        else{
+                              $('.form-control').removeClass('notValidate');
+                              $('#'+response.data.id).addClass('notValidate');
+                            toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
                         }
                     })
                     .catch(error => {
-                        swal({
-                            title: "Thông báo",
-                            text: " Lỗi hệ thống.",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
+                        console.log(error);
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
             setFileInput() {
               $('.dropify').dropify();
-            }
+            },
+            clearFileInput() {
+                $('.dropify-clear').click();
+            },
         },
         mounted() {
           this.setFileInput();
