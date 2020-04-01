@@ -68,11 +68,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 );
             if (strlen($is_excluded) != 0) {
                 if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
-                   $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
-                       $query->select('course_id')
-                           ->from('tms_role_course')
-                           ->where('role_id', $role_id);
-                   });
+                    $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
+                        $query->select('course_id')
+                            ->from('tms_role_course')
+                            ->where('role_id', $role_id);
+                    });
                 } else { //List khóa học đã phân quyền cho role này
                     $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
                         $query->select('course_id')
@@ -482,15 +482,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         ]);
 
         return $course;
-
     }
 
-    public function spitIP($ip){
+    public function spitIP($ip)
+    {
         $access_ip = '{"list_access_ip":[';
         $splitAccessIP = "";
-        if($ip)
+        if ($ip)
             $splitAccessIP = explode(',', $ip);
-        if($splitAccessIP){
+        if ($splitAccessIP) {
             foreach ($splitAccessIP as $ip) {
                 $access_ip .= '"' . str_replace(' ', '', $ip) . '",';
             }
@@ -674,7 +674,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 DB::table('mdl_enrol')
                     ->where('courseid', '=', $course->id)
                     ->where('enrol', '=', 'self')
-                    ->where('roleid', '=', 5)//quyền học viên
+                    ->where('roleid', '=', 5) //quyền học viên
                     ->delete();
             }
 
@@ -908,7 +908,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ->where('mdl_attendance.attendance', '=', $date)
             ->where('mdl_course.id', '=', $course_id)
             ->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT)
-            ->select('mdl_user.id',
+            ->select(
+                'mdl_user.id',
                 'mdl_user.username',
                 'tms_user_detail.fullname',
                 'mdl_attendance.attendance',
@@ -953,31 +954,42 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $action = $request->input('action');
 
         // Ghi log của course
-        $documents = DB::table('mdl_logstore_standard_log as lsl')
-            ->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
+        // * lấy log trong thùng rác của course
+        $docDel = DB::table('mdl_logstore_standard_log as lsl')
             ->join('mdl_user as u', 'u.id', '=', 'lsl.userid')
             ->where('lsl.contextlevel', '=', MdlUser::CONTEXT_MODULE)
-            ->where('lsl.courseid', '=', $course_id);
+            ->where('lsl.courseid', '=', $course_id)->join('mdl_tool_recyclebin_course as mtrc', 'mtrc.courseid', '=', 'lsl.courseid')
+            ->where('lsl.action', '=', 'deleted')
+            ->select('lsl.other', 'mtrc.name', 'u.username', 'lsl.action', 'mtrc.module', 'lsl.timecreated');
+
+        // * lấy log khác thùng rác
+        $docDifDel = DB::table('mdl_logstore_standard_log as lsl')
+            ->join('mdl_user as u', 'u.id', '=', 'lsl.userid')
+            ->where('lsl.contextlevel', '=', MdlUser::CONTEXT_MODULE)
+            ->where('lsl.courseid', '=', $course_id)->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
+            ->select('lsl.other', DB::raw('"" as name'), 'u.username', 'lsl.action', 'cm.module', 'lsl.timecreated');
+
+        // * union all log
+        $documents = $docDel->unionAll($docDifDel);
 
         if ($keyword) {
             $documents = $documents
-                ->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+                ->whereRaw('( other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR username like "%' . $keyword . '%" )');
         }
 
         if ($action) {
             $documents = $documents
-                ->where('lsl.action', '=', $action);
+                ->where('action', '=', $action);
         }
 
         if ($module_id > 0) {
-            $documents = $documents->where('cm.module', '=', $module_id);
+            $documents = $documents->where('module', '=', $module_id);
         }
 
         $total_Data = $documents->count();
 
         $documents = $documents
-            ->select('lsl.action', 'lsl.other', 'lsl.timecreated', 'u.username')
-            ->orderBy('lsl.timecreated', 'desc')
+            ->orderBy('timecreated', 'desc')
             ->skip(($page - 1) * $pageSize)->take($pageSize)
             ->get();
 

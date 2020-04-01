@@ -443,7 +443,7 @@
                         <tr v-for="(att,index) in documents">
                           <td>{{ index+1 }}</td>
                           <td>{{ JSON.parse(att.other).modulename }}</td>
-                          <td>{{ JSON.parse(att.other).name }}</td>
+                          <td>{{ isset(JSON.parse(att.other).name) ? JSON.parse(att.other).name : att.name }}</td>
                           <td>{{ att.action }}</td>
                           <td>{{ att.username }}</td>
                           <td>{{ att.timecreated | convertDateTime }}</td>
