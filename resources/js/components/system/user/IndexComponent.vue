@@ -431,9 +431,13 @@
             user_delete: user_delete
           })
             .then(response => {
+                swal.close();
               if (response.data === 'success') {
                 toastr['success'](current_pos.trans.get('keys.xoa_tai_khoan_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                 $('#btnFilter').trigger('click');
+                //   const index = current_pos.posts.findIndex(post => post.user_id == user_delete);
+                //   if (~index) // if the post exists in array
+                //       current_pos.posts.splice(index, 1); //delete the post
                 this.user_delete = [];
               } else {
                 toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
@@ -457,6 +461,12 @@
           axios.post(url)
             .then(response => {
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                $('#btnFilter').trigger('click');
+              // var url_split = url.split('/');
+              // var user_id = url_split[url_split.length - 1];
+              //   const index = current_pos.posts.findIndex(post => post.user_id == user_id);
+              //   if (~index) // if the post exists in array
+              //       current_pos.posts.splice(index, 1); //delete the post
             })
             .catch(error => {
               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
