@@ -72,49 +72,57 @@
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-if="posts.length == 0">
-                      <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
-                    </tr>
-                    <tr v-else v-for="(user,index) in posts" v-if="user.user_detail">
-                      <td>{{ (current-1)*row+(index+1) }}</td>
-                      <td>
-                        <router-link
-                          :to="{ name: 'EditUserById', params: { user_id: user.user_id,type:'system' } }">
-                          {{ user.user_detail.user ? user.user_detail.user.username : '' }}
-                        </router-link>
-                      </td>
+                    <template v-if="posts.length == 0">
+<!--                      <tr v-if="posts.length == 0">-->
+<!--                        <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>-->
+<!--                      </tr>-->
+                      <tr>
+                        <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
+                      </tr>
+                    </template>
+                    <template v-else>
+                      <tr v-if="user.user_detail" v-for="(user,index) in posts">
+                        <td>{{ (current-1)*row+(index+1) }}</td>
+                        <td>
+                          <router-link
+                            :to="{ name: 'EditUserById', params: { user_id: user.user_id,type:'system' } }">
+                            {{ user.user_detail.user ? user.user_detail.user.username : '' }}
+                          </router-link>
+                        </td>
 
-                      <td class=" mobile_hide">{{ user.user_detail.fullname }}</td>
-                      <td class=" mobile_hide">{{ user.user_detail.email }}</td>
-<!--                      <td class="wrap_select">-->
-<!--                        <table v-if="user.user_detail.trainning_user.length > 0" style="margin-bottom: 0;">-->
-<!--                          <tr v-for="trainning in user.user_detail.trainning_user">-->
-<!--                            <td>-->
-<!--                              {{ trainning.training_detail.name }}-->
-<!--                              <span style="display: none;" class="remove_trainning" :title="trans.get('keys.go_khung_nang_luc')"-->
-<!--                                    @click="remove_trainning(trainning.id)"><i class="fas fa-times"></i></span>-->
-<!--                            </td>-->
-<!--                          </tr>-->
-<!--                        </table>-->
-<!--                        <span>{{ user.trainning_name }}</span>-->
-<!--                        <div style="display: none;">-->
-<!--                          <div style="display: flex;min-width: 100px;">-->
-<!--                            <select v-model="user.trainning_id"-->
-<!--                                    class="custom-select custom-select-sm form-control form-control-sm">-->
-<!--                              <option v-for="value in trainning_list" :value="value.id">{{value.name}}</option>-->
-<!--                            </select>-->
-<!--                            <button style="height: 33px;min-width: 45px;" class="btn btn-primary btn-sm" type="button"-->
-<!--                                    @click="changeTrainning(user.trainning_id,user.id)">{{trans.get('keys.luu')}}-->
-<!--                            </button>-->
-<!--                          </div>-->
-<!--                        </div>-->
-<!--                      </td>-->
-                      <td class="text-center">
-                        <button @click="remove_trainning(user.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select" type="button">
-                          <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
-                        </button>
-                      </td>
-                    </tr>
+                        <td class=" mobile_hide">{{ user.user_detail.fullname }}</td>
+                        <td class=" mobile_hide">{{ user.user_detail.email }}</td>
+                        <!--                      <td class="wrap_select">-->
+                        <!--                        <table v-if="user.user_detail.trainning_user.length > 0" style="margin-bottom: 0;">-->
+                        <!--                          <tr v-for="trainning in user.user_detail.trainning_user">-->
+                        <!--                            <td>-->
+                        <!--                              {{ trainning.training_detail.name }}-->
+                        <!--                              <span style="display: none;" class="remove_trainning" :title="trans.get('keys.go_khung_nang_luc')"-->
+                        <!--                                    @click="remove_trainning(trainning.id)"><i class="fas fa-times"></i></span>-->
+                        <!--                            </td>-->
+                        <!--                          </tr>-->
+                        <!--                        </table>-->
+                        <!--                        <span>{{ user.trainning_name }}</span>-->
+                        <!--                        <div style="display: none;">-->
+                        <!--                          <div style="display: flex;min-width: 100px;">-->
+                        <!--                            <select v-model="user.trainning_id"-->
+                        <!--                                    class="custom-select custom-select-sm form-control form-control-sm">-->
+                        <!--                              <option v-for="value in trainning_list" :value="value.id">{{value.name}}</option>-->
+                        <!--                            </select>-->
+                        <!--                            <button style="height: 33px;min-width: 45px;" class="btn btn-primary btn-sm" type="button"-->
+                        <!--                                    @click="changeTrainning(user.trainning_id,user.id)">{{trans.get('keys.luu')}}-->
+                        <!--                            </button>-->
+                        <!--                          </div>-->
+                        <!--                        </div>-->
+                        <!--                      </td>-->
+                        <td class="text-center">
+                          <button @click="remove_trainning(user.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select" type="button">
+                            <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                          </button>
+                        </td>
+                      </tr>
+                    </template>
+
                     </tbody>
                     <tfoot>
                     <tr>

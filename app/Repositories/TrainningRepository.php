@@ -706,6 +706,9 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     });
                 });
             }
+            else{
+                $data = $data->whereHas('user_detail.user');
+            }
 
             $data = $data->orderBy('user_id', 'desc');
             $data = $data->groupBy('user_id');
