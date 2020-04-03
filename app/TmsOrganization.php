@@ -30,7 +30,7 @@ class TmsOrganization extends Model
 
     public function children()
     {
-        return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children');
+        return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children')->with('employees.user');
     }
 
     public function roleOrganization()
