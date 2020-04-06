@@ -1939,10 +1939,14 @@ class BussinessRepository implements IBussinessInterface
         //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
         $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
+//            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
             ->where('c.id', '=', $course_id)
+            ->where('e.roleid', 5)//hoc vien only
+//            ->where('roles.id', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
@@ -3241,6 +3245,79 @@ class BussinessRepository implements IBussinessInterface
         }
     }
 
+    //New screen
+    public function apiListDetail(Request $request)
+    {
+
+
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        //Query users
+//        $data = TmsOrganization::with('employees.user')
+//            ->with('children')
+//            ->with('trainings.trainning')
+            //->where('id', $organization_id)
+//            ->whereHas('trainings', function($q) use($training_id) {
+//                    // Query the name field in status table
+//                    $q->where('trainning_id', '=', $training_id);
+//                })
+//            ->get();
+        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
+        //Đã được cấp chứng chỉ và chưa được
+        //join khung năng lục?
+
+//        return response()->json($data);
+
+        /*
+
+         select
+o.`name` as organization_name,
+c.`name` as course_name,
+e.`name` as employee_name,
+s.employee_id,
+s.course_id
+
+
+from organization o
+JOIN organization_employee oe ON  oe.organization_id = o.id
+LEFT JOIN organization_courses oc ON oc.organization_id = o.id AND oe.organization_id = oc.organization_id
+LEFT JOIN employee e ON oe.employee_id = e.id
+LEFT JOIN course c ON oc.course_id = c.id
+LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
+
+ */
+
+
+
+        $base_query_pos = TmsOrganization::where('tms_organization.enabled', 1)
+            ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+            ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
+            ->leftjoin('tms_trainning_groups', function ($join) {
+                $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
+                $join->where('tms_trainning_groups.type', '=', 1);
+            })
+            ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftjoin('course_final', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+            })
+            ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
+            ->select(
+                'tms_organization.name',
+                'tms_user_detail.fullname',
+                'mdl_course.fullname as course_name',
+                'tms_traninning_programs.name as traning'
+            )
+            ->get();
+
+        dd($base_query_pos);die;
+    }
+
+
+
     function getRegionName($regionCode)
     {
         switch ($regionCode) {
@@ -4345,7 +4422,7 @@ class BussinessRepository implements IBussinessInterface
             $name = $request->input('name');
             $description = $request->input('description');
             $is_active = $request->input('is_active');
-
+            $position = $request->input('position');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
@@ -4386,6 +4463,7 @@ class BussinessRepository implements IBussinessInterface
                     'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
+                    'position' =>  $position
                 ]);
                 \DB::commit();
 
@@ -4490,14 +4568,15 @@ class BussinessRepository implements IBussinessInterface
             $get_active = DB::table('image_certificate')
                 ->where('is_active', 1)->first();
             if ($is_active == 0) {
-                if($get_active || $get_active->id == $id){
+                if(!$get_active || $get_active->id == $id){
                     $response->status = false;
                     $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
                     return response()->json($response);
                 }
             }
             else if($is_active == 1){
-                $get_active->is_active = 0;
+//                $get_active->is_active = 0;
+                ImageCertificate::where('id','<>',$id)->where('is_active','=','1')->update(['is_active'=>'0']);
             }
             $cer->save();
             \DB::commit();

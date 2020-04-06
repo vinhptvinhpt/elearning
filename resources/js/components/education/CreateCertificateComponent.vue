@@ -55,6 +55,7 @@
                 description: '',
                 confirm:false,
                 is_active: 0,
+                coordinates:{},
             }
         },
         methods: {
@@ -73,12 +74,19 @@
                     return;
                 }
 
+                var img = $('.dropify-render img')[0];
+                if(typeof(img) !== 'undefined'){
+                    this.coordinates.image_width = img.width;
+                    this.coordinates.image_height = img.height;
+                }
+
                 this.formData = new FormData();
                 this.is_active = this.confirm == true ? 1 : 0;
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('name', this.name);
                 this.formData.append('is_active', this.is_active);
                 this.formData.append('description', this.description);
+                this.formData.append('position', JSON.stringify(this.coordinates));
 
                 axios.post('/certificate/create', this.formData, {
                     headers: {

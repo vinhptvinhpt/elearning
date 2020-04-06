@@ -37,4 +37,9 @@ class TmsOrganization extends Model
     {
         return $this->hasOne('App\TmsRoleOrganization', 'organization_id', 'id');
     }
+
+    public function trainings()
+    {
+        return $this->hasMany('App\TmsTrainningGroup', 'group_id', 'id')->where('type','=', 1);
+    }
 }
