@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
+use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
@@ -1146,7 +1147,7 @@ class BussinessRepository implements IBussinessInterface
         $listCourses = $listCourses->orderBy('id', 'desc');
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-        
+
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
         $response = [
@@ -2543,6 +2544,18 @@ class BussinessRepository implements IBussinessInterface
     //chart
     public function apiShowStatistic(Request $request)
     {
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        $data = TmsOrganization::with('employees.user')->with('children')
+            ->where('id', $organization_id)
+            ->first();
+        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
+        //Đã được cấp chứng chỉ và chưa được
+        //join khung năng lục?
+        //return response()->json($data);
+
+
         //define
         $data = [
             'district' => [],
@@ -4475,19 +4488,17 @@ class BussinessRepository implements IBussinessInterface
                 $cer->path = $path_avatar;
             }
             $get_active = DB::table('image_certificate')
-                ->where('is_active', 1)
-                ->pluck('id')->first();
-            if ($is_active == 0 && $get_active == null) {
-                $response->status = false;
-                $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
-                return response()->json($response);
+                ->where('is_active', 1)->first();
+            if ($is_active == 0) {
+                if($get_active || $get_active->id == $id){
+                    $response->status = false;
+                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
+                    return response()->json($response);
+                }
             }
             else if($is_active == 1){
-                DB::table('image_certificate')
-                    ->where('is_active', 1)
-                    ->update(['is_active' => 0]);
+                $get_active->is_active = 0;
             }
-
             $cer->save();
             \DB::commit();
             $response->status = true;

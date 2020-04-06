@@ -30,7 +30,7 @@
                         || current_roles.has_role_leader || current_roles.has_role_manager
                         ">
                         <a class="nav-link has-submenu collapse-level-1" id="quan_ly_he_thong"
-                           @click="toggleMenu('quan_ly_he_thong','auth_drp')"
+                           @click="toggleMenu('', 'quan_ly_he_thong','auth_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
                             <i class="fa fa-database" aria-hidden="true"></i>
                             <span class="nav-link-text">{{ trans.get('keys.quan_ly_he_thong') }}</span>
@@ -112,7 +112,7 @@
                             <li class="nav-item hide"
                                 v-if="slug_can('tms-system-organize-view') && (!current_roles.has_user_market || current_roles.root_user)">
                                 <a class="nav-link  has-submenu collapse-level-2" id="co_cau_to_chuc"
-                                   @click="toggleMenu('co_cau_to_chuc','signup_organize12')"
+                                   @click="toggleMenu('quan_ly_he_thong', 'co_cau_to_chuc','signup_organize12')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
                                     {{ trans.get('keys.co_cau_to_chuc') }}
                                 </a>
@@ -146,7 +146,7 @@
                             <li class="nav-item"
                                 v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
                                 <a class="nav-link  has-submenu collapse-level-2" id="quan_tri_nguoi_dung"
-                                   @click="toggleMenu('quan_tri_nguoi_dung','signup_organize')"
+                                   @click="toggleMenu('quan_ly_he_thong', 'quan_tri_nguoi_dung','signup_organize')"
                                    href="javascript:void(0);" data-level="collapse-level-2">
                                     {{ trans.get('keys.quan_tri_nguoi_dung') }}
                                 </a>
@@ -222,7 +222,7 @@
                         || slug_can('tms-educate-certificate-view')
                         || slug_can('tms-trainning-view')">
                         <a class="nav-link  has-submenu collapse-level-1" id="quan_ly_dao_tao"
-                           @click="toggleMenu('quan_ly_dao_tao','pages_drp')"
+                           @click="toggleMenu('','quan_ly_dao_tao','pages_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
                             <i class="fa fa-book" aria-hidden="true"></i>
                             <span class="nav-link-text">{{ trans.get('keys.quan_ly_dao_tao') }}</span>
@@ -242,7 +242,7 @@
                             || slug_can('tms-educate-exam-clone-add')
                             || slug_can('tms-educate-exam-restore-view')">
                                 <a class="nav-link has-submenu" id="khoa_dao_tao"
-                                   @click="toggleMenu('khoa_dao_tao','recover_drp12')"
+                                   @click="toggleMenu('quan_ly_dao_tao', 'khoa_dao_tao','recover_drp12')"
                                    href="javascript:void(0);" data-toggle="collapse">
                                     {{ trans.get('keys.khoa_dao_tao') }}
                                 </a>
@@ -278,7 +278,7 @@
 
                             <li class="nav-item" v-if="slug_can('tms-trainning-view')">
                                 <a class="nav-link has-submenu" id="khung_nang_luc"
-                                   @click="toggleMenu('khung_nang_luc','recover_drp')"
+                                   @click="toggleMenu('quan_ly_dao_tao', 'khung_nang_luc','recover_drp')"
                                    href="javascript:void(0);" data-toggle="collapse">
                                     {{ trans.get('keys.khung_nang_luc') }}
                                 </a>
@@ -309,7 +309,7 @@
                             <li class="nav-item" v-if=" slug_can('tms-educate-uncertificate-view') || slug_can('tms-educate-certificate-view') ||
                             slug_can('tms-educate-resetexam-view')">
                                 <a class="nav-link has-submenu" id="chung_chi"
-                                   @click="toggleMenu('chung_chi','certificate')"
+                                   @click="toggleMenu('quan_ly_dao_tao', 'chung_chi','certificate')"
                                    href="javascript:void(0);" data-toggle="collapse">
                                     {{ trans.get('keys.chung_chi') }}
                                 </a>
@@ -339,7 +339,7 @@
                     || slug_can('tms-report-base-view')
                     || slug_can('tms-report-report-view')">
                         <a class="nav-link has-submenu collapse-level-1"
-                           href="javascript:void(0);" id="bao_cao" @click="toggleMenu('bao_cao','bc_drp12')"
+                           href="javascript:void(0);" id="bao_cao" @click="toggleMenu('', 'bao_cao','bc_drp12')"
                            data-level="collapse-level-1">
                             <i class="fa fa-bell-o" aria-hidden="true"></i>
                             <span class="nav-link-text">{{ trans.get('keys.bao_cao') }}</span>
@@ -348,7 +348,7 @@
                             class="nav flex-column collapse collapse-level-1 ">
                             <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
                                 <a class="nav-link has-submenu" id="quan_ly_survey"
-                                   @click="toggleMenu('quan_ly_survey','recover_drp1')"
+                                   @click="toggleMenu('bao_cao', 'quan_ly_survey','recover_drp1')"
                                    href="javascript:void(0);" data-toggle="collapse"
                                 >{{ trans.get('keys.quan_ly_survey') }}</a>
                                 <ul id="recover_drp1"
@@ -388,7 +388,7 @@
                     || slug_can('tms-setting-email_template-view')
                     || slug_can('tms-setting-notification-view')">
                         <a class="nav-link has-submenu collapse-level-1"
-                           @click="toggleMenu('cau_hinh_he_thong','bc_drp23')"
+                           @click="toggleMenu('','cau_hinh_he_thong','bc_drp23')"
                            href="javascript:void(0);" id="cau_hinh_he_thong"
                            data-level="collapse-level-1">
                             <i class="fa fa-cog" aria-hidden="true"></i>
@@ -428,7 +428,7 @@
                     v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
                     <li class="nav-item">
                         <a class="nav-link has-submenu collapse-level-1"
-                           @click="toggleMenu('huong_dan_su_dung','bc_drp')"
+                           @click="toggleMenu('', 'huong_dan_su_dung','bc_drp')"
                            href="javascript:void(0);" id="huong_dan_su_dung"
                            data-level="collapse-level-1">
                             <i class="fa fa-exclamation" aria-hidden="true"></i>
@@ -534,8 +534,34 @@
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
             },
-            toggleMenu(parent_id, child_id) {
-                var x = document.getElementById(parent_id);
+            toggleMenu(parent_id, current_id, child_id) {
+                var x = document.getElementById(current_id);
+
+                if(parent_id){
+                    $('a.collapse-level-1').not($('#'+parent_id)).each(function(){
+                        //lấy danh sách element thẻ a cùng cấp với cha
+                        var get_id = ($(this)[0]).getAttribute('id');
+                        $('#' + get_id).removeClass("active");
+
+                        //ẩn những ul phía sau
+                        var get_next = ($(this)[0]).nextSibling;
+                        var id_next = get_next.nextSibling.id;
+                        document.getElementById(id_next).style.display = "none";
+                    });
+
+                    $('a.active').not($('#'+parent_id)).removeClass('active');
+
+                }else{
+                    //là trường hợp thẻ a to nhất click
+                    $('a.collapse-level-1').not($('#'+current_id)).each(function(){
+                        //sẽ lấy danh sách những thẻ a cùng cấp và xóa class active
+                        var get_id = ($(this)[0]).getAttribute('id');
+                        $('#' + get_id).removeClass("active");
+                        var get_next = ($(this)[0]).nextSibling;
+                        var id_next = get_next.nextSibling.id;
+                        document.getElementById(id_next).style.display = "none";
+                    });
+                }
                 if (x) {
                     var y = document.getElementById(child_id);
 
@@ -543,7 +569,7 @@
                         x.classList.toggle("active");
                         y.style.display = "block";
                     } else {
-                        $('#' + parent_id).removeClass("active");
+                        $('#' + current_id).removeClass("active");
                         y.style.display = "none";
                     }
                 }

@@ -293,6 +293,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $style = $request->input('style');
+        $paginated = $request->input('paginated');
 
         $param = [
             'keyword' => 'text',
@@ -309,6 +310,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             'users'
         ])
         ->select('id', 'code', 'name')->where('deleted', '=', 0);
+
+
+        if (strlen($paginated) != 0 && $paginated == 0) {
+            return response()->json($lstData->get());
+        }
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
