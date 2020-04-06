@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
+use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
@@ -2547,6 +2548,18 @@ class BussinessRepository implements IBussinessInterface
     //chart
     public function apiShowStatistic(Request $request)
     {
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        $data = TmsOrganization::with('employees.user')->with('children')
+            ->where('id', $organization_id)
+            ->first();
+        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
+        //Đã được cấp chứng chỉ và chưa được
+        //join khung năng lục?
+        //return response()->json($data);
+
+
         //define
         $data = [
             'district' => [],
