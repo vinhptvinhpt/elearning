@@ -4336,7 +4336,7 @@ class BussinessRepository implements IBussinessInterface
             $name = $request->input('name');
             $description = $request->input('description');
             $is_active = $request->input('is_active');
-
+            $position = $request->input('position');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
@@ -4377,6 +4377,7 @@ class BussinessRepository implements IBussinessInterface
                     'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
+                    'position' =>  $position
                 ]);
                 \DB::commit();
 
@@ -4481,14 +4482,15 @@ class BussinessRepository implements IBussinessInterface
             $get_active = DB::table('image_certificate')
                 ->where('is_active', 1)->first();
             if ($is_active == 0) {
-                if($get_active || $get_active->id == $id){
+                if(!$get_active || $get_active->id == $id){
                     $response->status = false;
                     $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
                     return response()->json($response);
                 }
             }
             else if($is_active == 1){
-                $get_active->is_active = 0;
+//                $get_active->is_active = 0;
+                ImageCertificate::where('id','<>',$id)->where('is_active','=','1')->update(['is_active'=>'0']);
             }
             $cer->save();
             \DB::commit();
