@@ -108,6 +108,8 @@ import TemplateDetailComponent from "./components/email/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
 import AttendanceComponent from "./components/education/AttendanceComponent";
 import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
+import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
+import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -485,12 +487,14 @@ const routes = [
       //Report
       {
         path: 'report',
-        component: ReportIndexComponent,
+        //component: ReportIndexComponent,
+        component: ReportDetailComponent,
         name: 'ReportIndex'
       },
       {
         path: 'report/base',
         component: ReportIndexBaseComponent,
+        //component: ReportBaseComponent,
         name: 'ReportBaseIndex'
       },
       //Survey

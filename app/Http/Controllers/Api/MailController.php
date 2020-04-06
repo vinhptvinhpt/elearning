@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\URL;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
+    const DEVELOPMENT = 1;
 
     /* Load / generate configuration */
     public function loadConfiguration()
@@ -113,7 +114,7 @@ class MailController extends Controller
 
                     try {
                         //send mail can not continue if has fake email
-                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::INVITE_STUDENT,
                                 $username,
@@ -245,7 +246,7 @@ class MailController extends Controller
                 \DB::beginTransaction();
                 foreach ($lstNotif as $itemNotif) {
                     try {
-                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL) && $this->filterMail($itemNotif->email)) {
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                             $email = $itemNotif->email;
                             $send = 1;
@@ -411,7 +412,7 @@ class MailController extends Controller
                         //send mail can not continue if has fake email
                         $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                         $email = $itemNotif->email;
-                        if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::REMIND_CERTIFICATE,
                                 $itemNotif->username,
@@ -579,7 +580,7 @@ class MailController extends Controller
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                             $email = $itemNotif->email;
                             //Check email format
-                            if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                            if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                                 Mail::to($email)->send(new CourseSendMail(
                                     TmsNotification::SUGGEST,
                                     $itemNotif->username,
@@ -794,7 +795,7 @@ class MailController extends Controller
                         //send mail can not continue if has fake email
                         $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                         $email = $itemNotif->email;
-                        if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE,
                                 $itemNotif->username,
@@ -983,7 +984,7 @@ class MailController extends Controller
                         //send mail can not continue if has fake email
                         $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                         $email = $itemNotif->email;
-                        if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::REMIND_EDUCATION_SCHEDULE,
                                 $itemNotif->username,
@@ -1128,7 +1129,7 @@ class MailController extends Controller
                 \DB::beginTransaction();
                 foreach ($listRemindLoginNotification as $itemNotif) {
                     try {
-                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL) && $this->filterMail($itemNotif->email)) {
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                             $email = $itemNotif->email;
                             Mail::to($email)->send(new CourseSendMail(
@@ -1245,7 +1246,7 @@ class MailController extends Controller
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                             $email = $itemNotif->email;
 
-                            if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                            if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                                 Mail::to($email)->send(new CourseSendMail(
                                     TmsNotification::REMIND_UPCOMING_COURSE,
                                     $itemNotif->username,
@@ -1435,7 +1436,7 @@ class MailController extends Controller
                         //send mail can not continue if has fake email
                         $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                         $email = $itemNotif->email;
-                        if (strlen($email) != 0 && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL)) {
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::REMIND_ACCESS_COURSE,
                                 $itemNotif->username,
@@ -1538,6 +1539,25 @@ class MailController extends Controller
         }
         if (!empty($ios_device_tokens)) {
             sendPushNotification("Một số khóa học sắp bắt đầu", 'ios', $ios_device_tokens, $params);
+        }
+    }
+
+    function filterMail($email) {
+        if (self::DEVELOPMENT == 1) {
+            $dev_email = [
+                'immrhy@gmail.com',
+                'innrhy@gmail.com',
+                'fruity.tester@gmail.com',
+                'linhnt@tinhvan.com',
+                'nguyenlinhcksl@gmail.com'
+            ];
+            if (in_array($email, $dev_email)) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            return true;
         }
     }
 }
