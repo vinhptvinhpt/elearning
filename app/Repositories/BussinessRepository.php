@@ -1146,7 +1146,7 @@ class BussinessRepository implements IBussinessInterface
         $listCourses = $listCourses->orderBy('id', 'desc');
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-        
+
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
         $response = [
@@ -1938,10 +1938,14 @@ class BussinessRepository implements IBussinessInterface
         //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
         $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
+//            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
             ->where('c.id', '=', $course_id)
+            ->where('e.roleid', 5)//hoc vien only
+//            ->where('roles.id', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
