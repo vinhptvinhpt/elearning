@@ -1939,10 +1939,14 @@ class BussinessRepository implements IBussinessInterface
         //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
         $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
+//            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
             ->where('c.id', '=', $course_id)
+            ->where('e.roleid', 5)//hoc vien only
+//            ->where('roles.id', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
@@ -4418,7 +4422,7 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
             $name = $request->input('name');
             $description = $request->input('description');
             $is_active = $request->input('is_active');
-
+            $position = $request->input('position');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
@@ -4459,6 +4463,7 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
                     'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
+                    'position' =>  $position
                 ]);
                 \DB::commit();
 
@@ -4563,14 +4568,15 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
             $get_active = DB::table('image_certificate')
                 ->where('is_active', 1)->first();
             if ($is_active == 0) {
-                if($get_active || $get_active->id == $id){
+                if(!$get_active || $get_active->id == $id){
                     $response->status = false;
                     $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
                     return response()->json($response);
                 }
             }
             else if($is_active == 1){
-                $get_active->is_active = 0;
+//                $get_active->is_active = 0;
+                ImageCertificate::where('id','<>',$id)->where('is_active','=','1')->update(['is_active'=>'0']);
             }
             $cer->save();
             \DB::commit();

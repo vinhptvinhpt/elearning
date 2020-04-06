@@ -493,7 +493,8 @@
                 if($('#ip_inputSizeFullName').val() !== ''){
                     this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 }
-                else if(typeof(this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined){
+                else if(typeof(this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined
+                    || this.coordinates.fullnameSize == ''){
                     this.coordinates.fullnameSize = 15;
                 }
 
@@ -507,7 +508,8 @@
                 if($('#ip_inputSizeProgram').val() !== ''){
                     this.coordinates.programSize = $('#ip_inputSizeProgram').val();
                 }
-                else if(typeof(this.coordinates.programSize) == 'undefined' || this.coordinates.programSize === undefined){
+                else if(typeof(this.coordinates.programSize) == 'undefined' || this.coordinates.programSize === undefined
+                    || this.coordinates.programSize == ''){
                     this.coordinates.programSize = 15;
                 }
 
