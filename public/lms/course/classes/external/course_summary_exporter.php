@@ -61,7 +61,7 @@ class course_summary_exporter extends \core\external\exporter {
         $img_url_DB = array_values($DB->get_records_sql($course_picture_url))[0]->course_avatar;
         $root_url = $CFG->wwwroot;
         // [VinhPT][Easia] Change url to tms
-        $root_url = trim($root_url, "lms")."tms";
+        $root_url = trim($root_url, "lms");
         if($img_url_DB){
             $courseimage = $root_url.$img_url_DB;
         }else{

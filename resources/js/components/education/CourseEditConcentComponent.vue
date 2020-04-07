@@ -334,7 +334,7 @@
                 this.formData.append('enddate', this.course.enddate);
                 this.formData.append('pass_score', this.course.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.course.summary);
+                this.formData.append('description', this.course.summary === null ? '' : this.course.summary);
                 this.formData.append('is_end_quiz', 0);
                 this.formData.append('course_place', this.course.course_place);
                 this.formData.append('category_id', this.course.category);

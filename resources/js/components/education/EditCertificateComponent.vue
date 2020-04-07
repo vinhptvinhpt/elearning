@@ -51,8 +51,8 @@
                     {{trans.get('keys.chung_chi_mau')}}
                     <span class="inline-checkbox ml-3">
                                     <span class="custom-control custom-checkbox custom-control-inline">
-                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.confirm" checked>
-                                        <input v-else type="checkbox" v-model="certificate.confirm"  class="custom-control-input" :id="'inputCheck'">
+                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.is_active" checked>
+                                        <input v-else type="checkbox" v-model="certificate.is_active"  class="custom-control-input" :id="'inputCheck'">
                                         <label class="custom-control-label" :for="'inputCheck'"></label>
                                     </span>
                                 </span>
@@ -176,7 +176,6 @@
         },
         methods:{
             selectedFile(e) {
-                console.log(e.target.value);
                 let file = this.$refs.file.files[0];
                 const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
                 if(!file || (validFileTypes.indexOf(file.type) == -1)){
@@ -223,7 +222,17 @@
                     .then(response => {
 
                         this.certificate = response.data;
-                        this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
+                        // this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
+                        // try {
+                        //     var splitPath = this.certificate.path.split('/');
+                        //     let fileName = require("../../../../public/storage/upload/certificate/"+splitPath[splitPath.length - 1]);
+                        //     // do something
+                        // } catch (e) {
+                        //     this.certificate.path = "/storage/upload/certificate/default_certificate.jpg";
+                        //     toastr['warning'](this.trans.get('keys.khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh'), this.trans.get('keys.thong_bao'));
+                        // }
+
+
                         // this.coordinates = JSON.parse(response.data.position);
                         if(response.data.position !== '')
                             this.coordinates = JSON.parse(response.data.position);
@@ -244,38 +253,39 @@
                     $('.description_required').show();
                     return;
                 }
+                if(this.certificate.is_active){
+                    if(!this.certificate_img.pos_logo){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_logo){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_name){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_ten'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_name){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_ten'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_program){
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_khung_nang_luc'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_program){
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_khung_nang_luc'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if(!this.certificate_img.pos_date)
+                    {
+                        toastr['error'](this.trans.get('keys.hay_chon_toa_do_ngay_cap'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if(!this.certificate_img.pos_date)
-                {
-                    toastr['error'](this.trans.get('keys.hay_chon_toa_do_ngay_cap'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
+                    if($('#ip_inputSizeFullName').val() == '')
+                    {
+                        toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_nguoi_dung'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
 
-                if($('#ip_inputSizeFullName').val() == '')
-                {
-                    toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_nguoi_dung'), this.trans.get('keys.thong_bao'));
-                    return;
-                }
-
-                if($('#ip_inputSizeProgram').val() == '')
-                {
-                    toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_khung_nang_luc'), this.trans.get('keys.thong_bao'));
-                    return;
+                    if($('#ip_inputSizeProgram').val() == '')
+                    {
+                        toastr['error'](this.trans.get('keys.hay_nhap_co_chu_ten_khung_nang_luc'), this.trans.get('keys.thong_bao'));
+                        return;
+                    }
                 }
 
 
@@ -290,7 +300,7 @@
 
 
                 this.formData = new FormData();
-                this.certificate.is_active = this.certificate.confirm == true ? 1 : 0;
+                this.certificate.is_active = this.certificate.is_active ? 1 : 0;
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('name', this.certificate.name);
                 this.formData.append('is_active', this.certificate.is_active);
@@ -322,7 +332,6 @@
               $('.dropify').dropify();
             },
             onClickImage(e){
-                console.log(this.currentChoose);
                 var posX_click = `${e.clientX}`;
                 var posY_click = `${e.clientY}`;
                 var posX = this.$refs.busstop.getBoundingClientRect().x;
@@ -410,7 +419,7 @@
                 else if(name == 'inputLogo' && this.certificate_img.pos_logo){
                     this.coordinates.logoX = coordinate_x;
                     this.coordinates.logoY = coordinate_y;
-                    this.logo_path = "/storage/upload/certificate/1584953796.jpg";
+                    this.logo_path = "/storage/upload/certificate/default_logo.jpg";
                 }
                 $('#sp_'+name).css('left', coordinate_x);
                 $('#sp_'+name).css('top', coordinate_y);
@@ -441,7 +450,6 @@
                 }
             },
             OnchangeTextBox(e){
-                console.log(e.currentTarget.id);
                 if(e.currentTarget.id.indexOf('Size') > -1){
                     if(e.currentTarget.id.indexOf('FullName') > -1 && this.certificate_img.pos_name)
                     {
@@ -485,7 +493,8 @@
                 if($('#ip_inputSizeFullName').val() !== ''){
                     this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 }
-                else if(typeof(this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined){
+                else if(typeof(this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined
+                    || this.coordinates.fullnameSize == ''){
                     this.coordinates.fullnameSize = 15;
                 }
 
@@ -499,7 +508,8 @@
                 if($('#ip_inputSizeProgram').val() !== ''){
                     this.coordinates.programSize = $('#ip_inputSizeProgram').val();
                 }
-                else if(typeof(this.coordinates.programSize) == 'undefined' || this.coordinates.programSize === undefined){
+                else if(typeof(this.coordinates.programSize) == 'undefined' || this.coordinates.programSize === undefined
+                    || this.coordinates.programSize == ''){
                     this.coordinates.programSize = 15;
                 }
 
@@ -524,7 +534,7 @@
     word-break: break-word;
   }
   #sp_inputDate{
-    font-size: 16px;
+    font-size: 12px;
   }
   #sp_inputFullName{
     font-size: 32px;

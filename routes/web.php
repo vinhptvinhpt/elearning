@@ -458,6 +458,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::get('/education/course/list', 'Backend\CourseController@viewIndex')->name('education.course');
     Route::post('/api/courses/list', 'Backend\CourseController@apiGetListCourse');
+    Route::post('/api/courses/list_permissiondata', 'Backend\CourseController@apiGetListCoursePermissionData');
     Route::post('/api/courses/create', 'Backend\CourseController@apiCreateCourse');
     Route::post('/api/courses/get_list_teacher', 'Backend\CourseController@apiGetListTeacher');
     Route::get('/education/course/detail/{id}', 'Backend\CourseController@viewCourseDetail')->name('education.course.detail');
@@ -593,6 +594,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/report/show_report_by_region', 'Backend\ReportController@apiShowReportByRegion');
     Route::post('/report/show_statistic', 'Backend\ReportController@apiShowStatistic');
     Route::get('/report/base', 'Backend\ReportController@viewReportBase')->name('report.base');
+    Route::post('/report/list_detail', 'Backend\ReportController@apiListDetail');
+
 
     Route::get('/activity_log', 'Backend\BackendController@viewActivityLog')->name('activity.log');
     Route::post('/activity_log', 'Backend\BackendController@apiActivityLog');
@@ -698,9 +701,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::get('/api/checkrolesidebar', 'Backend\BackendController@checkRoleSidebar');
 
-    //Cuonghq new API Brigde for Vue-route Feb 6, 2020
-    Route::post('/bridge/fetch', 'BridgeController@fetch');
-    Route::post('/bridge/bonus', 'BridgeController@bonus');
+
 
     //Organization new
     Route::post('/organization/list', 'Backend\OrganizationController@apiListOrganization');
@@ -727,6 +728,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
 
 });
+
+//Cuonghq new API Brigde for Vue-route Feb 6, 2020
+Route::post('/bridge/fetch', 'BridgeController@fetch');
+Route::post('/bridge/bonus', 'BridgeController@bonus');
+
 // [VinhPT][26.12.2019] Login first screen
 Route::get('/loginfirst', 'Backend\loginfirst\LoginFirstController@viewLoginFirst');
 Route::post('/loginfirst/executelogin', 'Backend\loginfirst\LoginFirstController@executeLogin');

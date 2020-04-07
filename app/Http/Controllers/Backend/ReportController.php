@@ -58,4 +58,9 @@ class ReportController extends Controller
     {
         return $this->bussinessRepository->apiShowReportByRegion($request);
     }
+    public function apiListDetail(Request $request)
+    {
+        return $this->bussinessRepository->apiListDetail($request);
+    }
+
 }

@@ -30,11 +30,16 @@ class TmsOrganization extends Model
 
     public function children()
     {
-        return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children');
+        return $this->hasMany('App\TmsOrganization', 'parent_id', 'id')->with('children')->with('employees.user');
     }
 
     public function roleOrganization()
     {
         return $this->hasOne('App\TmsRoleOrganization', 'organization_id', 'id');
+    }
+
+    public function trainings()
+    {
+        return $this->hasMany('App\TmsTrainningGroup', 'group_id', 'id')->where('type','=', 1);
     }
 }

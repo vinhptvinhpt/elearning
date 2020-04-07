@@ -4,7 +4,9 @@
 namespace App\Repositories;
 
 
+use App\MdlUserEnrolments;
 use App\TmsInvitation;
+use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
@@ -161,7 +163,6 @@ class BussinessRepository implements IBussinessInterface
     {
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
-
         $validates = validate_fails($request, [
             'startdate' => 'date',
             'enddate' => 'date',
@@ -181,109 +182,33 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $response = array();
-            //        chart 1 data
-            //        So luong hoan thanh khoa hoc / thang
-            //        So luong enrol khoa hoc / thang
-            //        $completed = MdlCourseCompletions::where("timecompleted", ">=", $start_time)
-            //            ->where("timecompleted", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timecompleted)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timecompleted))'))
-            //            ->get()->toArray();
-            //
-            //        $completed = fillMissingMonthChartData($completed, $start_time, $end_time);
-            //        $response['completed'] = $completed;
-
-            //        $enrolled = MdlCourseCompletions::where("timeenrolled", ">=", $start_time)
-            //            ->where("timeenrolled", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(timeenrolled)) as mth'),
-            //                \DB::raw('count(id) as total')
-            //            )
-            //            ->groupBy(\DB::raw('MONTH(FROM_UNIXTIME(timeenrolled))'))
-            //            ->get()->toArray();
-            //
-            //        $enrolled = fillMissingMonthChartData($enrolled, $start_time, $end_time);
-            //        $response['enrolled'] = $enrolled;
-
-
-            //chart 1,2 data
-            //Hoc viên enrol khóa offline/online trong tháng
 
             $role_id = 5;
-            //        $enrolled_all = MdlUserEnrolments::where('mdl_enrol.enrol', 'manual')
-            //            ->where('roles.id', '=', $role_id)
-            //            ->where(function ($q) use ($start_time, $end_time) {
-            //                $q
-            //                    ->where(function ($q1) use ($start_time, $end_time) {
-            //                    $q1->where("mdl_user_enrolments.timecreated", ">=", $start_time)->where("mdl_user_enrolments.timecreated", "<=", $now);
-            //                    })
-            //                    ->orWhere(function ($q2) use ($start_time, $end_time) {
-            //                        $q2->where("mdl_user_enrolments.timestart", ">=", $start_time)->where("mdl_user_enrolments.timestart", "<=", $now);
-            //                    });
-            //            })
-            //            ->select(
-            //                'mdl_course.id',
-            //                'mdl_user_enrolments.userid',
-            //                'mdl_course.category',
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth'),
-            //                \DB::raw('MONTH(FROM_UNIXTIME(mdl_user_enrolments.timestart)) as mth2')
-            //            )
-            //            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-            //            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-            //            ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
-            //            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            //            ->get()->toArray();
-
-            //        $enrolled = array();
-
-            //        $this_month_offline = 0;
-            //        $this_month_online = 0;
-            //
-            //        foreach ($enrolled_all as $enrol) {
-            //            $mth = $enrol['mth'];
-            //            if (strlen($mth) == 0) {
-            //                $mth = $enrol['mth2'];
-            //            }
-            //
-            //            if ($mth == date('n', $now)) {
-            //                if ($enrol['category'] == 5) { //offline
-            //                    $this_month_offline += 1;
-            //                } elseif ($enrol['category'] != 5 && $enrol['category'] != 2) { //online
-            //                    $this_month_online += 1;
-            //                }
-            //            }
-            //
-            //            if (array_key_exists($mth, $enrolled)) {
-            //                $enrolled[$mth] += 1;
-            //            } else {
-            //                $enrolled[$mth] = 1;
-            //            }
-            //        }
-
-            //        $enrolled_source = array();
-            //        foreach ($enrolled as $key => $val) {
-            //            $enrolled_source[] = array(
-            //              'mth' => $key,
-            //              'total' => $val
-            //            );
-            //        }
 
             //chart 3 data
             //hoc vien dang ki moi
-            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
-                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+//            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
+//                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
+//                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
+//                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+//                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//                ->select(
+//                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
+//                    DB::raw('count(*) as total')
+//                )
+//                ->groupBy('mthyr')
+//                ->get()
+//                ->toArray();
+
+            $students = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", date("Y-m-d H:i:s", $start_time))
+                ->where("mdl_user_enrolments.timecreated", "<=", date("Y-m-d H:i:s", $end_time))
+                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->where('mdl_course_categories.id', '=', 4)// khoa hoc ky nang mem
                 ->select(
-                //                error strict mode laravel https://stackoverflow.com/a/44984930/3387087
-                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%m') mth"),
-                //                DB::raw("DATE_FORMAT(model_has_roles.created_at, '%Y') yr"),
-                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
+                    DB::raw('CONCAT(MONTH(mdl_user_enrolments.timecreated), "/", DATE_FORMAT(mdl_user_enrolments.timecreated, "%y")) mthyr'),
                     DB::raw('count(*) as total')
                 )
                 ->groupBy('mthyr')
@@ -305,30 +230,6 @@ class BussinessRepository implements IBussinessInterface
                     'total' => $val
                 );
             }
-
-            //        $confirm_students = TmsUserDetail::where("confirm_time", ">=", $start_time)
-            //            ->where("confirm_time", "<=", $end_time)
-            //            ->select(
-            //                \DB::raw('MONTH(FROM_UNIXTIME(confirm_time)) as mth')
-            //            )
-            //            ->get()->toArray();
-            //
-            //        $confirmed = array();
-            //        foreach ($confirm_students as $confirm) {
-            //            $mth = $confirm['mth'];
-            //            if (array_key_exists($mth, $confirmed)) {
-            //                $confirmed[$mth] += 1;
-            //            } else {
-            //                $confirmed[$mth] = 1;
-            //            }
-            //        }
-            //        $confirm_source = array();
-            //        foreach ($confirmed as $key => $val) {
-            //            $confirm_source[] = array(
-            //                'mth' => $key,
-            //                'total' => $val
-            //            );
-            //        }
 
             $confirm_students = StudentCertificate::where("student_certificate.created_at", ">=", date("Y-m-d H:i:s", $start_time))
                 ->join('course_final as cf', 'cf.userid', '=', 'student_certificate.userid')
@@ -397,13 +298,7 @@ class BussinessRepository implements IBussinessInterface
                     $online += 1;
                 }
             }
-            //chart1 bonus
-            //        $enrolled = fillMissingMonthChartData($enrolled_source, $start_time, $end_time);
-            //        $response['enrolled'] = $enrolled;
 
-            //chart2
-            //        $response['online'] = $this_month_online;
-            //        $response['offline'] = $this_month_offline;
             $response['online'] = $online;
             $response['offline'] = $offline;
 
@@ -434,9 +329,13 @@ class BussinessRepository implements IBussinessInterface
     {
         $now = time();
         $row = $request->input('row');
+        $keyword = $request->input('keyword');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
 
         $validates = validate_fails($request, [
             'row' => 'number',
+            'keyword' => 'text'
         ]);
         if (!empty($validates)) {
             return response()->json([]);
@@ -453,6 +352,30 @@ class BussinessRepository implements IBussinessInterface
                     'course_place',
                     'category'
                 );
+
+            if ($keyword) {
+                //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+                // code xử lý remove ký tự đầu tiên của keyword đi
+                if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                    $total_len = strlen($keyword);
+                    if ($total_len > 2) {
+                        $keyword = substr($keyword, 1, $total_len - 1);
+                    }
+                }
+
+                $data = $data->whereRaw('( mdl_course.fullname like "%' . $keyword . '%" OR mdl_course.shortname like "%' . $keyword . '%" )');
+            }
+
+            if ($startdate) {
+                $cv_startDate = strtotime($startdate);
+                $data = $data->where('mdl_course.startdate', '>=', $cv_startDate);
+            }
+
+            if ($enddate) {
+                $cv_endDate = strtotime($enddate);
+                $data = $data->where('mdl_course.enddate', '<=', $cv_endDate);
+            }
+
 
             $data = $data->paginate($row);
             $total = ceil($data->total() / $row);
@@ -483,7 +406,6 @@ class BussinessRepository implements IBussinessInterface
                 ->where('mhr.model_id', $user_id)
                 ->where('mhr.model_type', 'App/MdlUser')
                 ->get();
-
             if (count($sru) != 0) {
                 foreach ($sru as $role) {
                     if ($role->name == Role::ROLE_MANAGER) {
@@ -1181,7 +1103,6 @@ class BussinessRepository implements IBussinessInterface
         //            $listCourses = $listCourses->where('mdl_course.category', '!=', 2);
         //        }
 
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -1224,6 +1145,8 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $listCourses = $listCourses->orderBy('id', 'desc');
+
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
@@ -2016,10 +1939,14 @@ class BussinessRepository implements IBussinessInterface
         //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
         $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
+//            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
             ->where('c.id', '=', $course_id)
+            ->where('e.roleid', 5)//hoc vien only
+//            ->where('roles.id', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
@@ -2621,6 +2548,18 @@ class BussinessRepository implements IBussinessInterface
     //chart
     public function apiShowStatistic(Request $request)
     {
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        $data = TmsOrganization::with('employees.user')->with('children')
+            ->where('id', $organization_id)
+            ->first();
+        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
+        //Đã được cấp chứng chỉ và chưa được
+        //join khung năng lục?
+        //return response()->json($data);
+
+
         //define
         $data = [
             'district' => [],
@@ -3305,6 +3244,79 @@ class BussinessRepository implements IBussinessInterface
             return $arranged;
         }
     }
+
+    //New screen
+    public function apiListDetail(Request $request)
+    {
+
+
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        //Query users
+//        $data = TmsOrganization::with('employees.user')
+//            ->with('children')
+//            ->with('trainings.trainning')
+            //->where('id', $organization_id)
+//            ->whereHas('trainings', function($q) use($training_id) {
+//                    // Query the name field in status table
+//                    $q->where('trainning_id', '=', $training_id);
+//                })
+//            ->get();
+        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
+        //Đã được cấp chứng chỉ và chưa được
+        //join khung năng lục?
+
+//        return response()->json($data);
+
+        /*
+
+         select
+o.`name` as organization_name,
+c.`name` as course_name,
+e.`name` as employee_name,
+s.employee_id,
+s.course_id
+
+
+from organization o
+JOIN organization_employee oe ON  oe.organization_id = o.id
+LEFT JOIN organization_courses oc ON oc.organization_id = o.id AND oe.organization_id = oc.organization_id
+LEFT JOIN employee e ON oe.employee_id = e.id
+LEFT JOIN course c ON oc.course_id = c.id
+LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
+
+ */
+
+
+
+        $base_query_pos = TmsOrganization::where('tms_organization.enabled', 1)
+            ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+            ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
+            ->leftjoin('tms_trainning_groups', function ($join) {
+                $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
+                $join->where('tms_trainning_groups.type', '=', 1);
+            })
+            ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftjoin('course_final', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+            })
+            ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
+            ->select(
+                'tms_organization.name',
+                'tms_user_detail.fullname',
+                'mdl_course.fullname as course_name',
+                'tms_traninning_programs.name as traning'
+            )
+            ->get();
+
+        dd($base_query_pos);die;
+    }
+
+
 
     function getRegionName($regionCode)
     {
@@ -4410,7 +4422,7 @@ class BussinessRepository implements IBussinessInterface
             $name = $request->input('name');
             $description = $request->input('description');
             $is_active = $request->input('is_active');
-
+            $position = $request->input('position');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
@@ -4451,6 +4463,7 @@ class BussinessRepository implements IBussinessInterface
                     'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
+                    'position' =>  $position
                 ]);
                 \DB::commit();
 
@@ -4516,6 +4529,7 @@ class BussinessRepository implements IBussinessInterface
             $is_active = $request->input('is_active');
             $position = $request->input('position');
 
+
             $validates = validate_fails($request, [
                 'id' => 'number',
                 'name' => 'text',
@@ -4551,16 +4565,18 @@ class BussinessRepository implements IBussinessInterface
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
             }
-
+            $get_active = DB::table('image_certificate')
+                ->where('is_active', 1)->first();
             if ($is_active == 0) {
-                $get_active = DB::table('image_certificate')
-                    ->where('is_active', 1)
-                    ->pluck('id')->toArray();
-                if (count($get_active) == 1 && in_array($id, $get_active)) {
+                if(!$get_active || $get_active->id == $id){
                     $response->status = false;
                     $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
                     return response()->json($response);
                 }
+            }
+            else if($is_active == 1){
+//                $get_active->is_active = 0;
+                ImageCertificate::where('id','<>',$id)->where('is_active','=','1')->update(['is_active'=>'0']);
             }
             $cer->save();
             \DB::commit();
@@ -11972,30 +11988,48 @@ class BussinessRepository implements IBussinessInterface
         try {
             $sale_room_id = $request->input('sale_room_id');
             $user_id = $request->input('user_id');
-
+            $role_id = $request->input('role_id');
             $param = [
                 'sale_room_id' => 'number',
                 'user_id' => 'number',
+                'role_id' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
 
-            if ($sale_room_id && $user_id) {
+            if ($role_id && $user_id) {
+                //get role
+                $role = Role::select('mdl_role_id', 'name')->findOrFail($role_id);
+                $mdlUser = MdlUser::findOrFail($user_id);
                 \DB::beginTransaction();
-                TmsSaleRoomUser::where([
-                    'sale_room_id' => $sale_room_id,
-                    'user_id' => $user_id,
-                    'type' => TmsSaleRoomUser::POS
+                //delete user with role
+                ModelHasRole::where([
+                    'role_id' => $role_id,
+                    'model_id' => $user_id,
+                    'model_type' => 'App/MdlUser',
                 ])->delete();
+                if($sale_room_id){
+                    TmsSaleRoomUser::where([
+                        'sale_room_id' => $sale_room_id,
+                        'user_id' => $user_id,
+                        'type' => TmsSaleRoomUser::POS
+                    ])->delete();
 
-                $sale_room = TmsSaleRooms::select('name')->findOrFail($sale_room_id);
-                $userName = TmsUserDetail::select('fullname')->where('user_id', $user_id)->first();
-                devcpt_log_system('organize', '/system/organize/saleroom/edit/' . $sale_room_id, 'remove', 'Gỡ Nhân viên : ' . $userName['fullname'] . ' khỏi Điểm bán : ' . $sale_room['name']);
+                    $sale_room = TmsSaleRooms::select('name')->findOrFail($sale_room_id);
+                    $userName = TmsUserDetail::select('fullname')->where('user_id', $user_id)->first();
+                    devcpt_log_system('organize', '/system/organize/saleroom/edit/' . $sale_room_id, 'remove', 'Gỡ Nhân viên : ' . $userName['fullname'] . ' khỏi Điểm bán : ' . $sale_room['name']);
+                }
+                $type = 'role';
+                $url = '/roles/list_user/' . $role_id;
+                $action = 'delete';
+                $info = 'Xóa quyền  ' . $role['name'] . ' cho tài khoản' . $mdlUser['username'];
+                devcpt_log_system($type, $url, $action, $info);
                 \DB::commit();
                 return response()->json(status_message('success', __('go_nguoi_dung_thanh_cong')));
-            } else {
+            }
+            else {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
         } catch (Exception $e) {
