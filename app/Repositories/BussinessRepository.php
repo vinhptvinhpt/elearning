@@ -6398,9 +6398,10 @@ class BussinessRepository implements IBussinessInterface
 
                 $arr_data_enrol = [];
                 $data_item_enrol = [];
+
                 foreach ($roles as $role) {
                     //if (!$checkrole) {
-                    if ($role['name'] == 'student') {
+                    if ($role['name'] == 'student' || $role['name'] == 'employee') {
                         $mdlUser->update(['redirect_type' => 'lms']);
                     } else {
                         $mdlUser->update(['redirect_type' => 'default']);
@@ -6419,7 +6420,6 @@ class BussinessRepository implements IBussinessInterface
 
                     usleep(100);
                 }
-
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
             }
