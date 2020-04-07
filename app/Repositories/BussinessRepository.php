@@ -1347,7 +1347,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
 
-        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        //lấy danh sách học viên/giáo viên đang được enrol vào khóa học hiện tại
         $currentUserEnrol = DB::table('mdl_user_enrolments')
             ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
             ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
@@ -1362,7 +1362,6 @@ class BussinessRepository implements IBussinessInterface
             $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
             $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
-
         if ($role_id) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_enrol.roleid', '=', $role_id);
         }
@@ -6471,9 +6470,10 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
 
                 $arr_data_enrol = [];
                 $data_item_enrol = [];
+
                 foreach ($roles as $role) {
                     //if (!$checkrole) {
-                    if ($role['name'] == 'student') {
+                    if ($role['name'] == 'student' || $role['name'] == 'employee') {
                         $mdlUser->update(['redirect_type' => 'lms']);
                     } else {
                         $mdlUser->update(['redirect_type' => 'default']);
@@ -6492,7 +6492,6 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
 
                     usleep(100);
                 }
-
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
             }
