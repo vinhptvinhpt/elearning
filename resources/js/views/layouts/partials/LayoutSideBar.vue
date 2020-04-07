@@ -535,9 +535,9 @@
                 return this.slugs.indexOf(permissionName) !== -1;
             },
             toggleMenu(parent_id, child_id) {
-                var x = document.getElementById(parent_id);
+                let x = document.getElementById(parent_id);
                 if (x) {
-                    var y = document.getElementById(child_id);
+                    let y = document.getElementById(child_id);
 
                     if (y.style.display === "none" || y.style.display === '') {
                         x.classList.toggle("active");
