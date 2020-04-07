@@ -15,7 +15,23 @@
       <!--Chart Statistic-->
       <div class="card" id="indexReport">
         <div class="card-body">
+
           <div class="row">
+            <div class="col-md-6">
+              <label for="organization_id">{{ trans.get('keys.to_chuc')}}</label>
+              <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id" @input="callStatistic()"/>
+            </div>
+            <div class="col-md-6">
+              <label for="training_select">{{ trans.get('keys.khung_nang_luc')}}</label>
+                <select id="training_select" v-model="training_id" class="custom-select custom-select-sm form-control form-control-sm" @change="callStatistic()">
+                  <option v-for="training_option in training_options" :value="training_option.id">
+                    {{training_option.name}}
+                  </option>
+                </select>
+            </div>
+          </div>
+
+          <div class="row" style="display: none">
             <div class="col-md-4 col-sm-6">
               <h6 class="text-center">{{trans.get('keys.thong_ke_so_luong_tinh_thanh')}}</h6>
               <!--						<p class="text-center mt-10">{{trans.get('keys.tong_so')}} <strong>{{data.city.MB.length + data.city.MT.length + data.city.MN.length}}</strong> {{trans.get('keys.tinh_thanh')}}</p>-->
@@ -205,7 +221,13 @@
                     }
                 },
                 series: [{}]
-              }
+              },
+              organization_id: 0,
+              organization_options: [],
+              organization_ready: false,
+              training_id: 0,
+              training_options: [],
+              training_ready: false
             }
         },
         methods: {
@@ -213,10 +235,14 @@
               this.organization_id = id;
             },
             preloadData() {
-              this.callStatistic();
+                this.fetchOrganization();
+                this.fetchTraining();
             },
             callStatistic() { //Statistic
-                axios.post('/report/show_statistic')
+                axios.post('/report/show_statistic', {
+                    organization_id: this.organization_id,
+                    training_id: this.training_id
+                })
                     .then(response => {
                         this.data = response.data;
 
@@ -307,11 +333,73 @@
                     .catch(error => {
                         console.log(error);
                     });
-            }
+            },
+            fetchOrganization() {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list', {
+                keyword: this.parent_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang,
+              })
+                .then(response => {
+                  //Set options recursive
+                  this.organization_options = this.setOptions(response.data);
+                  if(this.organization_options.length !== 0) {
+                    this.organization_id = this.organization_options[0].id;
+                  }
+                  this.organization_ready = true;
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+            fetchTraining() {
+              axios.post('/api/trainning/list', {
+                paginated: 0
+              })
+                .then(response => {
+                  this.training_options = response.data;
+                  //set first options
+                  if(this.training_options.length !== 0) {
+                    this.training_id = this.training_options[0].id;
+                  }
+                  this.training_ready = true;
+                })
+                .catch(error => {
+                  console.log(error.response.data);
+                });
+            },
+            setOptions(list) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name
+                };
+                if (item.children.length > 0) {
+                  newOption.children = this.setOptions(item.children);
+                }
+                outPut.push(newOption);
+              }
+              return outPut;
+            },
+        },
+        computed: { //Phải gọi trên html nó mới trigger computed value
+          data_ready: function() {
+            return this.training_ready && this.organization_ready;
+          }
         },
         mounted() {
             this.preloadData();
         },
+        watch: {
+          data_ready: function(newVal, oldVal) {
+            if (newVal === true && oldVal === false) {
+              this.callStatistic();
+            }
+          }
+        }
     }
 </script>
 
