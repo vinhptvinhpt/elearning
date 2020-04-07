@@ -218,6 +218,10 @@ function permission_cat_name()
         'tms-access-manage-branch' => 'Truy cập dữ liệu của trưởng Đại lý',
         'tms-access-manage-saleroom' => 'Truy cập dữ liệu của trưởng Điểm bán',
 
+        'tms-login' => 'Đăng nhập',
+        'tms-system-employee' => 'Quản lý nhân viên',
+        'tms-educate-exam-organize' => 'Quản lý Khóa học của tổ chức',
+
         'nav_dashboard' => '<i class="fa fa-tachometer"></i> Dashboard',
         'nav_elearning' => '<i class="fa fa-graduation-cap"></i> Elearning',
         'nav_notification' => '<i class="fa fa-bell"></i> Thông báo',
@@ -237,6 +241,9 @@ function permission_slug()
         'nav_dashboard' => [
             'tms-dashboard' => [
                 'tms-dashboard-view' => 'Dashboard',
+            ],
+            'tms-login' => [
+                'tms-login-view' => 'Đăng nhập',
             ]
         ],
         /*'nav_elearning' => [
@@ -262,6 +269,14 @@ function permission_slug()
                 'tms-system-user-edit' => 'Sửa',
                 'tms-system-user-deleted' => 'Xóa',
             ],
+            'tms-system-employee' => [
+                'tms-system-employee-view' => 'Xem',
+                'tms-system-employee-add' => 'Thêm',
+                'tms-system-employee-edit' => 'Sửa',
+                'tms-system-employee-deleted' => 'Xóa',
+                'tms-system-employee-decentralization' => 'Phân quyền',
+            ],
+//            tms-system-employee
             'tms-system-market' => [
                 'tms-system-market-view' => 'Xem',
                 'tms-system-market-add' => 'Thêm',
@@ -300,6 +315,12 @@ function permission_slug()
                 'tms-educate-libraly-add' => 'Thêm',
                 'tms-educate-libraly-edit' => 'Sửa',
                 'tms-educate-libraly-deleted' => 'Xóa',
+            ],
+            'tms-educate-exam-organize' => [
+                'tms-educate-exam-organize-view' => 'Xem',
+                'tms-educate-exam-organize-add' => 'Thêm',
+                'tms-educate-exam-organize-edit' => 'Sửa',
+                'tms-educate-exam-organize-deleted' => 'Xóa',
             ],
             'tms-educate-exam-online' => [
                 'tms-educate-exam-online-view' => 'Xem',

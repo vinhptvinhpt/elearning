@@ -152,14 +152,14 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 ]);
             }
 
-            $check_role = TmsUserDetail::where('user_id', $user_id)
-                ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tms_user_detail.user_id')
-                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-                ->where('r.name', $position)->count();
-
-            if ($check_role == 0) {
-                return response()->json(status_message('error', __('nguoi_dung_khong_co_quuyen_cho_vi_tri_nay')));
-            }
+//            $check_role = TmsUserDetail::where('user_id', $user_id)
+//                ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tms_user_detail.user_id')
+//                ->join('roles as r', 'r.id', '=', 'mhr.role_id')
+//                ->where('r.name', $position)->count();
+//
+//            if ($check_role == 0) {
+//                return response()->json(status_message('error', __('nguoi_dung_khong_co_quuyen_cho_vi_tri_nay')));
+//            }
 
             $item = TmsOrganizationEmployee::where('id', $id)->first();
             $item->organization_id = $organization_id;
