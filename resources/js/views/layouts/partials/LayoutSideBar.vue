@@ -286,15 +286,15 @@
                                     class="nav flex-column collapse collapse-level-2">
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
                                         <router-link
-                                          :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '0' } }"
-                                          class="nav-link">
+                                                :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '0' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_chung_chi') }}</span>
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
                                         <router-link
-                                          :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }"
-                                           class="nav-link">
+                                                :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_huy_hieu') }}</span>
                                         </router-link>
                                     </li>
@@ -535,7 +535,7 @@
                 return this.slugs.indexOf(permissionName) !== -1;
             },
             toggleMenu(parent_id, current_id, child_id) {
-                var x = document.getElementById(current_id);
+                let x = document.getElementById(current_id);
 
                 if(parent_id){
                     $('a.collapse-level-1').not($('#'+parent_id)).each(function(){
@@ -563,7 +563,7 @@
                     });
                 }
                 if (x) {
-                    var y = document.getElementById(child_id);
+                    let y = document.getElementById(child_id);
 
                     if (y.style.display === "none" || y.style.display === '') {
                         x.classList.toggle("active");

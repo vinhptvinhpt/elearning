@@ -1347,7 +1347,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
 
-        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        //lấy danh sách học viên/giáo viên đang được enrol vào khóa học hiện tại
         $currentUserEnrol = DB::table('mdl_user_enrolments')
             ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
             ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
@@ -1362,7 +1362,6 @@ class BussinessRepository implements IBussinessInterface
             $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
             $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
-
         if ($role_id) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_enrol.roleid', '=', $role_id);
         }
@@ -3248,49 +3247,10 @@ class BussinessRepository implements IBussinessInterface
     //New screen
     public function apiListDetail(Request $request)
     {
-
-
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
 
-        //Query users
-//        $data = TmsOrganization::with('employees.user')
-//            ->with('children')
-//            ->with('trainings.trainning')
-            //->where('id', $organization_id)
-//            ->whereHas('trainings', function($q) use($training_id) {
-//                    // Query the name field in status table
-//                    $q->where('trainning_id', '=', $training_id);
-//                })
-//            ->get();
-        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
-        //Đã được cấp chứng chỉ và chưa được
-        //join khung năng lục?
-
-//        return response()->json($data);
-
-        /*
-
-         select
-o.`name` as organization_name,
-c.`name` as course_name,
-e.`name` as employee_name,
-s.employee_id,
-s.course_id
-
-
-from organization o
-JOIN organization_employee oe ON  oe.organization_id = o.id
-LEFT JOIN organization_courses oc ON oc.organization_id = o.id AND oe.organization_id = oc.organization_id
-LEFT JOIN employee e ON oe.employee_id = e.id
-LEFT JOIN course c ON oc.course_id = c.id
-LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
-
- */
-
-
-
-        $base_query_pos = TmsOrganization::where('tms_organization.enabled', 1)
+        $query = TmsOrganization::where('tms_organization.enabled', 1)
             ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
             ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
             ->leftjoin('tms_trainning_groups', function ($join) {
@@ -3306,17 +3266,69 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
             ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
             ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
             ->select(
-                'tms_organization.name',
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name',
+                'tms_user_detail.user_id',
                 'tms_user_detail.fullname',
+                'mdl_course.id as course_id',
+                'mdl_course.shortname as course_code',
                 'mdl_course.fullname as course_name',
-                'tms_traninning_programs.name as traning'
-            )
-            ->get();
+                'tms_traninning_programs.id as training_id',
+                'tms_traninning_programs.name as training_name',
+                'tms_user_detail.confirm',
+                'course_final.timecompleted',
+                'student_certificate.code'
+            );
 
-        dd($base_query_pos);die;
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $query = $query->where('tms_organization.id', '=', $organization_id);
+        }
+
+        if (strlen($training_id) != 0 && $training_id != 0) {
+            $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+        }
+
+        $list = $query->get();
+
+        $data = array();
+
+        foreach ($list as $item) {
+            $data[$item['organization_id']]['name'] = $item['organization_name'];
+            if (strlen($item['training_id']) != 0) {
+                $data[$item['organization_id']]['training'][$item['training_id']]['name'] = $item['training_name'];
+                if (strlen($item['course_id']) != 0) {
+                    $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['name'] = $item['course_name'];
+                    $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][] = [
+                        'user_id' => $item['user_id'],
+                        'fullname' => $item['fullname'],
+                        'completed' => is_numeric($item['timecompleted']) ? 1 : 0,
+                        'certificated' => isset($item['code']) ? 1 : 0,
+                    ];
+                    if (strlen($item['user_id']) != 0) {
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname']
+                        ];
+
+                        if (isset($item['code'])) {
+                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated'][$item['user_id']] = $user;
+                        } else {
+                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated_missing'][$item['user_id']] = $user;
+                        }
+                        $data[$item['organization_id']]['training'][$item['training_id']]['total'][$item['user_id']] = $user;
+
+                        if (is_numeric($item['timecompleted'])) {
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['completed'][$item['user_id']] = $user;
+                        } else {
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incompleted'][$item['user_id']] = $user;
+                        }
+                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['total'][$item['user_id']] = $user;
+                    }
+                }
+            }
+        }
+        return $data;
     }
-
-
 
     function getRegionName($regionCode)
     {
@@ -6471,9 +6483,10 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
 
                 $arr_data_enrol = [];
                 $data_item_enrol = [];
+
                 foreach ($roles as $role) {
                     //if (!$checkrole) {
-                    if ($role['name'] == 'student') {
+                    if ($role['name'] == 'student' || $role['name'] == 'employee') {
                         $mdlUser->update(['redirect_type' => 'lms']);
                     } else {
                         $mdlUser->update(['redirect_type' => 'default']);
@@ -6492,7 +6505,6 @@ LEFT JOIN study s ON s.employee_id = e.id AND s.course_id = c.id
 
                     usleep(100);
                 }
-
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
             }
