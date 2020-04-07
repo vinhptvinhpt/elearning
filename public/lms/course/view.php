@@ -38,11 +38,13 @@
     $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$course->id))[0]->access_ip;
     if($result_ip){
         $list_access_ip = json_decode($result_ip)->list_access_ip;
-        if(!in_array(getremoteaddr(), $list_access_ip)){
-            $root_url = $CFG->wwwroot;
-            $url_to_page = new moodle_url($root_url);
-            $message_ip_access = "You do not have permission to access this course";
-            redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+        if ($list_access_ip){
+            if(!in_array(getremoteaddr(), $list_access_ip)){
+                $root_url = $CFG->wwwroot;
+                $url_to_page = new moodle_url($root_url);
+                $message_ip_access = "You do not have permission to access this course";
+                redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+            }
         }
     }
 
