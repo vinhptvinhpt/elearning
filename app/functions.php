@@ -946,17 +946,17 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
 //        );
 //    }
 
-    MdlUserEnrolments::firstOrCreate(
-        [
-            'enrolid' => $enrole->id,
-            'userid' => $user_id
-        ],
-        [
-            'timestart' => strtotime(Carbon::now()),
-            'modifierid' => Auth::user()->id,
-            'timecreated' => strtotime(Carbon::now()),
-            'timemodified' => strtotime(Carbon::now())
-        ]);
+//    MdlUserEnrolments::firstOrCreate(
+//        [
+//            'enrolid' => $enrole->id,
+//            'userid' => $user_id
+//        ],
+//        [
+//            'timestart' => strtotime(Carbon::now()),
+//            'modifierid' => Auth::user()->id,
+//            'timecreated' => strtotime(Carbon::now()),
+//            'timemodified' => strtotime(Carbon::now())
+//        ]);
 
 //    $checkEnrole = DB::table('mdl_user_enrolments')
 //        ->where('enrolid', '=', $enrole->id)
