@@ -126,6 +126,7 @@
                     });
             },
             addPermission(){
+                let current_pos = this;
                 if(this.permission.name && this.permission.method && this.permission.url){
                     axios.post('/permission/slug/add',{
                         slug:this.slug,
@@ -136,12 +137,13 @@
                     })
                         .then(response => {
                             if(response.data == 'success'){
-                                toastr['success']("Gán chức năng chi tiết thành công.", this.trans.get('keys.thanh_cong'));
-                                this.$router.push({ name: 'AddPermission', params: {slug: this.slug} });
+                                toastr['success']("Gán chức năng chi tiết thành công.", current_pos.trans.get('keys.thanh_cong'));
+                                current_pos.$router.push({ name: 'AddPermission', params: {slug: current_pos.slug} });
+                                current_pos.listPermissionDetail();
                             }else if(response.data == 'warning'){
-                              toastr['warning']("Key đã tồn tại.", this.trans.get('keys.thong_bao'));
+                              toastr['warning']("Key đã tồn tại.", current_pos.trans.get('keys.thong_bao'));
                             }else{
-                              toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             }
                         })
                         .catch(error => {
@@ -162,7 +164,9 @@
                     axios.post(url)
                         .then(response => {
                           toastr['success']("Xóa thành công!", current_pos.trans.get('keys.thanh_cong'));
-                          this.$router.push({ name: 'AddPermission', params: {slug: this.slug} });
+                            current_pos.$router.push({ name: 'AddPermission', params: {slug: current_pos.slug} });
+                            swal.close();
+                            current_pos.listPermissionDetail();
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
