@@ -3293,41 +3293,85 @@ class BussinessRepository implements IBussinessInterface
         $data = array();
 
         foreach ($list as $item) {
-            $data[$item['organization_id']]['name'] = $item['organization_name'];
+
+            if (!isset($data[$item['organization_id']])) {
+                //Build organization object
+                self::buildDefaultReportObject($data, $item['organization_id'], $item['organization_name']);
+            }
             if (strlen($item['training_id']) != 0) {
-                $data[$item['organization_id']]['training'][$item['training_id']]['name'] = $item['training_name'];
+                //Build training object
+                if (!isset($data[$item['organization_id']]['training'][$item['training_id']])) {
+                    self::buildDefaultReportObject($data[$item['organization_id']]['training'], $item['training_id'], $item['training_name']);
+                }
                 if (strlen($item['course_id']) != 0) {
-                    $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['name'] = $item['course_name'];
-                    $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][] = [
-                        'user_id' => $item['user_id'],
-                        'fullname' => $item['fullname'],
-                        'completed' => is_numeric($item['timecompleted']) ? 1 : 0,
-                        'certificated' => isset($item['code']) ? 1 : 0,
-                    ];
+                    //Build course object
+                    if (!isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
+                        self::buildDefaultReportObject($data[$item['organization_id']]['training'][$item['training_id']]['courses'], $item['course_id'], $item['course_name']);
+                    }
+
                     if (strlen($item['user_id']) != 0) {
                         $user = [
                             'user_id' => $item['user_id'],
                             'fullname' => $item['fullname']
                         ];
 
+                        //Update all user array for organization
+                        $data[$item['organization_id']]['users'][$item['user_id']] = $user;
+                        //Update all user array for training
+                        $data[$item['organization_id']]['training'][$item['training_id']]['users'][$item['user_id']] = $user;
+                        //Update user array for course
+                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][$item['user_id']] = $user;
+
                         if (isset($item['code'])) {
+                            $data[$item['organization_id']]['certificated'][$item['user_id']] = $user;
                             $data[$item['organization_id']]['training'][$item['training_id']]['certificated'][$item['user_id']] = $user;
                         } else {
+                            $data[$item['organization_id']]['certificated_missing'][$item['user_id']] = $user;
                             $data[$item['organization_id']]['training'][$item['training_id']]['certificated_missing'][$item['user_id']] = $user;
                         }
-                        $data[$item['organization_id']]['training'][$item['training_id']]['total'][$item['user_id']] = $user;
-
                         if (is_numeric($item['timecompleted'])) {
+                            $data[$item['organization_id']]['completed'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['completed'][$item['user_id']] = $user;
                             $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['completed'][$item['user_id']] = $user;
                         } else {
-                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incompleted'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['incomplete'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['incomplete'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incomplete'][$item['user_id']] = $user;
                         }
-                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['total'][$item['user_id']] = $user;
                     }
                 }
             }
         }
+
         return $data;
+    }
+
+    public static function buildDefaultReportObject(&$object, $object_id, $name) {
+        $object[$object_id]['name'] = $name;
+        $object[$object_id]['completed'] = [];
+        $object[$object_id]['incomplete'] = [];
+        $object[$object_id]['certificated'] = [];
+        $object[$object_id]['certificated_missing'] = [];
+        $object[$object_id]['completed'] = [];
+        $object[$object_id]['completed'] = [];
+        $object[$object_id]['users'] = [];
+    }
+
+    function updateObjectCounter(&$object, $counter, $organization_id, $training_id, $course_id = 0) {
+        if ($counter == 'completed_count' || $counter == 'incomplete_count')
+        {
+            $object[$organization_id]['total_complete_count'] += 1;
+            $object[$organization_id]['training'][$training_id]['total_complete_count'] += 1;
+        }
+        if ($counter == 'certificated_count' || $counter == 'certificated_missing_count')
+        {
+            $object[$organization_id]['total_certificate_count'] += 1;
+            $object[$organization_id]['training'][$training_id]['total_certificate_count'] += 1;
+        }
+        $object[$organization_id][$counter] += 1;
+        if ($course_id != 0) { //Layer course only
+            $object[$organization_id]['training'][$training_id]['courses'][$course_id][$counter] += 1;
+        }
     }
 
     function getRegionName($regionCode)
@@ -7011,6 +7055,7 @@ class BussinessRepository implements IBussinessInterface
             ->where([
                 'user_id' => $user_id,
             ])->first();
+        $users['id'] = $user_id;
         $users['username'] = $mdlUser['username'];
         if ($users['dob']) {
             $dob = date('Y-m-d', $users['dob']);
@@ -8939,7 +8984,6 @@ class BussinessRepository implements IBussinessInterface
             $user_id = $request->input('user_id');
             $password = $request->input('password');
             $passwordConf = $request->input('passwordConf');
-
             /*$param = [
                 'user_id' => 'number',
                 'password' => 'token',
@@ -8973,6 +9017,7 @@ class BussinessRepository implements IBussinessInterface
             return 'success';
         } catch (\Exception $e) {
             return 'error';
+//            return $e->getMessage();
         }
     }
 

@@ -833,7 +833,11 @@
         "employee": "Executive",
         "student": "Student",
         "teacher": "Teacher",
-        "admin": "Admin"
+        "admin": "Admin",
+        "thong_ke_nhan_vien": "Employee Statistic Report",
+        "hoan_thanh_dao_tao": "Trainning completed",
+        "da_cap_chung_chi": "Certificated",
+        "chua_co_giay_chung_nhan": "Mising certificate"
     },
     "vi.keys": {
         "language": "",
@@ -1669,6 +1673,10 @@
         "employee": "Executive",
         "student": "Student",
         "teacher": "Teacher",
-        "admin": "Admin"
+        "admin": "Admin",
+        "thong_ke_nhan_vien": "Thống kê nhân viên",
+        "hoan_thanh_dao_tao": "Hoàn thành đào tạo",
+        "da_cap_chung_chi": "Đã cấp chứng chỉ",
+        "chua_co_giay_chung_nhan": "Chưa có giấy chứng nhận"
     }
 }
