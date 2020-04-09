@@ -420,6 +420,8 @@ class BussinessRepository implements IBussinessInterface
                         $checkRole->has_role_pos = true;
                     } elseif ($role->name == Role::ROOT) {
                         $checkRole->root_user = true;
+                    } elseif ($role->name == Role::ADMIN) {
+                        $checkRole->root_user = true;
                     }
                 }
             }
@@ -2140,9 +2142,7 @@ class BussinessRepository implements IBussinessInterface
             $permission_slugs = DB::table('permission_slug_role as psr')
                 ->join('model_has_roles as mhr', 'mhr.role_id', '=', 'psr.role_id')
                 ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id');
-
-
-            if (tvHasRole(Auth::user()->id, 'Root') || tvHasRole(Auth::user()->id, 'root')) {
+            if (tvHasRole(Auth::user()->id, 'Root') || tvHasRole(Auth::user()->id, 'root') || tvHasRole(Auth::user()->id, 'admin')) {
                 $permission_slugs = $permission_slugs->select('psr.permission_slug')->groupBy('psr.permission_slug')->get();
 
                 foreach ($permission_slugs as $per_slug) {
@@ -6169,7 +6169,6 @@ class BussinessRepository implements IBussinessInterface
 
         $roles = $roles->select('id', 'name', 'description', 'status')
             ->get()->toArray();
-
 
         return response()->json($roles);
     }
