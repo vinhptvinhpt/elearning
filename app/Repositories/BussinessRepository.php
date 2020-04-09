@@ -7055,6 +7055,7 @@ class BussinessRepository implements IBussinessInterface
             ->where([
                 'user_id' => $user_id,
             ])->first();
+        $users['id'] = $user_id;
         $users['username'] = $mdlUser['username'];
         if ($users['dob']) {
             $dob = date('Y-m-d', $users['dob']);
@@ -8983,7 +8984,6 @@ class BussinessRepository implements IBussinessInterface
             $user_id = $request->input('user_id');
             $password = $request->input('password');
             $passwordConf = $request->input('passwordConf');
-
             /*$param = [
                 'user_id' => 'number',
                 'password' => 'token',
@@ -9017,6 +9017,7 @@ class BussinessRepository implements IBussinessInterface
             return 'success';
         } catch (\Exception $e) {
             return 'error';
+//            return $e->getMessage();
         }
     }
 

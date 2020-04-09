@@ -277,18 +277,15 @@ class LoginController extends Controller
             DB::beginTransaction();
 
             try {
-
                 MdlUser::findOrFail($checkUser['id'])->update([
                     'password' => bcrypt($password)
                 ]);
-
 //            Mail::send('email.recover_password', [
 //                'username' => $username,
 //                'password' => $password
 //            ], function ($message) use ($email) {
 //                $message->to($email)->subject('Recover Password');
 //            });
-
                 //sendmail to user for get new password
                 Mail::to($email)->send(new CourseSendMail(
                     TmsNotification::FORGOT_PASSWORD,

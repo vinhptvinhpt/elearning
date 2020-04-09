@@ -349,6 +349,7 @@ const routes = [
         name: 'ProfileEdit',
         props: (route) => ({
           type: 'system',
+          userid: route.params.user_id
         })
       },
       {

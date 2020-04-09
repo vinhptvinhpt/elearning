@@ -319,7 +319,6 @@ class ExcelController extends Controller
             );
         }
 
-
         $exportExcel = new ResultSheet($fullname, $export_data);
 
         $filename = $username . "_result.xlsx";

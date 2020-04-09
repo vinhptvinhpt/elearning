@@ -105,12 +105,14 @@ class CourseSendMail extends Mailable
         if ($this->activity == TmsNotification::INVITE_STUDENT) {
             $subject = __('thu_moi_tham_gia_khoa_hoc');
             $view = 'email.invite_student';
-        } else if ($this->activity == TmsNotification::ENROL
+        }
+        else if ($this->activity == TmsNotification::ENROL
             || $this->activity == TmsNotification::QUIZ_START
             || $this->activity == TmsNotification::QUIZ_END
             || $this->activity == TmsNotification::QUIZ_COMPLETED
             || $this->activity == TmsNotification::REMIND_CERTIFICATE
             || $this->activity == TmsNotification::ACTIVE_EMAIL
+            || $this->activity == TmsNotification::FORGOT_PASSWORD
         ) {
             switch ($this->activity) {
                 case TmsNotification::ENROL:
@@ -145,7 +147,8 @@ class CourseSendMail extends Mailable
                     $subject = '';
                     $view = '';
             }
-        } elseif ($this->activity == TmsNotification::SUGGEST) {
+        }
+        elseif ($this->activity == TmsNotification::SUGGEST) {
             $subject = '[ELEARNING] Giới thiệu một số khóa học kĩ năng mềm';
             $view = 'email.suggest_course';
         } elseif ($this->activity == TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE) {
