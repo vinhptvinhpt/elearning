@@ -83,7 +83,7 @@
                 </li>
               </ul>
               <div class="text-right">
-                <router-link to="/tms/profile/edit" class="btn btn-primary btn-sm">{{trans.get('keys.sua')}}</router-link>
+                <router-link :to="{ name: 'ProfileEdit', params: { user_id: users.id } }" class="btn btn-primary btn-sm">{{trans.get('keys.sua')}}</router-link>
               </div>
               <!-- <div class="text-right" v-else>
                   <a title="Khôi phục tài khoản" href="#" class="btn btn-sm btn-success" @click="restoreUser(users.user_id)">
@@ -98,7 +98,7 @@
       <user-schedule :user_id="user_id"></user-schedule>
 
       <div class="col-12 hk-sec-wrapper">
-        <user-course-grade :user_id="user_id" :training_name="training_name"></user-course-grade>
+        <user-course-grade :user_id="user_id" :training_name="training_name" :fullname="users.fullname" :username="users.username"></user-course-grade>
       </div>
 
     </div>

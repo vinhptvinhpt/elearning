@@ -112,7 +112,7 @@
     import Ls from '../../../services/ls'
 
     export default {
-        props: ['type'],
+        props: ['type', 'userid'],
         data() {
             return {
                 users: {},
@@ -125,7 +125,6 @@
         },
         methods:{
             changeRequired(element){
-                console.log(element);
                 $('#'+element).removeClass('notValidate');
             },
             viewPassword(){
@@ -163,6 +162,7 @@
                     $('.passwordError').show();
                     return;
                 }
+
                 axios.post('/system/user/updatePassword', {
                     user_id:this.user_id,
                     password:this.password,
@@ -251,6 +251,7 @@
                     .catch(error => {
                         //console.log(error);
                     })
+                this.user_id = this.userid;
             },
             getCitys() {
                 axios.post('/system/list/list_city')
