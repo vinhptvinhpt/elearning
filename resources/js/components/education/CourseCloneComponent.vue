@@ -243,6 +243,39 @@
                 this.description = this.sample.description;
                 this.pass_score = Math.floor(this.sample.pass_score);
                 this.is_end_quiz = this.sample.is_end_quiz;
+
+               this.shortname = this.convertToShortName(this.fullname);
+            },
+            convertToShortName(words){
+                var text = '';
+                words = words.split(' ');
+                $.each(words, function () {
+                    text +=  this.substring(0, 1);
+                });
+
+                var d = new Date();
+                var time = d.getHours()+''+d.getMinutes()+''+d.getSeconds()+''+d.getDate()+''+(d.getMonth()+1)+''+d.getFullYear();
+                return this.replaceStringVN(text).toUpperCase()+time;
+            },
+            replaceStringVN(string){
+                string = string.replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a', string);
+                string = string.replace(/[èéẹẻẽêềếệểễ]/g, 'e', string);
+                string = string.replace(/[ìíịỉĩ]/g, 'i', string);
+                string = string.replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o', string);
+                string = string.replace(/[ùúụủũưừứựửữ]/g, 'u', string);
+                string = string.replace(/[ỳýỵỷỹ]/g, 'y', string);
+                string = string.replace(/[đ]/g, 'D', string);
+                string = string.replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'A', string);
+                string = string.replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'E', string);
+                string = string.replace(/[ÌÍỊỈĨ]/g, 'I', string);
+                string = string.replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'O', string);
+                string = string.replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'U', string);
+                string = string.replace(/[ỲÝỴỶỸ]/g, 'Y', string);
+                string = string.replace(/[Đ]/g, 'D', string);
+
+                string = string.replace(' ', '', string);
+
+                return string;
             },
             onChangeCate(event) {
                 if (event.target.value == 3) {
