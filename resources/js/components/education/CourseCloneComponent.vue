@@ -105,13 +105,12 @@
                                                        class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-sm-6 col-md-4 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
-                                                    *</label>
+                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
                                                 <input v-model="enddate" type="date"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-                                                <label v-if="!enddate"
-                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!enddate"-->
+<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
                                             <div class="col-sm-6 col-md-4 form-group">
                                                 <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
@@ -325,10 +324,10 @@
                     $('.startdate_required').show();
                     return;
                 }
-                if (!this.enddate) {
-                    $('.enddate_required').show();
-                    return;
-                }
+                // if (!this.enddate) {
+                //     $('.enddate_required').show();
+                //     return;
+                // }
                 if (!this.pass_score) {
                     $('.pass_score_required').show();
                     return;

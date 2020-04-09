@@ -263,8 +263,11 @@
         },
         filters: {
             convertDateTime(value) {
-                var time = new Date(value * 1000);
-                return time.toLocaleDateString();
+                if(value){
+                    var time = new Date(value * 1000);
+                    return time.toLocaleDateString();
+                }
+                return "";
             }
         },
         methods: {
