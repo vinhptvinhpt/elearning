@@ -23,7 +23,7 @@
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
             <div class="col-6">
-              <select id="training_select" v-model="training_id" class="custom-select custom-select-sm form-control form-control-sm">
+              <select id="training_select" v-model="training_id" class="custom-select form-control">
                 <option v-for="training_option in training_options" :value="training_option.id">
                   {{training_option.name}}
                 </option>
@@ -33,12 +33,12 @@
 
           <div class="row">
             <div class="col-6">
-              <select v-model="mode_select" class="custom-select custom-select-sm form-control form-control-sm">
+              <select v-model="mode_select" class="custom-select form-control">
                 <option value="completed">
-                  {{ trans.get('keys.completed')}}
+                  {{ trans.get('keys.hoan_thanh_dao_tao')}}
                 </option>
                 <option value="certificated">
-                  {{ trans.get('keys.certificated')}}
+                  {{ trans.get('keys.da_cap_chung_chi')}}
                 </option>
               </select>
             </div>
@@ -80,26 +80,14 @@
               </thead>
               <tbody>
 
-                <tr style="background: #e0e3e4;">
-                  <td colspan="4"><strong>{{report_data.name}}</strong></td>
-                </tr>
-                <template v-for="(item, index) in report_data">
-                  <tr v-if="item.type === 'organization'" style="background: #e0e3e4;">
-                    <td colspan="4"><strong>{{item.column1}}</strong></td>
+                  <tr :style="'background:'+ item.color" v-for="(item, index) in report_data">
+                    <td v-if="item.type === 'organization' || item.type === 'training'"><strong>{{item.column1}}</strong></td>
+                    <td v-else>{{item.column1}}</td>
+                    <td v-html="item.column2" style="vertical-align: top;"></td>
+                    <td v-html="item.column3" style="vertical-align: top;"></td>
+                    <td v-html="item.column4" style="vertical-align: top;"></td>
                   </tr>
-                  <tr v-else>
-                    <td><strong>{{item.column1}}</strong></td>
 
-                    <td v-if="typeof item.column2 !== 'undefined'">{{item.column2.length}}</td>
-                    <td v-else>0</td>
-
-                    <td v-if="typeof item.column3 !== 'undefined'">{{item.column3.length}}</td>
-                    <td v-else>0</td>
-
-                    <td v-if="typeof item.column4 !== 'undefined'">{{item.column4.length}}</td>
-                    <td v-else>0</td>
-                  </tr>
-                </template>
               </tbody>
             </table>
           </div>
@@ -142,13 +130,14 @@
             listData() {
               axios.post('/report/list_detail', {
                 organization_id: this.organization_id,
-                training_id: this.training_id
+                training_id: this.training_id,
+                mode_select: this.mode_select
               })
                 .then(response => {
                   let list = response.data;
+                  this.report_data = [];
                   this.setData(list, 'organization');
-
-                  console.log(this.report_data);
+                  //Reset report_data array
                 })
                 .catch(error => {
                   console.log(error);
@@ -245,34 +234,36 @@
                   column2: [],
                   column3: [],
                   column4: [],
-                  users: []
+                  color: "#fff"
                 };
 
-                pushObject.column1 = item.name; //Organization name
+                pushObject.column1 = item.name;
 
-                if (typeof item.certificated !== 'undefined') {
-                  pushObject.column2 = item.certificated;
-                }
-                if (typeof item.certificated_missing !== 'undefined') {
-                  pushObject.column3 = item.certificated_missing;
-                }
 
-                if (typeof item.completed !== 'undefined') {
-                  pushObject.column2 = item.certificated;
-                }
-                if (typeof item.incompleted !== 'undefined') {
-                  pushObject.column3 = item.certificated_missing;
-                }
+                console.log(item);
 
-                if (typeof item.total !== 'undefined') {
-                  pushObject.column4 = item.total;
+
+                if (type === 'organization' || type === 'training' || type === 'courses') {
+                  if (this.mode_select === 'completed') {
+                    pushObject.column2 = Object.keys(item.completed).length;
+                    pushObject.column3 = Object.keys(item.incomplete).length;
+                  } else {
+                    pushObject.column2 = Object.keys(item.certificated).length;
+                    pushObject.column3 = Object.keys(item.certificated_missing).length;
+                  }
+                  pushObject.column4 = Object.keys(item.users).length;
                 }
 
-                if (typeof item.users !== 'undefined') {
-                  pushObject.users = item.users;
+                if (type === 'organization') {
+                  pushObject.color = '#e0e3e4';
+                } else if (type === 'training') {
+                  pushObject.color = '#5BBFDE';
                 }
 
                 this.report_data.push(pushObject);
+
+                this.setUserListObject(item);
+
                 if (typeof item.training != 'undefined' && item.training) {
                   this.setData(item.training, 'training');
                 }
@@ -282,6 +273,46 @@
                 }
 
               }
+            },
+            setUserListObject(item) {
+              if (typeof item.users !== 'undefined') {
+                let pushObject = {
+                  type: 'users',
+                  column1: '',
+                  column2: '',
+                  column3: '',
+                  column4: '',
+                  color: "#fff"
+                };
+                if (this.mode_select === 'completed') {
+                  if (typeof item.completed !== 'undefined') {
+                    pushObject.column2 = this.setUserList(item.completed);
+                  }
+                  if (typeof item.incomplete !== 'undefined') {
+                    pushObject.column3 = this.setUserList(item.incomplete);
+                  }
+                } else {
+                  if (typeof item.certificated !== 'undefined') {
+                    pushObject.column2 = this.setUserList(item.certificated);
+                  }
+                  if (typeof item.certificated_missing !== 'undefined') {
+                    pushObject.column3 = this.setUserList(item.certificated_missing);
+                  }
+                }
+                pushObject.column4 = this.setUserList(item.users);
+                this.report_data.push(pushObject);
+              }
+            },
+            setUserList(users) {
+              let display_text = '';
+              let display_array = [];
+              for (const [key, item] of Object.entries(users)) {
+                  display_array.push(item.fullname);
+              }
+              if (display_array.length !== 0) {
+                display_text = display_array.join('<br/>');
+              }
+              return display_text;
             }
         },
         mounted() {
