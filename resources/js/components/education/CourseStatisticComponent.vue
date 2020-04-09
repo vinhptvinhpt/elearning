@@ -112,7 +112,7 @@
                                                 <th scope="row">{{trans.get('keys.thoi_gian_ket_thuc')}}</th>
                                             </div>
                                             <div class="col-8">
-                                                <td>{{ course.enddate}}</td>
+                                                <td>{{ course.enddate }}</td>
                                             </div>
                                         </div>
                                     </tr>
@@ -533,8 +533,11 @@
                 return (value * 100);
             },
             convertDateTime(value) {
-                var time = new Date(value * 1000);
-                return time.toLocaleDateString();
+                if(value){
+                    var time = new Date(value * 1000);
+                    return time.toLocaleDateString();
+                }
+                return "";
             }
         },
         methods: {
@@ -591,14 +594,19 @@
 
 
                         this.course.startdate = DD + '/' + MM + '/' + YYYY;
+                        if(response.data.enddate){
+                            var endate = new Date(response.data.enddate * 1000);
 
-                        var endate = new Date(response.data.enddate * 1000);
+                            var YYYY_end = endate.getFullYear();
+                            var MM_end = ten(endate.getMonth() + 1);
+                            var DD_end = ten(endate.getDate());
 
-                        var YYYY_end = endate.getFullYear();
-                        var MM_end = ten(endate.getMonth() + 1);
-                        var DD_end = ten(endate.getDate());
+                            this.course.enddate = DD_end + '/' + MM_end + '/' + YYYY_end;
 
-                        this.course.enddate = DD_end + '/' + MM_end + '/' + YYYY_end;
+                        }
+                        else{
+                            this.course.enddate = "";
+                        }
 
                         this.course.pass_score = Math.floor(response.data.pass_score);
                     })
