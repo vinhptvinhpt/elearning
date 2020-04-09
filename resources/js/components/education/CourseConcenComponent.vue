@@ -233,9 +233,11 @@
         },
         filters: {
             convertDateTime(value) {
-                var time = new Date(value * 1000);
-                return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
-
+               if(value){
+                   var time = new Date(value * 1000);
+                   return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
+               }
+               return "";
             }
         },
         methods: {

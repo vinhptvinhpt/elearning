@@ -97,14 +97,13 @@
                                                        class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
-                                                    *</label>
+                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
                                                 <input v-model="course.enddate"
                                                        type="datetime-local"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-                                                <label v-if="!course.enddate"
-                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!course.enddate"-->
+<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
 
@@ -261,15 +260,19 @@
 
                         this.course.startdate = YYYY + '-' + MM + '-' + DD + 'T' + HH + ':' + II;
 
-                        var endate = new Date(response.data.enddate * 1000);
+                       if(response.data.enddate){
+                           var endate = new Date(response.data.enddate * 1000);
 
-                        var YYYY_end = endate.getFullYear();
-                        var MM_end = ten(endate.getMonth() + 1);
-                        var DD_end = ten(endate.getDate());
-                        var HH_end = ten(endate.getHours());
-                        var II_end = ten(endate.getMinutes());
+                           var YYYY_end = endate.getFullYear();
+                           var MM_end = ten(endate.getMonth() + 1);
+                           var DD_end = ten(endate.getDate());
+                           var HH_end = ten(endate.getHours());
+                           var II_end = ten(endate.getMinutes());
 
-                        this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end + 'T' + HH_end + ':' + II_end;
+                           this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end + 'T' + HH_end + ':' + II_end;
+                       }else{
+                           this.course.enddate = "";
+                       }
 
                         this.course.pass_score = Math.floor(response.data.pass_score);
 
@@ -299,10 +302,10 @@
                     $('.startdate_required').show();
                     return;
                 }
-                if (!this.course.enddate) {
-                    $('.enddate_required').show();
-                    return;
-                }
+                // if (!this.course.enddate) {
+                //     $('.enddate_required').show();
+                //     return;
+                // }
                 if (!this.course.pass_score) {
                     $('.pass_score_required').show();
                     return;

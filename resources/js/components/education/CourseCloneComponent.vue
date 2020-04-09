@@ -105,13 +105,12 @@
                                                        class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-sm-6 col-md-4 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
-                                                    *</label>
+                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
                                                 <input v-model="enddate" type="date"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-                                                <label v-if="!enddate"
-                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!enddate"-->
+<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
                                             <div class="col-sm-6 col-md-4 form-group">
                                                 <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
@@ -244,6 +243,39 @@
                 this.description = this.sample.description;
                 this.pass_score = Math.floor(this.sample.pass_score);
                 this.is_end_quiz = this.sample.is_end_quiz;
+
+               this.shortname = this.convertToShortName(this.fullname);
+            },
+            convertToShortName(words){
+                var text = '';
+                words = words.split(' ');
+                $.each(words, function () {
+                    text +=  this.substring(0, 1);
+                });
+
+                var d = new Date();
+                var time = d.getHours()+''+d.getMinutes()+''+d.getSeconds()+''+d.getDate()+''+(d.getMonth()+1)+''+d.getFullYear();
+                return this.replaceStringVN(text).toUpperCase()+time;
+            },
+            replaceStringVN(string){
+                string = string.replace(/[àáạảãâầấậẩẫăằắặẳẵ]/g, 'a', string);
+                string = string.replace(/[èéẹẻẽêềếệểễ]/g, 'e', string);
+                string = string.replace(/[ìíịỉĩ]/g, 'i', string);
+                string = string.replace(/[òóọỏõôồốộổỗơờớợởỡ]/g, 'o', string);
+                string = string.replace(/[ùúụủũưừứựửữ]/g, 'u', string);
+                string = string.replace(/[ỳýỵỷỹ]/g, 'y', string);
+                string = string.replace(/[đ]/g, 'D', string);
+                string = string.replace(/[ÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴ]/g, 'A', string);
+                string = string.replace(/[ÈÉẸẺẼÊỀẾỆỂỄ]/g, 'E', string);
+                string = string.replace(/[ÌÍỊỈĨ]/g, 'I', string);
+                string = string.replace(/[ÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠ]/g, 'O', string);
+                string = string.replace(/[ÙÚỤỦŨƯỪỨỰỬỮ]/g, 'U', string);
+                string = string.replace(/[ỲÝỴỶỸ]/g, 'Y', string);
+                string = string.replace(/[Đ]/g, 'D', string);
+
+                string = string.replace(' ', '', string);
+
+                return string;
             },
             onChangeCate(event) {
                 if (event.target.value == 3) {
@@ -325,10 +357,10 @@
                     $('.startdate_required').show();
                     return;
                 }
-                if (!this.enddate) {
-                    $('.enddate_required').show();
-                    return;
-                }
+                // if (!this.enddate) {
+                //     $('.enddate_required').show();
+                //     return;
+                // }
                 if (!this.pass_score) {
                     $('.pass_score_required').show();
                     return;

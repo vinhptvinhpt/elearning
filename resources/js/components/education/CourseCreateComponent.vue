@@ -99,13 +99,12 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
-                                                    *</label>
+                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
                                                 <input v-model="enddate" type="date"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-                                                <label v-if="!enddate"
-                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!enddate"-->
+<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
@@ -250,10 +249,10 @@
                     $('.startdate_required').show();
                     return;
                 }
-                if (!this.enddate) {
-                    $('.enddate_required').show();
-                    return;
-                }
+                // if (!this.enddate) {
+                //     $('.enddate_required').show();
+                //     return;
+                // }
                 if (!this.pass_score && this.category_id != 3) {
                     $('.pass_score_required').show();
                     return;
