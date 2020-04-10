@@ -30,9 +30,6 @@ $additional_param = "?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930
                 <div class="content-panel">
                     <div class="content-header-wrapper">
                         <h2 class="title"><i class="fa fa-video-camera"></i> VIDEOS LIBRARY</h2>
-                        <!-- <div class="actions">
-                            <button class="btn btn-success"><i class="fa fa-plus"></i> Upload New Item</button>
-                        </div> -->
                     </div>
                     <div class="content-utilities">
                         <div class="page-nav">
