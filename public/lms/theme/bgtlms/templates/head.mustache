@@ -30,9 +30,9 @@
 <script src="/sso/sslssso.js"></script>
 <script>
 	$(document).ready(function(){
-		var currentUrl = window.location.href;
-		var jwtsso = getToken();
-		if (jwtsso){
+		<!-- var currentUrl = window.location.href; -->
+		<!-- var jwtsso = getToken(); -->
+		<!-- if (jwtsso){ -->
 			<!-- $.ajax({ -->
 				<!-- url:'/sso/authentoken', -->
 				<!-- data: {'jwt': jwtsso}, -->
@@ -59,20 +59,20 @@
 					<!-- console.log(ex); -->
 				<!-- } -->
 			<!-- }); -->
-		}else{
-			$.ajax({
-				url:'/lms/login/index.php',
-				data: {action:'sso.logout'},
-				type: 'POST',
-				dataType: 'json',
-				success: function(data) {
-					if(data == 1 && window.location.href != '/lms/login/index.php'){
-                        localStorage.setItem(logoutCookie, 'logout');
-						window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback='+currentUrl;
-					}
-				}
-			});
-		}
+		<!-- }else{ -->
+			<!-- $.ajax({ -->
+				<!-- url:'/lms/login/index.php', -->
+				<!-- data: {action:'sso.logout'}, -->
+				<!-- type: 'POST', -->
+				<!-- dataType: 'json', -->
+				<!-- success: function(data) { -->
+					<!-- if(data == 1 && window.location.href != '/lms/login/index.php'){ -->
+						
+						<!-- window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback='+currentUrl; -->
+					<!-- } -->
+				<!-- } -->
+			<!-- }); -->
+		<!-- } -->
 	});
 
     function getCookieByName(o) {
@@ -82,7 +82,7 @@
 
 	var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
 	var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
-    var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
+
 	function isSafariBrowser() {
 		var o = navigator.userAgent.indexOf("Safari") > -1;
 		return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
