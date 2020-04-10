@@ -117,7 +117,7 @@ $additional_param = "?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930
         $temp.val(text).select();
         document.execCommand("copy");
         $temp.remove();
-
+        alert("Copied to clipboard");
         return false;
     }
 </script>
