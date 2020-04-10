@@ -19,7 +19,7 @@ $PAGE->set_pagelayout('mydashboard');
 $PAGE->set_pagetype('my-index');
 $PAGE->set_title(get_string('surveydashboard'));
 $PAGE->set_heading($header);
-$linksurvey = '/survey/viewlayout/10';
+$linksurvey = '/tms/survey/viewlayout/10';
 
 echo $OUTPUT->header();
 ?>
