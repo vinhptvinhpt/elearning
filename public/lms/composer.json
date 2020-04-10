@@ -9,5 +9,8 @@
         "phpunit/dbunit": "4.0.*",
         "moodlehq/behat-extension": "3.37.0",
         "mikey179/vfsstream": "^1.6"
+    },
+	"require": {
+        "microsoft/windowsazure": "^0.5"
     }
 }
