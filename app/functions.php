@@ -221,6 +221,7 @@ function permission_cat_name()
         'tms-login' => 'Đăng nhập',
         'tms-system-employee' => 'Quản lý nhân viên',
         'tms-educate-exam-organize' => 'Quản lý Khóa học của tổ chức',
+        'tms-system-activity-log' => 'Theo dõi hoạt động',
 
         'nav_dashboard' => '<i class="fa fa-tachometer"></i> Dashboard',
         'nav_elearning' => '<i class="fa fa-graduation-cap"></i> Elearning',
@@ -308,6 +309,12 @@ function permission_slug()
             'tms-system-import-user' => [
                 'tms-system-import-user-view' => 'Import'
             ],
+            'tms-system-activity-log' => [
+                'tms-system-activity-log-view' => 'Xem',
+                'tms-system-activity-log-add' => 'Thêm',
+                'tms-system-activity-log-edit' => 'Sửa',
+                'tms-system-activity-log-deleted' => 'Xóa',
+                ]
         ],
         'nav_educate' => [
             'tms-educate-libraly' => [
