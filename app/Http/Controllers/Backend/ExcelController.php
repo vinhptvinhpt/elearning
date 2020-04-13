@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Exports\AttendanceSheet;
 use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
+use App\Exports\ReportDetailSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
@@ -289,6 +290,47 @@ class ExcelController extends Controller
         return response()->json(storage_path($filename));
     }
 
+    public function exportReportDetail(Request $request)
+    {
+
+        $data = $request->input('data');
+        $type = $request->input('type');
+
+        $export_data = array();
+        foreach ($data as $item) {
+
+            if ($item['type'] == 'users') {
+                //In PHP, '\n' (in single quotes) is a literal \ character followed by a literal n character. "\n" (in double quotes) is a newline character
+                $column2 = str_replace('<br/>', "\n", $item['column2']);
+                $column3 = str_replace('<br/>', "\n", $item['column3']);
+                $column4 = str_replace('<br/>', "\n", $item['column4']);
+            } else {
+                $column2 = $item['column2'];
+                $column3 = $item['column3'];
+                $column4 = $item['column4'];
+            }
+
+            $export_data[] = array(
+                $item['column1'],
+                $column2,
+                $column3,
+                $column4,
+                $item['type']
+            );
+        }
+
+        dd($export_data);
+
+
+        $exportExcel = new ReportDetailSheet('Report Detail', $export_data, $type);
+
+        $filename = "report_detail.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json(storage_path($filename));
+    }
+
     public function apiExportResult(Request $request)
     {
 
@@ -494,11 +536,6 @@ class ExcelController extends Controller
         $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
 
         return response()->json($filename);
-    }
-
-    public function downloadExportReport() {
-        $filename = "report_detail.xlsx";
-        return Storage::download($filename);
     }
 
     public function apiDownloadExport($file_name) {

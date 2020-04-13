@@ -23,7 +23,7 @@
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
             <div class="col-6">
-              <select id="training_select" v-model="training_id" class="custom-select form-control">
+              <select id="training_select" v-model="training_id" class="custom-select">
                 <option value="0">{{ trans.get('keys.khung_nang_luc') }}</option>
                 <option v-for="training_option in training_options" :value="training_option.id">
                   {{training_option.name}}
@@ -172,21 +172,20 @@
                 });
             },
             exportExcel(data) {
-                axios.post('/exportReport', {
+                axios.post('/exportReportDetail', {
                     data: data,
+                    type: this.mode_select
                 })
                     .then(response => {
-                        var a = $("<a>")
-                            .prop("href", "/downloadExportReport")
-                            //.prop("download", "newfile.txt")
-                            .appendTo("body");
-                        a[0].click();
-                        a.remove();
-                        //roam_message('success','Lỗi hệ thống. Thao tác thất bại');
+                      var a = $("<a>")
+                        .prop("href", "/api/downloadExport/" + 'report_detail.xlsx')
+                        .appendTo("body");
+                      a[0].click();
+                      a.remove();
+                      toastr['success'](this.trans.get('keys.xuat_du_lieu_thanh_cong'), this.trans.get('keys.thanh_cong'));
                     })
                     .catch(error => {
-                        console.log(error);
-                        roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
             myFilterBy: (option, label, search) => {
@@ -372,7 +371,7 @@
     }
     .color-box {
       margin: 5px;
-      border: 1px solid rgba(0, 0, 0, .2);
+      border: 1px solid rgba(0, 0, 0, 0.2);
     }
 
     .course-color {
@@ -384,7 +383,7 @@
     }
 
     .organization-color {
-      background: #e0e3e4;
+      background: #E0E3E4;
     }
 
 </style>

@@ -838,7 +838,8 @@
         "hoan_thanh_dao_tao": "Trainning completed",
         "da_cap_chung_chi": "Certificated",
         "chua_co_giay_chung_nhan": "Mising certificate",
-        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận"
+        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận",
+        "xuat_du_lieu_thanh_cong": "Export successfully"
     },
     "vi.keys": {
         "language": "",
@@ -1679,6 +1680,7 @@
         "hoan_thanh_dao_tao": "Hoàn thành đào tạo",
         "da_cap_chung_chi": "Đã cấp chứng chỉ",
         "chua_co_giay_chung_nhan": "Chưa có giấy chứng nhận",
-        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận"
+        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận",
+        "xuat_du_lieu_thanh_cong": "Xuất dữ liệu thành công"
     }
 }

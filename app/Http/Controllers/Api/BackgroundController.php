@@ -21,6 +21,7 @@ use App\TmsCityBranch;
 use App\TmsDepartments;
 use App\TmsNotification;
 use App\TmsNotificationLog;
+use App\TmsOrganization;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
@@ -642,6 +643,109 @@ class BackgroundController extends Controller
         }
     }
 
+    public function importEmployee()
+    {
+        set_time_limit(0);
+
+        $dir = storage_path() . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "import";
+        //return files or folders in directory above
+        $files = scandir($dir);
+        $files = array_diff($files, array('.', '..'));
+        $files = array_slice($files, 0, 1);
+
+        foreach ($files as $file_path) {
+
+            //check file is xlsx, xls
+            $extension = pathinfo($file_path, PATHINFO_EXTENSION);
+
+            if ($extension != 'xls' && $extension != 'xlsx') {
+                return response()->json([
+                    'extension' => 'error'
+                ]);
+            }
+
+            $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
+
+            $list_uploaded = (new DataImport)->toArray($file_path, '', '');
+            $response = array();
+
+            foreach ($list_uploaded as $user) {
+
+                $errors = array();
+
+                //Fetch data
+                //Skip 2 first row and department name row, check first column is numeric or not
+                $stt = $user[0];
+                if (!is_numeric($stt)) {
+                    continue;
+                }
+
+                $position_name = $user[6];
+
+                if (strpos($position_name, Role::ROLE_MANAGER)) {
+                    $role = Role::ROLE_MANAGER;
+                } elseif (strpos($position_name, Role::ROLE_LEADER)) {
+                    $role = Role::ROLE_LEADER;
+                } elseif (strpos($position_name, 'executive')) {
+                    $role = Role::ROLE_EMPLOYEE;
+                } else { //Skip for other roles
+                    $errors[] = 'Position is not available';
+                }
+
+                $department_name = $user[5];
+                if (strlen($department_name) == 0) {
+                    $errors[] = 'Department is missing';
+                } else {
+                    $department = TmsOrganization::firstOrCreate([
+                        'code' => strtoupper($department_name),
+                        'name' => $department_name
+                    ]);
+                }
+
+                $email = $user[25];
+                //Validate required fields
+                if (strlen($email) == 0) {
+                    $errors[] = 'Email is missing';
+                } else {
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $errors[] = "Email is wrong format";
+                    }
+                }
+
+                $full_name = $user[1];
+                $first_name = $user[2];
+                $middle_name = $user[3];
+                $last_name = $user[4];
+
+                if (strlen($full_name) == 0) {
+                    $errors[] = 'Full name is missing';
+                }
+
+                if (strlen($first_name) == 0) {
+                    $errors[] = 'First name is missing';
+                }
+
+                if (strlen($last_name) == 0) {
+                    $errors[] = 'Last name is missing';
+                }
+
+                $personal_id = $user[18];
+                if (strlen($personal_id) == 0) {
+                    $errors[] = 'Personal id is missing';
+                }
+
+                $user = self::createEmployee(
+                    $role,
+                    $email,
+                    $email,
+                    1
+                );
+
+            }
+
+        }
+    }
+
     function composeEmployeeErrorObject($stt, $cmtnd, $fullname, $message) {
         $userOuput = array();
 
@@ -707,6 +811,370 @@ class BackgroundController extends Controller
         $managementCode,
         $unknownSaleroomId,
         $manageCode = ''
+    ) {
+
+        $newUserId = 0;
+        $resultOutput = [
+            'userId' => $newUserId,
+            'message' => '',
+            'type' => '',
+            'username' => ''
+        ];
+        $userOutputMessages = [];
+        $checkTM = 1;
+
+        try {
+            //Check các thông tin bắt buộc
+            if (empty($email) || empty($cmtnd) || empty($username) || empty($fullname)) {
+
+                $message = '';
+
+                $userOuput['username'] = $username;
+
+                $message .= 'Dữ liệu không đủ: ';
+
+                $missing = array();
+
+                if (!$username) {
+                    $missing[]= 'Tài khoản';
+                }
+                if (!$email) {
+                    $missing[] = 'Email';
+                }
+                if (!$cmtnd) {
+                    $missing[] = 'Số CMTND';
+                }
+                if (!$fullname) {
+                    $missing[] = 'Họ và tên';
+                }
+                $message .= implode(", ", $missing) . ' không được để trống.';
+                $userOutputMessages[] = $message;
+                $checkTM = 0;
+            }
+
+            //kiểm tra nếu tồn tại các trường và các trường đó sai định dạng
+            $array = [
+                'phone' => $phone,
+                'cmtnd' => $cmtnd,
+                'confirm' => $confirm
+            ];
+
+            $check = self::validate_fields($array, [
+                'phone' => 'phone',
+                'cmtnd' => 'text',
+                'confirm' => 'boolean'
+            ]);
+
+            if(!empty($check)) {
+                $msg = [];
+                foreach($check as $item=>$value) {
+                    switch ($item)
+                    {
+                        case 'cmtnd':
+                            $item = "CMTND";
+                            break;
+                        case 'phone':
+                            $item = "SDT";
+                            break;
+                        case 'confirm':
+                            $item = "Confirm";
+                            break;
+                        default:
+                            break;
+                    }
+                    $msg[]= $item. ': '.$value;
+                }
+                $userOutputMessages[] = implode(", ", $msg);
+                $checkTM = 0;
+            }
+
+            $usernameNew = $username;
+
+            //Nếu thỏa mãn
+            if ($checkTM == 1)
+            {
+                //Xử lý tên user
+                $nameExpl = explode(' ', $fullname);
+                $rowname = count($nameExpl);
+                $firstname = $nameExpl[$rowname - 1] ? $nameExpl[$rowname - 1] : '';
+                $lastname = str_replace($nameExpl[$rowname - 1], '', $fullname);
+                $lastname = $lastname ? $lastname : '';
+
+//                \DB::beginTransaction();
+//                \DB::disableQueryLog();
+
+                //Khởi tạo saleroom default
+                //Nếu k tìm thấy đại lý hay điểm bán thì gán vào unknown saleroom
+                $position = TmsSaleRoomUser::POS;
+                $positionId = $unknownSaleroomId;
+
+                //'manageagents'
+                //'managepos'
+
+                $isUnknown = 1;
+
+                if (strlen($manageCode) != 0) { // tạo trưởng điểm bán, trưởng đại lý
+                    if ($role_name == 'managepos') {
+
+                        $checkSaleRoom = TmsSaleRooms::where('code', '=', $manageCode)
+                            ->CreateBranchJoin('mdl_user as mu', 'mu.id', '=', 'tms_sale_rooms.user_id')
+                            ->select('mu.id', 'mu.username')
+                            ->first();
+
+                        if (
+                            isset($checkSaleRoom)
+                            && isset($checkSaleRoom->username)
+                            && strpos($checkSaleRoom->username, $username) !== false
+                        ) {
+                            $newUserId = $checkSaleRoom->id;
+                        }
+                    }
+                    if ($role_name == 'manageagents') {
+                        $checkBranch = TmsBranch::where('code', '=', $manageCode)
+                            ->leftJoin('mdl_user as mu', 'mu.id', '=', 'tms_branch.user_id')
+                            ->select('mu.id', 'mu.username')
+                            ->first();
+                        if (isset($checkBranch)
+                            && isset($checkBranch->username)
+                            && strpos($checkBranch->username, $username) !== false
+                        ) {
+                            $newUserId = $checkBranch->id;
+                        }
+                    }
+                }
+
+                if ($newUserId == 0) { //check tiếp nếu k tìm thấy user có sẵn ở trên
+                    if ($managementCode > 0) { //Có truyền mã đơn vị quản lý nhân viên này
+
+                        //kiểm tra mã đơn vị quản lý
+                        //kiểm tra trong điểm bán
+
+                        $checkSaleRoomUser = TmsSaleRooms::where('code', '=', $managementCode)->first();
+                        if (isset($checkSaleRoomUser)) {
+                            $position = TmsSaleRoomUser::POS;
+                            $positionId = $checkSaleRoomUser->id;
+                            $isUnknown = 0;
+                        } else {
+                            //kiểm tra trong đại lý
+                            $checkBranchUser = TmsBranch::where('code', '=', $managementCode)->first();
+                            if (isset($checkBranchUser)) {
+                                $position = TmsSaleRoomUser::AGENTS;
+                                $positionId = $checkBranchUser->id;
+                                $isUnknown = 0;
+                            }
+                        }
+                    }
+
+                    //lấy các user có tên tương tự
+                    $user_related_series = MdlUser::where('username', 'like', "{$username}%")
+                        ->leftJoin('tms_user_detail as tud', 'tud.user_id', '=', 'mdl_user.id')
+                        ->leftJoin('tms_sale_room_user as tsru', 'tsru.user_id', '=', 'mdl_user.id')
+                        ->select(
+                            'mdl_user.id',
+                            'mdl_user.username',
+                            'mdl_user.email',
+                            'tud.cmtnd',
+                            'tud.phone',
+                            'tud.address',
+                            'tsru.sale_room_id',
+                            'tsru.type'
+                        )
+                        ->get();
+
+                    $max_append = 0;
+                    $checkedUsers = [];
+
+                    //nếu có user tương tự
+                    if (count($user_related_series) > 0) {
+
+                        foreach ($user_related_series as $user) {
+                            $current_username = $user->username;
+                            $append = substr($current_username, strlen($username), strlen($current_username));
+                            if (strlen($append) == 0 || is_numeric($append)) { //hyquoccuong hyquocuong9 hyquoccuong6 ... not hyquoccuongdeptrai
+                                if ($append > $max_append) {
+                                    $max_append = $append;
+                                }
+                                //in the series
+                                //Trùng cmt => cập nhật user, break loop
+                                if ($user->cmtnd == $cmtnd) {
+                                    $newUserId = $user->id;
+                                    break;
+                                }
+
+                                if (strlen($user->phone) != 0 && strlen($phone) != 0 && $user->phone == $phone) {
+                                    $newUserId = $user->id;
+                                    break;
+                                }
+
+                                if (strlen($user->address) != 0 && strlen($address) != 0 && $user->address == $address) {
+                                    $newUserId = $user->id;
+                                    break;
+                                }
+
+                                //Khởi tạo
+                                if (!isset($checkedUsers[$user->id][TmsSaleRoomUser::POS])) {
+                                    $checkedUsers[$user->id][TmsSaleRoomUser::POS] = [];
+                                }
+                                if (!isset($checkedUsers[$user->id][TmsSaleRoomUser::AGENTS])) {
+                                    $checkedUsers[$user->id][TmsSaleRoomUser::AGENTS] = [];
+                                }
+
+                                if (isset($user->sale_room_id)) {
+                                    $checkedUsers[$user->id][$user->type][] = $user->sale_room_id;
+                                }
+
+                                $checkedUsers[$user->id]['username'] = $user->username;
+                                $checkedUsers[$user->id]['cmtnd'] = isset($user->cmtnd) ? $user->cmtnd : null;
+                            }
+                        }
+
+                        if (count($checkedUsers) != 0) { //has series
+                            foreach ($checkedUsers as $checkedUserId => $checkedUser) {
+                                //cung la fake user, cung chi nhanh(k có chi nhánh)
+                                if (strpos($checkedUser['cmtnd'], '0000') !== false) {
+                                    if (in_array($positionId, $checkedUser[$position])) {
+                                        //đã tồn tại user và same branch or same saleroom
+                                        $newUserId = $checkedUserId;
+                                    }
+                                }
+                            }
+                        }
+
+                        $new_append = $max_append + 1;
+                        $usernameNew = $username . $new_append;
+                    }
+                }
+
+                //nếu user đã tồn tại -> cập nhật user
+                if ($newUserId > 0) {
+                    //cập nhật thông tin user
+                    $userGet = MdlUser::where('id', $newUserId)->first();
+
+                    $resultOutput['username'] = $userGet->username;
+
+
+                    $userGet->redirect_type = 'lms';
+                    $userGet->firstname = $firstname;
+                    $userGet->lastname = $lastname;
+                    $userGet->email = $email;
+                    $userGet->save();
+
+                    //cập nhật thông tin chi tiết user
+                    $userGetTms = TmsUserDetail::where('user_id', $newUserId)->first();
+                    $userGetTms->cmtnd = $cmtnd;
+                    $userGetTms->fullname = $fullname;
+                    $userGetTms->email = $email;
+                    $userGetTms->phone = $phone;
+                    $userGetTms->address = $address;
+                    $userGetTms->sex = $sex ? $sex : 1;
+                    $userGetTms->confirm = $confirm ? $confirm : 0;
+                    $userGetTms->user_id = $newUserId;
+                    $userGetTms->dob = $timestamp;
+                    $userGetTms->working_status = $working_status;
+                    $userGetTms->start_time = $timestamp_start;
+                    $userGetTms->save();
+
+                    //devcpt_log_system('user', '/system/user/edit/' . $newUserId, 'update', 'Import Update User: ' . $username);
+
+                    $userOutputMessages[] = 'Cập nhật thành công';
+                    $resultOutput['type'] = 'update';
+                } else {
+                    //thêm mới user với name + 1 số hoặc tạo mới hoàn toàn
+                    $emailNew = $usernameNew . "@gmail.com";
+
+                    $newUserId = $this->createUserOrg(
+                        $usernameNew,
+                        $firstname,
+                        $lastname,
+                        $emailNew,
+                        $role_name,
+                        $confirm,
+                        $cmtnd,
+                        $fullname,
+                        $phone,
+                        $code,
+                        $address,
+                        $sex,
+                        $timestamp,
+                        $timestamp_start,
+                        $working_status
+                    );
+                    $resultOutput['type'] = 'create';
+                    $resultOutput['username'] = $usernameNew;
+                    $userOutputMessages[] = 'Thêm mới thành công';
+                }
+
+                //Tạo thành công user
+                if ($newUserId != 0 ) {
+                    //Nếu tồn tại mã quản lý, nhân viên only
+                    if($managementCode > 0)
+                    {
+                        $createPositionUser = $this->CreateSaleRoomUser($positionId, $newUserId, $position);
+                        if ($createPositionUser['code'] == 0) {
+                            if ($isUnknown == 0) {
+                                $userOutputMessages[] = 'Không gán được user vào '. $position. ' ' . $managementCode;
+                            } else {
+                                $userOutputMessages[] = 'Không tìm thấy điểm bán và đại lý tương ứng, gán nhân viên vào điểm bán unknowsaleroom ' . $unknownSaleroomId;
+                            }
+                        }
+                    }
+
+                    //add user vao khung nang luc chung chi trong he thong sau khi tạo (day la khung nang luc bat buoc)
+//                    $trainning = new TmsTrainningUser();
+//                    $trainning->user_id = $newUserId;
+//                    $trainning->trainning_id = 1; //id khung nang luc bat buoc
+//                    $trainning->save();
+
+                    $trainning = TmsTrainningUser::firstOrCreate([
+                        'user_id' => $newUserId,
+                        'trainning_id' => 1 //id khung nang luc bat buoc
+                    ]);
+                    $category = TmsTrainningCategory::select('category_id')
+                        ->where('trainning_id', $trainning->trainning_id)
+                        ->first()
+                        ->toArray();
+                    self::training_enrole($newUserId, $category['category_id']);
+
+                    $resultOutput['userId'] = $newUserId;
+                    $resultOutput['message'] = implode(". ", $userOutputMessages);
+
+                    return $resultOutput;
+                }
+//                \DB::commit();
+            }
+        }
+        catch (\Exception $e) {
+//            \DB::rollBack();
+            $checkUsername = self::checkUsernameAfterConvert($username);
+            if ($checkUsername == 1) {
+                $userOutputMessages[] = 'Tên sai định dạng, không thể chuyển về dạng không dấu: ' . $fullname;
+            } else {
+                //dd($e);
+                $userOutputMessages[] = $e->getMessage();
+            }
+        }
+        $resultOutput['message'] = implode(". ", $userOutputMessages);
+        return $resultOutput;
+    }
+
+    public function createEmployee(
+        $role,
+        $username,
+        $email,
+        $personal_id,
+        $full_name,
+        $first_name,
+        $middle_name,
+        $last_name,
+
+
+        $phone,
+        $code,
+        $address,
+        $sex,
+        $timestamp,
+        $timestamp_start,
+        $working_status
     ) {
 
         $newUserId = 0;

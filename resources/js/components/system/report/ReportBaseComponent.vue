@@ -23,7 +23,7 @@
             </div>
             <div class="col-md-6">
               <label for="training_select">{{ trans.get('keys.khung_nang_luc')}}</label>
-                <select id="training_select" v-model="training_id" class="custom-select custom-select-sm form-control form-control-sm" @change="callStatistic()">
+                <select id="training_select" v-model="training_id" class="custom-select" @change="callStatistic()">
                   <option v-for="training_option in training_options" :value="training_option.id">
                     {{training_option.name}}
                   </option>
