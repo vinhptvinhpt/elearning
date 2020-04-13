@@ -21,6 +21,7 @@ use App\TmsCityBranch;
 use App\TmsDepartments;
 use App\TmsNotification;
 use App\TmsNotificationLog;
+use App\TmsOrganization;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
@@ -642,6 +643,109 @@ class BackgroundController extends Controller
         }
     }
 
+    public function importEmployee()
+    {
+        set_time_limit(0);
+
+        $dir = storage_path() . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "import";
+        //return files or folders in directory above
+        $files = scandir($dir);
+        $files = array_diff($files, array('.', '..'));
+        $files = array_slice($files, 0, 1);
+
+        foreach ($files as $file_path) {
+
+            //check file is xlsx, xls
+            $extension = pathinfo($file_path, PATHINFO_EXTENSION);
+
+            if ($extension != 'xls' && $extension != 'xlsx') {
+                return response()->json([
+                    'extension' => 'error'
+                ]);
+            }
+
+            $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
+
+            $list_uploaded = (new DataImport)->toArray($file_path, '', '');
+            $response = array();
+
+            foreach ($list_uploaded as $user) {
+
+                $errors = array();
+
+                //Fetch data
+                //Skip 2 first row and department name row, check first column is numeric or not
+                $stt = $user[0];
+                if (!is_numeric($stt)) {
+                    continue;
+                }
+
+                $position_name = $user[6];
+
+                if (strpos($position_name, Role::ROLE_MANAGER)) {
+                    $role = Role::ROLE_MANAGER;
+                } elseif (strpos($position_name, Role::ROLE_LEADER)) {
+                    $role = Role::ROLE_LEADER;
+                } elseif (strpos($position_name, 'executive')) {
+                    $role = Role::ROLE_EMPLOYEE;
+                } else { //Skip for other roles
+                    $errors[] = 'Position is not available';
+                }
+
+                $department_name = $user[5];
+                if (strlen($department_name) == 0) {
+                    $errors[] = 'Department is missing';
+                } else {
+                    $department = TmsOrganization::firstOrCreate([
+                        'code' => strtoupper($department_name),
+                        'name' => $department_name
+                    ]);
+                }
+
+                $email = $user[25];
+                //Validate required fields
+                if (strlen($email) == 0) {
+                    $errors[] = 'Email is missing';
+                } else {
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                        $errors[] = "Email is wrong format";
+                    }
+                }
+
+                $full_name = $user[1];
+                $first_name = $user[2];
+                $middle_name = $user[3];
+                $last_name = $user[4];
+
+                if (strlen($full_name) == 0) {
+                    $errors[] = 'Full name is missing';
+                }
+
+                if (strlen($first_name) == 0) {
+                    $errors[] = 'First name is missing';
+                }
+
+                if (strlen($last_name) == 0) {
+                    $errors[] = 'Last name is missing';
+                }
+
+                $personal_id = $user[18];
+                if (strlen($personal_id) == 0) {
+                    $errors[] = 'Personal id is missing';
+                }
+
+                $user = self::createEmployee(
+                    $role,
+                    $email,
+                    $email,
+                    1
+                );
+
+            }
+
+        }
+    }
+
     function composeEmployeeErrorObject($stt, $cmtnd, $fullname, $message) {
         $userOuput = array();
 
@@ -1052,6 +1156,29 @@ class BackgroundController extends Controller
         $resultOutput['message'] = implode(". ", $userOutputMessages);
         return $resultOutput;
     }
+
+    public function createEmployee(
+        $role,
+        $username,
+        $email,
+        $personal_id,
+        $full_name,
+        $first_name,
+        $middle_name,
+        $last_name,
+
+
+        $phone,
+        $code,
+        $address,
+        $sex,
+        $timestamp,
+        $timestamp_start,
+        $working_status
+    ) {
+
+    }
+
 
     public function CreateBranch($name, $code, $user_id, $city, $address, $unknown = false)
     {

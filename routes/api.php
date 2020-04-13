@@ -35,6 +35,9 @@ Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
+//Import user by excel file
+Route::get('/cron/background/importEmployee', 'Api\BackgroundController@importEmployee');
+
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendESEC', 'Api\MailController@sendEnrolQuizStartQuizEndQuizCompleted')->middleware(['App\Http\Middleware\CheckToken']); //every minute

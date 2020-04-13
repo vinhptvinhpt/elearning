@@ -38,24 +38,24 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         // TODO: Implement store() method.
         $response = new ResponseModel();
         try {
-            $code               = $request->input('code');
-            $name               = $request->input('name');
-            $style              = $request->input('style');
-            $run_cron           = $request->input('run_cron');
-            $auto_certificate   = $request->input('auto_certificate');
-            $time_start         = $request->input('time_start');
-            $time_end           = $request->input('time_end');
-            $role_id            = $request->input('role_id');
-            $organization_id    = $request->input('organization_id');
-            $logo               = $request->file('file');
+            $code = $request->input('code');
+            $name = $request->input('name');
+            $style = $request->input('style');
+            $run_cron = $request->input('run_cron');
+            $auto_certificate = $request->input('auto_certificate');
+            $time_start = $request->input('time_start');
+            $time_end = $request->input('time_end');
+            $role_id = $request->input('role_id');
+            $organization_id = $request->input('organization_id');
+            $logo = $request->file('file');
 
             $param = [
-                'code'              => 'code',
-                'name'              => 'text',
-                'time_start'        => 'text',
-                'time_end'          => 'text',
-                'role_id'           => 'number',
-                'organization_id'   => 'number',
+                'code' => 'code',
+                'name' => 'text',
+                'time_start' => 'text',
+                'time_end' => 'text',
+                'role_id' => 'number',
+                'organization_id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -63,8 +63,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $response->message = __('dinh_dang_du_lieu_khong_hop_le');
                 return response()->json($response);
             }
-            if($style == 1){
-                if(!$time_start || $time_start == 0){
+            if ($style == 1) {
+                if (!$time_start || $time_start == 0) {
                     $response->status = false;
                     $response->message = __('ban_chua_nhap_ngay_bat_dau');
                     return response()->json($response);
@@ -81,14 +81,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json($response);
             }
 
-            if($style == 1){
+            if ($style == 1) {
                 $time_start = strtotime($time_start);
-                if(!$time_end){
-                    $time_end = $time_start + 365*24*60*60;
-                }else{
+                if (!$time_end) {
+                    $time_end = $time_start + 365 * 24 * 60 * 60;
+                } else {
                     $time_end = strtotime($time_end);
                 }
-            }else{
+            } else {
                 $time_start = 0;
                 $time_end = 0;
             }
@@ -107,29 +107,29 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             $tms_trainning = TmsTrainningProgram::firstOrCreate([
-                'code'              => $code,
-                'name'              => $name,
-                'style'             => $style,
-                'run_cron'          => $run_cron ? 1 : 0,
-                'time_start'        => $time_start,
-                'time_end'          => $time_end,
-                'logo'              => $path_logo,
-                'auto_certificate'  => $auto_certificate ? 1 : 0
+                'code' => $code,
+                'name' => $name,
+                'style' => $style,
+                'run_cron' => $run_cron ? 1 : 0,
+                'time_start' => $time_start,
+                'time_end' => $time_end,
+                'logo' => $path_logo,
+                'auto_certificate' => $auto_certificate ? 1 : 0
             ]);
 
-            if($role_id && $role_id != 0 && $tms_trainning){
+            if ($role_id && $role_id != 0 && $tms_trainning) {
                 $trainning_role = TmsTrainningGroup::firstOrCreate([
-                    'trainning_id'  => $tms_trainning->id,
-                    'group_id'      => $role_id,
-                    'type'          => 0
+                    'trainning_id' => $tms_trainning->id,
+                    'group_id' => $role_id,
+                    'type' => 0
                 ]);
             }
 
-            if($organization_id && $organization_id != 0 && $tms_trainning){
+            if ($organization_id && $organization_id != 0 && $tms_trainning) {
                 $trainning_organization = TmsTrainningGroup::firstOrCreate([
-                    'trainning_id'      => $tms_trainning->id,
-                    'group_id'          => $organization_id,
-                    'type'              => 1
+                    'trainning_id' => $tms_trainning->id,
+                    'group_id' => $organization_id,
+                    'type' => 1
                 ]);
             }
 
@@ -150,25 +150,25 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         // TODO: Implement update() method.
         $response = new ResponseModel();
         try {
-            $id                 = $request->input('id');
-            $code               = $request->input('code');
-            $name               = $request->input('name');
-            $style              = $request->input('style');
-            $auto_certificate   = $request->input('auto_certificate');
-            $run_cron           = $request->input('run_cron');
-            $time_start         = $request->input('time_start');
-            $time_end           = $request->input('time_end');
-            $role_id            = $request->input('role_id');
-            $organization_id    = $request->input('organization_id');
-            $logo               = $request->file('file');
+            $id = $request->input('id');
+            $code = $request->input('code');
+            $name = $request->input('name');
+            $style = $request->input('style');
+            $auto_certificate = $request->input('auto_certificate');
+            $run_cron = $request->input('run_cron');
+            $time_start = $request->input('time_start');
+            $time_end = $request->input('time_end');
+            $role_id = $request->input('role_id');
+            $organization_id = $request->input('organization_id');
+            $logo = $request->file('file');
 
             $param = [
-                'code'              => 'code',
-                'name'              => 'text',
-                'time_start'        => 'text',
-                'time_end'          => 'text',
-                'role_id'           => 'number',
-                'organization_id'   => 'number',
+                'code' => 'code',
+                'name' => 'text',
+                'time_start' => 'text',
+                'time_end' => 'text',
+                'role_id' => 'number',
+                'organization_id' => 'number',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -187,25 +187,25 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json($response);
             }
 
-            if($style == 1){
+            if ($style == 1) {
                 $time_start = strtotime($time_start);
-                if(!$time_end){
-                    $time_end = $time_start + 365*24*60*60;
-                }else{
+                if (!$time_end) {
+                    $time_end = $time_start + 365 * 24 * 60 * 60;
+                } else {
                     $time_end = strtotime($time_end);
                 }
-            }else{
+            } else {
                 $time_start = 0;
                 $time_end = 0;
             }
 
-            $trainning->code                = $code;
-            $trainning->name                = $name;
-            $trainning->style               = $style;
-            $trainning->auto_certificate    = $auto_certificate;
-            $trainning->run_cron            = $run_cron;
-            $trainning->time_start          = $time_start;
-            $trainning->time_end            = $time_end;
+            $trainning->code = $code;
+            $trainning->name = $name;
+            $trainning->style = $style;
+            $trainning->auto_certificate = $auto_certificate;
+            $trainning->run_cron = $run_cron;
+            $trainning->time_start = $time_start;
+            $trainning->time_end = $time_end;
 
             if ($logo) {
                 $name_logo = time() . '.' . $logo->getClientOriginalExtension();
@@ -223,26 +223,26 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->save();
 
             TmsTrainningGroup::where([
-                'trainning_id'  => $id,
-                'type'          => 0
+                'trainning_id' => $id,
+                'type' => 0
             ])->delete();
             TmsTrainningGroup::where([
-                'trainning_id'  => $id,
-                'type'          => 1
+                'trainning_id' => $id,
+                'type' => 1
             ])->delete();
-            if($role_id && $role_id != 0){
+            if ($role_id && $role_id != 0) {
                 $trainning_role = TmsTrainningGroup::firstOrCreate([
-                    'trainning_id'  => $id,
-                    'group_id'      => $role_id,
-                    'type'          => 0
+                    'trainning_id' => $id,
+                    'group_id' => $role_id,
+                    'type' => 0
                 ]);
             }
 
-            if($organization_id && $organization_id != 0){
+            if ($organization_id && $organization_id != 0) {
                 $trainning_organization = TmsTrainningGroup::firstOrCreate([
-                    'trainning_id'      => $id,
-                    'group_id'          => $organization_id,
-                    'type'              => 1
+                    'trainning_id' => $id,
+                    'group_id' => $organization_id,
+                    'type' => 1
                 ]);
             }
 
@@ -268,8 +268,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json($response);
             }
 
-            $check = TmsTrainningUser::where('trainning_id',$id)->count();
-            if($check > 0){
+            $check = TmsTrainningUser::where('trainning_id', $id)->count();
+            if ($check > 0) {
                 $response->status = false;
                 $response->message = __('ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa');
                 return response()->json($response);
@@ -304,17 +304,18 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json([]);
         }
 
-        $lstData = TmsTrainningProgram::with([
-            'group_role.role',
-            'group_organize.organize',
-            'users'
-        ])
-        ->select('id', 'code', 'name')->where('deleted', '=', 0);
+//        $lstData = TmsTrainningProgram::select('id', 'code', 'name')->where('deleted', '=', 0);
 
+        $leftJoin = '(select ttu.trainning_id as tr_id, count(ttu.id) as total_user from tms_traninning_users as ttu) as ttus';
+        $leftJoin = DB::raw($leftJoin);
+        $lstData = DB::table('tms_traninning_programs as ttp')
+            ->leftJoin($leftJoin, 'ttus.tr_id', '=', 'ttp.id')
+            ->select('ttp.id', 'ttp.code', 'ttp.name', 'ttus.total_user')
+            ->where('ttp.deleted', '=', 0);
 
-        if (strlen($paginated) != 0 && $paginated == 0) {
-            return response()->json($lstData->get());
-        }
+//        if (strlen($paginated) != 0 && $paginated == 0) {
+//            return response()->json($lstData->get());
+//        }
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -323,13 +324,13 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             });
         }
 
-        if($style){
-            $lstData = $lstData->where('style',1);
-        }else{
-            $lstData = $lstData->where('style',0);
+        if ($style) {
+            $lstData = $lstData->where('.ttp.style', 1);
+        } else {
+            $lstData = $lstData->where('ttp.style', 0);
         }
 
-        $lstData = $lstData->orderBy('id', 'desc');
+        $lstData = $lstData->orderBy('ttp.id', 'desc');
 
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);
@@ -352,21 +353,21 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('ttp.id', '=', $id)
             ->select(
                 'ttp.id', 'ttp.code', 'ttp.name', 'ttp.style', 'ttp.run_cron', 'ttp.auto_certificate',
-                'ttp.time_start', 'ttp.time_end','ttp.logo',
+                'ttp.time_start', 'ttp.time_end', 'ttp.logo',
                 DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where
                 ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
                 DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where
                 tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')
             )
             ->first();
-        if($trainning->time_start && $trainning->time_start != 0){
-            $trainning->time_start = date('d-m-Y',$trainning->time_start);
-        }else{
+        if ($trainning->time_start && $trainning->time_start != 0) {
+            $trainning->time_start = date('d-m-Y', $trainning->time_start);
+        } else {
             $trainning->time_start = '';
         }
-        if($trainning->time_end && $trainning->time_end != 0){
-            $trainning->time_end = date('d-m-Y',$trainning->time_end);
-        }else{
+        if ($trainning->time_end && $trainning->time_end != 0) {
+            $trainning->time_end = date('d-m-Y', $trainning->time_end);
+        } else {
             $trainning->time_end = '';
         }
 
@@ -703,7 +704,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             if ($keyword) {
-                $data = $data->whereHas('user_detail.user', function($query) use($keyword) {
+                $data = $data->whereHas('user_detail.user', function ($query) use ($keyword) {
                     // Query the name field in status table
                     $query->where(function ($q) use ($keyword) {
                         $q->where('fullname', 'like', "%{$keyword}%")
@@ -711,8 +712,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                             ->orWhere('username', 'like', "%{$keyword}%");
                     });
                 });
-            }
-            else{
+            } else {
                 $data = $data->whereHas('user_detail.user');
             }
 
@@ -736,15 +736,16 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
     }
 
-    public function apiTrainningRemove(Request $request){
-        try{
+    public function apiTrainningRemove(Request $request)
+    {
+        try {
             $id = $request->input('id');
-            if(!$id || !is_numeric($id)){
+            if (!$id || !is_numeric($id)) {
                 return response()->json(status_message('error', __('dinh_dang_du_lieu_khong_hop_le')));
             }
             TmsTrainningUser::find($id)->delete();
             return response()->json(status_message('success', __('cap_nhat_khung_nang_luc_thanh_cong')));
-        }catch (\Exception $e){
+        } catch (\Exception $e) {
             \DB::rollBack();
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }

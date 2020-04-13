@@ -198,9 +198,10 @@
                 this.getCourses();
             },
             restoreCourse(id, instance_id) {
+                let current_pos = this;
                 swal({
-                    title: "Bạn có chắc chắn muốn khôi phục khóa đào tạo đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_co_chac_chan_muon_khoi_phuc_khoa_dao_tao_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -230,7 +231,7 @@
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
+                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error")
                             console.log(error);
                         });
                 });
@@ -238,9 +239,10 @@
                 return false;
             },
             deleteCourse(id, instance_id) {
+                let current_pos = this;
                 swal({
-                    title: "Bạn có chắc chắn muốn xóa khóa đào tạo đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_co_chac_chan_muon_xoa_khoa_dao_tao_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -270,7 +272,7 @@
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
+                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error")
                             console.log(error);
                         });
                 });
