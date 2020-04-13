@@ -2300,7 +2300,7 @@ $string['passstatus'] = 'PASS';
 $string['inprogressstatus'] = 'IN-PROGRESS';
 $string['failstatus'] = 'FAIL';
 
-$string['vietlot_introduction'] = 'Vietlot Introduction';
+$string['vietlot_introduction'] = 'Introduction';
 $string['guideline'] = 'User guide';
 $string['surveydashboard'] = 'Survey';
 $string['surveytext'] = 'Click to take survey';
@@ -2314,4 +2314,4 @@ $string['importquestionselect'] = 'Select image to upload:';
 $string['importquestionupload'] = 'Upload';
 
 $string['closebutton'] = 'Close';
-$string['certificatetext'] = 'You obtain Vietlott certificate';
+$string['certificatetext'] = 'You obtain certificate';
