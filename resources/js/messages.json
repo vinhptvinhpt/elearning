@@ -840,8 +840,6 @@
         "da_cap_chung_chi": "Certificated",
         "chua_co_giay_chung_nhan": "Mising certificate",
         "nhan_vien_chua_co_giay_chung_nhan": "Employees do not have a certificate",
-
-
         "ban_muon_xoa_nhung_tai_khoan_da_chon": "You want to delete the selected accounts",
         "ban_chua_chon_tai_khoan": "You have not selected an account",
         "ban_muon_xoa_muc_da_chon": "You want to delete the selected item?",
@@ -1694,8 +1692,6 @@
         "da_cap_chung_chi": "Đã cấp chứng chỉ",
         "chua_co_giay_chung_nhan": "Chưa có giấy chứng nhận",
         "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận",
-
-
         "ban_muon_xoa_nhung_tai_khoan_da_chon": "Bạn muốn xóa những tài khoản đã chọn",
         "ban_chua_chon_tai_khoan": "Bạn chưa chọn tài khoản",
         "ban_muon_xoa_muc_da_chon": "Bạn muốn xóa mục đã chọn",
