@@ -506,9 +506,10 @@
             },
             removeAvatar(){
                 var user_id = this.user_id;
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn gỡ avatar.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_go_avatar'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -524,7 +525,7 @@
                             }
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },
@@ -553,9 +554,10 @@
                 return;
             },
             deletePost(url) {
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -567,13 +569,14 @@
                             location.reload();
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
 
                 return false;
             },
             updatePassword(){
+
                 $('.message.error').hide();
                 if(this.password.length === 0){
                     $('.passError').show();
@@ -587,6 +590,8 @@
                     $('.passwordError').show();
                     return;
                 }
+
+                let current_pos = this;
                 axios.post('/system/user/updatePassword', {
                     user_id:this.user_id,
                     password:this.password,
@@ -594,30 +599,30 @@
                 })
                     .then(response => {
                         if(response.data === 'success'){
-                            roam_message('success','Cập nhật mật khẩu thành công!');
+                            roam_message('success',current_pos.trans.get('keys.cap_nhat_mat_khau_thanh_cong'));
                             $('.showChangePass').slideUp();
                             $('.btnShowChangePass').removeClass('active');
                         }else if(response.data === 'passwordFail'){
                             $('.passwordError').show();
-                            roam_message('error','Mật khẩu không khớp nhau!');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_khong_khop_nhau'));
                         }else if(response.data === 'passFail'){
                             $('.passStyleError').show();
-                            roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
                         }else if(response.data === 'passConfFail'){
                             $('.passConfStyleError').show();
-                            roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
                         }else if(response.data === 'passwordExist'){
                             $('.wrap_password').removeClass('success');
                             $('.wrap_password').addClass('warning');
-                            roam_message('error','Mật khẩu mới trùng mật khẩu đang sử dụng.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_moi_trung_mat_khau_dang_su_dung'));
                         }else if(response.data === 'validateFail'){
-                            roam_message('error','Lỗi định dạng. Một số trường nhập vào chứa ký tự đặc biệt!');
+                            roam_message('error',current_pos.trans.get('keys.loi_dinh_dang_mot_so_truong_nhap_vao_chua_ky_tu_dac_biet'));
                         }else{
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại!');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại!');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             validate_password(){
@@ -816,6 +821,8 @@
                 this.formData.append('trainning_id', this.users.training.trainning_id);
                 this.formData.append('organization_id', this.users.employee.organization_id);
 
+                let current_pos = this;
+
                 axios.post('/system/user/update', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -831,13 +838,14 @@
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             restoreUser(user_id){
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn khôi phục lại tài khoản này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -849,7 +857,7 @@
                             location.reload();
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
 
