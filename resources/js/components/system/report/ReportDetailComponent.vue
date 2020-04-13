@@ -19,34 +19,21 @@
 
           <!--New filter-->
           <div class="row">
-            <div class="col-6">
+            <div class="col-5">
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
             <div class="col-6">
               <select id="training_select" v-model="training_id" class="custom-select form-control">
+                <option value="0">{{ trans.get('keys.khung_nang_luc') }}</option>
                 <option v-for="training_option in training_options" :value="training_option.id">
                   {{training_option.name}}
                 </option>
               </select>
             </div>
-          </div>
-
-          <div class="row">
-            <div class="col-6">
-              <select v-model="mode_select" class="custom-select form-control">
-                <option value="completed">
-                  {{ trans.get('keys.hoan_thanh_dao_tao')}}
-                </option>
-                <option value="certificated">
-                  {{ trans.get('keys.da_cap_chung_chi')}}
-                </option>
-              </select>
-            </div>
-            <div class="col-6">
-              <button id="buttonReport" class="btn btn-primary btn-sm hasLoading" @click="listData()">{{trans.get('keys.xem')}}<i class="fa fa-spinner"></i></button>
+            <div class="col-1">
+              <button id="buttonReport" class="btn btn-md btn-primary hasLoading" @click="listData()">{{trans.get('keys.xem')}}<i class="fa fa-spinner"></i></button>
             </div>
           </div>
-
         </div>
       </div>
       <!--End Filter block-->
@@ -55,15 +42,32 @@
       <div class="card" id="requestReport">
         <div class="card-body">
           <h5 class="text-center mb-20">{{trans.get('keys.thong_ke_nhan_vien')}}</h5>
-          <div class="text-right mb-20">
-            <a style="color: #fff" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
-              <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
-            </a>
-            <a style="color: #fff" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
-              <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>
-            </a>
-          </div>
+          <div class="mb-20">
+            <div class="row">
+              <div class="col-7">
+                <span class="color-box organization-color">{{trans.get('keys.to_chuc')}}</span>
+                <span class="color-box training-color">{{trans.get('keys.khung_nang_luc')}}</span>
+                <span class="color-box course-color">{{trans.get('keys.khoa_hoc')}}</span>
+              </div>
+              <div class="col-5 text-right" style="display: flex">
+                <select v-model="mode_select" class="form-control" @input="listData()">
+                  <option value="completed">
+                    {{ trans.get('keys.hoan_thanh_dao_tao')}}
+                  </option>
+                  <option value="certificated">
+                    {{ trans.get('keys.da_cap_chung_chi')}}
+                  </option>
+                </select>
+                <a style="padding: 10px;margin: 0 5px;color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
+                  <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
+                </a>
+                <a style="padding: 10px;margin: 0 5px;color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
+                  <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>
+                </a>
+              </div>
+            </div>
 
+          </div>
           <div class="table-responsive">
             <table>
               <thead>
@@ -80,17 +84,32 @@
               </thead>
               <tbody>
 
-                  <tr :style="'background:'+ item.color" v-for="(item, index) in report_data">
-                    <td v-if="item.type === 'organization' || item.type === 'training'"><strong>{{item.column1}}</strong></td>
-                    <td v-else>{{item.column1}}</td>
-                    <td v-html="item.column2" style="vertical-align: top;"></td>
-                    <td v-html="item.column3" style="vertical-align: top;"></td>
-                    <td v-html="item.column4" style="vertical-align: top;"></td>
-                  </tr>
+              <template v-for="(item, index) in report_data">
+                <tr v-if="item.type === 'organization' || item.type === 'training'" :style="'background:'+ item.color" v-on:click="toggleRow('student_list_' + item.id, parseInt(item.column4))">
+                  <td><strong>{{item.column1}}</strong></td>
+                  <td style="vertical-align: top;">{{item.column2}}</td>
+                  <td style="vertical-align: top;">{{item.column3}}</td>
+                  <td style="vertical-align: top;">{{item.column4}}</td>
+                </tr>
+                <tr v-else-if="item.type === 'courses'" :style="'background:'+ item.color" v-on:click="toggleRow('student_list_' + item.id, parseInt(item.column4))" :class="mode_select === 'certificated' ? 'hidden' : ''">
+                  <td>{{item.column1}}</td>
+                  <td style="vertical-align: top;">{{item.column2}}</td>
+                  <td style="vertical-align: top;">{{item.column3}}</td>
+                  <td style="vertical-align: top;">{{item.column4}}</td>
+                </tr>
+                <tr v-else :style="'background:'+ item.color" :id="'student_list_' + item.parent" class="hidden" :has-content="mode_select === 'completed'">
+                  <td>{{item.column1}}</td>
+                  <td v-html="item.column2" style="vertical-align: top;"></td>
+                  <td v-html="item.column3" style="vertical-align: top;"></td>
+                  <td v-html="item.column4" style="vertical-align: top;"></td>
+                </tr>
+              </template>
+
 
               </tbody>
             </table>
           </div>
+          <p>{{trans.get('keys.chu_y_click_moi_hang_de_xem_danh_sach_nhan_vien')}}</p>
         </div>
       </div>
       <!--End Content Report-->
@@ -112,12 +131,7 @@
                   }
                 ],
                 training_id: 0,
-                training_options: [
-                  {
-                    id: 0,
-                    label: this.trans.get('keys.khung_nang_luc')
-                  }
-                ],
+                training_options: [],
                 mode_select: 'completed'
             }
         },
@@ -136,7 +150,7 @@
                 .then(response => {
                   let list = response.data;
                   this.report_data = [];
-                  this.setData(list, 'organization');
+                  this.setData(list, 'organization', '');
                   //Reset report_data array
                 })
                 .catch(error => {
@@ -225,30 +239,35 @@
               }
               return outPut;
             },
-            setData(list, type) {
-
+            setData(list, type, parent_key) {
               for (const [key, item] of Object.entries(list)) {
+                let current_key = parent_key + type + key;
                 let pushObject = {
+                  id: current_key,
                   type: type,
                   column1: '',
                   column2: [],
                   column3: [],
                   column4: [],
-                  color: "#fff"
+                  color: "#D1FFE9",
+                  parent: ''
                 };
-
                 pushObject.column1 = item.name;
-
-
-                console.log(item);
-
-
                 if (type === 'organization' || type === 'training' || type === 'courses') {
                   if (this.mode_select === 'completed') {
-                    pushObject.column2 = Object.keys(item.completed).length;
+                    let completed = item.completed;
+                    if (type === 'organization' || type === 'training') {
+                      completed = this.cleanDataForParent(item.incomplete, completed);
+                    }
+                    pushObject.column2 = Object.keys(completed).length;
                     pushObject.column3 = Object.keys(item.incomplete).length;
+
                   } else {
-                    pushObject.column2 = Object.keys(item.certificated).length;
+                    let certificated = item.certificated;
+                    if (type === 'organization' || type === 'training') {
+                      certificated = this.cleanDataForParent(item.certificated_missing, certificated);
+                    }
+                    pushObject.column2 = Object.keys(certificated).length;
                     pushObject.column3 = Object.keys(item.certificated_missing).length;
                   }
                   pushObject.column4 = Object.keys(item.users).length;
@@ -262,28 +281,31 @@
 
                 this.report_data.push(pushObject);
 
-                this.setUserListObject(item);
+                this.setUserListObject(item, current_key);
 
                 if (typeof item.training != 'undefined' && item.training) {
-                  this.setData(item.training, 'training');
+                  this.setData(item.training, 'training', current_key);
                 }
 
                 if (typeof item.courses != 'undefined' && item.courses) {
-                  this.setData(item.courses, 'courses');
+                  this.setData(item.courses, 'courses', current_key);
                 }
 
               }
             },
-            setUserListObject(item) {
-              if (typeof item.users !== 'undefined') {
+            setUserListObject(item, parent_key) {
+              if (typeof item.users !== 'undefined' && item.users.length !== 0) {
                 let pushObject = {
+                  id: 0,
                   type: 'users',
                   column1: '',
                   column2: '',
                   column3: '',
                   column4: '',
-                  color: "#fff"
+                  color: "#fff",
+                  parent: parent_key
                 };
+
                 if (this.mode_select === 'completed') {
                   if (typeof item.completed !== 'undefined') {
                     pushObject.column2 = this.setUserList(item.completed);
@@ -313,6 +335,14 @@
                 display_text = display_array.join('<br/>');
               }
               return display_text;
+            },
+            cleanDataForParent(check, need_to_check) {
+              for (const [key, item] of Object.entries(check)) {
+                if (key in need_to_check) {
+                  delete need_to_check[key];
+                }
+              }
+              return need_to_check;
             }
         },
         mounted() {
@@ -340,4 +370,21 @@
     .hidden {
         display:none;
     }
+    .color-box {
+      margin: 5px;
+      border: 1px solid rgba(0, 0, 0, .2);
+    }
+
+    .course-color {
+      background: #D1FFE9;
+    }
+
+    .training-color {
+      background: #5BBFDE;
+    }
+
+    .organization-color {
+      background: #e0e3e4;
+    }
+
 </style>

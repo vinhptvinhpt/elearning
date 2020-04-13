@@ -128,7 +128,7 @@
                 yAxis: {
                     min: 0,
                     title: {
-                        text: 'Thống kê Nhân viên bán hàng'
+                        text: 'Thống kê nhân viên'
                     }
                 },
                 tooltip: {
@@ -308,31 +308,72 @@
                             }]
                         }];
 
-                        let user_confirm_data = [];
-                        let user_missing_data = [];
-                        let user_district_title = [];
-
-                        for (let [key, value] of Object.entries(this.data.userConfirm)) {
-                            user_confirm_data.push(value.length);
-                            user_missing_data.push(this.data.user[key].length - value.length);
-                            user_district_title.push(this.data.district[key]);
-                        }
-                        this.userOptions.xAxis.categories = user_district_title;
-
-                        // //Nhân viên update
-                        this.userOptions.series = [{
-                            name: 'Nhân viên đã có giấy chứng nhận',
-                            data: user_confirm_data,
-                            //color: '#3a55b1'
-                        }, {
-                            name: 'Nhân viên chưa có giấy chứng nhận',
-                            data: user_missing_data,
-                            //color: '#dc0511'
-                        }];
+                        // let user_confirm_data = [];
+                        // let user_missing_data = [];
+                        // let user_district_title = [];
+                        //
+                        // for (let [key, value] of Object.entries(this.data.userConfirm)) {
+                        //     user_confirm_data.push(value.length);
+                        //     user_missing_data.push(this.data.user[key].length - value.length);
+                        //     user_district_title.push(this.data.district[key]);
+                        // }
+                        // this.userOptions.xAxis.categories = user_district_title;
+                        //
+                        // // //Nhân viên update
+                        // this.userOptions.series = [{
+                        //     name: 'Nhân viên đã có giấy chứng nhận',
+                        //     data: user_confirm_data,
+                        //     //color: '#3a55b1'
+                        // }, {
+                        //     name: 'Nhân viên chưa có giấy chứng nhận',
+                        //     data: user_missing_data,
+                        //     //color: '#dc0511'
+                        // }];
                     })
                     .catch(error => {
                         console.log(error);
                     });
+            },
+            listData() {
+            axios.post('/report/list_base', {
+              organization_id: this.organization_id,
+              training_id: this.training_id,
+            })
+              .then(response => {
+                let list = response.data;
+
+
+                let user_confirm_data = [];
+                let user_missing_data = [];
+                let user_district_title = [];
+
+                for (let [id, object] of Object.entries(list)) {
+
+                  let certificated_count = Array.isArray(object.certificated) ? object.certificated.length : Object.keys(object.certificated).length;
+                  user_confirm_data.push(certificated_count);
+
+                  let certificated_mising_count = Array.isArray(object.certificated_missing) ? object.certificated_missing.length : Object.keys(object.certificated_missing).length;
+                  user_missing_data.push(certificated_mising_count);
+
+                  user_district_title.push(object.name);
+                }
+                this.userOptions.xAxis.categories = user_district_title;
+
+                // //Nhân viên update
+                this.userOptions.series = [{
+                  name: this.trans.get('keys.nhan_vien_da_co_giay_chung_nhan'),
+                  data: user_confirm_data,
+                  //color: '#3a55b1'
+                }, {
+                  name: this.trans.get('keys.nhan_vien_chua_co_giay_chung_nhan'),
+                  data: user_missing_data,
+                  //color: '#dc0511'
+                }];
+
+              })
+              .catch(error => {
+                console.log(error);
+              });
             },
             fetchOrganization() {
               $('.content_search_box').addClass('loadding');
@@ -397,6 +438,7 @@
           data_ready: function(newVal, oldVal) {
             if (newVal === true && oldVal === false) {
               this.callStatistic();
+              this.listData();
             }
           }
         }
