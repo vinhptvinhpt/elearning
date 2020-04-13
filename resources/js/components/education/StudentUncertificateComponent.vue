@@ -275,10 +275,11 @@
             },
             generateSelectUser() {
                 var user_selected = this.certificate_id;
+                let current_pos = this;
                 if (this.certificate_id.length === 0) {
                     swal({
-                        title: "Thông báo",
-                        text: "Bạn chưa chọn học viên nào.",
+                        title: this.trans.get('keys.thong_bao'),
+                        text: this.trans.get('keys.ban_chua_chon_hoc_vien_nao'),
                         type: "warning",
                         showCancelButton: false,
                         closeOnConfirm: false,
@@ -287,8 +288,8 @@
                     return;
                 }
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn cấp mã hàng loạt tài khoản đã chọn.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_cap_ma_hang_loat_tai_khoan_da_chon'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -300,8 +301,8 @@
                         .then(response => {
                             if (response.data === 'success') {
                                 swal({
-                                        title: "Thông báo",
-                                        text: "Cấp mã cho các tài khoản thành công!",
+                                        title: current_pos.trans.get('keys.thong_bao'),
+                                        text: current_pos.trans.get('keys.cap_ma_cho_cac_tai_khoan_thanh_cong'),
                                         type: "success",
                                         showCancelButton: false,
                                         closeOnConfirm: false,
@@ -312,8 +313,8 @@
                                     });
                             } else {
                                 swal({
-                                    title: "Lỗi hệ thống",
-                                    text: "Thao tác thất bại.",
+                                    title: current_pos.trans.get('keys.thong_bao'),
+                                    title: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                     type: "error",
                                     showCancelButton: false,
                                     closeOnConfirm: false,
@@ -323,8 +324,8 @@
                         })
                         .catch(error => {
                             swal({
-                                title: "Lỗi hệ thống",
-                                text: "Thao tác thất bại.",
+                                title: current_pos.trans.get('keys.thong_bao'),
+                                title: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,

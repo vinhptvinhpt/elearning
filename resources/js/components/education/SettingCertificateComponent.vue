@@ -111,8 +111,8 @@
             deleteCertificate(url) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -121,7 +121,7 @@
                     axios.post(url)
                         .then(response => {
                             if(response.data === 'exists'){
-                                toastr['error']("Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!", current_pos.trans.get('keys.that_bai'));
+                                toastr['error'](current_pos.trans.get('keys.chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc'), current_pos.trans.get('keys.that_bai'));
                             }else{
                                 toastr['success'](current_pos.trans.get('keys.xoa_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                                 current_pos.getListImages();

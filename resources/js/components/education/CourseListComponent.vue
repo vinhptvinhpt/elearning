@@ -299,7 +299,7 @@
                     }
                 })
                     .then(response => {
-                        toastr['success']("Import tài khoản thành công", this.trans.get('keys.thanh_cong'));
+                        toastr['success'](this.trans.get('keys.import_tai_khoan_thanh_cong'), this.trans.get('keys.thanh_cong'));
                         this.$router.push({name: 'CourseIndex'});
                     })
                     .catch(error => {
@@ -333,8 +333,8 @@
             deletePost(id) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -360,8 +360,8 @@
             approveCourse(course_id, status) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn chuyển trạng thái khóa học?",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_chuyen_trang_thai_khoa_hoc'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
