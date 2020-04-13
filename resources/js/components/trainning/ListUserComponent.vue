@@ -32,14 +32,7 @@
                         </select>
                       </label>
                     </div>
-                    <!--<div class="fillterConfirm" style="display: inline-block;">
-                      <label>
-                        <select v-model="trainning" class="custom-select custom-select-sm form-control form-control-sm" @change="getUser(1)">
-                          <option value="0">{{trans.get('keys.khung_nang_luc')}}</option>
-                          <option v-for="value in trainning_list" :value="value.id">{{value.name}}</option>
-                        </select>
-                      </label>
-                    </div>-->
+
                   </div>
                   <div class="col-sm-4">
                     <form v-on:submit.prevent="getUser(1)">
@@ -92,29 +85,7 @@
 
                         <td class=" mobile_hide">{{ user.user_detail.fullname }}</td>
                         <td class=" mobile_hide">{{ user.user_detail.email }}</td>
-                        <!--                      <td class="wrap_select">-->
-                        <!--                        <table v-if="user.user_detail.trainning_user.length > 0" style="margin-bottom: 0;">-->
-                        <!--                          <tr v-for="trainning in user.user_detail.trainning_user">-->
-                        <!--                            <td>-->
-                        <!--                              {{ trainning.training_detail.name }}-->
-                        <!--                              <span style="display: none;" class="remove_trainning" :title="trans.get('keys.go_khung_nang_luc')"-->
-                        <!--                                    @click="remove_trainning(trainning.id)"><i class="fas fa-times"></i></span>-->
-                        <!--                            </td>-->
-                        <!--                          </tr>-->
-                        <!--                        </table>-->
-                        <!--                        <span>{{ user.trainning_name }}</span>-->
-                        <!--                        <div style="display: none;">-->
-                        <!--                          <div style="display: flex;min-width: 100px;">-->
-                        <!--                            <select v-model="user.trainning_id"-->
-                        <!--                                    class="custom-select custom-select-sm form-control form-control-sm">-->
-                        <!--                              <option v-for="value in trainning_list" :value="value.id">{{value.name}}</option>-->
-                        <!--                            </select>-->
-                        <!--                            <button style="height: 33px;min-width: 45px;" class="btn btn-primary btn-sm" type="button"-->
-                        <!--                                    @click="changeTrainning(user.trainning_id,user.id)">{{trans.get('keys.luu')}}-->
-                        <!--                            </button>-->
-                        <!--                          </div>-->
-                        <!--                        </div>-->
-                        <!--                      </td>-->
+
                         <td class="text-center">
                           <button @click="remove_trainning(user.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select" type="button">
                             <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
@@ -163,8 +134,7 @@
         totalPages: 0,
         total_user: 0,
         row: 10,
-        trainning: 0,
-        trainning_list: []
+        trainning: 0
       }
     },
     methods: {
@@ -212,15 +182,7 @@
         });
 
       },
-      getTrainning() {
-        axios.post('/trainning/api_trainning_list')
-          .then(response => {
-            this.trainning_list = response.data;
-          })
-          .catch(error => {
-            this.trainning_list = [];
-          });
-      },
+
       getUser(paged) {
         axios.post('/trainning/api_list_user', {
           page: paged || this.current,
