@@ -704,8 +704,7 @@
                 })
                     .then(response => {
                         var a = $("<a>")
-                            .prop("href", "/downloadExportReport")
-                            //.prop("download", "newfile.txt")
+                            .prop("href", "/api/downloadExport/" + 'report_detail.xlsx')
                             .appendTo("body");
                         a[0].click();
                         a.remove();

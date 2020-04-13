@@ -682,7 +682,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/excel/download', 'Backend\EmailTemplateController@downloadExportReport');
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
-    Route::get('/downloadExportReport', 'Backend\ExcelController@downloadExportReport');
+    Route::post('/exportReportDetail', 'Backend\ExcelController@exportReportDetail');
     Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
     Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
     Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
