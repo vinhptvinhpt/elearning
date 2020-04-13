@@ -494,8 +494,8 @@ const routes = [
       },
       {
         path: 'report/base',
-        component: ReportIndexBaseComponent,
-        //component: ReportBaseComponent,
+        //component: ReportIndexBaseComponent,
+        component: ReportBaseComponent,
         name: 'ReportBaseIndex'
       },
       //Survey

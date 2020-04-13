@@ -3244,7 +3244,7 @@ class BussinessRepository implements IBussinessInterface
         }
     }
 
-    //New screen
+    //New report screen
     public function apiListDetail(Request $request)
     {
         $organization_id = $request->input('organization_id');
@@ -3345,6 +3345,114 @@ class BussinessRepository implements IBussinessInterface
 
         return $data;
     }
+
+    public function apiListBase(Request $request)
+    {
+        $organization_id = $request->input('organization_id');
+        $training_id = $request->input('training_id');
+
+        $query = TmsOrganization::where('tms_organization.enabled', 1)
+            ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+            ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
+            ->leftjoin('tms_trainning_groups', function ($join) {
+                $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
+                $join->where('tms_trainning_groups.type', '=', 1);
+            })
+            ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
+            ->leftjoin('course_final', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+            })
+            ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
+            ->select(
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name',
+                'tms_user_detail.user_id',
+                'tms_user_detail.fullname',
+                'mdl_course.id as course_id',
+                'mdl_course.shortname as course_code',
+                'mdl_course.fullname as course_name',
+                'tms_traninning_programs.id as training_id',
+                'tms_traninning_programs.name as training_name',
+                'tms_user_detail.confirm',
+                'course_final.timecompleted',
+                'student_certificate.code'
+            );
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $query = $query->where(function ($q) use ($organization_id) {
+                $q->where('tms_organization.id', '=', $organization_id)
+                ->orWhereIn('tms_organization.id', function ($q1) use ($organization_id) {
+                    $q1->select('id')->from('tms_organization')->where('parent_id', "=", $organization_id);
+                });
+            });
+        }
+
+        if (strlen($training_id) != 0 && $training_id != 0) {
+            $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+        }
+
+        $list = $query->get();
+
+        $data = array();
+
+        foreach ($list as $item) {
+
+            if (!isset($data[$item['organization_id']])) {
+                //Build organization object
+                self::buildDefaultReportObject($data, $item['organization_id'], $item['organization_name']);
+            }
+            if (strlen($item['training_id']) != 0) {
+                //Build training object
+                if (!isset($data[$item['organization_id']]['training'][$item['training_id']])) {
+                    self::buildDefaultReportObject($data[$item['organization_id']]['training'], $item['training_id'], $item['training_name']);
+                }
+                if (strlen($item['course_id']) != 0) {
+                    //Build course object
+                    if (!isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
+                        self::buildDefaultReportObject($data[$item['organization_id']]['training'][$item['training_id']]['courses'], $item['course_id'], $item['course_name']);
+                    }
+
+                    if (strlen($item['user_id']) != 0) {
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname']
+                        ];
+
+                        //Update all user array for organization
+                        $data[$item['organization_id']]['users'][$item['user_id']] = $user;
+                        //Update all user array for training
+                        $data[$item['organization_id']]['training'][$item['training_id']]['users'][$item['user_id']] = $user;
+                        //Update user array for course
+                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][$item['user_id']] = $user;
+
+                        if (isset($item['code'])) {
+                            $data[$item['organization_id']]['certificated'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated'][$item['user_id']] = $user;
+                        } else {
+                            $data[$item['organization_id']]['certificated_missing'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated_missing'][$item['user_id']] = $user;
+                        }
+                        if (is_numeric($item['timecompleted'])) {
+                            $data[$item['organization_id']]['completed'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['completed'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['completed'][$item['user_id']] = $user;
+                        } else {
+                            $data[$item['organization_id']]['incomplete'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['incomplete'][$item['user_id']] = $user;
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incomplete'][$item['user_id']] = $user;
+                        }
+                    }
+                }
+            }
+        }
+
+        return $data;
+    }
+
+
 
     public static function buildDefaultReportObject(&$object, $object_id, $name) {
         $object[$object_id]['name'] = $name;

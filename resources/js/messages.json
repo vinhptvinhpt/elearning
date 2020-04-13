@@ -837,7 +837,8 @@
         "thong_ke_nhan_vien": "Employee Statistic Report",
         "hoan_thanh_dao_tao": "Trainning completed",
         "da_cap_chung_chi": "Certificated",
-        "chua_co_giay_chung_nhan": "Mising certificate"
+        "chua_co_giay_chung_nhan": "Mising certificate",
+        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận"
     },
     "vi.keys": {
         "language": "",
@@ -1677,6 +1678,7 @@
         "thong_ke_nhan_vien": "Thống kê nhân viên",
         "hoan_thanh_dao_tao": "Hoàn thành đào tạo",
         "da_cap_chung_chi": "Đã cấp chứng chỉ",
-        "chua_co_giay_chung_nhan": "Chưa có giấy chứng nhận"
+        "chua_co_giay_chung_nhan": "Chưa có giấy chứng nhận",
+        "nhan_vien_chua_co_giay_chung_nhan": "Nhân viên chưa có giấy chứng nhận"
     }
 }

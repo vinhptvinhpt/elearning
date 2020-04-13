@@ -63,4 +63,8 @@ class ReportController extends Controller
         return $this->bussinessRepository->apiListDetail($request);
     }
 
+    public function apiListBase(Request $request)
+    {
+        return $this->bussinessRepository->apiListBase($request);
+    }
 }
