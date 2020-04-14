@@ -563,6 +563,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/trainning/create', 'Backend\TrainningController@viewCreate')->name('trainning.create');
     Route::get('/trainning/detail/{id}', 'Backend\TrainningController@viewDetail')->name('trainning.detail');
     Route::post('/api/trainning/list', 'Backend\TrainningController@apiGetListTrainning');
+    Route::get('/api/training/list_for_filter', 'Backend\TrainningController@apiGetListTrainingForFilter');
     Route::post('/api/trainning/create', 'Backend\TrainningController@apiCreateTrainning');
     Route::post('/api/trainning/update', 'Backend\TrainningController@apiEditTrainning');
     Route::post('/api/trainning/delete/{id}', 'Backend\TrainningController@apiDeteleTrainning');
