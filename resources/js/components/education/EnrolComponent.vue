@@ -26,46 +26,46 @@
     <div class="row mb-4">
       <div class="col-sm">
         <div class="accordion" id="accordion_1">
-          <div class="card">
-            <div class="card-header d-flex justify-content-between">
-              <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"
-                 aria-expanded="false"><i
-                class="fal fa-upload mr-3"></i>{{trans.get('keys.tai_len_excel')}}</a>
-            </div>
-            <div id="collapse_2" class="collapse" data-parent="#accordion_1">
-              <div class="card-body">
-                <p class="mb-3">
-                  <a :href="'/files/enrol_sample.xlsx'" class="px-0"><i
-                    class="fal fa-file-alt mr-3"></i>{{trans.get('keys.tai_ve_bieu_mau')}}</a>
-                </p>
-                <input type="file" ref="file" name="file" class="dropify fileImport"
-                       accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
-                       @change="selectedFile"/>
+<!--          <div class="card">-->
+<!--            <div class="card-header d-flex justify-content-between">-->
+<!--              <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"-->
+<!--                 aria-expanded="false"><i-->
+<!--                class="fal fa-upload mr-3"></i>{{trans.get('keys.tai_len_excel')}}</a>-->
+<!--            </div>-->
+<!--            <div id="collapse_2" class="collapse" data-parent="#accordion_1">-->
+<!--              <div class="card-body">-->
+<!--                <p class="mb-3">-->
+<!--                  <a :href="'/files/enrol_sample.xlsx'" class="px-0"><i-->
+<!--                    class="fal fa-file-alt mr-3"></i>{{trans.get('keys.tai_ve_bieu_mau')}}</a>-->
+<!--                </p>-->
+<!--                <input type="file" ref="file" name="file" class="dropify fileImport"-->
+<!--                       accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"-->
+<!--                       @change="selectedFile"/>-->
 
-                <div class="button-list">
-                  <button type="button" class="btn btn-primary hasLoading btn-sm"
-                          @click="importExcel()">
-                    {{trans.get('keys.ghi_danh')}}<i class="fa fa-spinner" aria-hidden="true"></i>
-                  </button>
-                </div>
-                <div class="logUpload mt-4" v-if="data_import">
+<!--                <div class="button-list">-->
+<!--                  <button type="button" class="btn btn-primary hasLoading btn-sm"-->
+<!--                          @click="importExcel()">-->
+<!--                    {{trans.get('keys.ghi_danh')}}<i class="fa fa-spinner" aria-hidden="true"></i>-->
+<!--                  </button>-->
+<!--                </div>-->
+<!--                <div class="logUpload mt-4" v-if="data_import">-->
 
-                  <h5 class="hk-sec-title mb-3">{{trans.get('keys.thong_tin_ghi_danh')}}</h5>
-                  <ul class="list-group mb-3">
-                    <li v-for="user in data_import"
-                        :class="'list-group-item '+ (user.status == 'success'? 'list-group-item-success' : 'list-group-item-danger')">
-                      <span
-                        v-if="user.username">{{trans.get('keys.tai_khoan')}}: <strong>{{user.username}}</strong>. </span>
-                      {{user.message}}
-                    </li>
-                  </ul>
-                  <li class="list-group-item list-group-item-danger">
-                    <span>{{trans.get('keys.refresh_trang_de_xem_du_lieu_vua_import')}}</span>
-                  </li>
-                </div>
-              </div>
-            </div>
-          </div>
+<!--                  <h5 class="hk-sec-title mb-3">{{trans.get('keys.thong_tin_ghi_danh')}}</h5>-->
+<!--                  <ul class="list-group mb-3">-->
+<!--                    <li v-for="user in data_import"-->
+<!--                        :class="'list-group-item '+ (user.status == 'success'? 'list-group-item-success' : 'list-group-item-danger')">-->
+<!--                      <span-->
+<!--                        v-if="user.username">{{trans.get('keys.tai_khoan')}}: <strong>{{user.username}}</strong>. </span>-->
+<!--                      {{user.message}}-->
+<!--                    </li>-->
+<!--                  </ul>-->
+<!--                  <li class="list-group-item list-group-item-danger">-->
+<!--                    <span>{{trans.get('keys.refresh_trang_de_xem_du_lieu_vua_import')}}</span>-->
+<!--                  </li>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
           <div class="card">
             <div class="card-header d-flex justify-content-between">
               <a role="button" data-toggle="collapse" href="#collapse_1"
