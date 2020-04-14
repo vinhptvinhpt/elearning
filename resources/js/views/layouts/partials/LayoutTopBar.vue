@@ -27,7 +27,7 @@
                 <div class="dropdown-menu dropdown-menu-right" data-dropdown-in="flipInX" data-dropdown-out="flipOutX">
                     <router-link class="dropdown-item" :to="{ name: 'Profile' }">
                       <i class="dropdown-icon zmdi zmdi-account"></i>
-                      <span>{{ trans.get('keys.thong_tin') }}</span>
+                      <span>{{ trans.get('keys.thong_tin_ca_nhan') }}</span>
                     </router-link>
                     <a class="dropdown-item" href="#"><i
                             class="dropdown-icon zmdi zmdi-settings"></i><span>{{ trans.get('keys.cai_dat') }}</span></a>
