@@ -293,7 +293,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $style = $request->input('style');
-        $paginated = $request->input('paginated');
 
         $param = [
             'keyword' => 'text',
@@ -312,10 +311,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->leftJoin($leftJoin, 'ttus.tr_id', '=', 'ttp.id')
             ->select('ttp.id', 'ttp.code', 'ttp.name', 'ttus.total_user')
             ->where('ttp.deleted', '=', 0);
-
-//        if (strlen($paginated) != 0 && $paginated == 0) {
-//            return response()->json($lstData->get());
-//        }
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -343,7 +338,13 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             'data' => $lstData
         ];
 
+        return response()->json($response);
+    }
 
+    public function apiGetListTrainingForFilter() {
+        $response = TmsTrainningProgram::select('id', 'code', 'name')
+            ->where('deleted', '=', 0)
+            ->orderBy('id', 'desc')->get();
         return response()->json($response);
     }
 

@@ -396,9 +396,7 @@
                 })
             },
             fetchTraining() {
-              axios.post('/api/trainning/list', {
-                paginated: 0
-              })
+              axios.get('/api/training/list_for_filter')
                 .then(response => {
                   // this.training_options = response.data;
                     this.training_options = response.data.data.data;
