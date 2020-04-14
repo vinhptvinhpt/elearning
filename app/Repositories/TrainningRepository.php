@@ -331,7 +331,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         $lstData = $lstData->orderBy('ttp.id', 'desc');
-
+        if(is_null($row) || $row == 0)
+            $row = 5;
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);
         $response = [

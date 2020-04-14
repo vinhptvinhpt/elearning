@@ -878,7 +878,7 @@ class BussinessRepository implements IBussinessInterface
 
             if ($category_id != 2) { //nếu là thư viện khóa học thì không check thời gian
                 $stdate = strtotime($startdate);
-                $eddate = !is_null($enddate) ? strtotime($enddate) : null;
+                $eddate = !is_null($enddate) ? strtotime($enddate) : 0;
                 if ($enddate && $stdate > $eddate) {
                     $response->status = false;
                     $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');

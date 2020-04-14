@@ -293,7 +293,7 @@
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
                                         <router-link
-                                                :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }"
+                                                :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex', query: { type: '1' } }"
                                                 class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_cap_huy_hieu') }}</span>
                                         </router-link>

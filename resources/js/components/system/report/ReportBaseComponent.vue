@@ -400,7 +400,8 @@
                 paginated: 0
               })
                 .then(response => {
-                  this.training_options = response.data;
+                  // this.training_options = response.data;
+                    this.training_options = response.data.data.data;
                   //set first options
                   if(this.training_options.length !== 0) {
                     this.training_id = this.training_options[0].id;
@@ -408,7 +409,7 @@
                   this.training_ready = true;
                 })
                 .catch(error => {
-                  console.log(error.response.data);
+                  console.log(error);
                 });
             },
             setOptions(list) {

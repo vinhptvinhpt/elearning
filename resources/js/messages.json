@@ -882,7 +882,10 @@
         "key_da_ton_tai": "The key already exists",
         "cap_nhat_chuc_nang_chi_tiet_thanh_cong": "Update function details successfully",
         "ban_can_nhap_day_du_thong_tin": "You need to enter complete information",
-        "ban_muon_xoa_quyen_nay": "You want to delete this permission."
+        "ban_muon_xoa_quyen_nay": "You want to delete this permission.",
+        "thong_tin": "Profile",
+        "cai_dat": "Setting",
+        "dang_xuat": "Logout"
     },
     "vi.keys": {
         "language": "",
@@ -1765,6 +1768,10 @@
         "key_da_ton_tai": "Key đã tồn tại",
         "cap_nhat_chuc_nang_chi_tiet_thanh_cong": "Cập nhật chức năng chi tiết thành công",
         "ban_can_nhap_day_du_thong_tin": "Bạn cần nhập đầy đủ thông tin",
-        "ban_muon_xoa_quyen_nay": "Bạn muốn xóa quyền này."
+        "ban_muon_xoa_quyen_nay": "Bạn muốn xóa quyền này.",
+
+        "thong_tin": "Thông tin",
+        "cai_dat": "Cài đặt",
+        "dang_xuat": "Đăng xuất"
     }
 }

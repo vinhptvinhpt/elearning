@@ -732,12 +732,15 @@ const routes = [
           organization_id: route.query.organization_id ? route.query.organization_id : 0,
         })
       },
-      //Trainning
-      // {
-      //   path: 'trainning/list',
-      //   component: TrainningListComponent,
-      //   name: 'TrainningIndex'
-      // },
+      // Trainning
+      {
+        path: 'trainning/certification',
+        component: TrainningListComponent,
+        name: 'TrainningCertificationIndex',
+        props: (route) => ({
+          type: route.query.type ? route.query.type : 0
+        })
+      },
       {
         path: 'trainning/list',
         component: TrainningListComponent,

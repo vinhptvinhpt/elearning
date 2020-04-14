@@ -385,7 +385,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course->visible = 1;  //luôn hiển thị khi là khóa học mẫu
         } else {
             $stdate = strtotime($startdate);
-            $eddate = !is_null($enddate) ? strtotime($enddate) : null;
+            $eddate = !is_null($enddate) ? strtotime($enddate) : 0;
             $course->course_place = $course_place;
             $course->startdate = $stdate;
             $course->enddate = $eddate;
@@ -615,7 +615,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
             if ($category_id != 2) { //nếu là thư viện khóa học thì không check thời gian
                 $stdate = strtotime($startdate);
-                $eddate = !is_null($enddate) ? strtotime($enddate) : null;
+                $eddate = !is_null($enddate) ? strtotime($enddate) : 0;
                 if ($enddate && $stdate > $eddate) {
                     $response->status = false;
                     $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
