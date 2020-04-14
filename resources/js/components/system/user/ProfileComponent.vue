@@ -23,7 +23,7 @@
                 <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                 </h6>
                 <p>ID: <strong>{{users.username}}</strong></p>
-                <p v-if="users.student_role > 0">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : 'Chưa cập nhật'}}</strong></p>
+                <p v-if="users.student_role > 0">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat') }}</strong></p>
                 <div v-if="users.confirm == 0 && users.student_role > 0">
                   <hr>
                   <p>{{trans.get('keys.thoi_gian_het_han')}}</p>
@@ -42,15 +42,15 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.ngay_thang_nam_sinh')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.dob && users.dob != 0) ? users.dob : 'Chưa cập nhật' }}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.dob && users.dob != 0) ? users.dob :  trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.gioi_tinh')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.sex == 1) ? 'Nam' : 'Nữ'}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.sex == 1) ? trans.get('keys.nam') : trans.get('keys.nu') }}</div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.dia_chi_thuong_tru')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.address ? users.address : 'Chưa cập nhật' }}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.address ? users.address : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.dia_chi_email')}}</div>
@@ -58,7 +58,7 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.so_dien_thoai_lien_lac')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.phone ? users.phone : 'Chưa cập nhật' }}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.phone ? users.phone : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.so_chung_minh_nhan_dan_so_the_can_cuoc')}}</div>
@@ -66,19 +66,19 @@
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.tinh_trang_cong_tac')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.working_status == 0) ? 'Đang công tác' : 'Nghỉ công tác'}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.working_status == 0) ? trans.get('keys.dang_cong_tac') : trans.get('keys.nghi_cong_tac') }}</div>
                   </div>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.ngay_bat_dau_lam_viec')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.start_time ? users.start_time : 'Chưa cập nhật'}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.start_time ? users.start_time : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                   <div class="row" v-if="users.student_role > 0">
                     <div class="col-sm-6">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm) ? 'Đã cấp' : 'Chưa cấp'}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm) ?  trans.get('keys.da_cap') :  trans.get('keys.chua_cap') }}</div>
                   </div>
                   <div class="row" v-if="users.student_role > 0">
                     <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.city.name : 'Chưa cập nhật'}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.city.name : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                 </li>
               </ul>
@@ -133,9 +133,10 @@
                     })
             },
             restoreUser(user_id){
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn khôi phục lại tài khoản này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -145,8 +146,8 @@
                         .then(response => {
                             if(response.data == 'success'){
                                 swal({
-                                    title: "Thông báo!",
-                                    text: "Khôi phục thành công!",
+                                    title: current_pos.trans.get('keys.thong_bao'),
+                                    text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
                                     type: "success",
                                     showCancelButton: false,
                                     closeOnConfirm: false,
@@ -155,12 +156,12 @@
                                     location.reload();
                                 });
                             }else{
-                                swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+                                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
                             }
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
                         });
                 });
                 return false;

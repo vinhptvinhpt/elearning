@@ -276,6 +276,9 @@
                 this.formData.append('confirm', this.confirm);
                 this.formData.append('confirm_address', this.confirm_address);
                 this.formData.append('training_id', this.training);
+
+                let current_pos = this;
+
                 axios.post('/system/user_market/create_user_market', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -298,7 +301,7 @@
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             getTrainingProgram(){

@@ -125,6 +125,7 @@
                 }
             },
             addCityFromDepartment(){
+                let current_pos = this;
                 if(this.city_add.length  == 0){
                     swal({
                         title: this.trans.get('keys.thong_bao'),
@@ -146,7 +147,7 @@
                         this.allSelected = false;
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             getCityAddFromDepartment(paged) {

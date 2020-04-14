@@ -207,6 +207,7 @@
           })
       },
       update() {
+          let current_pos = this;
         if(!this.organization.name){
           $('.name_required').show();
           return;
@@ -226,11 +227,11 @@
         })
           .then(response => {
             if(response.data.key) {
-              toastr['error'](response.data.message, this.trans.get('keys.loi'));
+              toastr['error'](response.data.message, current_pos.trans.get('keys.loi'));
               $('.form-control').removeClass('error');
               $('#organization_'+response.data.key).addClass('error');
             }else{
-              toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
+              toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               if(response.data.status === 'success'){
                 $('.form-control').removeClass('error');
               }
@@ -238,7 +239,7 @@
           })
           .catch(error => {
             //console.log(error);
-            roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
           })
       }
     },

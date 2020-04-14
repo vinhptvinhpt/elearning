@@ -194,9 +194,10 @@
                 this.getListUsers();
             },
             removeUser(id) {
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn gỡ User đã chọn.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_go_user_da_chon'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -209,7 +210,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },

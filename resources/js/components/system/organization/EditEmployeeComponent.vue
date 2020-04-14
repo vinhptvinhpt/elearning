@@ -184,6 +184,7 @@
           })
       },
       update() {
+          let current_pos = this;
         if(!this.employee.organization_id){
           $('.organization_required').show();
           return;
@@ -206,16 +207,16 @@
               $('#employee_'+response.data.key).addClass('error');
             }else{
               if (response.data.status === 'success') {
-                toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
+                toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                 $('.form-control').removeClass('error');
               } else {
-                toastr[response.data.status](response.data.message, this.trans.get('keys.that_bai'));
+                toastr[response.data.status](response.data.message, current_pos.trans.get('keys.that_bai'));
               }
             }
           })
           .catch(error => {
             //console.log(error);
-            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
           })
       },
     },

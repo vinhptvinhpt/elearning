@@ -116,7 +116,7 @@
                     const input = this.$refs.file;
                     input.type = 'file';
                     this.$refs.file.value = '';
-                    roam_message("error","Định dạng file không hợp lệ");
+                    roam_message("error",this.trans.get('keys.dinh_dang_file_khong_hop_le'));
                 }
             },
 

@@ -60,7 +60,7 @@
                 }
 
                 this.answerOptions.series = [{
-                    name: 'Tỉ lệ',
+                    name: this.trans.get('keys.ratio'),
                     colorByPoint: true,
                     data: data_ans
                 }];

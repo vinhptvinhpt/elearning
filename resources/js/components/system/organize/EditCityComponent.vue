@@ -189,7 +189,7 @@
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     })
             }
         },

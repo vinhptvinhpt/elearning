@@ -91,6 +91,7 @@
                     })
             },
             sendNotification(){
+                let current_pos = this;
                 if(!this.message.content){
                     $('.content_required').show();
                     return;
@@ -99,8 +100,8 @@
                     .then(response => {
                         if(response.data === 'success') {
                             swal({
-                                title: "Thông báo!",
-                                text: "Gửi thành công!",
+                                title: current_pos.trans.get('keys.thong_bao'),
+                                text: current_pos.trans.get('keys.gui_thanh_cong'),
                                 type: "success",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -108,8 +109,8 @@
                             });
                         }else if(response.data === 'fail'){
                             swal({
-                                title: "Thông báo!",
-                                text: "Lỗi hệ thống. Thao tác thất bại!",
+                                title: current_pos.trans.get('keys.thong_bao'),
+                                text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -121,8 +122,8 @@
                     })
                     .catch(error => {
                         swal({
-                            title: "Thông báo!",
-                            text: "Lỗi hệ thống. Thao tác thất bại!",
+                            title: current_pos.trans.get('keys.thong_bao'),
+                            text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                             type: "error",
                             showCancelButton: false,
                             closeOnConfirm: false,

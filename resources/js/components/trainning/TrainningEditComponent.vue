@@ -606,7 +606,7 @@
             },
             enrolUserToCourse() {
                 if (this.userEnrols.length === 0) {
-                    toastr['warning']('Bạn chưa chọn khóa học', this.trans.get('keys.thong_bao'));
+                    toastr['warning'](this.trans.get('keys.ban_chua_chon_khoa_hoc'), this.trans.get('keys.thong_bao'));
                     return;
                 }
                 axios.post('/api/trainning/addcoursetotrainning', {
@@ -627,7 +627,7 @@
             },
             removeEnrolUserToCourse() {
                 if (this.userRemoveEnrol.length === 0) {
-                    toastr['warning']('Bạn chưa chọn khóa học', this.trans.get('keys.thong_bao'));
+                    toastr['warning'](this.trans.get('keys.ban_chua_chon_khoa_hoc'), this.trans.get('keys.thong_bao'));
                     return;
                 }
                 axios.post('/api/trainning/removecoursetotrainning', {

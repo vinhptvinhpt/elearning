@@ -188,8 +188,8 @@
             restoreSurvey(id) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn khôi phục survey này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
+                    text:  this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -208,7 +208,7 @@
                         })
                         .catch(error => {
                             swal.close();
-                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
 
@@ -217,8 +217,8 @@
             deleteSurvey(id) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa hoàn toàn survey này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
+                    text:  this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -236,7 +236,7 @@
                         })
                         .catch(error => {
                             swal.close();
-                            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
 

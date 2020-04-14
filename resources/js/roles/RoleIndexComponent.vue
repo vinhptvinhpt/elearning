@@ -115,14 +115,17 @@
                 $('.output.error').html();
                 if(!this.role.name ) {
                     $('.name.error').show();
-                    $('.name.error').html('Trường bắt buộc phải nhập.');
+                    $('.name.error').html(this.trans.get('keys.truong_bat_buoc_phai_nhap'));
                     return;
                 }
                 if(!this.role.description ) {
                     $('.description.error').show();
-                    $('.description.error').html('Trường bắt buộc phải nhập.');
+                    $('.description.error').html(this.trans.get('keys.truong_bat_buoc_phai_nhap'));
                     return;
                 }
+
+                let current_pos = this;
+
                 axios.post('/role/create', {
                     name: this.role.name,
                     description: this.role.description,
@@ -133,7 +136,7 @@
                         this.role.description = '';
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             listRoles(){
@@ -149,9 +152,10 @@
             },
             deleteRole(role_id){
                 var role_id = role_id;
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn xóa quyền này.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_xoa_quyen_nay'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -164,7 +168,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             }

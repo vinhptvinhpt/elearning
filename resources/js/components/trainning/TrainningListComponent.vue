@@ -176,8 +176,8 @@
             deletePost(id) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn có chắc muốn xóa khung năng lực này.",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_co_chac_muon_xoa_khung_nang_luc_nay'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,

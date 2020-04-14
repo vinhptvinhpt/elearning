@@ -222,8 +222,8 @@
             deletePost(id) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,

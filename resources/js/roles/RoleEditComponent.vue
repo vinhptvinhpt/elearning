@@ -248,7 +248,7 @@
                     $('.saleroom_required').show();
                     return;
                 }*/
-
+                let current_pos = this;
                 axios.post('/role/update', {
                     role_id: this.role_id,
                     per_slug_input: this.permission_select,
@@ -265,14 +265,15 @@
                         roam_message(response.data.status,response.data.message);
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             deleteRole(){
                 var role_id = this.role_id;
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn xóa quyền này.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_xoa_quyen_nay'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -286,7 +287,7 @@
                             this.$router.push({ name: 'RoleIndex' });
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error', current_pos.trans.get('keys.ban_muon_xoa_quyen_nay'));
                         });
                 });
             }

@@ -319,8 +319,8 @@
       removeWordPlace(word_place_id) {
         var user_id = this.user_id;
         swal({
-          title: "Thông báo",
-          text: "Bạn chắc chắn muốn xóa nơi làm việc này?",
+          title: this.trans.get('keys.thong_bao'),
+          text: this.trans.get('keys.ban_chac_chan_muon_xoa_noi_lam_viec_nay'),
           type: "warning",
           showCancelButton: true,
           closeOnConfirm: false,
@@ -342,7 +342,7 @@
       },
       addWordPlace() {
         if (this.word_place == 0) {
-          $('.word_place.error').html('Bạn cần chọn nơi làm việc.');
+          $('.word_place.error').html(this.trans.get('keys.ban_can_chon_noi_lam_viec'));
           $('.word_place.error').show();
         }
         axios.post('/system/user/word_place_add', {
@@ -402,9 +402,10 @@
           })
       },
       restoreUser(user_id) {
+          let current_pos = this;
         swal({
-          title: "Bạn muốn khôi phục lại tài khoản này",
-          text: "Chọn 'ok' để thực hiện thao tác.",
+          title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
           type: "error",
           showCancelButton: true,
           closeOnConfirm: false,
@@ -414,8 +415,8 @@
             .then(response => {
               if (response.data == 'success') {
                 swal({
-                  title: "Thông báo!",
-                  text: "Khôi phục thành công!",
+                  title: current_pos.trans.get('keys.thong_bao'),
+                  text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
                   type: "success",
                   showCancelButton: false,
                   closeOnConfirm: false,
@@ -424,12 +425,12 @@
                   location.reload();
                 });
               } else {
-                swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
               }
 
             })
             .catch(error => {
-              swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+              swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
             });
         });
         return false;

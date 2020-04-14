@@ -421,7 +421,7 @@
                     const input = this.$refs.file;
                     input.type = 'file';
                     this.$refs.file.value = '';
-                    roam_message("error","Định dạng file không hợp lệ");
+                    roam_message("error",current_pos.trans.get('keys.dinh_dang_file_khong_hop_le'));
                 }
             },
             importExcel(){
@@ -447,8 +447,8 @@
                         .catch(error => {
                             $('button.hasLoading').removeClass('loadding');
                             swal({
-                                title: "Thông báo",
-                                text: " Lỗi hệ thống.Thao tác thất bại!",
+                                title: this.trans.get('keys.thong_bao'),
+                                text: this.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -478,6 +478,7 @@
                 }
             },
             addUserMarket(){
+                let current_pos = this;
                 if(this.user_select.length  > 0){
                     axios.post('/system/user_market/add_user_role', {
                         user_select: this.user_select,
@@ -489,15 +490,16 @@
                         $('.show_form').trigger('click');*/
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
                 }
             },
             removeUserMarket(user_id){
-                var user = user_id
+                var user = user_id;
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn Gỡ quyền giám sát thị trường của người dùng này.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_go_quyen_giam_sat_thi_truong_cua_nguoi_dung_nay'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -510,7 +512,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },

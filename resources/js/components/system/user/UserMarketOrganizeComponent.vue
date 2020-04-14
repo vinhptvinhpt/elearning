@@ -241,6 +241,7 @@
                     });
             },
             addOrganize(organize_id){
+                let current_pos = this;
                 axios.post('/system/user_market/add_role_organize', {
                     organize_id: organize_id,
                     user_id: this.user_id,
@@ -250,14 +251,15 @@
                         $('.show_form').trigger('click');
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             removeOrganize(organize_id){
-                var user = this.user_id
+                var user = this.user_id;
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn Gỡ đại lý này.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_go_dai_ly_nay'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -271,7 +273,7 @@
                         roam_message(response.data.status,response.data.message);
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
                 });
             },

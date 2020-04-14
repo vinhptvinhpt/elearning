@@ -166,6 +166,7 @@
                 this.allSelected = false;
             },
             assignEmployee() {
+                let current_pos = this;
                 if (this.userAssigns.length === 0) {
                     toastr['error'](this.trans.get('keys.ban_chua_chon_nhan_vien'), this.trans.get('keys.loi'));
                     return;
@@ -176,15 +177,15 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                          toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                           this.getUserNeedAssign(this.current_ass);
                           this.$parent.getDataList();
                         } else {
-                          toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                          toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
-                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                      toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },
             uncheckAssignAll() {
