@@ -182,6 +182,7 @@
             },
             removeSaleRoom(sale_room_id){
                 var branch_id = this.id;
+                let current_pos = this;
                 swal({
                     title: this.trans.get('keys.thong_bao'),
                     text: this.trans.get('keys.ban_muon_go_diem_ban_da_chon'),
@@ -198,7 +199,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },

@@ -81,6 +81,7 @@
                     });
             },
             updateSetting() {
+                let current_pos = this;
                 this.formData = new FormData();
                 this.setting.forEach(val => {
                     let pretty_value = val.content;
@@ -99,8 +100,8 @@
                     .then(response => {
                         if(response.data === 'success') {
                             swal({
-                                title: "Thông báo",
-                                text: "Update tùy chọn thành công.",
+                                title: current_pos.trans.get('keys.thong_bao'),
+                                text: current_pos.trans.get('keys.cap_nhat_thanh_cong'),
                                 type: "success",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -111,8 +112,8 @@
                         }
                         else if(response.data.length !== 0) {
                             swal({
-                                title: "Dữ liệu sai định dạng",
-                                text: "Dữ liệu nhập vào không đúng: " + response.data,
+                                title: current_pos.trans.get('keys.du_lieu_sai_dinh_dang'),
+                                text: current_pos.trans.get('keys.du_lieu_nhap_vao_khong_dung') + response.data,
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -121,8 +122,8 @@
                         }
                         else{
                             swal({
-                                title: "Lỗi hệ thống",
-                                text: "Thao tác thất bại.",
+                                title: current_pos.trans.get('keys.loi_he_thong'),
+                                text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,

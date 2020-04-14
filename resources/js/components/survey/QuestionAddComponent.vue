@@ -254,13 +254,13 @@
                 }
 
                 if (this.type_question === 'multiplechoice' && this.anwsers.length === 0) {
-                    toastr['warning']('Bạn chưa nhập câu trả lời', this.trans.get('keys.thong_bao'));
+                    toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
 
                     return;
                 }
 
                 if (this.type_question === 'group' && (this.question_childs.length === 0 || this.anwsers.length === 0)) {
-                    toastr['warning']('Bạn chưa nhập câu trả lời hoặc câu hỏi con', this.trans.get('keys.thong_bao'));
+                    toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi_hoac_cau_hoi_con'), this.trans.get('keys.thong_bao'));
                     return;
                 }
 
@@ -284,7 +284,7 @@
 
                     })
                     .catch(error => {
-                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             }
         },

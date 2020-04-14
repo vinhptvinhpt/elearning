@@ -1563,6 +1563,7 @@
         "cap_nhat_thanh_cong": "Cập nhật thành công. ",
         "khong_ton_tai": "Không tồn tại. ",
         "quan_tri_khung_nang_luc": "Quản trị khung năng lực",
+        "quan_tri_khung_nang_luc": "Quản trị khung năng lực",
         "chinh_sua_thong_tin_knl": "Sửa thông tin khung năng lực",
         "delete_branch_success": "Xóa Chi nhánh thành công",
         "remove_city_from_branch_success": "Gỡ Tỉnh thành khỏi Chi nhánh thành công",
@@ -1725,6 +1726,28 @@
         "chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc": "Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!",
         "ban_chua_chon_hoc_vien_nao": "Bạn chưa chọn học viên nào.",
         "ban_muon_cap_ma_hang_loat_tai_khoan_da_chon": "Bạn muốn cấp mã hàng loạt tài khoản đã chọn.",
-        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Cấp mã cho các tài khoản thành công!"
+        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Cấp mã cho các tài khoản thành công!",
+
+
+        "logout_error": "Logout Error!!!",
+        "gui_thanh_cong": "Gửi thành công!",
+        "du_lieu_sai_dinh_dang": "Dữ liệu sai định dạng",
+        "du_lieu_nhap_vao_khong_dung": "Dữ liệu nhập vào không đúng ",
+        "ban_chua_nhap_cau_tra_loi_hoac_cau_hoi_con": "Bạn chưa nhập câu trả lời hoặc câu hỏi con",
+        "ban_muon_khoi_phuc_survey_nay": "Bạn muốn khôi phục survey này",
+        "ban_muon_xoa_hoan_toan_survey_nay": "Bạn muốn xóa hoàn toàn survey này",
+        "ban_muon_go_user_da_chon": "Bạn muốn gỡ User đã chọn",
+        "sua_diem_ban_thanh_cong": "Sửa Điểm bán thành công!",
+        "khoi_phuc_thanh_cong": "Khôi phục thành công",
+        "ban_can_chon_noi_lam_viec": "Bạn cần chọn nơi làm việc.",
+        "Bạn chắc chắn muốn xóa nơi làm việc này?": "Bạn chắc chắn muốn xóa nơi làm việc này?",
+        "ban_muon_go_quyen_giam_sat_thi_truong_cua_nguoi_dung_nay": "Bạn muốn Gỡ quyền giám sát thị trường của người dùng này.",
+        "ban_muon_go_dai_ly_nay": "Bạn muốn gỡ đại lý này",
+        "ban_co_chac_muon_xoa_khung_nang_luc_nay": "Bạn có chắc muốn xóa khung năng lực này.",
+        "gan_chuc_nang_chi_tiet_thanh_cong": "Gán chức năng chi tiết thành công.",
+        "key_da_ton_tai": "Key đã tồn tại",
+        "cap_nhat_chuc_nang_chi_tiet_thanh_cong": "Cập nhật chức năng chi tiết thành công",
+        "ban_can_nhap_day_du_thong_tin": "Bạn cần nhập đầy đủ thông tin",
+        "ban_muon_xoa_quyen_nay": "Bạn muốn xóa quyền này."
     }
 }

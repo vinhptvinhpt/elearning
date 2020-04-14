@@ -358,6 +358,9 @@
           this.formData.append('type', this.type);
           this.formData.append('role_name', this.role_name);
           this.formData.append('importType', this.importType);
+
+          let current_pos = this;
+
           axios.post(this.urlImport, this.formData, {
             headers: {
               'Content-Type': 'multipart/form-data'
@@ -372,8 +375,8 @@
             .catch(error => {
               $('button.hasLoading').removeClass('loadding');
               swal({
-                title: "Thông báo",
-                text: " Lỗi hệ thống.Thao tác thất bại!",
+                title: current_pos.trans.get('keys.thong_bao'),
+                text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                 type: "error",
                 showCancelButton: false,
                 closeOnConfirm: false,

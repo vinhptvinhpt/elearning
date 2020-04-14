@@ -181,9 +181,10 @@
                     })
             },
             restoreUser(user_id){
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn khôi phục lại tài khoản này",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -193,8 +194,8 @@
                         .then(response => {
                             if(response.data === 'success'){
                                 swal({
-                                    title: "Thông báo!",
-                                    text: "Khôi phục thành công!",
+                                    title: current_pos.trans.get('keys.thong_bao'),
+                                    text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
                                     type: "success",
                                     showCancelButton: false,
                                     closeOnConfirm: false,
@@ -203,12 +204,12 @@
                                     location.reload();
                                 });
                             }else{
-                                swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+                                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
                             }
 
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error");
+                            swal(current_pos.trans.get('keys.thong_bao'),  current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
                         });
                 });
 

@@ -183,9 +183,10 @@
                 this.fetch();
             },
             removeSaleRoom(sale_room_id){
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn gỡ điểm bán đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_go_diem_ban_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -198,8 +199,8 @@
                         .then(response => {
                             if(response.data === 'success'){
                                 swal({
-                                    title: "Thông báo",
-                                    text: "Gỡ điểm bán thành công.",
+                                    title: current_pos.trans.get('keys.ban_muon_go_diem_ban_da_chon'),
+                                    text: current_pos.trans.get('keys.go_diem_ban_thanh_cong'),
                                     type: "success",
                                     showCancelButton: false,
                                     closeOnConfirm: false,
@@ -209,8 +210,8 @@
                                 });
                             }else{
                                 swal({
-                                    title: "Lỗi hệ thốngs",
-                                    text: "Thao tác thất bại.",
+                                    title: current_pos.trans.get('keys.loi_he_thong'),
+                                    text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                     type: "error",
                                     showCancelButton: false,
                                     closeOnConfirm: false,
@@ -221,8 +222,8 @@
                         .catch(error => {
                             console.log(error);
                             swal({
-                                title: "Lỗi hệ thống",
-                                text: "Thao tác thất bại.",
+                                title: current_pos.trans.get('keys.loi_he_thong'),
+                                text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,

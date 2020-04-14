@@ -611,6 +611,8 @@
                 this.formData.append('training_id', this.training);
                 this.formData.append('organization_id', this.last_organization_id);
 
+                let current_pos = this;
+
                 axios.post('/system/user/create', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -661,7 +663,7 @@
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             setFileInput() {

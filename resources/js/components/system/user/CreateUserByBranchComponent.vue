@@ -298,6 +298,9 @@
                 this.formData.append('confirm', this.confirm);
                 this.formData.append('confirm_address', this.confirm_address);
                 this.formData.append('type', this.sale_room_id === 0 ? this.branch_type : this.saleroom_type);
+
+                let current_pos = this;
+
                 axios.post('/system/user/create_in_saleroom', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -322,7 +325,7 @@
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             getSaleroom() {

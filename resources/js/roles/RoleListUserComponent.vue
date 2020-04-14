@@ -247,6 +247,7 @@
                 }
             },
             addUserRole(){
+                let current_pos = this;
                 if(this.user_add.length  > 0){
                     axios.post('/role/list_user/add_user_by_role',{
                         user_add:this.user_add,
@@ -256,7 +257,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 }
             },
@@ -299,9 +300,10 @@
             },
             removeUser(user_id){
                 var role_id = this.role_id;
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn gỡ User đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_go_user_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -315,7 +317,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },

@@ -106,6 +106,7 @@
                     });
             },
             updatePermission(){
+                let current_pos = this;
                 if(this.data.permission.name && this.data.permission.method && this.data.permission.url && this.data.permission.permission_slug){
                     axios.post('/permission/detail/update',{
                         permission_id:this.permission_id,
@@ -117,19 +118,19 @@
                     })
                         .then(response => {
                             if(response.data == 'success'){
-                              toastr['success']("Cập nhật chức năng chi tiết thành công.", this.trans.get('keys.thanh_cong'));
+                              toastr['success'](current_pos.trans.get('keys.cap_nhat_chuc_nang_chi_tiet_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                               this.$router.push({ name: 'DetailPermission', params: {id: this.id} });
                             }else if(response.data == 'warning'){
-                                toastr['warning']("Key đã tồn tại.", this.trans.get('keys.thong_bao'));
+                                toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
                             }else{
-                              toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                              toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             }
                         })
                         .catch(error => {
                             console.log(error.response.data);
                         });
                 }else{
-                      toastr['error']("Bạn cần nhập đầy đủ thông tin.", this.trans.get('keys.thong_bao'));
+                      toastr['error'](current_pos.trans.get('keys.ban_can_nhap_day_du_thong_tin'), current_pos.trans.get('keys.thong_bao'));
                 }
             },
         },

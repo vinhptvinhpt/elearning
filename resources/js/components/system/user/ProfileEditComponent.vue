@@ -170,30 +170,30 @@
                 })
                     .then(response => {
                         if(response.data == 'success'){
-                            roam_message('success','Cập nhật mật khẩu thành công!');
+                            roam_message('success',current_pos.trans.get('keys.cap_nhat_mat_khau_thanh_cong'));
                             $('.showChangePass').slideUp();
                             $('.btnShowChangePass').removeClass('active');
                         }else if(response.data == 'passwordFail'){
                             $('.passwordError').show();
-                            roam_message('error','Mật khẩu không khớp nhau!');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_khong_khop_nhau'));
                         }else if(response.data == 'passFail'){
                             $('.passStyleError').show();
-                            roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
                         }else if(response.data == 'passConfFail'){
                             $('.passConfStyleError').show();
-                            roam_message('error','Mật khẩu chưa đáp ứng. Mật khẩu cần bao gồm chữ in hoa, số và ký tự đặc biệt.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
                         }else if(response.data == 'passwordExist'){
                             $('.wrap_password').removeClass('success');
                             $('.wrap_password').addClass('warning');
-                            roam_message('error','Mật khẩu mới trùng mật khẩu đang sử dụng.');
+                            roam_message('error',current_pos.trans.get('keys.mat_khau_moi_trung_mat_khau_dang_su_dung'));
                         }else if(response.data == 'validateFail'){
-                            roam_message('error','Lỗi định dạng. Một số trường nhập vào chứa ký tự đặc biệt!');
+                            roam_message('error',current_pos.trans.get('keys.loi_dinh_dang_mot_so_truong_nhap_vao_chua_ky_tu_dac_biet'));
                         }else{
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại!');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         }
                     })
                     .catch(error => {
-                        roam_message('error','Lỗi hệ thống. Thao tác thất bại!');
+                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
             validate_password(){

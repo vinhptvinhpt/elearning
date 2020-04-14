@@ -249,9 +249,10 @@
                     });
             },
             deletePost(url) {
+                let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -261,8 +262,8 @@
                         .then(response => {
                             console.log(response.data);
                             swal({
-                                title: "Thông báo!",
-                                text: "Xóa thành công!",
+                                title: current_pos.trans.get('keys.thong_bao'),
+                                text: current_pos.trans.get('keys.xoa_thanh_cong'),
                                 type: "success",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -272,7 +273,7 @@
                             });
                         })
                         .catch(error => {
-                            swal("Thông báo!", "Lỗi hệ thống. Thao tác thất bại!", "error")
+                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error")
                             console.log(error);
                         });
                 });
@@ -280,9 +281,10 @@
                 return false;
             },
             removeUser(id) {
+                let current_pos = this;
                 swal({
-                    title: "Thông báo",
-                    text: "Bạn muốn gỡ User đã chọn.",
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_muon_go_user_da_chon'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
@@ -295,7 +297,7 @@
                             roam_message(response.data.status,response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },
