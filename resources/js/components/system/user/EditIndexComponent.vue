@@ -153,18 +153,18 @@
                   </div>
                 </li>
                 <li v-if="role_type != 'market'">
-                  <div class="row">
-                    <div class="col-sm-6">{{trans.get('keys.noi_lam_viec')}}</div>
-                    <div class="col-sm-6 pl-30 pl-sm-15">
-                      <div v-if="users.salerooms.length > 0" v-for="saleroom in users.salerooms" class="clearfix">
-                        <router-link v-if="saleroom.type == 'pos'" style="float:left;"
-                                     :to="{ path: 'system/organize/saleroom', name: 'SaleroomIndex', query: {code: saleroom.code, branch_id: 0} }">
-                          {{ saleroom.name }} ( {{ trans.get('keys.diem_ban') }} )
-                        </router-link>
-                        <router-link v-else style="float:left;"
-                                     :to="{ path: 'system/organize/branch', name: 'BranchIndex', query: {code: saleroom.branch_code, city: 0} }">
-                          {{ saleroom.branch_name }} ( {{ trans.get('keys.dai_ly') }} )
-                        </router-link>
+<!--                  <div class="row">-->
+<!--&lt;!&ndash;                    <div class="col-sm-6">{{trans.get('keys.noi_lam_viec')}}</div>&ndash;&gt;-->
+<!--                    <div class="col-sm-6 pl-30 pl-sm-15">-->
+<!--                      <div v-if="users.salerooms.length > 0" v-for="saleroom in users.salerooms" class="clearfix">-->
+<!--                        <router-link v-if="saleroom.type == 'pos'" style="float:left;"-->
+<!--                                     :to="{ path: 'system/organize/saleroom', name: 'SaleroomIndex', query: {code: saleroom.code, branch_id: 0} }">-->
+<!--                          {{ saleroom.name }} ( {{ trans.get('keys.diem_ban') }} )-->
+<!--                        </router-link>-->
+<!--                        <router-link v-else style="float:left;"-->
+<!--                                     :to="{ path: 'system/organize/branch', name: 'BranchIndex', query: {code: saleroom.branch_code, city: 0} }">-->
+<!--                          {{ saleroom.branch_name }} ( {{ trans.get('keys.dai_ly') }} )-->
+<!--                        </router-link>-->
                         <!--<a :title="trans.get('keys.sua_noi_lam_viec')" style="float: right;" class="nav-link dropdown-toggle no-caret p-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-pencil-square-o"></i>
                         </a>
@@ -208,8 +208,8 @@
                                 </div>
                             </div>
                         </div>-->
-                      </div>
-                      <div v-if="users.salerooms.length == 0">
+<!--                      </div>-->
+<!--                      <div v-if="users.salerooms.length == 0">-->
                         <!--<a :title="trans.get('keys.sua_noi_lam_viec')" style="float: right;" class="nav-link dropdown-toggle no-caret p-0" href="#" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fa fa-pencil-square-o"></i>
                         </a>
@@ -250,11 +250,11 @@
                                 </div>
                             </div>
                         </div>-->
-                        <p>{{trans.get('keys.chua_cap_nhat')}}</p>
-                      </div>
+<!--                        <p>{{trans.get('keys.chua_cap_nhat')}}</p>-->
+<!--                      </div>-->
 
-                    </div>
-                  </div>
+<!--                    </div>-->
+<!--                  </div>-->
                 </li>
                 <li>
                   <div class="row">

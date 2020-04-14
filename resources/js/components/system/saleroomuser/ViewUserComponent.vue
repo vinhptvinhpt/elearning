@@ -31,7 +31,7 @@
                 <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                 </h6>
                 <p>ID: <strong>{{users.username}}</strong></p>
-                <p>{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : 'Chưa cập nhật'}}</strong></p>
+                <p>{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>
                 <div v-if="users.confirm == 0 && type == 'student'">
                   <hr>
                   <p>{{trans.get('keys.thoi_gian_het_han')}}</p>
@@ -47,15 +47,15 @@
                   <tbody>
                   <tr>
                     <th scope="row">{{trans.get('keys.ngay_thang_nam_sinh')}}</th>
-                    <td>{{ (users.dob && users.dob != 0) ? users.dob : 'Chưa cập nhật' }}</td>
+                    <td>{{ (users.dob && users.dob != 0) ? users.dob : trans.get('keys.chua_cap_nhat') }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.gioi_tinh')}}</th>
-                    <td>{{ (users.sex == 1) ? 'Nam' : 'Nữ'}}</td>
+                    <td>{{ (users.sex == 1) ? trans.get('keys.nam')  : trans.get('keys.nu')  }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.dia_chi_thuong_tru')}}</th>
-                    <td>{{ users.address ? users.address : 'Chưa cập nhật' }}</td>
+                    <td>{{ users.address ? users.address : trans.get('keys.chua_cap_nhat')  }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.dia_chi_email')}}</th>
@@ -63,7 +63,7 @@
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.so_dien_thoai_lien_lac')}}</th>
-                    <td>{{ users.phone ? users.phone : 'Chưa cập nhật' }}</td>
+                    <td>{{ users.phone ? users.phone : trans.get('keys.chua_cap_nhat')  }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.so_chung_minh_nhan_dan_so_the_can_cuoc')}}</th>
@@ -71,42 +71,42 @@
                   </tr>
                   <tr v-if="users.student_role > 0">
                     <th scope="row">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</th>
-                    <td>{{ (users.confirm) ? 'Đã cấp' : 'Chưa cấp'}}</td>
+                    <td>{{ (users.confirm) ? trans.get('keys.da_cap')  : trans.get('keys.chua_cap')  }}</td>
                   </tr>
                   <tr v-if="users.student_role > 0">
                     <th scope="row">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</th>
-                    <td>{{ (users.confirm_address) ? users.city ? users.city.name : 'Chưa cập nhật' : 'Chưa cập nhật'}}</td>
+                    <td>{{ (users.confirm_address) ? users.city ? users.city.name : trans.get('keys.da_cap_nhat') : trans.get('keys.chua_cap_nhat') }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.tinh_trang_cong_tac')}}</th>
-                    <td>{{ (users.working_status == 0) ? 'Đang công tác' : 'Nghỉ công tác'}}</td>
+                    <td>{{ (users.working_status == 0) ? trans.get('keys.dang_cong_tac')  : trans.get('keys.nghi_cong_tac') }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.ngay_bat_dau_lam_viec')}}</th>
-                    <td>{{ users.start_time ? users.start_time : 'Chưa cập nhật'}}</td>
+                    <td>{{ users.start_time ? users.start_time : trans.get('keys.chua_cap_nhat') }}</td>
                   </tr>
-                  <tr>
-                    <th scope="row">{{trans.get('keys.noi_lam_viec')}}</th>
-                    <td>
-                      <!--<p v-if="users.salerooms" v-for="saleroom in users.salerooms">
-                          {{ saleroom.saleroom.name }}
-                      </p>
-                      <span v-else>{{trans.get('keys.chua_cap_nhat')}}</span>-->
-                      <div v-if="users.salerooms" v-for="saleroom in users.salerooms" class="clearfix">
-                        <router-link v-if="saleroom.type == 'pos'" style="float:left;"
-                                     :to="{name: 'SaleroomIndex', query: {code: saleroom.code}}">
-                          {{ saleroom.name }} ( {{ trans.get('keys.diem_ban') }} )
-                        </router-link>
-                        <router-link v-else style="float:left;"
-                                     :to="{ name: 'BranchIndex', query: {code: saleroom.branch_code}}">
-                          {{ saleroom.branch_name }} ( {{ trans.get('keys.dai_ly') }} )
-                        </router-link>
-                      </div>
-                      <div v-else>
-                        <p>{{trans.get('keys.chua_cap_nhat')}}</p>
-                      </div>
-                    </td>
-                  </tr>
+<!--                  <tr>-->
+<!--                    <th scope="row">{{trans.get('keys.noi_lam_viec')}}</th>-->
+<!--                    <td>-->
+<!--                      &lt;!&ndash;<p v-if="users.salerooms" v-for="saleroom in users.salerooms">-->
+<!--                          {{ saleroom.saleroom.name }}-->
+<!--                      </p>-->
+<!--                      <span v-else>{{trans.get('keys.chua_cap_nhat')}}</span>&ndash;&gt;-->
+<!--                      <div v-if="users.salerooms" v-for="saleroom in users.salerooms" class="clearfix">-->
+<!--                        <router-link v-if="saleroom.type == 'pos'" style="float:left;"-->
+<!--                                     :to="{name: 'SaleroomIndex', query: {code: saleroom.code}}">-->
+<!--                          {{ saleroom.name }} ( {{ trans.get('keys.diem_ban') }} )-->
+<!--                        </router-link>-->
+<!--                        <router-link v-else style="float:left;"-->
+<!--                                     :to="{ name: 'BranchIndex', query: {code: saleroom.branch_code}}">-->
+<!--                          {{ saleroom.branch_name }} ( {{ trans.get('keys.dai_ly') }} )-->
+<!--                        </router-link>-->
+<!--                      </div>-->
+<!--                      <div v-else>-->
+<!--                        <p>{{trans.get('keys.chua_cap_nhat')}}</p>-->
+<!--                      </div>-->
+<!--                    </td>-->
+<!--                  </tr>-->
                   </tbody>
                 </table>
               </div>

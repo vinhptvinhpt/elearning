@@ -886,7 +886,9 @@
         "cai_dat": "Setting",
         "dang_xuat": "Logout",
         "khoa_hoc_truc_tuyen": "Online course",
-        "khoa_hoc_tap_trung": "Offline course"
+        "khoa_hoc_tap_trung": "Offline course",
+        "ratio": "Ratio",
+        "user_exam": "List retake exam users"
     },
     "vi.keys": {
         "language": "",
@@ -1775,7 +1777,7 @@
         "dang_xuat": "Đăng xuất",
         "khoa_hoc_truc_tuyen": "Khóa học trực tuyến",
         "khoa_hoc_tap_trung": "Khóa học tập trung",
-
-        "ratio": "Tỷ lệ"
+        "ratio": "Tỷ lệ",
+        "user_exam": "Danh sách học viên thi lại lý thuyết"
     }
 }

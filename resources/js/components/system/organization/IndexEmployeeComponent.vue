@@ -486,7 +486,7 @@
       //   }
       // }
     },
-    computed: { //Phải gọi trên html nó mới trigger computed value
+      computed: { //Phải gọi trên html nó mới trigger computed value
       filterPosition: function() {
         let default_response = [
           {
@@ -533,8 +533,8 @@
     watch: {
       roles_ready: function(newVal, oldVal) {
         if (newVal === true && oldVal === false) {
-          this.getRoleFromCurrentRoles(this.current_roles);
-          this.fetchOrganizationInfo(0);
+            this.getRoleFromCurrentRoles(this.current_roles);
+            this.fetchOrganizationInfo(this.organization_id);
         }
       }
     }
