@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Exports\ImportResultSheet;
 use App\Exports\ListMismatchData;
 use App\Http\Controllers\Controller;
 use App\Imports\DataImport;
+use App\Imports\EmployeeImport;
 use App\MdlEnrol;
 use App\MdlGradeGrade;
 use App\MdlGradeItem;
@@ -666,8 +668,13 @@ class BackgroundController extends Controller
 
             $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
 
-            $list_uploaded = (new DataImport)->toArray($file_path, '', '');
+            $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+
+            $list_uploaded = (new EmployeeImport())->toArray($file_path, '', '');
+
             $response = array();
+
+            echo count($response);die;
 
             foreach ($list_uploaded as $user) {
 
@@ -676,7 +683,7 @@ class BackgroundController extends Controller
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
                 $stt = $user[0];
-                if (!is_numeric($stt)) {
+                if (!is_numeric($stt) || $stt == 0) {
                     continue;
                 }
 
@@ -692,6 +699,7 @@ class BackgroundController extends Controller
                     $errors[] = 'Position is not available';
                 }
 
+                //Check / create department
                 $department_name = $user[5];
                 if (strlen($department_name) == 0) {
                     $errors[] = 'Department is missing';
@@ -702,8 +710,10 @@ class BackgroundController extends Controller
                     ]);
                 }
 
-                $email = $user[25];
+
                 //Validate required fields
+                //email
+                $email = $user[26];
                 if (strlen($email) == 0) {
                     $errors[] = 'Email is missing';
                 } else {
@@ -711,7 +721,7 @@ class BackgroundController extends Controller
                         $errors[] = "Email is wrong format";
                     }
                 }
-
+                //name
                 $full_name = $user[1];
                 $first_name = $user[2];
                 $middle_name = $user[3];
@@ -728,21 +738,97 @@ class BackgroundController extends Controller
                 if (strlen($last_name) == 0) {
                     $errors[] = 'Last name is missing';
                 }
-
+                //cmtnd
                 $personal_id = $user[18];
                 if (strlen($personal_id) == 0) {
                     $errors[] = 'Personal id is missing';
                 }
 
-                $user = self::createEmployee(
-                    $role,
-                    $email,
-                    $email,
-                    1
+                $address = $user[17];
+                $phone = $user[24];
+                $phone2 = $user[25];
+                $skype = $user[27];
+
+                $gender = $user[12];
+
+                if (strtolower($gender) == 'nam') {
+                    $gender = 1;
+                } elseif (strtolower($gender) == 'nữ') {
+                    $gender = 0;
+                } else {
+                    $gender = -1;
+                }
+
+                $dob = "";
+                if (strlen($user[8]) == 0 || strlen($user[9]) == 0 || strlen($user[10]) == 0) {
+                    $errors[] = 'Personal id is missing';
+                } else {
+                    $dob_date = str_pad($user[8], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[9], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[10];
+
+                    $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
+                    $dob = strtotime($dob_string);
+                }
+
+                $start_time = "";
+                if (strlen($user[14]) == 0 || strlen($user[15]) == 0 || strlen($user[16]) == 0) {
+                    $start_date = str_pad($user[14], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[15], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[16];
+                    $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
+                    $start_time = strtotime($start_time_string);
+                }
+
+
+                $response_item = array(
+                    $stt,
+                    $full_name,
+                    '',
+                    ''
                 );
 
+                if (!empty($errors)) {
+                    $user = self::createEmployee(
+                        $role,
+                        $email,
+                        $email,
+                        $full_name,
+                        $first_name,
+                        $middle_name,
+                        $last_name,
+                        $personal_id,
+                        $phone,
+                        $phone2,
+                        $skype,
+                        $address,
+                        $gender,
+                        $dob,
+                        $start_time
+                    );
+                    $response_item[2] = 'success';
+                } else {
+                    $response_item[2] = 'error';
+                    $response_item[3] = implode("\n", $errors);
+                }
+
+                $response[] = $response_item;
+
+                dd($response);
             }
 
+            echo 123;die;
+
+            $result_file_name = "bg_import_error_" . $file_name . ".xlsx";
+
+            //xóa file cũ
+            if (Storage::exists($result_file_name)) {
+                Storage::delete($result_file_name);
+            }
+
+            //ghi file vào thư mục storage
+            $exportExcel = new ImportResultSheet('Import Result', $response);
+            $exportExcel->store($result_file_name, '', Excel::XLSX);
         }
     }
 
@@ -1161,20 +1247,18 @@ class BackgroundController extends Controller
         $role,
         $username,
         $email,
-        $personal_id,
         $full_name,
         $first_name,
         $middle_name,
         $last_name,
-
-
+        $personal_id,
         $phone,
-        $code,
+        $phone2,
+        $skype,
         $address,
-        $sex,
-        $timestamp,
-        $timestamp_start,
-        $working_status
+        $gender,
+        $dob,
+        $working_start_at
     ) {
 
     }
