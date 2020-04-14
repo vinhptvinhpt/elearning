@@ -59,6 +59,11 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiGetListTrainning($request);
     }
 
+    public function apiGetListTrainingForFilter()
+    {
+        return $this->trainningRepository->apiGetListTrainingForFilter();
+    }
+
     public function apiCreateTrainning(Request $request)
     {
         return $this->trainningRepository->store($request);

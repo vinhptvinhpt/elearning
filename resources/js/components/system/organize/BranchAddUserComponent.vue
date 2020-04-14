@@ -128,6 +128,7 @@
                 }
             },
             addUserBranch(){
+                let current_pos = this;
                 if(this.user_add.length  > 0){
                     axios.post('/system/organize/branch/add_user_by_branch',{
                         user_add:this.user_add,
@@ -138,7 +139,7 @@
                             this.user_add = [];
                         })
                         .catch(error => {
-                            roam_message('error','Lỗi hệ thống. Thao tác thất bại');
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 }
             },

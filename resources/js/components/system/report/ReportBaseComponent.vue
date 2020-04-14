@@ -128,13 +128,13 @@
                 yAxis: {
                     min: 0,
                     title: {
-                        text: 'Thống kê nhân viên'
+                        text: this.trans.get('keys.thong_ke_nhan_vien')
                     }
                 },
                 tooltip: {
                     headerFormat: '<span style="font-size:10px">{point.key}</span><table>',
                     pointFormat: '<tr><td style="color:{series.color};padding:0">{series.name}: </td>' +
-                        '<td style="padding:0"><b>{point.y} Nhân viên</b></td></tr>',
+                        '<td style="padding:0"><b>{point.y} ' +this.trans.get('keys.nhan_vien')+'</b></td></tr>',
                     footerFormat: '</table>',
                     shared: true,
                     useHTML: true
@@ -256,7 +256,7 @@
 
                         //City update
                         this.cityOptions.series = [{
-                            name: 'Tỉ lệ',
+                            name: this.trans.get('keys.ratio'),
                             colorByPoint: true,
                             data: city_data
                         }];
@@ -271,7 +271,7 @@
 
                         // //Đại lý update
                         this.branchOptions.series = [{
-                            name: 'Tỉ lệ',
+                            name: this.trans.get('keys.ratio'),
                             colorByPoint: true,
                             data: branch_data
                         }];
@@ -286,23 +286,23 @@
 
                         // //Điểm bán Update
                         this.saleroomOptions.series = [{
-                            name: 'Tỉ lệ',
+                            name: this.trans.get('keys.ratio'),
                             colorByPoint: true,
                             data: saleroom_data
                         }];
 
                         // //Khóa học Update
                         this.courseOptions.series = [{
-                            name: 'Tỉ lệ',
+                            name: this.trans.get('keys.ratio'),
                             colorByPoint: true,
                             data: [{
-                                name: 'Khóa học trực tuyến',
+                                name:  this.trans.get('keys.khoa_hoc_truc_tuyen'),
                                 y: this.data.course_online,
                                 //color: '#dc0511'
                                 /*sliced: true,
                                 selected: true*/
                             }, {
-                                name: 'Khóa học tập trung',
+                                name:  this.trans.get('keys.khoa_hoc_tap_trung'),
                                 y: this.data.course_offline,
                                 //color: '#3a55b1'
                             }]
@@ -396,11 +396,10 @@
                 })
             },
             fetchTraining() {
-              axios.post('/api/trainning/list', {
-                paginated: 0
-              })
+              axios.get('/api/training/list_for_filter')
                 .then(response => {
-                  this.training_options = response.data;
+                  // this.training_options = response.data;
+                    this.training_options = response.data.data.data;
                   //set first options
                   if(this.training_options.length !== 0) {
                     this.training_id = this.training_options[0].id;
@@ -408,7 +407,7 @@
                   this.training_ready = true;
                 })
                 .catch(error => {
-                  console.log(error.response.data);
+                  console.log(error);
                 });
             },
             setOptions(list) {

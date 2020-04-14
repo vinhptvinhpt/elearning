@@ -137,11 +137,11 @@
                     })
                         .then(response => {
                             if(response.data == 'success'){
-                                toastr['success']("Gán chức năng chi tiết thành công.", current_pos.trans.get('keys.thanh_cong'));
+                                toastr['success'](current_pos.trans.get('keys.gan_chuc_nang_chi_tiet_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                                 current_pos.$router.push({ name: 'AddPermission', params: {slug: current_pos.slug} });
                                 current_pos.listPermissionDetail();
                             }else if(response.data == 'warning'){
-                              toastr['warning']("Key đã tồn tại.", current_pos.trans.get('keys.thong_bao'));
+                              toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
                             }else{
                               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             }
@@ -154,8 +154,8 @@
             deletePost(url) {
                 let current_pos = this;
                 swal({
-                    title: "Bạn muốn xóa mục đã chọn",
-                    text: "Chọn 'ok' để thực hiện thao tác.",
+                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "error",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -163,7 +163,7 @@
                 }, function () {
                     axios.post(url)
                         .then(response => {
-                          toastr['success']("Xóa thành công!", current_pos.trans.get('keys.thanh_cong'));
+                          toastr['success'](current_pos.trans.get('keys.xoa_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                             current_pos.$router.push({ name: 'AddPermission', params: {slug: current_pos.slug} });
                             swal.close();
                             current_pos.listPermissionDetail();

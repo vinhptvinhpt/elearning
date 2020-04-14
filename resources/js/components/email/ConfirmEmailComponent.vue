@@ -31,6 +31,7 @@
           });
       },
       logout() {
+          let current_pos = this;
         $.ajax({
           type: "POST",
           url: '/bgtlogout',
@@ -44,8 +45,8 @@
               window.location.href = "/";
             } else {
               swal({
-                title: "Lỗi hệ thống",
-                text: "Logout Error!!!",
+                  title: current_pos.trans.get('keys.thong_bao'),
+                text: current_pos.trans.get('keys.logout_error'),
                 type: "error",
                 showCancelButton: false,
                 closeOnConfirm: false,
