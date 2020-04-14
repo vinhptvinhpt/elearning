@@ -319,9 +319,6 @@ class ExcelController extends Controller
             );
         }
 
-        dd($export_data);
-
-
         $exportExcel = new ReportDetailSheet('Report Detail', $export_data, $type);
 
         $filename = "report_detail.xlsx";
