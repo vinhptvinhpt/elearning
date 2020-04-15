@@ -861,7 +861,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
             DB::commit();
             $response->status = true;
-            $response->message = 'success';
+            $response->message = __('thao_tac_thanh_cong');
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;
