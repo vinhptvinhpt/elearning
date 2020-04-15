@@ -13634,17 +13634,22 @@ class BussinessRepository implements IBussinessInterface
             $ids = array();
             $ids_error = '';
             // End_date rỗng insert bình thường
-            if (empty($end_date)) {
-                $ids = $lstUserIDs;
-            } else {
-                foreach ($lstUserIDs as $user_id) {
-                    if (checkUserEnrol($user_id, $start_date, $end_date)) {
-                        array_push($ids, $user_id);
-                    } else {
-                        $ids_error .= MdlUser::find($user_id)->username . ', ';
-                    }
+
+            //id category
+            $category = 5;
+
+//            if (empty($end_date)) {
+//                $ids = $lstUserIDs;
+//            } else {
+            foreach ($lstUserIDs as $user_id) {
+                if (checkUserEnrol($user_id, $start_date, $end_date, $category)) {
+                    array_push($ids, $user_id);
+                }
+                else {
+                    $ids_error .= MdlUser::find($user_id)->username . ', ';
                 }
             }
+//            }
 
             enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
 

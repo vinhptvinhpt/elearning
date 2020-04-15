@@ -471,7 +471,7 @@
               if (response.data.status) {
                 if (response.data.otherData !== '') {
                   response.data.otherData = response.data.otherData.substring(0, response.data.otherData.length - 2);
-                  alert('Tài khoản: ' + response.data.otherData + ' trùng lịch.');
+                  alert(this.trans.get('keys.tai_khoan')+' ' + response.data.otherData + ' '+this.trans.get('keys.trung_lich'));
                 } else {
                   toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                 }
