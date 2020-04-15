@@ -152,14 +152,14 @@
                                                 </a>
 
                                                 <router-link :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2"
+                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'InviteStudent', params: { id: course.id, come_from: 'offline', course_name: course.fullname } }">
                                                         <span class="btn-icon-wrap"><i
                                                           class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
                                                 <router-link :title="trans.get('keys.ghi_danh_khoa_hoc')"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'CourseEnrol', params: { id: course.id, come_from: 'offline' } }">
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>

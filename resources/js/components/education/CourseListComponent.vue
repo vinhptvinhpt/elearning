@@ -158,12 +158,12 @@
                                             </td>
                                             <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>
                                             <td class="text-center mobile_hide">
-                                              <span v-if="course.visible==1">
+                                              <span v-if="course.visible == 1">
                                              <i class="fa fa-toggle-on" @click="approveCourse(course.id,course.visible)"
                                                 style="color:#3a55b1; cursor: pointer; font-size: 25px;"
                                                 aria-hidden="true"></i>
                                                  </span>
-                                                <span v-if="course.visible==0">
+                                                <span v-if="course.visible == 0">
                                              <i class="fa fa-toggle-off"
                                                 @click="approveCourse(course.id,course.visible)"
                                                 style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
@@ -178,15 +178,17 @@
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
 
-                                                <router-link :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2"
+                                                <router-link
+                                                  :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
+                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'InviteStudent', params: { id: course.id, come_from: 'online', course_name: course.fullname } }">
                                                       <span class="btn-icon-wrap"><i
                                                         class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
-                                                <router-link :title="trans.get('keys.ghi_danh_khoa_hoc')"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                <router-link
+                                                  :title="trans.get('keys.ghi_danh_khoa_hoc')"
+                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'CourseEnrol', params: { id: course.id, come_from: 'online' } }">
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>
