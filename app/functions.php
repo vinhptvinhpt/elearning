@@ -2615,7 +2615,7 @@ function validate_fails($request, $param)
                 case 'phone':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            "regex:/^[0-9\.\-\s]*$/i"
+                            "regex:/^[0-9\+\.\-\s]*$/i"
                         ],
                     ]);
                     if (
@@ -3192,27 +3192,63 @@ function api_has_permission()
 }
 
 // Kiểm tra user có thể enrol
-function checkUserEnrol($user_id, $start_date, $end_date)
+function checkUserEnrol($user_id, $start_date, $end_date, $category)
 {
     $courses = DB::table('mdl_user_enrolments as ue')
         ->join('mdl_enrol as e', 'e.id', '=', 'ue.enrolid')
         ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
         ->where('e.enrol', '=', 'manual')
-        ->where('ue.userid', '=', $user_id);
+        ->where('ue.userid', '=', $user_id)
+        ->where('c.category', '=', $category)
+        ->orderBy('c.startdate', 'asc');
 
-    $maxDate = $courses->max('c.enddate');
-    $minDate = $courses->min('c.startdate');
+    $count = $courses->count();
 
-    // Nếu k có $maxDate return true
-    if (empty($maxDate) || (empty($maxDate) && empty($minDate))) {
+    if ($count == 1) {
+        $maxDate = $courses->max('c.enddate');
+        $minDate = $courses->min('c.startdate');
+
+        // Nếu k có $maxDate return true
+        if (empty($maxDate) || (empty($maxDate) && empty($minDate))) {
+            return true;
+        }
+
+        // Xử lý tồn tại $minDate và $maxDate
+        if ($maxDate > 0 && $minDate && $end_date > 0 && ($start_date >= $maxDate || $end_date <= $minDate)) {
+            return true;
+        }
+
+        //xử lý nếu không có ngày kết thúc
+        if ($end_date == 0 && $start_date >= $maxDate) {
+            return true;
+        }
+
+        return false;
+
+    } elseif ($count > 1) {
+        $dem = 1;
+        $courses = $courses->get();
+        foreach ($courses as $c) {
+            $minDate = $c->enddate;
+            $maxDate = $courses[$dem]->startdate;
+            // Xử lý tồn tại $minDate và $maxDate
+            if ($minDate > 0 && (($start_date <= $minDate && $start_date >= $maxDate)  || $end_date >= $maxDate )) {
+                return false;
+            }
+            //ngày kết thúc khóa học đang check = 0 và ngày bắt đầu khóa học đang enrol > = ngày bắt đầu khóa học đang check => trùng
+            if($minDate == 0 && $start_date >= $maxDate)
+                return false;
+            //ngày kết thúc đang enrol = 0 => nếu ngày bắt đầu khóa học đang enrol <= ngày bắt đầu khóa học đang check => trùng
+            if($end_date == 0 && $start_date <= $maxDate)
+                return false;
+            if($dem < $count-1)
+                $dem++;
+        }
+
         return true;
     }
-    // Xử lý tồn tại $minDate và $maxDate
-    if ($maxDate && $minDate && ($start_date >= $maxDate || $end_date <= $minDate)) {
-        return true;
-    }
 
-    return false;
+    return true;
 }
 
 // lưu thông tin tài khoản vào tms_nofitications

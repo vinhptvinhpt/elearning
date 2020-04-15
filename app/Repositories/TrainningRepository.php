@@ -443,8 +443,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstCourseTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('mdl_course as c', 'c.id', '=', 'ttc.sample_id')
-            ->where('ttc.trainning_id', '=', $trainning_id)
-            ->where('ttc.deleted', '=', 0)
+//            ->where('ttc.trainning_id', '=', $trainning_id)
+            ->where('ttc.deleted', '=', 1)
             ->select('c.id')->groupBy('ttc.sample_id')->pluck('c.id');
 
         $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
@@ -525,7 +525,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         $course->startdate = $course_sample->startdate;
                         $course->enddate = $course_sample->enddate;
 
-                        $course->visible = 0;
+                        $course->visible = 1; //tao ra 1 khoa hoc moi, mac dinh set khoa hoc do dc active
 
                         $course->save();
 
@@ -861,7 +861,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
             DB::commit();
             $response->status = true;
-            $response->message = 'success';
+            $response->message = __('thao_tac_thanh_cong');
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;

@@ -487,7 +487,7 @@ const routes = [
       },
       //Report
       {
-        path: 'report',
+        path: 'report/detail',
         //component: ReportIndexComponent,
         component: ReportDetailComponent,
         name: 'ReportIndex'

@@ -281,7 +281,7 @@
                 phone:'',
                 cmtnd:'',
                 address:'',
-                inputRole: [5],
+                inputRole: [],
                 roles:[],
                 sex: 1,
                 code: '',
@@ -325,8 +325,14 @@
         },
         methods: {
             acceptNumber() {
-                var x = this.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-                this.phone = !x[2] ? x[1] :  x[1] + '' + x[2] + (x[3] ? '' + x[3] : '');
+              let has_plus = false;
+              if (this.phone.indexOf('+') === 0) {
+                has_plus = true;
+              }
+              let x = this.phone.replace(/\D/g,'');
+              if (has_plus === true) {
+                this.phone = '+' + x;
+              }
             },
             myFilterBy: (option, label, search) => {
               if (!label) {

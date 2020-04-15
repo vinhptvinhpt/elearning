@@ -456,6 +456,7 @@ class ExcelController extends Controller
         $keyword = $request->input('keyword');
         $course_id = $request->input('course_id');
         $course_name = $request->input('course_name');
+        $course_code = $request->input('course_code');
 
         $param = [
             'course_id' => 'number',
@@ -526,9 +527,9 @@ class ExcelController extends Controller
             );
         }
 
-        $exportExcel = new AttendanceSheet($course_name, $export_data);
+        $exportExcel = new AttendanceSheet($course_code, $export_data);
 
-        $filename = $course_name . " Attendance List.xlsx";
+        $filename = $course_code . " Attendance List.xlsx";
 
         $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
 

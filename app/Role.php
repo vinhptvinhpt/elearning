@@ -46,6 +46,7 @@ class Role extends Model
         self::MANAGE_MARKET,
         self::COURSE_CREATOR,
         self::EDITING_TEACHER,
+        self::STUDENT,
     ];
 
     const arr_role_organization = [

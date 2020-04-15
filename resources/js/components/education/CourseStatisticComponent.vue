@@ -661,7 +661,8 @@
                 axios.post('/api/exportAttendance', {
                     keyword: this.keywordAtt,
                     course_id: this.course_id,
-                    course_name: this.course.fullname
+                    course_name: this.course.fullname,
+                    course_code: this.course.shortname
                 })
                     .then(response => {
                         let file_name = response.data;
