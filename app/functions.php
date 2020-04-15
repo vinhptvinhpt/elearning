@@ -2615,7 +2615,7 @@ function validate_fails($request, $param)
                 case 'phone':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            "regex:/^[0-9\.\-\s]*$/i"
+                            "regex:/^[0-9\+\.\-\s]*$/i"
                         ],
                     ]);
                     if (

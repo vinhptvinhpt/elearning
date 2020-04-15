@@ -37,6 +37,7 @@ Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfir
 
 //Import user by excel file
 Route::get('/cron/background/importEmployee', 'Api\BackgroundController@importEmployee');
+Route::get('/cron/background/import', 'Api\BackgroundController@import');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
