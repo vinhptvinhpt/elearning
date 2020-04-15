@@ -405,8 +405,14 @@
         },
         methods:{
             acceptNumber() {
-                var x = this.users.phone.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
-                this.users.phone = !x[2] ? x[1] :  x[1] + '' + x[2] + (x[3] ? '' + x[3] : '');
+                let has_plus = false;
+                if (this.users.phone.indexOf('+') === 0) {
+                  has_plus = true;
+                }
+                let x = this.users.phone.replace(/\D/g,'');
+                if (has_plus === true) {
+                  this.users.phone = '+' + x;
+                }
             },
             changeOption(){
                 if(this.option_work === 'pos'){

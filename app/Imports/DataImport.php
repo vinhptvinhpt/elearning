@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Concerns\WithCalculatedFormulas;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithConditionalSheets;
 use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 
 class DataImport implements ToModel, WithCalculatedFormulas, WithColumnFormatting, WithMultipleSheets
 {
@@ -30,7 +31,7 @@ class DataImport implements ToModel, WithCalculatedFormulas, WithColumnFormattin
     public function columnFormats(): array
     {
         return [
-            'I' => NumberFormat::FORMAT_DATE_DDMMYYYY,
+            //'I' => NumberFormat::FORMAT_DATE_DDMMYYYY,
         ];
     }
 
@@ -44,6 +45,7 @@ class DataImport implements ToModel, WithCalculatedFormulas, WithColumnFormattin
             'DiemBanHang k giay chung nhan' => new FirstSheetImport(),
             'DS tạo tk' => new FirstSheetImport(),
             'Sheet1' => new FirstSheetImport(),
+            'Staff List' => new FirstSheetImport(),
         ];
     }
 

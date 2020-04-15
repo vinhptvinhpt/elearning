@@ -76,18 +76,19 @@ class ImportResultSheet implements WithTitle, WithHeadings, FromArray, WithMappi
                     $event->sheet->getDelegate()->getColumnDimensionByColumn($i)->setWidth(20);
                 }
 
-
                 //Duyệt content và set style
-                foreach ($this->content as $line) {
 
-                    $color = 'FFFFFF';
 
-                    $stt = $line[0] + 1;
+                foreach ($this->content as $stt => $line) {
+
+                    $color = 'ffffff';
+
+                    $stt = $stt + 2; //bỏ heading row => tăng thêm 2 vì bắt đầu từ 0
 
                     if ($line[2] == 'success') {
-                        $color = '5BBFDE';
+                        $color = '99ff99';
                     } elseif ($line[2] == 'error') {
-                        $color = 'E0E3E4';
+                        $color = 'ffcc66';
                     }
 
                     //Set màu cho các row
@@ -97,7 +98,7 @@ class ImportResultSheet implements WithTitle, WithHeadings, FromArray, WithMappi
                         ->getStartColor()
                         ->setARGB($color);
 
-                    //Enable xuống dòng cacs rows
+                    //Enable xuống dòng các rows
                     $event->sheet->getDelegate()->getStyle("A$stt:D$stt")
                         ->getAlignment()
                         ->setVertical(Alignment::VERTICAL_TOP)
@@ -120,6 +121,13 @@ class ImportResultSheet implements WithTitle, WithHeadings, FromArray, WithMappi
                 ];
                 $event->sheet->getDelegate()->getStyle('A1:D1')
                     ->applyFromArray($styleArray);
+
+                //Fill color heading rows
+                $event->sheet->getDelegate()->getStyle("A1:D1")
+                    ->getFill()
+                    ->setFillType(Fill::FILL_SOLID)
+                    ->getStartColor()
+                    ->setARGB('E0E3E4');
 
                 //$event->sheet->getDelegate()
                 //->getStyle('A1:D1')

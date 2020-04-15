@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class AddAccessIpToMdlCourse extends Migration
+class AddDescriptionToTmsOrganizationEmployeeTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class AddAccessIpToMdlCourse extends Migration
      */
     public function up()
     {
-        Schema::table('mdl_course', function (Blueprint $table) {
-            $table->string('access_ip');
+        Schema::table('tms_organization_employee', function (Blueprint $table) {
+            $table->string('description', 255)->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class AddAccessIpToMdlCourse extends Migration
      */
     public function down()
     {
-        Schema::table('mdl_course', function (Blueprint $table) {
-            $table->dropColumn('access_ip');
+        Schema::table('tms_organization_employee', function (Blueprint $table) {
+            $table->dropColumn('description');
         });
     }
 }

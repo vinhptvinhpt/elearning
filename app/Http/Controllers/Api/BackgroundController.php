@@ -6,7 +6,6 @@ use App\Exports\ImportResultSheet;
 use App\Exports\ListMismatchData;
 use App\Http\Controllers\Controller;
 use App\Imports\DataImport;
-use App\Imports\EmployeeImport;
 use App\MdlEnrol;
 use App\MdlGradeGrade;
 use App\MdlGradeItem;
@@ -24,6 +23,7 @@ use App\TmsDepartments;
 use App\TmsNotification;
 use App\TmsNotificationLog;
 use App\TmsOrganization;
+use App\TmsOrganizationEmployee;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
@@ -649,6 +649,15 @@ class BackgroundController extends Controller
     {
         set_time_limit(0);
 
+
+        $manager_keys = array(
+            'manager',
+            'officer',
+            'director',
+            'controller',
+            'chief'
+        );
+
         $dir = storage_path() . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "import";
         //return files or folders in directory above
         $files = scandir($dir);
@@ -670,13 +679,13 @@ class BackgroundController extends Controller
 
             $file_name = pathinfo($file_path, PATHINFO_FILENAME);
 
-            $list_uploaded = (new EmployeeImport())->toArray($file_path, '', '');
+            $list_uploaded = (new DataImport())->toArray($file_path, '', '');
 
             $response = array();
 
-            echo count($response);die;
+            $list_employee = $list_uploaded['Staff List'];
 
-            foreach ($list_uploaded as $user) {
+            foreach ($list_employee as $user) {
 
                 $errors = array();
 
@@ -689,14 +698,17 @@ class BackgroundController extends Controller
 
                 $position_name = $user[6];
 
-                if (strpos($position_name, Role::ROLE_MANAGER)) {
+
+                if (strlen($position_name) == 0) {
+                    $errors[] = 'Position is missing';
+                }
+
+                if (str_replace($manager_keys, '', $position_name) != $position_name) {
                     $role = Role::ROLE_MANAGER;
-                } elseif (strpos($position_name, Role::ROLE_LEADER)) {
+                } elseif (strpos($position_name, Role::ROLE_LEADER) !== false) {
                     $role = Role::ROLE_LEADER;
-                } elseif (strpos($position_name, 'executive')) {
+                } else {
                     $role = Role::ROLE_EMPLOYEE;
-                } else { //Skip for other roles
-                    $errors[] = 'Position is not available';
                 }
 
                 //Check / create department
@@ -704,20 +716,20 @@ class BackgroundController extends Controller
                 if (strlen($department_name) == 0) {
                     $errors[] = 'Department is missing';
                 } else {
-                    $department = TmsOrganization::firstOrCreate([
+                    $organization = TmsOrganization::firstOrCreate([
                         'code' => strtoupper($department_name),
                         'name' => $department_name
                     ]);
                 }
 
-
                 //Validate required fields
                 //email
                 $email = $user[26];
+
                 if (strlen($email) == 0) {
                     $errors[] = 'Email is missing';
                 } else {
-                    if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
                         $errors[] = "Email is wrong format";
                     }
                 }
@@ -745,12 +757,12 @@ class BackgroundController extends Controller
                 }
 
                 $address = $user[17];
-                $phone = $user[24];
-                $phone2 = $user[25];
+                $phone = self::preparePhoneNo($user[24]);
+                $phone2 = self::preparePhoneNo($user[25]);
+
                 $skype = $user[27];
 
                 $gender = $user[12];
-
                 if (strtolower($gender) == 'nam') {
                     $gender = 1;
                 } elseif (strtolower($gender) == 'nữ') {
@@ -780,7 +792,6 @@ class BackgroundController extends Controller
                     $start_time = strtotime($start_time_string);
                 }
 
-
                 $response_item = array(
                     $stt,
                     $full_name,
@@ -788,8 +799,8 @@ class BackgroundController extends Controller
                     ''
                 );
 
-                if (!empty($errors)) {
-                    $user = self::createEmployee(
+                if (empty($errors)) {
+                    $user_id = self::createEmployee(
                         $role,
                         $email,
                         $email,
@@ -806,18 +817,27 @@ class BackgroundController extends Controller
                         $dob,
                         $start_time
                     );
-                    $response_item[2] = 'success';
-                } else {
+
+                    if (is_numeric($user_id)) { //tạo user thành công
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
+                        if (!is_numeric($employee)) {
+                            $errors[] = $employee;
+                        }
+                    } else {
+                        $errors[] = $user_id; //Tạo thất bại -> báo lỗi
+                    }
+                }
+
+                if (!empty($errors)) {
                     $response_item[2] = 'error';
                     $response_item[3] = implode("\n", $errors);
+                } else {
+                    $response_item[2] = 'success';
                 }
 
                 $response[] = $response_item;
 
-                dd($response);
             }
-
-            echo 123;die;
 
             $result_file_name = "bg_import_error_" . $file_name . ".xlsx";
 
@@ -826,10 +846,32 @@ class BackgroundController extends Controller
                 Storage::delete($result_file_name);
             }
 
-            //ghi file vào thư mục storage
+            //ghi file vào thư mục storage, không được mở file khi đang lưu nếu k sẽ lỗi k lưu được
             $exportExcel = new ImportResultSheet('Import Result', $response);
             $exportExcel->store($result_file_name, '', Excel::XLSX);
         }
+    }
+
+    function createOrganizationEmployee($organization_id, $user_id, $role, $description) {
+        $check = TmsOrganizationEmployee::with('organization')->where('user_id', $user_id)->first();
+        if (isset($check)) {
+            if ($check->organization_id != $organization_id) {
+                return __('nhan_vien_da_tham_gia_phong_ban_khac') . ": " . $check->organization->name;
+            }
+            //overwrite chức vụ
+            $check->position = $role;
+            $check->description = $description;
+            $check->save();
+        } else {
+            //tạo mới nếu chưa có
+            $check = new TmsOrganizationEmployee();
+            $check->user_id = $user_id;
+            $check->organization_id = $organization_id;
+            $check->position = $role;
+            $check->description = $description;
+            $check->save();
+        }
+        return $check->id;
     }
 
     function composeEmployeeErrorObject($stt, $cmtnd, $fullname, $message) {
@@ -1243,6 +1285,14 @@ class BackgroundController extends Controller
         return $resultOutput;
     }
 
+    function preparePhoneNo($phone) {
+        $plus = '';
+        if (strpos($phone, '+') === 0) {
+            $plus = '+';
+        }
+        return $plus . preg_replace("/[^0-9]/", "", $phone);
+    }
+
     public function createEmployee(
         $role,
         $username,
@@ -1252,7 +1302,7 @@ class BackgroundController extends Controller
         $middle_name,
         $last_name,
         $personal_id,
-        $phone,
+        $phone1,
         $phone2,
         $skype,
         $address,
@@ -1260,7 +1310,77 @@ class BackgroundController extends Controller
         $dob,
         $working_start_at
     ) {
+        $check = MdlUser::query()->where('email', $email)->first();
+        if (isset($check)) { //Cập nhật
+            try {
+                $check->redirect_type = 'lms';
+                $check->firstname = $first_name;
+                $check->middlename = $middle_name;
+                $check->lastname = $last_name;
+                $check->email = $email;
+                $check->phone1 = $phone1;
+                $check->phone2 = $phone2;
+                $check->skype = $skype;
+                $check->save();
 
+                //Xóa detail thừa
+                //TmsUserDetail::query()->where('email', $email)->delete();
+
+                //cập nhật thông tin chi tiết user
+                $user_detail = TmsUserDetail::query()->where('email', $email)->first();
+                if (!isset($user_detail)) {
+                    $user_detail = new TmsUserDetail();
+                }
+                $user_detail->user_id = $check->id;
+                $user_detail->cmtnd = $personal_id;
+                $user_detail->fullname = $full_name;
+                $user_detail->email = $email;
+                $user_detail->phone = $phone1;
+                $user_detail->address = $address;
+                $user_detail->sex = $gender;
+                $user_detail->confirm = 0;
+                $user_detail->dob = $dob;
+                $user_detail->working_status = 1;
+                $user_detail->start_time = $working_start_at;
+                $user_detail->save();
+
+
+                $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
+                if ($role) {
+                    //Auto thêm quyền học viên nếu chưa có
+                    self::add_user_by_role($check->id, 5);
+                    //Thêm quyền mới nếu chưa có
+                    self::add_user_by_role($check->id, $role['id']);
+                    //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+                }
+            } catch (Exception $e) {
+                return $e->getMessage();
+            }
+        } else { //Tạo mới
+            $check = self::createUserNew(
+                $role,
+                $username,
+                $email,
+                $full_name,
+                $first_name,
+                $middle_name,
+                $last_name,
+                $personal_id,
+                $phone1,
+                $phone2,
+                $skype,
+                $address,
+                $gender,
+                $dob,
+                $working_start_at
+            );
+
+            if (!is_object($check)) { //lỗi
+                return $check;
+            }
+        }
+        //Thành công trả về id của user
+        return $check->id;
     }
 
 
@@ -1525,6 +1645,90 @@ class BackgroundController extends Controller
         return $mdlUser->id;
     }
 
+    /**
+     * @param $role
+     * @param $username
+     * @param $email
+     * @param $full_name
+     * @param $first_name
+     * @param $middle_name
+     * @param $last_name
+     * @param $personal_id
+     * @param $phone1
+     * @param $phone2
+     * @param $skype
+     * @param $address
+     * @param $gender
+     * @param $dob
+     * @param $working_start_at
+     * @return mixed
+     */
+    public function createUserNew(
+        $role,
+        $username,
+        $email,
+        $full_name,
+        $first_name,
+        $middle_name,
+        $last_name,
+        $personal_id,
+        $phone1,
+        $phone2,
+        $skype,
+        $address,
+        $gender,
+        $dob,
+        $working_start_at
+    ) {
+        try {
+            $check = new MdlUser;
+            $check->username = $username;
+            $check->password = bcrypt('Easia@2020');
+            $check->redirect_type = 'lms';
+            $check->firstname = $first_name;
+            $check->middlename = $middle_name;
+            $check->lastname = $last_name;
+            $check->email = $email;
+            if (strlen($phone1) != 0) {
+                $check->phone1 = $phone1;
+            }
+            if (strlen($phone2) != 0) {
+                $check->phone2 = $phone2;
+            }
+            if (strlen($skype) != 0) {
+                $check->skype = $skype;
+            }
+            $check->active = 1;
+            $check->save();
+
+            $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
+            if ($role) {
+                //Auto thêm quyền học viên nếu chưa có
+                self::add_user_by_role($check->id, 5);
+                //Thêm quyền mới nếu chưa có
+                self::add_user_by_role($check->id, $role['id']);
+                //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+            }
+
+            $user_detail = new TmsUserDetail;
+            $user_detail->cmtnd = $personal_id;
+            $user_detail->fullname = $full_name;
+            $user_detail->email = $email;
+            $user_detail->phone = $phone1;
+            $user_detail->address = $address;
+            $user_detail->sex = $gender;
+            $user_detail->confirm = 0;
+            $user_detail->dob = $dob;
+            $user_detail->working_status = 1;
+            $user_detail->start_time = $working_start_at;
+            $user_detail->user_id = $check->id;
+            $user_detail->save();
+        } catch (Exception $e) {
+            return $e->getMessage();
+        }
+        return $check;
+    }
+
     public function RandomCMTND()
     {
         $checkUserCMTND = TmsUserDetail::where('cmtnd', 'like', "0000%")->get()->toArray();
@@ -1642,7 +1846,7 @@ class BackgroundController extends Controller
                     case 'phone':
                         $validator = Validator::make($array, [
                             $key => [
-                                "regex:/^[0-9\.\-\s]*$/i"
+                                "regex:/^[0-9\+\.\-\s]*$/i"
                             ],
                         ]);
                         if (

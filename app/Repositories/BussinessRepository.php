@@ -6359,10 +6359,11 @@ class BussinessRepository implements IBussinessInterface
         )
             ->where('tms_user_detail.deleted', 0)
             ->whereNotIn('mdl_user.username', ['admin']);
-        if ($roles != 0) {
-            $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
-            $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
-        }
+
+//        if ($roles != 0) {
+//            $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
+//            $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
+//        }
         //else {
         /*$listUsers = $listUsers->leftJoin('model_has_roles','model_has_roles.model_id','=','mdl_user.id');
         $listUsers = $listUsers->join('roles','roles.id','=','model_has_roles.role_id');*/
@@ -6378,7 +6379,7 @@ class BussinessRepository implements IBussinessInterface
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
-        }
+        }//
         if ($this->keyword) {
             $listUsers = $listUsers->where(function ($query) {
                 $query->orWhere('tms_user_detail.fullname', 'like', "%{$this->keyword}%")
