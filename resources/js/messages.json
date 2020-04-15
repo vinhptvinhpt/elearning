@@ -862,7 +862,10 @@
         "chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc": "This certificate is being specified as a template, so it cannot be deleted!",
         "ban_chua_chon_hoc_vien_nao": "You have not selected any students yet.",
         "ban_muon_cap_ma_hang_loat_tai_khoan_da_chon": "You want to batch code the selected accounts.",
-        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Grant code for successful accounts!"
+        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Grant code for successful accounts!",
+        "them_moi_nguoi_dung_vao_knl": "Add user to competency framework",
+        "them_vao_knl": "Add to competency framework",
+        "chua_chon_user": "You must choose user"
     },
     "vi.keys": {
         "language": "",
@@ -1725,6 +1728,9 @@
         "chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc": "Chứng chỉ này đang được chỉ định làm mẫu nên không xóa được!",
         "ban_chua_chon_hoc_vien_nao": "Bạn chưa chọn học viên nào.",
         "ban_muon_cap_ma_hang_loat_tai_khoan_da_chon": "Bạn muốn cấp mã hàng loạt tài khoản đã chọn.",
-        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Cấp mã cho các tài khoản thành công!"
+        "cap_ma_cho_cac_tai_khoan_thanh_cong": "Cấp mã cho các tài khoản thành công!",
+        "them_moi_nguoi_dung_vao_knl": "Thêm người dùng vào Khung năng lực",
+        "them_vao_knl": "Thêm vào khung năng lực",
+        "chua_chon_user": "Chưa chọn người dùng"
     }
 }

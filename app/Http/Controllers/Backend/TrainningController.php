@@ -11,7 +11,8 @@ class TrainningController extends Controller
 {
     private $bussinessRepository;
     private $trainningRepository;
-    public function __construct(BussinessRepository $bussinessRepository,TrainningRepository $trainningRepository)
+
+    public function __construct(BussinessRepository $bussinessRepository, TrainningRepository $trainningRepository)
     {
         $this->bussinessRepository = $bussinessRepository;
         $this->trainningRepository = $trainningRepository;
@@ -135,5 +136,15 @@ class TrainningController extends Controller
     public function apiUpdateUserBGT()
     {
         return $this->bussinessRepository->apiUpdateUserBGT();
+    }
+
+    public function apiGetUsersOutTrainning(Request $request)
+    {
+        return $this->trainningRepository->apiGetUsersOutTranning($request);
+    }
+
+    public function apiAddUserToTrainning(Request $request)
+    {
+        return $this->trainningRepository->apiAddUserToTrainning($request);
     }
 }

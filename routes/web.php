@@ -212,7 +212,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 //        Route::get('/en/certificate/student/uncertificate', 'Backend\StudentController@viewStudentUncertificate')->name('student.uncertificate');
 
 
-
 });
 
 Route::group(['prefix' => 'laravel-filemanager', 'middleware' => ['web', 'auth']], function () {
@@ -583,6 +582,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/trainning/update_sale', 'Backend\TrainningController@apiUpdateSale');
     Route::get('/api/trainning/update_branch', 'Backend\TrainningController@apiRemoveDataBranch');
     Route::get('/api/trainning/update_branch_sale/{key}', 'Backend\TrainningController@apiUpdateDataBranch');
+    Route::post('/api/trainning/getlistuserouttrainning', 'Backend\TrainningController@apiGetUsersOutTrainning');
+    Route::post('/api/trainning/addusertotrainning', 'Backend\TrainningController@apiAddUserToTrainning');
 
     Route::get('/report', 'Backend\ReportController@viewReport')->name('report.view');
     Route::post('/report/get_city_by_district', 'Backend\ReportController@apiGetCityByDistrict');
@@ -703,7 +704,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/checkrolesidebar', 'Backend\BackendController@checkRoleSidebar');
 
 
-
     //Organization new
     Route::post('/organization/list', 'Backend\OrganizationController@apiListOrganization');
     Route::post('/organization/create', 'Backend\OrganizationController@apiCreateOrganization');
@@ -740,7 +740,7 @@ Route::post('/loginfirst/executelogin', 'Backend\loginfirst\LoginFirstController
 //Route::get('/import', 'Backend\CourseController@importFile');
 
 // send mail xác nhận email trong tài khoản
-Route::get('/api/sendmailactive','Api\TaskController@sendMailActiveEmail');
+Route::get('/api/sendmailactive', 'Api\TaskController@sendMailActiveEmail');
 
 // active
 Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController@apiConfirmEmail');
