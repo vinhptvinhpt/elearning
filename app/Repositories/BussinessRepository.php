@@ -729,6 +729,10 @@ class BussinessRepository implements IBussinessInterface
 //                $result = callAPI('POST', $url, $data_del, false, '');
                 $course = MdlCourse::findOrFail($id);
                 $course->deleted = 1;
+                //Nếu đây là khóa học mẫu => update các row trong bảng tms_trainning_courses =1 để không vênh dữ liệu
+                if($course->category == 2){
+                    TmsTrainningCourse::where('sample_id','=',$id)->update(['deleted'=>'1']);
+                }
                 $course->save();
 
                 $result = 1;
