@@ -908,7 +908,7 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
 //        ->first();
 //    if (!$enrole) {
 
-    $enrole = MdlEnrol::firstOrCreate(
+    MdlEnrol::firstOrCreate(
         [
             'enrol' => 'manual',
             'courseid' => $course_id,

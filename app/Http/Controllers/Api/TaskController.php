@@ -529,6 +529,7 @@ class TaskController extends Controller
             //->where('r.name', '=', \App\Role::STUDENT)
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
+            ->groupBy(['ttu.user_id', 'ttc.course_id', 'r.mdl_role_id'])
             ->get();
 
         if ($courses) {

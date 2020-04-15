@@ -7,7 +7,7 @@
                     <img src="/assets/dist/img/logo-black.png" class="img-fluid" alt=""
                          style="margin-right: auto; margin-left: auto;">
                 </div>
-                <h3 class="login_title">Đào tạo trực tuyến </h3>
+                <h3 class="login_title">PHH Academy</h3>
                 <div class="form_box">
 
                     <form method="POST" class="login-form" id="loginform">
@@ -43,8 +43,7 @@
                             </label>
                         </div>
                         <button style="position: relative;" type="submit" class="btn btn-login btn-block mt-3">Đăng nhập
-                            <i
-                                    class="fa fa-spinner" aria-hidden="true"></i></button>
+                            <i class="fa fa-spinner" aria-hidden="true"></i></button>
 
                         <!-- Error Alert -->
                         <div class="alert alert-danger alert-dismissible message error loginFail"
@@ -133,7 +132,7 @@
     </div>
     <div class="form_confirm_wrap">
         <div class="form_confirm">
-            <h3 class="confirm_title">HỆ THỐNG<br><span>Đào tạo trực tuyến nhân viên bán hàng</span></h3>
+            <h3 class="confirm_title">PHH Academy</h3>
             <div class="content">
                 <p style="font-size: 1.1rem;font-weight: 500;">Bạn đã có giấy chứng nhận chưa ?</p>
                 <ul>
@@ -375,22 +374,22 @@
                         localStorage.setItem('auth.user', JSON.stringify(userinfo));
                         localStorage.setItem('auth.lang', 'vi');
                         sslssso.login(data.jwt);
-                        // loginLMS(data, callback);
+                        loginLMS(data, callback);
                         // // [VinhPT]
                         // // Check if description is student => bgt.tinhvan.com/lms else => bgt.tinhvan.com
-                        if (data.redirect_type.includes("lms")) {
-                            if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
-                                window.location.href = '{{Config::get('constants.domain.LMS')}}';
-                            } else {
-                                window.location.href = callback;
-                            }
-                        } else {
-                            if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
-                                window.location.href = '/tms/dashboard';
-                            } else {
-                                window.location.href = callback;
-                            }
-                        }
+                        {{--if (data.redirect_type.includes("lms")) {--}}
+                        {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
+                        {{--        window.location.href = '{{Config::get('constants.domain.LMS')}}';--}}
+                        {{--    } else {--}}
+                        {{--        window.location.href = callback;--}}
+                        {{--    }--}}
+                        {{--} else {--}}
+                        {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
+                        {{--        window.location.href = '/tms/dashboard';--}}
+                        {{--    } else {--}}
+                        {{--        window.location.href = callback;--}}
+                        {{--    }--}}
+                        {{--}--}}
 
                     } else if (
                         data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" ||
@@ -444,7 +443,7 @@
                         }
                     } else {
                         if (callback.includes('{{Config::get('constants.domain.TMS')}}')) {
-                            window.location.href = '/dashboard';
+                            window.location.href = '/tms/dashboard';
                         } else {
                             window.location.href = callback;
                         }

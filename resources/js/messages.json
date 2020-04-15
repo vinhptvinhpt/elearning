@@ -887,6 +887,9 @@
         "dang_xuat": "Logout",
         "khoa_hoc_truc_tuyen": "Online course",
         "khoa_hoc_tap_trung": "Offline course",
+        "them_moi_nguoi_dung_vao_knl": "Add user to competency framework",
+        "them_vao_knl": "Add to competency framework",
+        "chua_chon_user": "You must choose user",
         "ratio": "Ratio",
         "user_exam": "List retake exam users"
     },
@@ -1777,7 +1780,10 @@
         "dang_xuat": "Đăng xuất",
         "khoa_hoc_truc_tuyen": "Khóa học trực tuyến",
         "khoa_hoc_tap_trung": "Khóa học tập trung",
+        "user_exam": "Danh sách học viên thi lại lý thuyết",
         "ratio": "Tỷ lệ",
-        "user_exam": "Danh sách học viên thi lại lý thuyết"
+        "them_moi_nguoi_dung_vao_knl": "Thêm người dùng vào Khung năng lực",
+        "them_vao_knl": "Thêm vào khung năng lực",
+        "chua_chon_user": "Chưa chọn người dùng"
     }
 }
