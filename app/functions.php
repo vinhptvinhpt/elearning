@@ -314,7 +314,7 @@ function permission_slug()
                 'tms-system-activity-log-add' => 'Thêm',
                 'tms-system-activity-log-edit' => 'Sửa',
                 'tms-system-activity-log-deleted' => 'Xóa',
-                ]
+            ]
         ],
         'nav_educate' => [
             'tms-educate-libraly' => [
@@ -908,7 +908,7 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
 //        ->first();
 //    if (!$enrole) {
 
-    $enrole = MdlEnrol::firstOrCreate(
+    MdlEnrol::firstOrCreate(
         [
             'enrol' => 'manual',
             'courseid' => $course_id,
