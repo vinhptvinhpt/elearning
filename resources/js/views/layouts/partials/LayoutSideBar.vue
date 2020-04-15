@@ -376,7 +376,7 @@
                                 </router-link>
                             </li>
                             <li class="nav-item" v-if="slug_can('tms-report-report-view')">
-                                <router-link to="/tms/report" class="nav-link">
+                                <router-link to="/tms/report/detail" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.bao_cao_danh_gia') }}</span>
                                 </router-link>
                             </li>

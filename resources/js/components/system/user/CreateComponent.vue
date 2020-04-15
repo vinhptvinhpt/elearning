@@ -281,7 +281,7 @@
                 phone:'',
                 cmtnd:'',
                 address:'',
-                inputRole: [5],
+                inputRole: [],
                 roles:[],
                 sex: 1,
                 code: '',

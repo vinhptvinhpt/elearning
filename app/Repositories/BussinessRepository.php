@@ -729,6 +729,10 @@ class BussinessRepository implements IBussinessInterface
 //                $result = callAPI('POST', $url, $data_del, false, '');
                 $course = MdlCourse::findOrFail($id);
                 $course->deleted = 1;
+                //Nếu đây là khóa học mẫu => update các row trong bảng tms_trainning_courses =1 để không vênh dữ liệu
+                if($course->category == 2){
+                    TmsTrainningCourse::where('sample_id','=',$id)->update(['deleted'=>'1']);
+                }
                 $course->save();
 
                 $result = 1;
@@ -6529,16 +6533,25 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json(error_message('inputEmail', __('email_sai_dinh_dang')));
 
             \DB::beginTransaction();
+//            dd($inputRole);
+
+            //set default role contains student id = 5
+            if ($inputRole)
+                $inputRole .= ',5';
+            else
+                $inputRole = '5';
             //  Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->first();
+            $name_role = array("student");
             if ($type == 'teacher') {
-                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'teacher')->get()->toArray();
+                $name_role[] = "teacher";
+                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } elseif ($type == 'student') {
-                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->get()->toArray();
+                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } else {
                 if ($inputRole) {
                     $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('id', explode(',', $inputRole))->get()->toArray();
                 } else {
-                    $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->get()->toArray();
+                    $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
                 }
             }
             $convert_name = convert_name($fullname);
@@ -7341,6 +7354,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //            $checkStudent = false;
+            $roles[] = "5";
             if ($roles[0]) {
                 //$checkrole = false;
                 foreach ($roles as $role_id) {
@@ -13625,17 +13639,22 @@ class BussinessRepository implements IBussinessInterface
             $ids = array();
             $ids_error = '';
             // End_date rỗng insert bình thường
-            if (empty($end_date)) {
-                $ids = $lstUserIDs;
-            } else {
-                foreach ($lstUserIDs as $user_id) {
-                    if (checkUserEnrol($user_id, $start_date, $end_date)) {
-                        array_push($ids, $user_id);
-                    } else {
-                        $ids_error .= MdlUser::find($user_id)->username . ', ';
-                    }
+
+            //id category
+            $category = 5;
+
+//            if (empty($end_date)) {
+//                $ids = $lstUserIDs;
+//            } else {
+            foreach ($lstUserIDs as $user_id) {
+                if (checkUserEnrol($user_id, $start_date, $end_date, $category)) {
+                    array_push($ids, $user_id);
+                }
+                else {
+                    $ids_error .= MdlUser::find($user_id)->username . ', ';
                 }
             }
+//            }
 
             enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
 

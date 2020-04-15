@@ -19,11 +19,11 @@
           <div class="row">
             <div class="col-md-6">
               <label for="organization_id">{{ trans.get('keys.to_chuc')}}</label>
-              <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id" @input="callStatistic()"/>
+              <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id" @input="listData()"/>
             </div>
             <div class="col-md-6">
               <label for="training_select">{{ trans.get('keys.khung_nang_luc')}}</label>
-                <select id="training_select" v-model="training_id" class="custom-select" @change="callStatistic()">
+                <select id="training_select" v-model="training_id" class="custom-select" @change="listData()">
                   <option v-for="training_option in training_options" :value="training_option.id">
                     {{training_option.name}}
                   </option>
@@ -398,8 +398,8 @@
             fetchTraining() {
               axios.get('/api/training/list_for_filter')
                 .then(response => {
-                  // this.training_options = response.data;
-                    this.training_options = response.data.data.data;
+                  this.training_options = response.data;
+                  //   this.training_options = response.data.data.data;
                   //set first options
                   if(this.training_options.length !== 0) {
                     this.training_id = this.training_options[0].id;
