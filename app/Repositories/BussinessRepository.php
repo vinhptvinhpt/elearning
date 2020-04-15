@@ -6528,16 +6528,25 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json(error_message('inputEmail', __('email_sai_dinh_dang')));
 
             \DB::beginTransaction();
+//            dd($inputRole);
+
+            //set default role contains student id = 5
+            if ($inputRole)
+                $inputRole .= ',5';
+            else
+                $inputRole = '5';
             //  Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->first();
+            $name_role = array("student");
             if ($type == 'teacher') {
-                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'teacher')->get()->toArray();
+                $name_role[] = "teacher";
+                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } elseif ($type == 'student') {
-                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->get()->toArray();
+                $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } else {
                 if ($inputRole) {
                     $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('id', explode(',', $inputRole))->get()->toArray();
                 } else {
-                    $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->get()->toArray();
+                    $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
                 }
             }
             $convert_name = convert_name($fullname);
@@ -7340,6 +7349,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //            $checkStudent = false;
+            $roles[] = "5";
             if ($roles[0]) {
                 //$checkrole = false;
                 foreach ($roles as $role_id) {
