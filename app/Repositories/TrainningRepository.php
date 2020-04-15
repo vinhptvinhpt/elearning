@@ -11,6 +11,7 @@ use App\MdlCourseCompletionCriteria;
 use App\MdlEnrol;
 use App\MdlGradeCategory;
 use App\MdlGradeItem;
+use App\Role;
 use App\TmsTrainningCategory;
 use App\TmsTrainningCourse;
 use App\TmsTrainningGroup;
@@ -23,6 +24,7 @@ use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class TrainningRepository implements ITranningInterface, ICommonInterface
@@ -303,19 +305,15 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json([]);
         }
 
-//        $lstData = TmsTrainningProgram::select('id', 'code', 'name')->where('deleted', '=', 0);
-
-        $leftJoin = '(select ttu.trainning_id as tr_id, count(ttu.id) as total_user from tms_traninning_users as ttu) as ttus';
-        $leftJoin = DB::raw($leftJoin);
         $lstData = DB::table('tms_traninning_programs as ttp')
-            ->leftJoin($leftJoin, 'ttus.tr_id', '=', 'ttp.id')
-            ->select('ttp.id', 'ttp.code', 'ttp.name', 'ttus.total_user')
+            ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
+            ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
             ->where('ttp.deleted', '=', 0);
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
-                $query->orWhere('code', 'like', "%{$this->keyword}%")
-                    ->orWhere('name', 'like', "%{$this->keyword}%");
+                $query->orWhere('ttp.code', 'like', "%{$this->keyword}%")
+                    ->orWhere('ttp.name', 'like', "%{$this->keyword}%");
             });
         }
 
@@ -326,8 +324,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         $lstData = $lstData->orderBy('ttp.id', 'desc');
+
         if(is_null($row) || $row == 0)
             $row = 5;
+
+        $lstData->groupBy('ttp.id');
+
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);
         $response = [
@@ -696,30 +698,23 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json([]);
             }
 
-            $data = TmsTrainningUser::with([
-                'user_detail.user',
-//                'user_detail.trainning_user.training_detail'
-            ]);
+            $data = DB::table('tms_traninning_users as ttu')
+                ->join('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
+                ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+                ->where('mu.active', '=', 0)
+                ->select('ttu.id as id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($trainning != 0) {
-                $data = $data->where('trainning_id', '=', $trainning);
+                $data = $data->where('ttu.trainning_id', '=', $trainning);
             }
 
             if ($keyword) {
-                $data = $data->whereHas('user_detail.user', function ($query) use ($keyword) {
-                    // Query the name field in status table
-                    $query->where(function ($q) use ($keyword) {
-                        $q->where('fullname', 'like', "%{$keyword}%")
-                            ->orWhere('email', 'like', "%{$keyword}%")
-                            ->orWhere('username', 'like', "%{$keyword}%");
-                    });
-                });
-            } else {
-                $data = $data->whereHas('user_detail.user');
+                $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
             }
 
-            $data = $data->orderBy('user_id', 'desc');
-            $data = $data->groupBy('user_id');
+
+            $data = $data->orderBy('mu.id', 'desc');
+            $data = $data->groupBy('mu.id');
             $data = $data->paginate($row);
 
             $total = ceil($data->total() / $row);
@@ -741,14 +736,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     public function apiTrainningRemove(Request $request)
     {
         try {
-            $id = $request->input('id');
-            if (!$id || !is_numeric($id)) {
+            $user_id = $request->input('id');
+            if (!$user_id || !is_numeric($user_id)) {
                 return response()->json(status_message('error', __('dinh_dang_du_lieu_khong_hop_le')));
             }
-            TmsTrainningUser::find($id)->delete();
+//            TmsTrainningUser::find($id)->delete();
+            TmsTrainningUser::where('user_id', $user_id)->delete();
             return response()->json(status_message('success', __('cap_nhat_khung_nang_luc_thanh_cong')));
         } catch (\Exception $e) {
-            \DB::rollBack();
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
@@ -756,5 +751,122 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     public function detail($id)
     {
         // TODO: Implement detail() method.
+    }
+
+    //lay danh sach user ko nam trong KNL
+    public function apiGetUsersOutTranning(Request $request)
+    {
+        try {
+            $keyword = $request->input('keyword');
+            $row = $request->input('row');
+            $trainning = $request->input('trainning');
+
+            $param = [
+                'keyword' => 'text',
+                'row' => 'number',
+                'trainning' => 'number'
+            ];
+
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                return response()->json([]);
+            }
+
+            $leftJoin = '(SELECT ttu.trainning_id,ttu.user_id
+                        FROM tms_traninning_users ttu where ttu.trainning_id = ' . $trainning . ' group by ttu.user_id) as ttpu';
+
+            $leftJoin = DB::raw($leftJoin);
+
+            $data = DB::table('mdl_user as mu')
+                ->leftJoin($leftJoin, 'ttpu.user_id', '=', 'mu.id')
+                ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+                ->where('mu.active', '=', 0)
+                ->whereNull('ttpu.trainning_id')
+                ->select('ttpu.trainning_id as trainning_id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
+
+            if ($keyword) {
+                $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
+            }
+
+            $data = $data->orderBy('mu.id', 'desc');
+            $data = $data->groupBy('mu.id');
+            $data = $data->paginate($row);
+
+            $total = ceil($data->total() / $row);
+            $total_user = $data->total();
+            $response = [
+                'pagination' => [
+                    'total' => $total,
+                    'total_user' => $total_user,
+                    'current_page' => $data->currentPage(),
+                ],
+                'data' => $data,
+            ];
+            return response()->json($response);
+        } catch (\Exception $e) {
+            return response()->json([]);
+        }
+    }
+
+    //them nguoi dung vao KNL
+    public function apiAddUserToTrainning(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $lstUserIDs = $request->input('Users');
+
+            $param = [
+                'trainning_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            //add user to competency framework
+            DB::beginTransaction();
+            $queryArray = [];
+            $num = 0;
+            $limit = 300;
+
+            foreach ($lstUserIDs as $user_id) {
+                $queryItem = [];
+                $queryItem['trainning_id'] = $trainning_id;
+                $queryItem['user_id'] = $user_id;
+                array_push($queryArray, $queryItem);
+                $num++;
+                if ($num >= $limit) {
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+            }
+            TmsTrainningUser::insert($queryArray);
+
+            //lay danh sach course_id trong KNL
+            $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
+
+            // enroll user to course in competency framework
+            // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
+            // he thong dang set mac dinh user tao ra deu co quyen student
+
+            foreach ($courses as $course) {
+                enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
+                usleep(10);
+            }
+
+
+            DB::commit();
+            $response->status = true;
+            $response->message = 'success';
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
     }
 }
