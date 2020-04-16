@@ -5,10 +5,13 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item">
-              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" >
+            <li class="breadcrumb-item" v-if="selected_role === 'root'">
+              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
+            </li>
+            <li v-else class="breadcrumb-item">
+              {{ trans.get('keys.to_chuc') }}
             </li>
             <li class="breadcrumb-item active">{{ trans.get('keys.chi_tiet') }}</li>
           </ol>
@@ -96,7 +99,10 @@
                 <div class="row mt-3">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                      <router-link v-if="selected_role === 'root'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                        {{trans.get('keys.quay_lai')}}
+                      </router-link>
+                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
 
@@ -117,7 +123,12 @@
 <script>
   //import vPagination from 'vue-plain-pagination'
   export default {
-    props: ['id', 'source_page'],
+    props: {
+      source_page: Number,
+      current_roles: Object,
+      roles_ready: Boolean,
+      id: [ String, Number ]
+    },
     //components: {vPagination},
     data() {
       return {
@@ -140,7 +151,8 @@
             id: 0,
             label: this.trans.get('keys.chon_to_chuc')
           }
-        ]
+        ],
+        selected_role: 'user'
       }
     },
     methods: {
@@ -241,10 +253,30 @@
             //console.log(error);
             roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
           })
-      }
+      },
+      getRoleFromCurrentRoles (current_roles) {
+        if (current_roles.root_user === true) {
+          this.selected_role = 'root';
+        } else if (current_roles.has_role_manager === true) {
+          this.selected_role = 'manager';
+        } else if (current_roles.has_role_leader === true) {
+          this.selected_role = 'leader';
+        } else if (current_roles.has_user_market === true) {
+          this.selected_role = 'user_market';
+        } else {
+          this.selected_role = 'user';
+        }
+      },
     },
     mounted() {
       this.getData();
+    },
+    watch: {
+      roles_ready: function(newVal, oldVal) {
+        if (newVal === true && oldVal === false) {
+          this.getRoleFromCurrentRoles(this.current_roles);
+        }
+      }
     }
   }
 </script>
