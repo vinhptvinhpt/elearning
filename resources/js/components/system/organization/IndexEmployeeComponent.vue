@@ -5,10 +5,13 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item">
-              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}" >
+            <li class="breadcrumb-item" v-if="selected_role === 'root'">
+              <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
+            </li>
+            <li v-else class="breadcrumb-item">
+              {{ trans.get('keys.to_chuc') }}
             </li>
             <li v-if="organization_selected !== false" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{ organization_name }}</router-link></li>
             <li class="breadcrumb-item active">{{ trans.get('keys.nhan_vien') }}</li>
@@ -210,7 +213,8 @@
                     <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
                       <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                     </div>
-                    <router-link :to="{ name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm"  v-if="organization_id !== false">
+                    <router-link v-if="organization_id.length !== 0"
+                                 :to="{ name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm">
                       {{trans.get('keys.quay_lai')}}
                     </router-link>
                   </div>
@@ -242,8 +246,9 @@
       source_page: Number,
       current_roles: Object,
       roles_ready: Boolean,
-      organization_id: { //query string
-        default: '0'
+      organization_id: {
+        type: [ String, Number ],
+        default: ''
       }
     },
     data() {
@@ -326,7 +331,7 @@
             this.totalRow = response.data ? response.data.total : 0;
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           });
       },
       // createEmployee(){
@@ -386,15 +391,14 @@
       //     })
       // },
       onPageChange() {
-        if (this.organization_id !== '0') {
-          //Truyền organization_id
+
+        this.organization_id = this.organization_id.toString();
+
+        if (this.organization_id.length !== 0) {
+          //Có truyền organization_id
           this.query_organization_id = parseInt(this.organization_id);
           this.fetchOrganizationInfo(this.query_organization_id);
-        } else if (
-          this.query_organization_id !== '0'
-          && this.query_organization_id !== 0
-          && typeof this.query_organization_id !== 'undefined'
-        ) {
+        } else if (this.query_organization_id !== 0 && typeof this.query_organization_id !== 'undefined') {
           //Chuyển trang khi đã có query_organization_id
           this.fetchOrganizationInfo(this.query_organization_id);
         }
@@ -447,7 +451,7 @@
             }
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           })
       },
       getRoleFromCurrentRoles(current_roles) {
@@ -533,8 +537,13 @@
     watch: {
       roles_ready: function(newVal, oldVal) {
         if (newVal === true && oldVal === false) {
-            this.getRoleFromCurrentRoles(this.current_roles);
-            this.fetchOrganizationInfo(this.organization_id);
+            this.organization_id = this.organization_id.toString();
+          this.getRoleFromCurrentRoles(this.current_roles);
+          if (this.organization_id.length === 0) {
+              this.fetchOrganizationInfo(0);
+          } else {
+            this.fetchOrganizationInfo(parseInt(this.organization_id));
+          }
         }
       }
     }

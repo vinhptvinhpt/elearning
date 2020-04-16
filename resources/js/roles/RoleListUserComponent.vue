@@ -255,6 +255,8 @@
                     })
                         .then(response => {
                             roam_message(response.data.status,response.data.message);
+                            this.getListAddUsers(this.current2);
+                            this.getListUsers(this.current);
                         })
                         .catch(error => {
                             roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
@@ -309,7 +311,7 @@
                     closeOnConfirm: true,
                     showLoaderOnConfirm: false
                 }, function () {
-                    axios.post('/role/list_user/remove_user',{
+                    axios.post('/role/list_user/remove_user_role',{
                         role_id:role_id,
                         user_id:user_id
                     })

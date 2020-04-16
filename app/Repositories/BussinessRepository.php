@@ -1311,6 +1311,11 @@ class BussinessRepository implements IBussinessInterface
 //            $result = callAPI('POST', $url, $data_res, false, '');
             $course = MdlCourse::findOrFail($id);
             $course->deleted = 0;
+            //nếu là thư viện khóa học => Cập nhật cả trong khung năng lực tms_trainning_courses vì
+            // khi xóa thư viện khóa học thì chuyển trạng thái khóa học đó trong knl = 1
+            if($course->category == 2){
+                TmsTrainningCourse::where('sample_id','=',$id)->update(['deleted'=>'0']);
+            }
             $course->save();
 
             $result = 1;
@@ -1464,45 +1469,6 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-
-        //xử lý lấy dữ liệu người dùng bên diva
-        //        if ($keyword) {
-        //            \DB::beginTransaction();
-        //            $checkUser = MdlUser::where('username', $keyword);
-        //            $checkUser = $checkUser->where('deleted', 0)->first();
-        //            if (!$checkUser) {
-        //
-        //                $url = Config::get('constants.domain.DIVA') . 'user/search?term=' . $keyword;
-        //
-        //                $result = callAPI('GET', $url, '', true, '');
-        //
-        //                $result = json_decode($result, true);
-        //
-        //                if ($result['code'] == 0 && !empty($result['data'])) {
-        //
-        //                    $mdl_user = new MdlUser();
-        //                    insert_user_search($result, $mdl_user, 'Bgt@2109');
-        //
-        //                    //Assign TMS
-        //                    //mặc định add tài khoản từ diva có quyền học viên
-        //                    $modelHasRole = ModelHasRole::where([
-        //                        'role_id' => 5,
-        //                        'model_id' => $mdl_user->id
-        //                    ])->first();
-        //                    if (!$modelHasRole) {
-        //                        $userRole = new ModelHasRole;
-        //                        $userRole->role_id = 5;
-        //                        $userRole->model_id = $mdl_user->id;
-        //                        $userRole->model_type = 'App/MdlUser';
-        //                        $userRole->save();
-        //
-        //                        enrole_lms($mdl_user->id, 5, 0); //mặc định set người dùng diva có quyền học viên
-        //                    }
-        //                }
-        //            }
-        //            \DB::commit();
-        //        }
-
 
         //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
         $userNeedEnrol = DB::table('model_has_roles')
@@ -3697,7 +3663,7 @@ class BussinessRepository implements IBussinessInterface
 
 //            //Thêm quyền bên LMS
 //            if (!empty($per_slug_input)) {
-//                apply_role_lms($role_id, $per_slug_input);
+                apply_role_lms($role_id, $per_slug_input);
 //            }
 
             $type = 'role';
@@ -6667,6 +6633,7 @@ class BussinessRepository implements IBussinessInterface
                     //                    enrole_lms($mdlUser->id, $role['mdl_role_id'], $confirm);
 
                     bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
+//                    bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 
                     usleep(100);
                 }
@@ -7341,16 +7308,24 @@ class BussinessRepository implements IBussinessInterface
             $root = MdlUser::where('username', 'admin')->first();
             if ($root['id'] == $user_id) {
                 $mdr_root = ModelHasRole::where('model_id', $root['id'])->get()->toArray();
+                dd($mdr_root);
                 if ($mdr_root) {
                     foreach ($mdr_root as $mhr) {
                         ModelHasRole::where([
                             'role_id' => $mhr['role_id'],
                             'model_id' => $mhr['model_id']
                         ])->delete();
+                        //remove role of user from table mdl_role_assignments for lms
+                        MdlRoleAssignments::where([
+                            'roleid' => $mhr['role_id'],
+                            'userid' => $mhr['model_id']
+                        ])->delete();
                     }
                 }
             } else {
                 ModelHasRole::where('model_id', $user_id)->delete();
+                //remove role of user from table mdl_role_assignments for lms
+                MdlRoleAssignments::where('userid', $user_id)->delete();
             }
 
             //            $checkStudent = false;
@@ -7365,9 +7340,9 @@ class BussinessRepository implements IBussinessInterface
                         //                        $checkStudent = true;
                     } else {
                         $mdlUser->redirect_type = 'default';
-                        MdlRoleAssignments::where([
-                            'userid' => $user_id
-                        ])->whereIn('roleid', [$role['mdl_role_id']])->delete();
+//                        MdlRoleAssignments::where([
+//                            'userid' => $user_id
+//                        ])->whereIn('roleid', [$role['mdl_role_id']])->delete();
                     }
                     //}
 
@@ -12189,6 +12164,10 @@ class BussinessRepository implements IBussinessInterface
                     'model_id' => $user_id,
                     'model_type' => 'App/MdlUser',
                 ])->delete();
+//                //Remove user LMS
+//                MdlRoleAssignments::where([ 'roleid' => $mdl_role_id, 'userid' => $user_id ])->delete();
+//                //Clear cache
+//                api_lms_clear_cache_enrolments($mdl_role_id, $user_id);
                 if($sale_room_id){
                     TmsSaleRoomUser::where([
                         'sale_room_id' => $sale_room_id,
@@ -12222,6 +12201,9 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $this->saleroom_id = $request->input('sale_room_id');
         $this->city_id = 0;
+        $role_id = $request->input('role_id');
+
+
 
         $param = [
             'keyword' => 'text',
@@ -12282,6 +12264,27 @@ class BussinessRepository implements IBussinessInterface
                         ->where('.tsru.type', '=', TmsSaleRoomUser::POS)
                         ->whereRaw('tsru.user_id = tud.user_id');
                 });
+        }
+
+        //Check đã tồn tại role
+        if (strlen($role_id) != 0) {
+            $check_role = Role::query()->where('id', $role_id)->first();
+            if (isset($check_role)) { //Check trong organization
+                if (in_array($check_role->name, Role::arr_role_organization)) {
+                    $data = $data->whereNotIn('tud.user_id', function ($query) {
+                            //check exist in table tms_nofitications
+                            $query->select('user_id')->from('tms_organization_employee');
+                        });
+                }
+            } else { //Check đã có role này rồi hay chưa
+                $data = $data->whereNotIn('tud.user_id', function ($query) use ($role_id) {
+                    //check exist in table tms_nofitications
+                    $query->select('model_id')
+                        ->from('model_has_roles')
+                        ->where('role_id', $role_id)
+                        ->where('model_type', 'App/MdlUser');
+                });
+            }
         }
 
         if ($this->keyword) {

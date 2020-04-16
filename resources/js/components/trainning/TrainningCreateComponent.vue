@@ -37,7 +37,7 @@
                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                 <select v-model="role" class="form-control selectpicker" id="inputRole" autocomplete="false">
                   <option value="0">{{trans.get('keys.chon_vai_tro')}}</option>
-                  <option v-for="item in roles" :value="item.id">{{item.name}}</option>
+                  <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                 </select>
               </div>
               <div class="col-sm-6 form-group">

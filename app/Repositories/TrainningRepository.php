@@ -325,7 +325,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstData = $lstData->orderBy('ttp.id', 'desc');
 
-        if(is_null($row) || $row == 0)
+        if (is_null($row) || $row == 0)
             $row = 5;
 
         $lstData->groupBy('ttp.id');
@@ -343,7 +343,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    public function apiGetListTrainingForFilter() {
+    public function apiGetListTrainingForFilter()
+    {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
             ->orderBy('id', 'desc')->get();
@@ -443,12 +444,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstCourseTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('mdl_course as c', 'c.id', '=', 'ttc.sample_id')
-//            ->where('ttc.trainning_id', '=', $trainning_id)
-            ->where('ttc.deleted', '=', 1)
+            ->where('ttc.trainning_id', '=', $trainning_id)
+            ->where('ttc.deleted', '=', 0)
             ->select('c.id')->groupBy('ttc.sample_id')->pluck('c.id');
 
         $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
+            ->where('deleted', '=', 0)
             ->whereNotIn('id', $lstCourseTrainning);
+
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -782,7 +785,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
                 ->where('mu.active', '=', 0)
                 ->whereNull('ttpu.trainning_id')
-                ->select('ttpu.trainning_id as trainning_id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
+                ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($keyword) {
                 $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
@@ -857,7 +860,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
                 usleep(10);
             }
-
 
             DB::commit();
             $response->status = true;

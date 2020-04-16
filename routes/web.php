@@ -420,6 +420,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/role/list_user/add_user_by_role', 'Backend\RoleController@apiAddUserByRole');
     Route::post('/role/list_user/list_user_role', 'Backend\RoleController@apiListUserByRole');
     Route::post('/role/list_user/remove_user', 'Backend\RoleController@apiRemoveUser');
+    Route::post('/role/list_user/remove_user_role', 'Backend\RoleController@apiRemoveUserRole');
     /*Route::post('/role/get_data_city', 'Backend\RoleController@apiGetDataCity');
     Route::post('/role/get_data_branch', 'Backend\RoleController@apiGetDataBranch');
     Route::post('/role/get_data_saleroom', 'Backend\RoleController@apiGetDataSaleroom');*/
@@ -585,6 +586,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/trainning/update_branch_sale/{key}', 'Backend\TrainningController@apiUpdateDataBranch');
     Route::post('/api/trainning/getlistuserouttrainning', 'Backend\TrainningController@apiGetUsersOutTrainning');
     Route::post('/api/trainning/addusertotrainning', 'Backend\TrainningController@apiAddUserToTrainning');
+    Route::get('/api/trainning/testapi', 'Backend\TrainningController@testAPI');
 
     Route::get('/report', 'Backend\ReportController@viewReport')->name('report.view');
     Route::post('/report/get_city_by_district', 'Backend\ReportController@apiGetCityByDistrict');
