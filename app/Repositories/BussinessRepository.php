@@ -3697,7 +3697,7 @@ class BussinessRepository implements IBussinessInterface
 
 //            //Thêm quyền bên LMS
 //            if (!empty($per_slug_input)) {
-//                apply_role_lms($role_id, $per_slug_input);
+                apply_role_lms($role_id, $per_slug_input);
 //            }
 
             $type = 'role';
@@ -6667,6 +6667,7 @@ class BussinessRepository implements IBussinessInterface
                     //                    enrole_lms($mdlUser->id, $role['mdl_role_id'], $confirm);
 
                     bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
+//                    bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 
                     usleep(100);
                 }
@@ -7341,16 +7342,24 @@ class BussinessRepository implements IBussinessInterface
             $root = MdlUser::where('username', 'admin')->first();
             if ($root['id'] == $user_id) {
                 $mdr_root = ModelHasRole::where('model_id', $root['id'])->get()->toArray();
+                dd($mdr_root);
                 if ($mdr_root) {
                     foreach ($mdr_root as $mhr) {
                         ModelHasRole::where([
                             'role_id' => $mhr['role_id'],
                             'model_id' => $mhr['model_id']
                         ])->delete();
+                        //remove role of user from table mdl_role_assignments for lms
+                        MdlRoleAssignments::where([
+                            'roleid' => $mhr['role_id'],
+                            'userid' => $mhr['model_id']
+                        ])->delete();
                     }
                 }
             } else {
                 ModelHasRole::where('model_id', $user_id)->delete();
+                //remove role of user from table mdl_role_assignments for lms
+                MdlRoleAssignments::where('userid', $user_id)->delete();
             }
 
             //            $checkStudent = false;
@@ -7365,9 +7374,9 @@ class BussinessRepository implements IBussinessInterface
                         //                        $checkStudent = true;
                     } else {
                         $mdlUser->redirect_type = 'default';
-                        MdlRoleAssignments::where([
-                            'userid' => $user_id
-                        ])->whereIn('roleid', [$role['mdl_role_id']])->delete();
+//                        MdlRoleAssignments::where([
+//                            'userid' => $user_id
+//                        ])->whereIn('roleid', [$role['mdl_role_id']])->delete();
                     }
                     //}
 
@@ -12189,6 +12198,10 @@ class BussinessRepository implements IBussinessInterface
                     'model_id' => $user_id,
                     'model_type' => 'App/MdlUser',
                 ])->delete();
+//                //Remove user LMS
+//                MdlRoleAssignments::where([ 'roleid' => $mdl_role_id, 'userid' => $user_id ])->delete();
+//                //Clear cache
+//                api_lms_clear_cache_enrolments($mdl_role_id, $user_id);
                 if($sale_room_id){
                     TmsSaleRoomUser::where([
                         'sale_room_id' => $sale_room_id,

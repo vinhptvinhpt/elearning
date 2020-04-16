@@ -420,6 +420,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/role/list_user/add_user_by_role', 'Backend\RoleController@apiAddUserByRole');
     Route::post('/role/list_user/list_user_role', 'Backend\RoleController@apiListUserByRole');
     Route::post('/role/list_user/remove_user', 'Backend\RoleController@apiRemoveUser');
+    Route::post('/role/list_user/remove_user_role', 'Backend\RoleController@apiRemoveUserRole');
     /*Route::post('/role/get_data_city', 'Backend\RoleController@apiGetDataCity');
     Route::post('/role/get_data_branch', 'Backend\RoleController@apiGetDataBranch');
     Route::post('/role/get_data_saleroom', 'Backend\RoleController@apiGetDataSaleroom');*/

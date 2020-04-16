@@ -309,7 +309,7 @@
                     closeOnConfirm: true,
                     showLoaderOnConfirm: false
                 }, function () {
-                    axios.post('/role/list_user/remove_user',{
+                    axios.post('/role/list_user/remove_user_role',{
                         role_id:role_id,
                         user_id:user_id
                     })
