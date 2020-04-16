@@ -12235,6 +12235,9 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $this->saleroom_id = $request->input('sale_room_id');
         $this->city_id = 0;
+        $role_id = $request->input('role_id');
+
+
 
         $param = [
             'keyword' => 'text',
@@ -12295,6 +12298,27 @@ class BussinessRepository implements IBussinessInterface
                         ->where('.tsru.type', '=', TmsSaleRoomUser::POS)
                         ->whereRaw('tsru.user_id = tud.user_id');
                 });
+        }
+
+        //Check đã tồn tại role
+        if (strlen($role_id) != 0) {
+            $check_role = Role::query()->where('id', $role_id)->first();
+            if (isset($check_role)) { //Check trong organization
+                if (in_array($check_role->name, Role::arr_role_organization)) {
+                    $data = $data->whereNotIn('tud.user_id', function ($query) {
+                            //check exist in table tms_nofitications
+                            $query->select('user_id')->from('tms_organization_employee');
+                        });
+                }
+            } else { //Check đã có role này rồi hay chưa
+                $data = $data->whereNotIn('tud.user_id', function ($query) use ($role_id) {
+                    //check exist in table tms_nofitications
+                    $query->select('model_id')
+                        ->from('model_has_roles')
+                        ->where('role_id', $role_id)
+                        ->where('model_type', 'App/MdlUser');
+                });
+            }
         }
 
         if ($this->keyword) {
