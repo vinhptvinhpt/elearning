@@ -516,7 +516,7 @@ class TaskController extends Controller
 
     #endregion
 
-    public function autoEnrolTrainning()
+    public function autoEnrolTrainning1()
     {
         //ThoLd 31/12/2019
         //optimize query
@@ -579,6 +579,45 @@ class TaskController extends Controller
                 //write log to notifications
                 $this->insert_single_notification(\App\TmsNotification::MAIL, $course->user_id, \App\TmsNotification::ENROL, $course->course_id);
                 usleep(200);
+            }
+        }
+    }
+
+    //cron enroll user to competency framework
+    public function autoEnrolTrainning()
+    {
+        //lay danh sach khoa hoc theo tung khung nang luc
+        $lstData = DB::table('tms_trainning_courses as ttc')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.run_cron', '=', 1)
+            ->where('ttc.deleted', '=', 0)
+            ->select('ttc.trainning_id', 'ttc.course_id')->get();
+
+        if ($lstData) {
+            foreach ($lstData as $data) {
+                //raw query lay so hoc vien da enrol vao course
+                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue 
+                            join mdl_enrol me on me.id = mue.enrolid join mdl_course mc on mc.id = me.courseid
+                            where mc.id = ' . $data->course_id . ') as ue';
+
+                $leftJoin = DB::raw($leftJoin);
+
+                //lay danh sach hoc vien nam trong KNL chua dc enroll vao khoa hoc
+                $users = DB::table('tms_traninning_users as ttu')
+                    ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')
+                    ->leftJoin($leftJoin, 'ue.userid', '=', 'ttu.user_id')
+                    ->where('ttp.id', '=', $data->trainning_id)
+                    ->whereNull('ue.enrolid')->pluck('ttu.user_id')->toArray();
+
+
+                if (count($users) > 0) {
+                    // enroll user to course in competency framework
+                    // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
+                    // he thong dang set mac dinh user tao ra deu co quyen student
+                    cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, false);
+                }
+
+                usleep(100);
             }
         }
     }

@@ -1465,45 +1465,6 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        //xử lý lấy dữ liệu người dùng bên diva
-        //        if ($keyword) {
-        //            \DB::beginTransaction();
-        //            $checkUser = MdlUser::where('username', $keyword);
-        //            $checkUser = $checkUser->where('deleted', 0)->first();
-        //            if (!$checkUser) {
-        //
-        //                $url = Config::get('constants.domain.DIVA') . 'user/search?term=' . $keyword;
-        //
-        //                $result = callAPI('GET', $url, '', true, '');
-        //
-        //                $result = json_decode($result, true);
-        //
-        //                if ($result['code'] == 0 && !empty($result['data'])) {
-        //
-        //                    $mdl_user = new MdlUser();
-        //                    insert_user_search($result, $mdl_user, 'Bgt@2109');
-        //
-        //                    //Assign TMS
-        //                    //mặc định add tài khoản từ diva có quyền học viên
-        //                    $modelHasRole = ModelHasRole::where([
-        //                        'role_id' => 5,
-        //                        'model_id' => $mdl_user->id
-        //                    ])->first();
-        //                    if (!$modelHasRole) {
-        //                        $userRole = new ModelHasRole;
-        //                        $userRole->role_id = 5;
-        //                        $userRole->model_id = $mdl_user->id;
-        //                        $userRole->model_type = 'App/MdlUser';
-        //                        $userRole->save();
-        //
-        //                        enrole_lms($mdl_user->id, 5, 0); //mặc định set người dùng diva có quyền học viên
-        //                    }
-        //                }
-        //            }
-        //            \DB::commit();
-        //        }
-
-
         //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
         $userNeedEnrol = DB::table('model_has_roles')
             ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')

@@ -585,6 +585,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/trainning/update_branch_sale/{key}', 'Backend\TrainningController@apiUpdateDataBranch');
     Route::post('/api/trainning/getlistuserouttrainning', 'Backend\TrainningController@apiGetUsersOutTrainning');
     Route::post('/api/trainning/addusertotrainning', 'Backend\TrainningController@apiAddUserToTrainning');
+    Route::get('/api/trainning/testapi', 'Backend\TrainningController@testAPI');
 
     Route::get('/report', 'Backend\ReportController@viewReport')->name('report.view');
     Route::post('/report/get_city_by_district', 'Backend\ReportController@apiGetCityByDistrict');
