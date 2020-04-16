@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Repositories\TrainningRepository;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
+use Illuminate\Support\Facades\DB;
+use mod_lti\local\ltiservice\response;
 
 class TrainningController extends Controller
 {
@@ -151,5 +153,26 @@ class TrainningController extends Controller
     public function apiAddUserToTrainning(Request $request)
     {
         return $this->trainningRepository->apiAddUserToTrainning($request);
+    }
+
+    public function testAPI(){
+        $users = DB::table('tms_traninning_programs as ttp')
+            ->select(
+                'ttp.id as trainning_id', 'mhr.model_id as user_id'
+            )
+            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
+            })
+            ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+            ->leftJoin('tms_traninning_users as ttu', function ($join) {
+                $join->on('ttu.trainning_id', '=', 'ttp.id');
+                $join->on('ttu.user_id', '=', 'mhr.model_id');
+            })
+            ->where('ttp.deleted', '=', 0)
+            ->whereNotNull('ttg.group_id')
+            ->whereNull('ttu.id')
+            ->get();
+
+        return response()->json($users);
     }
 }

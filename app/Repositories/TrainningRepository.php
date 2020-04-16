@@ -325,7 +325,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstData = $lstData->orderBy('ttp.id', 'desc');
 
-        if(is_null($row) || $row == 0)
+        if (is_null($row) || $row == 0)
             $row = 5;
 
         $lstData->groupBy('ttp.id');
@@ -343,7 +343,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    public function apiGetListTrainingForFilter() {
+    public function apiGetListTrainingForFilter()
+    {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
             ->orderBy('id', 'desc')->get();
@@ -784,7 +785,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
                 ->where('mu.active', '=', 0)
                 ->whereNull('ttpu.trainning_id')
-                ->select('ttpu.trainning_id as trainning_id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
+                ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($keyword) {
                 $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
@@ -859,7 +860,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
                 usleep(10);
             }
-
 
             DB::commit();
             $response->status = true;
