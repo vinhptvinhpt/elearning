@@ -65,16 +65,17 @@
                                                     </div>
                                                     <div class="form-row">
                                                         <div class="col-sm-6 form-group">
+
                                                             <label for="inputRole">{{trans.get('keys.quyen')}}</label>
+
                                                             <select v-model="trainning.role_id"
                                                                     class="form-control selectpicker" id="inputRole"
                                                                     autocomplete="false">
                                                                 <option value="0">{{trans.get('keys.chon_vai_tro')}}
                                                                 </option>
-                                                                <option v-for="item in roles" :value="item.id">
-                                                                    {{item.name}}
-                                                                </option>
+                                                              <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                                                             </select>
+
                                                         </div>
                                                         <div class="col-sm-6 form-group">
                                                             <label>{{trans.get('keys.them_co_cau_to_chuc')}}</label>
@@ -422,7 +423,7 @@
                     showClear: true,
                     showClose: true,
                 },
-                roles: {},
+                roles: [],
                 //Treeselect options
                 tree_options: [
                     {
