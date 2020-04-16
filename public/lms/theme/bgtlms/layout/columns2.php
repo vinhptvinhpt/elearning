@@ -257,30 +257,21 @@ if ($pagetype == "my-index") {
     $nav->add($guide);
 }
 
-// [VinhPT][2019.12.05] Filter list access tms
-// [VinhPT][EAsia] Change list user has permission to access TMS
-$list_access_tms = array('Root', 'Admin', 'Manager', 'Leader');
+// [VinhPT][Easia][16.04.2020] Change list user has permission to access TMS
 $can_access_tms = false;
 global $DB;
-$sql_check_role = "select
-        ra.id as id,
-        r.shortname as shortname
-    from
-        mdl_role as r
-    inner join mdl_role_assignments as ra on
-        r.id = ra.roleid
-    where
-        ra.contextid = 1
-        and ra.userid = " . $USER->id;
+$sql_check_role = "SELECT redirect_type FROM mdl_user WHERE id = " . $USER->id;
 try {
-    $result_check = array_values($DB->get_records_sql($sql_check_role));
-    foreach ($result_check as $check_value) {
-        if (in_array($check_value->shortname, $list_access_tms)) {
-            $can_access_tms = true;
-        }
+    $result_check = array_values($DB->get_records_sql($sql_check_role))[0];
+    if ($result_check != "lms") {
+        $can_access_tms = true;
     }
 } catch (Exception $e) {
     $can_access_tms = false;
+}
+
+if (is_siteadmin($USER)) {
+    $can_access_tms = true;
 }
 
 if (is_siteadmin($USER)) {
