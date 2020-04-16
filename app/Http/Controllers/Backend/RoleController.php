@@ -89,6 +89,10 @@ class RoleController extends Controller
     {
         return $this->bussinessRepository->apiRemoveUser($request);
     }
+    public function apiRemoveUserRole(Request $request)
+    {
+        return $this->bussinessRepository->apiRemoveUserRole($request);
+    }
     public function apiListRoleOrganize(Request $request)
     {
         return $this->bussinessRepository->apiListRoleOrganize($request);

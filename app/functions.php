@@ -720,11 +720,11 @@ function training_enrole($user_id, $trainning_id = null)
     }
 }
 
-function bulk_enrol_lms($user_id, $role_id, $arr_data, $data_item)
+function bulk_enrol_lms($user_id, $role_id, &$arr_data, $data_item)
 {
     $mdl_role = MdlRole::findOrFail($role_id);
     $context_id = 1;
-    if ($mdl_role['shortname'] != 'student') {
+    if ($mdl_role['shortname'] != Role::STUDENT) {
         $mdlRoleAssignment = MdlRoleAssignments::where([
             'roleid' => $role_id,
             'userid' => $user_id,
@@ -745,7 +745,7 @@ function enrole_lms($user_id, $role_id, $confirm)
 {
     $mdl_role = MdlRole::findOrFail($role_id);
     $context_id = 1;
-    if ($mdl_role['shortname'] == 'student') {
+    if ($mdl_role['shortname'] == Role::STUDENT) {
         /*if ($confirm == 0) {
             $courses = DB::table('mdl_course_categories as cate')
                 ->join('mdl_course as course', 'course.category', '=', 'cate.id')
