@@ -1311,6 +1311,11 @@ class BussinessRepository implements IBussinessInterface
 //            $result = callAPI('POST', $url, $data_res, false, '');
             $course = MdlCourse::findOrFail($id);
             $course->deleted = 0;
+            //nếu là thư viện khóa học => Cập nhật cả trong khung năng lực tms_trainning_courses vì
+            // khi xóa thư viện khóa học thì chuyển trạng thái khóa học đó trong knl = 1
+            if($course->category == 2){
+                TmsTrainningCourse::where('sample_id','=',$id)->update(['deleted'=>'0']);
+            }
             $course->save();
 
             $result = 1;

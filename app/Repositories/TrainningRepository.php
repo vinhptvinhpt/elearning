@@ -443,12 +443,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $lstCourseTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('mdl_course as c', 'c.id', '=', 'ttc.sample_id')
-//            ->where('ttc.trainning_id', '=', $trainning_id)
-            ->where('ttc.deleted', '=', 1)
+            ->where('ttc.trainning_id', '=', $trainning_id)
+            ->where('ttc.deleted', '=', 0)
             ->select('c.id')->groupBy('ttc.sample_id')->pluck('c.id');
 
         $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
+            ->where('deleted', '=', 0)
             ->whereNotIn('id', $lstCourseTrainning);
+
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {

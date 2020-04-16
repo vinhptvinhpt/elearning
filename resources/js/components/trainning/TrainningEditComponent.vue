@@ -617,6 +617,7 @@
                         if (response.data.status) {
                             toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                             $('#btnFilter1').trigger('click');
+                            this.getListSampleCourse();
                         } else {
                             toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
@@ -638,6 +639,7 @@
                         if (response.data.status) {
                             toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                             $('#btnFilter1').trigger('click');
+                            this.getListSampleCourse();
                         } else {
                             toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
