@@ -2655,7 +2655,7 @@ class core_renderer extends renderer_base
             // [VinhPT][Easia] change url to tms
             $root_url = trim($root_url, "lms");
             $url_avatar = $root_url.$url_picture;
-            if (getimagesize($url_avatar) !== false) {
+            if ($url_picture) {
                 $src = $url_avatar;
             } else {
                 $src = $userpicture->get_url($this->page, $this);
