@@ -267,7 +267,6 @@
                     });
             },
             updateInfras() {
-                console.log('123');
                 // if (!this.infra_data.infra_name) {
                 //     $('.dtinfra_name_required').show();
                 //     return;

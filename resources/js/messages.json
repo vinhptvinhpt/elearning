@@ -891,7 +891,9 @@
         "them_vao_knl": "Add to competency framework",
         "chua_chon_user": "You must choose user",
         "ratio": "Ratio",
-        "user_exam": "List retake exam users"
+        "user_exam": "List retake exam users",
+        "xoa_vinh_vien_tai_khoan_da_chon": "Permanently delete the selected account",
+        "khoi_phuc_tai_khoan_da_chon": "Restore selected accounts"
     },
     "vi.keys": {
         "language": "",
@@ -1784,6 +1786,8 @@
         "ratio": "Tỷ lệ",
         "them_moi_nguoi_dung_vao_knl": "Thêm người dùng vào Khung năng lực",
         "them_vao_knl": "Thêm vào khung năng lực",
-        "chua_chon_user": "Chưa chọn người dùng"
+        "chua_chon_user": "Chưa chọn người dùng",
+        "xoa_vinh_vien_tai_khoan_da_chon": "Xóa vĩnh viễn tài khoản đã chọn",
+        "khoi_phuc_tai_khoan_da_chon": "Khôi phục tài khoản đã chọn"
     }
 }

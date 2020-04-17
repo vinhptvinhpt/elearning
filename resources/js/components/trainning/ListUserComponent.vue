@@ -336,7 +336,6 @@
                     trainning_id: this.trainning_id
                 })
                     .then(response => {
-                        console.log(response.data.message);
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             current_pos.getUser(current_pos.current);
@@ -386,6 +385,7 @@
                             // roam_message(response.data.status, response.data.message);
                             $('.btn_open_select.actives').trigger('click');
                             current_pos.getUser(current_pos.current);
+                            current_pos.getUserOutTrainning(current_pos.current_out);
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));

@@ -186,7 +186,6 @@
                 $('#'+id_wrap).trigger('click');
             },
             changeRequired(element){
-                console.log(element);
                 $('#'+element).removeClass('notValidate');
             },
             viewPassword(){
