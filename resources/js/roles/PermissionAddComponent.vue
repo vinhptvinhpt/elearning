@@ -140,6 +140,7 @@
                                 toastr['success'](current_pos.trans.get('keys.gan_chuc_nang_chi_tiet_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                                 current_pos.$router.push({ name: 'AddPermission', params: {slug: current_pos.slug} });
                                 current_pos.listPermissionDetail();
+                                current_pos.ressetForm();
                             }else if(response.data == 'warning'){
                               toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
                             }else{
@@ -175,6 +176,10 @@
                 });
 
                 return false;
+            },
+            ressetForm(){
+                this.permission.name = "";
+                this.permission.url = "";
             }
         },
         mounted() {

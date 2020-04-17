@@ -260,7 +260,6 @@
                 }, function () {
                     axios.post(url)
                         .then(response => {
-                            console.log(response.data);
                             swal({
                                 title: current_pos.trans.get('keys.thong_bao'),
                                 text: current_pos.trans.get('keys.xoa_thanh_cong'),

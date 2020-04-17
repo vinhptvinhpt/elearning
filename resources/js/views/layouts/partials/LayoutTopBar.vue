@@ -151,8 +151,10 @@
                     <i class="fa fa-sort-desc"></i>
                 </a>
                 <div class="dropdown-menu dropdown-menu-right">
+                  <template v-if="domainWeb.indexOf('localhost') == 0 || domainWeb.indexOf('127') == 0">
                     <a class="dropdown-item" @click="setLang('vi')"><span
-                            class="language_icon language_vi"></span> Tiếng Việt</a>
+                      class="language_icon language_vi"></span> Tiếng Việt</a>
+                  </template>
                     <a class="dropdown-item" @click="setLang('en')"><span
                             class="language_icon language_en"></span> English</a>
                 </div>
@@ -172,22 +174,26 @@
                 url_redirect: '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=',
                 username: 'guest',
                 avatar: '/images/user.png',
-                classObject: 'language_icon language_en'
+                classObject: 'language_icon language_en',
+                domainWeb: ''
             }
         },
 
         methods: {
             getDefaultValue() {
+                // this.setLang('en');
                 let obj = Ls.get('auth.user');
+                let lang = Ls.get('auth.lang');
+                if(this.domainWeb.indexOf('dev') == 0)
+                    lang = 'en';
                 if (obj && obj !== 'undefined') {
                     var user_info = JSON.parse(obj);
                     this.username = user_info.username;
                     this.avatar = user_info.avatar;
-                    this.classObject = 'language_icon language_' + Ls.get('auth.lang');
+                    this.classObject = 'language_icon language_' + lang;
                 }
-                let lang = Ls.get('auth.lang');
                 if (obj && obj !== 'undefined') {
-                    this.classObject = 'language_icon language_' + Ls.get('auth.lang');
+                    this.classObject = 'language_icon language_' + lang;
                 }
             },
             setLang(lang) {
@@ -213,6 +219,7 @@
         },
         mounted() {
             this.getDefaultValue();
+            this.domainWeb = location.hostname;
         }
     }
 </script>

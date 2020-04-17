@@ -476,6 +476,7 @@
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             $('.btn_open_select.actives').trigger('click');
                             current_pos.getUser(current_pos.current);
+                            current_pos.getUserOutTrainning(current_pos.current_out);
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
