@@ -7335,7 +7335,11 @@ class BussinessRepository implements IBussinessInterface
                 foreach ($roles as $role_id) {
                     //if (!$checkrole) {
                     $role = Role::findOrFail($role_id);
-                    if ($role['name'] == 'student' && count($roles) == 1) {
+//                    if (($role['name'] == 'student' || $role['name'] == 'employee') && count($roles) == 1) {
+//                        $mdlUser->redirect_type = 'lms';
+//                        //                        $checkStudent = true;
+//                    }
+                    if ($role['name'] == 'student' || $role['name'] == 'employee') {
                         $mdlUser->redirect_type = 'lms';
                         //                        $checkStudent = true;
                     } else {
