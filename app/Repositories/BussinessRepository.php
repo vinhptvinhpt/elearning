@@ -7329,14 +7329,17 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //            $checkStudent = false;
-            $roles[] = "5";
+            if(!in_array("5", $roles))
+                $roles[] = "5";
             if ($roles[0]) {
                 //$checkrole = false;
                 foreach ($roles as $role_id) {
                     //if (!$checkrole) {
                     $role = Role::findOrFail($role_id);
+                    dd($role['name']);
+
 //                    if (($role['name'] == 'student' || $role['name'] == 'employee') && count($roles) == 1) {
-//                        $mdlUser->redirect_type = 'lms';
+//                        $mdlUser->redirect_type = 'lms';4kikk099999i
 //                        //                        $checkStudent = true;
 //                    }
                     if ($role['name'] == 'student' || $role['name'] == 'employee') {
