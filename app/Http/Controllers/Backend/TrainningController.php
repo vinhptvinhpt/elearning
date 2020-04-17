@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\TrainningRepository;
+use App\TmsOrganizationEmployee;
+use App\TmsTrainningGroup;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\DB;
@@ -155,23 +157,54 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiAddUserToTrainning($request);
     }
 
-    public function testAPI(){
-        $users = DB::table('tms_traninning_programs as ttp')
-            ->select(
-                'ttp.id as trainning_id', 'mhr.model_id as user_id'
-            )
-            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
-            })
-            ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
-            ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                $join->on('ttu.trainning_id', '=', 'ttp.id');
-                $join->on('ttu.user_id', '=', 'mhr.model_id');
-            })
-            ->where('ttp.deleted', '=', 0)
-            ->whereNotNull('ttg.group_id')
-            ->whereNull('ttu.id')
-            ->get();
+    public function apiAddUserOrganiToTrainning(Request $request)
+    {
+        return $this->trainningRepository->apiAddUserOrganiToTrainning($request);
+    }
+
+    public function testAPI()
+    {
+//        $tbl1 = '(select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+//                 join tms_organization tor on tor.id = toe.organization_id
+//                 order by tor.parent_id, toe.id) ttoe';
+//
+//        $tbl2 = '(select @pv := 2) initialisation';
+//
+//        $tbl = $tbl1 . ',' . $tbl2;
+//        $tbl = DB::raw($tbl);
+
+//        $unionTbl = '(select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = 2)';
+//        $unionTbl = TmsOrganizationEmployee::where('organization_id', 2)->select('organization_id', 'user_id');
+//        $unionTbl = DB::table('tms_organization_employee as toe')->where('toe.organization_id','=',2)
+//            ->select('toe.organization_id','toe.user_id');
+
+//        $users = DB::table($tbl)->whereRaw('find_in_set(ttoe.parent_id, @pv)')
+//            ->whereRaw('length(@pv := concat(@pv, \',\', ttoe.organization_id))')
+//            ->union($unionTbl)
+//            ->select('ttoe.organization_id', 'ttoe.user_id')->get();
+
+//        $users = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
+
+        $tblQuery = '(select  ttoe.organization_id,
+       ttoe.user_id
+        from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+         join tms_organization tor on tor.id = toe.organization_id
+         order by tor.parent_id, toe.id) ttoe,
+        (select @pv := 2) initialisation
+        where   find_in_set(ttoe.parent_id, @pv)
+        and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+        UNION 
+        select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = 2
+        ) as org_us';
+
+        $tblQuery = DB::raw($tblQuery);
+
+        $leftJoin = '(select user_id, trainning_id from tms_traninning_users  where trainning_id = 9) ttu';
+        $leftJoin = DB::raw($leftJoin);
+
+        $users = DB::table($tblQuery)->leftJoin($leftJoin,'ttu.user_id','=','org_us.user_id')
+            ->whereNull('ttu.trainning_id')
+            ->pluck('org_us.user_id')->toArray();
 
         return response()->json($users);
     }

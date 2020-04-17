@@ -6330,10 +6330,10 @@ class BussinessRepository implements IBussinessInterface
             ->where('tms_user_detail.deleted', 0)
             ->whereNotIn('mdl_user.username', ['admin']);
 
-//        if ($roles != 0) {
-//            $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
-//            $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
-//        }
+        if ($roles != 0) {
+            $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
+            $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
+        }
         //else {
         /*$listUsers = $listUsers->leftJoin('model_has_roles','model_has_roles.model_id','=','mdl_user.id');
         $listUsers = $listUsers->join('roles','roles.id','=','model_has_roles.role_id');*/
@@ -7335,7 +7335,11 @@ class BussinessRepository implements IBussinessInterface
                 foreach ($roles as $role_id) {
                     //if (!$checkrole) {
                     $role = Role::findOrFail($role_id);
-                    if ($role['name'] == 'student' && count($roles) == 1) {
+//                    if (($role['name'] == 'student' || $role['name'] == 'employee') && count($roles) == 1) {
+//                        $mdlUser->redirect_type = 'lms';
+//                        //                        $checkStudent = true;
+//                    }
+                    if ($role['name'] == 'student' || $role['name'] == 'employee') {
                         $mdlUser->redirect_type = 'lms';
                         //                        $checkStudent = true;
                     } else {
