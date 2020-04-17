@@ -119,11 +119,11 @@
                         .then(response => {
                             if(response.data == 'success'){
                               toastr['success'](current_pos.trans.get('keys.cap_nhat_chuc_nang_chi_tiet_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
-                              this.$router.push({ name: 'DetailPermission', params: {id: this.id} });
+                              current_pos.$router.push({ name: 'DetailPermission', params: {id: current_pos.id} });
                             }else if(response.data == 'warning'){
-                                toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
+                              toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
                             }else{
-                              toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                             }
                         })
                         .catch(error => {
