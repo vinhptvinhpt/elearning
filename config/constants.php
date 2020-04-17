@@ -14,10 +14,12 @@ return [
 
         'DIVA-LIVE' => 'https://qldbh.bgt.com.vn/elearning-api/v1/',
 
-        'DIVA-TOKEN-SYSTEM' => 'U7x8oakUxoL4920zJuskO9-Ikksh4292J' ,//token hệ thống do DIVA cung cap,
+        'DIVA-TOKEN-SYSTEM' => 'U7x8oakUxoL4920zJuskO9-Ikksh4292J',//token hệ thống do DIVA cung cap,
 
-        'EDITING-TEACHER-ID' => 3 ,//editingteacher id
+        'EDITING-TEACHER-ID' => 3,//editingteacher id
 
-        'EMAIL-DEFAULT' => 'nohasmail@gmail.com' //editingteacher id
+        'EMAIL-DEFAULT' => 'nohasmail@gmail.com', //editingteacher id,
+
+        'LIMIT_SUBMIT' => 100 //giới hạn số bản ghi submit 1 lần lên db, đang dùng cho chức add user vào KNL và enroll vào tất cả các course trong KNL
     ],
 ];

@@ -891,7 +891,13 @@
         "them_vao_knl": "Add to competency framework",
         "chua_chon_user": "You must choose user",
         "ratio": "Ratio",
-        "user_exam": "List retake exam users"
+        "user_exam": "List retake exam users",
+        "xoa_vinh_vien_tai_khoan_da_chon": "Permanently delete the selected account",
+        "khoi_phuc_tai_khoan_da_chon": "Restore selected accounts",
+        "them_cctc_vao_knl": "Add organization to competency framework",
+        "them_user_cctc_vao_knl": "Add all users who are in the organization to the current competence framework",
+        "chua_chon_cctc": "You must choose organization",
+        "luu_y_cctc_vao_knl": "NOTE: The number of users in the organization you choose cannot exceed 100 people"
     },
     "vi.keys": {
         "language": "",
@@ -1784,6 +1790,12 @@
         "ratio": "Tỷ lệ",
         "them_moi_nguoi_dung_vao_knl": "Thêm người dùng vào Khung năng lực",
         "them_vao_knl": "Thêm vào khung năng lực",
-        "chua_chon_user": "Chưa chọn người dùng"
+        "chua_chon_user": "Chưa chọn người dùng",
+        "xoa_vinh_vien_tai_khoan_da_chon": "Xóa vĩnh viễn tài khoản đã chọn",
+        "khoi_phuc_tai_khoan_da_chon": "Khôi phục tài khoản đã chọn",
+        "them_cctc_vao_knl": "Thêm cơ cấu tổ chức vào khung năng lực",
+        "them_user_cctc_vao_knl": "Thêm tất cả người dùng nằm trong cơ cấu tổ chức vào khung năng lực hiện tại",
+        "chua_chon_cctc": "Chưa chọn cơ cấu tổ chức",
+        "luu_y_cctc_vao_knl": "Lưu ý: Số người dùng trong tổ chức bạn chọn không được vượt quá 100 người"
     }
 }

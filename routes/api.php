@@ -39,6 +39,9 @@ Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfir
 Route::get('/cron/background/importEmployee', 'Api\BackgroundController@importEmployee');
 Route::get('/cron/background/import', 'Api\BackgroundController@import');
 
+//Clean users, comment lại sau khi dùng xong
+Route::get('/cron/background/removeUsers', 'Api\BackgroundController@removeUsers'); //Every 5 minutes
+
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendESEC', 'Api\MailController@sendEnrolQuizStartQuizEndQuizCompleted')->middleware(['App\Http\Middleware\CheckToken']); //every minute

@@ -837,6 +837,7 @@
                     .then(response => {
                         if(response.data.status){
                             roam_message(response.data.status,response.data.message);
+                            this.goBack();
                         }else{
                             roam_message('error',response.data.message);
                             $('.form-control').removeClass('notValidate');
@@ -846,6 +847,19 @@
                     .catch(error => {
                         roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
+            },
+            goBack(){
+                switch (this.type) {
+                    case "teacher":
+                        location.href = "/tms/education/user_teacher";
+                        break;
+                    case "student":
+                        location.href = "/tms/education/user_student";
+                        break;
+                    default:
+                        location.href = "/tms/system/user";
+                        break;
+                }
             },
             restoreUser(user_id){
                 let current_pos = this;
@@ -929,7 +943,7 @@
                 .catch(error => {
                   $('.content_search_box').removeClass('loadding');
                 })
-            },
+            }
         },
         mounted() {
             this.fetch();

@@ -1302,6 +1302,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
 //ThoLD 15/09/2019
 function remove_enrole_user_to_course($user_id, $role_id, $course_id)
 {
+    Log::info($course_id);
     $enroles = DB::table('mdl_enrol')
 //        ->where('enrol', '=', 'manual')
         ->where('courseid', '=', $course_id)
@@ -1311,12 +1312,13 @@ function remove_enrole_user_to_course($user_id, $role_id, $course_id)
     $count_enrol = count($enroles);
     if ($count_enrol > 0) {
         foreach ($enroles as $enrole) {
+            Log::info('1');
             //xoá dữ liệu khỏi bảng mdl_user_enrolments
             MdlUserEnrolments::where([
                 'enrolid' => $enrole->id,
                 'userid' => $user_id,
             ])->delete();
-
+            Log::info('2');
             sleep(0.02);
 
             //xoá dữ liệu khỏi bảng MdlRoleAssignments
@@ -1325,13 +1327,13 @@ function remove_enrole_user_to_course($user_id, $role_id, $course_id)
                 ->where('contextlevel', '=', MdlUser::CONTEXT_COURSE)
                 ->first();
             $context_id = $context ? $context->id : 0;
-
+            Log::info('3');
             MdlRoleAssignments::where([
                 'roleid' => $role_id,
                 'userid' => $user_id,
                 'contextid' => $context_id
             ])->delete();
-
+            Log::info('4');
         }
     }
 

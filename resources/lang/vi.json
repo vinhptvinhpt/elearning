@@ -302,5 +302,6 @@
     "phan_quyen_thanh_cong": "Phân quyền thành công",
     "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng",
     "ten": "Tên",
-    "to_chuc": "Tổ chức"
+    "to_chuc": "Tổ chức",
+    "qua_so_luong_submit": "Số người dùng vượt quá hạn mức quy định"
 }

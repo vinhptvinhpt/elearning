@@ -97,13 +97,13 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="current_roles.root_user">
+                            <li class="nav-item">
                                 <router-link to="/tms/organization" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="current_roles.has_role_manager || current_roles.has_role_leader">
+                            <li class="nav-item">
                                 <router-link to="/tms/organization-employee" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
                                 </router-link>
