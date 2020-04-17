@@ -1150,20 +1150,83 @@ class TaskController extends Controller
             $queryArray = [];
         }
 
+        usleep(100);
         //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
         //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
         $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
 
         foreach ($lstDataTrainning as $trainning) {
             if ($trainning->total_tr == 2) {
+                //region xu ly cho TH KNL ap dung cho ca role va cctc
+                $trainning_gr = TmsTrainningGroup::where('trainning_id', $trainning->trainning_id)->select('group_id', 'type')->get();
+                $role_id = 0;
+                $org_id = 0;
+                foreach ($trainning_gr as $ttr) {
+                    if ($ttr->type == 0) {
+                        $role_id = $ttr->group_id;
+                    } else {
+                        $org_id = $ttr->group_id;
+                    }
+                }
 
+                usleep(100);
+
+                //raw query lay so user nam trong cctc
+                $org_query = '(select  ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $org_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                            UNION 
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
+                            ) as org_tp';
+
+                $org_query = DB::raw($org_query);
+
+                //raw query lay so user nam trong role
+                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
+                                join (select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0 and ttgg.group_id  = ' . $role_id . '
+                                ) as ttgg';
+
+                $role_query = DB::raw($role_query);
+
+                //raw query lay so user nam trong KNL
+                $trr_query = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning->trainning_id . ') ttu';
+                $trr_query = DB::raw($trr_query);
+
+                //lay danh sach user nam trong cctc va role nhung chua  dc add vao KNL
+                $users = DB::table($org_query)->join($role_query, 'ttp_r.user_id', '=', 'org_tp.org_uid')
+                    ->leftJoin($trr_query, 'ttu.user_id', '=', 'org_tp.org_uid')
+                    ->whereNull('ttu.trainning_id')->pluck('org_tp.org_uid');
+
+                //add user to compentecy
+                if (count($users) > 0) {
+                    foreach ($users as $user) {
+                        $queryItem = [];
+
+                        $queryItem['trainning_id'] = $trainning->trainning_id;
+                        $queryItem['user_id'] = $user;
+                        array_push($queryArray, $queryItem);
+                        $num++;
+
+                        if ($num >= $limit) {
+                            TmsTrainningUser::insert($queryArray);
+                            $num = 0;
+                            $queryArray = [];
+                        }
+                    }//endforeach
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+                //endregion
             } else {
                 if ($trainning->type == 0) {
                     //region Nhóm quyền
                     $users = DB::table('tms_traninning_programs as ttp')
-                        ->select(
-                            'ttp.id as trainning_id', 'mhr.model_id as user_id'
-                        )
                         ->leftJoin('tms_trainning_groups as ttg', function ($join) {
                             $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
                         })
@@ -1175,17 +1238,17 @@ class TaskController extends Controller
                         ->where('ttp.deleted', '=', 0)
                         ->whereNotNull('ttg.group_id')
                         ->whereNull('ttu.id')
-                        ->get();
+                        ->pluck('mhr.model_id as user_id');
 
-                    if (!empty($users)) {
+                    if (count($users) > 0) {
                         foreach ($users as $user) {
                             $queryItem = [];
-                            if ($user->trainning_id && $user->user_id) {
-                                $queryItem['trainning_id'] = $user->trainning_id;
-                                $queryItem['user_id'] = $user->user_id;
-                                array_push($queryArray, $queryItem);
-                                $num++;
-                            }
+
+                            $queryItem['trainning_id'] = $trainning->trainning_id;
+                            $queryItem['user_id'] = $user;
+                            array_push($queryArray, $queryItem);
+                            $num++;
+
                             if ($num >= $limit) {
                                 TmsTrainningUser::insert($queryArray);
                                 $num = 0;
@@ -1196,6 +1259,7 @@ class TaskController extends Controller
                         $num = 0;
                         $queryArray = [];
                     }
+
                     //endregion
                 } else {
                     //region Cơ cấu tổ chức

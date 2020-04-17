@@ -277,6 +277,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 return response()->json($response);
             }
 
+            TmsTrainningGroup::where('trainning_id', $id)->delete();
+
             $trainning = TmsTrainningProgram::findOrFail($id);
             $trainning->deleted = 1;
             $trainning->save();
