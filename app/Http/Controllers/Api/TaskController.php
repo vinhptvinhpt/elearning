@@ -20,6 +20,7 @@ use App\StudentCertificate;
 use App\TmsLog;
 use App\TmsNotification;
 use App\TmsSaleRoomUser;
+use App\TmsTrainningGroup;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
 use App\User;
@@ -1149,81 +1150,137 @@ class TaskController extends Controller
             $queryArray = [];
         }
 
+        //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
         //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
-        //Nhóm quyền
-        $users = DB::table('tms_traninning_programs as ttp')
-            ->select(
-                'ttp.id as trainning_id', 'mhr.model_id as user_id'
-            )
-            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
-            })
-            ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
-            ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                $join->on('ttu.trainning_id', '=', 'ttp.id');
-                $join->on('ttu.user_id', '=', 'mhr.model_id');
-            })
-            ->where('ttp.deleted', '=', 0)
-            ->whereNotNull('ttg.group_id')
-            ->whereNull('ttu.id')
-            ->get();
+        $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
 
-        if (!empty($users)) {
-            foreach ($users as $user) {
-                $queryItem = [];
-                if ($user->trainning_id && $user->user_id) {
-                    $queryItem['trainning_id'] = $user->trainning_id;
-                    $queryItem['user_id'] = $user->user_id;
-                    array_push($queryArray, $queryItem);
-                    $num++;
-                }
-                if ($num >= $limit) {
-                    TmsTrainningUser::insert($queryArray);
-                    $num = 0;
-                    $queryArray = [];
-                }
-            }//endforeach
-            TmsTrainningUser::insert($queryArray);
-            $num = 0;
-            $queryArray = [];
-        }
+        foreach ($lstDataTrainning as $trainning) {
+            if ($trainning->total_tr == 2) {
 
-        //Cơ cấu tổ chức
-        $users = DB::table('tms_traninning_programs as ttp')
-            ->select(
-                'ttp.id as trainning_id', 'toe.user_id'
-            )
-            ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-                $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 1);
-            })
-            ->leftJoin('tms_organization_employee as toe', 'toe.organization_id', '=', 'ttg.group_id')
-            ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                $join->on('ttu.trainning_id', '=', 'ttp.id');
-                $join->on('ttu.user_id', '=', 'toe.user_id');
-            })
-            ->where('ttp.deleted', '=', 0)
-            ->whereNotNull('ttg.group_id')
-            ->whereNull('ttu.id')
-            ->get();
+            } else {
+                if ($trainning->type == 0) {
+                    //region Nhóm quyền
+                    $users = DB::table('tms_traninning_programs as ttp')
+                        ->select(
+                            'ttp.id as trainning_id', 'mhr.model_id as user_id'
+                        )
+                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
+                        })
+                        ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
+                            $join->on('ttu.trainning_id', '=', 'ttp.id');
+                            $join->on('ttu.user_id', '=', 'mhr.model_id');
+                        })
+                        ->where('ttp.deleted', '=', 0)
+                        ->whereNotNull('ttg.group_id')
+                        ->whereNull('ttu.id')
+                        ->get();
 
-        if (!empty($users)) {
-            foreach ($users as $user) {
-                $queryItem = [];
-                if ($user->trainning_id && $user->user_id) {
-                    $queryItem['trainning_id'] = $user->trainning_id;
-                    $queryItem['user_id'] = $user->user_id;
-                    array_push($queryArray, $queryItem);
-                    $num++;
+                    if (!empty($users)) {
+                        foreach ($users as $user) {
+                            $queryItem = [];
+                            if ($user->trainning_id && $user->user_id) {
+                                $queryItem['trainning_id'] = $user->trainning_id;
+                                $queryItem['user_id'] = $user->user_id;
+                                array_push($queryArray, $queryItem);
+                                $num++;
+                            }
+                            if ($num >= $limit) {
+                                TmsTrainningUser::insert($queryArray);
+                                $num = 0;
+                                $queryArray = [];
+                            }
+                        }//endforeach
+                        TmsTrainningUser::insert($queryArray);
+                        $num = 0;
+                        $queryArray = [];
+                    }
+                    //endregion
+                } else {
+                    //region Cơ cấu tổ chức
+                    //lay danh sach user nam trong co cau to chuc va ko nam trong KNL
+                    $tblQuery = '(select  ttoe.organization_id, ttoe.user_id
+                                    from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $trainning->group_id . ') initialisation
+                                    where   find_in_set(ttoe.parent_id, @pv)
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                                    UNION 
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $trainning->group_id . ') as org_us';
+
+                    $tblQuery = DB::raw($tblQuery);
+
+                    $leftJoin = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning->trainning_id . ') ttu';
+                    $leftJoin = DB::raw($leftJoin);
+
+                    $users = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
+                        ->whereNull('ttu.trainning_id')
+                        ->pluck('org_us.user_id')->toArray();
+
+                    if (count($users) > 0) {
+                        foreach ($users as $user) {
+                            $queryItem = [];
+
+                            $queryItem['trainning_id'] = $trainning->trainning_id;
+                            $queryItem['user_id'] = $user;
+                            array_push($queryArray, $queryItem);
+                            $num++;
+
+                            if ($num >= $limit) {
+                                TmsTrainningUser::insert($queryArray);
+                                $num = 0;
+                                $queryArray = [];
+                            }
+                        }//endforeach
+                        TmsTrainningUser::insert($queryArray);
+                        $num = 0;
+                        $queryArray = [];
+                    }
+
+
+//                    $users = DB::table('tms_traninning_programs as ttp')
+//                        ->select(
+//                            'ttp.id as trainning_id', 'toe.user_id'
+//                        )
+//                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+//                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 1);
+//                        })
+//                        ->leftJoin('tms_organization_employee as toe', 'toe.organization_id', '=', 'ttg.group_id')
+//                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
+//                            $join->on('ttu.trainning_id', '=', 'ttp.id');
+//                            $join->on('ttu.user_id', '=', 'toe.user_id');
+//                        })
+//                        ->where('ttp.deleted', '=', 0)
+//                        ->whereNotNull('ttg.group_id')
+//                        ->whereNull('ttu.id')
+//                        ->get();
+//
+//                    if (!empty($users)) {
+//                        foreach ($users as $user) {
+//                            $queryItem = [];
+//                            if ($user->trainning_id && $user->user_id) {
+//                                $queryItem['trainning_id'] = $user->trainning_id;
+//                                $queryItem['user_id'] = $user->user_id;
+//                                array_push($queryArray, $queryItem);
+//                                $num++;
+//                            }
+//                            if ($num >= $limit) {
+//                                TmsTrainningUser::insert($queryArray);
+//                                $num = 0;
+//                                $queryArray = [];
+//                            }
+//                        }//endforeach
+//                        TmsTrainningUser::insert($queryArray);
+//                        $num = 0;
+//                        $queryArray = [];
+//                    }
+                    //endregion
                 }
-                if ($num >= $limit) {
-                    TmsTrainningUser::insert($queryArray);
-                    $num = 0;
-                    $queryArray = [];
-                }
-            }//endforeach
-            TmsTrainningUser::insert($queryArray);
-            $num = 0;
-            $queryArray = [];
+            }
+
+            usleep(100);
         }
     }
 
