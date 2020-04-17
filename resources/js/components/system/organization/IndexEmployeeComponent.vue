@@ -392,11 +392,11 @@
       // },
       onPageChange() {
 
-        this.organization_id = this.organization_id.toString();
+        let organization_id_string = this.organization_id.toString();
 
         if (this.organization_id.length !== 0) {
           //Có truyền organization_id
-          this.query_organization_id = parseInt(this.organization_id);
+          this.query_organization_id = parseInt(organization_id_string);
           this.fetchOrganizationInfo(this.query_organization_id);
         } else if (this.query_organization_id !== 0 && typeof this.query_organization_id !== 'undefined') {
           //Chuyển trang khi đã có query_organization_id
@@ -537,12 +537,12 @@
     watch: {
       roles_ready: function(newVal, oldVal) {
         if (newVal === true && oldVal === false) {
-            this.organization_id = this.organization_id.toString();
+            let organization_id_string = this.organization_id.toString();
           this.getRoleFromCurrentRoles(this.current_roles);
           if (this.organization_id.length === 0) {
               this.fetchOrganizationInfo(0);
           } else {
-            this.fetchOrganizationInfo(parseInt(this.organization_id));
+            this.fetchOrganizationInfo(parseInt(organization_id_string));
           }
         }
       }
