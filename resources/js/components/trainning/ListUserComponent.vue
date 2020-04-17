@@ -149,16 +149,6 @@
 
 
                                                             <div class="text-left">
-                                                                <!--                                                                <button :title="trans.get('keys.them_vao_knl')"-->
-                                                                <!--                                                                        type="button"-->
-                                                                <!--                                                                        style="float: right; position: relative;"-->
-                                                                <!--                                                                        class="btn btn-sm btn-success mt-3 d-none btn-add-competency"-->
-                                                                <!--                                                                        @click="addToTrainning()">-->
-                                                                <!--                                                                    <i class="fa fa-spinner" aria-hidden="true"></i>-->
-                                                                <!--                                                                    {{trans.get('keys.them_vao_knl')}}-->
-                                                                <!--                                                                </button>-->
-
-
                                                                 <button type="button" id="btnExportPdf"
                                                                         style="float: right; position: relative;"
                                                                         class="btn btn-sm btn-success mt-3 btn-pdf"
@@ -175,15 +165,47 @@
                                         </div>
                                     </div>
                                 </div>
-                                <!--<div class="card">-->
-                                <!--                                <div class="card-header d-flex justify-content-between">-->
-                                <!--                                    <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"-->
-                                <!--                                       aria-expanded="false"><i class="fal fa-upload mr-3"></i>{{trans.get('keys.tai_len_file_excel')}}</a>-->
-                                <!--                                </div>-->
-                                <!--</div>-->
+                                <div class="card">
+                                    <div class="card-header d-flex justify-content-between">
+                                        <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"
+                                           aria-expanded="false"><i class="fal fa-upload mr-3"></i>{{trans.get('keys.them_cctc_vao_knl')}}</a>
+                                    </div>
+                                    <div id="collapse_2" class="collapse" data-parent="#accordion_1">
+                                        <div class="card-body">
+                                            <div class="col-12 col-lg-12">
+                                                <div class="form-row">
+                                                    <div class="col-sm-8 form-group">
+                                                        <treeselect v-model="organization_id"
+                                                                    :multiple="false" :options="tree_options"
+                                                                    id="organization_parent_id"/>
+                                                    </div>
+                                                    <div class="col-4 form-group">
+                                                        <button type="button"
+                                                                style="float: right; position: relative;"
+                                                                class="btn btn-sm btn-success mt-3 btn-pdf"
+                                                                @click="addOrganizationToTrainning()">
+                                                            {{trans.get('keys.them_vao_knl')}} <i
+                                                                class="fa fa-spinner"
+                                                                aria-hidden="true"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                                <div class="form-row">
+                                                    <div class="col-sm-12 form-group">
+                                                        <label style="font-style: italic;">{{trans.get('keys.them_user_cctc_vao_knl')}}</label>
+                                                        <br/>
+                                                        <label style="font-style: italic; color: red;">{{trans.get('keys.luu_y_cctc_vao_knl')}}</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+
                     <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
                     <div class="row">
                         <div class="col-sm">
@@ -258,7 +280,7 @@
                                                 <td class=" mobile_hide">{{ user.email }}</td>
 
                                                 <td class="text-center">
-                                                    <button @click="remove_trainning(user.user_id)"
+                                                    <button @click="remove_trainning(user.id,user.user_id,trainning_id)"
                                                             class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select"
                                                             type="button">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
@@ -319,10 +341,77 @@
                 totalPagesOut: 0,
 
                 allSelected: false,
-                userTrainning: []
+                userTrainning: [],
+
+                tree_options: [
+                    {
+                        id: 0,
+                        label: this.trans.get('keys.chon_to_chuc')
+                    }
+                ],
+                organization_parent_list: [],
+                organization_id: 0
             }
         },
         methods: {
+            listOrganization() {
+                axios.post('/organization/list', {
+                    keyword: this.parent_keyword,
+                    level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                    paginated: 0 //không phân trang,
+                })
+                    .then(response => {
+                        this.organization_parent_list = response.data;
+                        //Set options recursive
+                        this.tree_options = this.setOptions(response.data);
+                    })
+                    .catch(error => {
+
+                    })
+            },
+            setOptions(list) {
+                let outPut = [];
+                for (const [key, item] of Object.entries(list)) {
+                    let newOption = {
+                        id: item.id,
+                        label: item.name
+                    };
+                    if (item.children.length > 0) {
+                        newOption.children = this.setOptions(item.children);
+                    }
+                    outPut.push(newOption);
+                }
+                return outPut;
+            },
+            addOrganizationToTrainning() {
+                let current_pos = this;
+
+                if (this.organization_id === 0) {
+                    toastr['warning'](current_pos.trans.get('keys.chua_chon_cctc'), current_pos.trans.get('keys.thong_bao'));
+                    return;
+                }
+
+                $('button.btn-pdf i').css("display", "inline-block");
+                axios.post('/api/trainning/adduserorganizationtotrainning', {
+                    org_id: this.organization_id,
+                    trainning_id: this.trainning_id
+                })
+                    .then(response => {
+                        if (response.data.status) {
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            current_pos.getUser(current_pos.current);
+                            current_pos.getUserOutTrainning(current_pos.current_out);
+                        } else {
+                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                        }
+                        $('button.btn-pdf i').css("display", "none");
+                    })
+                    .catch(error => {
+                        $('button.btn-pdf i').css("display", "none");
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                    });
+
+            },
             addToTrainning() {
                 let current_pos = this;
                 let count = this.userTrainning.length;
@@ -336,7 +425,6 @@
                     trainning_id: this.trainning_id
                 })
                     .then(response => {
-                        console.log(response.data.message);
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             current_pos.getUser(current_pos.current);
@@ -368,8 +456,9 @@
             onCheckboxTrainning() {
                 this.allSelected = false;
             },
-            remove_trainning(id) {
+            remove_trainning(id, user_id, tr_id) {
                 let current_pos = this;
+                console.log('trainning_id: ' + tr_id);
                 swal({
                     title: current_pos.trans.get('keys.thong_bao'),
                     text: current_pos.trans.get('keys.ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay'),
@@ -380,16 +469,16 @@
                 }, function () {
                     axios.post('/trainning/api_remove_trainning', {
                         id: id,
+                        user_id: user_id,
+                        trainning_id: tr_id
                     })
                         .then(response => {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            // roam_message(response.data.status, response.data.message);
                             $('.btn_open_select.actives').trigger('click');
                             current_pos.getUser(current_pos.current);
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
-                            // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
             },
@@ -409,13 +498,11 @@
                     })
                         .then(response => {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            // roam_message(response.data.status, response.data.message);
                             $('.btn_open_select.actives').trigger('click');
                             current_pos.getUser(current_pos.current);
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
-                            // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
 
@@ -462,7 +549,7 @@
             },
         },
         mounted() {
-            //this.getTrainning();
+            this.listOrganization();
         }
     }
 </script>
