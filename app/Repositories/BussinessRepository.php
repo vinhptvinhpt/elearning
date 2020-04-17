@@ -7339,7 +7339,7 @@ class BussinessRepository implements IBussinessInterface
                     dd($role['name']);
 
 //                    if (($role['name'] == 'student' || $role['name'] == 'employee') && count($roles) == 1) {
-//                        $mdlUser->redirect_type = 'lms';
+//                        $mdlUser->redirect_type = 'lms';4kikk099999i
 //                        //                        $checkStudent = true;
 //                    }
                     if ($role['name'] == 'student' || $role['name'] == 'employee') {
