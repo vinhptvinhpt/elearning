@@ -302,5 +302,6 @@
     "phan_quyen_thanh_cong": "Assign successfully",
     "xac_nhan_email_nguoi_dung": "Confirm email",
     "ten": "Name",
-    "to_chuc": "Organization"
+    "to_chuc": "Organization",
+    "qua_so_luong_submit": "The number of users exceeds the specified limit"
 }

@@ -9061,7 +9061,6 @@ class BussinessRepository implements IBussinessInterface
 
                 //Function clear user khỏi DB
                 TmsUserDetail::clearUser($user_id);
-                StudentCertificate::where('userid', $user_id)->delete();
 
                 $type = 'user';
                 $url = '*';

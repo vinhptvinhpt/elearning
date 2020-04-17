@@ -739,14 +739,28 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     public function apiTrainningRemove(Request $request)
     {
         try {
-            $user_id = $request->input('id');
+            $id = $request->input('id');
+            $user_id = $request->input('user_id');
+            $trainning_id = $request->input('trainning_id');
             if (!$user_id || !is_numeric($user_id)) {
                 return response()->json(status_message('error', __('dinh_dang_du_lieu_khong_hop_le')));
             }
-//            TmsTrainningUser::find($id)->delete();
-            TmsTrainningUser::where('user_id', $user_id)->delete();
+
+            //lay danh sach course_id trong KNL
+            $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
+
+            DB::beginTransaction();
+            //remove enrol hoc vien khoi KNL
+            //remove quyen student cua hoc vien
+            foreach ($courses as $course) {
+                remove_enrole_user_to_course($user_id, Role::ROLE_STUDENT, $course);
+            }
+
+            TmsTrainningUser::find($id)->delete();
+            DB::commit();
             return response()->json(status_message('success', __('cap_nhat_khung_nang_luc_thanh_cong')));
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
@@ -862,6 +876,98 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             DB::commit();
+            $response->status = true;
+            $response->message = __('thao_tac_thanh_cong');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    //them nguoi dung vao KNL
+    public function apiAddUserOrganiToTrainning(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $org_id = $request->input('org_id');
+
+            $param = [
+                'trainning_id' => 'number',
+                'org_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            //lay danh sach user nam trong co cau to chuc va ko nam trong KNL
+            $tblQuery = '(select  ttoe.organization_id, ttoe.user_id
+                                    from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $org_id . ') initialisation
+                                    where   find_in_set(ttoe.parent_id, @pv)
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                                    UNION 
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
+
+            $tblQuery = DB::raw($tblQuery);
+
+            $leftJoin = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning_id . ') ttu';
+            $leftJoin = DB::raw($leftJoin);
+
+            $lstUserIDs = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
+                ->whereNull('ttu.trainning_id')
+                ->pluck('org_us.user_id')->toArray();
+
+            if (count($lstUserIDs) >= Config::get('constants.domain.LIMIT_SUBMIT')) {
+                $response->status = false;
+                $response->message = __('qua_so_luong_submit');
+                return response()->json($response);
+            }
+
+
+            //add user to competency framework
+            if (count($lstUserIDs) > 0) {
+                DB::beginTransaction();
+                $queryArray = [];
+                $num = 0;
+                $limit = 300;
+
+                foreach ($lstUserIDs as $user_id) {
+                    $queryItem = [];
+                    $queryItem['trainning_id'] = $trainning_id;
+                    $queryItem['user_id'] = $user_id;
+                    array_push($queryArray, $queryItem);
+                    $num++;
+                    if ($num >= $limit) {
+                        TmsTrainningUser::insert($queryArray);
+                        $num = 0;
+                        $queryArray = [];
+                    }
+                }
+                TmsTrainningUser::insert($queryArray);
+
+                //lay danh sach course_id trong KNL
+                $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
+
+                // enroll user to course in competency framework
+                // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
+                // he thong dang set mac dinh user tao ra deu co quyen student
+
+                foreach ($courses as $course) {
+                    enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
+                    usleep(10);
+                }
+
+                DB::commit();
+            }
+
             $response->status = true;
             $response->message = __('thao_tac_thanh_cong');
         } catch (\Exception $e) {

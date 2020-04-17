@@ -2295,5 +2295,32 @@ class BackgroundController extends Controller
             $mhr->save();
         }
     }
+
+    //Xóa user & các dữ liệu liên quan khỏi hệ thống
+    public function removeUsers() {
+        $excludes = [
+            'easia_editor_03',
+            'easia_editor_02',
+            'easia_editor_01',
+            'easia',
+            'thuyanhpt',
+            'surimen',
+            'thuylinh',
+            'linhnt',
+            'admin'
+        ];
+
+        $users = MdlUser::query()
+            ->whereNotIn('username', $excludes)
+            ->select('id')
+            ->limit(500)
+            ->get();
+
+        foreach ($users as $user) {
+            //Gọi hàm xóa tms user, trong hàm có gọi sang lms để xóa
+            TmsUserDetail::clearUser($user->id);
+        }
+
+    }
 }
 
