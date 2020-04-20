@@ -163,6 +163,8 @@
                     return;
                 }
 
+                let current_pos = this;
+
                 axios.post('/system/user/updatePassword', {
                     user_id:this.user_id,
                     password:this.password,
