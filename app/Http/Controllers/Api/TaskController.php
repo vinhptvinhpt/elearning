@@ -1172,7 +1172,7 @@ class TaskController extends Controller
                 usleep(100);
 
                 //raw query lay so user nam trong cctc
-                $org_query = '(select  ttoe.organization_id,
+                $org_query = '(select ttoe.organization_id,
                                    ttoe.user_id as org_uid
                             from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
                                      join tms_organization tor on tor.id = toe.organization_id
@@ -1188,8 +1188,12 @@ class TaskController extends Controller
 
                 //raw query lay so user nam trong role
                 $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
-                                join (select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0 and ttgg.group_id  = ' . $role_id . '
-                                ) as ttgg';
+                                join (
+                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
+                                ) as ttgg on ttgg.trainning_id = ttp.id 
+                                join model_has_roles mhr on mhr.role_id = ttgg.group_id 
+                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
+                                ) ttp_r';
 
                 $role_query = DB::raw($role_query);
 
