@@ -158,7 +158,7 @@
                         <select v-model="roles" class="custom-select custom-select-sm form-control form-control-sm"
                                 @change="getUser(1)">
                           <option value="0">{{trans.get('keys.theo_quyen')}}</option>
-                          <option v-for="role in listrole" :value="role.id">{{ role.name }}</option>
+                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                         </select>
                       </label>
                     </div>
