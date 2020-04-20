@@ -5,7 +5,7 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item" v-if="selected_role === 'root'">
+            <li class="breadcrumb-item" v-if="selected_role === 'root' || getSelectedRole==true">
               <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
@@ -271,13 +271,22 @@
     mounted() {
       this.getData();
     },
-    watch: {
-      roles_ready: function(newVal, oldVal) {
-        if (newVal === true && oldVal === false) {
-          this.getRoleFromCurrentRoles(this.current_roles);
-        }
-      }
-    }
+      computed: { //Phải gọi trên html nó mới trigger computed value
+          getSelectedRole: function() {
+              if (this.roles_ready) {
+                  this.getRoleFromCurrentRoles(this.current_roles);
+                  return true;
+              }
+              return false;
+          }
+      },
+    // watch: {
+    //   roles_ready: function(newVal, oldVal) {
+    //     if (newVal === true && oldVal === false) {
+    //       this.getRoleFromCurrentRoles(this.current_roles);
+    //     }
+    //   }
+    // }
   }
 </script>
 

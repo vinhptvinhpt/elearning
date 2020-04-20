@@ -702,7 +702,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/education/resetexam/getlistuser', 'Backend\UserExamController@getListUser');
     Route::post('/education/resetexam/resetuser', 'Backend\UserExamController@apiRestUserExam');
 
-    Route::get('/api/getinfosidebar', 'Backend\LanguageController@getInfoSidebar');
+//    Route::get('/api/getinfosidebar', 'Backend\LanguageController@getInfoSidebar');
 //    Route::post('/sso/checklogin', 'Backend\BackendController@checklogin');
 
     Route::get('/api/checkrolesidebar', 'Backend\BackendController@checkRoleSidebar');

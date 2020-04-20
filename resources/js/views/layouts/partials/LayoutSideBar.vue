@@ -496,11 +496,10 @@
 <script>
 
     export default {
-        props: ['current_roles'],
+        props: ['current_roles', 'slugs', 'roles_ready'],
         components: {},
         data() {
             return {
-                slugs: [],
                 has_user_market: false,
                 has_master_agency: false,
                 has_role_agency: false,
@@ -513,15 +512,6 @@
         },
 
         methods: {
-            getinfoSidebar() {
-                axios.get('/api/getinfosidebar')
-                    .then(response => {
-                        this.slugs = response.data;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-            },
             fetchRoles() {
                 this.has_user_market = this.current_roles.has_user_market;
                 this.has_master_agency = this.current_roles.has_master_agency;
@@ -576,7 +566,6 @@
             }
         },
         mounted() {
-            this.getinfoSidebar();
             this.fetchRoles();
         }
     }
