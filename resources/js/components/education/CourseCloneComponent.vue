@@ -407,7 +407,11 @@
                     .then(response => {
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            this.$router.push({name: 'CourseIndex'});
+                            //khóa học tập trung
+                            if(current_pos.category_id == 5)
+                              this.$router.push({name: 'CourseConcentrateIndex'});
+                            else
+                                this.$router.push({name: 'CourseIndex'});
                         } else {
                             toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }

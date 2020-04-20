@@ -210,7 +210,7 @@
         },
         methods: {
             getCategories() {
-                axios.post('/api/courses/get_list_category')
+                axios.post('/api/courses/get_list_category_edit')
                     .then(response => {
                         this.categories = response.data;
                     })
