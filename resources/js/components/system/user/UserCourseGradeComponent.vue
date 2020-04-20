@@ -95,7 +95,7 @@
                                         </td>
                                         <td>
                                             <span v-if="post.status_user == 1 && post.finalgrade >= post.gradepass && post.user_course_completionstate == post.user_course_learn && post.user_course_completionstate > 0"
-                                                  class="badge badge-success">Hoàn thành</span>
+                                                  class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
                                             <span v-else class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>
                                         </td>
                                     </tr>

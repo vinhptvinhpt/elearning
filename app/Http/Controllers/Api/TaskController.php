@@ -608,8 +608,7 @@ class TaskController extends Controller
                     ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')
                     ->leftJoin($leftJoin, 'ue.userid', '=', 'ttu.user_id')
                     ->where('ttp.id', '=', $data->trainning_id)
-                    ->whereNull('ue.enrolid')->pluck('ttu.user_id')->toArray();
-
+                    ->whereNull('ue.enrolid')->groupBy('ttu.user_id')->pluck('ttu.user_id')->toArray();
 
                 if (count($users) > 0) {
                     // enroll user to course in competency framework
@@ -1343,7 +1342,7 @@ class TaskController extends Controller
                 //lay danh sach user nam trong cctc va role nhung chua  dc add vao KNL
                 $users = DB::table($org_query)->join($role_query, 'ttp_r.user_id', '=', 'org_tp.org_uid')
                     ->leftJoin($trr_query, 'ttu.user_id', '=', 'org_tp.org_uid')
-                    ->whereNull('ttu.trainning_id')->pluck('org_tp.org_uid');
+                    ->whereNull('ttu.trainning_id')->groupBy('org_tp.org_uid')->pluck('org_tp.org_uid');
 
                 //add user to compentecy
                 if (count($users) > 0) {
@@ -1380,7 +1379,7 @@ class TaskController extends Controller
                         })
                         ->where('ttp.deleted', '=', 0)
                         ->whereNotNull('ttg.group_id')
-                        ->whereNull('ttu.id')
+                        ->whereNull('ttu.id')->groupBy('mhr.model_id')
                         ->pluck('mhr.model_id as user_id');
 
                     if (count($users) > 0) {
@@ -1423,7 +1422,7 @@ class TaskController extends Controller
                     $leftJoin = DB::raw($leftJoin);
 
                     $users = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
-                        ->whereNull('ttu.trainning_id')
+                        ->whereNull('ttu.trainning_id')->groupBy('org_us.user_id')
                         ->pluck('org_us.user_id')->toArray();
 
                     if (count($users) > 0) {
