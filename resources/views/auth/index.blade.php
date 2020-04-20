@@ -372,7 +372,7 @@
                         localStorage.setItem(logoutCookie, '');
                         localStorage.setItem('auth.token', data.jwt);
                         localStorage.setItem('auth.user', JSON.stringify(userinfo));
-                        localStorage.setItem('auth.lang', 'vi');
+                        localStorage.setItem('auth.lang', 'en');
                         sslssso.login(data.jwt);
                         loginLMS(data, callback);
                         // // [VinhPT]
