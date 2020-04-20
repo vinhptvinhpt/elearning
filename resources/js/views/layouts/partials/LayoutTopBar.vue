@@ -143,20 +143,20 @@
                 </div>
             </li>
             <li class="nav-item language_dropdown">
-                <a class="nav-link dropdown-toggle no-caret" href="#" role="button" data-toggle="dropdown"
-                   aria-haspopup="true" aria-expanded="false">
-                    <span v-bind:class="classObject">
+<!--                <a class="nav-link dropdown-toggle no-caret" href="#" role="button" data-toggle="dropdown"-->
+<!--                   aria-haspopup="true" aria-expanded="false">-->
+<!--                    <span v-bind:class="classObject">-->
 
-                    </span>
-                    <i class="fa fa-sort-desc"></i>
-                </a>
+<!--                    </span>-->
+<!--                    <i class="fa fa-sort-desc"></i>-->
+<!--                </a>-->
                 <div class="dropdown-menu dropdown-menu-right">
-                  <template v-if="domainWeb.indexOf('localhost') == 0 || domainWeb.indexOf('127') == 0">
-                    <a class="dropdown-item" @click="setLang('vi')"><span
-                      class="language_icon language_vi"></span> Tiếng Việt</a>
-                  </template>
-                    <a class="dropdown-item" @click="setLang('en')"><span
-                            class="language_icon language_en"></span> English</a>
+<!--                  <template v-if="domainWeb.indexOf('localhost') == 0 || domainWeb.indexOf('127') == 0">-->
+<!--                    <a class="dropdown-item" @click="setLang('vi')"><span-->
+<!--                      class="language_icon language_vi"></span> Tiếng Việt</a>-->
+<!--                  </template>-->
+<!--                    <a class="dropdown-item" @click="setLang('en')"><span-->
+<!--                            class="language_icon language_en"></span> English</a>-->
                 </div>
             </li>
         </ul>
@@ -183,9 +183,10 @@
             getDefaultValue() {
                 // this.setLang('en');
                 let obj = Ls.get('auth.user');
-                let lang = Ls.get('auth.lang');
-                if(this.domainWeb.indexOf('dev') == 0)
-                    lang = 'en';
+                // let lang = Ls.get('auth.lang');
+                // if(this.domainWeb.indexOf('dev') == 0)
+                let lang = 'en';
+                // Ls.get('auth.lang');
                 if (obj && obj !== 'undefined') {
                     var user_info = JSON.parse(obj);
                     this.username = user_info.username;
@@ -218,7 +219,7 @@
             }
         },
         mounted() {
-            this.getDefaultValue();
+            // this.getDefaultValue();
             this.domainWeb = location.hostname;
         }
     }

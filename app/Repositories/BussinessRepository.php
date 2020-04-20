@@ -7308,7 +7308,6 @@ class BussinessRepository implements IBussinessInterface
             $root = MdlUser::where('username', 'admin')->first();
             if ($root['id'] == $user_id) {
                 $mdr_root = ModelHasRole::where('model_id', $root['id'])->get()->toArray();
-                dd($mdr_root);
                 if ($mdr_root) {
                     foreach ($mdr_root as $mhr) {
                         ModelHasRole::where([
@@ -7336,7 +7335,6 @@ class BussinessRepository implements IBussinessInterface
                 foreach ($roles as $role_id) {
                     //if (!$checkrole) {
                     $role = Role::findOrFail($role_id);
-                    dd($role['name']);
 
 //                    if (($role['name'] == 'student' || $role['name'] == 'employee') && count($roles) == 1) {
 //                        $mdlUser->redirect_type = 'lms';4kikk099999i
