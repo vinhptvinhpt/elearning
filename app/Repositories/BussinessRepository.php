@@ -6628,10 +6628,8 @@ class BussinessRepository implements IBussinessInterface
                     $data_item['model_id'] = $mdlUser->id;
                     $data_item['model_type'] = 'App/MdlUser';
                     array_push($arr_data, $data_item);
-
                     //                    add_user_by_role($mdlUser->id, $role['id']);
                     //                    enrole_lms($mdlUser->id, $role['mdl_role_id'], $confirm);
-
                     bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 //                    bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 

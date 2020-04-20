@@ -219,7 +219,7 @@
             }
         },
         mounted() {
-            // this.getDefaultValue();
+            this.getDefaultValue();
             this.domainWeb = location.hostname;
         }
     }
