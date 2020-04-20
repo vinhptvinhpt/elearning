@@ -724,7 +724,8 @@ function bulk_enrol_lms($user_id, $role_id, &$arr_data, $data_item)
 {
     $mdl_role = MdlRole::findOrFail($role_id);
     $context_id = 1;
-    if ($mdl_role['shortname'] != Role::STUDENT) {
+
+//    if ($mdl_role['shortname'] != Role::STUDENT) {
         $mdlRoleAssignment = MdlRoleAssignments::where([
             'roleid' => $role_id,
             'userid' => $user_id,
@@ -738,7 +739,7 @@ function bulk_enrol_lms($user_id, $role_id, &$arr_data, $data_item)
 
             array_push($arr_data, $data_item);
         }
-    }
+//    }
 }
 
 function enrole_lms($user_id, $role_id, $confirm)
