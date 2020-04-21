@@ -186,13 +186,14 @@ abstract class restore_search_base implements renderable {
         $contextlevel = $this->get_itemcontextlevel();
         list($sql, $params) = $this->get_searchsql();
         // Get total number, to avoid some incorrect iterations.
+        // [VinhPT][Easia] Disable force filter category Vietlott
         // [VinhPT] Filter course category Thu vien khoa hoc
-        if ($this->case == "import"){
-            $substr = 'WHERE';
-            // Condition for course belong to category Thu vien khoa hoc
-            $condition = ' c.category = 2 and ';
-            $sql = str_replace($substr, $substr.$condition, $sql);
-        }
+        // if ($this->case == "import"){
+        //     $substr = 'WHERE';
+        //     // Condition for course belong to category Thu vien khoa hoc
+        //     $condition = ' c.category = 2 and ';
+        //     $sql = str_replace($substr, $substr.$condition, $sql);
+        // }
 
         $countsql = preg_replace('/ORDER BY.*/', '', $sql);
         $totalcourses = $DB->count_records_sql("SELECT COUNT(*) FROM ($countsql) sel", $params);
