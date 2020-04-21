@@ -2517,18 +2517,6 @@ class BussinessRepository implements IBussinessInterface
     //chart
     public function apiShowStatistic(Request $request)
     {
-        $organization_id = $request->input('organization_id');
-        $training_id = $request->input('training_id');
-
-        $data = TmsOrganization::with('employees.user')->with('children')
-            ->where('id', $organization_id)
-            ->first();
-        //Đệ quy để ra mảng data nhân viên theo tổ chức và các tổ chức con
-        //Đã được cấp chứng chỉ và chưa được
-        //join khung năng lục?
-        //return response()->json($data);
-
-
         //define
         $data = [
             'district' => [],
@@ -2541,7 +2529,7 @@ class BussinessRepository implements IBussinessInterface
             'course_online' => 0
         ];
 
-        $districts = TmsDepartments::all();
+        /*$districts = TmsDepartments::all();
 
         foreach ($districts as $district) {
             $data['district'][$district->id] = $district->name;
@@ -2626,7 +2614,7 @@ class BussinessRepository implements IBussinessInterface
                     $data['userConfirm'][$item->district][] = $item->user_id;
                 }
             }
-        }
+        }*/
 
         $course_data = MdlCourse::where('category', '<>', 2)->get();
         foreach ($course_data as $course_item) {
@@ -3932,6 +3920,11 @@ class BussinessRepository implements IBussinessInterface
                     //remove nhân viên giám sát thị trường
                     remove_user_market($user_id);
                 }
+
+                if (in_array($role['name'], Role::arr_role_organization)) {
+                    TmsOrganizationEmployee::query()->where('user_id', $user_id)->delete();
+                }
+
                 //Clear cache
                 api_lms_clear_cache_enrolments($mdl_role_id, $user_id);
 
@@ -12205,8 +12198,6 @@ class BussinessRepository implements IBussinessInterface
         $this->city_id = 0;
         $role_id = $request->input('role_id');
 
-
-
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -12270,23 +12261,29 @@ class BussinessRepository implements IBussinessInterface
 
         //Check đã tồn tại role
         if (strlen($role_id) != 0) {
-            $check_role = Role::query()->where('id', $role_id)->first();
-            if (isset($check_role)) { //Check trong organization
+
+                $check_role = Role::query()->where('id', $role_id)->first();
+
                 if (in_array($check_role->name, Role::arr_role_organization)) {
-                    $data = $data->whereNotIn('tud.user_id', function ($query) {
-                            //check exist in table tms_nofitications
-                            $query->select('user_id')->from('tms_organization_employee');
-                        });
+                    $org_role_array = Role::arr_role_organization;
+                    $data = $data->whereNotIn('tud.user_id', function ($query) use ($org_role_array) {
+                        $query->select('model_id')
+                            ->from('model_has_roles')
+                            ->whereIn('role_id',  function ($q) use ($org_role_array) {
+                                $q->select('id')->from('roles')->whereIn('name', $org_role_array);
+                            })
+                            ->where('model_type', 'App/MdlUser');
+                    });
+                } else {//Check đã có role này rồi hay chưa
+                    $data = $data->whereNotIn('tud.user_id', function ($query) use ($role_id) {
+                        $query->select('model_id')
+                            ->from('model_has_roles')
+                            ->where('role_id', $role_id)
+                            ->where('model_type', 'App/MdlUser');
+                    });
                 }
-            } else { //Check đã có role này rồi hay chưa
-                $data = $data->whereNotIn('tud.user_id', function ($query) use ($role_id) {
-                    //check exist in table tms_nofitications
-                    $query->select('model_id')
-                        ->from('model_has_roles')
-                        ->where('role_id', $role_id)
-                        ->where('model_type', 'App/MdlUser');
-                });
-            }
+
+
         }
 
         if ($this->keyword) {
