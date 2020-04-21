@@ -30,34 +30,42 @@ class ReportController extends Controller
     {
         return $this->bussinessRepository->apiGetDistrict($request);
     }
+
     public function apiGetCityByDistrict(Request $request)
     {
         return $this->bussinessRepository->apiGetCityByDistrictReport($request);
     }
+
     public function apiGetCityByDepartment(Request $request)
     {
         return $this->bussinessRepository->apiGetCityByDepartmentReport($request);
     }
+
     public function apiGetBranchByCity(Request $request)
     {
         return $this->bussinessRepository->apiGetBranchByCityReport($request);
     }
+
     public function apiGetSaleRoomByBranch(Request $request)
     {
         return $this->bussinessRepository->apiGetSaleRoomByBranchReport($request);
     }
+
     public function apiShowStatistic(Request $request)
     {
         return $this->bussinessRepository->apiShowStatistic($request);
     }
+
     public function apiShowReportByCity(Request $request)
     {
         return $this->bussinessRepository->apiShowReportByCity($request);
     }
+
     public function apiShowReportByRegion(Request $request)
     {
         return $this->bussinessRepository->apiShowReportByRegion($request);
     }
+
     public function apiListDetail(Request $request)
     {
         return $this->bussinessRepository->apiListDetail($request);

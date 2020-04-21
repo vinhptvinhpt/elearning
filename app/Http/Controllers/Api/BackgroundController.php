@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\CourseCompletion;
+use App\CourseFinal;
 use App\Exports\ImportResultSheet;
 use App\Exports\ListMismatchData;
 use App\Http\Controllers\Controller;
@@ -16,10 +18,14 @@ use App\ModelHasRole;
 use App\Role;
 use App\StudentCertificate;
 use App\TmsBranch;
+use App\TmsBranchMaster;
 use App\TmsBranchSaleRoom;
 use App\TmsCity;
 use App\TmsCityBranch;
 use App\TmsDepartments;
+use App\TmsDevice;
+use App\TmsInvitation;
+use App\TmsLog;
 use App\TmsNotification;
 use App\TmsNotificationLog;
 use App\TmsOrganization;
@@ -27,10 +33,14 @@ use App\TmsOrganizationEmployee;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
+use App\TmsSurveyUser;
+use App\TmsSurveyUserView;
 use App\TmsTrainningCategory;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
+use App\TmsUserSaleDetail;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -649,7 +659,6 @@ class BackgroundController extends Controller
     {
         set_time_limit(0);
 
-
         $manager_keys = array(
             'manager',
             'officer',
@@ -687,7 +696,8 @@ class BackgroundController extends Controller
 
             foreach ($list_employee as $user) {
 
-                $errors = array();
+                $content = array();
+                $status = true;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -700,7 +710,7 @@ class BackgroundController extends Controller
 
 
                 if (strlen($position_name) == 0) {
-                    $errors[] = 'Position is missing';
+                    $content[] = 'Position is missing';
                 }
 
                 if (str_replace($manager_keys, '', $position_name) != $position_name) {
@@ -714,7 +724,7 @@ class BackgroundController extends Controller
                 //Check / create department
                 $department_name = $user[5];
                 if (strlen($department_name) == 0) {
-                    $errors[] = 'Department is missing';
+                    $content[] = 'Department is missing';
                 } else {
                     $organization = TmsOrganization::firstOrCreate([
                         'code' => strtoupper($department_name),
@@ -727,10 +737,10 @@ class BackgroundController extends Controller
                 $email = $user[26];
 
                 if (strlen($email) == 0) {
-                    $errors[] = 'Email is missing';
+                    $content[] = 'Email is missing';
                 } else {
                     if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-                        $errors[] = "Email is wrong format";
+                        $content[] = "Email is wrong format";
                     }
                 }
                 //name
@@ -740,20 +750,20 @@ class BackgroundController extends Controller
                 $last_name = $user[4];
 
                 if (strlen($full_name) == 0) {
-                    $errors[] = 'Full name is missing';
+                    $content[] = 'Full name is missing';
                 }
 
                 if (strlen($first_name) == 0) {
-                    $errors[] = 'First name is missing';
+                    $content[] = 'First name is missing';
                 }
 
                 if (strlen($last_name) == 0) {
-                    $errors[] = 'Last name is missing';
+                    $content[] = 'Last name is missing';
                 }
                 //cmtnd
                 $personal_id = $user[18];
                 if (strlen($personal_id) == 0) {
-                    $errors[] = 'Personal id is missing';
+                    $content[] = 'Personal id is missing';
                 }
 
                 $address = $user[17];
@@ -773,7 +783,7 @@ class BackgroundController extends Controller
 
                 $dob = "";
                 if (strlen($user[8]) == 0 || strlen($user[9]) == 0 || strlen($user[10]) == 0) {
-                    $errors[] = 'Personal id is missing';
+                    $content[] = 'Personal id is missing';
                 } else {
                     $dob_date = str_pad($user[8], 2, '0', STR_PAD_LEFT);
                     $dob_month = str_pad($user[9], 2, '0', STR_PAD_LEFT);
@@ -799,8 +809,8 @@ class BackgroundController extends Controller
                     ''
                 );
 
-                if (empty($errors)) {
-                    $user_id = self::createEmployee(
+                if (empty($content)) {
+                    $createEmployeeResponse = self::createEmployee(
                         $role,
                         $email,
                         $email,
@@ -818,25 +828,28 @@ class BackgroundController extends Controller
                         $start_time
                     );
 
-                    if (is_numeric($user_id)) { //tạo user thành công
+                    if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
+                        $user_id = $createEmployeeResponse['id'];
                         $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
                         if (!is_numeric($employee)) {
-                            $errors[] = $employee;
+                            $content[] = $employee;
                         }
                     } else {
-                        $errors[] = $user_id; //Tạo thất bại -> báo lỗi
+                        $status = false;
+                        $content[] = $createEmployeeResponse['message']; //Tạo thất bại -> log lỗi
                     }
+                } else { //validate fail
+                    $status = false;
                 }
 
-                if (!empty($errors)) {
+                if ($status ==  false) {
                     $response_item[2] = 'error';
-                    $response_item[3] = implode("\n", $errors);
                 } else {
                     $response_item[2] = 'success';
                 }
+                $response_item[3] = implode("\n", $content);
 
                 $response[] = $response_item;
-
             }
 
             $result_file_name = "bg_import_error_" . $file_name . ".xlsx";
@@ -1311,6 +1324,12 @@ class BackgroundController extends Controller
         $working_start_at
     ) {
         $check = MdlUser::query()->where('email', $email)->first();
+
+        $response = [
+            'id'=> 0,
+            'message' => ''
+        ];
+
         if (isset($check)) { //Cập nhật
             try {
                 $check->redirect_type = 'lms';
@@ -1327,34 +1346,46 @@ class BackgroundController extends Controller
                 //TmsUserDetail::query()->where('email', $email)->delete();
 
                 //cập nhật thông tin chi tiết user
-                $user_detail = TmsUserDetail::query()->where('email', $email)->first();
+                $user_detail = TmsUserDetail::query()
+                    ->where('email', $email)
+                    ->orWhere('cmtnd', $personal_id)
+                    ->first();
                 if (!isset($user_detail)) {
                     $user_detail = new TmsUserDetail();
                 }
-                $user_detail->user_id = $check->id;
-                $user_detail->cmtnd = $personal_id;
-                $user_detail->fullname = $full_name;
-                $user_detail->email = $email;
-                $user_detail->phone = $phone1;
-                $user_detail->address = $address;
-                $user_detail->sex = $gender;
-                $user_detail->confirm = 0;
-                $user_detail->dob = $dob;
-                $user_detail->working_status = 1;
-                $user_detail->start_time = $working_start_at;
-                $user_detail->save();
 
+                //check cmtnd
+                if ($user_detail->user_id != $check->id) {
+                    $response['message'] = 'Skip update because Personal ID is used by another user ' . $user_detail->fullname;
+                } else {
+                    $user_detail->user_id = $check->id;
+                    $user_detail->fullname = $full_name;
+                    $user_detail->cmtnd = $personal_id;
+                    $user_detail->email = $email;
+                    $user_detail->phone = $phone1;
+                    $user_detail->address = $address;
+                    $user_detail->sex = $gender;
+                    $user_detail->confirm = 0;
+                    $user_detail->dob = $dob;
+                    $user_detail->working_status = 1;
+                    $user_detail->start_time = $working_start_at;
+                    $user_detail->save();
 
-                $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
-                if ($role) {
-                    //Auto thêm quyền học viên nếu chưa có
-                    self::add_user_by_role($check->id, 5);
-                    //Thêm quyền mới nếu chưa có
-                    self::add_user_by_role($check->id, $role['id']);
-                    //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+                    $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
+                    if ($role) {
+                        //Auto thêm quyền học viên nếu chưa có
+                        self::add_user_by_role($check->id, 5);
+                        //Thêm quyền mới nếu chưa có
+                        self::add_user_by_role($check->id, $role['id']);
+                        //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+                    }
+                    $response['id'] = $check->id;
+                    if (strlen($response['message']) == 0) {
+                        $response['message'] = 'Update successfully';
+                    }
                 }
             } catch (Exception $e) {
-                return $e->getMessage();
+                $response['message'] = $e->getMessage();
             }
         } else { //Tạo mới
             $check = self::createUserNew(
@@ -1376,11 +1407,14 @@ class BackgroundController extends Controller
             );
 
             if (!is_object($check)) { //lỗi
-                return $check;
+                $response['message'] = $check;
+            } else {
+                $response['id'] = $check->id;
+                $response['message'] = 'Create successfully';
             }
         }
-        //Thành công trả về id của user
-        return $check->id;
+
+        return $response;
     }
 
 
@@ -1681,6 +1715,15 @@ class BackgroundController extends Controller
         $working_start_at
     ) {
         try {
+
+            //Check cmtnd
+            $user_detail = TmsUserDetail::query()
+                ->where('cmtnd', $personal_id)
+                ->first();
+            if (isset($user_detail)) {
+                return 'Can not create user because Personal ID is used by another user ' . $user_detail->fullname;
+            }
+
             $check = new MdlUser;
             $check->username = $username;
             $check->password = bcrypt('Easia@2020');
@@ -1723,6 +1766,7 @@ class BackgroundController extends Controller
             $user_detail->start_time = $working_start_at;
             $user_detail->user_id = $check->id;
             $user_detail->save();
+
         } catch (Exception $e) {
             return $e->getMessage();
         }
@@ -2310,17 +2354,210 @@ class BackgroundController extends Controller
             'admin'
         ];
 
-        $users = MdlUser::query()
-            ->whereNotIn('username', $excludes)
-            ->select('id')
-            ->limit(500)
-            ->get();
+//Xóa lần lượt
 
-        foreach ($users as $user) {
-            //Gọi hàm xóa tms user, trong hàm có gọi sang lms để xóa
-            TmsUserDetail::clearUser($user->id);
-        }
+//        $users = MdlUser::query()
+//            ->whereNotIn('username', $excludes)
+//            ->select('id')
+//            ->limit(500)
+//            ->get();
+//
+//        foreach ($users as $user) {
+//            //Gọi hàm xóa tms user, trong hàm có gọi sang lms để xóa
+//            TmsUserDetail::clearUser($user->id);
+//        }
 
+//Xóa cùng lúc
+        //Xóa khỏi bảng TmsUserDetail
+        TmsUserDetail::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        //Xóa dữ liệu liên quan
+        //Tms tables
+        ModelHasRole::query()
+            ->whereIn('model_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('model_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsRoleOrganize::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsSaleRoomUser::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsSurveyUserView::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsSurveyUser::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsTrainningUser::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsUserSaleDetail::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsDevice::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        TmsLog::query()
+            ->whereIn('user', function ($q) use ($excludes) {
+            self::buildSubQueryForUser1($q, $excludes);
+        })
+            ->orWhereNotIn('user', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        //Old organize system
+        TmsCity::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->update(['user_id' => 0]);
+
+        TmsBranchMaster::query()
+            ->whereIn('master_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('master_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->update(['master_id' => 0]);
+
+        TmsBranch::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->update(['user_id' => 0]);
+        TmsSaleRooms::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->update(['user_id' => 0]);
+
+        //new tables
+        TmsInvitation::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+        TmsOrganizationEmployee::query()
+            ->whereIn('user_id', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('user_id', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        //Not has tms in name tables by dat09
+        CourseFinal::query()
+            ->whereIn('userid', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('userid', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+        CourseCompletion::query()
+            ->whereIn('userid', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('userid', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+        StudentCertificate::query()
+            ->whereIn('userid', function ($q) use ($excludes) {
+                self::buildSubQueryForUser1($q, $excludes);
+            })
+            ->orWhereNotIn('userid', function ($q)  {
+                self::buildSubQueryForUser2($q);
+            })
+            ->delete();
+
+        //Temporary
+        //Delete Mdl_user data
+        MdlUser::query()->whereNotIn('username', $excludes)->delete();
+    }
+
+    function buildSubQueryForUser1(&$q, $excludes) {
+        /**
+         * @var $q Builder
+         */
+        $q->select('id')->from('mdl_user')->whereNotIn('username', $excludes);
+    }
+
+    function buildSubQueryForUser2(&$q) {
+        /**
+         * @var $q Builder
+         */
+        $q->select('id')->from('mdl_user');
     }
 }
 
