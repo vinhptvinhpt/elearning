@@ -247,19 +247,18 @@
                 }
             },
             addUserRole(){
-                let current_pos = this;
                 if(this.user_add.length  > 0){
                     axios.post('/role/list_user/add_user_by_role',{
                         user_add:this.user_add,
                         role_id:this.role_id
                     })
                         .then(response => {
-                            roam_message(response.data.status,response.data.message);
+                            toastr[response.data.status](response.data.message, this.trans.get('keys.thong_bao'));
                             this.getListAddUsers(this.current2);
                             this.getListUsers(this.current);
                         })
                         .catch(error => {
-                            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                          toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                         });
                 }
             },

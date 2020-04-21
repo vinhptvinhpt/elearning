@@ -205,11 +205,14 @@
               toastr['error'](response.data.message, this.trans.get('keys.loi'));
               $('.form-control').removeClass('error');
               $('#employee_'+response.data.key).addClass('error');
-            }else{
+            }
+            else{
               if (response.data.status === 'success') {
                 toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                 $('.form-control').removeClass('error');
-              } else {
+                this.$router.push({ name: 'IndexEmployee', query: { organization_id: current_pos.employee.organization_id }});
+              }
+              else {
                 toastr[response.data.status](response.data.message, current_pos.trans.get('keys.that_bai'));
               }
             }

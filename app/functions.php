@@ -323,12 +323,12 @@ function permission_slug()
                 'tms-educate-libraly-edit' => 'Sửa',
                 'tms-educate-libraly-deleted' => 'Xóa',
             ],
-            'tms-educate-exam-organize' => [
-                'tms-educate-exam-organize-view' => 'Xem',
-                'tms-educate-exam-organize-add' => 'Thêm',
-                'tms-educate-exam-organize-edit' => 'Sửa',
-                'tms-educate-exam-organize-deleted' => 'Xóa',
-            ],
+//            'tms-educate-exam-organize' => [
+//                'tms-educate-exam-organize-view' => 'Xem',
+//                'tms-educate-exam-organize-add' => 'Thêm',
+//                'tms-educate-exam-organize-edit' => 'Sửa',
+//                'tms-educate-exam-organize-deleted' => 'Xóa',
+//            ],
             'tms-educate-exam-online' => [
                 'tms-educate-exam-online-view' => 'Xem',
                 'tms-educate-exam-online-add' => 'Thêm',
@@ -427,24 +427,24 @@ function permission_slug()
                 'tms-access-profile-view' => 'Xem',
                 'tms-access-profile-edit' => 'Sửa',
             ],
-            'tms-access-market' => [
-                'tms-access-market-view' => 'Xem',
-                'tms-access-market-add' => 'Thêm',
-                'tms-access-market-edit' => 'Sửa',
-                'tms-access-market-deleted' => 'Xóa',
-            ],
-            'tms-access-manage-branch' => [
-                'tms-access-manage-branch-view' => 'Xem',
-                'tms-access-manage-branch-add' => 'Thêm',
-                'tms-access-manage-branch-edit' => 'Sửa',
-                'tms-access-manage-branch-deleted' => 'Xóa',
-            ],
-            'tms-access-manage-saleroom' => [
-                'tms-access-manage-saleroom-view' => 'Xem',
-                'tms-access-manage-saleroom-add' => 'Thêm',
-                'tms-access-manage-saleroom-edit' => 'Sửa',
-                'tms-access-manage-saleroom-deleted' => 'Xóa',
-            ],
+//            'tms-access-market' => [
+//                'tms-access-market-view' => 'Xem',
+//                'tms-access-market-add' => 'Thêm',
+//                'tms-access-market-edit' => 'Sửa',
+//                'tms-access-market-deleted' => 'Xóa',
+//            ],
+//            'tms-access-manage-branch' => [
+//                'tms-access-manage-branch-view' => 'Xem',
+//                'tms-access-manage-branch-add' => 'Thêm',
+//                'tms-access-manage-branch-edit' => 'Sửa',
+//                'tms-access-manage-branch-deleted' => 'Xóa',
+//            ],
+//            'tms-access-manage-saleroom' => [
+//                'tms-access-manage-saleroom-view' => 'Xem',
+//                'tms-access-manage-saleroom-add' => 'Thêm',
+//                'tms-access-manage-saleroom-edit' => 'Sửa',
+//                'tms-access-manage-saleroom-deleted' => 'Xóa',
+//            ],
         ],
         'nav_support' => [
             'tms-support' => [

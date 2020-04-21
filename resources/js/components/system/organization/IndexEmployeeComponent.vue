@@ -5,7 +5,7 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item" v-if="selected_role === 'root'">
+            <li class="breadcrumb-item" v-if="selected_role === 'root' || getSelectedRole==true">
               <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
@@ -532,21 +532,32 @@
         } else {
           return default_response;
         }
-      }
-    },
-    watch: {
-      roles_ready: function(newVal, oldVal) {
-        if (newVal === true && oldVal === false) {
+      },
+      getSelectedRole: function(){
+        if(this.roles_ready){
             let organization_id_string = this.organization_id.toString();
-          this.getRoleFromCurrentRoles(this.current_roles);
-          if (this.organization_id.length === 0) {
-              this.fetchOrganizationInfo(0);
-          } else {
-            this.fetchOrganizationInfo(parseInt(organization_id_string));
-          }
+            this.getRoleFromCurrentRoles(this.current_roles);
+            if (this.organization_id.length === 0) {
+                this.fetchOrganizationInfo(0);
+            } else {
+                this.fetchOrganizationInfo(parseInt(organization_id_string));
+            }
         }
       }
-    }
+    },
+    // watch: {
+    //   roles_ready: function(newVal, oldVal) {
+    //     if (newVal === true && oldVal === false) {
+    //         let organization_id_string = this.organization_id.toString();
+    //       this.getRoleFromCurrentRoles(this.current_roles);
+    //       if (this.organization_id.length === 0) {
+    //           this.fetchOrganizationInfo(0);
+    //       } else {
+    //         this.fetchOrganizationInfo(parseInt(organization_id_string));
+    //       }
+    //     }
+    //   }
+    // }
   }
 </script>
 
