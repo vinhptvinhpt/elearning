@@ -396,17 +396,23 @@ class BussinessRepository implements IBussinessInterface
     public function checkRoleSidebar()
     {
         $checkRole = new CheckRoleModel();
+        $permissions = [];
+
         try {
 
             $user_id = Auth::id();
 
             $sru = DB::table('model_has_roles as mhr')
                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
-                //->where('roles.name', '=', Role::MANAGE_MARKET)
+                ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
                 ->where('mhr.model_id', $user_id)
                 ->where('mhr.model_type', 'App/MdlUser')
                 ->get();
+
+
             if (count($sru) != 0) {
+
                 foreach ($sru as $role) {
                     if ($role->name == Role::ROLE_MANAGER) {
                         $checkRole->has_role_manager = true;
@@ -423,7 +429,28 @@ class BussinessRepository implements IBussinessInterface
                     } elseif ($role->name == Role::ADMIN) {
                         $checkRole->root_user = true;
                     }
+
+                    $permissions[] = $role->permission_slug;
+
                 }
+
+                //Nếu là root cho phép tất cả các quyền
+                if (tvHasRole(Auth::user()->id, 'Root')
+                    || tvHasRole(Auth::user()->id, 'root')
+                    || tvHasRole(Auth::user()->id, 'admin')) {
+
+                    $permissions = []; //tạo mảng quyền mới
+                    //Lay tat ca cac quyen
+                    $permission_slugs = DB::table('permission_slug_role as psr')
+                        ->join('model_has_roles as mhr', 'mhr.role_id', '=', 'psr.role_id')
+                        ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                        ->select('psr.permission_slug')->groupBy('psr.permission_slug')->get();
+
+                    foreach ($permission_slugs as $per_slug) {
+                        $permissions[] = $per_slug->permission_slug;
+                    }
+                }
+
             }
 
 //            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
@@ -440,7 +467,11 @@ class BussinessRepository implements IBussinessInterface
             $checkRole->has_role_manager = false;
             $checkRole->has_role_leader = false;
         }
-        return response()->json($checkRole);
+
+        $response['roles'] = $checkRole;
+        $response['slugs'] = $permissions;
+
+        return response()->json($response);
     }
     #endregion
 

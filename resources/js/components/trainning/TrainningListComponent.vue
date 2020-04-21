@@ -187,6 +187,7 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                                current_pos.getTrainnings();
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

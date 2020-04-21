@@ -3,7 +3,7 @@
         <div class="overwrap_search_box"></div>
         <div class="hk-wrapper hk-vertical-nav">
             <top-bar :key="topBarKey"></top-bar>
-            <side-bar v-if="roles_ready" :current_roles="current_roles"></side-bar>
+            <side-bar v-if="roles_ready" :current_roles="current_roles" :slugs="slugs"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
               <router-view
@@ -25,6 +25,7 @@
       data() {
         return {
           topBarKey: 0,
+          slugs: [],
           current_roles: {
             has_user_market: false,
             has_master_agency: false,
@@ -51,7 +52,8 @@
           checkRoleSidebar() {
             axios.get('/api/checkrolesidebar')
               .then(response => {
-                this.current_roles = response.data;
+                this.current_roles = response.data.roles;
+                this.slugs = response.data.slugs;
                 //Pass to sidebar
                 if (response.data.root_user === true) {
                   this.selected_role = 'root';
