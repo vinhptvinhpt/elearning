@@ -724,7 +724,7 @@
                   //label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
                   //name: item.name
                 };
-                if (this.role_selected === 'root') {
+                if (this.role_selected === 'root' || this.role_selected === 'admin') {
                   outPut.push(newOption);
                 }
                 if (this.role_selected === 'leader' || this.role_selected === 'manager') {
@@ -744,6 +744,8 @@
             getRoleFromCurrentRoles(current_roles) {
                 if (current_roles.root_user === true) {
                   this.role_selected = 'root';
+                } else if (current_roles.has_role_admin === true) {
+                  this.role_selected = 'admin';
                 } else if (current_roles.has_role_manager === true) {
                   this.role_selected = 'manager';
                 } else if (current_roles.has_role_leader === true) {

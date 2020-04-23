@@ -411,10 +411,12 @@ class BussinessRepository implements IBussinessInterface
                 ->where('mhr.model_type', 'App/MdlUser')
                 ->get();
 
-
             if (count($sru) != 0) {
 
                 foreach ($sru as $role) {
+
+                    $permissions[] = $role->permission_slug;
+
                     if ($role->name == Role::ROLE_MANAGER) {
                         $checkRole->has_role_manager = true;
                     } elseif ($role->name == Role::ROLE_LEADER) {
@@ -427,12 +429,9 @@ class BussinessRepository implements IBussinessInterface
                         $checkRole->has_role_pos = true;
                     } elseif ($role->name == Role::ROOT) {
                         $checkRole->root_user = true;
-                    } elseif ($role->name == Role::ADMIN) {
-                        $checkRole->root_user = true;
+                    } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
+                        $checkRole->has_role_admin = true;
                     }
-
-                    $permissions[] = $role->permission_slug;
-
                 }
 
                 //Nếu là root cho phép tất cả các quyền
