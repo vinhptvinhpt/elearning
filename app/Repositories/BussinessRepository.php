@@ -284,7 +284,8 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //chart 2(count course only), 4 data
-            $courses = MdlCourse::where('mdl_course.visible', 1)->where('mdl_course.category', "<>", 2)
+            $courses = MdlCourse::where('mdl_course.deleted', 0)
+                ->where('mdl_course.category', "<>", 2)
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
                 ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
                 ->get();
@@ -2647,7 +2648,11 @@ class BussinessRepository implements IBussinessInterface
             }
         }*/
 
-        $course_data = MdlCourse::where('category', '<>', 2)->get();
+        $course_data = MdlCourse::where('mdl_course.deleted', 0)
+            ->where('mdl_course.category', "<>", 2)
+            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
+            ->get();
         foreach ($course_data as $course_item) {
             if ($course_item->category == 5) {
                 $data['course_offline'] += 1;
@@ -3440,8 +3445,6 @@ class BussinessRepository implements IBussinessInterface
 
         return $data;
     }
-
-
 
     public static function buildDefaultReportObject(&$object, $object_id, $name) {
         $object[$object_id]['name'] = $name;
