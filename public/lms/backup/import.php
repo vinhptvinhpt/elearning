@@ -66,8 +66,9 @@ if ($importcourseid === false || $searchcourses) {
     // Obviously not... show the selector so one can be chosen
     $url = new moodle_url('/backup/import.php', array('id'=>$courseid));
     $search = new import_course_search(array('url'=>$url));
+    // [VinhPT][Easia] Disable force filter category Vietlott
     // [VinhPT] Add case import to differ other restore case
-    $search->case = "import";
+    // $search->case = "import";
     // show the course selector
     echo $OUTPUT->header();
     echo $renderer->import_course_selector($url, $search);

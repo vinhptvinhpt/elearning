@@ -1,6 +1,6 @@
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
-## Larvel: 5.8
+## Laravel: 5.8
 ## Moodle: 3.7
 
 ## Hướng dẫn cài đặt hệ thống Elearning
