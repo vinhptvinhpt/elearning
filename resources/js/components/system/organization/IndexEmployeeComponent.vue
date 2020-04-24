@@ -5,7 +5,7 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item" v-if="selected_role === 'root' || getSelectedRole==true">
+            <li class="breadcrumb-item" v-if="selected_role === 'root' || selected_role === 'admin' || getSelectedRole === true">
               <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
@@ -108,7 +108,7 @@
 
               <!-- Gán người dùng vào tổ chức batch -->
               <assign-employee
-                v-if="selected_role == 'root'"
+                v-if="selected_role == 'root' || selected_role === 'admin'"
                 :key="assignBatch"
                 :organization_id="query_organization_id"></assign-employee>
 
@@ -457,6 +457,8 @@
       getRoleFromCurrentRoles(current_roles) {
         if (current_roles.root_user === true) {
           this.selected_role = 'root';
+        } else if (current_roles.has_role_admin === true) {
+          this.selected_role = 'admin';
         } else if (current_roles.has_role_manager === true) {
           this.selected_role = 'manager';
         } else if (current_roles.has_role_leader === true) {
@@ -511,7 +513,7 @@
           this.getRoleFromCurrentRoles(this.current_roles);
           //overwrite filter for manager / leader
 
-          if (this.selected_role === 'root') {
+          if (this.selected_role === 'root' || this.selected_role === 'admin') {
             return default_response;
           }
 

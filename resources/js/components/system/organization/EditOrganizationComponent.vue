@@ -5,7 +5,7 @@
         <nav class="breadcrumb" aria-label="breadcrumb">
           <ol class="breadcrumb bg-transparent px-0">
             <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item" v-if="selected_role === 'root' || getSelectedRole==true">
+            <li class="breadcrumb-item" v-if="selected_role === 'root' || selected_role === 'admin' || getSelectedRole === true">
               <router-link :to="{name: 'IndexOrganization', params: {page: source_page}}">
                 {{ trans.get('keys.to_chuc') }}
               </router-link>
@@ -99,7 +99,7 @@
                 <div class="row mt-3">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link v-if="selected_role === 'root'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                      <router-link v-if="selected_role === 'root' || selected_role === 'admin'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
                       <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
@@ -257,6 +257,8 @@
       getRoleFromCurrentRoles (current_roles) {
         if (current_roles.root_user === true) {
           this.selected_role = 'root';
+        } else if (current_roles.has_role_admin === true) {
+          this.selected_role = 'admin';
         } else if (current_roles.has_role_manager === true) {
           this.selected_role = 'manager';
         } else if (current_roles.has_role_leader === true) {

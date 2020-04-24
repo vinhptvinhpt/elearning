@@ -63,7 +63,7 @@ class Kernel extends ConsoleKernel
         $pdo = DB::connection()->getPdo();
 
         if($pdo) {
-            $stored_configs = TmsConfigs::all();
+            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
             $today = date('Y-m-d H:i:s', time());
             if (count($stored_configs) == 0 || count($stored_configs) != count($configs)) {
                 TmsConfigs::whereIn('target', array_keys($configs))->delete();
@@ -491,7 +491,8 @@ class Kernel extends ConsoleKernel
         //Moved to mail controller
         $schedule->call(function () use ($configs) {
             if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
-                $courses = MdlCourse::all()->where('category', "=", 4)->random(rand(3, 5));
+                //$courses = MdlCourse::all()->where('category', "=", 4)->random(rand(3, 5));
+                $courses = MdlCourse::query()->where('category', "=", 4)->orderByRaw('RAND()')->get();
                 $countCourse = count($courses);
                 if ($countCourse > 0) {
                     $curentDate = time();

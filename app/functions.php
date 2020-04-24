@@ -190,6 +190,7 @@ function permission_cat_name()
         'tms-system-student' => 'Quản lý Học viên',
         'tms-system-market' => 'Quản lý Nhân viên giám sát thị trường',
         'tms-system-organize' => 'Quản lý khung cơ cấu tổ chức',
+        'tms-system-administrator' => 'Quyền quản trị hệ thống',
         'tms-system-role' => 'Quản lý phân Quyền',
         'tms-system-import-user' => 'Thêm dữ liệu bằng excel',
         'tms-system-trash' => 'Khôi phục thùng rác',
@@ -258,6 +259,9 @@ function permission_slug()
             ]
         ],*/
         'nav_system' => [
+            'tms-system-administrator' => [
+                'tms-system-administrator-grant' => 'Cho phép'
+            ],
             'tms-system-organize' => [
                 'tms-system-organize-view' => 'Xem',
                 'tms-system-organize-add' => 'Thêm',

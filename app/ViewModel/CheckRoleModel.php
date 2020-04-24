@@ -13,5 +13,6 @@ class CheckRoleModel
     public $root_user = false;
     public $has_role_manager = false;
     public $has_role_leader = false;
+    public $has_role_admin = false;
 
 }

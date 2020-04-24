@@ -34,6 +34,7 @@
             has_role_manager: false,
             has_role_leader: false,
             root_user: false,
+            has_role_admin: false,
           },
           roles_ready: false,
           selected_role: 'user'
@@ -55,13 +56,16 @@
                 this.current_roles = response.data.roles;
                 this.slugs = response.data.slugs;
                 //Pass to sidebar
-                if (response.data.root_user === true) {
+
+                if (response.data.roles.root_user === true) {
                   this.selected_role = 'root';
-                } else if (response.data.has_role_manager === true) {
+                } else if (response.data.roles.has_role_admin === true) {
+                  this.selected_role = 'admin';
+                } else if (response.data.roles.has_role_manager === true) {
                   this.selected_role = 'manager';
-                } else if (response.data.has_role_leader === true) {
+                } else if (response.data.roles.has_role_leader === true) {
                   this.selected_role = 'leader';
-                } else if (response.data.has_user_market === true) {
+                } else if (response.data.roles.has_user_market === true) {
                   this.selected_role = 'user_market';
                 } else {
                   this.selected_role = 'user';
@@ -69,7 +73,7 @@
                 this.roles_ready = true;
               })
               .catch(error => {
-                console.log(error.response.data);
+                //console.log(error);
               });
           },
           renderTopBarAgain() { //Force render top bar

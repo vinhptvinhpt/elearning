@@ -284,7 +284,8 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //chart 2(count course only), 4 data
-            $courses = MdlCourse::where('mdl_course.visible', 1)->where('mdl_course.category', "<>", 2)
+            $courses = MdlCourse::where('mdl_course.deleted', 0)
+                ->where('mdl_course.category', "<>", 2)
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
                 ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
                 ->get();
@@ -410,10 +411,12 @@ class BussinessRepository implements IBussinessInterface
                 ->where('mhr.model_type', 'App/MdlUser')
                 ->get();
 
-
             if (count($sru) != 0) {
 
                 foreach ($sru as $role) {
+
+                    $permissions[] = $role->permission_slug;
+
                     if ($role->name == Role::ROLE_MANAGER) {
                         $checkRole->has_role_manager = true;
                     } elseif ($role->name == Role::ROLE_LEADER) {
@@ -426,12 +429,9 @@ class BussinessRepository implements IBussinessInterface
                         $checkRole->has_role_pos = true;
                     } elseif ($role->name == Role::ROOT) {
                         $checkRole->root_user = true;
-                    } elseif ($role->name == Role::ADMIN) {
-                        $checkRole->root_user = true;
+                    } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
+                        $checkRole->has_role_admin = true;
                     }
-
-                    $permissions[] = $role->permission_slug;
-
                 }
 
                 //Nếu là root cho phép tất cả các quyền
@@ -1343,9 +1343,9 @@ class BussinessRepository implements IBussinessInterface
             $course->deleted = 0;
             //nếu là thư viện khóa học => Cập nhật cả trong khung năng lực tms_trainning_courses vì
             // khi xóa thư viện khóa học thì chuyển trạng thái khóa học đó trong knl = 1
-            if ($course->category == 2) {
-                TmsTrainningCourse::where('sample_id', '=', $id)->update(['deleted' => '0']);
-            }
+          //  if ($course->category == 2) {
+                TmsTrainningCourse::where('course_id', '=', $id)->update(['deleted' => '0']);
+          //  }
             $course->save();
 
             $result = 1;
@@ -2646,7 +2646,11 @@ class BussinessRepository implements IBussinessInterface
             }
         }*/
 
-        $course_data = MdlCourse::where('category', '<>', 2)->get();
+        $course_data = MdlCourse::where('mdl_course.deleted', 0)
+            ->where('mdl_course.category', "<>", 2)
+            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
+            ->get();
         foreach ($course_data as $course_item) {
             if ($course_item->category == 5) {
                 $data['course_offline'] += 1;
@@ -3441,8 +3445,7 @@ class BussinessRepository implements IBussinessInterface
     }
 
 
-    public static function buildDefaultReportObject(&$object, $object_id, $name)
-    {
+    public static function buildDefaultReportObject(&$object, $object_id, $name) {
         $object[$object_id]['name'] = $name;
         $object[$object_id]['completed'] = [];
         $object[$object_id]['incomplete'] = [];
