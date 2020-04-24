@@ -34,7 +34,7 @@ Cài đặt thư viện cho script python gen chứng chỉ
 - sudo pip install mysql-connector-python
 - sudo pip install Pillow
 
-Lưu ý: khi cấu hình connection trong file generate.py, nếu cài database container trên cùng 1 máy thì đặt host='localhost', tương tự cho trường hợp container db nằm trên server khác
+**Lưu ý**: khi cấu hình connection trong file generate.py, nếu cài database container trên cùng 1 máy thì đặt host='localhost', tương tự cho trường hợp container db nằm trên server khác
 
 ## Danh sách các cron của hệ thống
 Lưu ý, cần chỉnh sửa path cho các cron trên
