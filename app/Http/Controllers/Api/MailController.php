@@ -41,7 +41,7 @@ class MailController extends Controller
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
-            $stored_configs = TmsConfigs::all();
+            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
             $today = date('Y-m-d H:i:s', time());
             if (count($stored_configs) == 0 || count($stored_configs) != count($configs)) {
                 TmsConfigs::whereIn('target', array_keys($configs))->delete();
@@ -238,6 +238,7 @@ class MailController extends Controller
                     'mdl_course.startdate',
                     'mdl_course.enddate'
                 )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get();
 
             $countNotif = count($lstNotif);
@@ -246,9 +247,9 @@ class MailController extends Controller
                 \DB::beginTransaction();
                 foreach ($lstNotif as $itemNotif) {
                     try {
-                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL) && $this->filterMail($itemNotif->email)) {
+                        $email = $itemNotif->email;
+                        if (strlen($email) > 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
-                            $email = $itemNotif->email;
                             $send = 1;
                             $quiz_data = null;
                             if (
@@ -376,6 +377,7 @@ class MailController extends Controller
     //Notification record created by Tho
     //Checked ok 2020 March 24
     //Type one time
+    //Add limit 23/4
     public function sendRemindCertificate() {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_CERTIFICATE] == TmsConfigs::ENABLE) {
@@ -401,6 +403,7 @@ class MailController extends Controller
                     'mdl_user.lastname',
                     'mdl_user.username'
                 )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
 
             $countRemindNotif = count($lstRemindExpireNotif);
@@ -544,7 +547,8 @@ class MailController extends Controller
         $configs = self::loadConfiguration();
         $schedule = 3; //send again after x days
         if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
-            $courses = MdlCourse::all()->where('category', "=", 4)->random(rand(3, 5));
+            //$courses = MdlCourse::all()->where('category', "=", 4)->random(rand(3, 5));
+            $courses = MdlCourse::query()->where('category', "=", 4)->orderByRaw('RAND()')->get();
             $countCourse = count($courses);
             if ($countCourse > 0) {
                 $curentDate = time();
@@ -1129,9 +1133,9 @@ class MailController extends Controller
                 \DB::beginTransaction();
                 foreach ($listRemindLoginNotification as $itemNotif) {
                     try {
-                        if (!empty($itemNotif->email) && filter_var($itemNotif->email, FILTER_VALIDATE_EMAIL) && $this->filterMail($itemNotif->email)) {
+                        $email = $itemNotif->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
-                            $email = $itemNotif->email;
                             Mail::to($email)->send(new CourseSendMail(
                                 $itemNotif->target,
                                 $itemNotif->username,
@@ -1245,7 +1249,6 @@ class MailController extends Controller
                             //send mail can not continue if has fake email
                             $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
                             $email = $itemNotif->email;
-
                             if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                                 Mail::to($email)->send(new CourseSendMail(
                                     TmsNotification::REMIND_UPCOMING_COURSE,
@@ -1402,7 +1405,6 @@ class MailController extends Controller
 
     //Send email remind user to access course
     //Add limit
-    //
     public function sendRemindAccess() {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {

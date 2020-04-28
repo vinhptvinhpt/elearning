@@ -328,7 +328,7 @@
                             cursor: 'pointer',
                             dataLabels: {
                                 enabled: false,
-                                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+                              pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>'
                             },
                             showInLegend: true
                         }
