@@ -32,7 +32,10 @@ class StudentController extends Controller
     {
         return view('education.student_certificate');
     }
-
+    public function apiListStudentsCertificate(Request $request)
+    {
+        return $this->bussinessRepository->apiListStudentsCertificate($request);
+    }
     public function apiListStudentsUncertificate(Request $request)
     {
         return $this->bussinessRepository->apiListStudentsUncertificate($request);
@@ -48,10 +51,6 @@ class StudentController extends Controller
     public function randomNumber($length)
     {
         return $this->bussinessRepository->randomNumber($length);
-    }
-    public function apiListStudentsCertificate(Request $request)
-    {
-        return $this->bussinessRepository->apiListStudentsCertificate($request);
     }
     public function sendMail($user, $certificatecode)
     {
@@ -88,5 +87,9 @@ class StudentController extends Controller
     public function autoGenCertificate($user_id)
     {
         return $this->bussinessRepository->autoGenCertificate($user_id);
+    }
+    public function viewImageCertificate()
+    {
+        return view('education.certificate_image');
     }
 }

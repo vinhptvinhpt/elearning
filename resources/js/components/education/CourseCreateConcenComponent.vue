@@ -284,7 +284,7 @@
                 this.formData.append('estimate_duration', this.estimate_duration);
                 this.formData.append('course_budget', this.course_budget);
                 this.formData.append('access_ip', this.access_ip);
-
+                let current_pos = this;
                 axios.post('/api/courses/create', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
