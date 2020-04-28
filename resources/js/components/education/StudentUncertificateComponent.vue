@@ -220,12 +220,11 @@
                           <span class="btn-icon-wrap"><i class="fal fa-spinner"></i></span>
                         </button>
 
-                        <a :title="trans.get('keys.xem_chung_chi')"
-                           v-else :href="'/storage/upload/certificate/'+ user.code+'.png'" target="_blank"
-                           class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                        ><span class="btn-icon-wrap"><i
-                          class="fal fa-arrow-alt-right"></i></span></a>
-
+                        <router-link v-else :title="trans.get('keys.xem_chung_chi')"
+                                     class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                     :to="{ name: 'ImageCertificate', query: { code: user.code }}">
+                          <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-right"></i></span>
+                        </router-link>
                       </td>
                     </tr>
                     </tbody>

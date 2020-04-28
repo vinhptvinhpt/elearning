@@ -110,6 +110,7 @@ import AttendanceComponent from "./components/education/AttendanceComponent";
 import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
 import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
+import ImageCertificateComponent from "./components/education/ImageCertificateComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -607,6 +608,14 @@ const routes = [
         path: 'certificate/student/uncertificate',
         component: StudentUncertificateComponent,
         name: 'StudentUncertificate',
+      },
+      {
+        path: 'certificate/image',
+        component: ImageCertificateComponent,
+        name: 'ImageCertificate',
+        props: (route) => ({
+          code: route.query.code,
+        })
       },
       {
         path: 'education/course/list_concentrate',

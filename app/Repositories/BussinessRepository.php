@@ -4475,19 +4475,6 @@ class BussinessRepository implements IBussinessInterface
             return response()->json();
         }
 
-        //        //get list id students in table student_certificate
-        //        $listIdStudentsDone = DB::table('student_certificate')
-        ////            ->select('userid')
-        ////            ->where('status', '=', 2)
-        //            ->get()->pluck('userid');
-        //
-        //        //get info of students by id students above
-        //        $listStudentsDone = DB::table('tms_user_detail')
-        //            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-        //            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
-        //            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'student_certificate.status as status', 'student_certificate.code as code', 'student_certificate.timecertificate as timecertificate')
-        //            ->whereIn('tms_user_detail.user_id', $listIdStudentsDone);
-
         //fix query of DatDT
         $listStudentsDone = DB::table('tms_user_detail as tud')
             ->join('mdl_user as u', 'u.id', '=', 'tud.user_id')
