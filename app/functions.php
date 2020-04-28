@@ -3074,16 +3074,8 @@ function apply_role_lms($role_id, $per_slug_input = [])
                         $arr_data = [];
                         $num = 0;
                     }
-
-//                    MdlRoleCapabilities::firstOrCreate([
-//                        'roleid' => $role['mdl_role_id'],
-//                        'capability' => $capability,
-//                        'contextid' => $context,
-//                        'permission' => 1,
-//                    ]);
                 }
             }
-
             MdlRoleCapabilities::insert($arr_data);
         }
 

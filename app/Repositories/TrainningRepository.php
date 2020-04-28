@@ -45,6 +45,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $style = $request->input('style');
             $run_cron = $request->input('run_cron');
             $auto_certificate = $request->input('auto_certificate');
+            $auto_badge = $request->input('auto_badge');
             $time_start = $request->input('time_start');
             $time_end = $request->input('time_end');
             $role_id = $request->input('role_id');
@@ -116,7 +117,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'time_start' => $time_start,
                 'time_end' => $time_end,
                 'logo' => $path_logo,
-                'auto_certificate' => $auto_certificate ? 1 : 0
+                'auto_certificate' => $auto_certificate ? 1 : 0,
+                'auto_badge' => $auto_badge ? 1 : 0
             ]);
 
             if ($role_id && $role_id != 0 && $tms_trainning) {
@@ -157,6 +159,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $name = $request->input('name');
             $style = $request->input('style');
             $auto_certificate = $request->input('auto_certificate');
+            $auto_badge = $request->input('auto_badge');
             $run_cron = $request->input('run_cron');
             $time_start = $request->input('time_start');
             $time_end = $request->input('time_end');
@@ -204,7 +207,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->code = $code;
             $trainning->name = $name;
             $trainning->style = $style;
-            $trainning->auto_certificate = $auto_certificate;
+            $trainning->auto_certificate = $auto_certificate ? 1 : 0;
+            $trainning->auto_badge = $auto_badge? 1 : 0;
             $trainning->run_cron = $run_cron;
             $trainning->time_start = $time_start;
             $trainning->time_end = $time_end;
@@ -359,14 +363,21 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $trainning = DB::table('tms_traninning_programs as ttp')
             ->where('ttp.id', '=', $id)
             ->select(
-                'ttp.id', 'ttp.code', 'ttp.name', 'ttp.style', 'ttp.run_cron', 'ttp.auto_certificate',
-                'ttp.time_start', 'ttp.time_end', 'ttp.logo',
-                DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where
-                ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
-                DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where
-                tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')
+                'ttp.id',
+                'ttp.code',
+                'ttp.name',
+                'ttp.style',
+                'ttp.run_cron',
+                'ttp.auto_certificate',
+                'ttp.auto_badge',
+                'ttp.time_start',
+                'ttp.time_end',
+                'ttp.logo',
+                DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
+                DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')
             )
             ->first();
+
         if ($trainning->time_start && $trainning->time_start != 0) {
             $trainning->time_start = date('d-m-Y', $trainning->time_start);
         } else {
@@ -914,8 +925,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                                     where   find_in_set(ttoe.parent_id, @pv)
-                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                                    UNION 
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                                    UNION
                                     select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
 
             $tblQuery = DB::raw($tblQuery);
