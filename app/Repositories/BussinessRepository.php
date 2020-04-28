@@ -4269,32 +4269,32 @@ class BussinessRepository implements IBussinessInterface
         //get value of request
         $row = $request->input('row');
         $keyword = $request->input('keyword');
+        $training_id = $request->input('training_id');
 
         $validates = validate_fails($request, [
             'row' => 'number',
             'keyword' => 'text',
+            'training_id' => 'number'
         ]);
         if (!empty($validates)) {
             return response()->json([]);
         }
-        //get number of course required
-        // $course_count = MdlCourseCategory::where('id', 3)->get()->pluck('coursecount');
 
-        //get list id students get certificate by when number course lager course count above
-        $listIdStudentsDone = DB::table('course_final')->get()->pluck('userid');
-        //        $listIdStudentsHaveFinal = DB::table('course_completion')
-        //            ->where('iscoursefinal', '=', 1)
-        //            ->get()->pluck('userid');
-
-
-        //get info of students by id students above
-        $listStudentsDone = DB::table('tms_user_detail')
+        $listStudentsDone = DB::table('course_completion')
+            ->join('tms_user_detail', 'course_completion.userid', '=', 'tms_user_detail.user_id')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
-            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'student_certificate.status as status', 'student_certificate.code as code', 'student_certificate.timecertificate as timecertificate')
-            ->where('student_certificate.userid', '=', null)
-            ->whereIn('tms_user_detail.user_id', $listIdStudentsDone);
-
+            ->leftJoin('tms_traninning_programs', 'course_completion.training_id', '=', 'tms_traninning_programs.id')
+            ->leftJoin('student_certificate', function($join)
+            {
+                $join->on('course_completion.userid', '=', 'student_certificate.userid');
+                $join->on('course_completion.training_id', '=', 'student_certificate.trainning_id');
+            })
+            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'tms_traninning_programs.name as training_name')
+            ->whereNull('student_certificate.id')
+            ->whereNotNull('course_completion.training_id')
+            ->groupBy('course_completion.userid', 'course_completion.training_id');
+//            ->groupBy('student_certificate.userid', 'student_certificate.trainning_id');
+//        dd($listStudentsDone->toSql());
         //search
         if (strlen($keyword) != 0) {
             $listStudentsDone->where(function ($query) use ($keyword) {
@@ -4307,6 +4307,9 @@ class BussinessRepository implements IBussinessInterface
             });
         }
 
+        if($training_id > 0){
+            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
+        }
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
         $total = ceil($listStudentsDone->total() / $row);
@@ -4460,9 +4463,11 @@ class BussinessRepository implements IBussinessInterface
         //get value of request
         $row = $request->input('row');
         $keyword = $request->input('keyword');
+        $training_id = $request->input('training_id');
 
         $validates = validate_fails($request, [
             'row' => 'number',
+            'training_id' => 'training_id',
             'keyword' => 'text',
         ]);
 
@@ -4487,8 +4492,10 @@ class BussinessRepository implements IBussinessInterface
         $listStudentsDone = DB::table('tms_user_detail as tud')
             ->join('mdl_user as u', 'u.id', '=', 'tud.user_id')
             ->join('student_certificate as sc', 'tud.user_id', '=', 'sc.userid')
+            ->leftJoin('tms_traninning_programs', 'sc.trainning_id', '=', 'tms_traninning_programs.id')
             ->select(
                 'u.id as user_id',
+                'tms_traninning_programs.name as training_name',
                 'tud.fullname as fullname',
                 'tud.email as email',
                 'u.username as username',
@@ -4509,6 +4516,10 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
+        }
+
+        if ($training_id > 0) {
+            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
         }
 
         $listStudentsDone = $listStudentsDone->groupBy('u.id');

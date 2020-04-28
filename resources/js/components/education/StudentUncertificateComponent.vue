@@ -29,6 +29,13 @@
                       <option value="50">50</option>
                       <option value="100">100</option>
                     </select>
+
+                    <select id="training_select" v-model="training_id" autocomplete="false" class="form-control" @change="getListStudentsUncertificate(1)">
+                      <option value="0">-- {{trans.get('keys.chon_khung_nang_luc')}} --</option>
+                      <option v-for="training_option in training_options" :value="training_option.id">
+                        {{training_option.name}}
+                      </option>
+                    </select>
                   </label>
                 </div>
               </div>
@@ -59,6 +66,7 @@
                     </th>
                     <th>{{trans.get('keys.stt')}}</th>
                     <th>{{trans.get('keys.ten_hoc_vien')}}</th>
+                    <th>{{trans.get('keys.ten_knl')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.so_cmtnd')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.dien_thoai')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
@@ -77,6 +85,7 @@
                       </td>
                       <td>{{ (current-1)*row+(index+1) }}</td>
                       <td>{{ user.fullname }}</td>
+                      <td>{{ user.training_name }}</td>
                       <td class=" mobile_hide">{{ user.cmtnd }}</td>
                       <td class=" mobile_hide">{{ user.phone }}</td>
                       <td class=" mobile_hide">{{ user.email }}</td>
@@ -130,6 +139,13 @@
                       <option value="50">50</option>
                       <option value="100">100</option>
                     </select>
+
+                    <select id="training_select_certificate" v-model="training_id_certificate" autocomplete="false" class="form-control" @change="getListStudentsCertificate(1)">
+                      <option value="0">-- {{trans.get('keys.chon_khung_nang_luc')}} --</option>
+                      <option v-for="training_option in training_options_certificate" :value="training_option.id">
+                        {{training_option.name}}
+                      </option>
+                    </select>
                   </label>
                 </div>
               </div>
@@ -154,6 +170,7 @@
                     <thead>
                     <th>{{trans.get('keys.stt')}}</th>
                     <th>{{trans.get('keys.ten_hoc_vien')}}</th>
+                    <th>{{trans.get('keys.ten_knl')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.so_cmtnd')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.dien_thoai')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
@@ -168,6 +185,7 @@
                     <tr v-else v-for="(user,index) in posts">
                       <td>{{ (currentCt-1)*rowCt+(index+1) }}</td>
                       <td>{{ user.fullname }}</td>
+                      <td>{{ user.training_name }}</td>
                       <td class=" mobile_hide">{{ user.cmtnd }}</td>
                       <td class=" mobile_hide">{{ user.phone }}</td>
                       <td class=" mobile_hide">{{ user.email }}</td>
@@ -256,6 +274,10 @@
                 rowCt: 10,
                 row: 10,
                 allSelected: false,
+                training_options: [],
+                training_id: 0,
+                training_options_certificate: [],
+                training_id_certificate: 0
             }
         },
         filters: {
@@ -265,6 +287,16 @@
             }
         },
         methods: {
+            fetchTraining() {
+                axios.get('/api/training/list_for_filter')
+                    .then(response => {
+                        this.training_options = response.data;
+                        this.training_options_certificate = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
             selectAllCheckbox() {
                 this.certificate_id = [];
                 if (!this.allSelected) {
@@ -339,6 +371,7 @@
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
+                    training_id: this.training_id
                 })
                     .then(response => {
                         if (response.data) {
@@ -356,6 +389,7 @@
                     page: paged || this.currentCt,
                     keyword: this.keywordCt,
                     row: this.rowCt,
+                    training_id: this.training_id_certificate
                 })
                     .then(response => {
                         if (response.data) {
@@ -411,10 +445,18 @@
             },
         },
         mounted() {
+            this.fetchTraining();
         }
     }
 </script>
 
 <style scoped>
-
+  #training_select{
+    width: auto !important;
+    display: inherit;
+  }
+  #training_select_certificate{
+    width: auto !important;
+    display: inherit;
+  }
 </style>
