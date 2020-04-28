@@ -4483,6 +4483,7 @@ class BussinessRepository implements IBussinessInterface
             ->select(
                 'u.id as user_id',
                 'tms_traninning_programs.name as training_name',
+                'tms_traninning_programs.auto_badge as badge',
                 'tud.fullname as fullname',
                 'tud.email as email',
                 'u.username as username',

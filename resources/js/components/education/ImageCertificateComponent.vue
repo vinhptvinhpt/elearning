@@ -1,6 +1,6 @@
 <template>
   <div class="row">
-    <div class="cl-box-img">
+    <div class="cl-box-img box-certificate">
       <div class="cl-image">
         <img :src="img_certificate_path" alt="" class="logo_img">
       </div>
@@ -10,7 +10,7 @@
     </div>
 
 <!--    badge-->
-    <div class="cl-box-img">
+    <div v-if="badge == 1" class="cl-box-img">
       <div class="cl-image">
         <img :src="img_badge_path" alt="" class="logo_img">
       </div>
@@ -23,7 +23,7 @@
 
 <script>
     export default {
-        props: ['code'],
+        props: ['code', 'badge'],
         data() {
             return {
                 img_certificate_path : '/storage/upload/certificate/'+this.code+'_certificate.png',
@@ -33,6 +33,9 @@
         methods: {
         },
         mounted() {
+            if(this.badge != 1){
+                $(".box-certificate").css("margin", "1% 25%");
+            }
         }
     }
 </script>

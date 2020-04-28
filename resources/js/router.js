@@ -615,6 +615,7 @@ const routes = [
         name: 'ImageCertificate',
         props: (route) => ({
           code: route.query.code,
+          badge: route.query.badge
         })
       },
       {
