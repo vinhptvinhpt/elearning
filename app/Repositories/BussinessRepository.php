@@ -4564,13 +4564,23 @@ class BussinessRepository implements IBussinessInterface
         return view('education.setting_certificate');
     }
 
-    public function apiGetListImagesCertificate()
+    public function apiGetListImagesCertificate(Request $request)
     {
-        $response = DB::table('image_certificate as ic')
-            ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
-            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'to.name as organization_name')
-            ->get();
-        return response()->json($response);
+        $type = $request->input('type');
+        $validates = validate_fails($request, [
+            'type' => 'number',
+        ]);
+        if (!empty($validates)) {
+            return response()->json([]);
+        }
+        else {
+            $response = DB::table('image_certificate as ic')
+                ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
+                ->where('ic.type', '=', $type)
+                ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
+                ->get();
+            return response()->json($response);
+        }
     }
 
     //tạo ảnh chứng chỉ
@@ -4584,11 +4594,14 @@ class BussinessRepository implements IBussinessInterface
             $is_active = $request->input('is_active');
             $position = $request->input('position');
             $organization_id = $request->input('organization_id');
+            //type 1: certificate, type 2: badge
+            $type = $request->input('type');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
                 'is_active' => 'number',
                 'training_id' => 'number',
+                'type' => 'number',
             ]);
             if (!empty($validates)) {
                 //var_dump($validates);
@@ -4611,15 +4624,16 @@ class BussinessRepository implements IBussinessInterface
                 }
 
                 \DB::beginTransaction();
-                if ($is_active == 1) {
-                    DB::table('image_certificate')
-                        ->where('is_active', 1)
-                        ->update(['is_active' => 0]);
-                }
+//                if ($is_active == 1) {
+//                    DB::table('image_certificate')
+//                        ->where('is_active', 1)
+//                        ->update(['is_active' => 0]);
+//                }
                 ImageCertificate::updateOrCreate([
                     //Add unique field combo to match here
                     //For example, perhaps you only want one entry per user:
-                    'organization_id' => $organization_id
+                    'organization_id' => $organization_id,
+                    'type' => $type,
                 ],[
                     'path' => $path_avatar,
                     'name' => $name,
@@ -4674,7 +4688,7 @@ class BussinessRepository implements IBussinessInterface
         }
         $certificate_info = DB::table('image_certificate as ic')
             ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
-            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'to.name as organization_name')
+            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
             ->where('ic.id', '=', $id)
             ->first();
         return response()->json($certificate_info);
@@ -4694,13 +4708,17 @@ class BussinessRepository implements IBussinessInterface
             $is_active = $request->input('is_active');
             $position = $request->input('position');
             $organization_id = $request->input('organization_id');
+            //type 1: chứng chỉ, 2: huy hiệu
+            $type = $request->input('type');
 
 
             $validates = validate_fails($request, [
                 'id' => 'number',
                 'name' => 'text',
+                'position' => 'longtext',
                 'description' => 'longtext',
-                'is_active' => 'number'
+                'is_active' => 'number',
+                'type' => 'number'
             ]);
             if (!empty($validates)) {
                 $response->status = false;
@@ -4710,7 +4728,10 @@ class BussinessRepository implements IBussinessInterface
             //thực hiện update dữ liệu
 //            $cer = ImageCertificate::where('id', $id)->first();
             //get organization
-            $cer = ImageCertificate::where('organization_id', $organization_id)->first();
+            $cer = ImageCertificate::where('organization_id', $organization_id)
+                ->where('type', '=', $type)
+                ->first();
+
             if(!empty($cer) && $cer->id == $id){
                 $cer->name = $name;
                 $cer->description = $description;
@@ -13758,4 +13779,22 @@ class BussinessRepository implements IBussinessInterface
         return 'Xác nhận thất bại';
     }
 
+
+    //badge
+    public function apiGetListImagesBadge()
+    {
+        //lấy theo tổ chức
+//        $response = DB::table('image_badge as ib')
+//            ->leftJoin('tms_organization as to', 'ib.organization_id', '=', 'to.id')
+//            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
+//            ->get();
+
+        dd('hihi');
+        $response = DB::table('image_badge as ib')
+//            ->leftJoin('tms_organization as to', 'ib.organization_id', '=', 'to.id')
+//            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
+            ->get();
+
+        return response()->json($response);
+    }
 }

@@ -13,7 +13,7 @@
         <div class="col-12 col-lg-5">
             <form action="" class="form-row hk-sec-wrapper">
 
-              <div class="col-12 form-group">
+              <div v-if="this.$parent.type == 1" class="col-12 form-group">
                 <label>{{trans.get('keys.chon_to_chuc')}} </label>
                 <select id="organization_select" v-model="organization_id" autocomplete="false" class="form-control">
                   <option value="0">-- {{trans.get('keys.chon_to_chuc')}} --</option>
@@ -49,7 +49,7 @@
 
 <script>
     export default {
-        props: ['type'],
+        props: [],
         data() {
             return {
                 name: '',
@@ -59,6 +59,7 @@
                 coordinates:{},
                 organization_options: [],
                 organization_id: 0,
+                type: 1
             }
         },
         methods: {
@@ -87,7 +88,7 @@
                     return;
                 }
 
-                if(this.organization_id == '0') {
+                if(this.$parent.type == 1 && this.organization_id == '0') {
                     $('.organization_required').show();
                     return;
                 }
@@ -116,6 +117,7 @@
                 this.formData.append('is_active', this.is_active);
                 this.formData.append('organization_id', this.organization_id);
                 this.formData.append('description', this.description);
+                this.formData.append('type', this.$parent.type);
                 this.formData.append('position', JSON.stringify(this.coordinates));
 
                 axios.post('/certificate/create', this.formData, {

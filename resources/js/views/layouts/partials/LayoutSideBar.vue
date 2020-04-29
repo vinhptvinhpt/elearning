@@ -321,10 +321,20 @@
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if="slug_can('tms-educate-certificate-view')">
-                                        <router-link to="/tms/certificate/setting" class="nav-link">
+                                        <router-link
+                                          :to="{ path: '/tms/certificate/setting', name: 'SettingCertificate', query: { type: '1' } }"
+                                          class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.chung_chi_mau') }}</span>
                                         </router-link>
                                     </li>
+                                  <li class="nav-item" v-if="slug_can('tms-educate-badge-view')">
+<!--                                    to="/tms/badge/setting"-->
+                                    <router-link
+                                      :to="{ path: '/tms/badge/setting', name: 'SettingBadge', query: { type: '2' } }"
+                                      class="nav-link">
+                                      <span class="nav-link-text"> {{ trans.get('keys.huy_hieu_mau') }}</span>
+                                    </router-link>
+                                  </li>
                                     <li class="nav-item" v-if="slug_can('tms-educate-resetexam-view')">
                                         <router-link to="/tms/education/resetexam" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung_thi_lai') }}</span>

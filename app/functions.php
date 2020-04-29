@@ -201,6 +201,7 @@ function permission_cat_name()
         'tms-educate-exam-restore' => 'Khôi phục khóa đào tạo',
         'tms-educate-uncertificate' => 'Danh sách học viên',
         'tms-educate-certificate' => 'Chứng chỉ mẫu',
+        'tms-educate-badge' => 'Huy hiệu mẫu',
         'tms-trainning' => 'Khung năng lực',
         'tms-educate' => 'Chứng chỉ',
         'tms-report' => 'Báo cáo',
@@ -366,6 +367,12 @@ function permission_slug()
                 'tms-educate-certificate-edit' => 'Sửa',
                 'tms-educate-certificate-deleted' => 'Xóa',
                 'tms-educate-resetexam-view' => 'Cấp phép thi lại'
+            ],
+            'tms-educate-badge' => [
+                'tms-educate-badge-view' => 'Xem',
+                'tms-educate-badge-add' => 'Thêm',
+                'tms-educate-badge-edit' => 'Sửa',
+                'tms-educate-badge-deleted' => 'Xóa'
             ],
             'tms-trainning' => [
                 'tms-trainning-view' => 'Xem',

@@ -36,7 +36,7 @@
             </div>
             <div class="col-12 col-lg-6">
               <form action="" class="form-row hk-sec-wrapper">
-                <div class="col-12 form-group">
+                <div v-if="certificate.type == 1" class="col-12 form-group">
                   <label>{{trans.get('keys.chon_to_chuc')}} </label>
                   <select id="organization_select" v-model="organization_id" autocomplete="false" class="form-control">
                     <option value="0">-- {{trans.get('keys.chon_to_chuc')}} --</option>
@@ -156,7 +156,7 @@
 
 <script>
     export default {
-        props: ['id'],
+        props: ['id', 'type'],
         data() {
             return {
                 certificate: {
@@ -165,7 +165,8 @@
                     description: '',
                     confirm: false,
                     is_active: 1,
-                    path: ''
+                    path: '',
+                    type: 2
                 },
                 language : this.trans.get('keys.language'),
                 imgLeft: null,
@@ -258,6 +259,12 @@
                     })
             },
             updateCertificate(){
+
+                if(this.certificate.type == 1 && this.organization_id == '0') {
+                    $('.organization_required').show();
+                    return;
+                }
+
                 if(!this.certificate.name){
                     $('.name_required').show();
                     return;
@@ -319,6 +326,7 @@
                 this.formData.append('name', this.certificate.name);
                 this.formData.append('is_active', this.certificate.is_active);
                 this.formData.append('description', this.certificate.description);
+                this.formData.append('type', this.certificate.type);
                 this.formData.append('id', this.id);
                 this.formData.append('organization_id', this.organization_id);
                 this.formData.append('position', JSON.stringify(this.coordinates));
@@ -332,7 +340,10 @@
                         var language =  this.language;
                         if (response.data.status) {
                           toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-                          this.$router.push({ name: 'SettingCertificate' });
+                          if(this.certificate.type == 1)
+                            this.$router.push({ name: 'SettingCertificate', query :{ type: this.certificate.type }});
+                          else
+                              this.$router.push({ name: 'SettingBadge', query :{ type: this.certificate.type }});
                         }else{
                             $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');
