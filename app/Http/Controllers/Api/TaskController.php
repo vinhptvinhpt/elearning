@@ -204,7 +204,7 @@ class TaskController extends Controller
             }
 
             CourseCompletion::insert($arrData);
-            
+
             usleep(100);
         }
     }
