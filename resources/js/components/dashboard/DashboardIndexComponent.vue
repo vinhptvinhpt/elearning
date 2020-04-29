@@ -15,12 +15,13 @@
                                       format="dd-MM-yyyy"
                                       input-class="form-control"
                                       @input="listData()"></datepicker>&nbsp;<datepicker
-                                  id="inputEnd"
-                                  :clear-button=true
-                                  v-model="enddate"
-                                  format="dd-MM-yyyy"
-                                  input-class="form-control"
-                                  @input="listData()"></datepicker>
+                                      id="inputEnd"
+                                      :clear-button=true
+                                      v-model="enddate"
+                                      format="dd-MM-yyyy"
+                                      input-class="form-control"
+                                      @input="listData()">
+                                      </datepicker>
 <!--                                    <input type="date" id="inputStart" v-model="startdate" class="form-control" @change="listData()">&nbsp;<input type="date" id="inputEnd" v-model="enddate" class="form-control" @change="listData()">-->
                                 </div>
                             </div>
@@ -177,14 +178,12 @@
 </template>
 
 <script>
-    import datePicker from 'vue-bootstrap-datetimepicker'
     import {Chart} from 'highcharts-vue'
 
     //import vPagination from 'vue-plain-pagination'
     export default {
         components: {
             highcharts: Chart,
-            datePicker
             //vPagination,
         },
         data() {
@@ -440,88 +439,101 @@
                 return year + '-' + month + '-' + ('0' + date).slice(-2);
             },
             listData() {
+                $('#logic-warning').hide();
+                let has_startdate = false;
+                let has_enddate = false;
+
                 if (this.startdate === null || this.startdate === 'undefined') {
                   $('#startdate-warning').show();
-                  return;
-                } else if (this.enddate === null || this.enddate === 'undefined') {
-                  $('#enddate-warning').show();
+                } else {
+                  if (this.startdate.length === 0) {
+                    $('#startdate-warning').show();
+                  } else {
+                    $('#startdate-warning').hide();
+                    has_startdate = true;
+                  }
                 }
-                else if (this.startdate.length === 0 || this.enddate.length === 0) {
-                    $('#logic-warning').hide();
-                    if (this.startdate.length === 0) {
-                        $('#startdate-warning').show();
-                        return;
-                    }
-                    if (this.enddate.length === 0) {
-                        $('#startdate-warning').hide();
-                        $('#enddate-warning').show();
-                    }
-                } else if (this.startdate > this.enddate) {
+
+                if (this.enddate === null || this.enddate === 'undefined') {
+                  $('#enddate-warning').show();
+                } else {
+                  if (this.enddate.length === 0) {
+                    $('#enddate-warning').show();
+                  } else {
+                    $('#enddate-warning').hide();
+                    has_enddate = true;
+                  }
+                }
+
+                if (has_startdate && has_enddate) {
+
+                  let startdate_stamp = Date.parse(this.startdate);
+                  let enddate_stamp = Date.parse(this.enddate);
+
+                  if (startdate_stamp > enddate_stamp) {
                     $('#startdate-warning').hide();
                     $('#enddate-warning').hide();
                     $('#logic-warning').show();
-                } else {
+                  } else {
                     $('#startdate-warning').hide();
                     $('#enddate-warning').hide();
                     $('#logic-warning').hide();
 
-                    this.startdate = this.convertTime(this.startdate);
-                    this.enddate = this.convertTime(this.enddate);
-
                     axios.post('/dashboard/chart_data', {
-                        startdate: this.startdate,
-                        enddate: this.enddate,
+                      startdate: this.convertTime(this.startdate),
+                      enddate: this.convertTime(this.enddate),
                     })
-                        .then(response => {
-                            let chart_data = response.data;
-                            let label_array = [];
-                            //let completed_array = [];
-                            //let enrolled_array = [];
-                            let registered_array = [];
-                            let stack_registered_array = [];
-                            let confirmed_array = [];
-                            let quit_array = [];
-                            let label_array2 = [];
+                      .then(response => {
+                        let chart_data = response.data;
+                        let label_array = [];
+                        //let completed_array = [];
+                        //let enrolled_array = [];
+                        let registered_array = [];
+                        let stack_registered_array = [];
+                        let confirmed_array = [];
+                        let quit_array = [];
+                        let label_array2 = [];
 
 
-                            // chart_data.completed.forEach(val => {
-                            //     label_array.push('Tháng ' + val.mth);
-                            //     completed_array.push(val.total);
-                            // });
-                            // chart_data.enrolled.forEach(val => {
-                            //     enrolled_array.push(val.total);
-                            // });
-                            chart_data.confirmed.forEach(val => {
-                                label_array.push('T ' + val.mthyr);
-                                confirmed_array.push(val.total);
-                            });
-                            chart_data.stack_registered.forEach(val => {
-                                stack_registered_array.push(val.total);
-                            });
-
-                            chart_data.registered.forEach(val => {
-                                label_array2.push('T ' + val.mthyr);
-                                registered_array.push(val.total);
-                            });
-                            chart_data.quit.forEach(val => {
-                                quit_array.push(val.total);
-                            });
-                            this.option1.xAxis.categories = label_array;
-                            this.option1.series[0]['data'] = confirmed_array;
-                            this.option1.series[1]['data'] = stack_registered_array;
-
-                            this.option2.series[0]['data'][0].y = chart_data.online;
-                            this.option2.series[0]['data'][1].y = chart_data.offline;
-                            this.total1 = chart_data.online + chart_data.offline;
-                            this.option2.subtitle.text = this.trans.get('keys.tong_so') + ': ' + this.total1;
-
-                            this.option3.xAxis.categories = label_array2;
-                            this.option3.series[0]['data'] = registered_array;
-                            this.option3.series[1]['data'] = quit_array;
-                        })
-                        .catch(error => {
-                            console.log(error);
+                        // chart_data.completed.forEach(val => {
+                        //     label_array.push('Tháng ' + val.mth);
+                        //     completed_array.push(val.total);
+                        // });
+                        // chart_data.enrolled.forEach(val => {
+                        //     enrolled_array.push(val.total);
+                        // });
+                        chart_data.confirmed.forEach(val => {
+                          label_array.push('T ' + val.mthyr);
+                          confirmed_array.push(val.total);
                         });
+                        chart_data.stack_registered.forEach(val => {
+                          stack_registered_array.push(val.total);
+                        });
+
+                        chart_data.registered.forEach(val => {
+                          label_array2.push('T ' + val.mthyr);
+                          registered_array.push(val.total);
+                        });
+                        chart_data.quit.forEach(val => {
+                          quit_array.push(val.total);
+                        });
+                        this.option1.xAxis.categories = label_array;
+                        this.option1.series[0]['data'] = confirmed_array;
+                        this.option1.series[1]['data'] = stack_registered_array;
+
+                        this.option2.series[0]['data'][0].y = chart_data.online;
+                        this.option2.series[0]['data'][1].y = chart_data.offline;
+                        this.total1 = chart_data.online + chart_data.offline;
+                        this.option2.subtitle.text = this.trans.get('keys.tong_so') + ': ' + this.total1;
+
+                        this.option3.xAxis.categories = label_array2;
+                        this.option3.series[0]['data'] = registered_array;
+                        this.option3.series[1]['data'] = quit_array;
+                      })
+                      .catch(error => {
+                        console.log(error);
+                      });
+                  }
                 }
             },
             tableData(paged) {
