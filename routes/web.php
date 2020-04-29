@@ -604,7 +604,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/report/base', 'Backend\ReportController@viewReportBase')->name('report.base');
     Route::post('/report/list_detail', 'Backend\ReportController@apiListDetail');
     Route::post('/report/list_base', 'Backend\ReportController@apiListBase');
-
+    Route::post('/report/list_course_by_training', 'Backend\ReportController@apiListCourseByTraining');
 
     Route::get('/activity_log', 'Backend\BackendController@viewActivityLog')->name('activity.log');
     Route::post('/activity_log', 'Backend\BackendController@apiActivityLog');

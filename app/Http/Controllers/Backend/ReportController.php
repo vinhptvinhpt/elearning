@@ -75,4 +75,9 @@ class ReportController extends Controller
     {
         return $this->bussinessRepository->apiListBase($request);
     }
+
+    public function apiListCourseByTraining(Request $request)
+    {
+        return $this->bussinessRepository->apiListCourseByTraining($request);
+    }
 }

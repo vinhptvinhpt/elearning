@@ -3241,6 +3241,10 @@ class BussinessRepository implements IBussinessInterface
     {
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
+        $course_id = $request->input('training_id');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $mode_select = $request->input('mode_select');
 
         $query = TmsOrganization::where('tms_organization.enabled', 1)
             ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
@@ -3251,9 +3255,17 @@ class BussinessRepository implements IBussinessInterface
             })
             ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
             ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
-            ->leftjoin('course_final', function ($join) {
-                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
-                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+//            ->leftjoin('course_final', function ($join) {
+//                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+//                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+//            })
+            ->leftjoin('course_completion', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
+            })
+            ->leftjoin('tms_trainning_complete', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
+                $join->on('tms_trainning_complete.trainning_id', '=', 'tms_trainning_groups.group_id');
             })
             ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
             ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
@@ -3268,7 +3280,8 @@ class BussinessRepository implements IBussinessInterface
                 'tms_traninning_programs.id as training_id',
                 'tms_traninning_programs.name as training_name',
                 'tms_user_detail.confirm',
-                'course_final.timecompleted',
+                //'course_final.timecompleted',
+                'course_completion.timecompleted',
                 'student_certificate.code'
             );
 
@@ -3278,6 +3291,28 @@ class BussinessRepository implements IBussinessInterface
 
         if (strlen($training_id) != 0 && $training_id != 0) {
             $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+        }
+
+        if (strlen($course_id) != 0 && $course_id != 0) {
+            $query = $query->where('mdl_course.id', '=', $course_id);
+        }
+
+        if (strlen($start_date) > 0) {
+            $start_date = $start_date . " 00:00:00";
+            if ($mode_select == 'completed') {
+                $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
+            } else {
+                $query = $query->where('student_certificate.timecertificate', '>=', strtotime($start_date));
+            }
+        }
+
+        if (strlen($end_date) > 0) {
+            $end_date = $end_date . " 23:59:59";
+            if ($mode_select == 'completed') {
+                $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);
+            } else {
+                $query = $query->where('student_certificate.timecertificate', '<=', strtotime($end_date));
+            }
         }
 
         $list = $query->get();
@@ -3444,6 +3479,16 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
+    public function apiListCourseByTraining(Request $request) {
+        $training_id = $request->input('training_id');
+        return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
+            ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->select(
+                'mdl_course.id',
+                'mdl_course.fullname as name',
+                'mdl_course.shortname'
+            )->get();
+    }
 
     public static function buildDefaultReportObject(&$object, $object_id, $name)
     {
