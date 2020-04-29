@@ -93,11 +93,13 @@ Route::group([
         Route::get('/certificate/student/uncertificate', 'Backend\StudentController@viewStudentUncertificate')->name('student.uncertificate');
         Route::get('/student/certificate', 'Backend\StudentController@viewStudentsCertificate')->name('student.certificate');
         Route::get('/certificate/setting', 'Backend\StudentController@settingCertificate')->name('setting.certificate');
-        Route::get('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
+//        Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
 
         Route::get('/certificate/generate', 'Backend\StudentController@apiAutoGenCertificate');
         Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
 
+        //badge
+        Route::get('/badge/get_images', 'Backend\StudentController@apiGetListImagesBadge');
         //test
         Route::get('/testNotify', 'Api\NotificationController@index');
 
@@ -667,7 +669,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/student/get/certificate', 'Backend\StudentController@apiListStudentsCertificate');
     Route::post('/student/check/certificate', 'Backend\StudentController@generateCodeCertificate');
     Route::get('/certificate/setting', 'Backend\StudentController@settingCertificate')->name('setting.certificate');
-    Route::get('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
+   Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
     Route::post('/certificate/create', 'Backend\StudentController@apiCreateCertificate');
     Route::get('/certificate/edit/{id}', 'Backend\StudentController@viewEditCertificate');
     Route::post('/certificate/delete/{id}', 'Backend\StudentController@apiDelete');

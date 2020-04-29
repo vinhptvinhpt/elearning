@@ -60,9 +60,9 @@ class StudentController extends Controller
     {
         return $this->bussinessRepository->settingCertificate();
     }
-    public function apiGetListImagesCertificate()
+    public function apiGetListImagesCertificate(Request $request)
     {
-        return $this->bussinessRepository->apiGetListImagesCertificate();
+        return $this->bussinessRepository->apiGetListImagesCertificate($request);
     }
     public function apiCreateCertificate(Request $request)
     {
@@ -91,5 +91,11 @@ class StudentController extends Controller
     public function viewImageCertificate()
     {
         return view('education.certificate_image');
+    }
+
+    //badge
+    public function apiGetListImagesBadge()
+    {
+        return $this->bussinessRepository->apiGetListImagesBadge();
     }
 }
