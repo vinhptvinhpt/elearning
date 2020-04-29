@@ -111,7 +111,6 @@
             },
             selectedFile() {
                 let file = this.$refs.file.files[0];
-                const validFileTypes = ['image/gif', 'image/jpeg', 'image/png'];
                 if(!file || (file.type !== 'application/vnd.ms-excel' && file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' && file.type !== '.csv')){
                     const input = this.$refs.file;
                     input.type = 'file';

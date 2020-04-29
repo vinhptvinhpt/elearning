@@ -4566,7 +4566,9 @@ class BussinessRepository implements IBussinessInterface
 
     public function apiGetListImagesCertificate()
     {
-        $response = DB::table('image_certificate')
+        $response = DB::table('image_certificate as ic')
+            ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
+            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'to.name as organization_name')
             ->get();
         return response()->json($response);
     }
@@ -4581,10 +4583,12 @@ class BussinessRepository implements IBussinessInterface
             $description = $request->input('description');
             $is_active = $request->input('is_active');
             $position = $request->input('position');
+            $organization_id = $request->input('organization_id');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
                 'is_active' => 'number',
+                'training_id' => 'number',
             ]);
             if (!empty($validates)) {
                 //var_dump($validates);
@@ -4593,8 +4597,6 @@ class BussinessRepository implements IBussinessInterface
                 $path_avatar = '';
                 if ($avatar) {
                     $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();
-                    //                    $destinationPath = public_path('/upload/certificate/');
-                    //                    $avatar->move($destinationPath, $name_avatar);
 
                     // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
                     Storage::putFileAs(
@@ -4602,11 +4604,9 @@ class BussinessRepository implements IBussinessInterface
                         $avatar,
                         $name_avatar
                     );
-
                     $path_avatar = '/storage/upload/certificate/' . $name_avatar;
-
-                    //                    $path_avatar = 'upload/certificate/' . $name_avatar;
-                } else {
+                }
+                else {
                     $path_avatar = '/storage/upload/certificate/default_certificate.png';
                 }
 
@@ -4616,7 +4616,11 @@ class BussinessRepository implements IBussinessInterface
                         ->where('is_active', 1)
                         ->update(['is_active' => 0]);
                 }
-                ImageCertificate::create([
+                ImageCertificate::updateOrCreate([
+                    //Add unique field combo to match here
+                    //For example, perhaps you only want one entry per user:
+                    'organization_id' => $organization_id
+                ],[
                     'path' => $path_avatar,
                     'name' => $name,
                     'description' => $description,
@@ -4646,9 +4650,9 @@ class BussinessRepository implements IBussinessInterface
             //tìm chứng chỉ dựa vào id
             $deletedRow = ImageCertificate::find($id);
             //nếu tồn tại chứng chỉ và chứng chỉ đó đang được active thì không xóa được
-            if ($deletedRow && $deletedRow->is_active == 1) {
-                return 'exists';
-            }
+//            if ($deletedRow && $deletedRow->is_active == 1) {
+//                return 'exists';
+//            }
             $deletedRow->delete();
             \DB::commit();
             return 'success';
@@ -4668,8 +4672,11 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             return response()->json();
         }
-        $certificate_info = DB::table('image_certificate')
-            ->where('image_certificate.id', '=', $id)->first();
+        $certificate_info = DB::table('image_certificate as ic')
+            ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
+            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'to.name as organization_name')
+            ->where('ic.id', '=', $id)
+            ->first();
         return response()->json($certificate_info);
     }
 
@@ -4686,6 +4693,7 @@ class BussinessRepository implements IBussinessInterface
             $description = $request->input('description');
             $is_active = $request->input('is_active');
             $position = $request->input('position');
+            $organization_id = $request->input('organization_id');
 
 
             $validates = validate_fails($request, [
@@ -4700,11 +4708,33 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json($response);
             }
             //thực hiện update dữ liệu
-            $cer = ImageCertificate::where('id', $id)->first();
-            $cer->name = $name;
-            $cer->description = $description;
-            $cer->is_active = $is_active;
-            $cer->position = $position;
+//            $cer = ImageCertificate::where('id', $id)->first();
+            //get organization
+            $cer = ImageCertificate::where('organization_id', $organization_id)->first();
+            if(!empty($cer) && $cer->id == $id){
+                $cer->name = $name;
+                $cer->description = $description;
+                $cer->is_active = $is_active;
+                $cer->position = $position;
+                $cer->organization_id = $organization_id;
+            }
+            else if(!empty($cer) && $cer->id !== $id){
+                $response->status = false;
+                $response->message = __('to_chuc_nay_da_ton_tai_mau_chung_chi');
+                return response()->json($response);
+            }
+            else{
+                $cer = ImageCertificate::updateOrCreate([
+                    'id' => $id
+                ],[
+                    'name' => $name,
+                    'description' => $description,
+                    'is_active' => $is_active,
+                    'position' => $position,
+                    'organization_id' => $organization_id
+                ]);
+            }
+
 
             if ($avatar) {
                 $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();
@@ -4723,18 +4753,18 @@ class BussinessRepository implements IBussinessInterface
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
             }
-            $get_active = DB::table('image_certificate')
-                ->where('is_active', 1)->first();
-            if ($is_active == 0) {
-                if (!$get_active || $get_active->id == $id) {
-                    $response->status = false;
-                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
-                    return response()->json($response);
-                }
-            } else if ($is_active == 1) {
-//                $get_active->is_active = 0;
-                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->update(['is_active' => '0']);
-            }
+//            $get_active = DB::table('image_certificate')
+//                ->where('is_active', 1)->first();
+//            if ($is_active == 0) {
+//                if (!$get_active || $get_active->id == $id) {
+//                    $response->status = false;
+//                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
+//                    return response()->json($response);
+//                }
+//            } else if ($is_active == 1) {
+////                $get_active->is_active = 0;
+//                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->update(['is_active' => '0']);
+//            }
             $cer->save();
             \DB::commit();
             $response->status = true;

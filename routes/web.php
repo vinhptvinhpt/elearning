@@ -60,6 +60,9 @@ Route::group([
         Route::get('/education/user_teacher/trash', 'Backend\EducationController@viewTrashUserTeacher')->name('system.user.teacher.trash');
         Route::get('/education/user_student', 'Backend\EducationController@viewIndexStudent')->name('education.user_student');
         Route::get('/education/user_student/trash', 'Backend\EducationController@viewTrashUserStudent')->name('system.user.student.trash');
+
+
+        Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
         /**
          * Route Đào tạo
          **/
@@ -723,6 +726,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/update', 'Backend\OrganizationController@apiEditEmployee');
     Route::post('/organization-employee/assign', 'Backend\OrganizationController@apiAssignEmployee');
     Route::post('/organization-employee/get-user-detail/{id}', 'Backend\OrganizationController@apiDetailUser');
+
+
+    Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 
     //Attendance
     Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');

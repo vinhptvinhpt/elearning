@@ -40,8 +40,9 @@
                     <th>{{trans.get('keys.stt')}}</th>
                     <th>{{trans.get('keys.mau_chung_chi')}}</th>
                     <th>{{trans.get('keys.ten_chung_chi')}}</th>
+                    <th>{{trans.get('keys.ten_to_chuc')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.mo_ta')}}</th>
-                    <th class=" mobile_hide">{{trans.get('keys.mau')}}</th>
+<!--                    <th class=" mobile_hide">{{trans.get('keys.mau')}}</th>-->
                     <th>{{trans.get('keys.hanh_dong')}}</th>
                     </thead>
                     <tbody>
@@ -56,13 +57,16 @@
                       <td>
                         {{ image.name }}
                       </td>
+                      <td>
+                        {{ image.organization_name }}
+                      </td>
                       <td class=" mobile_hide">
                         {{ image.description }}
                       </td>
-                      <td class=" mobile_hide">
-                        <span v-if="image.is_active == 1" class="badge badge-success">Active</span>
-                        <span v-else class="badge badge-secondary">Inactive</span>
-                      </td>
+<!--                      <td class=" mobile_hide">-->
+<!--                        <span v-if="image.is_active == 1" class="badge badge-success">Active</span>-->
+<!--                        <span v-else class="badge badge-secondary">Inactive</span>-->
+<!--                      </td>-->
                       <td>
                         <router-link :title="trans.get('keys.sua')"
                            class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
