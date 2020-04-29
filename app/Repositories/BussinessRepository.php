@@ -3241,6 +3241,10 @@ class BussinessRepository implements IBussinessInterface
     {
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
+        $course_id = $request->input('training_id');
+        $start_date = $request->input('start_date');
+        $end_date = $request->input('end_date');
+        $mode_select = $request->input('mode_select');
 
         $query = TmsOrganization::where('tms_organization.enabled', 1)
             ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
@@ -3251,9 +3255,17 @@ class BussinessRepository implements IBussinessInterface
             })
             ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
             ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
-            ->leftjoin('course_final', function ($join) {
-                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
-                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+//            ->leftjoin('course_final', function ($join) {
+//                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+//                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+//            })
+            ->leftjoin('course_completion', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
+            })
+            ->leftjoin('tms_trainning_complete', function ($join) {
+                $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
+                $join->on('tms_trainning_complete.trainning_id', '=', 'tms_trainning_groups.group_id');
             })
             ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
             ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
@@ -3268,7 +3280,8 @@ class BussinessRepository implements IBussinessInterface
                 'tms_traninning_programs.id as training_id',
                 'tms_traninning_programs.name as training_name',
                 'tms_user_detail.confirm',
-                'course_final.timecompleted',
+                //'course_final.timecompleted',
+                'course_completion.timecompleted',
                 'student_certificate.code'
             );
 
@@ -3278,6 +3291,28 @@ class BussinessRepository implements IBussinessInterface
 
         if (strlen($training_id) != 0 && $training_id != 0) {
             $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+        }
+
+        if (strlen($course_id) != 0 && $course_id != 0) {
+            $query = $query->where('mdl_course.id', '=', $course_id);
+        }
+
+        if (strlen($start_date) > 0) {
+            $start_date = $start_date . " 00:00:00";
+            if ($mode_select == 'completed') {
+                $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
+            } else {
+                $query = $query->where('student_certificate.timecertificate', '>=', strtotime($start_date));
+            }
+        }
+
+        if (strlen($end_date) > 0) {
+            $end_date = $end_date . " 23:59:59";
+            if ($mode_select == 'completed') {
+                $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);
+            } else {
+                $query = $query->where('student_certificate.timecertificate', '<=', strtotime($end_date));
+            }
         }
 
         $list = $query->get();
@@ -3444,8 +3479,19 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
+    public function apiListCourseByTraining(Request $request) {
+        $training_id = $request->input('training_id');
+        return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
+            ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->select(
+                'mdl_course.id',
+                'mdl_course.fullname as name',
+                'mdl_course.shortname'
+            )->get();
+    }
 
-    public static function buildDefaultReportObject(&$object, $object_id, $name) {
+    public static function buildDefaultReportObject(&$object, $object_id, $name)
+    {
         $object[$object_id]['name'] = $name;
         $object[$object_id]['completed'] = [];
         $object[$object_id]['incomplete'] = [];
@@ -4269,44 +4315,63 @@ class BussinessRepository implements IBussinessInterface
         //get value of request
         $row = $request->input('row');
         $keyword = $request->input('keyword');
+        $training_id = $request->input('training_id');
 
         $validates = validate_fails($request, [
             'row' => 'number',
             'keyword' => 'text',
+            'training_id' => 'number'
         ]);
         if (!empty($validates)) {
             return response()->json([]);
         }
-        //get number of course required
-        // $course_count = MdlCourseCategory::where('id', 3)->get()->pluck('coursecount');
 
-        //get list id students get certificate by when number course lager course count above
-        $listIdStudentsDone = DB::table('course_final')->get()->pluck('userid');
-        //        $listIdStudentsHaveFinal = DB::table('course_completion')
-        //            ->where('iscoursefinal', '=', 1)
-        //            ->get()->pluck('userid');
+        $listStudentsDone = DB::table('tms_trainning_complete as ttc')
+            ->join('mdl_user as mu', 'mu.id', '=', 'ttc.user_id')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mu.id')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->leftJoin('student_certificate as sc', function ($join) {
+                $join->on('sc.userid', '=', 'mu.id');
+                $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
+            })
+            ->select('tud.user_id', 'tud.fullname as fullname',
+                'tud.email as email', 'mu.username as username',
+                'tud.cmtnd as cmtnd',
+                'tud.confirm as confirm', 'tud.phone as phone',
+                'ttp.name as training_name', 'ttp.id as training_id')
+            ->whereNull('sc.id')
+            ->groupBy('ttc.user_id', 'ttc.trainning_id');
 
 
-        //get info of students by id students above
-        $listStudentsDone = DB::table('tms_user_detail')
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
-            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'student_certificate.status as status', 'student_certificate.code as code', 'student_certificate.timecertificate as timecertificate')
-            ->where('student_certificate.userid', '=', null)
-            ->whereIn('tms_user_detail.user_id', $listIdStudentsDone);
-
+//        $listStudentsDone = DB::table('course_completion')
+//            ->join('tms_user_detail', 'course_completion.userid', '=', 'tms_user_detail.user_id')
+//            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//            ->leftJoin('tms_traninning_programs', 'course_completion.training_id', '=', 'tms_traninning_programs.id')
+//            ->leftJoin('student_certificate', function($join)
+//            {
+//                $join->on('course_completion.userid', '=', 'student_certificate.userid');
+//                $join->on('course_completion.training_id', '=', 'student_certificate.trainning_id');
+//            })
+//            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'tms_traninning_programs.name as training_name')
+//            ->whereNull('student_certificate.id')
+//            ->whereNotNull('course_completion.training_id')
+//            ->groupBy('course_completion.userid', 'course_completion.training_id');
+//            ->groupBy('student_certificate.userid', 'student_certificate.trainning_id');
+//        dd($listStudentsDone->toSql());
         //search
         if (strlen($keyword) != 0) {
             $listStudentsDone->where(function ($query) use ($keyword) {
-                $query->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.email', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.cmtnd', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.phone', 'like', "%{$keyword}%")
-                    ->orWhere('student_certificate.code', 'like', "%{$keyword}%")
-                    ->orWhere('mdl_user.username', 'like', "%{$keyword}%");
+                $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
+                    ->orWhere('tud.email', 'like', "%{$keyword}%")
+                    ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
+                    ->orWhere('tud.phone', 'like', "%{$keyword}%")
+                    ->orWhere('mu.username', 'like', "%{$keyword}%");
             });
         }
 
+        if ($training_id > 0) {
+            $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
+        }
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
         $total = ceil($listStudentsDone->total() / $row);
@@ -4325,41 +4390,30 @@ class BussinessRepository implements IBussinessInterface
     {
         try {
             $user_selected = $request->input('user_selected');
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             $arr_data = [];
             $data_item = [];
 
-            foreach ($user_selected as $user_id) {
-                $student = StudentCertificate::where('userid', $user_id)->first();
-                //nếu học viên đã có mã thì không làm gì cả
-                if (!$student) {
-                    //check role: if role managemarket => dont generate code
-                    $checkRole = tvHasRole($user_id, 'managemarket');
-                    if (!$checkRole) {
-                        //update status to 1
-                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
-                        //                        StudentCertificate::create([
-                        //                            'userid' => $user_id,
-                        //                            'code' => $certificatecode,
-                        //                            'status' => 1,
-                        //                            'timecertificate' => time()
-                        //                        ]);
+            foreach ($user_selected as $user) {
+                //update status to 1
+                $certificatecode = $user['user_id'] . $this->randomNumber(7 - strlen($user['user_id']));
 
-                        $data_item['userid'] = $user_id;
-                        $data_item['code'] = $certificatecode;
-                        $data_item['status'] = 1;
-                        $data_item['timecertificate'] = time();
+                $data_item['userid'] = $user['user_id'];
+                $data_item['trainning_id'] = $user['training_id'];
+                $data_item['code'] = $certificatecode;
+                $data_item['status'] = 1;
+                $data_item['timecertificate'] = time();
 
-                        array_push($arr_data, $data_item);
-                    }
-                }
-                usleep(100); //sleep tranh tinh trang query db lien tiep
+                array_push($arr_data, $data_item);
+
+
+                usleep(10); //sleep tranh tinh trang query db lien tiep
             }
 
             StudentCertificate::insert($arr_data);
 
-            \DB::commit();
+            DB::commit();
             return 'success';
         } catch (\Exception  $e) {
             return 'error';
@@ -4373,70 +4427,28 @@ class BussinessRepository implements IBussinessInterface
         $response = new ResponseModel();
         try {
             $user_id = $request->input('user_id');
+            $trainning_id = $request->input('trainning_id');
 
-            $validates = validate_fails($request, [
-                'user_id' => 'number',
+
+            $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
+
+            StudentCertificate::create([
+                'userid' => $user_id,
+                'code' => $certificatecode,
+                'trainning_id' => $trainning_id,
+                'status' => 1,
+                'timecertificate' => time()
             ]);
-            if (!empty($validates)) {
-                //var_dump($validates);
-            } else {
-                $student = StudentCertificate::where('userid', $user_id)->first();
-                //check role: if role managemarket => dont generate code
-                $checkRole = tvHasRole($user_id, 'managemarket');
-                if (!$checkRole) {
-                    $response_text = "";
-                    \DB::beginTransaction();
-                    //set value for default: 3 is not exists in table student_certificate
-                    $check = 3;
-                    if ($student) {
-                        //dont has certificate code
-                        if ($student->code == '') {
-                            $student->code = $user_id . $this->randomNumber(7 - strlen($user_id));
-                            $student->save();
-                            $check = 0;
-                        } else if ($student->code != '' && $student->status == 0) {
-                            //create certificate image
-                            $student->status = 1;
-                            $student->save();
-                            $check = 3;
-                        } else if ($student->code != '' && $student->status == 1)
-                            $check = 1;
-                    } else {
-                        //create certificate code
-                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
-                        StudentCertificate::create([
-                            'userid' => $user_id,
-                            'code' => $certificatecode,
-                            'status' => 0,
-                            'timecertificate' => time()
-                        ]);
-                        $get_user = $listCourses = DB::table('tms_user_detail')
-                            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-                            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
-                            ->where('mdl_user.id', '=', $user_id)->first();
-                        $this->sendMail($get_user, $certificatecode);
-                        $check = 0;
-                    }
-                    \DB::commit();
+            $get_user = $listCourses = DB::table('tms_user_detail')
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+                ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
+                ->where('mdl_user.id', '=', $user_id)->first();
+            $this->sendMail($get_user, $certificatecode);
 
-                    if ($check == 0) {
-                        $response_text = __('cap_ma_thanh_cong');
-                    } else if ($check == 3) {
-                        //                    $msg = $this->autoGenCertificate($user_id);
-                        //                    $response->msg = $msg;
-                        $response_text = __('yeu_cau_cap_chung_chi_thanh_cong');
-                    } else if ($check == 1) {
-                        $response_text = __('dang_doi_cap_chung_chi');
-                    }
-                    $response->status = true;
-                    $response->message = $response_text;
-                } else {
-                    $response->status = false;
-                    $response->message = __('chuyen_vien_kinh_doanh_khong_duoc_cap_chung_chi');
-                }
-            }
+            $response->status = true;
+            $response->message = __('cap_ma_thanh_cong');
+
         } catch (\Exception $e) {
-            \DB::rollBack();
             $response->status = false;
             $response->message = $e->getMessage();
         }
@@ -4460,9 +4472,11 @@ class BussinessRepository implements IBussinessInterface
         //get value of request
         $row = $request->input('row');
         $keyword = $request->input('keyword');
+        $training_id = $request->input('training_id');
 
         $validates = validate_fails($request, [
             'row' => 'number',
+            'training_id' => 'training_id',
             'keyword' => 'text',
         ]);
 
@@ -4470,25 +4484,15 @@ class BussinessRepository implements IBussinessInterface
             return response()->json();
         }
 
-        //        //get list id students in table student_certificate
-        //        $listIdStudentsDone = DB::table('student_certificate')
-        ////            ->select('userid')
-        ////            ->where('status', '=', 2)
-        //            ->get()->pluck('userid');
-        //
-        //        //get info of students by id students above
-        //        $listStudentsDone = DB::table('tms_user_detail')
-        //            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-        //            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
-        //            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'student_certificate.status as status', 'student_certificate.code as code', 'student_certificate.timecertificate as timecertificate')
-        //            ->whereIn('tms_user_detail.user_id', $listIdStudentsDone);
-
         //fix query of DatDT
         $listStudentsDone = DB::table('tms_user_detail as tud')
             ->join('mdl_user as u', 'u.id', '=', 'tud.user_id')
             ->join('student_certificate as sc', 'tud.user_id', '=', 'sc.userid')
+            ->leftJoin('tms_traninning_programs', 'sc.trainning_id', '=', 'tms_traninning_programs.id')
             ->select(
                 'u.id as user_id',
+                'tms_traninning_programs.name as training_name',
+                'tms_traninning_programs.auto_badge as badge',
                 'tud.fullname as fullname',
                 'tud.email as email',
                 'u.username as username',
@@ -4509,6 +4513,10 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
+        }
+
+        if ($training_id > 0) {
+            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
         }
 
         $listStudentsDone = $listStudentsDone->groupBy('u.id');
@@ -4565,11 +4573,23 @@ class BussinessRepository implements IBussinessInterface
         return view('education.setting_certificate');
     }
 
-    public function apiGetListImagesCertificate()
+    public function apiGetListImagesCertificate(Request $request)
     {
-        $response = DB::table('image_certificate')
-            ->get();
-        return response()->json($response);
+        $type = $request->input('type');
+        $validates = validate_fails($request, [
+            'type' => 'number',
+        ]);
+        if (!empty($validates)) {
+            return response()->json([]);
+        }
+        else {
+            $response = DB::table('image_certificate as ic')
+                ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
+                ->where('ic.type', '=', $type)
+                ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
+                ->get();
+            return response()->json($response);
+        }
     }
 
     //tạo ảnh chứng chỉ
@@ -4582,10 +4602,15 @@ class BussinessRepository implements IBussinessInterface
             $description = $request->input('description');
             $is_active = $request->input('is_active');
             $position = $request->input('position');
+            $organization_id = $request->input('organization_id');
+            //type 1: certificate, type 2: badge
+            $type = $request->input('type');
             $validates = validate_fails($request, [
                 'name' => 'text',
                 'description' => 'longtext',
                 'is_active' => 'number',
+                'training_id' => 'number',
+                'type' => 'number',
             ]);
             if (!empty($validates)) {
                 //var_dump($validates);
@@ -4594,8 +4619,6 @@ class BussinessRepository implements IBussinessInterface
                 $path_avatar = '';
                 if ($avatar) {
                     $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();
-                    //                    $destinationPath = public_path('/upload/certificate/');
-                    //                    $avatar->move($destinationPath, $name_avatar);
 
                     // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
                     Storage::putFileAs(
@@ -4603,21 +4626,23 @@ class BussinessRepository implements IBussinessInterface
                         $avatar,
                         $name_avatar
                     );
-
                     $path_avatar = '/storage/upload/certificate/' . $name_avatar;
-
-                    //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 } else {
                     $path_avatar = '/storage/upload/certificate/default_certificate.png';
                 }
 
                 \DB::beginTransaction();
-                if ($is_active == 1) {
-                    DB::table('image_certificate')
-                        ->where('is_active', 1)
-                        ->update(['is_active' => 0]);
-                }
-                ImageCertificate::create([
+//                if ($is_active == 1) {
+//                    DB::table('image_certificate')
+//                        ->where('is_active', 1)
+//                        ->update(['is_active' => 0]);
+//                }
+                ImageCertificate::updateOrCreate([
+                    //Add unique field combo to match here
+                    //For example, perhaps you only want one entry per user:
+                    'organization_id' => $organization_id,
+                    'type' => $type
+                ],[
                     'path' => $path_avatar,
                     'name' => $name,
                     'description' => $description,
@@ -4647,9 +4672,9 @@ class BussinessRepository implements IBussinessInterface
             //tìm chứng chỉ dựa vào id
             $deletedRow = ImageCertificate::find($id);
             //nếu tồn tại chứng chỉ và chứng chỉ đó đang được active thì không xóa được
-            if ($deletedRow && $deletedRow->is_active == 1) {
-                return 'exists';
-            }
+//            if ($deletedRow && $deletedRow->is_active == 1) {
+//                return 'exists';
+//            }
             $deletedRow->delete();
             \DB::commit();
             return 'success';
@@ -4669,8 +4694,11 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             return response()->json();
         }
-        $certificate_info = DB::table('image_certificate')
-            ->where('image_certificate.id', '=', $id)->first();
+        $certificate_info = DB::table('image_certificate as ic')
+            ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
+            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
+            ->where('ic.id', '=', $id)
+            ->first();
         return response()->json($certificate_info);
     }
 
@@ -4687,13 +4715,18 @@ class BussinessRepository implements IBussinessInterface
             $description = $request->input('description');
             $is_active = $request->input('is_active');
             $position = $request->input('position');
+            $organization_id = $request->input('organization_id');
+            //type 1: chứng chỉ, 2: huy hiệu
+            $type = $request->input('type');
 
 
             $validates = validate_fails($request, [
                 'id' => 'number',
                 'name' => 'text',
+                'position' => 'longtext',
                 'description' => 'longtext',
-                'is_active' => 'number'
+                'is_active' => 'number',
+                'type' => 'number'
             ]);
             if (!empty($validates)) {
                 $response->status = false;
@@ -4701,11 +4734,34 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json($response);
             }
             //thực hiện update dữ liệu
-            $cer = ImageCertificate::where('id', $id)->first();
-            $cer->name = $name;
-            $cer->description = $description;
-            $cer->is_active = $is_active;
-            $cer->position = $position;
+//            $cer = ImageCertificate::where('id', $id)->first();
+            //get organization
+            $cer = ImageCertificate::where('organization_id', $organization_id)
+                ->where('type', '=', $type)
+                ->first();
+
+            if(!empty($cer) && $cer->id == $id){
+                $cer->name = $name;
+                $cer->description = $description;
+                $cer->is_active = $is_active;
+                $cer->position = $position;
+                $cer->organization_id = $organization_id;
+            } else if (!empty($cer) && $cer->id !== $id) {
+                $response->status = false;
+                $response->message = __('to_chuc_nay_da_ton_tai_mau_chung_chi');
+                return response()->json($response);
+            } else {
+                $cer = ImageCertificate::updateOrCreate([
+                    'id' => $id
+                ], [
+                    'name' => $name,
+                    'description' => $description,
+                    'is_active' => $is_active,
+                    'position' => $position,
+                    'organization_id' => $organization_id
+                ]);
+            }
+
 
             if ($avatar) {
                 $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();
@@ -4724,18 +4780,18 @@ class BussinessRepository implements IBussinessInterface
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
             }
-            $get_active = DB::table('image_certificate')
-                ->where('is_active', 1)->first();
-            if ($is_active == 0) {
-                if (!$get_active || $get_active->id == $id) {
-                    $response->status = false;
-                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
-                    return response()->json($response);
-                }
-            } else if ($is_active == 1) {
-//                $get_active->is_active = 0;
-                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->update(['is_active' => '0']);
-            }
+//            $get_active = DB::table('image_certificate')
+//                ->where('is_active', 1)->first();
+//            if ($is_active == 0) {
+//                if (!$get_active || $get_active->id == $id) {
+//                    $response->status = false;
+//                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
+//                    return response()->json($response);
+//                }
+//            } else if ($is_active == 1) {
+////                $get_active->is_active = 0;
+//                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->update(['is_active' => '0']);
+//            }
             $cer->save();
             \DB::commit();
             $response->status = true;
@@ -13729,4 +13785,22 @@ class BussinessRepository implements IBussinessInterface
         return 'Xác nhận thất bại';
     }
 
+
+    //badge
+    public function apiGetListImagesBadge()
+    {
+        //lấy theo tổ chức
+//        $response = DB::table('image_badge as ib')
+//            ->leftJoin('tms_organization as to', 'ib.organization_id', '=', 'to.id')
+//            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
+//            ->get();
+
+        dd('hihi');
+        $response = DB::table('image_badge as ib')
+//            ->leftJoin('tms_organization as to', 'ib.organization_id', '=', 'to.id')
+//            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
+            ->get();
+
+        return response()->json($response);
+    }
 }

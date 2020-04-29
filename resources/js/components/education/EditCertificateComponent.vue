@@ -36,6 +36,17 @@
             </div>
             <div class="col-12 col-lg-6">
               <form action="" class="form-row hk-sec-wrapper">
+                <div v-if="certificate.type == 1" class="col-12 form-group">
+                  <label>{{trans.get('keys.chon_to_chuc')}} </label>
+                  <select id="organization_select" v-model="organization_id" autocomplete="false" class="form-control">
+                    <option value="0">-- {{trans.get('keys.chon_to_chuc')}} --</option>
+                    <option v-for="organization_option in organization_options" :value="organization_option.id">
+                      {{organization_option.name}}
+                    </option>
+                  </select>
+                  <label v-if="organization_id == '0'" class="required text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                </div>
+
                 <div class="col-12 form-group">
                   <h6 for="inputName">{{trans.get('keys.ten_chung_chi')}} </h6>
                   <input autocomplete="false" v-model="certificate.name" type="text" id="inputName" :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')" class="form-control mb-4" @input="changeRequired('inputName')">
@@ -46,18 +57,18 @@
                   <input autocomplete="false" v-model="certificate.description" type="text" id="inputDescription" :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')" class="form-control mb-4" @input="changeRequired('inputDescription')">
                   <label v-if="!certificate.description" class="required text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
-                <div class="col-12 form-group">
-                  <h6 class="d-inline-flex">
-                    {{trans.get('keys.chung_chi_mau')}}
-                    <span class="inline-checkbox ml-3">
-                                    <span class="custom-control custom-checkbox custom-control-inline">
-                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.is_active" checked>
-                                        <input v-else type="checkbox" v-model="certificate.is_active"  class="custom-control-input" :id="'inputCheck'">
-                                        <label class="custom-control-label" :for="'inputCheck'"></label>
-                                    </span>
-                                </span>
-                  </h6>
-                </div>
+<!--                <div class="col-12 form-group">-->
+<!--                  <h6 class="d-inline-flex">-->
+<!--                    {{trans.get('keys.chung_chi_mau')}}-->
+<!--                    <span class="inline-checkbox ml-3">-->
+<!--                                    <span class="custom-control custom-checkbox custom-control-inline">-->
+<!--                                        <input v-if="certificate.is_active == 1" class="custom-control-input" :id="'inputCheck'" type="checkbox" v-model="certificate.is_active" checked>-->
+<!--                                        <input v-else type="checkbox" v-model="certificate.is_active"  class="custom-control-input" :id="'inputCheck'">-->
+<!--                                        <label class="custom-control-label" :for="'inputCheck'"></label>-->
+<!--                                    </span>-->
+<!--                                </span>-->
+<!--                  </h6>-->
+<!--                </div>-->
 
                 <div class="col-12 form-group">
                   <h6>{{trans.get('keys.toa_do_chung_chi')}} </h6>
@@ -145,7 +156,7 @@
 
 <script>
     export default {
-        props: ['id'],
+        props: ['id', 'type'],
         data() {
             return {
                 certificate: {
@@ -153,8 +164,9 @@
                     name: '',
                     description: '',
                     confirm: false,
-                    is_active: 0,
-                    path: ''
+                    is_active: 1,
+                    path: '',
+                    type: 2
                 },
                 language : this.trans.get('keys.language'),
                 imgLeft: null,
@@ -171,7 +183,9 @@
                 img_width: 0,
                 img_height: 0,
                 fullName: "Nguyễn Văn A",
-                programName: "Chứng chỉ khóa học"
+                programName: "Chứng chỉ khóa học",
+                organization_options: [],
+                organization_id: 0,
             }
         },
         methods:{
@@ -222,6 +236,7 @@
                     .then(response => {
 
                         this.certificate = response.data;
+                        this.organization_id = response.data.organization_id == null ? 0 : response.data.organization_id;
                         // this.certificate.confirm = this.certificate.is_active == 1 ? true : false;
                         // try {
                         //     var splitPath = this.certificate.path.split('/');
@@ -244,6 +259,12 @@
                     })
             },
             updateCertificate(){
+
+                if(this.certificate.type == 1 && this.organization_id == '0') {
+                    $('.organization_required').show();
+                    return;
+                }
+
                 if(!this.certificate.name){
                     $('.name_required').show();
                     return;
@@ -305,7 +326,9 @@
                 this.formData.append('name', this.certificate.name);
                 this.formData.append('is_active', this.certificate.is_active);
                 this.formData.append('description', this.certificate.description);
+                this.formData.append('type', this.certificate.type);
                 this.formData.append('id', this.id);
+                this.formData.append('organization_id', this.organization_id);
                 this.formData.append('position', JSON.stringify(this.coordinates));
 
                 axios.post('/certificate/update', this.formData, {
@@ -317,7 +340,10 @@
                         var language =  this.language;
                         if (response.data.status) {
                           toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-                          this.$router.push({ name: 'SettingCertificate' });
+                          if(this.certificate.type == 1)
+                            this.$router.push({ name: 'SettingCertificate', query :{ type: this.certificate.type }});
+                          else
+                              this.$router.push({ name: 'SettingBadge', query :{ type: this.certificate.type }});
                         }else{
                             $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');
@@ -517,11 +543,20 @@
                 $('#sp_inputProgram').css('line-height', this.coordinates.programSize+'px');
                 $('#ip_inputSizeProgram').val(this.coordinates.programSize);
             },
+            fetchOrganization() {
+                axios.get('/api/organization/getorganizations')
+                    .then(response => {
+                        this.organization_options = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
         },
         mounted() {
             this.certificateData();
             this.setFileInput();
-
+            this.fetchOrganization();
         }
     }
 </script>

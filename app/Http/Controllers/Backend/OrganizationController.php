@@ -78,4 +78,8 @@ class OrganizationController extends Controller
     public function apiDetailUser($id) {
         return $this->tmsOrganizationEmployeeRepository->userDetail($id);
     }
+
+    public function apiGetOrganizations() {
+        return $this->tmsOrganizationRepository->GetOrganizations();
+    }
 }

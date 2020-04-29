@@ -15,8 +15,8 @@
         <div class="row">
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
-                    <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_cap_huy_hieu')}}</h5>
-                    <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc_cap_chung_chi')}}</h5>
+                    <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_theo_thoi_gian')}}</h5>
+                    <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc')}}</h5>
                     <div class="row mb-4">
                         <div class="col-sm">
                             <div class="accordion" id="accordion_1">

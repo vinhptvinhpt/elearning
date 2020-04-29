@@ -767,8 +767,8 @@
         "danh_sach_nhan_su": "Student list",
         "danh_sach_moi_ghi_danh": "Invite list",
         "chon_vao_danh_sach": "Add to invite list",
-        "khung_nang_luc_cap_chung_chi": "Competency framework for certification",
-        "khung_nang_luc_cap_huy_hieu": "Badge competency framework",
+        "khung_nang_luc_khong_theo_thoi_gian": "Competency framework without time",
+        "khung_nang_luc_theo_thoi_gian": "Competency framework with time",
         "thoi_gian_hoan_thanh": "Completion time",
         "huy_khoi_danh_sach": "Remove from list",
         "moi_tham_gia_khoa_hoc": "Invite to enrol course",
@@ -897,7 +897,8 @@
         "them_cctc_vao_knl": "Add organization to competency framework",
         "them_user_cctc_vao_knl": "Add all users who are in the organization to the current competence framework",
         "chua_chon_cctc": "You must choose organization",
-        "luu_y_cctc_vao_knl": "NOTE: The number of users in the organization you choose cannot exceed 100 people"
+        "luu_y_cctc_vao_knl": "NOTE: The number of users in the organization you choose cannot exceed 100 people",
+        "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template"
     },
     "vi.keys": {
         "language": "",
@@ -1797,6 +1798,7 @@
         "them_cctc_vao_knl": "Thêm cơ cấu tổ chức vào khung năng lực",
         "them_user_cctc_vao_knl": "Thêm tất cả người dùng nằm trong cơ cấu tổ chức vào khung năng lực hiện tại",
         "chua_chon_cctc": "Chưa chọn cơ cấu tổ chức",
-        "luu_y_cctc_vao_knl": "Lưu ý: Số người dùng trong tổ chức bạn chọn không được vượt quá 100 người"
+        "luu_y_cctc_vao_knl": "Lưu ý: Số người dùng trong tổ chức bạn chọn không được vượt quá 100 người",
+        "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ"
     }
 }

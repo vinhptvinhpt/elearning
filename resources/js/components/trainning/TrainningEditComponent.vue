@@ -101,7 +101,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="form-row">
-                                                        <div class="col-sm-6 form-group">
+                                                        <div class="col-sm-4 form-group">
                                                             <label>{{trans.get('keys.tu_dong_chay_cron')}}</label>
                                                             <div class="custom-control custom-switch">
                                                                 <input type="checkbox" class="custom-control-input"
@@ -115,9 +115,8 @@
                                                                        for="run_cron">No</label>
                                                             </div>
                                                         </div>
-                                                        <div class="col-sm-6 form-group">
-                                                            <label v-if="trainning.auto_certificate == 1">{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
-                                                            <label v-else>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
+                                                        <div class="col-sm-4 form-group">
+                                                            <label>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
                                                             <div class="custom-control custom-switch">
                                                                 <input type="checkbox" class="custom-control-input"
                                                                        id="auto_certificate"
@@ -129,6 +128,20 @@
                                                                 <label v-else class="custom-control-label"
                                                                        for="auto_certificate">No</label>
                                                             </div>
+                                                        </div>
+                                                        <div class="col-sm-4 form-group">
+                                                          <label>{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+                                                          <div class="custom-control custom-switch">
+                                                            <input type="checkbox" class="custom-control-input"
+                                                                   id="auto_badge"
+                                                                   :checked="trainning.auto_badge==1?true:false"
+                                                                   v-model="trainning.auto_badge">
+                                                            <label v-if="trainning.auto_badge == 1"
+                                                                   class="custom-control-label"
+                                                                   for="auto_badge">Yes</label>
+                                                            <label v-else class="custom-control-label"
+                                                                   for="auto_badge">No</label>
+                                                          </div>
                                                         </div>
                                                     </div>
 
@@ -387,6 +400,7 @@
                     organization_id: 0,
                     run_cron: 1,
                     auto_certificate: 1,
+                    auto_badge: 1,
                     time_start: '',
                     time_end: '',
                     logo: ''
@@ -582,6 +596,7 @@
                 this.formData.append('name', this.trainning.name);
                 this.formData.append('style', this.trainning.style);
                 this.formData.append('auto_certificate', this.trainning.auto_certificate);
+                this.formData.append('auto_badge', this.trainning.auto_badge);
                 this.formData.append('run_cron', this.trainning.run_cron);
                 this.formData.append('time_start', this.trainning.time_start);
                 this.formData.append('time_end', this.trainning.time_end);

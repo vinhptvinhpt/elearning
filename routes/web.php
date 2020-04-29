@@ -60,6 +60,9 @@ Route::group([
         Route::get('/education/user_teacher/trash', 'Backend\EducationController@viewTrashUserTeacher')->name('system.user.teacher.trash');
         Route::get('/education/user_student', 'Backend\EducationController@viewIndexStudent')->name('education.user_student');
         Route::get('/education/user_student/trash', 'Backend\EducationController@viewTrashUserStudent')->name('system.user.student.trash');
+
+
+        Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
         /**
          * Route Đào tạo
          **/
@@ -90,11 +93,13 @@ Route::group([
         Route::get('/certificate/student/uncertificate', 'Backend\StudentController@viewStudentUncertificate')->name('student.uncertificate');
         Route::get('/student/certificate', 'Backend\StudentController@viewStudentsCertificate')->name('student.certificate');
         Route::get('/certificate/setting', 'Backend\StudentController@settingCertificate')->name('setting.certificate');
-        Route::get('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
+//        Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
 
         Route::get('/certificate/generate', 'Backend\StudentController@apiAutoGenCertificate');
         Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
 
+        //badge
+        Route::get('/badge/get_images', 'Backend\StudentController@apiGetListImagesBadge');
         //test
         Route::get('/testNotify', 'Api\NotificationController@index');
 
@@ -601,7 +606,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/report/base', 'Backend\ReportController@viewReportBase')->name('report.base');
     Route::post('/report/list_detail', 'Backend\ReportController@apiListDetail');
     Route::post('/report/list_base', 'Backend\ReportController@apiListBase');
-
+    Route::post('/report/list_course_by_training', 'Backend\ReportController@apiListCourseByTraining');
 
     Route::get('/activity_log', 'Backend\BackendController@viewActivityLog')->name('activity.log');
     Route::post('/activity_log', 'Backend\BackendController@apiActivityLog');
@@ -664,7 +669,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/student/get/certificate', 'Backend\StudentController@apiListStudentsCertificate');
     Route::post('/student/check/certificate', 'Backend\StudentController@generateCodeCertificate');
     Route::get('/certificate/setting', 'Backend\StudentController@settingCertificate')->name('setting.certificate');
-    Route::get('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
+   Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
     Route::post('/certificate/create', 'Backend\StudentController@apiCreateCertificate');
     Route::get('/certificate/edit/{id}', 'Backend\StudentController@viewEditCertificate');
     Route::post('/certificate/delete/{id}', 'Backend\StudentController@apiDelete');
@@ -673,6 +678,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/certificate/generate', 'Backend\StudentController@apiAutoGenCertificate');
     Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
     Route::post('/certificate/generate/multiple', 'Backend\StudentController@apiGenerateSelectedUser');
+    Route::get('/certificate/image', 'Backend\StudentController@viewImageCertificate');
 
     Route::get('/api/cron_delete_enrol', 'Backend\CourseController@apiDeleteEnrolNotUse');
     //test
@@ -722,6 +728,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/update', 'Backend\OrganizationController@apiEditEmployee');
     Route::post('/organization-employee/assign', 'Backend\OrganizationController@apiAssignEmployee');
     Route::post('/organization-employee/get-user-detail/{id}', 'Backend\OrganizationController@apiDetailUser');
+
+
+    Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 
     //Attendance
     Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');

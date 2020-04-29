@@ -110,6 +110,8 @@ import AttendanceComponent from "./components/education/AttendanceComponent";
 import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
 import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
+import ImageCertificateComponent from "./components/education/ImageCertificateComponent";
+import SettingBadgeComponent from "./components/education/SettingBadgeComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -609,6 +611,24 @@ const routes = [
         name: 'StudentUncertificate',
       },
       {
+        path: 'certificate/image',
+        component: ImageCertificateComponent,
+        name: 'ImageCertificate',
+        props: (route) => ({
+          code: route.query.code,
+          badge: route.query.badge
+        })
+      },
+      // badge
+      {
+        path: 'badge/setting',
+        component: SettingCertificateComponent,
+        name: 'SettingBadge',
+        props: (route) => ({
+          type: route.query.type
+        })
+      },
+      {
         path: 'education/course/list_concentrate',
         component: CourseConcenComponent,
         name: 'CourseConcentrateIndex',
@@ -654,7 +674,10 @@ const routes = [
       {
         path: 'certificate/setting',
         component: SettingCertificateComponent,
-        name: 'SettingCertificate'
+        name: 'SettingCertificate',
+        props: (route) => ({
+          type: route.query.type,
+        })
       },
       {
         path: 'certificate/edit/:id',
@@ -662,6 +685,7 @@ const routes = [
         name: 'EditCertificate',
         props: (route) => ({
           id: route.params.id,
+          type: route.params.type
         })
       },
       {

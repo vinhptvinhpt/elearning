@@ -20,6 +20,7 @@ use App\StudentCertificate;
 use App\TmsLog;
 use App\TmsNotification;
 use App\TmsSaleRoomUser;
+use App\TmsTrainningComplete;
 use App\TmsTrainningCourse;
 use App\TmsTrainningGroup;
 use App\TmsTrainningUser;
@@ -146,7 +147,7 @@ class TaskController extends Controller
 
     public function completeCourseForStudent()
     {
-        $lstTrainning = TmsTrainningCourse::select('trainning_id', 'course_id')->get();
+        $lstTrainning = TmsTrainningCourse::where('deleted', '=', '0')->select('trainning_id', 'course_id')->get();
 
         foreach ($lstTrainning as $data) {
             $lstUserCourse = DB::table('mdl_user_enrolments as mu')
@@ -189,6 +190,7 @@ class TaskController extends Controller
                     $data_item['finalgrade'] = $course->finalgrade;
                     $data_item['timecompleted'] = strtotime(Carbon::now());
                     $data_item['timeenrolled'] = strtotime(Carbon::now());
+                    $data_item['training_id'] = $data->trainning_id;
 
                     array_push($arrData, $data_item);
                     $num++;
@@ -204,7 +206,58 @@ class TaskController extends Controller
             }
 
             CourseCompletion::insert($arrData);
-            
+
+            usleep(100);
+        }
+    }
+
+    //danh sach hoc vien da hoan thanh KNL
+    public function userCompleteTrainning()
+    {
+        $lstTrainning = DB::table('tms_trainning_courses as ttc')
+            ->where('ttc.deleted', '=', '0')
+            ->select('ttc.trainning_id', DB::raw('count(ttc.course_id) as total_course'))
+            ->groupBy('ttc.trainning_id')->get();
+
+        foreach ($lstTrainning as $data) {
+
+            $lstData = DB::table('course_completion as cc')
+                ->leftJoin('tms_trainning_complete as ttc', function ($join) {
+                    $join->on('ttc.user_id', '=', 'cc.userid');
+                    $join->on('ttc.trainning_id', '=', 'cc.training_id');
+                })
+                ->select('cc.userid', DB::raw('count(cc.courseid) as total_course_cp'))
+                ->whereNull('ttc.id')
+                ->where('cc.training_id', '=', $data->trainning_id)
+                ->groupBy('cc.training_id', 'cc.userid')->get();
+
+
+            $arrData = [];
+            $data_item = [];
+
+            $num = 0;
+            $limit = 200;
+
+            foreach ($lstData as $course) {
+                if ($course->total_course_cp == $data->total_course) {
+                    $data_item['trainning_id'] = $data->trainning_id;
+                    $data_item['user_id'] = $course->userid;
+
+                    array_push($arrData, $data_item);
+                    $num++;
+                }
+
+                if ($num >= $limit) {
+                    TmsTrainningComplete::insert($arrData);
+                    $num = 0;
+                    $arrData = [];
+                }
+
+                usleep(50);
+            }
+
+            TmsTrainningComplete::insert($arrData);
+
             usleep(100);
         }
     }

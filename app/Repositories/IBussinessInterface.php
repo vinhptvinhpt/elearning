@@ -171,7 +171,7 @@ interface IBussinessInterface
 
     public function settingCertificate();
 
-    public function apiGetListImagesCertificate();
+    public function apiGetListImagesCertificate(Request $request);
 
     public function apiCreateCertificate(Request $request);
 

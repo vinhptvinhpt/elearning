@@ -40,8 +40,9 @@
                     <th>{{trans.get('keys.stt')}}</th>
                     <th>{{trans.get('keys.mau_chung_chi')}}</th>
                     <th>{{trans.get('keys.ten_chung_chi')}}</th>
+                    <th v-if="type == 1">{{trans.get('keys.ten_to_chuc')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.mo_ta')}}</th>
-                    <th class=" mobile_hide">{{trans.get('keys.mau')}}</th>
+<!--                    <th class=" mobile_hide">{{trans.get('keys.mau')}}</th>-->
                     <th>{{trans.get('keys.hanh_dong')}}</th>
                     </thead>
                     <tbody>
@@ -56,17 +57,20 @@
                       <td>
                         {{ image.name }}
                       </td>
+                      <td v-if="type == 1">
+                        {{ image.organization_name }}
+                      </td>
                       <td class=" mobile_hide">
                         {{ image.description }}
                       </td>
-                      <td class=" mobile_hide">
-                        <span v-if="image.is_active == 1" class="badge badge-success">Active</span>
-                        <span v-else class="badge badge-secondary">Inactive</span>
-                      </td>
+<!--                      <td class=" mobile_hide">-->
+<!--                        <span v-if="image.is_active == 1" class="badge badge-success">Active</span>-->
+<!--                        <span v-else class="badge badge-secondary">Inactive</span>-->
+<!--                      </td>-->
                       <td>
                         <router-link :title="trans.get('keys.sua')"
                            class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                           :to="{name: 'EditCertificate', params: {id: image.id}}">
+                           :to="{name: 'EditCertificate', params: {id: image.id, type: image.type}}">
                           <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                         </router-link>
                         <button @click.prevent="deleteCertificate('/certificate/delete/'+image.id)" class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"><span class="btn-icon-wrap"><i class="fal fa-trash"></i></span></button>
@@ -89,20 +93,24 @@
   import CreateCertificate from "./CreateCertificateComponent";
 
     export default {
-        props: [],
+        props: ['type'],
         components: {CreateCertificate},
         data() {
             return {
-                images: {},
+                images: [],
             }
         },
         methods: {
             onPageChange() {
             },
             getListImages(){
-                axios.get('/certificate/get_images')
+                // axios.get('/certificate/get_images')
+                axios.post('/certificate/get_images', {
+                    type: this.type
+                })
                     .then(response => {
-                        this.images = response.data;
+                        if(Array.isArray(response.data))
+                          this.images = response.data;
                     })
                     .catch(error => {
                         console.log(error.response.data);

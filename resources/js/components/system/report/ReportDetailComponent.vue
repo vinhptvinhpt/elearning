@@ -19,19 +19,49 @@
 
           <!--New filter-->
           <div class="row">
-            <div class="col-5">
+            <div class="col-6">
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
             <div class="col-6">
-              <select id="training_select" v-model="training_id" class="custom-select">
+              <select id="training_select" v-model="training_id" class="custom-select" @input="fetchCourses()">
                 <option value="0">{{ trans.get('keys.khung_nang_luc') }}</option>
                 <option v-for="training_option in training_options" :value="training_option.id">
                   {{training_option.name}}
                 </option>
               </select>
             </div>
-            <div class="col-1">
-              <button id="buttonReport" class="btn btn-md btn-primary hasLoading" @click="listData()">{{trans.get('keys.xem')}}<i class="fa fa-spinner"></i></button>
+            <div class="col-6">
+              <select id="course_select" v-model="course_id" class="custom-select">
+                <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
+                <option v-for="course in course_list" :value="course.id">
+                  {{course.name}}
+                </option>
+              </select>
+            </div>
+            <div class="col-6 form-inline">
+              <datepicker
+                id="inputStart"
+                :clear-button=true
+                v-model="startdate"
+                format="dd-MM-yyyy"
+                input-class="form-control"
+                style="width: 40%"
+                :placeholder="trans.get('keys.ngay_bat_dau')"
+              >
+              </datepicker>
+              <datepicker
+                id="inputEnd"
+                :clear-button=true
+                v-model="enddate"
+                format="dd-MM-yyyy"
+                input-class="form-control"
+                style="width: 40%"
+                :placeholder="trans.get('keys.ngay_ket_thuc')"
+              >
+              </datepicker>
+              <div class="text-right" style="width: 20%">
+                <button id="buttonReport" class="btn btn-primary form-control" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
+              </div>
             </div>
           </div>
         </div>
@@ -119,10 +149,11 @@
 </template>
 
 <script>
-    export default {
+  export default {
     	data() {
             return {
                 report_data: [],
+                course_list: [],
                 organization_id: 0,
                 organization_options: [
                   {
@@ -131,21 +162,85 @@
                   }
                 ],
                 training_id: 0,
+                course_id: 0,
                 training_options: [],
-                mode_select: 'completed'
+                mode_select: 'completed',
+                startdate: '',
+                enddate: ''
+              ,
             }
         },
         methods: {
+            convertTime(timestamp) {
+              let a = new Date(timestamp);
+              let year = a.getFullYear();
+              //Jan->Dec
+              // let months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+              // let month = months[a.getMonth()+1];
+              //1->12
+              let month = a.getMonth();
+              month = ('0' + (month + 1)).slice(-2);
+              let date = a.getDate();
+              // let hour = a.getHours();
+              // let min = a.getMinutes();
+              // let sec = a.getSeconds();
+              return year + '-' + month + '-' + ('0' + date).slice(-2);
+            },
             preloadData() {
                 this.fetchOrganization();
                 this.fetchTraining();
                 this.listData();
             },
+            fetchCourses() {
+              if (this.training_id !== 0) {
+                axios.post('/report/list_course_by_training', {
+                  training_id: this.training_id,
+                })
+                  .then(response => {
+                    this.course_list = response.data;
+                  })
+                  .catch(error => {
+                    console.log(error);
+                  });
+              } else {
+                this.course_list = [];
+              }
+            },
+            checkTime() {
+              let has_startdate = false;
+              let has_enddate = false;
+              if (!(this.startdate === null || this.startdate === 'undefined' || this.startdate.length === 0)) {
+                has_startdate = true;
+              }
+              if (!(this.enddate === null || this.enddate === 'undefined' || this.enddate.length === 0)) {
+                has_enddate = true;
+              }
+              if (has_startdate && has_enddate) {
+                let startdate_stamp = Date.parse(this.startdate);
+                let enddate_stamp = Date.parse(this.enddate);
+                if (startdate_stamp > enddate_stamp) {
+                  toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
+                  return;
+                }
+              }
+              if (has_startdate) {
+                this.startdate = this.convertTime(this.startdate);
+              }
+              if (has_enddate) {
+                this.enddate = this.convertTime(this.enddate);
+              }
+
+              console.log(this.startdate);
+              console.log(this.enddate);
+            },
             listData() {
+              this.checkTime();
               axios.post('/report/list_detail', {
                 organization_id: this.organization_id,
                 training_id: this.training_id,
-                mode_select: this.mode_select
+                mode_select: this.mode_select,
+                start_date: this.startdate,
+                end_date: this.enddate
               })
                 .then(response => {
                   let list = response.data;
@@ -383,5 +478,4 @@
     .organization-color {
       background: #E0E3E4;
     }
-
 </style>
