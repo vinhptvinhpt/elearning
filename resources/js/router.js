@@ -111,7 +111,6 @@ import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
 import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
 import ImageCertificateComponent from "./components/education/ImageCertificateComponent";
-import SettingBadgeComponent from "./components/education/SettingBadgeComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
