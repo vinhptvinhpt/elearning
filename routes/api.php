@@ -15,10 +15,10 @@ use Illuminate\Http\Request;
 
 
 Route::group(['prefix' => 'auth'], function () {
-    Route::post('login','AuthController@authenticate');
-    Route::post('register','AuthController@authenticate');
-    Route::post('logout','AuthController@logout');
-    Route::post('check','AuthController@check');
+    Route::post('login', 'AuthController@authenticate');
+    Route::post('register', 'AuthController@authenticate');
+    Route::post('logout', 'AuthController@logout');
+    Route::post('check', 'AuthController@check');
 });
 
 // session route
@@ -31,6 +31,7 @@ Route::get('/cron/task/completeCourse', 'Api\TaskController@completeCourseForStu
 Route::get('/cron/task/finalizeCourse', 'Api\TaskController@finalizeCourseForRole')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
@@ -64,12 +65,11 @@ Route::get('/cron/mail/insertRemindAccess', 'Api\MailController@insertRemindAcce
 Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->middleware(['App\Http\Middleware\CheckToken']); //every week
 
 
-
 // update email + active
 Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
 Route::get('/cron/testcron', 'Api\TaskController@testCron');
 // admin route
-Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function (){
+Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function () {
 //    Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning');
 //    Route::resource('todos', 'Demo\TodosController');
 //

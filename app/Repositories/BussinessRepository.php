@@ -3445,7 +3445,8 @@ class BussinessRepository implements IBussinessInterface
     }
 
 
-    public static function buildDefaultReportObject(&$object, $object_id, $name) {
+    public static function buildDefaultReportObject(&$object, $object_id, $name)
+    {
         $object[$object_id]['name'] = $name;
         $object[$object_id]['completed'] = [];
         $object[$object_id]['incomplete'] = [];
@@ -4280,35 +4281,51 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        $listStudentsDone = DB::table('course_completion')
-            ->join('tms_user_detail', 'course_completion.userid', '=', 'tms_user_detail.user_id')
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->leftJoin('tms_traninning_programs', 'course_completion.training_id', '=', 'tms_traninning_programs.id')
-            ->leftJoin('student_certificate', function($join)
-            {
-                $join->on('course_completion.userid', '=', 'student_certificate.userid');
-                $join->on('course_completion.training_id', '=', 'student_certificate.trainning_id');
+        $listStudentsDone = DB::table('tms_trainning_complete as ttc')
+            ->join('mdl_user as mu', 'mu.id', '=', 'ttc.user_id')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mu.id')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->leftJoin('student_certificate as sc', function ($join) {
+                $join->on('sc.userid', '=', 'mu.id');
+                $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
             })
-            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'tms_traninning_programs.name as training_name')
-            ->whereNull('student_certificate.id')
-            ->whereNotNull('course_completion.training_id')
-            ->groupBy('course_completion.userid', 'course_completion.training_id');
+            ->select('tud.user_id', 'tud.fullname as fullname',
+                'tud.email as email', 'mu.username as username',
+                'tud.cmtnd as cmtnd',
+                'tud.confirm as confirm', 'tud.phone as phone',
+                'ttp.name as training_name', 'ttp.id as training_id')
+            ->whereNull('sc.id')
+            ->groupBy('ttc.user_id', 'ttc.trainning_id');
+
+
+//        $listStudentsDone = DB::table('course_completion')
+//            ->join('tms_user_detail', 'course_completion.userid', '=', 'tms_user_detail.user_id')
+//            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+//            ->leftJoin('tms_traninning_programs', 'course_completion.training_id', '=', 'tms_traninning_programs.id')
+//            ->leftJoin('student_certificate', function($join)
+//            {
+//                $join->on('course_completion.userid', '=', 'student_certificate.userid');
+//                $join->on('course_completion.training_id', '=', 'student_certificate.trainning_id');
+//            })
+//            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'tms_traninning_programs.name as training_name')
+//            ->whereNull('student_certificate.id')
+//            ->whereNotNull('course_completion.training_id')
+//            ->groupBy('course_completion.userid', 'course_completion.training_id');
 //            ->groupBy('student_certificate.userid', 'student_certificate.trainning_id');
 //        dd($listStudentsDone->toSql());
         //search
         if (strlen($keyword) != 0) {
             $listStudentsDone->where(function ($query) use ($keyword) {
-                $query->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.email', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.cmtnd', 'like', "%{$keyword}%")
-                    ->orWhere('tms_user_detail.phone', 'like', "%{$keyword}%")
-                    ->orWhere('student_certificate.code', 'like', "%{$keyword}%")
-                    ->orWhere('mdl_user.username', 'like', "%{$keyword}%");
+                $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
+                    ->orWhere('tud.email', 'like', "%{$keyword}%")
+                    ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
+                    ->orWhere('tud.phone', 'like', "%{$keyword}%")
+                    ->orWhere('mu.username', 'like', "%{$keyword}%");
             });
         }
 
-        if($training_id > 0){
-            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
+        if ($training_id > 0) {
+            $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
         }
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
@@ -4328,41 +4345,30 @@ class BussinessRepository implements IBussinessInterface
     {
         try {
             $user_selected = $request->input('user_selected');
-            \DB::beginTransaction();
+            DB::beginTransaction();
 
             $arr_data = [];
             $data_item = [];
 
-            foreach ($user_selected as $user_id) {
-                $student = StudentCertificate::where('userid', $user_id)->first();
-                //nếu học viên đã có mã thì không làm gì cả
-                if (!$student) {
-                    //check role: if role managemarket => dont generate code
-                    $checkRole = tvHasRole($user_id, 'managemarket');
-                    if (!$checkRole) {
-                        //update status to 1
-                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
-                        //                        StudentCertificate::create([
-                        //                            'userid' => $user_id,
-                        //                            'code' => $certificatecode,
-                        //                            'status' => 1,
-                        //                            'timecertificate' => time()
-                        //                        ]);
+            foreach ($user_selected as $user) {
+                //update status to 1
+                $certificatecode = $user['user_id'] . $this->randomNumber(7 - strlen($user['user_id']));
 
-                        $data_item['userid'] = $user_id;
-                        $data_item['code'] = $certificatecode;
-                        $data_item['status'] = 1;
-                        $data_item['timecertificate'] = time();
+                $data_item['userid'] = $user['user_id'];
+                $data_item['trainning_id'] = $user['training_id'];
+                $data_item['code'] = $certificatecode;
+                $data_item['status'] = 1;
+                $data_item['timecertificate'] = time();
 
-                        array_push($arr_data, $data_item);
-                    }
-                }
-                usleep(100); //sleep tranh tinh trang query db lien tiep
+                array_push($arr_data, $data_item);
+
+
+                usleep(10); //sleep tranh tinh trang query db lien tiep
             }
 
             StudentCertificate::insert($arr_data);
 
-            \DB::commit();
+            DB::commit();
             return 'success';
         } catch (\Exception  $e) {
             return 'error';
@@ -4376,70 +4382,28 @@ class BussinessRepository implements IBussinessInterface
         $response = new ResponseModel();
         try {
             $user_id = $request->input('user_id');
+            $trainning_id = $request->input('trainning_id');
 
-            $validates = validate_fails($request, [
-                'user_id' => 'number',
+
+            $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
+
+            StudentCertificate::create([
+                'userid' => $user_id,
+                'code' => $certificatecode,
+                'trainning_id' => $trainning_id,
+                'status' => 1,
+                'timecertificate' => time()
             ]);
-            if (!empty($validates)) {
-                //var_dump($validates);
-            } else {
-                $student = StudentCertificate::where('userid', $user_id)->first();
-                //check role: if role managemarket => dont generate code
-                $checkRole = tvHasRole($user_id, 'managemarket');
-                if (!$checkRole) {
-                    $response_text = "";
-                    \DB::beginTransaction();
-                    //set value for default: 3 is not exists in table student_certificate
-                    $check = 3;
-                    if ($student) {
-                        //dont has certificate code
-                        if ($student->code == '') {
-                            $student->code = $user_id . $this->randomNumber(7 - strlen($user_id));
-                            $student->save();
-                            $check = 0;
-                        } else if ($student->code != '' && $student->status == 0) {
-                            //create certificate image
-                            $student->status = 1;
-                            $student->save();
-                            $check = 3;
-                        } else if ($student->code != '' && $student->status == 1)
-                            $check = 1;
-                    } else {
-                        //create certificate code
-                        $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
-                        StudentCertificate::create([
-                            'userid' => $user_id,
-                            'code' => $certificatecode,
-                            'status' => 0,
-                            'timecertificate' => time()
-                        ]);
-                        $get_user = $listCourses = DB::table('tms_user_detail')
-                            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-                            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
-                            ->where('mdl_user.id', '=', $user_id)->first();
-                        $this->sendMail($get_user, $certificatecode);
-                        $check = 0;
-                    }
-                    \DB::commit();
+            $get_user = $listCourses = DB::table('tms_user_detail')
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+                ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
+                ->where('mdl_user.id', '=', $user_id)->first();
+            $this->sendMail($get_user, $certificatecode);
 
-                    if ($check == 0) {
-                        $response_text = __('cap_ma_thanh_cong');
-                    } else if ($check == 3) {
-                        //                    $msg = $this->autoGenCertificate($user_id);
-                        //                    $response->msg = $msg;
-                        $response_text = __('yeu_cau_cap_chung_chi_thanh_cong');
-                    } else if ($check == 1) {
-                        $response_text = __('dang_doi_cap_chung_chi');
-                    }
-                    $response->status = true;
-                    $response->message = $response_text;
-                } else {
-                    $response->status = false;
-                    $response->message = __('chuyen_vien_kinh_doanh_khong_duoc_cap_chung_chi');
-                }
-            }
+            $response->status = true;
+            $response->message = __('cap_ma_thanh_cong');
+
         } catch (\Exception $e) {
-            \DB::rollBack();
             $response->status = false;
             $response->message = $e->getMessage();
         }
@@ -4605,8 +4569,7 @@ class BussinessRepository implements IBussinessInterface
                         $name_avatar
                     );
                     $path_avatar = '/storage/upload/certificate/' . $name_avatar;
-                }
-                else {
+                } else {
                     $path_avatar = '/storage/upload/certificate/default_certificate.png';
                 }
 
@@ -4620,7 +4583,7 @@ class BussinessRepository implements IBussinessInterface
                     //Add unique field combo to match here
                     //For example, perhaps you only want one entry per user:
                     'organization_id' => $organization_id
-                ],[
+                ], [
                     'path' => $path_avatar,
                     'name' => $name,
                     'description' => $description,
@@ -4711,22 +4674,20 @@ class BussinessRepository implements IBussinessInterface
 //            $cer = ImageCertificate::where('id', $id)->first();
             //get organization
             $cer = ImageCertificate::where('organization_id', $organization_id)->first();
-            if(!empty($cer) && $cer->id == $id){
+            if (!empty($cer) && $cer->id == $id) {
                 $cer->name = $name;
                 $cer->description = $description;
                 $cer->is_active = $is_active;
                 $cer->position = $position;
                 $cer->organization_id = $organization_id;
-            }
-            else if(!empty($cer) && $cer->id !== $id){
+            } else if (!empty($cer) && $cer->id !== $id) {
                 $response->status = false;
                 $response->message = __('to_chuc_nay_da_ton_tai_mau_chung_chi');
                 return response()->json($response);
-            }
-            else{
+            } else {
                 $cer = ImageCertificate::updateOrCreate([
                     'id' => $id
-                ],[
+                ], [
                     'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
