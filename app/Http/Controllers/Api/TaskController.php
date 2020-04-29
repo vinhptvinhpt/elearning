@@ -189,6 +189,7 @@ class TaskController extends Controller
                     $data_item['finalgrade'] = $course->finalgrade;
                     $data_item['timecompleted'] = strtotime(Carbon::now());
                     $data_item['timeenrolled'] = strtotime(Carbon::now());
+                    $data_item['training_id'] = $data->trainning_id;
 
                     array_push($arrData, $data_item);
                     $num++;
@@ -207,6 +208,11 @@ class TaskController extends Controller
 
             usleep(100);
         }
+    }
+
+    //danh sach hoc vien da hoan thanh KNL
+    public function userCompleteTrainning(){
+
     }
     #endregion
 
