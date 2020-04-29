@@ -222,7 +222,7 @@
 
                         <router-link v-else :title="trans.get('keys.xem_chung_chi')"
                                      class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                     :to="{ name: 'ImageCertificate', query: { code: user.code }}">
+                                     :to="{ name: 'ImageCertificate', query: { code: user.code, badge: user.badge }}">
                           <span class="btn-icon-wrap"><i class="fal fa-arrow-alt-right"></i></span>
                         </router-link>
                       </td>

@@ -315,4 +315,10 @@ class TmsOrganizationRepository implements ICommonInterface
     {
         // TODO: Implement detail() method.
     }
+
+    public function GetOrganizations(){
+        $data = TmsOrganization::whereIn('level', [1, 2])
+            ->get();
+        return response()->json($data);
+    }
 }

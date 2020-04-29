@@ -303,5 +303,6 @@
     "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng",
     "ten": "Tên",
     "to_chuc": "Tổ chức",
-    "qua_so_luong_submit": "Số người dùng vượt quá hạn mức quy định"
+    "qua_so_luong_submit": "Số người dùng vượt quá hạn mức quy định",
+    "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ"
 }
