@@ -36,12 +36,11 @@ Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrain
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
-//Import user by excel file
-Route::get('/cron/background/importEmployee', 'Api\BackgroundController@importEmployee');
-Route::get('/cron/background/import', 'Api\BackgroundController@import');
+//Import user by excel file on background
+Route::get('/background/importEmployee', 'Api\BackgroundController@importEmployee');
 
 //Clean users, comment lại sau khi dùng xong
-//Route::get('/cron/background/removeUsers', 'Api\BackgroundController@removeUsers');
+Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute

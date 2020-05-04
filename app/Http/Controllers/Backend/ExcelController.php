@@ -539,4 +539,8 @@ class ExcelController extends Controller
     public function apiDownloadExport($file_name) {
         return Storage::download($file_name);
     }
+
+    public function download($file_name) {
+        return Storage::download($file_name);
+    }
 }
