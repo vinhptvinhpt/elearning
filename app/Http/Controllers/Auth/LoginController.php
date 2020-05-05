@@ -139,6 +139,7 @@ class LoginController extends Controller
 
             $param = [
                 'username' => 'code',
+                //'username' => 'email',
                 //'password'      => 'password',
                 'remember' => 'number',
                 'status' => 'number',
@@ -182,6 +183,7 @@ class LoginController extends Controller
 
             $response['username'] = $checkUser->username;
             $response['avatar'] = Auth::user()->detail['avatar'];
+            $response['fullname'] = Auth::user()->detail['fullname'];
             $response['jwt'] = $token['token'];
             $response['status'] = 'SUCCESS';
             // [VinhPT]
@@ -201,7 +203,6 @@ class LoginController extends Controller
             $data_lms = createJWT($data_lms, 'data');
 
             $response['data'] = $data_lms;
-
 
             return response()->json($response);
 

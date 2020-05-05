@@ -244,7 +244,7 @@
                                 <a class="nav-link has-submenu" id="khoa_dao_tao"
                                    @click="toggleMenu('quan_ly_dao_tao', 'khoa_dao_tao','recover_drp12')"
                                    href="javascript:void(0);" data-toggle="collapse">
-                                    {{ trans.get('keys.khoa_dao_tao') }}
+                                    {{ trans.get('keys.quan_ly_khoa_dao_tao') }}
                                 </a>
                                 <ul id="recover_drp12"
                                     class="nav flex-column collapse collapse-level-2">

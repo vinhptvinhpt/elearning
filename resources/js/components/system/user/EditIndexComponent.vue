@@ -102,10 +102,26 @@
                 </li>
                 <li>
                   <div class="row">
-                    <div class="col-sm-6">{{trans.get('keys.dia_chi_email')}}</div>
-                    <div class="col-sm-6 pl-30 pl-sm-15">{{ users.email }}</div>
+                    <div class="col-sm-6">{{trans.get('keys.van_phong')}}</div>
+                    <div class="col-sm-6 pl-30 pl-sm-15">{{ users.city ? users.city :
+                      trans.get('keys.chua_cap_nhat') }}
+                    </div>
                   </div>
                 </li>
+                <li>
+                  <div class="row">
+                    <div class="col-sm-6">{{trans.get('keys.quoc_gia')}}</div>
+                    <div class="col-sm-6 pl-30 pl-sm-15">{{ users.country ? countries[users.country] :
+                      trans.get('keys.chua_cap_nhat') }}
+                    </div>
+                  </div>
+                </li>
+<!--                <li>-->
+<!--                  <div class="row">-->
+<!--                    <div class="col-sm-6">{{trans.get('keys.dia_chi_email')}}</div>-->
+<!--                    <div class="col-sm-6 pl-30 pl-sm-15">{{ users.email }}</div>-->
+<!--                  </div>-->
+<!--                </li>-->
                 <li>
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.so_dien_thoai_lien_lac')}}</div>
@@ -120,22 +136,22 @@
                     <div class="col-sm-6 pl-30 pl-sm-15">{{ users.cmtnd }}</div>
                   </div>
                 </li>
-                <li v-if="users.student_role > 0">
-                  <div class="row">
-                    <div class="col-sm-6">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.confirm) ? trans.get('keys.da_cap') :
-                      trans.get('keys.chua_cap')}}
-                    </div>
-                  </div>
-                </li>
-                <li v-if="users.student_role > 0">
-                  <div class="row">
-                    <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.confirm_address && users.city) ? users.city.name :
-                      trans.get('keys.chua_cap_nhat')}}
-                    </div>
-                  </div>
-                </li>
+<!--                <li v-if="users.student_role > 0">-->
+<!--                  <div class="row">-->
+<!--                    <div class="col-sm-6">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</div>-->
+<!--                    <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.confirm) ? trans.get('keys.da_cap') :-->
+<!--                      trans.get('keys.chua_cap')}}-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </li>-->
+<!--                <li v-if="users.student_role > 0">-->
+<!--                  <div class="row">-->
+<!--                    <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>-->
+<!--                    <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.confirm_address && users.city) ? users.city.name :-->
+<!--                      trans.get('keys.chua_cap_nhat')}}-->
+<!--                    </div>-->
+<!--                  </div>-->
+<!--                </li>-->
                 <li v-if="role_type != 'market'">
                   <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.tinh_trang_cong_tac')}}</div>
@@ -298,6 +314,8 @@
 <script>
   import UserSchedule from './ScheduleComponent'
   import UserCourseGrade from './UserCourseGradeComponent'
+  import Const from '../../../services/const'
+
 
   export default {
     components: {UserSchedule, UserCourseGrade},
@@ -312,7 +330,8 @@
         word_place_search: '',
         training_name: '',
         role_type: '',
-        has_student: ''
+        has_student: '',
+        countries: {},
       }
     },
     methods: {
@@ -434,12 +453,16 @@
             });
         });
         return false;
+      },
+      fetchCountries() {
+        this.countries = Const.data().countries;
       }
     },
     mounted() {
       this.userData();
       this.listWordPlace();
       this.fetch();
+      this.fetchCountries();
     }
   }
 </script>

@@ -78,6 +78,8 @@ class BackgroundController extends Controller
             'chief'
         );
 
+        $countries = TmsUserDetail::country;
+
         $from = $request->input('from');
 
         if (strlen($from) != 0) { //Import from cms
@@ -135,6 +137,18 @@ class BackgroundController extends Controller
                 }
 
                 $position_name = $user[6];
+                $city =  $user[7]; //office name
+                $country = $user[8]; //country name
+                if (strlen($country) == 0) {
+                    $content[] = 'Country is missing';
+                } else {
+                    $country_code = array_search($country, $countries,true);
+                    if ($country_code === false) {
+                        $content[] = 'Country name does not exist. Supported countries: Vietnam, Laos, Cambodia, Thailand, Myanmar';
+                    } else {
+                        $country = $country_code;
+                    }
+                }
 
 
                 if (strlen($position_name) == 0) {
@@ -162,7 +176,7 @@ class BackgroundController extends Controller
 
                 //Validate required fields
                 //email
-                $email = $user[26];
+                $email = $user[28];
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -189,18 +203,18 @@ class BackgroundController extends Controller
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[18];
+                $personal_id = $user[20];
                 if (strlen($personal_id) == 0) {
                     $content[] = 'Personal id is missing';
                 }
 
-                $address = $user[17];
-                $phone = self::preparePhoneNo($user[24]);
-                $phone2 = self::preparePhoneNo($user[25]);
+                $address = $user[19];
+                $phone = self::preparePhoneNo($user[26]);
+                $phone2 = self::preparePhoneNo($user[27]);
 
-                $skype = $user[27];
+                $skype = $user[29];
 
-                $gender = $user[12];
+                $gender = $user[14];
                 if (strtolower($gender) == 'nam') {
                     $gender = 1;
                 } elseif (strtolower($gender) == 'nữ') {
@@ -210,22 +224,22 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                if (strlen($user[8]) == 0 || strlen($user[9]) == 0 || strlen($user[10]) == 0) {
-                    $content[] = 'Personal id is missing';
+                if (strlen($user[10]) == 0 || strlen($user[11]) == 0 || strlen($user[12]) == 0) {
+                    $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[8], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[9], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[10];
+                    $dob_date = str_pad($user[10], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[11], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[12];
 
                     $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
                     $dob = strtotime($dob_string);
                 }
 
                 $start_time = "";
-                if (strlen($user[14]) == 0 || strlen($user[15]) == 0 || strlen($user[16]) == 0) {
-                    $start_date = str_pad($user[14], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[15], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[16];
+                if (strlen($user[16]) == 0 || strlen($user[17]) == 0 || strlen($user[18]) == 0) {
+                    $start_date = str_pad($user[16], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[17], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[18];
                     $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
                     $start_time = strtotime($start_time_string);
                 }
@@ -251,6 +265,8 @@ class BackgroundController extends Controller
                         $phone2,
                         $skype,
                         $address,
+                        $city,
+                        $country,
                         $gender,
                         $dob,
                         $start_time
@@ -340,6 +356,8 @@ class BackgroundController extends Controller
         $phone2,
         $skype,
         $address,
+        $city,
+        $country,
         $gender,
         $dob,
         $working_start_at
@@ -361,6 +379,8 @@ class BackgroundController extends Controller
                 $check->phone1 = $phone1;
                 $check->phone2 = $phone2;
                 $check->skype = $skype;
+                $check->city = $city;
+                $check->country = $country;
                 $check->save();
 
                 //Xóa detail thừa
@@ -385,10 +405,12 @@ class BackgroundController extends Controller
                     $user_detail->email = $email;
                     $user_detail->phone = $phone1;
                     $user_detail->address = $address;
+                    $user_detail->city = $city;
+                    $user_detail->country = $country;
                     $user_detail->sex = $gender;
                     $user_detail->confirm = 0;
                     $user_detail->dob = $dob;
-                    $user_detail->working_status = 1;
+                    $user_detail->working_status = 0;
                     $user_detail->start_time = $working_start_at;
                     $user_detail->save();
 
@@ -422,6 +444,8 @@ class BackgroundController extends Controller
                 $phone2,
                 $skype,
                 $address,
+                $city,
+                $country,
                 $gender,
                 $dob,
                 $working_start_at
@@ -469,6 +493,8 @@ class BackgroundController extends Controller
         $phone2,
         $skype,
         $address,
+        $city,
+        $country,
         $gender,
         $dob,
         $working_start_at
@@ -491,6 +517,8 @@ class BackgroundController extends Controller
             $check->middlename = $middle_name;
             $check->lastname = $last_name;
             $check->email = $email;
+            $check->city = $city;
+            $check->country = $country;
             if (strlen($phone1) != 0) {
                 $check->phone1 = $phone1;
             }
@@ -518,10 +546,12 @@ class BackgroundController extends Controller
             $user_detail->email = $email;
             $user_detail->phone = $phone1;
             $user_detail->address = $address;
+            $user_detail->city = $city;
+            $user_detail->country = $country;
             $user_detail->sex = $gender;
             $user_detail->confirm = 0;
             $user_detail->dob = $dob;
-            $user_detail->working_status = 1;
+            $user_detail->working_status = 0;
             $user_detail->start_time = $working_start_at;
             $user_detail->user_id = $check->id;
             $user_detail->save();

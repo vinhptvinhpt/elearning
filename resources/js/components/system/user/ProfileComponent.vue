@@ -53,6 +53,14 @@
                     <div class="col-sm-6 pl-40 pl-sm-15">{{ users.address ? users.address : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                   <div class="row">
+                    <div class="col-sm-6">{{trans.get('keys.van_phong')}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.city ? users.city : trans.get('keys.chua_cap_nhat') }}</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-6">{{trans.get('keys.quoc_gia')}}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ users.country ? countries[users.country] : trans.get('keys.chua_cap_nhat') }}</div>
+                  </div>
+                  <div class="row">
                     <div class="col-sm-6">{{trans.get('keys.dia_chi_email')}}</div>
                     <div class="col-sm-6 pl-40 pl-sm-15">{{ users.email }}</div>
                   </div>
@@ -78,7 +86,7 @@
                   </div>
                   <div class="row" v-if="users.student_role > 0">
                     <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.city.name : trans.get('keys.chua_cap_nhat') }}</div>
+                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.confirm_address_detail.name : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
                 </li>
               </ul>
@@ -108,6 +116,7 @@
 <script>
     import UserSchedule from './ScheduleComponent'
     import UserCourseGrade from './UserCourseGradeComponent'
+    import Const from '../../../services/const'
 
     export default {
         props: ['type'],
@@ -117,6 +126,7 @@
                 users: {},
                 training_name:'',
                 user_id: 0,
+                countries: {},
             }
         },
         methods:{
@@ -165,10 +175,14 @@
                         });
                 });
                 return false;
-            }
+            },
+            fetchCountries() {
+              this.countries = Const.data().countries;
+            },
         },
         mounted() {
           this.userData();
+          this.fetchCountries();
         }
     }
 </script>

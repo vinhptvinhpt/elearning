@@ -19,7 +19,7 @@
                             </div>
                         </div>
                         <div class="media-body">
-                            <span>{{ username }}</span>
+                            <span>{{ fullname }}</span>
                         </div>
 
                     </div>
@@ -49,9 +49,7 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text"><span
-                                                class="text-dark text-capitalize">{{ username }}</span><br>đã
-                                            thêm bạn vào khóa học <strong>ABC001</strong></div>
+                                        <div class="notifications-text"><span class="text-dark text-capitalize">{{ username }}</span><br>đã thêm bạn vào khóa học <strong>ABC001</strong></div>
                                         <div class="notifications-time">12 phút</div>
                                     </div>
                                 </div>
@@ -69,8 +67,7 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text">Bạn có 1 tin nhắn từ <span
-                                                class="text-dark text-capitalize">{{ username }}</span></div>
+                                        <div class="notifications-text">Bạn có 1 tin nhắn từ <span class="text-dark text-capitalize">{{ username }}</span></div>
                                         <div class="notifications-time">1 giờ</div>
                                     </div>
                                 </div>
@@ -173,6 +170,7 @@
             return {
                 url_redirect: '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=',
                 username: 'guest',
+                fullname: 'Guest',
                 avatar: '/images/user.png',
                 classObject: 'language_icon language_en',
                 domainWeb: ''
@@ -190,6 +188,7 @@
                 if (obj && obj !== 'undefined') {
                     var user_info = JSON.parse(obj);
                     this.username = user_info.username;
+                    this.fullname = user_info.fullname;
                     this.avatar = user_info.avatar;
                     this.classObject = 'language_icon language_' + lang;
                 }

@@ -367,7 +367,8 @@
 
                         var userinfo = {
                             username: data.username,
-                            avatar: data.avatar
+                            avatar: data.avatar,
+                            fullname: data.fullname
                         };
                         localStorage.setItem(logoutCookie, '');
                         localStorage.setItem('auth.token', data.jwt);
