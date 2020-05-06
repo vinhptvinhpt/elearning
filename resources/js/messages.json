@@ -253,7 +253,7 @@
         "khoa_dao_tao": "Course",
         "quan_ly_khoa_dao_tao": "Manage Courses",
         "nguoi_dung": "Users",
-        "co_cau_to_chuc": "Organizational Structure",
+        "co_cau_to_chuc": "Manage Organization",
         "chinh_sua_thu_vien_khoa_hoc": "Courses Library Editing",
         "chinh_sua_thong_tin_khoa_dao_tao": "Course Editing",
         "khoa_hoc_lam_bai_kiem_tra": "Testing Course",
@@ -321,7 +321,7 @@
         "cau_hoi": "Question",
         "gui": "Send",
         "quan_ly_diem_ban": "Manage saleroom",
-        "quan_ly_nhan_vien": "Manage employee",
+        "quan_ly_nhan_vien": "Manage Employee",
         "activity_log": "Activity Log",
         "chu_y_click_moi_hang_de_xem_danh_sach_nhan_vien": "Note: Click row to show employee list",
         "bao_cao_so_bo": "Report basic",
@@ -902,7 +902,14 @@
         "them_user_cctc_vao_knl": "Add all users who are in the organization to the current competence framework",
         "chua_chon_cctc": "You must choose organization",
         "luu_y_cctc_vao_knl": "NOTE: The number of users in the organization you choose cannot exceed 100 people",
-        "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template"
+        "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template",
+		"huy_hieu_mau": "Badge Template",
+		"mau_chu": "Text color",
+		"toa_do_chu_ky": "Sign coordinates",
+		"mau_huy_hieu": "Badge Template",
+		"ten_huy_hieu": "Badge name",
+		"chinh_sua_thong_tin_huy_hieu": "Edit the badge information",
+		"danh_sach_huy_hieu": "Badge Template List"
     },
     "vi.keys": {
         "language": "",
@@ -1807,6 +1814,13 @@
         "them_user_cctc_vao_knl": "Thêm tất cả người dùng nằm trong cơ cấu tổ chức vào khung năng lực hiện tại",
         "chua_chon_cctc": "Chưa chọn cơ cấu tổ chức",
         "luu_y_cctc_vao_knl": "Lưu ý: Số người dùng trong tổ chức bạn chọn không được vượt quá 100 người",
-        "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ"
+        "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ",
+		"huy_hieu_mau": "Mẫu huy hiệu",
+    	"mau_chu": "Màu chữ",
+    	"toa_do_chu_ky": "Toạ độ chữ ký",
+    	"mau_huy_hieu": "Mẫu huy hiệu",
+    	"ten_huy_hieu": "Tên huy hiệu",
+    	"chinh_sua_thong_tin_huy_hieu": "Chỉnh sửa thông tin huy hiệu",
+    	"danh_sach_huy_hieu": "Danh sách huy hiệu mẫu"
     }
 }

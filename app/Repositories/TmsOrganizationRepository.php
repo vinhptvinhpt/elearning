@@ -12,6 +12,7 @@ use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleOrganization;
 use Exception;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -34,6 +35,18 @@ class TmsOrganizationRepository implements ICommonInterface
             'level' => 'number'
         ];
 
+        $current_user_id = \Auth::user()->id;
+        $current_user_role = Role::ADMIN;
+        if ($request->session()->has($current_user_id . '_roles_and_slugs')) {
+            $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
+            if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+                $current_user_role = Role::ROLE_MANAGER;
+            }
+            if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+                $current_user_role = Role::ROLE_LEADER;
+            }
+        }
+
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
@@ -44,6 +57,13 @@ class TmsOrganizationRepository implements ICommonInterface
             "*",
             DB::raw(' (select MAX(level) from tms_organization) as max_level')
         );
+
+        if ($current_user_role == Role::ROLE_MANAGER || $current_user_role == Role::ROLE_LEADER) {
+            $list->whereIn('id', function ($q) use ($current_user_id) {
+                /* @var $q Builder */
+                $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
+            });
+        }
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
