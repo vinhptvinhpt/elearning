@@ -73,7 +73,11 @@
                                                                     autocomplete="false">
                                                                 <option value="0">{{trans.get('keys.chon_vai_tro')}}
                                                                 </option>
-                                                              <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
+                                                                <option v-for="role in roles" :value="role.id">{{
+                                                                    trans.has('keys.' + role.name) ? trans.get('keys.' +
+                                                                    role.name) : role.name.charAt(0).toUpperCase() +
+                                                                    role.name.slice(1) }}
+                                                                </option>
                                                             </select>
 
                                                         </div>
@@ -130,18 +134,18 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-sm-4 form-group">
-                                                          <label>{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
-                                                          <div class="custom-control custom-switch">
-                                                            <input type="checkbox" class="custom-control-input"
-                                                                   id="auto_badge"
-                                                                   :checked="trainning.auto_badge==1?true:false"
-                                                                   v-model="trainning.auto_badge">
-                                                            <label v-if="trainning.auto_badge == 1"
-                                                                   class="custom-control-label"
-                                                                   for="auto_badge">Yes</label>
-                                                            <label v-else class="custom-control-label"
-                                                                   for="auto_badge">No</label>
-                                                          </div>
+                                                            <label>{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
+                                                            <div class="custom-control custom-switch">
+                                                                <input type="checkbox" class="custom-control-input"
+                                                                       id="auto_badge"
+                                                                       :checked="trainning.auto_badge==1?true:false"
+                                                                       v-model="trainning.auto_badge">
+                                                                <label v-if="trainning.auto_badge == 1"
+                                                                       class="custom-control-label"
+                                                                       for="auto_badge">Yes</label>
+                                                                <label v-else class="custom-control-label"
+                                                                       for="auto_badge">No</label>
+                                                            </div>
                                                         </div>
                                                     </div>
 
@@ -232,9 +236,9 @@
                                                         <table id="datable_1" class="table_res">
                                                             <thead>
                                                             <tr>
-                                                                <th>{{trans.get('keys.stt')}}</th>
-                                                                <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
-                                                                <th style="width: 30%;">
+                                                                <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                                                <th style="width: 40%;">{{trans.get('keys.ma_khoa_hoc')}}</th>
+                                                                <th >
                                                                     {{trans.get('keys.ten_khoa_hoc')}}
                                                                 </th>
                                                                 <th class="text-center">
@@ -331,11 +335,12 @@
                                                         <table id="datable_2" class="table_res">
                                                             <thead>
                                                             <tr>
-                                                                <th>{{trans.get('keys.stt')}}</th>
-                                                                <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
-                                                                <th style="width: 30%;">
+                                                                <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                                                <th style="width: 40%;"> {{trans.get('keys.ma_khoa_hoc')}}</th>
+                                                                <th>
                                                                     {{trans.get('keys.ten_khoa_hoc')}}
                                                                 </th>
+                                                                <th style="width: 10%;">{{trans.get('keys.hanh_dong')}}</th>
                                                                 <th class="text-center"><input type="checkbox"
                                                                                                v-model="allSelectedRemove"
                                                                                                @click="selectAllRemoveEnrol()"
@@ -347,6 +352,13 @@
                                                                 <td>{{ (current_tn-1)*row_tn+(index+1) }}</td>
                                                                 <td>{{ user.shortname }}</td>
                                                                 <td>{{ user.fullname }}</td>
+                                                                <td>
+                                                                    <a :title="trans.get('keys.clone_noi_dung')"
+                                                                       class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                                                       :href="lms_url + user.id+'&importid='+user.sample_id"
+                                                                    ><span class="btn-icon-wrap"><i
+                                                                            class="fal fa-book-open"></i></span></a>
+                                                                </td>
                                                                 <td class="text-center">
                                                                     <input type="checkbox" :value="user.id"
                                                                            v-model="userRemoveEnrol"
@@ -447,7 +459,8 @@
                 ],
                 organization_parent_list: [],
 
-                language: this.trans.get('keys.language')
+                language: this.trans.get('keys.language'),
+                lms_url: '/lms/backup/import.php?id='
             }
         },
         methods: {
