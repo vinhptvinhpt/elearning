@@ -393,17 +393,15 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-    #region check for sidebar
+    #region check role for current user
 
-    public function checkRoleSidebar()
+    public function checkRole(Request $request)
     {
         $checkRole = new CheckRoleModel();
         $permissions = [];
+        $user_id = Auth::id();
 
         try {
-
-            $user_id = Auth::id();
-
             $sru = DB::table('model_has_roles as mhr')
                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
                 ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
@@ -471,6 +469,8 @@ class BussinessRepository implements IBussinessInterface
 
         $response['roles'] = $checkRole;
         $response['slugs'] = $permissions;
+
+        $request->session()->put( $user_id . '_roles_and_slugs', $response);
 
         return response()->json($response);
     }

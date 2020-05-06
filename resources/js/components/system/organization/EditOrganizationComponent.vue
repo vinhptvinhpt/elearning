@@ -99,7 +99,7 @@
                 <div class="row mt-3">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link v-if="selected_role === 'root' || selected_role === 'admin'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                      <router-link v-if="selected_role === 'root' || selected_role === 'admin' || selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
                       <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
@@ -107,7 +107,7 @@
                       </router-link>
 
 
-                      <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
+                      <button v-if="slug_can('tms-system-organize-edit')" type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
                     </div>
                   </div>
                 </div>
@@ -127,7 +127,8 @@
       source_page: Number,
       current_roles: Object,
       roles_ready: Boolean,
-      id: [ String, Number ]
+      id: [ String, Number ],
+      slugs: Object
     },
     //components: {vPagination},
     data() {
@@ -156,6 +157,9 @@
       }
     },
     methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
       selectParentItem(parent_id) {
         this.organization.parent_id = parent_id;
       },

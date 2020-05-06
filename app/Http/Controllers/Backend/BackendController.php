@@ -122,8 +122,8 @@ class BackendController extends Controller
         return $this->bussinessRepository->tableData($request);
     }
 
-    public function checkRoleSidebar()
+    public function checkRole(Request $request)
     {
-        return $this->bussinessRepository->checkRoleSidebar();
+        return $this->bussinessRepository->checkRole($request);
     }
 }

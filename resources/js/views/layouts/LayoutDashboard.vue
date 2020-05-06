@@ -10,6 +10,7 @@
                 :key="$route.fullPath"
                 :current_roles="current_roles"
                 :roles_ready="roles_ready"
+                :slugs="slugs"
                 :selected_role="selected_role"></router-view>
             </div>
         </div>
@@ -50,8 +51,8 @@
               }
             });
           },
-          checkRoleSidebar() {
-            axios.get('/api/checkrolesidebar')
+          checkRole() {
+            axios.get('/api/check_role')
               .then(response => {
                 this.current_roles = response.data.roles;
                 this.slugs = response.data.slugs;
@@ -83,7 +84,7 @@
       mounted() {
         this.openMenu();
           // this.$utils.setLayout('default')
-        this.checkRoleSidebar();
+        this.checkRole();
       }
     }
 </script>

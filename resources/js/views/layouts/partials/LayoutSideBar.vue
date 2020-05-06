@@ -97,13 +97,13 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="slug_can('tms-system-organize-view')">
                                 <router-link to="/tms/organization" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.co_cau_to_chuc') }}</span>
                                 </router-link>
                             </li>
 
-                            <li class="nav-item">
+                            <li class="nav-item" v-if="slug_can('tms-system-employee-view')">
                                 <router-link to="/tms/organization-employee" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
                                 </router-link>
