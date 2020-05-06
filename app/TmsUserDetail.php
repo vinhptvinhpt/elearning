@@ -6,10 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class TmsUserDetail extends Model
 {
+    const country = array(
+        'vi' => 'Vietnam',
+        'la' => 'Laos',
+        'kh' => 'Cambodia',
+        'mm' => 'Myanmar',
+        'th' => 'Thailand'
+    );
+
     protected $table = 'tms_user_detail';
     protected $fillable = [
         'user_id', 'fullname', 'cmtnd', 'dob', 'avatar', 'email',
-        'phone', 'address', 'city', 'description', 'last_login_at',
+        'phone', 'address', 'city', 'country', 'description', 'last_login_at',
         'last_login_ip', 'deleted','sex','code','time_start','working_status',
         'department','department_type','confirm','confirm_address', 'confirm_time'
     ];
@@ -30,7 +38,7 @@ class TmsUserDetail extends Model
     {
         return $this->hasOne('App\StudentCertificate','userid', 'user_id');
     }
-    public function city()
+    public function confirm_address_detail()
     {
         return $this->hasOne('App\TmsCity','id', 'confirm_address');
     }

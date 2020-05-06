@@ -16,6 +16,7 @@ use App\MdlUser;
 use App\Role;
 use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -37,9 +38,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $enddate = $request->input('enddate');
         $status_course = $request->input('status_course');
         $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
-        //Tích hợp phân quyền dữ liệu
-        $role_id = $request->input('role_id'); //quyền hệ thống
-        $is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
+        //Tích hợp phân quyền dữ liệu => Move to apiGetListCoursePermissionData
+        //$role_id = $request->input('role_id'); //quyền hệ thống
+        //$is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
 
         $param = [
             'keyword' => 'text',
@@ -53,53 +54,73 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
 
         $ready =  false;
-        if (strlen($role_id) != 0) {
-            $listCourses = DB::table('mdl_course as c')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
-                ->select(
-                    'c.id',
-                    'c.fullname',
-                    'c.shortname',
-                    'c.startdate',
-                    'c.enddate',
-                    'c.visible',
-                    'mccc.gradepass as pass_score'
-                );
-            if (strlen($is_excluded) != 0) {
-                if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
-                    $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
-                        $query->select('course_id')
-                            ->from('tms_role_course')
-                            ->where('role_id', $role_id);
-                    });
-                } else { //List khóa học đã phân quyền cho role này
-                    $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
-                        $query->select('course_id')
-                            ->from('tms_role_course')
-                            ->where('role_id', $role_id);
-                    });
-                }
-            }
-            $ready =  true;
-        } else {
+//        if (strlen($role_id) != 0) {
+//            $listCourses = DB::table('mdl_course as c')
+//                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+//                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
+//                ->select(
+//                    'c.id',
+//                    'c.fullname',
+//                    'c.shortname',
+//                    'c.startdate',
+//                    'c.enddate',
+//                    'c.visible',
+//                    'mccc.gradepass as pass_score'
+//                );
+//            if (strlen($is_excluded) != 0) {
+//                if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
+//                    $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($role_id) {
+//                        $query->select('course_id')
+//                            ->from('tms_role_course')
+//                            ->where('role_id', $role_id);
+//                    });
+//                } else { //List khóa học đã phân quyền cho role này
+//                    $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
+//                        $query->select('course_id')
+//                            ->from('tms_role_course')
+//                            ->where('role_id', $role_id);
+//                    });
+//                }
+//            }
+//            $ready =  true;
+//        }
+//        else {
+
             //Kiểm tra xem có phải role thuộc organization hay không
             $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            if ($checkRole === TRUE) {
-                $listCourses = DB::table('tms_organization_employee')
-                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id)
-                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                    ->join('mdl_course as c', 'tms_role_course.course_id', '=', 'c.id')
-                    ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'c.id')
-                    ->select(
+            if ($checkRole === true) {
+                $listCourses = DB::table('mdl_course as c')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->where(function($query){
+                        /* @var $query Builder */
+                        $query
+                            ->whereIn('c.id', function ($q1) { //enrol
+                                /* @var $q1 Builder */
+                                $q1->select('mdl_course.id')
+                                    ->from('mdl_user_enrolments as mue')
+                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                    ->where('mue.userid', '=', \Auth::user()->id);
+                            })
+                            ->orWhereIn('c.id', function ($q2) { //organization
+                                /* @var $q2 Builder */
+                                $q2->select('mdl_course.id')
+                                    ->from('tms_organization_employee')
+                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                            });
+                    })->select(
                         'c.id',
                         'c.fullname',
                         'c.shortname',
                         'c.startdate',
                         'c.enddate',
                         'c.visible',
-                        'mdl_course_completion_criteria.gradepass as pass_score'
+                        'c.category',
+                        'c.deleted',
+                        'mccc.gradepass as pass_score'
                     );
                 $ready = true;
             } else {
@@ -118,13 +139,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                             'c.startdate',
                             'c.enddate',
                             'c.visible',
+                            'c.category',
+                            'c.deleted',
                             'mccc.gradepass as pass_score'
                         );
                     $ready = true;
                 }
             }
-        }
-
+        //}
         if (!$ready) {
             //Không thuộc các trường hợp trên
             $listCourses = DB::table('mdl_course as c')
@@ -137,6 +159,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.startdate',
                     'c.enddate',
                     'c.visible',
+                    'c.category',
+                    'c.deleted',
                     'mccc.gradepass as pass_score'
                 );
         }
@@ -144,7 +168,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         //là khóa học mẫu
         if ($sample == 1) {
             $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
-        } else {
+        } else { // là khóa online
             $listCourses = $listCourses->where('c.category', '!=', 2);
             $listCourses = $listCourses->where('c.category', '!=', 5);
         }
@@ -193,7 +217,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
 
 
-        $listCourses = $listCourses->orderBy('id', 'desc');
+        $listCourses = $listCourses->orderBy('c.id', 'desc');
 
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);

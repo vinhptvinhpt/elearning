@@ -75,7 +75,7 @@
                   </tr>
                   <tr v-if="users.student_role > 0">
                     <th scope="row">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</th>
-                    <td>{{ (users.confirm_address) ? users.city ? users.city.name : trans.get('keys.da_cap_nhat') : trans.get('keys.chua_cap_nhat') }}</td>
+                    <td>{{ (users.confirm_address) ? users.confirm_address_detail ? users.confirm_address_detail.name : trans.get('keys.da_cap_nhat') : trans.get('keys.chua_cap_nhat') }}</td>
                   </tr>
                   <tr>
                     <th scope="row">{{trans.get('keys.tinh_trang_cong_tac')}}</th>

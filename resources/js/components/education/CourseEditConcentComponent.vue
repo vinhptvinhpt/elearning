@@ -145,7 +145,7 @@
                                           <div class="col-12 form-group">
                                             <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
                                             <input v-model="string_ip"
-                                                   :placeholder="trans.get('keys.nhap_dia_chi')" type="text"
+                                                   :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
                                                    class="form-control mb-4">
                                           </div>
 

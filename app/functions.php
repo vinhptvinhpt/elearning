@@ -2521,7 +2521,8 @@ function validate_fails($request, $param)
                 case 'code':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            "regex:/^[a-zA-Z0-9\-\_\.\/]*$/i",
+                            //"regex:/^[a-zA-Z0-9\-\_\.\/]*$/i", //username without @
+                            "regex:/^[a-zA-Z0-9\-\_\.\@\/]*$/i", //use email as username
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key))
