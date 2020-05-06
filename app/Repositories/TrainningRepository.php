@@ -413,7 +413,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->join('mdl_course as mc', 'mc.id', '=', 'ttc.course_id')
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
-            ->select('mc.id', 'mc.fullname', 'mc.shortname');
+            ->select('mc.id', 'mc.fullname', 'mc.shortname','ttc.sample_id');
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
