@@ -108,7 +108,7 @@
 
               <!-- Gán người dùng vào tổ chức batch -->
               <assign-employee
-                v-if="selected_role == 'root' || selected_role === 'admin'"
+                v-if="selected_role == 'root' || selected_role === 'admin' || selected_role === 'manager'"
                 :key="assignBatch"
                 :organization_id="query_organization_id"></assign-employee>
 

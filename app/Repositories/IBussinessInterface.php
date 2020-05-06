@@ -16,7 +16,7 @@ interface IBussinessInterface
 
     public function tableData(Request $request);
 
-    public function checkRoleSidebar();
+    public function checkRole(Request $request);
 
     //------------BranchController-----------------//
     public function apiListUserByBranch(Request $request);

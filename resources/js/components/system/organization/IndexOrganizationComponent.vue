@@ -143,7 +143,7 @@
                         <td>{{ item.name }}</td>
                         <td v-if="item.parent">{{ item.parent.code }} - {{ item.parent.name }}</td>
                         <td v-else></td>
-                        <td class="text-center">
+                        <td class="text-center" v-if="slug_can('tms-system-employee-view')">
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
                                        :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
                             {{ item.employees.length }}
@@ -151,19 +151,19 @@
                         </td>
                         <td class="text-center">
 
-                          <router-link :title="trans.get('keys.xem_nhan_vien')"
+                          <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
                                        :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
                             <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
                           </router-link>
 
-                          <router-link :title="trans.get('keys.sua_to_chuc')"
+                          <router-link v-if="slug_can('tms-system-organize-edit')" :title="trans.get('keys.sua_to_chuc')"
                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
                                        :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
                             <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                           </router-link>
 
-                          <a href="javascript(0)"
+                          <a v-if="slug_can('tms-system-organize-deleted')" href="javascript(0)"
                              @click.prevent="deletePost('/organization/delete/'+item.id)"
                              :title="trans.get('keys.xoa_to_chuc')"
                              class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
@@ -203,6 +203,7 @@
 
     export default {
         //components: {vPagination},
+        props: ['slugs'],
         data() {
             return {
                 organization: {
@@ -232,6 +233,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             selectParentItem(parent_id){
                 this.organization.parent_id = parent_id;
             },
