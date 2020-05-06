@@ -10,6 +10,7 @@ use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
+use Illuminate\Database\Query\Builder;
 use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
@@ -1064,7 +1065,11 @@ class BussinessRepository implements IBussinessInterface
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
         $status_course = $request->input('status_course');
-        //        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+//        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
+
+        if (strlen($category_id) == 0) {
+            $category_id = 5;
+        }
 
         $param = [
             'keyword' => 'text',
@@ -1078,27 +1083,46 @@ class BussinessRepository implements IBussinessInterface
 //        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
         //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
         $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-        if ($checkRole === TRUE) {
-            $listCourses = DB::table('tms_organization_employee')
-                ->where('tms_organization_employee.user_id', '=', \Auth::user()->id)
-                ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+        if ($checkRole === true) {
+            $listCourses = DB::table('mdl_course')
+                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
                 ->where('mdl_course.category', '=', $category_id)
-                ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                ->select(
+                ->where(function($query){
+                    /* @var $query Builder */
+                    $query
+                        ->whereIn('mdl_course.id', function ($q1) { //enrol
+                            /* @var $q1 Builder */
+                            $q1->select('mdl_course.id')
+                                ->from('mdl_user_enrolments as mue')
+                                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                ->where('mue.userid', '=', \Auth::user()->id);
+                        })
+                        ->orWhereIn('mdl_course.id', function ($q2) { //organization
+                            /* @var $q2 Builder */
+                            $q2->select('mdl_course.id')
+                                ->from('tms_organization_employee')
+                                ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                                ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                        });
+                })->select(
                     'mdl_course.id',
                     'mdl_course.fullname',
                     'mdl_course.shortname',
                     'mdl_course.startdate',
                     'mdl_course.enddate',
                     'mdl_course.visible',
-                    'mdl_course_completion_criteria.gradepass as pass_score'
+                    'mdl_course.category',
+                    'mdl_course.deleted',
+                    'mccc.gradepass as pass_score'
                 );
-        } else {
+        }
+        else {
             //Kiểm tra xem có phải role teacher hay không
             $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-            if ($checkRole == TRUE) {
+            if ($checkRole == true) {
                 $listCourses = DB::table('mdl_user_enrolments')
                     ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
                     ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
@@ -6375,6 +6399,11 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($roles);
     }
 
+    public function apiListCountry(Request $request)
+    {
+        return response()->json(TmsUserDetail::country);
+    }
+
     public function apiListUser(Request $request)
     {
         //$paged = $request->input('paged');
@@ -6486,9 +6515,10 @@ class BussinessRepository implements IBussinessInterface
             $phone = $request->input('phone');
             $cmtnd = $request->input('cmtnd');
             $address = $request->input('address');
+            $city = $request->input('city');
+            $country = $request->input('country');
             $inputRole = $request->input('inputRole');
             $type = $request->input('type');
-
             $sex = $request->input('sex');
             $code = ($request->input('code') && $request->input('code') != 'null') ? $request->input('code') : '';
             $start_time = $request->input('start_time');
@@ -6508,12 +6538,15 @@ class BussinessRepository implements IBussinessInterface
                 'fullname' => 'text',
                 'dob' => 'date',
                 //'email' => 'email',
-                'username' => 'code',
+                //'username' => 'code',
+                'username' => 'email',
                 /*'password' => 'token',
                 'passwordConf' => 'token',*/
                 'phone' => 'phone',
                 'cmtnd' => 'number',
                 'address' => 'text',
+                'city' => 'text',
+                'country' => 'text',
                 'sale_room_id' => 'number',
                 'sex' => 'number',
                 'code' => 'text',
@@ -6608,6 +6641,11 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->firstname = $convert_name['firstname'];
             $mdlUser->lastname = $convert_name['lastname'];
             $mdlUser->password = bcrypt($password);
+            if (strlen($address) != 0) {
+                $mdlUser->address = $address;
+            }
+            $mdlUser->city = $city;
+            $mdlUser->country = $country;
             $mdlUser->save();
 
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
@@ -6731,7 +6769,8 @@ class BussinessRepository implements IBussinessInterface
             $user->email = $email;
             $user->phone = $phone;
             $user->address = $address;
-
+            $user->city = $city;
+            $user->country = $country;
             $user->sex = $sex;
             $user->code = $code;
             if ($start_time && $start_time != 'null') {
@@ -7136,7 +7175,7 @@ class BussinessRepository implements IBussinessInterface
 
         $now = Carbon::now();
         $mdlUser = MdlUser::select('username')->findOrFail($user_id);
-        $users = TmsUserDetail::with('city', 'training.training_detail')
+        $users = TmsUserDetail::with('confirm_address_detail', 'training.training_detail')
             ->with('certificate')
             ->with('employee')
             ->where([
@@ -7194,6 +7233,7 @@ class BussinessRepository implements IBussinessInterface
             ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
             ->get();
         $users['salerooms'] = $salerooms;
+
         return response()->json($users);
     }
 
@@ -7216,7 +7256,7 @@ class BussinessRepository implements IBussinessInterface
 
         $now = Carbon::now();
         $mdlUser = MdlUser::select('username')->findOrFail($user_id);
-        $users = TmsUserDetail::with('city', 'training.training_detail')
+        $users = TmsUserDetail::with('confirm_address_detail', 'training.training_detail')
             ->with('certificate')
             ->with('employee')
             ->where([
@@ -7290,6 +7330,8 @@ class BussinessRepository implements IBussinessInterface
             $phone = $request->input('phone');
             $cmtnd = $request->input('cmtnd');
             $address = $request->input('address');
+            $city = $request->input('city');
+            $country = $request->input('country');
             $roles = $request->input('role');
             //$type = $request->input('type');
             $user_id = $request->input('user_id');
@@ -7311,6 +7353,8 @@ class BussinessRepository implements IBussinessInterface
 
             $param = [
                 'fullname' => 'text',
+                'city' => 'text',
+                'country' => 'text',
                 'dob' => 'date',
                 'email' => 'email',
                 'username' => 'text',
@@ -7449,6 +7493,8 @@ class BussinessRepository implements IBussinessInterface
                 add_user_by_role($user_id,$role['id']);
                 enrole_lms($user_id,$role['mdl_role_id'],$confirm);
             }*/
+            $mdlUser->city = $city;
+            $mdlUser->country = $country;
             $mdlUser->save();
 
 
@@ -7548,6 +7594,8 @@ class BussinessRepository implements IBussinessInterface
             $user->email = $email;
             $user->phone = ($phone && $phone != 'null' && $phone != 'NULL') ? $phone : '';
             $user->address = ($address && $address != 'null') ? $address : '';
+            $user->city = ($city && $city != 'null') ? $city : '';
+            $user->country = ($country && $country != 'null') ? $country : '';
 
             $user->sex = $sex;
             $user->code = $code ? $code : '';

@@ -1117,13 +1117,9 @@ table table tr td {
     display: block !important;
 }
 
-
-
-
-
 .vdp-datepicker__clear-button{
     position: absolute;
-    right: 5%;
+    right: 10%;
     top: 20%;
 }
 

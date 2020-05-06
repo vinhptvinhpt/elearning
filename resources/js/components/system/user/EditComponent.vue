@@ -94,31 +94,31 @@
                     </div>
                     <div class="col-12 col-lg-9">
                         <form action="" class="form-row">
-                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">
-                                <label for="inputConfirm">{{trans.get('keys.cap_giay_chung_nhan')}}</label>
-                                <select id="inputConfirm" class="form-control custom-select" v-model="users.confirm" @change="changeConfirm()">
-                                    <option value="0">{{trans.get('keys.chua_cap')}}</option>
-                                    <option value="1">{{trans.get('keys.da_cap')}}</option>
-                                </select>
-                            </div>
+<!--                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">-->
+<!--                                <label for="inputConfirm">{{trans.get('keys.cap_giay_chung_nhan')}}</label>-->
+<!--                                <select id="inputConfirm" class="form-control custom-select" v-model="users.confirm" @change="changeConfirm()">-->
+<!--                                    <option value="0">{{trans.get('keys.chua_cap')}}</option>-->
+<!--                                    <option value="1">{{trans.get('keys.da_cap')}}</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
 
-                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">
-                                <label for="inputConfirmAddress">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</label>
-                                <select id="inputConfirmAddress" class="form-control custom-select" v-model="users.confirm_address" :disabled="(users.confirm == 0) ? true : false">
-                                    <option value="0">{{trans.get('keys.chua_cap_nhat')}}</option>
-                                    <option v-for="city in citys" :value="city.id">{{ city.name }}</option>
-                                </select>
-                            </div>
+<!--                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">-->
+<!--                                <label for="inputConfirmAddress">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</label>-->
+<!--                                <select id="inputConfirmAddress" class="form-control custom-select" v-model="users.confirm_address" :disabled="(users.confirm == 0) ? true : false">-->
+<!--                                    <option value="0">{{trans.get('keys.chua_cap_nhat')}}</option>-->
+<!--                                    <option v-for="city in citys" :value="city.id">{{ city.name }}</option>-->
+<!--                                </select>-->
+<!--                            </div>-->
 
-                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">
-                                <label for="certificateCode">{{trans.get('keys.ma_chung_nhan')}}</label>
-                                <input type="text" id="certificateCode" v-model="users.certificate.code" class="form-control mb-4" :disabled="(users.confirm == 0) ? true : false">
-                            </div>
+<!--                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">-->
+<!--                                <label for="certificateCode">{{trans.get('keys.ma_chung_nhan')}}</label>-->
+<!--                                <input type="text" id="certificateCode" v-model="users.certificate.code" class="form-control mb-4" :disabled="(users.confirm == 0) ? true : false">-->
+<!--                            </div>-->
 
-                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">
-                                <label for="certificateDate">{{trans.get('keys.ngay_cap')}}</label>
-                                <input type="date" id="certificateDate" v-model="users.certificate.timecertificate" class="form-control mb-4" :disabled="(users.confirm == 0) ? true : false">
-                            </div>
+<!--                            <div class="col-sm-6 form-group" v-if="users.student_role > 0">-->
+<!--                                <label for="certificateDate">{{trans.get('keys.ngay_cap')}}</label>-->
+<!--                                <input type="date" id="certificateDate" v-model="users.certificate.timecertificate" class="form-control mb-4" :disabled="(users.confirm == 0) ? true : false">-->
+<!--                            </div>-->
 
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputUsername">{{trans.get('keys.ten_dang_nhap')}} *</label>
@@ -144,10 +144,24 @@
                                 <input type="text" id="inputAddress" v-model="users.address" class="form-control mb-4">
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
-                                <label for="inputEmail">{{trans.get('keys.email')}} *</label>
-                                <input type="text" id="inputEmail" v-model="users.email" class="form-control mb-4" @input="changeRequired('inputEmail')">
-                                <label v-if="!users.email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                              <label for="inputCity">{{trans.get('keys.van_phong')}}</label>
+                              <input v-model="users.city" type="text" id="inputCity" :placeholder="trans.get('keys.nhap_van_phong')" class="form-control mb-4">
                             </div>
+                            <div class="col-md-4 col-sm-6 form-group">
+                              <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
+                              <select id="inputCountry" class="form-control custom-select mb-4" v-model="users.country">
+                                <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+                                <option v-for="(country_name, country_code, index) in countries" :value="country_code">{{ country_name }}</option>
+                              </select>
+                              <label v-if="!users.country" class="required text-danger country_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                            </div>
+
+
+<!--                            <div class="col-md-4 col-sm-6 form-group">-->
+<!--                                <label for="inputEmail">{{trans.get('keys.email')}} *</label>-->
+<!--                                <input type="text" id="inputEmail" v-model="users.email" class="form-control mb-4" @input="changeRequired('inputEmail')">-->
+<!--                                <label v-if="!users.email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                            </div>-->
 
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputPhone">{{trans.get('keys.so_dt')}}</label>
@@ -162,10 +176,10 @@
                                 </select>
                             </div>
 
-                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type !== 'market'">
-                                <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>
-                                <input v-model="users.code" type="text" id="inputCode" placeholder="" class="form-control mb-4">
-                            </div>
+<!--                            <div class="col-md-4 col-sm-6 form-group" v-if="role_type !== 'market'">-->
+<!--                                <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>-->
+<!--                                <input v-model="users.code" type="text" id="inputCode" placeholder="" class="form-control mb-4">-->
+<!--                            </div>-->
 
                             <div v-if="roles && type === 'system'" class="col-12 form-group">
                                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
@@ -370,10 +384,13 @@
                     },
                     employee: {
                       organization_id: 0,
-                    }
+                    },
+                    city: '',
+                    country: ''
                 },
                 roles:[],
                 citys:[],
+                countries: [],
                 passwordConf:'',
                 password:'',
                 branch_input:'',
@@ -687,6 +704,9 @@
                 })
                     .then(response => {
                         this.users = response.data;
+
+                        console.log(this.users);
+
                         if (!response.data.training) {
                             this.users.training = {
                                 trainning_id: 0,
@@ -773,6 +793,11 @@
                   return;
                 }
 
+                if(!this.users.country) {
+                  $('.country_required').show();
+                  return;
+                }
+
                 let organization_roles_selected = [];
                 for (const [key, item] of Object.entries(this.roles)) {
                   if (this.users.role.indexOf(item.id) !== -1) {
@@ -809,6 +834,8 @@
                 this.formData.append('phone', this.users.phone);
                 this.formData.append('cmtnd', this.users.cmtnd);
                 this.formData.append('address', this.users.address);
+                this.formData.append('city', this.users.city);
+                this.formData.append('country', this.users.country);
                 this.formData.append('role', this.users.role);
                 //this.formData.append('type', this.type);
                 this.formData.append('user_id', this.user_id);
@@ -943,15 +970,27 @@
                 .catch(error => {
                   $('.content_search_box').removeClass('loadding');
                 })
-            }
+            },
+            getCountries() {
+              if(this.type === 'system') {
+                axios.post('/system/user/list_country')
+                  .then(response => {
+                    this.countries = response.data;
+                  })
+                  .catch(error => {
+                    console.log(error.response.data);
+                  });
+              }
+            },
         },
         mounted() {
             this.fetch();
-            this.getTrainingProgram();
+            //this.getTrainingProgram();
             this.getRoles();
-            this.getCitys();
+            //this.getCitys();
             this.userData();
             this.setFileInput();
+            this.getCountries();
         }
     }
 </script>

@@ -47,18 +47,18 @@
                       <!--                                                </div>-->
                       <!--                                            </div>-->
 
-                      <div class="col-sm-8">
-                        <div class="form-group">
-                          <v-select
-                            :options="departmentSelectOptions"
-                            :reduce="departmentSelectOption => departmentSelectOption.id"
-                            :placeholder="this.trans.get('keys.chon_chi_nhanh')"
-                            :filter-by="myFilterBy"
-                            v-model="department_id">
-                          </v-select>
-                          <label v-if="!department_id" class="text-danger department_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                        </div>
-                      </div>
+<!--                      <div class="col-sm-8">-->
+<!--                        <div class="form-group">-->
+<!--                          <v-select-->
+<!--                            :options="departmentSelectOptions"-->
+<!--                            :reduce="departmentSelectOption => departmentSelectOption.id"-->
+<!--                            :placeholder="this.trans.get('keys.chon_chi_nhanh')"-->
+<!--                            :filter-by="myFilterBy"-->
+<!--                            v-model="department_id">-->
+<!--                          </v-select>-->
+<!--                          <label v-if="!department_id" class="text-danger department_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                        </div>-->
+<!--                      </div>-->
 
                     </div>
                     <input type="file" ref="file" name="file" class="dropify fileImport" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"  @change="selectedFile"/>
@@ -159,10 +159,10 @@
                 //     return;
                 // }
 
-                if(!this.department_id || this.department_id === 0){
-                    $('.department_required').show();
-                    return;
-                }
+                // if(!this.department_id || this.department_id === 0){
+                //     $('.department_required').show();
+                //     return;
+                // }
 
                 if(this.$refs.file.files[0] === undefined){
                     $('.file_required').show();
@@ -177,19 +177,23 @@
                     this.formData.append('city_id', this.city_id); //removed
                     this.formData.append('department_id', this.department_id); //removed
                     this.formData.append('role_name', 'student');
+                    this.formData.append('from', 'cms');
                     axios.post(this.urlImport, this.formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
                         }
                     })
                 .then(response => {
-                    roam_message(response.data.status,response.data.message);
-                        var a = $("<a>")
-                            .prop("href", "/api/excel/download")
-                            //.prop("download", "newfile.txt")
-                            .appendTo("body");
-                        a[0].click();
-                        a.remove();
+                    toastr[response.data.status](response.data.message, this.trans.get('keys.' + response.data.status));
+
+                    //Download file
+                    let file_name = response.data.data.result_file;
+                    let a = $("<a>")
+                      .prop("href", "/api/excel/download/" + file_name)
+                      .appendTo("body");
+                    a[0].click();
+                    a.remove();
+
                     $('button.hasLoading').removeClass('loadding');
                     $('.logUpload').show();
                     $('#btnFilter').trigger('click');
@@ -223,7 +227,7 @@
         },
         mounted() {
             //this.listData();
-            this.listDepartment();
+            //this.listDepartment();
             //this.getUser();
             this.fetch();
             this.setFileInput();

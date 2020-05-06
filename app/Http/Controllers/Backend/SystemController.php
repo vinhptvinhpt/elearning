@@ -133,6 +133,11 @@ class SystemController extends Controller
         return $this->bussinessRepository->apiListRole($request);
     }
 
+    public function apiListCountry(Request $request)
+    {
+        return $this->bussinessRepository->apiListCountry($request);
+    }
+
     public function apiListUser(Request $request)
     {
         return $this->bussinessRepository->apiListUser($request);

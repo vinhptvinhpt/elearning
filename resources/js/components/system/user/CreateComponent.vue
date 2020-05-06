@@ -11,34 +11,35 @@
         </div>
         <div class="col-12 col-lg-9">
             <form action="" class="form-row hk-sec-wrapper">
-                <div class="col-sm-6 form-group" v-if="type === 'student'">
-                    <label for="inputConfirm">{{trans.get('keys.cap_giay_chung_nhan')}}</label>
-                    <select id="inputConfirm" class="form-control custom-select" v-model="confirm" >
-                        <option value="0">{{trans.get('keys.chua_cap')}}</option>
-                        <option value="1">{{trans.get('keys.da_cap')}}</option>
-                    </select>
-                </div>
 
-                <div class="col-sm-6 form-group" v-if="type === 'student'">
-                    <label for="inputConfirmAddress">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</label>
-                    <select id="inputConfirmAddress" class="form-control custom-select" v-model="confirm_address" :disabled="confirm == 1 ? false : true">
-                        <option value="0">{{trans.get('keys.chua_cap_nhat')}}</option>
-                        <option v-for="city in citys" :value="city.id">{{ city.name }}</option>
-                    </select>
-                </div>
+<!--                <div class="col-sm-6 form-group" v-if="type === 'student'">-->
+<!--                    <label for="inputConfirm">{{trans.get('keys.cap_giay_chung_nhan')}}</label>-->
+<!--                    <select id="inputConfirm" class="form-control custom-select" v-model="confirm" >-->
+<!--                        <option value="0">{{trans.get('keys.chua_cap')}}</option>-->
+<!--                        <option value="1">{{trans.get('keys.da_cap')}}</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
-                <div class="col-sm-6 form-group" v-if="type === 'student'">
-                    <label for="inputCertificateCode">{{trans.get('keys.ma_chung_nhan')}}</label>
-                    <input v-model="certificate_code" id="inputCertificateCode" class="form-control mb-4" :disabled="confirm == 1 ? false : true">
-                </div>
+<!--                <div class="col-sm-6 form-group" v-if="type === 'student'">-->
+<!--                    <label for="inputConfirmAddress">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</label>-->
+<!--                    <select id="inputConfirmAddress" class="form-control custom-select" v-model="confirm_address" :disabled="confirm == 1 ? false : true">-->
+<!--                        <option value="0">{{trans.get('keys.chua_cap_nhat')}}</option>-->
+<!--                        <option v-for="city in citys" :value="city.id">{{ city.name }}</option>-->
+<!--                    </select>-->
+<!--                </div>-->
 
-                <div class="col-sm-6 form-group" v-if="type === 'student'">
-                    <label for="inputCertificateDate">{{trans.get('keys.ngay_cap_ma_chung_nhan')}}</label>
-                    <input v-model="certificate_date" type="date" id="inputCertificateDate" class="form-control mb-4" :disabled="confirm == 1 ? false : true">
-                </div>
+<!--                <div class="col-sm-6 form-group" v-if="type === 'student'">-->
+<!--                    <label for="inputCertificateCode">{{trans.get('keys.ma_chung_nhan')}}</label>-->
+<!--                    <input v-model="certificate_code" id="inputCertificateCode" class="form-control mb-4" :disabled="confirm == 1 ? false : true">-->
+<!--                </div>-->
+
+<!--                <div class="col-sm-6 form-group" v-if="type === 'student'">-->
+<!--                    <label for="inputCertificateDate">{{trans.get('keys.ngay_cap_ma_chung_nhan')}}</label>-->
+<!--                    <input v-model="certificate_date" type="date" id="inputCertificateDate" class="form-control mb-4" :disabled="confirm == 1 ? false : true">-->
+<!--                </div>-->
 
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputUsername">{{trans.get('keys.ten_dang_nhap')}} *</label>
+                    <label for="inputUsername">{{trans.get('keys.ten_dang_nhap')}}(Email) *</label>
                     <input autocomplete="false" v-model="username" type="text" id="inputUsername" :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')" class="form-control mb-4" @input="changeRequired('inputUsername')">
                     <label v-if="!username" class="required text-danger username_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
@@ -71,13 +72,13 @@
                     <label for="inputDob">{{trans.get('keys.ngay_thang_nam_sinh')}}</label>
                     <input v-model="dob" type="date" id="inputDob" class="form-control mb-4">
                 </div>
-                <div class="col-md-4 col-sm-6 form-group">
+                <div class="col-md-4 col-sm-6 form-group hide">
                     <label for="inputEmail">{{trans.get('keys.email')}} *</label>
                     <input v-model="email" type="text" id="inputEmail" :placeholder="trans.get('keys.dia_chi_email')" class="form-control mb-4" @input="changeRequired('inputEmail')">
                     <label v-if="!email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}}*</label>
+                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}} *</label>
                     <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')" class="form-control mb-4" @input="changeRequired('inputCmtnd')">
                     <label v-if="!cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
@@ -86,11 +87,22 @@
                     <input v-model="phone" type="text" id="inputPhone" :placeholder="trans.get('keys.nhap_so_dt')" class="form-control mb-4" @input="acceptNumber">
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputAddress">{{trans.get('keys.dia_chi_thuong_tru')}}</label>
-                    <input v-model="address" type="text" id="inputAddress" :placeholder="trans.get('keys.dia_chi')" class="form-control mb-4">
+                    <label for="inputAddress">{{trans.get('keys.dia_chi')}}</label>
+                    <input v-model="address" type="text" id="inputAddress" :placeholder="trans.get('keys.nhap_dia_chi')" class="form-control mb-4">
                 </div>
-
-                <div v-if="roles && type === 'system'" class="col-12 form-group">
+                <div class="col-md-4 col-sm-6 form-group">
+                  <label for="inputCity">{{trans.get('keys.van_phong')}}</label>
+                  <input v-model="city" type="text" id="inputCity" :placeholder="trans.get('keys.nhap_van_phong')" class="form-control mb-4">
+                </div>
+                <div class="col-md-4 col-sm-6 form-group">
+                  <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
+                  <select id="inputCountry" class="form-control custom-select mb-4" v-model="country">
+                    <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+                    <option v-for="(country_name, country_code, index) in countries" :value="country_code">{{ country_name }}</option>
+                  </select>
+                  <label v-if="!country" class="required text-danger country_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                </div>
+                <div v-if="roles && type === 'system'" class="col-md-4 col-sm-6 form-group">
                     <label>{{trans.get('keys.quyen')}}</label>
                     <v-select
                       multiple
@@ -119,17 +131,17 @@
                     </select>
                 </div>
 
-                <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>
-                    <input v-model="code" type="text" id="inputCode" placeholder="" class="form-control mb-4">
-                </div>
+<!--                <div class="col-md-4 col-sm-6 form-group">-->
+<!--                    <label for="inputCode">{{trans.get('keys.ma_nhan_vien')}}</label>-->
+<!--                    <input v-model="code" type="text" id="inputCode" placeholder="" class="form-control mb-4">-->
+<!--                </div>-->
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputTimeStart">{{trans.get('keys.ngay_bat_dau_lam')}}</label>
                     <input v-model="start_time" type="date" id="inputTimeStart"  class="form-control mb-4">
                 </div>
 
-                <div class="col-sm-6 form-group">
+                <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputWorkingStatus">{{trans.get('keys.tinh_trang_lam_viec')}}</label>
                     <select id="inputWorkingStatus" class="form-control custom-select" v-model="working_status">
                         <option value="0">{{trans.get('keys.dang_cong_tac')}}</option>
@@ -281,6 +293,8 @@
                 phone:'',
                 cmtnd:'',
                 address:'',
+                city: '',
+                country: '',
                 inputRole: [],
                 roles:[],
                 sex: 1,
@@ -291,7 +305,8 @@
                 confirm_address:0,
                 certificate_code: '',
                 certificate_date: '',
-                citys:[],
+                //citys:[],
+                countries: [],
                 branch:0,
                 branch_input:'',
                 saleroom:0,
@@ -514,6 +529,17 @@
                         });
                 }
             },
+            getCountries() {
+              if(this.type === 'system') {
+                axios.post('/system/user/list_country')
+                  .then(response => {
+                    this.countries = response.data;
+                  })
+                  .catch(error => {
+                    console.log(error.response.data);
+                  });
+              }
+            },
             getCitys() {
                 axios.post('/system/list/list_city')
                     .then(response => {
@@ -540,10 +566,16 @@
                     $('.fullname_required').show();
                     return;
                 }
-                if(!this.email){
-                    $('.email_required').show();
-                    return;
+
+                if(!this.country) {
+                  $('.country_required').show();
+                  return;
                 }
+
+                // if(!this.email){
+                //     $('.email_required').show();
+                //     return;
+                // }
                 if(!this.cmtnd){
                     $('.cmtnd_required').show();
                     return;
@@ -593,13 +625,16 @@
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
                 this.formData.append('dob', this.dob);
-                this.formData.append('email', this.email);
+                // this.formData.append('email', this.email);
+                this.formData.append('email', this.username);
                 this.formData.append('username', this.username);
                 this.formData.append('password', this.password);
                 this.formData.append('passwordConf', this.passwordConf);
                 this.formData.append('phone', this.phone);
                 this.formData.append('cmtnd', this.cmtnd);
                 this.formData.append('address', this.address);
+                this.formData.append('city', this.city);
+                this.formData.append('country', this.country);
                 this.formData.append('inputRole', this.inputRole);
                 this.formData.append('type', this.type);
                 this.formData.append('sex', this.sex);
@@ -638,6 +673,8 @@
                             this.phone = '';
                             this.cmtnd = '';
                             this.address = '';
+                            this.city = '';
+                            this.country = '';
                             this.inputRole = [5];
                             this.sex = 1;
                             this.code = '';
@@ -758,16 +795,18 @@
             }
         },
         mounted() {
-            this.getCitys();
+            //this.getCitys();
             //this.get_branch();
             //this.getTrainingProgram();
             this.setFileInput();
             this.selectOrganization(this.organization_id);
             this.getRoles();
+            this.getCountries();
         },
         computed: {
           input_organization_id: {
             get () {
+              this.last_organization_id = this.organization_id;
               return this.organization_id;
             },
             set (value) {

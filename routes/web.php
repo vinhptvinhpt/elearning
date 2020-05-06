@@ -253,6 +253,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/dashboard', 'Backend\BackendController@index')->name('dashboard');
     Route::get('/system/user', 'Backend\SystemController@viewIndex')->name('system.user');
     Route::post('/system/user/list_role', 'Backend\SystemController@apiListRole');
+    Route::post('/system/user/list_country', 'Backend\SystemController@apiListCountry');
     Route::post('/system/user/list', 'Backend\SystemController@apiListUser')->name('system.user.list');
     Route::get('/system/user/create', 'Backend\SystemController@viewCreate')->name('system.user.create');
     Route::post('/system/user/create', 'Backend\SystemController@apiStore')->name('system.user.store');
@@ -669,7 +670,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/student/get/certificate', 'Backend\StudentController@apiListStudentsCertificate');
     Route::post('/student/check/certificate', 'Backend\StudentController@generateCodeCertificate');
     Route::get('/certificate/setting', 'Backend\StudentController@settingCertificate')->name('setting.certificate');
-   Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
+    Route::post('/certificate/get_images', 'Backend\StudentController@apiGetListImagesCertificate');
     Route::post('/certificate/create', 'Backend\StudentController@apiCreateCertificate');
     Route::get('/certificate/edit/{id}', 'Backend\StudentController@viewEditCertificate');
     Route::post('/certificate/delete/{id}', 'Backend\StudentController@apiDelete');
@@ -689,8 +690,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/update_pass', 'Auth\LoginController@updatePassword');
     //import excel test
     Route::get('/excel/import/user', 'Backend\EmailTemplateController@viewTestIndex');
-    Route::post('/api/excel/import/user', 'Backend\EmailTemplateController@apiImportExcel');
-    Route::get('/api/excel/download', 'Backend\EmailTemplateController@downloadExportReport');
+    Route::post('/api/excel/import/user', 'Api\BackgroundController@importEmployee');
+    Route::get('/api/excel/download/{file_name}', 'Backend\ExcelController@download');
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::post('/exportReportDetail', 'Backend\ExcelController@exportReportDetail');
