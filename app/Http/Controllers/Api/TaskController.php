@@ -182,18 +182,30 @@ class TaskController extends Controller
 
             foreach ($lstUserCourse as $course) {
 
-                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
-                    && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
+                    if (!empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+                        $data_item['userid'] = $course->user_id;
+                        $data_item['courseid'] = $course->course_id;
+                        $data_item['finalgrade'] = $course->finalgrade;
+                        $data_item['timecompleted'] = strtotime(Carbon::now());
+                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+                        $data_item['training_id'] = $data->trainning_id;
 
-                    $data_item['userid'] = $course->user_id;
-                    $data_item['courseid'] = $course->course_id;
-                    $data_item['finalgrade'] = $course->finalgrade;
-                    $data_item['timecompleted'] = strtotime(Carbon::now());
-                    $data_item['timeenrolled'] = strtotime(Carbon::now());
-                    $data_item['training_id'] = $data->trainning_id;
+                        array_push($arrData, $data_item);
+                        $num++;
 
-                    array_push($arrData, $data_item);
-                    $num++;
+                    } else {
+                        $data_item['userid'] = $course->user_id;
+                        $data_item['courseid'] = $course->course_id;
+                        $data_item['finalgrade'] = $course->finalgrade;
+                        $data_item['timecompleted'] = strtotime(Carbon::now());
+                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+                        $data_item['training_id'] = $data->trainning_id;
+
+                        array_push($arrData, $data_item);
+                        $num++;
+
+                    }
                 }
 
                 if ($num >= $limit) {
