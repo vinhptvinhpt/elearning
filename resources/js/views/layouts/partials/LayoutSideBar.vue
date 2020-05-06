@@ -322,19 +322,19 @@
                                     </li>
                                     <li class="nav-item" v-if="slug_can('tms-educate-certificate-view')">
                                         <router-link
-                                          :to="{ path: '/tms/certificate/setting', name: 'SettingCertificate', query: { type: '1' } }"
-                                          class="nav-link">
+                                                :to="{ path: '/tms/certificate/setting', name: 'SettingCertificate', query: { type: '1' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.chung_chi_mau') }}</span>
                                         </router-link>
                                     </li>
-                                  <li class="nav-item" v-if="slug_can('tms-educate-badge-view')">
-<!--                                    to="/tms/badge/setting"-->
-                                    <router-link
-                                      :to="{ path: '/tms/badge/setting', name: 'SettingBadge', query: { type: '2' } }"
-                                      class="nav-link">
-                                      <span class="nav-link-text"> {{ trans.get('keys.huy_hieu_mau') }}</span>
-                                    </router-link>
-                                  </li>
+                                    <li class="nav-item" v-if="slug_can('tms-educate-certificate-view')">
+                                        <!--                                    to="/tms/badge/setting"-->
+                                        <router-link
+                                                :to="{ path: '/tms/badge/setting', name: 'SettingBadge', query: { type: '2' } }"
+                                                class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.huy_hieu_mau') }}</span>
+                                        </router-link>
+                                    </li>
                                     <li class="nav-item" v-if="slug_can('tms-educate-resetexam-view')">
                                         <router-link to="/tms/education/resetexam" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung_thi_lai') }}</span>
@@ -537,8 +537,8 @@
             toggleMenu(parent_id, current_id, child_id) {
                 let x = document.getElementById(current_id);
 
-                if(parent_id){
-                    $('a.collapse-level-1').not($('#'+parent_id)).each(function(){
+                if (parent_id) {
+                    $('a.collapse-level-1').not($('#' + parent_id)).each(function () {
                         //lấy danh sách element thẻ a cùng cấp với cha
                         var get_id = ($(this)[0]).getAttribute('id');
                         $('#' + get_id).removeClass("active");
@@ -549,11 +549,11 @@
                         document.getElementById(id_next).style.display = "none";
                     });
 
-                    $('a.active').not($('#'+parent_id)).removeClass('active');
+                    $('a.active').not($('#' + parent_id)).removeClass('active');
 
-                }else{
+                } else {
                     //là trường hợp thẻ a to nhất click
-                    $('a.collapse-level-1').not($('#'+current_id)).each(function(){
+                    $('a.collapse-level-1').not($('#' + current_id)).each(function () {
                         //sẽ lấy danh sách những thẻ a cùng cấp và xóa class active
                         var get_id = ($(this)[0]).getAttribute('id');
                         $('#' + get_id).removeClass("active");

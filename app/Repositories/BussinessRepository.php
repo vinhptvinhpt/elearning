@@ -3503,7 +3503,8 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
-    public function apiListCourseByTraining(Request $request) {
+    public function apiListCourseByTraining(Request $request)
+    {
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
@@ -4605,8 +4606,7 @@ class BussinessRepository implements IBussinessInterface
         ]);
         if (!empty($validates)) {
             return response()->json([]);
-        }
-        else {
+        } else {
             $response = DB::table('image_certificate as ic')
                 ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
                 ->where('ic.type', '=', $type)
@@ -4666,7 +4666,7 @@ class BussinessRepository implements IBussinessInterface
                     //For example, perhaps you only want one entry per user:
                     'organization_id' => $organization_id,
                     'type' => $type
-                ],[
+                ], [
                     'path' => $path_avatar,
                     'name' => $name,
                     'description' => $description,
@@ -4720,7 +4720,7 @@ class BussinessRepository implements IBussinessInterface
         }
         $certificate_info = DB::table('image_certificate as ic')
             ->leftJoin('tms_organization as to', 'ic.organization_id', '=', 'to.id')
-            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
+            ->select('ic.id', 'ic.path', 'ic.name', 'ic.description', 'ic.position', 'ic.is_active', 'ic.organization_id', 'ic.type', 'to.name as organization_name')
             ->where('ic.id', '=', $id)
             ->first();
         return response()->json($certificate_info);
@@ -4764,7 +4764,7 @@ class BussinessRepository implements IBussinessInterface
                 ->where('type', '=', $type)
                 ->first();
 
-            if(!empty($cer) && $cer->id == $id){
+            if (!empty($cer) && $cer->id == $id) {
                 $cer->name = $name;
                 $cer->description = $description;
                 $cer->is_active = $is_active;
@@ -4804,18 +4804,18 @@ class BussinessRepository implements IBussinessInterface
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
             }
-//            $get_active = DB::table('image_certificate')
-//                ->where('is_active', 1)->first();
-//            if ($is_active == 0) {
-//                if (!$get_active || $get_active->id == $id) {
-//                    $response->status = false;
-//                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
-//                    return response()->json($response);
-//                }
-//            } else if ($is_active == 1) {
-////                $get_active->is_active = 0;
-//                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->update(['is_active' => '0']);
-//            }
+            $get_active = DB::table('image_certificate')
+                ->where('is_active', 1)->where('type', '=', $type)->first();
+            if ($is_active == 0) {
+                if (!$get_active || $get_active->id == $id) {
+                    $response->status = false;
+                    $response->message = __('hay_chon_mau_chung_chi_nay_la_mac_dinh_vi_chua_co_mau_mac_dinh');
+                    return response()->json($response);
+                }
+            } else if ($is_active == 1) {
+//                $get_active->is_active = 0;
+                ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->where('type', '=', $type)->update(['is_active' => '0']);
+            }
             $cer->save();
             \DB::commit();
             $response->status = true;
