@@ -6,7 +6,7 @@
 |--------------------------------------------------------------------------
 |
 */
-
+//Route::get('/trainning/testroute', 'Backend\TrainningController@getAllRoute');
 Route::get('/tms/{vue?}', function () {
     return view('layouts.dashboard');
 })->where('vue', '[\/\w\.-]*')->name('home');

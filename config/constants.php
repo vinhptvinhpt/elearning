@@ -20,6 +20,20 @@ return [
 
         'EMAIL-DEFAULT' => 'nohasmail@gmail.com', //editingteacher id,
 
-        'LIMIT_SUBMIT' => 100 //giới hạn số bản ghi submit 1 lần lên db, đang dùng cho chức add user vào KNL và enroll vào tất cả các course trong KNL
+        'LIMIT_SUBMIT' => 100, //giới hạn số bản ghi submit 1 lần lên db, đang dùng cho chức add user vào KNL và enroll vào tất cả các course trong KNL,
+
+        //contants update flag run cron 1 min/time => ko sua
+        'ACTION_READ_FLAG' => 'read',
+
+        'ACTION_UPDATE_FLAG' => 'write',
+
+        'START_CRON' => 'start',
+
+        'STOP_CRON' => 'stop',
+
+        // danh sach file chay cron, ko sua ten o day
+        'ENROLL_TRAINNING' => 'enroll_trainning.json', //add hoc vien vao KNL
+
+        'ENROLL_USER' => 'enroll_user.json', //enroll hoc vien vao KNL
     ],
 ];
