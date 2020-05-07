@@ -304,5 +304,8 @@
     "ten": "Tên",
     "to_chuc": "Tổ chức",
     "qua_so_luong_submit": "Số người dùng vượt quá hạn mức quy định",
-    "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ"
+    "to_chuc_nay_da_ton_tai_mau_chung_chi": "Tổ chức này đã tồn tại mẫu chứng chỉ",
+    "thoi_gian_hoc": "Thời gian học",
+    "so_nguoi_tham_gia": "Số người tham gia",
+    "thoi_luong_hoc": "Thời lượng học"
 }

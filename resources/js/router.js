@@ -62,8 +62,6 @@ import RoleIndexComponent from "./roles/RoleIndexComponent";
 import RoleEditComponent from "./roles/RoleEditComponent";
 import RoleListUserComponent from "./roles/RoleListUserComponent";
 import ImportIndexComponent from "./components/import/ImportIndexComponent";
-import ReportIndexComponent from "./components/system/report/ReportIndexComponent";
-import ReportIndexBaseComponent from "./components/system/report/ReportIndexBaseComponent";
 import SurveyListComponent from "./components/survey/SurveyListComponent";
 import SurveyCreateComponent from "./components/survey/SurveyCreateComponent";
 import SurveyStatisticComponent from "./components/survey/SurveyStatisticComponent";
@@ -489,13 +487,11 @@ const routes = [
       //Report
       {
         path: 'report/detail',
-        //component: ReportIndexComponent,
         component: ReportDetailComponent,
         name: 'ReportIndex'
       },
       {
         path: 'report/base',
-        //component: ReportIndexBaseComponent,
         component: ReportBaseComponent,
         name: 'ReportBaseIndex'
       },

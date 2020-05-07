@@ -11,6 +11,7 @@ use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\User;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Database\Query\JoinClause;
 use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
@@ -3164,7 +3165,6 @@ class BussinessRepository implements IBussinessInterface
             foreach ($region_data as $item) {
 
                 //Define region object
-                //$data_request[$item['district']]['name'] = $this->getRegionName($item['district']);
                 $data_request[$item['district']]['name'] = $item['district_name'];
 
 
@@ -3265,49 +3265,93 @@ class BussinessRepository implements IBussinessInterface
     {
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
-        $course_id = $request->input('training_id');
+        $course_id = $request->input('course_id');
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
-        $mode_select = $request->input('mode_select');
+        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
 
-        $query = TmsOrganization::where('tms_organization.enabled', 1)
-            ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+        $show_courses = false;
+        $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
+
+        $select_array =  array(
+            'tms_organization.id as organization_id',
+            'tms_organization.name as organization_name',
+            'tms_user_detail.user_id',
+            'tms_user_detail.fullname',
+            'tms_traninning_programs.id as training_id',
+            'tms_traninning_programs.name as training_name',
+            'tms_user_detail.confirm',
+          );
+
+        if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
+            $show_courses = true;
+        }
+
+        $query = TmsOrganization::query()->where('tms_organization.enabled', 1)
+            ->leftJoin('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
             ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
-            ->leftjoin('tms_trainning_groups', function ($join) {
+            ->leftJoin('tms_trainning_groups', function ($join) {
+                /* @var $join JoinClause */
                 $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
                 $join->where('tms_trainning_groups.type', '=', 1);
             })
-            ->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
-            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id')
-//            ->leftjoin('course_final', function ($join) {
-//                $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
-//                $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
-//            })
-            ->leftjoin('course_completion', function ($join) {
-                $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
-                $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
-            })
-            ->leftjoin('tms_trainning_complete', function ($join) {
-                $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
-                $join->on('tms_trainning_complete.trainning_id', '=', 'tms_trainning_groups.group_id');
-            })
-            ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
-            ->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid')
-            ->select(
-                'tms_organization.id as organization_id',
-                'tms_organization.name as organization_name',
-                'tms_user_detail.user_id',
-                'tms_user_detail.fullname',
+            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
+
+        if($show_courses) {
+            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
+                ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
+            $select_array = array_merge($select_array, [
                 'mdl_course.id as course_id',
                 'mdl_course.shortname as course_code',
                 'mdl_course.fullname as course_name',
-                'tms_traninning_programs.id as training_id',
-                'tms_traninning_programs.name as training_name',
-                'tms_user_detail.confirm',
-                //'course_final.timecompleted',
-                'course_completion.timecompleted',
-                'student_certificate.code'
-            );
+            ]);
+        }
+
+
+        if ($mode_select == 'completed_course' )
+        {
+            $query->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
+                /* @var $join JoinClause */
+                $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
+                $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
+            });
+            $select_array[] = 'course_completion.timecompleted as completed';
+        }
+
+        if ($mode_select == 'completed_training') {
+            $query->leftjoin('tms_trainning_complete', function ($join) { //Hoàn thành khung năng lực
+                /* @var $join JoinClause */
+                $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
+                $join->on('tms_trainning_complete.trainning_id', '=', 'tms_traninning_programs.id');
+            });
+            $select_array[] = 'tms_trainning_complete.id as completed';
+        }
+
+        //hoàn thành khóa học cũ
+//        $query->leftjoin('course_final', function ($join) {
+//            $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
+//            $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
+//        });
+//        $select_array[] = 'course_final.timecompleted';
+
+        //chứng chỉ
+        if ($mode_select == 'certificated') {
+            $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+            $select_array[] = 'student_certificate.code';
+        }
+
+        if ($mode_select == 'learning_time') {
+            $data_type = 'counter'; //Thống kê theo số lượng, cộng dồn
+            $query->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
+                /* @var $join JoinClause */
+                $join->on('tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
+                $join->on('mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
+            });
+            $select_array[] = 'tms_learning_activity_logs.duration';
+            $select_array[] = 'mdl_course.estimate_duration';
+        }
+
+        $query->select($select_array);
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             $query = $query->where('tms_organization.id', '=', $organization_id);
@@ -3323,28 +3367,43 @@ class BussinessRepository implements IBussinessInterface
 
         if (strlen($start_date) > 0) {
             $start_date = $start_date . " 00:00:00";
-            if ($mode_select == 'completed') {
+            if ($mode_select == 'completed_course') {
+                $start_timestamp = strtotime($start_date);
+                $query = $query->where('completed', '>=', $start_timestamp);
+            }
+            if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
-            } else {
+            }
+            if ($mode_select == 'certificated') { //mode certificated
                 $query = $query->where('student_certificate.timecertificate', '>=', strtotime($start_date));
+            }
+            if ($mode_select == 'learning_time') { //mode certificated
+                $query = $query->where('tms_learning_activity_logs.updated_at', '>=', $start_date);
             }
         }
 
         if (strlen($end_date) > 0) {
             $end_date = $end_date . " 23:59:59";
-            if ($mode_select == 'completed') {
+            if ($mode_select == 'completed_course') {
+                $end_timestamp = strtotime($end_date);
+                $query = $query->where('completed', '<=', $end_timestamp);
+            }
+            if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);
-            } else {
+            }
+            if ($mode_select == 'certificated') { //mode certificated
                 $query = $query->where('student_certificate.timecertificate', '<=', strtotime($end_date));
+            }
+            if ($mode_select == 'learning_time') { //mode certificated
+                $query = $query->where('tms_learning_activity_logs.updated_at', '<>>=', $start_date);
             }
         }
 
-        $list = $query->get();
+        $list = $query->get()->toArray();
 
         $data = array();
 
         foreach ($list as $item) {
-
             if (!isset($data[$item['organization_id']])) {
                 //Build organization object
                 self::buildDefaultReportObject($data, $item['organization_id'], $item['organization_name']);
@@ -3354,42 +3413,105 @@ class BussinessRepository implements IBussinessInterface
                 if (!isset($data[$item['organization_id']]['training'][$item['training_id']])) {
                     self::buildDefaultReportObject($data[$item['organization_id']]['training'], $item['training_id'], $item['training_name']);
                 }
-                if (strlen($item['course_id']) != 0) {
+
+                if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
                     //Build course object
                     if (!isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
                         self::buildDefaultReportObject($data[$item['organization_id']]['training'][$item['training_id']]['courses'], $item['course_id'], $item['course_name']);
                     }
+                }
 
-                    if (strlen($item['user_id']) != 0) {
-                        $user = [
-                            'user_id' => $item['user_id'],
-                            'fullname' => $item['fullname']
-                        ];
 
+                if (strlen($item['user_id']) != 0) {
+
+                    $user = [
+                        'user_id' => $item['user_id'],
+                        'fullname' => $item['fullname'],
+                    ];
+
+                    if ($mode_select == 'learning_time') {
+                        $user['duration'] = $item['duration'];
+                        $user['estimate_duration'] = $item['estimate_duration'];
+                    }
+
+                    if($data_type == 'person') {
+                        //col3
                         //Update all user array for organization
-                        $data[$item['organization_id']]['users'][$item['user_id']] = $user;
+                        self::pushUser($data[$item['organization_id']], 'col3', $item['user_id'], $user);
                         //Update all user array for training
-                        $data[$item['organization_id']]['training'][$item['training_id']]['users'][$item['user_id']] = $user;
-                        //Update user array for course
-                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][$item['user_id']] = $user;
-
-                        if (isset($item['code'])) {
-                            $data[$item['organization_id']]['certificated'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated'][$item['user_id']] = $user;
-                        } else {
-                            $data[$item['organization_id']]['certificated_missing'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated_missing'][$item['user_id']] = $user;
+                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col3', $item['user_id'], $user);
+                        if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                            //Update user array for course
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col3', $item['user_id'], $user);
                         }
-                        if (is_numeric($item['timecompleted'])) {
-                            $data[$item['organization_id']]['completed'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['completed'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['completed'][$item['user_id']] = $user;
-                        } else {
-                            $data[$item['organization_id']]['incomplete'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['incomplete'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incomplete'][$item['user_id']] = $user;
+
+                        //chứng chỉ, chỉ tính đến cấp training
+                        if ($mode_select == 'certificated') {
+                            //col1
+                            if (isset($item['code'])) {
+                                //Update array for organization
+                                self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                                //Update array for training
+                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
+                            }
+                            else { //col2
+                                //Update array for organization
+                                self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                                //Update array for training
+                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
+                            }
+                        }
+
+                        if ($mode_select == 'completed_course' || $mode_select == 'completed_training') {
+                            //hoàn thành, tính đến cấp course nếu chọn type completed_course
+                            if (is_numeric($item['completed']) && $item['completed'] != 0) { //col1
+                                //completed_course / completed_training
+                                //Update array for organization
+                                self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                                //Update array for training
+                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
+                                //completed_course only
+                                if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user);
+                                }
+                            }
+                            else { //col2
+                                //completed_course / completed_training
+                                //Update array for organization
+                                self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                                //Update array for training
+                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
+                                //completed_course only
+                                if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user);
+                                }
+                            }
                         }
                     }
+
+                    if ($data_type == 'counter') {
+                        //col3
+                        if ($mode_select == 'learning_time') {//thời gian học
+                            //Update for organization
+                            //$data[$item['organization_id']]['col3'] = '';
+                            //Update for training
+                            //$data[$item['organization_id']]['training'][$item['training_id']]['col3'] = '';
+                            //Update for course
+                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = $user['estimate_duration'];
+                        }
+
+                        //col1 & col2
+                        //Update array for organization
+                        self::pushUserWithCounter($data[$item['organization_id']], 'col1', $item['user_id'], $user, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']], 'col2', $item['user_id'], $user, $mode_select);
+                        //Update array for training
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user, $mode_select);
+                        //completed_course only
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user, $mode_select);
+                    }
+
                 }
             }
         }
@@ -3471,40 +3593,72 @@ class BussinessRepository implements IBussinessInterface
                             'user_id' => $item['user_id'],
                             'fullname' => $item['fullname']
                         ];
-
                         //Update all user array for organization
-                        $data[$item['organization_id']]['users'][$item['user_id']] = $user;
+                        self::pushUser($data[$item['organization_id']], 'col3', $item['user_id'], $user);
                         //Update all user array for training
-                        $data[$item['organization_id']]['training'][$item['training_id']]['users'][$item['user_id']] = $user;
+                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col3', $item['user_id'], $user);
                         //Update user array for course
-                        $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['users'][$item['user_id']] = $user;
+                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col3', $item['user_id'], $user);
 
+                        //chứng chỉ, chỉ tính đến cấp training
                         if (isset($item['code'])) {
-                            $data[$item['organization_id']]['certificated'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated'][$item['user_id']] = $user;
+                            self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
                         } else {
-                            $data[$item['organization_id']]['certificated_missing'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['certificated_missing'][$item['user_id']] = $user;
+                            self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
                         }
+                        //hoàn thành, tính đến cấp course
                         if (is_numeric($item['timecompleted'])) {
-                            $data[$item['organization_id']]['completed'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['completed'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['completed'][$item['user_id']] = $user;
+                            self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user);
                         } else {
-                            $data[$item['organization_id']]['incomplete'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['incomplete'][$item['user_id']] = $user;
-                            $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['incomplete'][$item['user_id']] = $user;
+                            self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user);
                         }
+                        //thời gian học
+                        //pending
                     }
                 }
             }
         }
-
         return $data;
     }
 
-    public function apiListCourseByTraining(Request $request)
+    public static function buildDefaultReportObject(&$object, $object_id, $col0)
     {
+        $object[$object_id]['col0'] = $col0;
+        $object[$object_id]['col1'] = [];
+        $object[$object_id]['col1_counter'] = 0;
+        $object[$object_id]['col2'] = [];
+        $object[$object_id]['col3'] = [];
+    }
+
+    public static function pushUser(&$object, $key, $id, $user) {
+        $object[$key][$id] = $user;
+    }
+
+    public static function pushUserWithCounter(&$object, $key, $id, $user, $mode_select) {
+
+        if ($mode_select == 'learning_time') {
+            if ($key == 'col1') {
+                //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration
+                if (isset($object[$key][$id]) && isset($object[$key][$id]['duration'])) {
+                    $object[$key][$id]['duration'] += $user['duration'];
+                } else {
+                    $object[$key][$id] = $user;
+                }
+                //Cộng vào tổng
+                $object['col1_counter'] += $user['duration'];
+            } else { //nếu không gom user bình thường
+                $object[$key][$id] = $user;
+            }
+        }
+    }
+
+    public function apiListCourseByTraining(Request $request) {
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
@@ -3513,48 +3667,6 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.fullname as name',
                 'mdl_course.shortname'
             )->get();
-    }
-
-    public static function buildDefaultReportObject(&$object, $object_id, $name)
-    {
-        $object[$object_id]['name'] = $name;
-        $object[$object_id]['completed'] = [];
-        $object[$object_id]['incomplete'] = [];
-        $object[$object_id]['certificated'] = [];
-        $object[$object_id]['certificated_missing'] = [];
-        $object[$object_id]['completed'] = [];
-        $object[$object_id]['completed'] = [];
-        $object[$object_id]['users'] = [];
-    }
-
-    function updateObjectCounter(&$object, $counter, $organization_id, $training_id, $course_id = 0)
-    {
-        if ($counter == 'completed_count' || $counter == 'incomplete_count') {
-            $object[$organization_id]['total_complete_count'] += 1;
-            $object[$organization_id]['training'][$training_id]['total_complete_count'] += 1;
-        }
-        if ($counter == 'certificated_count' || $counter == 'certificated_missing_count') {
-            $object[$organization_id]['total_certificate_count'] += 1;
-            $object[$organization_id]['training'][$training_id]['total_certificate_count'] += 1;
-        }
-        $object[$organization_id][$counter] += 1;
-        if ($course_id != 0) { //Layer course only
-            $object[$organization_id]['training'][$training_id]['courses'][$course_id][$counter] += 1;
-        }
-    }
-
-    function getRegionName($regionCode)
-    {
-        switch ($regionCode) {
-            case "MB":
-                return "Miền Bắc";
-            case "MT":
-                return "Miền Trung";
-            case "MN":
-                return "Miền Nam";
-            default:
-                return "";
-        }
     }
 
     function arrayUniqueMultidimensional($array)
