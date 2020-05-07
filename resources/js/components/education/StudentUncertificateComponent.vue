@@ -234,16 +234,22 @@
                                                 <button v-else-if="user.status == 1" type="button"
                                                         :title="trans.get('keys.dang_doi_cap_chung_chi')"
                                                         data-toggle="modal" data-target="#delete-ph-modal"
-                                                        class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
+                                                        class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2">
                                                     <span class="btn-icon-wrap"><i class="fal fa-spinner"></i></span>
                                                 </button>
 
-                                                <router-link v-else :title="trans.get('keys.xem_chung_chi')"
+                                                <router-link v-else-if="user.status == 2" :title="trans.get('keys.xem_chung_chi')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                              :to="{ name: 'ImageCertificate', query: { code: user.code, badge: user.badge }}">
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
+                                                <button v-else-if="user.status == 3" type="button"
+                                                        :title="trans.get('keys.cap_chung_chi_loi')"
+                                                        data-toggle="modal" data-target="#delete-ph-modal"
+                                                        class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
+                                                    <span class="btn-icon-wrap"><i class="fal fa-exclamation-triangle"></i></span>
+                                                </button>
                                             </td>
                                         </tr>
                                         </tbody>
