@@ -193,8 +193,8 @@
                                                 <div class="form-row">
                                                     <div class="col-sm-12 form-group">
                                                         <label style="font-style: italic;">{{trans.get('keys.them_user_cctc_vao_knl')}}</label>
-                                                        <br/>
-                                                        <label style="font-style: italic; color: red;">{{trans.get('keys.luu_y_cctc_vao_knl')}}</label>
+<!--                                                        <br/>-->
+<!--                                                        <label style="font-style: italic; color: red;">{{trans.get('keys.luu_y_cctc_vao_knl')}}</label>-->
                                                     </div>
                                                 </div>
                                             </div>
