@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\URL;
+use Storage;
 
 class TaskController extends Controller
 {
@@ -265,12 +266,12 @@ class TaskController extends Controller
                     $arrData = [];
                 }
 
-                usleep(50);
+                usleep(100);
             }
 
             TmsTrainningComplete::insert($arrData);
 
-            usleep(100);
+            usleep(500);
         }
     }
     #endregion
@@ -718,6 +719,13 @@ class TaskController extends Controller
     //cron enroll user to competency framework
     public function autoEnrolTrainning()
     {
+        $result = $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_READ_FLAG'), '');
+        $result = json_decode($result, true);
+
+        if ($result['flag'] == 'stop')
+            return;
+
+
         //lay danh sach khoa hoc theo tung khung nang luc
         $lstData = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
@@ -751,6 +759,34 @@ class TaskController extends Controller
                 usleep(100);
             }
         }
+
+        usleep(100);
+        //cap nhat trang thai cho cron
+        $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+            Config::get('constants.domain.STOP_CRON'));
+    }
+
+    // ghi text vao file, phuc vu cho chay cron, bao cho cron biet khi nao start
+    function updateFlagCron($filename, $action, $data = null)
+    {
+        $result = '';
+        $exists = Storage::disk('public')->exists('cron/' . $filename);
+        if ($exists) {
+            $file_path = Storage::path('public/cron/' . $filename);
+            switch ($action) {
+                case Config::get('constants.domain.ACTION_READ_FLAG'):
+                    $result = file_get_contents($file_path);
+                    break;
+                case Config::get('constants.domain.ACTION_UPDATE_FLAG'):
+                    $content = '{"flag":"' . $data . '"}';
+                    Storage::put('public/cron/' . $filename, $content);
+                    usleep(100);
+                    $result = file_get_contents($file_path);
+                    break;
+            }
+        }
+        usleep(100);
+        return $result;
     }
 
     //enrol user to course improve
@@ -1100,158 +1136,9 @@ class TaskController extends Controller
             }
         }
     }
+
     #endregion
 
-    #region auto enrol giao vien vao khoa hoc cap chung chi khi duoc tao
-    /*public function autoEnrolTeacher()
-    {
-        //category = 3
-        //user role = 4 teacher
-        //mdl_course / mdl_user / mdl_enrol / mdl_user_enrolments
-        $role_id = Role::ROLE_TEACHER; //teacher_role
-        $category_id = 3; //category chung chi
-        $all_courses = $this->getAllRequiredCourses();
-        $a = 0;
-        $b = 0;
-        if (count($all_courses) != 0) {
-            $course_data_array = array();
-            $students = $this->getUserByRole($role_id);
-
-            if (count($students) != 0) {
-                $student_ids = array();
-                foreach ($students as $student) {
-                    $student_ids[] = $student->id;
-                }
-                foreach ($all_courses as $one_course) {
-                    $a += count($student_ids);
-                    $course_data_array[$one_course->id]['students'] = $student_ids;
-                    $course_data_array[$one_course->id]['context_id'] = $one_course->context_id;
-                    $course_data_array[$one_course->id]['grade_id'] = $one_course->grade_id;
-                }
-            }
-
-            $courses = MdlUserEnrolments::where('mdl_course.category', $category_id)
-                ->where('mdl_enrol.enrol', 'manual')
-                ->where('roles.id', '=', $role_id)
-                ->select(
-                    'mdl_course.id',
-                    'mdl_user_enrolments.userid'
-                )
-                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-                ->join('model_has_roles', 'mdl_user_enrolments.userid', '=', 'model_has_roles.model_id')
-                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->get();
-
-
-            $exists = array();
-            if (count($courses) != 0) {
-                foreach ($courses as $course) {
-                    $exists[$course->id][] = $course->userid;
-                }
-            }
-
-            foreach ($exists as $course_id => $user_ids) {
-                $b += count($user_ids);
-                if (array_key_exists($course_id, $course_data_array)) {
-                    $course_data_array[$course_id]['students'] = array_diff($course_data_array[$course_id]['students'], $user_ids);
-                }
-            }
-
-            $now = time();
-
-//                echo $a. " - " . $b;die;
-
-            foreach ($course_data_array as $course_id => $data) {
-                $user_ids = $data['students'];
-                $context_id = $data['context_id'] && strlen($data['context_id']) != 0 ? $data['context_id'] : 0;
-                $grade_id = $data['grade_id'] && strlen($data['grade_id']) != 0 ? $data['grade_id'] : 0;
-
-                $new_enrol = MdlEnrol::firstOrCreate([
-                    'enrol' => 'manual',
-                    'courseid' => $course_id,
-                    'roleid' => $role_id,
-                    'sortorder' => 0,
-                    'status' => 0,
-                    'expirythreshold' => 86400,
-                    'timecreated' => $now,
-                    'timemodified' => $now
-                ]);
-//                    $guest = MdlEnrol::firstOrCreate(
-//                        [
-//                            'enrol' => 'guest',
-//                            'courseid' => $course_id,
-//                            'roleid' => $role_id,
-//                            'sortorder' => 1
-//                        ],
-//                        [
-//                            'expirythreshold' => 86400,
-//                            'timecreated' => $now,
-//                            'timemodified' => $now
-//                        ]
-//                    );
-//                    $self = MdlEnrol::firstOrCreate(
-//                        [
-//                            'enrol' => 'self',
-//                            'courseid' => $course_id,
-//                            'roleid' => $role_id,
-//                            'sortorder' => 2
-//                        ],
-//                        [
-//                            'expirythreshold' => 86400,
-//                            'timecreated' => $now,
-//                            'timemodified' => $now
-//                        ]
-//                    );
-                foreach ($user_ids as $user_id) {
-                    MdlUserEnrolments::firstOrCreate([
-                        'enrolid' => $new_enrol->id,
-                        'userid' => $user_id,
-                        'timestart' => $now,
-                        'timecreated' => $now,
-                        'timemodified' => $now
-                    ]);
-
-                    MdlRoleAssignments::firstOrCreate(
-                        [
-                            'roleid' => $role_id,
-                            'userid' => $user_id,
-                            'contextid' => $context_id
-                        ]
-                    );
-
-                    //Tồn tại bản ghi trong bang mdl_grade_items
-                    if ($grade_id != 0) {
-                        //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
-                        MdlGradeGrade::firstOrCreate(
-                            [
-                                'userid' => $user_id,
-                                'itemid' => $grade_id
-                            ],
-                            [
-                                'timecreated' => $now,
-                                'timemodified' => $now,
-                                'created_at' => date("Y-m-d H:i:s", $now),
-                                'updated_at' => date("Y-m-d H:i:s", $now),
-                            ]
-                        );
-                    }
-
-                    //Update mdl_course_completions
-                    MdlCourseCompletions::firstOrCreate(
-                        [
-                            'userid' => $user_id,
-                            'course' => $course_id
-                        ],
-                        [
-                            'timeenrolled' => $now,
-                        ]
-                    );
-                }
-            }
-        }
-    }*/
-    #endregion
 
     function checkCourseComplete($user_id)
     {
@@ -1375,6 +1262,12 @@ class TaskController extends Controller
      */
     function autoAddTrainningUser()
     {
+        $result = $this->updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_READ_FLAG'), '');
+        $result = json_decode($result, true);
+
+        if ($result['flag'] == 'stop')
+            return;
+
         $queryArray = [];
         $num = 0;
         $limit = 300;
@@ -1575,50 +1468,22 @@ class TaskController extends Controller
                         $num = 0;
                         $queryArray = [];
                     }
-
-
-//                    $users = DB::table('tms_traninning_programs as ttp')
-//                        ->select(
-//                            'ttp.id as trainning_id', 'toe.user_id'
-//                        )
-//                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-//                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 1);
-//                        })
-//                        ->leftJoin('tms_organization_employee as toe', 'toe.organization_id', '=', 'ttg.group_id')
-//                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
-//                            $join->on('ttu.trainning_id', '=', 'ttp.id');
-//                            $join->on('ttu.user_id', '=', 'toe.user_id');
-//                        })
-//                        ->where('ttp.deleted', '=', 0)
-//                        ->whereNotNull('ttg.group_id')
-//                        ->whereNull('ttu.id')
-//                        ->get();
-//
-//                    if (!empty($users)) {
-//                        foreach ($users as $user) {
-//                            $queryItem = [];
-//                            if ($user->trainning_id && $user->user_id) {
-//                                $queryItem['trainning_id'] = $user->trainning_id;
-//                                $queryItem['user_id'] = $user->user_id;
-//                                array_push($queryArray, $queryItem);
-//                                $num++;
-//                            }
-//                            if ($num >= $limit) {
-//                                TmsTrainningUser::insert($queryArray);
-//                                $num = 0;
-//                                $queryArray = [];
-//                            }
-//                        }//endforeach
-//                        TmsTrainningUser::insert($queryArray);
-//                        $num = 0;
-//                        $queryArray = [];
-//                    }
                     //endregion
                 }
             }
 
             usleep(100);
         }
+
+
+        //cap nhat trang thai cho cron
+        $this->updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+            Config::get('constants.domain.STOP_CRON'));
+        
+        usleep(100);
+        //khoi dong cron enroll hoc vien vao khoa hoc trong KNL
+        $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+            Config::get('constants.domain.START_CRON'));
     }
 
     /**

@@ -737,19 +737,19 @@ function bulk_enrol_lms($user_id, $role_id, &$arr_data, $data_item)
     $context_id = 1;
 
 //    if ($mdl_role['shortname'] != Role::STUDENT) {
-        $mdlRoleAssignment = MdlRoleAssignments::where([
-            'roleid' => $role_id,
-            'userid' => $user_id,
-            'contextid' => $context_id
-        ])->first();
-        if (!$mdlRoleAssignment) {
+    $mdlRoleAssignment = MdlRoleAssignments::where([
+        'roleid' => $role_id,
+        'userid' => $user_id,
+        'contextid' => $context_id
+    ])->first();
+    if (!$mdlRoleAssignment) {
 
-            $data_item['roleid'] = $role_id;
-            $data_item['userid'] = $user_id;
-            $data_item['contextid'] = $context_id;
+        $data_item['roleid'] = $role_id;
+        $data_item['userid'] = $user_id;
+        $data_item['contextid'] = $context_id;
 
-            array_push($arr_data, $data_item);
-        }
+        array_push($arr_data, $data_item);
+    }
 //    }
 }
 
@@ -1015,7 +1015,6 @@ function enrole_user_to_course($user_id, $role_id, $course_id, $cate_id)
         ]);
     }
 }
-
 
 
 //enrol user to course improve
@@ -3241,16 +3240,16 @@ function checkUserEnrol($user_id, $start_date, $end_date, $category)
             $minDate = $c->enddate;
             $maxDate = $courses[$dem]->startdate;
             // Xử lý tồn tại $minDate và $maxDate
-            if ($minDate > 0 && (($start_date <= $minDate && $start_date >= $maxDate)  || $end_date >= $maxDate )) {
+            if ($minDate > 0 && (($start_date <= $minDate && $start_date >= $maxDate) || $end_date >= $maxDate)) {
                 return false;
             }
             //ngày kết thúc khóa học đang check = 0 và ngày bắt đầu khóa học đang enrol > = ngày bắt đầu khóa học đang check => trùng
-            if($minDate == 0 && $start_date >= $maxDate)
+            if ($minDate == 0 && $start_date >= $maxDate)
                 return false;
             //ngày kết thúc đang enrol = 0 => nếu ngày bắt đầu khóa học đang enrol <= ngày bắt đầu khóa học đang check => trùng
-            if($end_date == 0 && $start_date <= $maxDate)
+            if ($end_date == 0 && $start_date <= $maxDate)
                 return false;
-            if($dem < $count-1)
+            if ($dem < $count - 1)
                 $dem++;
         }
 
@@ -3270,4 +3269,26 @@ function createNofitication($content)
         'createdby' => Auth::id(),
         'content' => $content
     ]);
+}
+
+// ghi text vao file, phuc vu cho chay cron, bao cho cron biet khi nao start
+function updateFlagCron($filename, $action, $data = null)
+{
+    $result = '';
+    $exists = Storage::disk('public')->exists('cron/' . $filename);
+    if ($exists) {
+        $file_path = Storage::path('public/cron/' . $filename);
+        switch ($action) {
+            case Config::get('constants.domain.ACTION_READ_FLAG'):
+                $result = file_get_contents($file_path);
+                break;
+            case Config::get('constants.domain.ACTION_UPDATE_FLAG'):
+                $content = '{"flag":"' . $data . '"}';
+                Storage::put('public/cron/' . $filename, $content);
+                usleep(100);
+                $result = file_get_contents($file_path);
+                break;
+        }
+    }
+    return $result;
 }

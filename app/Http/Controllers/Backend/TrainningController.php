@@ -8,6 +8,7 @@ use App\TmsOrganizationEmployee;
 use App\TmsTrainningGroup;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use mod_lti\local\ltiservice\response;
 
@@ -202,10 +203,50 @@ class TrainningController extends Controller
         $leftJoin = '(select user_id, trainning_id from tms_traninning_users  where trainning_id = 9) ttu';
         $leftJoin = DB::raw($leftJoin);
 
-        $users = DB::table($tblQuery)->leftJoin($leftJoin,'ttu.user_id','=','org_us.user_id')
+        $users = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
             ->whereNull('ttu.trainning_id')
             ->pluck('org_us.user_id')->toArray();
 
         return response()->json($users);
+    }
+
+    public function getAllRoute()
+    {
+//        $arrData = [];
+//        $routeCollection = Route::getRoutes();
+
+        //dd($routeCollection->getRoutes()[250]);
+
+//        foreach ($routeCollection as $value) {
+//            $data_item['url'] = $value->uri();
+//            $data_item['method'] = $value->getName();
+//            array_push($arrData,$data_item);
+//        }
+
+//        $arrData = [];
+//        $routeCollection = Route::getRoutes()->getRoutes();
+//
+////        dd($routeCollection[250]);
+//
+//        foreach ($routeCollection as $value) {
+//            if (array_key_exists('middleware', $value->action)) {
+//                if (in_array('clearance', $value->action['middleware']) && strpos($value->uri, 'locale') == false) {
+//
+//                    $data_item['url'] = $value->uri;
+//                    $data_item['method'] = $value->methods;
+//                    $data_item['action'] = $value->action['middleware'];
+//                    array_push($arrData, $data_item);
+//
+//                }
+//            }
+//        }
+//        return response()->json($arrData);
+        $data = updateFlagCron('enroll_trainning.json', 'write', 'stop');
+        $data = json_decode($data, true);
+        if ($data['flag'] == 'stop') {
+            return 'stop';
+        }
+        return 'start';
+        return response()->json($data);
     }
 }

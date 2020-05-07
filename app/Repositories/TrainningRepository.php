@@ -208,7 +208,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->name = $name;
             $trainning->style = $style;
             $trainning->auto_certificate = $auto_certificate ? 1 : 0;
-            $trainning->auto_badge = $auto_badge? 1 : 0;
+            $trainning->auto_badge = $auto_badge ? 1 : 0;
             $trainning->run_cron = $run_cron;
             $trainning->time_start = $time_start;
             $trainning->time_end = $time_end;
@@ -237,7 +237,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'type' => 1
             ])->delete();
             if ($role_id && $role_id != 0) {
-                $trainning_role = TmsTrainningGroup::firstOrCreate([
+                TmsTrainningGroup::firstOrCreate([
                     'trainning_id' => $id,
                     'group_id' => $role_id,
                     'type' => 0
@@ -245,12 +245,17 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             if ($organization_id && $organization_id != 0) {
-                $trainning_organization = TmsTrainningGroup::firstOrCreate([
+                TmsTrainningGroup::firstOrCreate([
                     'trainning_id' => $id,
                     'group_id' => $organization_id,
                     'type' => 1
                 ]);
             }
+
+            //cap nhat flag, chay cron
+            updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+                Config::get('constants.domain.START_CRON'));
+
 
             \DB::commit();
             $response->status = true;
@@ -413,7 +418,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->join('mdl_course as mc', 'mc.id', '=', 'ttc.course_id')
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
-            ->select('mc.id', 'mc.fullname', 'mc.shortname','ttc.sample_id');
+            ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id');
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -938,11 +943,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->whereNull('ttu.trainning_id')
                 ->pluck('org_us.user_id')->toArray();
 
-            if (count($lstUserIDs) >= Config::get('constants.domain.LIMIT_SUBMIT')) {
-                $response->status = false;
-                $response->message = __('qua_so_luong_submit');
-                return response()->json($response);
-            }
+//            if (count($lstUserIDs) >= Config::get('constants.domain.LIMIT_SUBMIT')) {
+//                $response->status = false;
+//                $response->message = __('qua_so_luong_submit');
+//                return response()->json($response);
+//            }
 
 
             //add user to competency framework
@@ -966,17 +971,21 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 }
                 TmsTrainningUser::insert($queryArray);
 
+                //cap nhat flag, chay cron
+                updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+                    Config::get('constants.domain.START_CRON'));
+
                 //lay danh sach course_id trong KNL
-                $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
+//                $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
 
                 // enroll user to course in competency framework
                 // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
                 // he thong dang set mac dinh user tao ra deu co quyen student
 
-                foreach ($courses as $course) {
-                    enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
-                    usleep(10);
-                }
+//                foreach ($courses as $course) {
+//                    enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
+//                    usleep(10);
+//                }
 
                 DB::commit();
             }
