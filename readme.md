@@ -108,4 +108,4 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 43 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/completeTrainning?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
 # cron tu dong gen anh chung chi
-0 1 * * * root python /home/easia/elearning-easia/python/generate.py 0 0
+*/1 * * * * root python /home/easia/elearning-easia/python/generate.py 0 0
