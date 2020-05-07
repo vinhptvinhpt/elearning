@@ -15,10 +15,23 @@
       <!--Filter block-->
       <div class="card">
         <div class="card-body">
-
-
-          <!--New filter-->
           <div class="row">
+            <div class="col-6">
+              <select v-model="mode_select" class="form-control">
+                <option value="certificated">
+                  {{ trans.get('keys.da_cap_chung_chi')}}
+                </option>
+                <option value="completed_training">
+                  {{ trans.get('keys.da_hoan_thanh_khung_nang_luc')}}
+                </option>
+                <option value="completed_course">
+                  {{ trans.get('keys.hoan_thanh_khoa_hoc')}}
+                </option>
+                <option value="learning_time">
+                  {{ trans.get('keys.thoi_gian_hoc')}}
+                </option>
+              </select>
+            </div>
             <div class="col-6">
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
@@ -30,7 +43,7 @@
                 </option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-6" v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
               <select id="course_select" v-model="course_id" class="custom-select">
                 <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
                 <option v-for="course in course_list" :value="course.id">
@@ -45,7 +58,6 @@
                 v-model="startdate"
                 format="dd-MM-yyyy"
                 input-class="form-control"
-                style="width: 40%"
                 :placeholder="trans.get('keys.ngay_bat_dau')"
               >
               </datepicker>
@@ -55,13 +67,12 @@
                 v-model="enddate"
                 format="dd-MM-yyyy"
                 input-class="form-control"
-                style="width: 40%"
                 :placeholder="trans.get('keys.ngay_ket_thuc')"
               >
               </datepicker>
-              <div class="text-right" style="width: 20%">
-                <button id="buttonReport" class="btn btn-primary form-control" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
-              </div>
+            </div>
+            <div class="col-12 text-right">
+              <button id="buttonReport" class="btn btn-primary" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
             </div>
           </div>
         </div>
@@ -79,19 +90,11 @@
                 <span class="color-box training-color">{{trans.get('keys.khung_nang_luc')}}</span>
                 <span class="color-box course-color">{{trans.get('keys.khoa_hoc')}}</span>
               </div>
-              <div class="col-5 text-right" style="display: flex">
-                <select v-model="mode_select" class="form-control" @input="listData()">
-                  <option value="completed">
-                    {{ trans.get('keys.hoan_thanh_dao_tao')}}
-                  </option>
-                  <option value="certificated">
-                    {{ trans.get('keys.da_cap_chung_chi')}}
-                  </option>
-                </select>
-                <a style="padding: 10px;margin: 0 5px;color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
+              <div class="col-5 text-right">
+                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
                   <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
                 </a>
-                <a style="padding: 10px;margin: 0 5px;color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
+                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
                   <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>
                 </a>
               </div>
@@ -103,13 +106,18 @@
               <thead>
               <tr>
                 <th>{{trans.get('keys.ten')}}</th>
-                <th v-if="mode_select === 'completed'">{{trans.get('keys.da_hoan_thanh_dao_tao')}}</th>
-                <th v-else>{{trans.get('keys.da_co_giay_chung_nhan')}}</th>
 
-                <th v-if="mode_select === 'completed'">{{trans.get('keys.chua_hoan_thanh_dao_tao')}}</th>
-                <th v-else>{{trans.get('keys.chua_co_giay_chung_nhan')}}</th>
+                <th v-if="mode_select === 'completed_course' || mode_select === 'completed_training'">{{trans.get('keys.da_hoan_thanh_dao_tao')}}</th>
+                <th v-if="mode_select === 'completed_course' || mode_select === 'completed_training'">{{trans.get('keys.chua_hoan_thanh_dao_tao')}}</th>
 
-                <th>{{trans.get('keys.tong_so')}}</th>
+                <th v-if="mode_select === 'certificated'">{{trans.get('keys.da_co_giay_chung_nhan')}}</th>
+                <th v-if="mode_select === 'certificated'">{{trans.get('keys.chua_co_giay_chung_nhan')}}</th>
+
+                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.thoi_gian_hoc')}}</th>
+                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.so_nguoi_tham_gia')}}</th>
+
+                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.thoi_luong_hoc')}}</th>
+                <th v-else>{{trans.get('keys.tong_so')}}</th>
               </tr>
               </thead>
               <tbody>
@@ -164,7 +172,7 @@
                 training_id: 0,
                 course_id: 0,
                 training_options: [],
-                mode_select: 'completed',
+                mode_select: 'certificated',
                 startdate: '',
                 enddate: ''
               ,
@@ -229,9 +237,6 @@
               if (has_enddate) {
                 this.enddate = this.convertTime(this.enddate);
               }
-
-              console.log(this.startdate);
-              console.log(this.enddate);
             },
             listData() {
               this.checkTime();
@@ -344,25 +349,24 @@
                   color: "#D1FFE9",
                   parent: ''
                 };
-                pushObject.column1 = item.name;
+                pushObject.column1 = item.col0;
                 if (type === 'organization' || type === 'training' || type === 'courses') {
-                  if (this.mode_select === 'completed') {
-                    let completed = item.completed;
-                    if (type === 'organization' || type === 'training') {
-                      completed = this.cleanDataForParent(item.incomplete, completed);
-                    }
-                    pushObject.column2 = Object.keys(completed).length;
-                    pushObject.column3 = Object.keys(item.incomplete).length;
-
-                  } else {
-                    let certificated = item.certificated;
-                    if (type === 'organization' || type === 'training') {
-                      certificated = this.cleanDataForParent(item.certificated_missing, certificated);
-                    }
-                    pushObject.column2 = Object.keys(certificated).length;
-                    pushObject.column3 = Object.keys(item.certificated_missing).length;
+                  let col1 = item.col1;
+                  let col2 = item.col2;
+                  if (this.mode_select === 'completed_course' && (type === 'organization' || type === 'training')) {
+                    col1 = this.cleanDataForParent(col2, col1);
                   }
-                  pushObject.column4 = Object.keys(item.users).length;
+                  if (this.mode_select === 'learning_time') {
+                    pushObject.column2 = Math.round(item.col1_counter / 3600);
+                  } else {
+                    pushObject.column2 = Object.keys(col1).length;
+                  }
+                  pushObject.column3 = Object.keys(col2).length;
+                  if (this.mode_select === 'learning_time') {
+                    pushObject.column4 = typeof item.col3 === 'string' ? item.col3 : '';
+                  } else {
+                    pushObject.column4 = Object.keys(item.col3).length;
+                  }
                 }
 
                 if (type === 'organization') {
@@ -386,7 +390,7 @@
               }
             },
             setUserListObject(item, parent_key) {
-              if (typeof item.users !== 'undefined' && item.users.length !== 0) {
+              if (typeof item.col3 !== 'undefined' && item.col3 !== null && item.col3.length !== 0) { //có người dùng
                 let pushObject = {
                   id: 0,
                   type: 'users',
@@ -397,23 +401,13 @@
                   color: "#fff",
                   parent: parent_key
                 };
-
-                if (this.mode_select === 'completed') {
-                  if (typeof item.completed !== 'undefined') {
-                    pushObject.column2 = this.setUserList(item.completed);
-                  }
-                  if (typeof item.incomplete !== 'undefined') {
-                    pushObject.column3 = this.setUserList(item.incomplete);
-                  }
-                } else {
-                  if (typeof item.certificated !== 'undefined') {
-                    pushObject.column2 = this.setUserList(item.certificated);
-                  }
-                  if (typeof item.certificated_missing !== 'undefined') {
-                    pushObject.column3 = this.setUserList(item.certificated_missing);
-                  }
+                if (typeof item.col1 !== 'undefined') {
+                  pushObject.column2 = this.setUserList(item.col1);
                 }
-                pushObject.column4 = this.setUserList(item.users);
+                if (typeof item.col2 !== 'undefined') {
+                  pushObject.column3 = this.setUserList(item.col2);
+                }
+                pushObject.column4 = this.setUserList(item.col3);
                 this.report_data.push(pushObject);
               }
             },

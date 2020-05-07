@@ -349,13 +349,13 @@
 
                 for (let [id, object] of Object.entries(list)) {
 
-                  let certificated_count = Array.isArray(object.certificated) ? object.certificated.length : Object.keys(object.certificated).length;
+                  let certificated_count = Array.isArray(object.col1) ? object.col1.length : Object.keys(object.col1).length;
                   user_confirm_data.push(certificated_count);
 
-                  let certificated_mising_count = Array.isArray(object.certificated_missing) ? object.certificated_missing.length : Object.keys(object.certificated_missing).length;
+                  let certificated_mising_count = Array.isArray(object.col2) ? object.col2.length : Object.keys(object.col2).length;
                   user_missing_data.push(certificated_mising_count);
 
-                  user_district_title.push(object.name);
+                  user_district_title.push(object.col0);
                 }
                 this.userOptions.xAxis.categories = user_district_title;
 
