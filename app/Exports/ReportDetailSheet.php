@@ -60,13 +60,37 @@ class ReportDetailSheet implements WithTitle, WithHeadings, FromArray, WithMappi
 
     public function _getHeading()
     {
+        if ($this->type == 'completed_training' || $this->type == 'completed_course') {
+            $heading =  [
+                __('ten'),
+                __('da_hoan_thanh_dao_tao'),
+                __('chua_hoan_thanh_dao_tao'),
+                __('tong_so'),
+            ];
+        } elseif ($this->type == 'certificated') {
+            $heading =  [
+                __('ten'),
+                __('da_hoan_thanh_dao_tao'),
+                __('chua_hoan_thanh_dao_tao'),
+                __('tong_so'),
+            ];
+        } elseif ($this->type == 'learning_time') {
+            $heading =  [
+                __('ten'),
+                __('thoi_gian_hoc'),
+                __('so_nguoi_tham_gia'),
+                __('thoi_luong_hoc'),
+            ];
+        } else {
+            $heading =  [
+                __(''),
+                __(''),
+                __(''),
+                __(''),
+            ];
+        }
 
-        return [
-            __('ten'),
-            $this->type == 'completed' ? __('da_hoan_thanh_dao_tao') : __('da_co_giay_chung_nhan'),
-            $this->type == 'completed' ? __('chua_hoan_thanh_dao_tao') : __('chua_co_giay_chung_nhan'),
-            __('tong_so'),
-        ];
+        return $heading;
     }
 
     public function registerEvents(): array

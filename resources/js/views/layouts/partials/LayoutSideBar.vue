@@ -27,7 +27,6 @@
                         || slug_can('tms-system-teacher-view')
                         || slug_can('tms-system-student-view')
                         || slug_can('tms-system-market-view')
-                        || current_roles.has_role_leader || current_roles.has_role_manager
                         ">
                         <a class="nav-link has-submenu collapse-level-1" id="quan_ly_he_thong"
                            @click="toggleMenu('', 'quan_ly_he_thong','auth_drp')"
@@ -144,7 +143,10 @@
                             </li>
 
                             <li class="nav-item"
-                                v-if="slug_can('tms-system-user-view') || slug_can('tms-system-teacher-view') || slug_can('tms-system-student-view') || slug_can('tms-system-market-view')">
+                                v-if="slug_can('tms-system-user-view')
+                                || slug_can('tms-system-teacher-view')
+                                || slug_can('tms-system-student-view')
+                                || slug_can('tms-system-market-view')">
                                 <a class="nav-link  has-submenu collapse-level-2" id="quan_tri_nguoi_dung"
                                    @click="toggleMenu('quan_ly_he_thong', 'quan_tri_nguoi_dung','signup_organize')"
                                    href="javascript:void(0);" data-level="collapse-level-2">

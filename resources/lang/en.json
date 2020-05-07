@@ -212,9 +212,9 @@
     "ma_trainning_da_ton_tai": "Trainning code already exists",
     "sua_khung_nang_luc_thanh_cong": "Edit trainning program successfully",
     "xoa_khung_nang_luc_thanh_cong": "Delete trainning program successfully",
-    "chua_hoan_thanh_dao_tao": "Employee incomplete education",
-    "da_hoan_thanh_dao_tao": "Employee completed course",
-    "da_co_giay_chung_nhan": "Employees get certificate",
+    "chua_hoan_thanh_dao_tao": "Training incomplete",
+    "da_hoan_thanh_dao_tao": "Training completed",
+    "da_co_giay_chung_nhan": "Certificated",
     "stt": "No.",
     "tong_so": "Total",
     "test_import_excel": "Add data using excel",
@@ -304,5 +304,8 @@
     "ten": "Name",
     "to_chuc": "Organization",
     "qua_so_luong_submit": "The number of users exceeds the specified limit",
-    "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template"
+    "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template",
+    "thoi_gian_hoc": "Actual learning hours",
+    "so_nguoi_tham_gia": "Number of participation",
+    "thoi_luong_hoc": "Training duration"
 }
