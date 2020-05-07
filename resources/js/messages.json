@@ -910,7 +910,8 @@
     "ten_huy_hieu": "Badge name",
     "chinh_sua_thong_tin_huy_hieu": "Edit the badge information",
     "danh_sach_huy_hieu": "Badge Template List",
-    "clone_noi_dung": "Clone content"
+    "clone_noi_dung": "Clone content",
+    "cap_chung_chi_loi": "Error generate certificate"
   },
   "vi.keys": {
     "language": "",
@@ -1823,6 +1824,7 @@
     "ten_huy_hieu": "Tên huy hiệu",
     "chinh_sua_thong_tin_huy_hieu": "Chỉnh sửa thông tin huy hiệu",
     "danh_sach_huy_hieu": "Danh sách huy hiệu mẫu",
-    "clone_noi_dung": "Sao chép nội dung khóa học"
+    "clone_noi_dung": "Sao chép nội dung khóa học",
+    "cap_chung_chi_loi": "Cấp chứng chỉ lỗi"
   }
 }
