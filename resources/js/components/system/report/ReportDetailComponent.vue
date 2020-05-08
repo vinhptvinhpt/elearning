@@ -51,28 +51,38 @@
                 </option>
               </select>
             </div>
+            <div class="col-6">
+              <select id="inputCountry" class="form-control custom-select" v-model="country">
+                <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+                <option v-for="(country_name, country_code, index) in countries" :value="country_code">{{ country_name }}</option>
+              </select>
+            </div>
             <div class="col-6 form-inline">
-              <datepicker
-                id="inputStart"
-                :clear-button=true
-                v-model="startdate"
-                format="dd-MM-yyyy"
-                input-class="form-control"
-                :placeholder="trans.get('keys.ngay_bat_dau')"
-              >
-              </datepicker>
-              <datepicker
-                id="inputEnd"
-                :clear-button=true
-                v-model="enddate"
-                format="dd-MM-yyyy"
-                input-class="form-control"
-                :placeholder="trans.get('keys.ngay_ket_thuc')"
-              >
-              </datepicker>
+              <div style="width: 50%">
+                <datepicker
+                  id="inputStart"
+                  :clear-button=true
+                  v-model="startdate"
+                  format="dd-MM-yyyy"
+                  input-class="form-control"
+                  :placeholder="trans.get('keys.ngay_bat_dau')"
+                >
+                </datepicker>
+              </div>
+              <div style="width: 50%">
+                <datepicker
+                  id="inputEnd"
+                  :clear-button=true
+                  v-model="enddate"
+                  format="dd-MM-yyyy"
+                  input-class="form-control"
+                  :placeholder="trans.get('keys.ngay_ket_thuc')"
+                >
+                </datepicker>
+              </div>
             </div>
             <div class="col-12 text-right">
-              <button id="buttonReport" class="btn btn-primary" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
+                <button id="buttonReport" class="btn btn-primary btn-sm" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
             </div>
           </div>
         </div>
@@ -174,11 +184,21 @@
                 training_options: [],
                 mode_select: 'certificated',
                 startdate: '',
-                enddate: ''
-              ,
+                enddate: '',
+                country: '',
+                countries: []
             }
         },
         methods: {
+            getCountries() {
+              axios.post('/system/user/list_country')
+                .then(response => {
+                  this.countries = response.data;
+                })
+                .catch(error => {
+                  console.log(error.response.data);
+                });
+            },
             convertTime(timestamp) {
               let a = new Date(timestamp);
               let year = a.getFullYear();
@@ -197,6 +217,7 @@
             preloadData() {
                 this.fetchOrganization();
                 this.fetchTraining();
+                this.getCountries();
                 this.listData();
             },
             fetchCourses() {
@@ -245,7 +266,8 @@
                 training_id: this.training_id,
                 mode_select: this.mode_select,
                 start_date: this.startdate,
-                end_date: this.enddate
+                end_date: this.enddate,
+                country: this.country
               })
                 .then(response => {
                   let list = response.data;
