@@ -4655,7 +4655,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
         }
 
-        $listStudentsDone = $listStudentsDone->groupBy('u.id');
+//        $listStudentsDone = $listStudentsDone->groupBy('u.id');
 
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
