@@ -6614,7 +6614,7 @@ class BussinessRepository implements IBussinessInterface
     }
 
     public function apiStore(Request $request)
-    {Log::info($request);
+    {
         try {
             $avatar = $request->file('file');
             $fullname = $request->input('fullname');
