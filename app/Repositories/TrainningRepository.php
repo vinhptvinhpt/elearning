@@ -252,10 +252,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ]);
             }
 
-            //cap nhat flag, chay cron
-            updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
-                Config::get('constants.domain.START_CRON'));
-
+            $totalCourse = TmsTrainningCourse::where('trainning_id', '=', $trainning->id)->where('deleted', '=', 0)->count();
+            if ($totalCourse > 0) {
+                //cap nhat flag, chay cron
+                updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+                    Config::get('constants.domain.START_CRON'));
+            }
 
             \DB::commit();
             $response->status = true;
@@ -418,6 +420,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->join('mdl_course as mc', 'mc.id', '=', 'ttc.course_id')
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
+            ->where('mc.deleted', '=', 0)
             ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id');
 
         if ($this->keyword) {
@@ -464,6 +467,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->join('mdl_course as c', 'c.id', '=', 'ttc.sample_id')
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
+            ->where('c.deleted', '=', 0)
             ->select('c.id')->groupBy('ttc.sample_id')->pluck('c.id');
 
         $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
