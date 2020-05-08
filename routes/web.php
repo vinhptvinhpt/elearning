@@ -309,7 +309,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/get_list_saleroom_select', 'Backend\SystemController@apiGetListSaleRoomSelect');
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
-
+    Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');
 
     //System cctc
     Route::get('/system/organize', 'Backend\SystemOrganizeController@viewIndex')->name('system.organize');
