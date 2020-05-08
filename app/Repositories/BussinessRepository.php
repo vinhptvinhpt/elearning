@@ -346,6 +346,7 @@ class BussinessRepository implements IBussinessInterface
             $data = MdlCourse::where('category', '<>', 2)
                 ->where("enddate", ">=", $now)
                 ->where("startdate", "<=", $now)
+                ->where("deleted", "=", 0)
                 ->select(
                     'id',
                     'shortname',
