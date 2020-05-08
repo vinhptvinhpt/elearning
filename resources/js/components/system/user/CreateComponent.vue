@@ -647,12 +647,12 @@
                 //         return;
                 //     }
                 // }
-                if (this.last_organization_id) {
-                    if (organization_roles_selected.length === 0) {
-                        toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                        return;
-                    }
-                }
+                // if (this.last_organization_id) {
+                //     if (organization_roles_selected.length === 0) {
+                //         toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                //         return;
+                //     }
+                // }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
