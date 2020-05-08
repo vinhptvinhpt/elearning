@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\ModelHasRole;
+use App\Repositories\MdlUserRepository;
 use App\TmsUserDetail;
 use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
@@ -13,10 +14,12 @@ use Illuminate\Support\Facades\DB;
 class SystemController extends Controller
 {
     private $bussinessRepository;
+    private $userRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository)
+    public function __construct(BussinessRepository $bussinessRepository, MdlUserRepository $userRepository)
     {
         $this->bussinessRepository = $bussinessRepository;
+        $this->userRepository = $userRepository;
     }
 
     protected $importOutput = [];
@@ -256,6 +259,11 @@ class SystemController extends Controller
     public function apiGradeCourseTotal(Request $request)
     {
         return $this->bussinessRepository->apiGradeCourseTotal($request);
+    }
+
+    public function apiGetTrainningUser(Request $request)
+    {
+        return $this->userRepository->getTrainningUser($request);
     }
 
     public function apiCourseList()

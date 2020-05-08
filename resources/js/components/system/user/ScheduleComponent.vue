@@ -70,7 +70,7 @@
                                     <th class=" mobile_hide">{{trans.get('keys.thoi_gian_bat_dau')}}</th>
                                     <th class=" mobile_hide">{{trans.get('keys.thoi_gian_ket_thuc')}}</th>
                                     <th class=" mobile_hide">{{trans.get('keys.hinh_thuc_dt')}}</th>
-                                    <th class=" mobile_hide">{{trans.get('keys.vai_tro')}}</th>
+<!--                                    <th class=" mobile_hide">{{trans.get('keys.vai_tro')}}</th>-->
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -91,7 +91,7 @@
                                         <span v-if="post.category == 2 || post.category == 5" class="badge bg-light-10">Offline</span>
                                         <span v-else class="badge badge-primary">Online</span>
                                     </td>
-                                    <td class=" mobile_hide">{{post.role_name}}</td>
+<!--                                    <td class=" mobile_hide">{{post.role_name}}</td>-->
                                 </tr>
                                 </tbody>
                                 <tfoot>
@@ -102,7 +102,7 @@
                                     <th class=" mobile_hide">{{trans.get('keys.thoi_gian_bat_dau')}}</th>
                                     <th class=" mobile_hide">{{trans.get('keys.thoi_gian_ket_thuc')}}</th>
                                     <th class=" mobile_hide">{{trans.get('keys.hinh_thuc_dt')}}</th>
-                                    <th class=" mobile_hide">{{trans.get('keys.vai_tro')}}</th>
+<!--                                    <th class=" mobile_hide">{{trans.get('keys.vai_tro')}}</th>-->
                                 </tr>
                                 </tfoot>
                             </table>
@@ -145,7 +145,7 @@
                    hour12 : false,
                    hour:  "2-digit",
                    minute: "2-digit"
-                }
+                };
                 var time = new Date(value * 1000);
                 return time.toLocaleDateString('hi',options);
             },

@@ -4,8 +4,15 @@
             <div class="row">
                 <div class="col-6 form-group">
                     <h5 class="hk-sec-title">{{trans.get('keys.khung_nang_luc')}}</h5>
-                    <select class="form-control" disabled>
-                        <option value="3">{{training_name ? training_name : trans.get('keys.chua_co_khung_nang_luc')}}
+                    <!--                    <select class="form-control">-->
+                    <!--                        <option value="3">{{training_name ? training_name : trans.get('keys.chua_co_khung_nang_luc')}}-->
+                    <!--                        </option>-->
+                    <!--                    </select>-->
+                    <select v-model="trainning_id" @change="getGradeByCourse(1)"
+                            class="form-control" id="trainning_id">
+                        <option value="">{{trans.get('keys.khung_nang_luc')}}</option>
+                        <option v-for="trr in trainningUser" :value="trr.id">
+                            {{trr.name}}
                         </option>
                     </select>
                 </div>
@@ -39,8 +46,9 @@
                                                     @click="getGradeByCourse(1)">
                                                 {{trans.get('keys.tim')}}
                                             </button>
-                                            <a style="color: #fff" class="btn btn-sm btn-primary" v-on:click="exportExcel(posts)" :title="trans.get('keys.xuat_excel')">
-                                              <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
+                                            <a style="color: #fff" class="btn btn-sm btn-primary"
+                                               v-on:click="exportExcel(posts)" :title="trans.get('keys.xuat_excel')">
+                                                <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i>&nbsp;{{trans.get('keys.excel')}}</span>
                                             </a>
                                         </div>
                                     </form>
@@ -53,6 +61,7 @@
                                         <th>{{trans.get('keys.stt')}}</th>
                                         <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
+                                        <th class=" mobile_hide">{{trans.get('keys.khung_nang_luc')}}</th>
                                         <th class="text-center">{{trans.get('keys.tien_do')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>
                                         <th>{{trans.get('keys.trang_thai')}}</th>
@@ -70,6 +79,10 @@
                                                    @click="getGradeCourseDetail(post.course_id)">
                                                 {{post.fullname}}
                                             </label>
+                                        </td>
+
+                                        <td class=" mobile_hide">
+                                            {{post.trainning_name}}
                                         </td>
                                         <td class="text-center">
                                             <label style="display: block;">
@@ -94,9 +107,17 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <span v-if="post.status_user == 1 && post.finalgrade >= post.gradepass && post.user_course_completionstate == post.user_course_learn && post.user_course_completionstate > 0"
-                                                  class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
-                                            <span v-else class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>
+                                            <div v-if="post.user_course_completionstate == post.user_course_learn && post.user_course_completionstate > 0">
+                                                <span v-if="post.status_user == 1 && post.finalgrade!=undefined && post.finalgrade >= post.gradepass"
+                                                      class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
+                                                <span v-else
+                                                      class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
+                                            </div>
+                                            <div v-else><span class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>
+                                            </div>
+                                            <!--                                            <span v-if="post.status_user == 1 && post.finalgrade >= post.gradepass && post.user_course_completionstate == post.user_course_learn && post.user_course_completionstate > 0"-->
+                                            <!--                                                  class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>-->
+                                            <!--                                            <span v-else class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>-->
                                         </td>
                                     </tr>
                                     </tbody>
@@ -105,6 +126,7 @@
                                         <th>{{trans.get('keys.stt')}}</th>
                                         <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
+                                        <th class=" mobile_hide">{{trans.get('keys.khung_nang_luc')}}</th>
                                         <th class="text-center">{{trans.get('keys.tien_do')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>
                                         <th>{{trans.get('keys.trang_thai')}}</th>
@@ -185,11 +207,23 @@
                 course_radio: 0,
                 course_detail: {},
                 course_grade: {},
+                trainningUser: [],
+                trainning_id: ''
             }
         },
         methods: {
             backPage() {
                 this.course_radio = 0;
+            },
+            getTrainningUser() {
+                axios.post('/api/system/get_trainning_user', {
+                    user_id: this.user_id
+                })
+                    .then(response => {
+                        this.trainningUser = response.data;
+                    })
+                    .catch(error => {
+                    });
             },
             getGradeCourseDetail(courseid) {
                 this.course_radio = courseid;
@@ -211,6 +245,7 @@
                     keyword: this.keyword,
                     row: this.row,
                     user_id: this.user_id,
+                    trainning_id: this.trainning_id,
                     category: this.category
                 })
                     .then(response => {
@@ -236,25 +271,26 @@
             },
             exportExcel(data) {
                 axios.post('/api/exportResult', {
-                  data: data,
-                  username: this.username,
-                  fullname: this.fullname
+                    data: data,
+                    username: this.username,
+                    fullname: this.fullname
                 })
-                  .then(response => {
-                    let file_name = response.data;
-                    let a = $("<a>")
-                      .prop("href", "/api/downloadExport/" + file_name)
-                      .appendTo("body");
-                    a[0].click();
-                    a.remove();
-                  })
-                  .catch(error => {
-                    toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
-                  });
+                    .then(response => {
+                        let file_name = response.data;
+                        let a = $("<a>")
+                            .prop("href", "/api/downloadExport/" + file_name)
+                            .appendTo("body");
+                        a[0].click();
+                        a.remove();
+                    })
+                    .catch(error => {
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+                    });
             },
         },
         mounted() {
             this.getCourseCategory();
+            this.getTrainningUser();
         }
     }
 </script>
