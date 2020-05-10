@@ -154,6 +154,7 @@ $countBlock = 1;
         color: #FFFFFF;
         text-transform: uppercase;
         font-size: 23px;
+        margin: 0;
     }
 
     .table thead th{
@@ -174,6 +175,7 @@ $countBlock = 1;
         border-radius: 4px;
         padding: .375em;
         width: 100%;
+        border:none;
     }
 
     .icon-circle{
@@ -335,6 +337,89 @@ $countBlock = 1;
         letter-spacing: 0.5px;
         color: #202020;
         margin: 0;
+        width: 100%;
+    }
+
+    .percentage{
+        font-family: Roboto-Regular;
+        fill: #862055;
+    }
+
+    .block-content{
+        width: 100%;
+    }
+
+
+
+    /*.table-keep thead th {*/
+    /*    !*position: sticky;*!*/
+    /*    top: 0;*/
+    /*}*/
+
+    /*.table-keep {*/
+    /*    display: flex;*/
+    /*    flex-flow: column;*/
+    /*    width: 100%;*/
+    /*    overflow-y: auto;*/
+    /*    height: 200px;*/
+    /*    min-height: 200px;*/
+    /*}*/
+
+    /*.table-keep thead {*/
+    /*    flex: 0 0 auto;*/
+    /*}*/
+
+    /*.table-keep tbody {*/
+    /*    flex: 1 1 auto;*/
+    /*    display: block;*/
+    /*    overflow-y: auto;*/
+    /*    overflow-x: hidden;*/
+    /*}*/
+
+    /*.table-keep tr {*/
+    /*    width: 100%;*/
+    /*    display: table;*/
+    /*    table-layout: fixed;*/
+    /*}*/
+
+
+    /*Ipad ngang(1024 x 768)*/
+    @media screen and (max-width: 1024px){
+
+    }
+    /*Ipad dọc(768 x 1024)*/
+    @media screen and (max-width: 768px){
+        .info-user{
+            padding-left: 25%;
+            margin-bottom: 15px;
+        }
+        .info-user, .info-learn{
+            width: 100%;
+        }
+
+        .block-content12{
+            display: block;
+        }
+
+        .block-content6{
+            max-width: 96%;
+        }
+    }
+    /*Tablet nhỏ(480 x 640)*/
+    @media screen and (max-width: 480px){
+
+
+        .item-content p{
+            font-size: 10px;
+        }
+    }
+    /*Iphone(480 x 640)*/
+    @media screen and (max-width: 320px){
+
+    }
+    /*Smart phone nhỏ*/
+    @media screen and (max-width: 240px){
+
     }
 </style>
 <body>
@@ -366,23 +451,24 @@ $countBlock = 1;
                 <div class="block overall">
                     <div class="title"><p>Overall</p></div>
                     <div class="block-content">
-                        <div class="row col-12">
-                            <div class="col-6 row">
+                        <div class="row col-12 block-content12">
+                            <div class="col-6 row block-content6">
                                <div class="col-6">
                                    <div>
                                        <svg viewBox="0 0 36 36" width="150" class="circular-chart">
-
+                                           <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                           <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
                                            <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                           <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                           <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+
+
                                            <text x="18" y="20.35" class="percentage">0%</text>
                                        </svg>
                                    </div>
@@ -398,7 +484,7 @@ $countBlock = 1;
                                 </div>
                             </div>
 
-                            <div class="col-6">
+                            <div class="col-6 block-content6">
                                 <div class="row block-progress">
                                     <p>Required Courses</p>
                                     <div class="progress col-11">
@@ -427,7 +513,7 @@ $countBlock = 1;
                 <div class="block courses">
                     <div class="title"><p>your courses</p></div>
                     <div class="block-content">
-                        <table class="table borderless">
+                        <table class="table borderless table-keep">
                             <thead>
                             <tr>
                                 <th scope="col">
@@ -667,10 +753,11 @@ $countBlock = 1;
 
 <script>
     $(document).ready(function(){
-        $(".nav-tabs a").click(function(){
-            var getHref = $(this).attr('href').replace('#', '');
-            $(getHref).addClass('active');
-        });
+        // $(".nav-tabs a").click(function(){
+        //     var getHref = $(this).attr('href').replace('#', '');
+        //     $(getHref).addClass('active');
+        // });
+        console.log(window.width);
     });
 
 </script>

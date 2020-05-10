@@ -543,6 +543,10 @@ $countBlock = 1;
         line-height: normal;
         letter-spacing: 0.1px;
     }
+    .percentage{
+        font-family: Roboto-Regular;
+        fill: #862055;
+    }
 </style>
 <body>
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
@@ -628,18 +632,16 @@ $countBlock = 1;
                             <div class="info-progress">
                                 <div>
                                     <svg viewBox="0 0 36 36" width="150" class="circular-chart">
-
+                                        <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
                                         <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-
-                                        <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
                                         <text x="18" y="20.35" class="percentage">0%</text>
                                     </svg>
                                 </div>
