@@ -93,6 +93,9 @@
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
         color: #3469FF;
+        background-image: url('images/file-tick.png');
+        background-repeat: no-repeat;
+        background-position: right;
     }
 
     .course-info__list-lessons ul li a{
@@ -106,7 +109,7 @@
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        width: 100%;
+        width: 90%;
     }
 
 
@@ -253,7 +256,7 @@
         background-color: #A30088;
         width: 100%;
         border: 2px solid #FFFFFF;
-        padding: 5px 15px;
+        padding: 6px 15px;
     }
     .btn-seach input:hover, .btn-seach i:hover{
         cursor: pointer;
@@ -408,8 +411,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+<!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+<!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -439,8 +444,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -470,8 +477,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -501,8 +510,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -532,8 +543,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -563,8 +576,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -594,8 +609,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
@@ -625,8 +642,10 @@
                                 </div>
                                 <div class="course-info__list-lessons">
                                     <ul>
-                                        <li><a href="">Lesson 1: Introduction</a></li>
-                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>
+                                        <!--                                        <li><a href=""><span>Lesson 1: Introduction</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <!--                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span> <i class="fa fa-file" aria-hidden="true"></i></a></li>-->
+                                        <li><a href=""><span>Lesson 1: Introduction</span></a></li>
+                                        <li><a href=""><span>Lesson 2: Skill to write minutes on the board</span></a></li>
                                     </ul>
                                 </div>
                                 <div class="btn-show btn-show-all btn-page">
