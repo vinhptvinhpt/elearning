@@ -124,7 +124,7 @@
         letter-spacing: 0.45px;
         color: #FFFFFF;
         text-transform: uppercase;
-        opacity: 1;
+        font-size: 13px;
         /*font-family: Roboto;*/
     }
 

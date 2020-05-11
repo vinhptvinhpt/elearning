@@ -1,25 +1,28 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
-$sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
-$courses = array_values($DB->get_records_sql($sql));
-$courses_current = array();
-$courses_all_required = array();
-$courses_optional = array();
-$courses_completed = array();
-foreach ($courses as $course){
-    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
-        array_push($courses_all_required, $course);
-    }
-    else if($course->numoflearned/$course->numofmodule == 1){
-        array_push($courses_completed, $course);
-    }
-    else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-        array_push($courses_current, $course);
-    }
+
+if($USER->id > 0){
+//    $sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+//    $courses = array_values($DB->get_records_sql($sql));
+//    $courses_current = array();
+//    $courses_all_required = array();
+//    $courses_optional = array();
+//    $courses_completed = array();
+//    foreach ($courses as $course){
+//        if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+//            array_push($courses_all_required, $course);
+//        }
+//        else if($course->numoflearned/$course->numofmodule == 1){
+//            array_push($courses_completed, $course);
+//        }
+//        else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
+//            array_push($courses_current, $course);
+//        }
+//    }
+//
+//    $countBlock = 1;
 }
 
-$countBlock = 1;
-//echo shell_exec('select * from mdl_user limit 1');
 
 ?>
 
