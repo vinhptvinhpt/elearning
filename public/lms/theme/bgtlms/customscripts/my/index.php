@@ -61,7 +61,9 @@ $countBlock = 1;
         font-family: Awsome;
         src: url('fonts/fa-solid-900.ttf');
     }
-
+    body{
+        font-size: 14px;
+    }
     a{
         text-decoration: none;
     }
@@ -108,6 +110,7 @@ $countBlock = 1;
     }
     .info-course p{
         margin: 0;
+        font-family: Roboto-Regular;
     }
     img{
         width: 100%;
@@ -148,8 +151,10 @@ $countBlock = 1;
 
     .title-course{
         text-align: left;
-        font: Bold 15px Roboto-Bold;
+        /*font: Bold 17px Roboto-Bold;*/
         letter-spacing: 0.6px;
+        font-size: 17px;
+        font-family: Roboto-Bold;
         color: #202020;
         opacity: 1;
         margin-bottom: 20px;
@@ -750,7 +755,7 @@ $countBlock = 1;
                                                 </div>
                                                 <div class="block-item__content">
                                                     <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                         <div class="info-course">
                                                             <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
                                                             <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
@@ -796,7 +801,7 @@ $countBlock = 1;
                                                 </div>
                                                 <div class="block-item__content">
                                                     <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                         <div class="info-course">
                                                             <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
                                                             <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
@@ -840,7 +845,7 @@ $countBlock = 1;
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
-                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
                                                                 <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
@@ -883,7 +888,7 @@ $countBlock = 1;
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
-                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
                                                                 <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
@@ -1028,6 +1033,7 @@ $countBlock = 1;
         }
 
         //localStorage.setItem('courses', <?php //json_decode($courses_current); ?>//);
+        localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
     });
 
 </script>

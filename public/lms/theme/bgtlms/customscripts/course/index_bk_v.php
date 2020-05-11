@@ -2,10 +2,12 @@
 require_once(__DIR__ . '/../../../../config.php');
 
 $USER->id = 23619;
-
+$sqlGetCoures = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+$courses = array_values($DB->get_records_sql($sqlGetCoures));
 
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
+
 ?>
 
 <html>
@@ -19,47 +21,34 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 <script src="js/bootstrap.min.js"></script>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
-<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
 <style>
     @font-face {
         font-family: Nunito-Sans;
         src: url('fonts/NunitoSans-Black.ttf');
     }
-
     @font-face {
         font-family: Nunito-Sans-Regular;
         src: url('fonts/NunitoSans-Regular.ttf');
     }
-
     @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
-
     @font-face {
         font-family: Roboto-Light;
         src: url('fonts/Roboto-Light.ttf');
     }
-
     @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
-
     @font-face {
         font-family: Awsome;
         src: url('fonts/fa-solid-900.ttf');
     }
 
-    @font-face {
-        font-family: Nunito-Bold;
-        src: url('fonts/Nunito-Bold.ttf');
-    }
-
-    img {
+    img{
         width: 100%;
     }
 
@@ -69,15 +58,13 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-color: #F1F1F1;
     }
 
-    ul {
+    ul{
         list-style: none;
     }
-
-    a {
+    a{
         text-decoration: none;
     }
-
-    a:hover {
+    a:hover{
         text-decoration: none;
         opacity: 0.5;
     }
@@ -89,55 +76,33 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     /*    overflow: hidden;*/
     /*}*/
     /*    view*/
-    .pagination{
-        margin: 0 auto;
-        padding: 1%;
-    }
-    .pagination li{
-        margin: 0% 5% !important;
-    }
-    .pagination li button{
-        background: #FFFFFF 0% 0% no-repeat padding-box;
-        border-radius: 4px;
-        font-family: Nunito-Bold;
-        letter-spacing: 0.45px;
-        color: #737373;
-    }
-    .page-item.active .page-link{
-        background: #862055 0% 0% no-repeat padding-box;
-        border-color: #862055;
-    }
-    .page-item:first-child button {
-        /*background-color: yellow !important;*/
-    }
-    .course-info__detail {
+    .course-info__detail{
         padding: 5% 0;
     }
 
-    .course-info__detail ul {
+    .course-info__detail ul{
         /*display: inline-flex;*/
         padding: 0;
         width: 100%;
     }
-
-    .course-info__detail ul li {
+    .course-info__detail ul li{
         margin-right: 8%;
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
         color: #737373;
     }
 
-    .course-info__list-lessons {
+    .course-info__list-lessons{
 
     }
 
-    .course-info__list-lessons ul {
+    .course-info__list-lessons ul{
         padding: 5% 0;
         padding-top: 0;
     }
 
 
-    .course-info__list-lessons ul li {
+    .course-info__list-lessons ul li{
         /*display: -webkit-box;*/
         /*-webkit-line-clamp: 1;*/
         /*-webkit-box-orient: vertical;*/
@@ -153,13 +118,13 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-position: right;
     }
 
-    .course-info__list-lessons ul li a {
+    .course-info__list-lessons ul li a{
         display: inline-flex;
         width: 100%;
     }
 
 
-    .course-info__list-lessons ul li a span {
+    .course-info__list-lessons ul li a span{
         display: -webkit-box;
         -webkit-line-clamp: 1;
         -webkit-box-orient: vertical;
@@ -168,13 +133,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
 
-    .btn-click {
+    .btn-click{
         background: #862055 0% 0% no-repeat padding-box;
         border-radius: 4px;
         opacity: 1;
     }
-
-    .btn-click a {
+    .btn-click a{
         text-align: left;
         font-family: Roboto-Regular;
         letter-spacing: 0.45px;
@@ -184,7 +148,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         /*font-family: Roboto;*/
     }
 
-    .percent {
+    .percent{
         width: 90px;
         height: 84px;
         transform: matrix(-0.91, 0.42, -0.42, -0.91, 0, 0);
@@ -192,7 +156,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 0.59;
     }
 
-    .course-info__title a {
+    .course-info__title a{
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #202020;
@@ -204,45 +168,43 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         height: 3.25rem;
     }
 
-    .course-info__title {
+    .course-info__title{
         padding: 2% 0;
     }
 
-    .btn-page {
+    .btn-page{
         text-align: right;
         padding-bottom: 15px;
     }
 
-    .block {
+    .block{
         padding-bottom: 4%;
         max-width: 48%;
     }
 
-    .block-first {
+    .block-first{
         margin-right: 4%;
     }
 
-    .course-block {
+    .course-block{
         background-color: #ffffff;
         position: relative;
         padding-left: 0;
         box-shadow: 3px 3px 6px #00000029;
     }
 
-    .course-block__image {
+    .course-block__image{
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
         min-height: 150px;
-        padding: 0;
     }
 
-    .course-block__image img {
-        width: 100%;
-        min-height: 100%;
+    .course-block__image img{
+
     }
 
-    .section--header {
+    .section--header{
         background-image: url('images/course/list/bg.png');
         width: 100%;
         background-repeat: no-repeat;
@@ -251,12 +213,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding-bottom: 1%;
     }
 
-    .header-block__logo img {
+    .header-block__logo img{
         width: 25%;
         padding: 4% 0;
     }
 
-    .header-block__search__title p {
+    .header-block__search__title p{
         font-family: Roboto-Regular;
         letter-spacing: 0.45px;
         color: #202020;
@@ -264,7 +226,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
 
-    .header-block__search__title .title-header {
+    .header-block__search__title .title-header{
         font-family: Roboto-Bold;
         text-transform: uppercase;
         letter-spacing: 0.9px;
@@ -273,7 +235,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding-top: 2%;
     }
 
-    .header-block__quick-filter__title p {
+    .header-block__quick-filter__title p{
         font-family: Roboto-Bold;
         letter-spacing: 0.9px;
         color: #202020;
@@ -281,7 +243,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding: 2% 0;
     }
 
-    .course-select, .input-search {
+    .course-select, .input-search{
         font-size: 13px;
         letter-spacing: 0.45px;
         color: #3E3E3E;
@@ -290,44 +252,42 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         border-radius: inherit;
     }
 
-    .input-search {
+    .input-search{
         padding: 2%;
         border-right: 0;
     }
-
-    .block-search__select {
+    .block-search__select{
         padding-right: 0;
     }
 
-    .block-search__btn {
+    .block-search__btn{
         padding-left: 5px;
         display: flex;
     }
 
-    .btn-seach {
+    .btn-seach{
         border: 1px solid #707070;
         border-left: 0;
     }
 
-    .btn-seach i {
+    .btn-seach i{
         position: absolute;
         color: #FFFFFF;
         top: 25%;
         padding: 3px 10px;
     }
 
-    .btn-seach input {
+    .btn-seach input{
         background-color: #A30088;
         width: 100%;
         border: 2px solid #FFFFFF;
         padding: 5px 15px;
     }
-
-    .btn-seach input:hover, .btn-seach i:hover {
+    .btn-seach input:hover, .btn-seach i:hover{
         cursor: pointer;
     }
 
-    .btn-click-course {
+    .btn-click-course{
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
@@ -340,32 +300,30 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         min-width: 135px;
     }
 
-    .btn-click-active {
+    .btn-click-active{
         background: transparent linear-gradient(97deg, #A30088 0%, #862055 100%) 0% 0% no-repeat padding-box;
         color: #FFFFFF;
     }
 
-    .block-search, .header-block__quick-filter__main ul {
+    .block-search, .header-block__quick-filter__main ul{
         padding-left: 0;
     }
 
-    .section-course-info {
+    .section-course-info{
         margin-top: 3%;
     }
 
     /*footer*/
-    .section-footer {
+    .section-footer{
         background: #202020 0% 0% no-repeat padding-box;
         border: 1px solid #707070;
         opacity: 1;
         padding: 1%;
     }
-
-    .footer-ul {
+    .footer-ul{
         padding: 0;
     }
-
-    .footer-ul li {
+    .footer-ul li{
         list-style: none;
         text-align: left;
         font-family: Nunito-Sans-Regular;
@@ -373,17 +331,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 1;
         margin-top: 5%;
     }
-
-    .footer-ul a {
+    .footer-ul a{
         text-decoration: none;
     }
-
-    .footer-ul li a {
+    .footer-ul li a{
         color: #FFFFFF;
         font-size: 13px;
     }
-
-    .footer-title {
+    .footer-title{
         text-align: left;
         font-family: Nunito-Sans-Regular;
         letter-spacing: 0.6px;
@@ -391,29 +346,25 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 1;
         font-size: 17px;
     }
-
     .footer-logo {
         height: 11%;
         /*margin-top: 1%;*/
     }
-
-    .footer-logo img {
+    .footer-logo img{
         width: 15%;
         position: absolute;
     }
 
-    .footer-full {
+    .footer-full{
         padding-bottom: 1%;
         margin-top: 5%;
     }
-
     /*.course-info__list-lessons ul li a{*/
     /*    */
     /*}*/
 </style>
 <body>
 <div class="wrapper" id="app"><!-- wrapper -->
-    <template>
     <section class="section section--header"><!-- section -->
         <div class="container">
             <div class="header-block">
@@ -428,20 +379,16 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <div class="header-block__search__btn-search">
                         <div class="row col-12 block-search">
                             <div class="col-2 block-search__select">
-                                <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
-                                        v-model="category">
+                                <select name="category" id="category" class="form-control course-select">
                                     <option value="0">All course</option>
-                                    <?php foreach ($categories as $category) { ?>
-                                        <option
-                                            value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                    <?php } ?>
+                                    <?php foreach ($categories as $category) {  ?>
+                                        <option value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                    <?php  } ?>
                                 </select>
                             </div>
                             <div class="col-5 block-search__btn">
-                                <input type="text" class="form-control input-search" v-model="txtSearch">
-                                <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
-                                                                                  aria-hidden="true"></i><input
-                                        type="button"></div>
+                                <input type="text" class="form-control input-search">
+                                <div class="btn-seach" @click="searchCourse()"><i class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
                             </div>
                         </div>
                     </div>
@@ -450,11 +397,10 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <div class="header-block__quick-filter__title"><p>Quick Filter</p></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
-                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
-                            <?php foreach ($categories as $category) { ?>
-                                <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
-                                    category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
-                            <?php } ?>
+                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0">All Course</li>
+                            <?php foreach ($categories as $category) {  ?>
+                                <li class="btn btn-click-course" id="ctgr<?php echo $category->id; ?>" category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
+                            <?php  } ?>
                         </ul>
                     </div>
                 </div>
@@ -466,53 +412,40 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     <section class="section section-content section-course-info">
         <div class="container">
             <div class="col-12 row">
-                <div class="col-4 block clctgr0" v-for="(course,index) in courses">
-                    <div class="row col-12 course-block">
-                        <div class="col-5 course-block__image">
-                            <img :src="urlTms+course.course_avatar" alt="">
-                        </div>
-                        <div class="col-7">
-                            <div class="course-info">
-                                <div class="info-text">
-                                    <div class="course-info__title">
-                                        <a :href="'lms/course/view.php?id='+course.id"
-                                           :title="course.fullname"><p class="title-course">
-                                                <i></i>{{course.fullname}}</p></a>
+                <?php foreach ($courses as $course) {  ?>
+                    <div class="col-4 block clctgr<?php echo $course->category; ?> clctgr0">
+                        <div class="row col-12 course-block">
+                            <div class="col-5 course-block__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                            </div>
+                            <div class="col-7">
+                                <div class="course-info">
+                                    <div class="info-text">
+                                        <div class="course-info__title">
+                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                        </div>
+                                        <div class="course-info__detail">
+                                            <ul>
+                                                <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</li>
+                                                <li class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</li>
+                                                <li class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</li>
+                                            </ul>
+                                        </div>
                                     </div>
-                                    <div class="course-info__detail">
-                                        <ul>
-                                            <li class="teacher">
-                                                <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
-                                            </li>
-                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
-                                            </li>
-                                            <li class="units">
-                                                <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
-                                            </li>
-                                        </ul>
+                                    <div class="btn-show btn-show-all btn-page">
+                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn more</a></button>
                                     </div>
-                                </div>
-                                <div class="btn-show btn-show-all btn-page">
-                                    <button class="btn btn-click"><a
-                                            :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                    </button>
-                                </div>
 
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                <?php  } ?>
 
             </div>
-            <div class="pagination" v-if="totalPage > 1">
-<!--                <v-pagination v-model="currentPage" :page-count="total"></v-pagination>-->
-                <v-pagination
-                    v-model="current"
-                    :page-count="totalPage"
-                    :classes="bootstrapPaginationClasses"
-                    :labels="customLabels"
-                    @input="onPageChange"
-                ></v-pagination>
+            <div class="pagination">
+                <?php
+                // PHẦN HIỂN THỊ PHÂN TRANG
+                ?>
             </div>
         </div>
     </section>
@@ -577,97 +510,56 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             </div>
         </footer>
     </section>
-    </template>
 </div>
 
 
+
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
 
         //tab categories click
-        $('.btn-click-course').click(function () {
+        $('.btn-click-course').click(function(){
             var category = $(this).attr('category');
+
             //add class active
             $(this).addClass('btn-click-active');
             $('.btn-click-course').not($('#ctgr' + category)).each(function () {
                 $(this).removeClass(' btn-click-active');
             });
 
-            // //show category
-            // $('.clctgr' + category).css('display', 'block');
-            // $('.block').not($('.clctgr' + category)).each(function () {
-            //     $(this).css('display', 'none');
-            // });
+            //show category
+            $('.clctgr' + category).css('display', 'block');
+            $('.block').not($('.clctgr' + category)).each(function () {
+                $(this).css('display', 'none');
+            });
         });
 
+        //btn search
+        $('.btn-seach').click(function(){
+            var category = $('#category').val();
 
+            //add class active
+            $('#ctgr' + category).addClass('btn-click-active');
+            $('.btn-click-course').not($('#ctgr' + category)).each(function () {
+                $(this).removeClass(' btn-click-active');
+            });
+
+            //show category
+            $('.clctgr' + category).css('display', 'block');
+            $('.block').not($('.clctgr' + category)).each(function () {
+                $(this).css('display', 'none');
+            });
+        });
     });
 
-    Vue.component('v-pagination', window['vue-plain-pagination'])
+
     var app = new Vue({
         el: '#app',
         data: {
-            category: 0,
-            txtSearch: '',
-            courses: [],
-            urlTms: '',
-            clctgr: true,
-            current: 1,
-            totalPage: 5,
-            recordPerPage: 3,
-            currentCoursesTotal: 0,
-            bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
-                ul: 'pagination',
-                li: 'page-item',
-                liActive: 'active',
-                liDisable: 'disabled',
-                button: 'page-link'
-            },
-            customLabels: {
-                first: false,
-                prev: '<',
-                next: '>',
-                last: false
-            }
         },
         methods: {
-            onPageChange: function(){
-                // console.log(this.category);
-                this.searchCourse(this.category, this.current);
-            },
-            searchCourse: function (category, page) {
-                this.category = category;
-                if(page == 1)
-                    this.current = 1;
-                this.urlTms = 'http://localhost:8888/elearning-easia/public';
-                let url = '<?php echo $CFG->wwwroot; ?>';
-                const params = new URLSearchParams();
-                params.append('category', category);
-                params.append('txtSearch', this.txtSearch);
-                params.append('current', page || this.current);
-                // params.append('pageCount', this.total);
-                params.append('recordPerPage', this.recordPerPage);
-
-                axios({
-                    method: 'post',
-                    url: url + '/coursesearch.php',
-                    data: params,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    }
-                })
-                    .then(response => {
-                        console.log(response.data);
-                        this.courses = response.data.courses;
-                        this.currentCoursesTotal = this.courses.length;
-                        this.totalPage = response.data.totalPage;
-                    })
-                    .catch(error => {
-                    });
+            searchCourse: function () {
             }
-        },
-        mounted() {
-            this.searchCourse();
         }
     })
 </script>
@@ -675,6 +567,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 </body>
 </html>
+
 
 <?php
 die;
