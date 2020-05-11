@@ -19,7 +19,7 @@
 }}
 <nav class="fixed-top navbar navbar-light bg-white navbar-expand moodle-has-zindex" aria-label="{{#str}}sitemenubar, admin{{/str}}">
 
-        <div data-region="drawer-toggle" class="d-inline-block mr-3">
+        <div data-region="drawer-toggle" class="d-inline-block mr-3 hide">
             <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn nav-link float-sm-left mr-1 btn-light bg-gray" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav">{{#pix}}i/menubars{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
         </div>
 
@@ -62,4 +62,152 @@
         </ul>
         <!-- search_box -->
 </nav>
+
+<script>
+  $(document).ready(function() {
+        var x = document.getElementsByTagName("BODY")[0];
+        var classes = x.className.toString().split(/\s+/);
+        let course_id = '0';
+        let context_id = '0';
+        let module_id = '0';
+        let category_id = '0';
+        let currentUrl = window.location.href;
+
+        //screen learn
+        if (classes.includes("pagelayout-incourse")) {
+             classes.forEach(function(classItem) {
+                if (classItem.startsWith('course-')) {
+                    course_id = classItem.substring(7, classItem.length);
+                }
+                if (classItem.startsWith('context-')) {
+                    context_id = classItem.substring(8, classItem.length);
+                }
+                if (classItem.startsWith('cmid-')) {
+                    module_id = classItem.substring(5, classItem.length);
+                }
+                if (classItem.startsWith('category-')) {
+                    category_id = classItem.substring(9, classItem.length);
+                }
+             });
+
+             $.ajax({
+                 url:'/lms/pusher/study.php',
+                 data: {
+                     'course_id': course_id,
+                     'context_id': context_id,
+                     'module_id': module_id,
+                     'category_id': category_id,
+                     'url': currentUrl,
+                     'type': 'init'
+                 },
+                 type: 'POST',
+                 success: function(data) {
+                   //console.log('init done');
+                 },
+                 error: function(e){
+                   console.log(e);
+                 }
+             });
+
+             //Close tab, leave page
+             //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
+            window.addEventListener('beforeunload', function (e) {
+               $.ajax({
+                   url:'/lms/pusher/study.php',
+                   data: {
+                       'course_id': course_id,
+                       'context_id': context_id,
+                       'module_id': module_id,
+                       'category_id': category_id,
+                       'url': currentUrl,
+                       'type': 'final'
+                   },
+                   type: 'POST',
+                   success: function(data) {
+                       //console.log('close done');
+                   },
+                   error: function(e){
+                       console.log(e);
+                   }
+               });
+              //e.preventDefault();
+              //e.returnValue = 'Are you sure you want to stop studying?';
+              //return;
+            });
+
+             //Click next activity
+             $( "#next-activity-link" ).click(function() {
+                 $.ajax({
+                     url:'/lms/pusher/study.php',
+                     data: {
+                         'course_id': course_id,
+                         'context_id': context_id,
+                         'module_id': module_id,
+                         'category_id': category_id,
+                         'url': currentUrl,
+                         'type': 'final'
+                     },
+                     type: 'POST',
+                     success: function(data) {
+                         //console.log('next done');
+                     },
+                     error: function(e){
+                         console.log(e);
+                     }
+                 });
+             });
+
+             //Click prev activity
+             $( "#prev-activity-link" ).click(function() {
+                 $.ajax({
+                     url:'/lms/pusher/study.php',
+                     data: {
+                         'course_id': course_id,
+                         'context_id': context_id,
+                         'module_id': module_id,
+                         'category_id': category_id,
+                         'url': currentUrl,
+                         'type': 'final'
+                     },
+                     type: 'POST',
+                     success: function(data) {
+                         //console.log('prev done');
+                     },
+                     error: function(e){
+                         console.log(e);
+                     }
+                 });
+             });
+        }
+
+        //screen course detail
+        if (classes.includes("pagelayout-course")) {
+            classes.forEach(function(classItem) {
+                if (classItem.startsWith('course-')) {
+                    course_id = classItem.substring(7, classItem.length);
+                }
+            });
+            $.ajax({
+                 url:'/lms/pusher/resume.php',
+                 data: {
+                     'course_id': course_id
+                 },
+                 type: 'POST',
+                 success: function(data) {
+                     if (data.length !== 0) {
+                          r = confirm("Do you want to continue last activity in course?");
+                          if (r == true) {
+                            window.location.href = data;
+                          } else {
+                            return;
+                          }
+                     }
+                 },
+                 error: function(e){
+                   console.log(e);
+                 }
+            });
+        }
+  });
+</script>
 
