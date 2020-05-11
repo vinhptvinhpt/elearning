@@ -59,9 +59,10 @@
     {{> theme_bgtlms/navbar }}
 
     <div id="page" class="container-fluid">
-        {{{ output.full_header }}}
 
-        <div id="page-content" class="row pb-3">
+        <!-- {{{ output.full_header }}} -->
+
+        <div id="page-content" class="row pt-3 pb-3">
             <div id="region-main-box" class="col-12">
                 {{#hasregionmainsettingsmenu}}
                 <div id="region-main-settings-menu" class="d-print-none {{#hasblocks}}has-blocks{{/hasblocks}}">
@@ -88,8 +89,8 @@
         </div>
     </div>
     {{{ output.standard_after_main_region_html }}}
-    {{> theme_bgtlms/nav-drawer }}
-    {{> theme_bgtlms/footer }}
+    <!-- {{> theme_bgtlms/nav-drawer }}
+    <!-- {{> theme_bgtlms/footer }}
 </div>
 
 </body>

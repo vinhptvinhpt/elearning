@@ -3263,12 +3263,13 @@ class BussinessRepository implements IBussinessInterface
     //New report screen
     public function apiListDetail(Request $request)
     {
+        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
         $course_id = $request->input('course_id');
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
-        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
+        $country = $request->input('country');
 
         $show_courses = false;
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
@@ -3280,7 +3281,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_user_detail.fullname',
             'tms_traninning_programs.id as training_id',
             'tms_traninning_programs.name as training_name',
-            'tms_user_detail.confirm',
+            'tms_user_detail.confirm'
         );
 
         if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
@@ -3362,6 +3363,10 @@ class BussinessRepository implements IBussinessInterface
 
         if (strlen($course_id) != 0 && $course_id != 0) {
             $query = $query->where('mdl_course.id', '=', $course_id);
+        }
+
+        if (strlen($country) != 0) {
+            $query = $query->where('tms_user_detail.country', '=', $country);
         }
 
         if (strlen($start_date) > 0) {
