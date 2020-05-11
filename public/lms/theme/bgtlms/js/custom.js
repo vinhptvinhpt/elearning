@@ -135,11 +135,11 @@
 
 
             } else {
-                $('.activity-navigation a#prev-activity-link').html('Quay lại');
+                $('.activity-navigation a#prev-activity-link').html('Previous');
                 var pre_title = $('.activity-navigation a#prev-activity-link').attr('title');
                 $('.activity-navigation a#prev-activity-link').append('<span class="title">' + pre_title + '</span>');
 
-                $('.activity-navigation a#next-activity-link').html('Tiếp tục');
+                $('.activity-navigation a#next-activity-link').html('Next');
                 var next_title = $('.activity-navigation a#next-activity-link').attr('title');
                 $('.activity-navigation a#next-activity-link').append('<span class="title">' + next_title + '</span>');
 
