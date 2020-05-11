@@ -497,10 +497,61 @@ $countBlock = 1;
     .col-right{
         padding-left: 0;
     }
+
+
+
+    .circular-chart {
+        display: block;
+        margin: 5% auto;
+        max-width: 80%;
+        max-height: 240px;
+        margin-bottom: 15%;
+    }
+    .that-circle {
+        fill: none;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-dashoffset:50;
+        animation: progress 1s ease-out forwards;
+        box-shadow: 0 8px 25px 0 #e5e5e5;
+    }
+    @keyframes progress {
+        100% {
+            stroke-dashoffset: 0;
+        }
+
+    }
+
+    .percentage {
+        fill: #4285f4;
+        font-size: 0.375em;
+        text-anchor: middle;
+        font-family: AvenirNext;
+        font-weight: bold;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: 1;
+        letter-spacing: normal;
+    }
+    .percentage_done {
+        fill: #9b9b9b;
+        font-size: 0.2em;
+        font-family: AvenirNext;
+        font-weight: 500;
+        font-style: normal;
+        font-stretch: normal;
+        line-height: normal;
+        letter-spacing: 0.1px;
+    }
+    .percentage{
+        font-family: Roboto-Regular;
+        fill: #862055;
+    }
 </style>
 <body>
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
-
+<?php
+?>
 <div class="wrapper"><!-- wrapper -->
     <section class="section section--header"><!-- section -->
         <header><!-- header -->
@@ -570,7 +621,7 @@ $countBlock = 1;
                     <div class="info">
                         <div class="info-user col-sm-12">
                             <div class="avatar col-sm-3">
-                                <img src="images/home/avatar.png" alt="">
+                                <img src="images/avatar.png" alt="">
                             </div>
                             <div class="info-user_info col-sm-9">
                                 <p class="username">Van Anh Tran</p>
@@ -579,22 +630,33 @@ $countBlock = 1;
                         </div>
                         <div class="info-courses">
                             <div class="info-progress">
-<!--                                <div id="container1" style="min-width: 100px; height: 100px; margin: 0 auto"></div>-->
-                                <!-- Progress bar 1 -->
-<!--                                <div class="progress" data-value-completed='--><?php //echo count($courses_completed)/count($courses_all_required); ?><!--' data-value-studying='0'>-->
-                                <div class="progress" data-value='60' data-value-studying="20">
+                                <div>
+                                    <svg viewBox="0 0 36 36" width="150" class="circular-chart">
+                                        <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                        <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                    <span class="progress-left">
-                                        <span class="progress-bar border-completed"></span>
-                                      </span>
-
-                                    <span class="progress-right">
-                                        <span class="progress-bar border-studying"></span>
-                                    </span>
-                                    <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">
-                                        <div class="h2 font-weight-bold"><?php echo count($courses_completed)/count($courses_all_required); ?><sup class="small">%</sup></div>
-                                    </div>
+                                        <text x="18" y="20.35" class="percentage">0%</text>
+                                    </svg>
                                 </div>
+<!--                                <div class="progress" data-value='--><?php //if(count($courses_all_required) == 0) echo 0; else echo count($courses_completed)*100/count($courses_all_required); ?><!--' data-value-studying='0'>-->
+<!--                                    <span class="progress-left">-->
+<!--                                        <span class="progress-bar border-completed"></span>-->
+<!--                                      </span>-->
+<!---->
+<!--                                    <span class="progress-right">-->
+<!--                                        <span class="progress-bar border-studying"></span>-->
+<!--                                    </span>-->
+<!--                                    <div class="progress-value w-100 h-100 rounded-circle d-flex align-items-center justify-content-center">-->
+<!--                                        <div class="h2 font-weight-bold">--><?php //if(count($courses_all_required) == 0) echo 0; else echo count($courses_completed)/count($courses_all_required); ?><!--<sup class="small">%</sup></div>-->
+<!--                                    </div>-->
+<!--                                </div>-->
                                 <!-- END -->
 
                                 <div class="progress-note">
@@ -647,7 +709,7 @@ $countBlock = 1;
                                 </div>
 
                                 <div class="info-statistic__profile">
-                                    <a class="info-text text-course">
+                                    <a class="info-text text-course" href="lms/user/profile.php?id=<?php echo $USER->id; ?>">
                                         Your Profile
                                     </a>
                                 </div>
@@ -963,79 +1025,6 @@ $countBlock = 1;
         function percentageToDegrees(percentage) {
             return percentage / 100 * 360
         }
-
-        // Create the chart
-        chart = new Highcharts.Chart({
-            chart: {
-                renderTo: 'container1',
-                type: 'pie'
-            },
-            title: {
-                text: 'AA'
-            },
-            yAxis: {
-                title: {
-                    text: 'Total percent market share'
-                }
-            },
-            plotOptions: {
-                pie: {
-                    shadow: false,
-                    point: {
-                        events: {
-                            mouseOver: function(e) {
-                                this.originalRadius = this.graphic.r;
-                                this.graphic.animate({
-                                    r: this.originalRadius*1.07
-                                }, 200);
-                            },
-                            mouseOut: function(e) {
-                                this.graphic.animate({
-                                    r: this.originalRadius
-                                }, 200);
-                            }
-                        }
-                    }
-                }
-            },
-            tooltip: {
-                formatter: function() {
-                    return '<b>' + this.point.name + '</b>: ' + this.y + ' %';
-                }
-            },
-            series: [{
-                name: 'Data',
-                data: [
-                    ["A", 9],
-                    ["B", 5],
-                    ["C", 7]
-                ],
-                size: '100%',
-                innerSize: '95%',
-                showInLegend: true,
-                dataLabels: {
-                    enabled: false
-                },
-                states: {
-                    hover: {
-                        halo: false
-                    }
-                },
-            }]
-        });
-
-        var circleradius = chart;
-        console.log(chart);
-
-        var test = chart.options.series[0].innerSize * chart.Height;
-        console.log(test);
-
-        // Render the circle
-        chart.renderer.circle('50%', '50%', 130).attr({
-            fill: '#fff',
-        }).add();
-
-
     });
 
 </script>

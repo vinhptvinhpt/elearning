@@ -1,7 +1,15 @@
 <?php
+    require_once("courselib.php");
     $id = optional_param('id', 0, PARAM_INT);
     $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
     $course = array_values($DB->get_records_sql($sql))[0];
+
+    $units = get_course_contents($id);
+
+//    $units = json_encode(get_course_contents($id));
+//    echo $units;
+//    die;
+
 ?>
 
 <html>
@@ -176,6 +184,10 @@
         display: none;
     }
 
+    .main-detail{
+        display: none;
+        display: none;
+    }
 
     .detail-list li{
         font-family: Roboto-Regular;
@@ -187,6 +199,17 @@
         font-size: 23px;
         margin-right: 1%;
         color: #862055;
+    }
+    .detail-list li a{
+        background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
+        background-repeat: no-repeat;
+        background-position: left;
+        padding-left: 4%;
+        font-family: Roboto-Regular;
+        font-size: 14px;
+        letter-spacing: 0.99px;
+        color: #333;
+        background-size: 20px 16px;
     }
 
     .detail-btn{
@@ -222,6 +245,10 @@
         border: 2px solid #FFFFFF;
         background: #FFFFFF 0% 0% no-repeat padding-box;
         overflow: hidden;
+    }
+    .unit:hover{
+        cursor: pointer;
+        box-shadow: 3px 3px 6px #00000029;
     }
     .unit-done{
         border: 2px solid #862055;
@@ -482,78 +509,91 @@
                 <div class="col-5 unit-info">
                     <div class="list-units">
 
-                        <div class="unit unit-done">
-                            <div class="unit__title"><p>Unit 1: Effective time management menthod</p></div>
-                            <div class="unit__progress">
-                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>
-                                <div class="unit__progress-number">
-                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">90</span>/<span class="percent-total">100</span></p>
+                        <?php foreach ($units as $unit) {  ?>
+                            <div class="unit" id="unit_<?php echo $unit['id']; ?>">
+                                <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
+                                <div class="unit__progress">
+                                    <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
+                                    <div class="unit__progress-number">
+                                        <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="unit unit-learning">
-                            <div class="unit__title"><p>Unit 2: Time Management Test 01</p></div>
-                            <div class="unit__progress">
-                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
-                                <div class="unit__progress-number">
-                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">50</span>/<span class="percent-total">100</span></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="unit">
-                            <div class="unit__title"><p>Unit 3: Time Management Test 02</p></div>
-                            <div class="unit__progress">
-                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
-                                <div class="unit__progress-number">
-                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="unit">
-                            <div class="unit__title"><p>Unit 4: Time Management Test 01</p></div>
-                            <div class="unit__progress">
-                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>
-                                <div class="unit__progress-number">
-                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="unit">
-                            <div class="unit__title"><p>Unit 5: Time Management Test 01</p></div>
-                            <div class="unit__progress">
-                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
-                                <div class="unit__progress-number">
-                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>
-                                </div>
-                            </div>
-                        </div>
+                        <?php } ?>
+<!--                        <div class="unit unit-done">-->
+<!--                            <div class="unit__title"><p>Unit 1: Effective time management menthod</p></div>-->
+<!--                            <div class="unit__progress">-->
+<!--                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>-->
+<!--                                <div class="unit__progress-number">-->
+<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">90</span>/<span class="percent-total">100</span></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!---->
+<!--                        <div class="unit unit-learning">-->
+<!--                            <div class="unit__title"><p>Unit 2: Time Management Test 01</p></div>-->
+<!--                            <div class="unit__progress">-->
+<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
+<!--                                <div class="unit__progress-number">-->
+<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">50</span>/<span class="percent-total">100</span></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!---->
+<!--                        <div class="unit">-->
+<!--                            <div class="unit__title"><p>Unit 3: Time Management Test 02</p></div>-->
+<!--                            <div class="unit__progress">-->
+<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
+<!--                                <div class="unit__progress-number">-->
+<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!---->
+<!--                        <div class="unit">-->
+<!--                            <div class="unit__title"><p>Unit 4: Time Management Test 01</p></div>-->
+<!--                            <div class="unit__progress">-->
+<!--                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>-->
+<!--                                <div class="unit__progress-number">-->
+<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
+<!---->
+<!--                        <div class="unit">-->
+<!--                            <div class="unit__title"><p>Unit 5: Time Management Test 01</p></div>-->
+<!--                            <div class="unit__progress">-->
+<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
+<!--                                <div class="unit__progress-number">-->
+<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </div>-->
 
 
                     </div>
                 </div>
-                <div class="col-7 unit-info unit-detail">
-                    <div class="detail-title">
-                        <p>Unit 1: Effective time management method</p>
-                    </div>
-                    <div class="detail-content">
-                        <ul class="detail-list">
-                            <li><i class="fa fa-file-text"></i> Part 1: Why learn to manage time?</li>
-                            <li><i class="fa fa-file-text"></i> Part 2: Time management tool</li>
-                            <li><i class="fa fa-file-text"></i> Part 3: Determining the goals of the job</li>
-                            <li><i class="fa fa-file-text"></i> Part 4: Organizing work and study time</li>
-                            <li><i class="fa fa-file-text"></i> Part 5: Developing time management skills</li>
-                            <li><i class="fa fa-file-text"></i> Part 6: The notes help manage time effectively</li>
-                        </ul>
-                    </div>
 
-                    <div class="detail-btn">
-                        <a href="" class="btn btn-click btn-start-unit">Start unit</a>
+                    <div class="col-7 unit-info unit-detail">
+                        <?php foreach ($units as $unit) {  ?>
+                            <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
+                                <div class="detail-title">
+                                    <p><?php echo $unit['name']; ?></p>
+                                </div>
+                                <div class="detail-content">
+                                    <ul class="detail-list">
+                                        <?php foreach ($unit['modules'] as $module) {  ?>
+                                            <li><a href=""><?php echo $module['name']; ?></a> </li>
+                                        <?php } ?>
+                                    </ul>
+                                </div>
+
+                                <div class="detail-btn">
+                                    <a href="" class="btn btn-click btn-start-unit">Start unit</a>
+                                </div>
+                            </div>
+                        <?php } ?>
                     </div>
-                </div>
             </div>
         </div>
     </section>
@@ -591,8 +631,27 @@
         $('.info-course-progress .col-3').css('line-height', getHeight+'px');
         $('.info-course-detail').css('height', getHeight+'px');
         $('.info-course-detail').css('line-height', getHeight+'px');
+
+
+        //event click unit
+        $('.unit').click(function(){
+            var getID = $(this).attr('id');
+            getID = getID.substring(5, getID.length);
+            $(this).toggleClass('unit-done');
+            $('#detail-' + getID).css('display', 'block');
+            $('.unit').not($(this)).each(function () {
+                $(this).removeClass('unit-done');
+            });
+            $('.main-detail').not($('#detail-' + getID)).each(function () {
+                $(this).css('display', 'none');
+                $(this).removeClass('unit-done');
+            });
+        });
     });
+
+
 </script>
+
 </body>
 </html>
 
