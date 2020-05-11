@@ -165,6 +165,9 @@ if __name__ == '__main__':
                 cursor.execute(sql_select_Query)
                 records = cursor.fetchall()
                 
+                num = 0
+                limit = 50
+                
                 for row in records:
                     
                     # 19/3/2020 uydd
@@ -377,6 +380,11 @@ if __name__ == '__main__':
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
                         #cursor.execute(sql, (student_certificate_id,))
+                num = num + 1
+                if num >= limit:
+                    connection.commit()
+                    num = 0
+
                 connection.commit()
                 print('luu nhieu anh thanh cong')
             else:

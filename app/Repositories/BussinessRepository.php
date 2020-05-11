@@ -346,6 +346,7 @@ class BussinessRepository implements IBussinessInterface
             $data = MdlCourse::where('category', '<>', 2)
                 ->where("enddate", ">=", $now)
                 ->where("startdate", "<=", $now)
+                ->where("deleted", "=", 0)
                 ->select(
                     'id',
                     'shortname',
@@ -471,7 +472,7 @@ class BussinessRepository implements IBussinessInterface
         $response['roles'] = $checkRole;
         $response['slugs'] = $permissions;
 
-        $request->session()->put( $user_id . '_roles_and_slugs', $response);
+        $request->session()->put($user_id . '_roles_and_slugs', $response);
 
         return response()->json($response);
     }
@@ -1088,7 +1089,7 @@ class BussinessRepository implements IBussinessInterface
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
                 ->where('mdl_course.category', '=', $category_id)
-                ->where(function($query){
+                ->where(function ($query) {
                     /* @var $query Builder */
                     $query
                         ->whereIn('mdl_course.id', function ($q1) { //enrol
@@ -1119,8 +1120,7 @@ class BussinessRepository implements IBussinessInterface
                     'mdl_course.deleted',
                     'mccc.gradepass as pass_score'
                 );
-        }
-        else {
+        } else {
             //Kiểm tra xem có phải role teacher hay không
             $checkRole = tvHasRole(\Auth::user()->id, "teacher");
             if ($checkRole == true) {
@@ -3273,7 +3273,7 @@ class BussinessRepository implements IBussinessInterface
         $show_courses = false;
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
 
-        $select_array =  array(
+        $select_array = array(
             'tms_organization.id as organization_id',
             'tms_organization.name as organization_name',
             'tms_user_detail.user_id',
@@ -3281,7 +3281,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_traninning_programs.id as training_id',
             'tms_traninning_programs.name as training_name',
             'tms_user_detail.confirm',
-          );
+        );
 
         if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
             $show_courses = true;
@@ -3297,7 +3297,7 @@ class BussinessRepository implements IBussinessInterface
             })
             ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
 
-        if($show_courses) {
+        if ($show_courses) {
             $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id')
                 ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
             $select_array = array_merge($select_array, [
@@ -3308,8 +3308,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
 
-        if ($mode_select == 'completed_course' )
-        {
+        if ($mode_select == 'completed_course') {
             $query->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
                 /* @var $join JoinClause */
                 $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
@@ -3434,7 +3433,7 @@ class BussinessRepository implements IBussinessInterface
                         $user['estimate_duration'] = $item['estimate_duration'];
                     }
 
-                    if($data_type == 'person') {
+                    if ($data_type == 'person') {
                         //col3
                         //Update all user array for organization
                         self::pushUser($data[$item['organization_id']], 'col3', $item['user_id'], $user);
@@ -3453,8 +3452,7 @@ class BussinessRepository implements IBussinessInterface
                                 self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
                                 //Update array for training
                                 self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
-                            }
-                            else { //col2
+                            } else { //col2
                                 //Update array for organization
                                 self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
                                 //Update array for training
@@ -3474,8 +3472,7 @@ class BussinessRepository implements IBussinessInterface
                                 if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
                                     self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user);
                                 }
-                            }
-                            else { //col2
+                            } else { //col2
                                 //completed_course / completed_training
                                 //Update array for organization
                                 self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
@@ -3636,11 +3633,13 @@ class BussinessRepository implements IBussinessInterface
         $object[$object_id]['col3'] = [];
     }
 
-    public static function pushUser(&$object, $key, $id, $user) {
+    public static function pushUser(&$object, $key, $id, $user)
+    {
         $object[$key][$id] = $user;
     }
 
-    public static function pushUserWithCounter(&$object, $key, $id, $user, $mode_select) {
+    public static function pushUserWithCounter(&$object, $key, $id, $user, $mode_select)
+    {
 
         if ($mode_select == 'learning_time') {
             if ($key == 'col1') {
@@ -3658,7 +3657,8 @@ class BussinessRepository implements IBussinessInterface
         }
     }
 
-    public function apiListCourseByTraining(Request $request) {
+    public function apiListCourseByTraining(Request $request)
+    {
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
@@ -4656,7 +4656,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
         }
 
-        $listStudentsDone = $listStudentsDone->groupBy('u.id');
+//        $listStudentsDone = $listStudentsDone->groupBy('u.id');
 
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
@@ -9385,54 +9385,55 @@ class BussinessRepository implements IBussinessInterface
 
         $now = Carbon::now();
         $mdlUserEnr = DB::table('mdl_user_enrolments as enrolments')
-            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'enrolments.enrolid')
-            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-            ->join('mdl_role', 'mdl_role.id', '=', 'mdl_enrol.roleid')
-            ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+            ->join('mdl_enrol as me', 'me.id', '=', 'enrolments.enrolid')
+            ->join('mdl_course as mc', 'mc.id', '=', 'me.courseid')
+//            ->join('mdl_role as mr', 'mr.id', '=', 'me.roleid')
+            ->join('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mc.id')
             ->where('enrolments.userid', '=', $user_id)
+            ->where('mc.deleted', '=', 0)
             ->select(
-                'mdl_course.id',
-                'mdl_course.fullname as course_name',
-                'mdl_course.shortname as shortname',
-                'mdl_course.startdate as startdate',
-                'mdl_course.enddate as enddate',
-                'mdl_role.shortname as role_name',
-                'mdl_course.category as category'
+                'mc.id',
+                'mc.fullname as course_name',
+                'mc.shortname as shortname',
+                'mc.startdate as startdate',
+                'mc.enddate as enddate',
+//                'mr.shortname as role_name',
+                'mc.category as category'
             );
         if ($status != 0) {
             switch ($status) {
                 case 1:
-                    $mdlUserEnr = $mdlUserEnr->where('mdl_course.startdate', '<', strtotime($now));
-                    $mdlUserEnr = $mdlUserEnr->where('mdl_course.enddate', '>', strtotime($now));
+                    $mdlUserEnr = $mdlUserEnr->where('mc.startdate', '<', strtotime($now));
+                    $mdlUserEnr = $mdlUserEnr->where('mc.enddate', '>', strtotime($now));
                     break;
                 case 2:
-                    $mdlUserEnr = $mdlUserEnr->where('mdl_course.startdate', '>', strtotime($now));
+                    $mdlUserEnr = $mdlUserEnr->where('mc.startdate', '>', strtotime($now));
                     break;
                 case 3:
-                    $mdlUserEnr = $mdlUserEnr->where('mdl_course.enddate', '<', strtotime($now));
+                    $mdlUserEnr = $mdlUserEnr->where('mc.enddate', '<', strtotime($now));
                     break;
             }
         }
-        $mdlUserEnr = $mdlUserEnr->orderBy('mdl_course.startdate', 'desc');
+        $mdlUserEnr = $mdlUserEnr->orderBy('mc.startdate', 'desc');
 
         if ($start_date) {
             //            $mdlUserEnr->where('mdl_course.enddate','>',strtotime($start_date));
-            $mdlUserEnr->where('mdl_course.startdate', '>', strtotime($start_date));
+            $mdlUserEnr->where('mc.startdate', '>', strtotime($start_date));
         }
         if ($end_date) {
-            $mdlUserEnr->where('mdl_course.enddate', '<', strtotime($end_date));
+            $mdlUserEnr->where('mc.enddate', '<', strtotime($end_date));
             //            $mdlUserEnr->where('mdl_course.startdate','<',strtotime($end_date));
         }
 
         if ($this->keyword) {
             if ($this->keyword == 'offline' || $this->keyword == 'Offline') {
-                $mdlUserEnr->whereIn('mdl_course.category', [2, 5]);
+                $mdlUserEnr->whereIn('mc.category', [2, 5]);
             } else if ($this->keyword == 'online' || $this->keyword == 'Online') {
-                $mdlUserEnr->whereNotIn('mdl_course.category', [2, 5]);
+                $mdlUserEnr->whereNotIn('mc.category', [2, 5]);
             } else {
                 $mdlUserEnr = $mdlUserEnr->where(function ($q) {
-                    $q->orWhere('mdl_course.fullname', 'like', "%{$this->keyword}%")
-                        ->orWhere('mdl_course.shortname', 'like', "%{$this->keyword}%");
+                    $q->orWhere('mc.fullname', 'like', "%{$this->keyword}%")
+                        ->orWhere('mc.shortname', 'like', "%{$this->keyword}%");
                 });
             }
         }
@@ -9453,6 +9454,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $user_id = $request->input('user_id');
+        $trainning_id = $request->input('trainning_id');
 
         $param = [
             'keyword' => 'text',
@@ -9472,12 +9474,17 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttc.deleted', '=', 0)
+            ->where('c.deleted', '=', 0)
             ->where('u.id', '=', $user_id)
             ->select(
                 'c.id as course_id',
                 'c.shortname',
                 'c.fullname',
                 'c.fullname',
+                'ttp.name as trainning_name',
                 'ccc.gradepass as gradepass',
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
@@ -9506,6 +9513,11 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
             });
         }
+
+        if ($trainning_id) {
+            $data = $data->where('ttp.id', '=', $trainning_id);
+        }
+
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
         $response = [
