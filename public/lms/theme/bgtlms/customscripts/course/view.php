@@ -116,12 +116,12 @@
         /*margin-top: 2%;*/
     }
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box;
+        background: #862055 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         text-align: left;
         font-family: Roboto-Regular;
         letter-spacing: 0.45px;
-        color: #FFFFFF;
+        color: #FFFFFF !important;
         text-transform: uppercase;
     }
 
@@ -422,6 +422,7 @@
 <body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
+    <?php echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
         <div class="container">
 <!--                progress info-->
@@ -512,7 +513,6 @@
             <div class="row col-12 course-content" id="courseunit">
                 <div class="col-5 unit-info">
                     <div class="list-units">
-
                         <?php foreach ($units as $unit) {  ?>
                             <div class="unit" id="unit_<?php echo $unit['id']; ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
@@ -550,7 +550,7 @@
             </div>
         </div>
     </section>
-
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 
@@ -563,6 +563,25 @@
             if(getClasses.indexOf('active')>-1){
                 var getId =  $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
+            }
+        });
+
+        $(".nav-click a").click(function() {
+            //set active for first block
+            var getHref = $(this).attr('href');
+            if(getHref.indexOf('unit')>-1){
+                var getID = $(".unit").first().attr('id');
+                var ID = getID.substring(5, getID.length);
+                ClickNav(getID, ID);
+                // $('#'+getID).addClass('unit-click');
+                // $('#detail-' + ID).css('display', 'block');
+                // $('.unit').not($('#'+getID)).each(function () {
+                //     $('#'+getID).removeClass('unit-click');
+                // });
+                // $('.main-detail').not($('#detail-' + ID)).each(function () {
+                //     $('#'+getID).css('display', 'none');
+                //     $('#'+getID).removeClass('unit-click');
+                // });
             }
         });
 
@@ -589,22 +608,36 @@
         //event click unit
         $('.unit').click(function(){
             var getID = $(this).attr('id');
-            getID = getID.substring(5, getID.length);
-            $(this).addClass('unit-click');
-            $('#detail-' + getID).css('display', 'block');
-            $('.unit').not($(this)).each(function () {
-                $(this).removeClass('unit-click');
-            });
-            $('.main-detail').not($('#detail-' + getID)).each(function () {
-                $(this).css('display', 'none');
-                $(this).removeClass('unit-click');
-            });
+            var ID = getID.substring(5, getID.length);
+            ClickNav(getID, ID);
+            // $(this).addClass('unit-click');
+            // $('#detail-' + getID).css('display', 'block');
+            // $('.unit').not($(this)).each(function () {
+            //     $(this).removeClass('unit-click');
+            // });
+            // $('.main-detail').not($('#detail-' + getID)).each(function () {
+            //     $(this).css('display', 'none');
+            //     $(this).removeClass('unit-click');
+            // });
         });
 
         //return back url
         $('.prev-btn').click(function () {
             history.back();
         });
+
+        //function click
+        function ClickNav(getID, ID){
+            $('#'+getID).addClass('unit-click');
+            $('#detail-' + ID).css('display', 'block');
+            $('.unit').not($('#'+getID)).each(function () {
+                $('#'+getID).removeClass('unit-click');
+            });
+            $('.main-detail').not($('#detail-' + ID)).each(function () {
+                $('#'+getID).css('display', 'none');
+                $('#'+getID).removeClass('unit-click');
+            });
+        }
     });
 
 

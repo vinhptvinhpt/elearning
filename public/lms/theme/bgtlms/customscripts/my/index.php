@@ -480,7 +480,7 @@ $countBlock = 1;
     }
 
     .content .container-fluid{
-        padding: 4%;
+        /*padding: 4%;*/
     }
 
     .block-note{
@@ -760,7 +760,7 @@ $countBlock = 1;
                                                 </div>
                                                 <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
-                                            <p>Không có dữ liệu</p>
+                                            <p>No data</p>
                                         <?php }  ?>
                                     </div>
 
@@ -809,7 +809,7 @@ $countBlock = 1;
                                             </div>
                                             <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
-                                            <p>Không có dữ liệu</p>
+                                            <p>No data</p>
                                         <?php }  ?>
                                     </div>
 
@@ -856,7 +856,7 @@ $countBlock = 1;
                                             </div>
                                             <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
-                                            <p>Không có dữ liệu</p>
+                                            <p>No data</p>
                                         <?php }  ?>
                                     </div>
                                 </div>

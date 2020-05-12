@@ -61,7 +61,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     body {
-        font-size: 14px;
+        font-size: 14px !important;
         font-family: Roboto-Bold;
         background-color: #F1F1F1;
     }
@@ -86,6 +86,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     /*    overflow: hidden;*/
     /*}*/
     /*    view*/
+    /*    paging*/
     .pagination{
         margin: 0 auto;
         padding: 1%;
@@ -101,11 +102,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         color: #737373;
     }
     .page-item.active .page-link{
-        background: #862055 0% 0% no-repeat padding-box;
-        border-color: #862055;
-    }
-    .page-item:first-child button {
-        /*background-color: yellow !important;*/
+        background: #862055 0% 0% no-repeat padding-box !important;
+        border-color: #862055 !important;
     }
     .course-info__detail {
         padding: 5% 0;
@@ -175,7 +173,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         text-align: left;
         font-family: Roboto-Regular;
         letter-spacing: 0.45px;
-        color: #FFFFFF;
+        color: #FFFFFF !important;
         text-transform: uppercase;
         font-size: 13px;
         /*font-family: Roboto;*/
@@ -219,10 +217,13 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         margin-right: 4%;
     }
 
+    .block{
+        /*padding: 0 !important;*/
+    }
     .course-block {
         background-color: #ffffff;
         position: relative;
-        padding-left: 0;
+        padding: 0 !important;;
         box-shadow: 3px 3px 6px #00000029;
     }
 
@@ -279,21 +280,23 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .course-select, .input-search {
-        font-size: 13px;
-        letter-spacing: 0.45px;
-        color: #3E3E3E;
+        font-size: 13px !important;
+        letter-spacing: 0.45px !important;
+        color: #3E3E3E !important;
         font-family: Roboto-Regular;
-        border: 1px solid #707070;
-        border-radius: inherit;
+        border: 1px solid #707070 !important;
+        border-radius: inherit !important;
     }
 
     .input-search {
         padding: 2%;
-        border-right: 0;
+        border-right: 0 !important;
+        width: 85%;
     }
 
     .block-search__select {
-        padding-right: 0;
+        padding-right: 0 !important;
+        padding-left: 0 !important;
     }
 
     .block-search__btn {
@@ -436,7 +439,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                     </select>
                                 </div>
                                 <div class="col-5 block-search__btn">
-                                    <input type="text" class="form-control input-search" v-model="txtSearch">
+                                    <input type="text" class=" input-search" v-model="txtSearch">
                                     <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
                                                                                                  aria-hidden="true"></i><input
                                             type="button"></div>
