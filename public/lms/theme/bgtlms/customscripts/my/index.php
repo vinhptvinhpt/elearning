@@ -97,11 +97,11 @@ $countBlock = 1;
         color: #202020;
         text-transform: uppercase;
         opacity: 1;
-        padding: 0;
+        padding: 0 !important;
     }
 
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box;
+        background: #862055 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
     }
@@ -123,7 +123,7 @@ $countBlock = 1;
     }
     .btn-show-all{
         text-align: right;
-        padding: 0;
+        padding: 0 !important;
     }
     .block-items{
         margin: 0;
@@ -133,15 +133,17 @@ $countBlock = 1;
         -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         /*margin: 1%;*/
-        max-width: 49%;
+        max-width: 49% !important;
         margin-bottom: 5%;
         display: flex;
-        padding: 0;
+        padding: 0 !important;
         overflow: hidden;
-
         height: 210px;
     }
 
+    .block-items{
+        padding-right: 0 !important;
+    }
     .block-items__item img{
         height: -webkit-fill-available;
     }
@@ -177,7 +179,7 @@ $countBlock = 1;
     }
     .course-block__top-show{
         display: flex;
-        padding: 0;
+        padding: 0 !important;
     }
     .block-item__content{
         width: inherit;
@@ -206,35 +208,37 @@ $countBlock = 1;
         width: 100%;
         /*height: 130px;*/
         display: flex;
-        padding-right: 0;
+        padding: 0 !important;
     }
     .avatar{
         width: 100%;
         border-radius: 50%;
-        margin: 0;
-        padding: 0;
+        margin: 0 !important;
+        padding-right: 0 !important;
     }
     .avatar img{
         margin-top: 15%;
+        margin-bottom: 15%;
     }
     .info{
         /*padding: 15px 0;*/
         margin: 40px 0;
-        background: #FFFFFF 0% 0% no-repeat padding-box;
+        /*background: #FFFFFF 0% 0% no-repeat padding-box;*/
         box-shadow: 3px 3px 6px #00000029;
         /*-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
         /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     }
     .info-user_info{
-        padding: 10px;
-        width: 100%;
+        padding: 10px !important;
+        width: 100% !important;
     }
     .info-user_info p{
         text-align: left;
         color: #FFFFFF;
         text-transform: uppercase;
         opacity: 1;
-        font-size: 14px;
+        font-size: 13px;
+        margin-bottom: 1%;
     }
     .username{
         font: Bold 15px Roboto-Bold;
@@ -476,7 +480,7 @@ $countBlock = 1;
     }
 
     .content .container-fluid{
-        padding: 4%;
+        /*padding: 4%;*/
     }
 
     .block-note{
@@ -503,11 +507,11 @@ $countBlock = 1;
     }
 
     .col-left{
-        padding-right: 0;
+        padding-right: 0 !important;
     }
 
     .col-right{
-        padding-left: 0;
+        padding-left: 0 !important;
     }
 
 
@@ -565,6 +569,7 @@ $countBlock = 1;
 <?php
 ?>
 <div class="wrapper"><!-- wrapper -->
+    <?php echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
         <header><!-- header -->
             <div class="content">
@@ -632,10 +637,10 @@ $countBlock = 1;
                 <div class="col-sm-3 col-left">
                     <div class="info">
                         <div class="info-user col-sm-12">
-                            <div class="avatar col-sm-3">
+                            <div class="avatar col-sm-4">
                                 <img src="images/avatar.png" alt="">
                             </div>
-                            <div class="info-user_info col-sm-9">
+                            <div class="info-user_info col-sm-8">
                                 <p class="username">Van Anh Tran</p>
                                 <p class="userposition">Sales Senior Manager</p>
                             </div>
@@ -732,28 +737,31 @@ $countBlock = 1;
                                     <!--                                    line 1-->
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
-                                        <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
-                                            <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-<!--                                            <div class="col-sm-6 block-items__item">-->
-                                                <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-<!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-                                                </div>
-                                                <div class="block-item__content">
-                                                    <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
-                                                        <div class="info-course">
-                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
-                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
-                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                        <?php if(count($courses_current) > 0) {  ?>
+                                            <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
+                                                <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
+    <!--                                            <div class="col-sm-6 block-items__item">-->
+                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+    <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                    </div>
+                                                    <div class="block-item__content">
+                                                        <div class="block-item__content_text">
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <div class="info-course">
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-item__content_btn">
+                                                            <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
                                                         </div>
                                                     </div>
-                                                    <div class="block-item__content_btn">
-                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php  $countBlock++; if($countBlock == 5) break; } ?>
-
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                        <?php } else { ?>
+                                            <p>No data</p>
+                                        <?php }  ?>
                                     </div>
 
                                 </div>
@@ -778,6 +786,7 @@ $countBlock = 1;
                                     <!--                                    line 1-->
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
+                                        <?php if(count($courses_all_required) > 0) {  ?>
                                         <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
                                             <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
 <!--                                            <div class="col-sm-6 block-items__item">-->
@@ -799,50 +808,14 @@ $countBlock = 1;
                                                 </div>
                                             </div>
                                             <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                        <?php } else { ?>
+                                            <p>No data</p>
+                                        <?php }  ?>
                                     </div>
 
                                 </div>
                             </div>
                         </div>
-                        <!--                        optional courses-->
-<!--                        <div class="courses-block">-->
-<!--                            <div class="course-block__top row">-->
-<!--                                <div class="col-sm-12 course-block__top-show">-->
-<!--                                    <div class=" col-sm-6 title">OPTIONAL COURSES</div>-->
-<!--                                    <div class="col-sm-6 btn-show btn-show-all">-->
-<!--                                        <button class="btn btn-click"><a href="">Show All</a></button>-->
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!---->
-<!--                            <div class="courses-block__content">-->
-<!--                                <div class="courses-block__content__item row">-->
-<!--                                    <div class="col-sm-12 row block-items">-->
-<!--                                        --><?php // $countBlock = 1; foreach ($courses_optional as $course) { ?>
-<!--                                            <div class="col-sm-6 block-items__item --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?><!--">-->
-<!--                                                                                           <div class="col-sm-6 block-items__item">-->
-<!--                                                <div class="block-item__image">-->
-<!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-<!--                                                </div>-->
-<!--                                                <div class="block-item__content">-->
-<!--                                                    <div class="block-item__content_text">-->
-<!--                                                        <a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--" title="--><?php //echo $course->fullname; ?><!--"><p class="title-course"><i></i>--><?php //echo $course->fullname; ?><!--</p></a>-->
-<!--                                                        <div class="info-course">-->
-<!--                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>-->
-<!--                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> --><?php //echo $course->numofmodule; ?><!-- Units</p>-->
-<!--                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> --><?php //echo $course->estimate_duration; ?><!-- hours</p>-->
-<!--                                                        </div>-->
-<!--                                                    </div>-->
-<!--                                                    <div class="block-item__content_btn">-->
-<!--                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--">Learn More</a></button>-->
-<!--                                                    </div>-->
-<!--                                                </div>-->
-<!--                                            </div>-->
-<!--                                            --><?php // $countBlock++; if($countBlock == 5) break; } ?>
-<!--                                    </div>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
 
                         <!--                        completed courses-->
                         <div class="courses-block">
@@ -862,6 +835,7 @@ $countBlock = 1;
                                     <!--                                    line 1-->
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
+                                        <?php if(count($courses_completed) > 0) {  ?>
                                         <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
                                             <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
                                                 <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
@@ -881,6 +855,9 @@ $countBlock = 1;
                                                 </div>
                                             </div>
                                             <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                        <?php } else { ?>
+                                            <p>No data</p>
+                                        <?php }  ?>
                                     </div>
                                 </div>
                             </div>
@@ -952,6 +929,7 @@ $countBlock = 1;
             </div>
         </footer>
     </section>
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 <script>

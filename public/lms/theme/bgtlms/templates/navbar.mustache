@@ -34,6 +34,13 @@
                     <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/index.php"><i class="fa fa-university"></i></a>
                 </div>
 
+                <div class="click-page">
+                    <ul class="nav navbar-nav ml-auto">
+                        <li><a href="lms/my/index.php"><i class="fa fa-home"></i> Home</a></li>
+                        <li><a href="lms/course/index.php"><i class="fa fa-university"></i> Course</a></li>
+                    </ul>
+                </div>
+
                 <div style="margin-left: 100px; max-width: 500px;">
                     <h3>{{{ output.page_title }}}</h3>
                 </div>
@@ -44,7 +51,7 @@
                     {{{ output.search_box }}}
                     </div>
                     <!-- navbar_plugin_output -->
-                    <li class="nav-item">
+                    <li class="nav-item d-flex align-items-center">
                     {{{ output.navbar_plugin_output }}}
                     </li>
                     <!-- user_menu -->
