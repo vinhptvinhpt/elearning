@@ -211,6 +211,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     .block {
         padding-bottom: 4%;
         max-width: 48%;
+        padding-right: 0 !important;
     }
 
     .block-first {
@@ -225,6 +226,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         position: relative;
         padding: 0 !important;;
         box-shadow: 3px 3px 6px #00000029;
+        margin: 0 !important;
     }
 
     .course-block__image {
@@ -300,7 +302,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .block-search__btn {
-        padding-left: 5px;
+        padding-left: .25rem !important;
         display: flex;
     }
 
@@ -469,8 +471,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                 <div class="col-12 row">
                     <div class="col-4 block clctgr0" v-for="(course,index) in courses">
                         <div class="row col-12 course-block">
-                            <div class="col-5 course-block__image">
-                                <img :src="urlTms+course.course_avatar" alt="">
+                            <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
+<!--                            <div class="col-6 course-block__image" :style="background-image: url('urlTms+course.course_avatar')">-->
+<!--                                <img :src="urlTms+course.course_avatar" alt="">-->
                             </div>
                             <div class="col-7">
                                 <div class="course-info">

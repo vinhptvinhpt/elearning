@@ -752,6 +752,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                     }
                 })
                     .then(response => {
+                        console.log(response.data);
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
 

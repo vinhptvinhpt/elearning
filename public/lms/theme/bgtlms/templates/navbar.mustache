@@ -20,25 +20,28 @@
 <nav class="fixed-top navbar navbar-light bg-white navbar-expand moodle-has-zindex" aria-label="{{#str}}sitemenubar, admin{{/str}}">
 
         <div class="container">
-
+<!--            logo-->
+            <div class="logo">
+                <a href="{{ config.wwwroot }}/my/index.php"><img src="images/logo-black.png" alt=""></a>
+            </div>
+            <!-- search_box -->
+            <div id="header-search-box-container">
+                {{{ output.search_box }}}
+            </div>
                 <div class="click-page">
                     <ul class="nav navbar-nav ml-auto">
-                        <li><a href="lms/my/index.php"><i class="fa fa-home"></i> Home</a></li>
-                        <li><a href="lms/course/index.php"><i class="fa fa-university"></i> Course</a></li>
+                        <li><a href="{{ config.wwwroot }}/my/index.php"><i class="fa fa-home"></i> Home</a></li>
+                        <li><a href="{{ config.wwwroot }}/course/index.php"><i class="fa fa-university"></i> Courses</a></li>
                     </ul>
                 </div>
 
                 <ul class="nav navbar-nav ml-auto">
-                    <!-- search_box -->
-                    <div id="header-search-box-container">
-                    {{{ output.search_box }}}
-                    </div>
                     <!-- navbar_plugin_output -->
                     <li class="nav-item d-flex align-items-center">
                     {{{ output.navbar_plugin_output }}}
                     </li>
                     <!-- user_menu -->
-                    <li class="nav-item d-flex align-items-center">
+                    <li class="nav-item user_menu d-flex align-items-center">
                         {{{ output.user_menu }}}
                     </li>
                 </ul>
