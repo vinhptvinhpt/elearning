@@ -705,8 +705,6 @@
                     .then(response => {
                         this.users = response.data;
 
-                        console.log(this.users);
-
                         if (!response.data.training) {
                             this.users.training = {
                                 trainning_id: 0,
