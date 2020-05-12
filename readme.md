@@ -14,7 +14,7 @@ Cài đặt các phần mềm liên quan
 ## Deploy hệ thống
 
 - Pull source code từ git về folder chỉ định trên server
-- Cấp quyền cho các folder
+- Cấp quyền cho các folder: public, storage, vendor, node_modules
 - cd /path/to/folder/source
 - Run: sudo docker-compose up -d
 - Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
