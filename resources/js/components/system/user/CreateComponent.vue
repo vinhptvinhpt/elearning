@@ -133,10 +133,10 @@
                             :reduce="roleSelectOption => roleSelectOption.id"
                             :placeholder="this.trans.get('keys.chon_vai_tro')"
                             :filter-by="myFilterBy"
-                            :required="!inputRole"
+                            :required="inputRole"
                             v-model="inputRole">
                     </v-select>
-
+                    <label v-if="inputRole.length==0" class="text-danger inputRole_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                     <!--                  <label for="inputRole">{{trans.get('keys.quyen')}}</label>-->
                     <!--                    <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>-->
                     <!--                        <option value="">{{trans.get('keys.chon_vai_tro')}}</option>-->
@@ -571,8 +571,6 @@
                     });
             },
             createUser() {
-
-
                 if (!this.username) {
                     $('.username_required').show();
                     return;
@@ -590,13 +588,18 @@
                     return;
                 }
 
-                if (!this.city){
+                if (!this.city) {
                     $('.city_required').show();
                     return;
                 }
 
                 if (!this.country) {
                     $('.country_required').show();
+                    return;
+                }
+
+                if (this.inputRole.length === 0) {
+                    $('.inputRole_required').show();
                     return;
                 }
 
@@ -623,10 +626,7 @@
                         return;
                     }
                 }
-                if (!this.inputRole) {
-                    $('.user_role_required').show();
-                    return;
-                }
+
 
                 let organization_roles_selected = [];
                 for (const [key, item] of Object.entries(this.roles)) {
