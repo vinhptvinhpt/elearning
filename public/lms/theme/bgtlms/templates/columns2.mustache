@@ -56,7 +56,12 @@
 
     {{{ output.standard_top_of_body_html }}}
 
-    {{> theme_bgtlms/navbar }}
+    {{#incourse}}
+        {{> theme_bgtlms/navbar-learning }}
+    {{/incourse}}
+    {{^incourse}}
+        {{> theme_bgtlms/navbar }}
+    {{/incourse}}
 
     <div id="page" class="{{#incourse}}container{{/incourse}}">
         <div id="page-content" class="row">
