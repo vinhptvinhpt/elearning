@@ -382,11 +382,11 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">
-                                <router-link to="/tms/report/base" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>
-                                </router-link>
-                            </li>
+<!--                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">-->
+<!--                                <router-link to="/tms/report/base" class="nav-link">-->
+<!--                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>-->
+<!--                                </router-link>-->
+<!--                            </li>-->
                             <li class="nav-item" v-if="slug_can('tms-report-report-view')">
                                 <router-link to="/tms/report/detail" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.bao_cao_danh_gia') }}</span>
