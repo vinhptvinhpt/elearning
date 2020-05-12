@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Mail\CourseSendMail;
-use App\Mail\EmailDeviationGrading;
 use App\MdlUser;
 use App\StudentCertificate;
 use App\TmsNotification;
@@ -234,29 +233,27 @@ class LoginController extends Controller
     public function reset(Request $request)
     {
         try {
-            $username = $request->input('username');
-            $email = $request->input('email');
+            $email = $request->input('username');
 
             $param = [
-                'username' => 'text',
-                'email' => 'email'
+                'username' => 'email'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
-                return response()->json(['status' => false, 'message' => 'Định dạng dữ liệu không hợp lệ']);
+                return response()->json(['status' => false, 'message' => 'Invalid data format']);
             }
 
             $checkUser = MdlUser::select('id', 'deleted')->where([
-                'username' => $username,
-                'email' => $email
+                'username' => $email
             ])->first();
 
             if (!$checkUser) {
-                return response()->json(['status' => false, 'message' => 'Tài khoản hoặc Email chưa chính xác']);
+                return response()->json(['status' => false, 'message' => 'Email incorrect']);
             }
 
             if ($checkUser->deleted == 1) {
-                return response()->json(['status' => false, 'message' => 'Tài khoản đang bị khóa, vui lòng liên hệ với quản trị viên để mở khóa tài khoản']);
+                return response()->json(['status' => false, 'message' => 'The account is locked, please contact the administrator to open lock up
+                    account']);
             }
 
             $normal_chars = range('a', 'z');
@@ -281,16 +278,11 @@ class LoginController extends Controller
                 MdlUser::findOrFail($checkUser['id'])->update([
                     'password' => bcrypt($password)
                 ]);
-//            Mail::send('email.recover_password', [
-//                'username' => $username,
-//                'password' => $password
-//            ], function ($message) use ($email) {
-//                $message->to($email)->subject('Recover Password');
-//            });
+
                 //sendmail to user for get new password
                 Mail::to($email)->send(new CourseSendMail(
                     TmsNotification::FORGOT_PASSWORD,
-                    $username,
+                    $email,
                     '',
                     '',
                     '',
@@ -301,11 +293,12 @@ class LoginController extends Controller
                     $password
                 ));
                 DB::commit();
+
             } catch (\Exception $e) {
                 DB::rollback();
-                return response()->json(['status' => false, 'message' => 'Reset mật khẩu thất bại do lỗi hệ thống, vui lòng thử lại sau']);
+                return response()->json(['status' => false, 'message' => 'Password reset failed due to a system error, please try again later']);
             }
-            return response()->json(['status' => true, 'message' => 'Mật khẩu mới đã được gửi về email của bạn. Vui lòng kiểm tra email để nhận mật khẩu']);
+            return response()->json(['status' => true, 'message' => 'New password has been sent to your email. Please check your email for password']);
         } catch (Exception $e) {
             return response()->json(['status' => false, 'message' => $e->getMessage()]);
         }
