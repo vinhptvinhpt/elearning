@@ -1,9 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
 
-$USER->id = 23619;
-
-
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
@@ -636,7 +633,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
-                this.category = category;
+                this.category = category || this.category;
                 if(page == 1)
                     this.current = 1;
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
@@ -657,7 +654,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     }
                 })
                     .then(response => {
-                        console.log(response.data);
                         this.courses = response.data.courses;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;

@@ -1,29 +1,13 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+$sqlGetCategories = 'select id, name from mdl_course_categories';
+$categories = array_values($DB->get_records_sql($sqlGetCategories));
 
-if($USER->id > 0){
-//    $sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
-//    $courses = array_values($DB->get_records_sql($sql));
-//    $courses_current = array();
-//    $courses_all_required = array();
-//    $courses_optional = array();
-//    $courses_completed = array();
-//    foreach ($courses as $course){
-//        if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
-//            array_push($courses_all_required, $course);
-//        }
-//        else if($course->numoflearned/$course->numofmodule == 1){
-//            array_push($courses_completed, $course);
-//        }
-//        else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-//            array_push($courses_current, $course);
-//        }
-//    }
-//
-//    $countBlock = 1;
-}
+$sqlGetCertificates = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and tms_traninning_programs.auto_certificate = 1 and student_certificate.userid = '.$USER->id;
+$certificates = array_values($DB->get_records_sql($sqlGetCertificates));
 
-
+$sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and tms_traninning_programs.auto_badge = 1 and student_certificate.userid = '.$USER->id;
+$badges = array_values($DB->get_records_sql($sqlGetBadges));
 ?>
 
 <html>
@@ -37,6 +21,10 @@ if($USER->id > 0){
 <script src="js/bootstrap.min.js"></script>
 <script src="js/highcharts.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
 <style>
     @font-face {
@@ -71,6 +59,10 @@ if($USER->id > 0){
         font-family: Awsome;
         src: url('fonts/fa-solid-900.ttf');
     }
+    @font-face {
+        font-family: Nunito-Bold;
+        src: url('fonts/Nunito-Bold.ttf');
+    }
 
     a{
         text-decoration: none;
@@ -100,7 +92,39 @@ if($USER->id > 0){
         clear: both;
     }
 
-/*    View*/
+/*    paging*/
+    .pagination{
+        margin: 0 auto;
+        padding: 1%;
+    }
+    .pagination li{
+        margin: 0% 5% !important;
+    }
+    .pagination li button{
+        background: #FFFFFF 0% 0% no-repeat padding-box;
+        border-radius: 4px;
+        font-family: Nunito-Bold;
+        letter-spacing: 0.45px;
+        color: #737373;
+    }
+    .page-item.active .page-link{
+        background: #862055 0% 0% no-repeat padding-box;
+        border-color: #862055;
+    }
+
+    .table-select, .tr-title{
+        max-width: 200px !important;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /*    View*/
+
+    .col-6.block-content6{
+        margin-top: 10px;
+    }
+
     .info-user{
         background-color: #FFFFFF;
         width: 25%;
@@ -179,6 +203,7 @@ if($USER->id > 0){
         padding: .375em;
         width: 100%;
         border:none;
+        font-size: 13px;
     }
 
     .icon-circle{
@@ -230,6 +255,10 @@ if($USER->id > 0){
         border-radius: 10px;
         max-height: 185px;
         max-width: 185px;
+    }
+
+    .item-image img{
+        max-height: 134px;
     }
 
     .item-content{
@@ -429,7 +458,7 @@ if($USER->id > 0){
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
 <?php
 ?>
-<div class="wrapper"><!-- wrapper -->
+<div class="wrapper" id="app"><!-- wrapper -->
 
     <!--    body-->
     <section class="section section-content">
@@ -515,18 +544,18 @@ if($USER->id > 0){
                 </div>
                 <div class="block courses">
                     <div class="title"><p>your courses</p></div>
-                    <div class="block-content">
+                    <div class="block-content table-responsive">
                         <table class="table borderless table-keep">
                             <thead>
                             <tr>
-                                <th scope="col">
-                                    <select name="" id="" class="course-select">
-                                        <option value="">All course</option>
-                                        <option value="">Training by department</option>
-                                        <option value="">Job skills courses</option>
-                                        <option value="">Soft skills courses</option>
-                                        <option value="">Client courses</option>
-                                        <option value="">Language courses</option>
+                                <th scope="col" class="table-select">
+                                    <select name="category" id="category" class="course-select" @change="searchCourse(category, 1)"
+                                            v-model="category">
+                                        <option value="0">All course</option>
+                                        <?php foreach ($categories as $category) { ?>
+                                            <option
+                                                value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                        <?php } ?>
                                     </select>
                                 </th>
                                 <th scope="col">Progress</th>
@@ -535,44 +564,23 @@ if($USER->id > 0){
                             </tr>
                             </thead>
                             <tbody>
-                            <tr>
-                                <th><a href="">Product Core Values</a></th>
+                            <tr v-for="(course,index) in courses">
+                                <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
                                 <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
                                 <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
                                 <td class="icon-circle icon-circle-green"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                            </tr>
-                            <tr>
-                                <th><a href="">Market Segment</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle icon-circle-green"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                            </tr>
-                            <tr>
-                                <th><a href="">Overall Sales Working Process</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                            </tr>
-                            <tr>
-                                <th><a href="">Synery with other departments</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                            </tr>
-                            <tr>
-                                <th><a href="">Market Segment</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle icon-circle-green"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                            </tr>
-                            <tr>
-                                <th><a href="">Product Core Values</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                             </tr>
                             </tbody>
                         </table>
+                        <div class="pagination" v-if="totalPage > 1">
+                            <v-pagination
+                                v-model="current"
+                                :page-count="totalPage"
+                                :classes="bootstrapPaginationClasses"
+                                :labels="customLabels"
+                                @input="onPageChange"
+                            ></v-pagination>
+                        </div>
                     </div>
                 </div>
                 <div class="block certificate-badge">
@@ -591,156 +599,34 @@ if($USER->id > 0){
                         <div id="certificate" class="tab-pane active">
                             <br/>
                             <div class="row col-12">
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
+                                <?php foreach ($certificates as $certificate) { ?>
+                                    <div class="col-3">
+                                        <div class="item-image">
+                                            <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
+                                        </div>
+                                        <div class="item-content">
+                                            <p class="item-content__name"><?php echo $certificate->name; ?></p>
+                                            <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+                                        </div>
                                     </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
-                                <div class="col-3">
-                                    <div class="item-image">
-                                        <img src="images/f238867fec8cf8586683a9d563b50e1e.png" alt="">
-                                    </div>
-                                    <div class="item-content">
-                                        <p class="item-content__name">Certificate name</p>
-                                        <p class="item-content__date">2020/04/25</p>
-                                    </div>
-                                </div>
+                                <?php } ?>
                             </div>
                         </div>
                         <div id="badge" class="container tab-pane fade">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
                                 <div class="row col-12">
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
+                                    <?php foreach ($badges as $badge) { ?>
+                                        <div class="col-3">
+                                            <div class="item-image">
+                                                <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
+                                            </div>
+                                            <div class="item-content">
+                                                <p class="item-content__name"><?php echo $badge->name; ?></p>
+                                                <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                            </div>
                                         </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="images/badge.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name">Certificate name</p>
-                                            <p class="item-content__date">2020/04/25</p>
-                                        </div>
-                                    </div>
+                                    <?php } ?>
                                 </div>
                             </div>
                         </div>
@@ -760,8 +646,74 @@ if($USER->id > 0){
         //     var getHref = $(this).attr('href').replace('#', '');
         //     $(getHref).addClass('active');
         // });
-        console.log(window.width);
     });
+
+    Vue.component('v-pagination', window['vue-plain-pagination'])
+    var app = new Vue({
+        el: '#app',
+        data: {
+            category: 0,
+            txtSearch: '',
+            courses: [],
+            urlTms: '',
+            clctgr: true,
+            current: 1,
+            totalPage: 0,
+            recordPerPage: 3,
+            currentCoursesTotal: 0,
+            bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
+                ul: 'pagination',
+                li: 'page-item',
+                liActive: 'active',
+                liDisable: 'disabled',
+                button: 'page-link'
+            },
+            customLabels: {
+                first: false,
+                prev: '<',
+                next: '>',
+                last: false
+            }
+        },
+        methods: {
+            onPageChange: function(){
+                // console.log(this.category);
+                this.searchCourse(this.category, this.current);
+            },
+            searchCourse: function (category, page) {
+                this.category = category || this.category;
+                if(page == 1)
+                    this.current = 1;
+                this.urlTms = 'http://localhost:8888/elearning-easia/public';
+                let url = '<?php echo $CFG->wwwroot; ?>';
+                const params = new URLSearchParams();
+                params.append('category', category);
+                params.append('txtSearch', this.txtSearch);
+                params.append('current', page || this.current);
+                // params.append('pageCount', this.total);
+                params.append('recordPerPage', this.recordPerPage);
+
+                axios({
+                    method: 'post',
+                    url: url + '/coursesearch.php',
+                    data: params,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                    .then(response => {
+                        this.courses = response.data.courses;
+                        this.currentCoursesTotal = this.courses.length;
+                        this.totalPage = response.data.totalPage;
+                    })
+                    .catch(error => {
+                    });
+            }
+        },
+        mounted() {
+            this.searchCourse();
+        }
+    })
 
 </script>
 </body>

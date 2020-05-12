@@ -80,6 +80,10 @@
         letter-spacing: 0.8px;
         color: #202020;
         font-size: 23px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .info-course-detail{
@@ -419,7 +423,7 @@
         <div class="container">
 <!--                progress info-->
            <div class="progress-info">
-               <div class="progress-info__title"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a><span> <?php echo $course->fullname; ?></span></div>
+               <div class="progress-info__title"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a><span title="<?php echo $course->fullname; ?>"> <?php echo $course->fullname; ?></span></div>
                <div class="progress-info__content">
                    <div class="row col-12">
                        <div class="col-4 info-course-detail">
