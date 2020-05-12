@@ -41,6 +41,12 @@ $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
 $courseid = $PAGE->course->id;
+$pagelayout = $PAGE->pagelayout;
+
+$incourse = false;
+if ($pagelayout == 'incourse') {
+    $incourse = true;
+}
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -51,7 +57,9 @@ $templatecontext = [
     'navdraweropen' => $navdraweropen,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
-    'courseid' => $courseid
+    'courseid' => $courseid,
+    'pagelayout' => $pagelayout,
+    'incourse' => $incourse
 ];
 
 $nav = $PAGE->flatnav;
