@@ -40,6 +40,8 @@ $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
+$courseid = $PAGE->course->id;
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -48,7 +50,8 @@ $templatecontext = [
     'bodyattributes' => $bodyattributes,
     'navdraweropen' => $navdraweropen,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
-    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu)
+    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
+    'courseid' => $courseid
 ];
 
 $nav = $PAGE->flatnav;
@@ -106,7 +109,7 @@ if ($nav->get('coursehome') && $pagetype != "enrol-index") {
     // $url_par = new moodle_url($participants_url);
     // $participants_node->action = $url_par;
 
-    // add node nội dung khoá học 
+    // add node nội dung khoá học
     $array_content = array(
         'text' => get_string('coursecontentlabel'),
         'key' => 'content_course',
@@ -147,7 +150,7 @@ if ($nav->get('coursehome') && $pagetype != "enrol-index") {
     // }
 }
 
-// Case category of course is category "Khoá học tập trung" (categoryid = 3) 
+// Case category of course is category "Khoá học tập trung" (categoryid = 3)
 // Add mark grade for offline courses
 if ($PAGE->course->category == "5") {
     if ($nav->get('log')) {
@@ -217,7 +220,7 @@ if ($nav->get('mycourses')) {
 }
 // [VinhPT][12.11.2019] Page vietlot_introduction and Guideline
 if ($pagetype == "my-index") {
-    // Vietlot introduction node 
+    // Vietlot introduction node
     $above_node = "calendar";
     $url = "/my/vietlot_introduction.php";
     $urlvl = new moodle_url($url);

@@ -466,7 +466,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 <?php
 ?>
 <div class="wrapper" id="app"><!-- wrapper -->
-
+    <?php echo $OUTPUT->header(); ?>
     <!--    body-->
     <section class="section section-content">
         <div class="info-user">
@@ -648,7 +648,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
         </div>
         <div class="clear-fix"></div>
     </section>
-
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 <script>

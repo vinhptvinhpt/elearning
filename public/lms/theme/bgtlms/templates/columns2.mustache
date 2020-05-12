@@ -58,10 +58,9 @@
 
     {{> theme_bgtlms/navbar }}
 
-    <div id="page" class="container-fluid">
-
+    <div id="page" class="container">
         <div id="page-content" class="row pt-3 pb-3">
-            <div id="region-main-box" class="col-12">
+            <div id="region-main-box" style="width: 100%">
                 {{#hasregionmainsettingsmenu}}
                 <div id="region-main-settings-menu" class="d-print-none {{#hasblocks}}has-blocks{{/hasblocks}}">
                     <div> {{{ output.region_main_settings_menu }}} </div>
@@ -87,6 +86,7 @@
         </div>
     </div>
     {{{ output.standard_after_main_region_html }}}
+    {{> theme_bgtlms/footer }}
 </div>
 
 </body>
@@ -107,7 +107,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
         let category_id = '0';
         let currentUrl = window.location.href;
 
-        //screen learn
+        //screen learning course / module view
         if (classes.includes("pagelayout-incourse")) {
              classes.forEach(function(classItem) {
                 if (classItem.startsWith('course-')) {
@@ -212,6 +212,8 @@ require(['theme_bgtlms/drawer'], function(mod) {
                      }
                  });
              });
+        } else {
+            $('#header-search-box-container').removeClass("hide");
         }
 
         //screen course detail
