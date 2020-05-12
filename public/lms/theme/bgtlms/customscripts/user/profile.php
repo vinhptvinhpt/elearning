@@ -109,8 +109,8 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
         color: #737373;
     }
     .page-item.active .page-link{
-        background: #862055 0% 0% no-repeat padding-box;
-        border-color: #862055;
+        background: #862055 0% 0% no-repeat padding-box !important;
+        border-color: #862055 !important;
     }
 
     .table-select, .tr-title{
@@ -196,7 +196,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
         border: none;
     }
     .borderless td, .borderless th {
-        border: none;
+        border: none !important;
         font-size: 13px;
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
@@ -353,11 +353,11 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
     .progress{
         height: .75rem;
-        border-radius: 0;
-        padding: 0;
+        border-radius: 0 !important;
+        padding: 0 !important;
     }
     .progress-bar{
-        background-color: #862055;
+        background-color: #862055 !important;
     }
 
     .progress-number span{
@@ -389,6 +389,14 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
     }
 
 
+    /*custom*/
+    #region-main{
+        font-size: 14px;
+        font-family: Roboto-Bold;
+        background-color: #f1f3f9 !important;
+        /*background-color: #F1F1F1 !important;*/
+        border: none !important;
+    }
 
     /*.table-keep thead th {*/
     /*    !*position: sticky;*!*/
@@ -465,189 +473,192 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
 <?php
 ?>
-<div class="wrapper" id="app"><!-- wrapper -->
+<div class="wrapper" ><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
     <!--    body-->
-    <section class="section section-content">
-        <div class="info-user">
-            <div class="avatar"><img src="images/avatar.png" alt=""></div>
-            <div class="address">
-                <p>{{ user.fullname }}</p>
-                <p class="address-detail">{{ user.address }}</p>
-            </div>
-            <div class="info-detail">
-                <ul>
-                    <li>Position: {{ user.position }}</li>
-                    <li>Department: {{ user.departmentname }}</li>
-                    <li v-if="user.yearworking > 0">Experience: {{linemanager.yearworking}} years</li>
-                    <li v-else>Experience: Under 1 year</li>
-                    <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
-                    <li>Company: Easia Travel</li>
-                </ul>
-            </div>
-        </div>
-        <div class="info-learn">
-            <div class="container">
-                <div class="block overall">
-                    <div class="title"><p>Overall</p></div>
-                    <div class="block-content">
-                        <div class="row col-12 block-content12">
-                            <div class="col-6 row block-content6">
-                               <div class="col-6">
-                                   <div>
-                                       <svg viewBox="0 0 36 36" width="150" class="circular-chart">
-                                           <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                           <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                           <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
-                                a 15.9155 15.9155 0 0 1 0 31.831
-                                a 15.9155 15.9155 0 0 1 0 -31.831" />
-
-
-
-
-                                           <text x="18" y="20.35" class="percentage">0%</text>
-                                       </svg>
-                                   </div>
-                               </div>
-                                <div class="col-6">
-                                    <div class="progress-note">
-                                        <ul>
-                                            <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
-                                            <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
-                                            <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-6 block-content6">
-                                <div class="row block-progress">
-                                    <p>Current Courses</p>
-                                    <div class="progress col-11">
-                                        <div class="progress-bar progress-current" role="progressbar" style="width: 0%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="col-1 progress-number"><span>{{ progressCurrentCourse }}</span></div>
-                                </div>
-                                <div class="row block-progress">
-                                    <p>Required Courses</p>
-                                    <div class="progress col-11">
-                                        <div class="progress-bar progress-required" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="col-1 progress-number"><span>{{ progressRequiredCourse }}</span></div>
-                                </div>
-
-<!--                                <div class="row block-progress">-->
-<!--                                    <p>Optional Courses</p>-->
-<!--                                    <div class="progress col-11">-->
-<!--                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-1 progress-number"><span>12/15</span></div>-->
-<!--                                </div>-->
-                            </div>
-                        </div>
-                    </div>
+    <div id="app">
+        <section class="section section-content">
+            <div class="info-user">
+                <div class="avatar"><img src="images/avatar.png" alt=""></div>
+                <div class="address">
+                    <p>{{ user.fullname }}</p>
+                    <p class="address-detail">{{ user.address }}</p>
                 </div>
-                <div class="block courses">
-                    <div class="title"><p>your courses</p></div>
-                    <div class="block-content table-responsive">
-                        <table class="table borderless table-keep">
-                            <thead>
-                            <tr>
-                                <th scope="col" class="table-select">
-                                    <select name="category" id="category" class="course-select" @change="searchCourse(category, 1)"
-                                            v-model="category">
-                                        <option value="0">All course</option>
-                                        <?php foreach ($categories as $category) { ?>
-                                            <option
-                                                value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                        <?php } ?>
-                                    </select>
-                                </th>
-                                <th scope="col">Percent</th>
-                                <th scope="col">Point</th>
-                                <th scope="col" class="width10">Qualified</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr v-for="(course,index) in courses">
-                                <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
-                                <td v-if="course.numofmodule == 0"><span class="numberget">0</span>/<span class="numberhave">0</span></td>
-                                <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span>/<span class="numberhave">100</span></td>
-                                <td><span class="numberhave">{{ course.pass_score }}</span></td>
-                                <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule < 0"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                                <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div class="pagination" v-if="totalPage > 1">
-                            <v-pagination
-                                v-model="current"
-                                :page-count="totalPage"
-                                :classes="bootstrapPaginationClasses"
-                                :labels="customLabels"
-                                @input="onPageChange"
-                            ></v-pagination>
-                        </div>
-                    </div>
-                </div>
-                <div class="block certificate-badge">
-                    <!-- Nav tabs -->
-                    <ul class="nav nav-tabs justify-content-center">
-                        <li class="nav-item">
-                            <a class="nav-link active" data-toggle="tab" href="#certificate">certificate</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" data-toggle="tab" href="#badge">badge</a>
-                        </li>
+                <div class="info-detail">
+                    <ul>
+                        <li>Position: {{ user.position }}</li>
+                        <li>Department: {{ user.departmentname }}</li>
+                        <li v-if="user.yearworking > 0">Experience: {{linemanager.yearworking}} years</li>
+                        <li v-else>Experience: Under 1 year</li>
+                        <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
+                        <li>Company: Easia Travel</li>
                     </ul>
+                </div>
+            </div>
+            <div class="info-learn">
+                <div class="container">
+                    <div class="block overall">
+                        <div class="title"><p>Overall</p></div>
+                        <div class="block-content">
+                            <div class="row col-12 block-content12">
+                                <div class="col-6 row block-content6">
+                                    <div class="col-6">
+                                        <div>
+                                            <svg viewBox="0 0 36 36" width="150" class="circular-chart">
+                                                <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
+                                                <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
+                                a 15.9155 15.9155 0 0 1 0 31.831
+                                a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                    <!-- Tab panes -->
-                    <div class="tab-content">
-                        <div id="certificate" class="tab-pane active">
-                            <br/>
-                            <div class="row col-12">
-                                <?php foreach ($certificates as $certificate) { ?>
-                                    <div class="col-3">
-                                        <div class="item-image">
-                                            <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
-                                        </div>
-                                        <div class="item-content">
-                                            <p class="item-content__name"><?php echo $certificate->name; ?></p>
-                                            <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+
+
+
+                                                <text x="18" y="20.35" class="percentage">0%</text>
+                                            </svg>
                                         </div>
                                     </div>
-                                <?php } ?>
+                                    <div class="col-6">
+                                        <div class="progress-note">
+                                            <ul>
+                                                <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
+                                                <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
+                                                <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 block-content6">
+                                    <div class="row block-progress">
+                                        <p>Current Courses</p>
+                                        <div class="progress col-10">
+                                            <div class="progress-bar progress-current" role="progressbar" style="width: 0%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="col-1 progress-number"><span>{{ progressCurrentCourse }}</span></div>
+                                    </div>
+                                    <div class="row block-progress">
+                                        <p>Required Courses</p>
+                                        <div class="progress col-10">
+                                            <div class="progress-bar progress-required" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        <div class="col-1 progress-number"><span>{{ progressRequiredCourse }}</span></div>
+                                    </div>
+
+                                    <!--                                <div class="row block-progress">-->
+                                    <!--                                    <p>Optional Courses</p>-->
+                                    <!--                                    <div class="progress col-11">-->
+                                    <!--                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
+                                    <!--                                    </div>-->
+                                    <!--                                    <div class="col-1 progress-number"><span>12/15</span></div>-->
+                                    <!--                                </div>-->
+                                </div>
                             </div>
                         </div>
-                        <div id="badge" class="container tab-pane fade">
+                    </div>
+                    <div class="block courses">
+                        <div class="title"><p>your courses</p></div>
+                        <div class="block-content table-responsive">
+                            <table class="table borderless table-keep">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="table-select">
+                                        <select name="category" id="category" class="course-select" @change="searchCourse(category, 1)"
+                                                v-model="category">
+                                            <option value="0">All course</option>
+                                            <?php foreach ($categories as $category) { ?>
+                                                <option
+                                                    value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                            <?php } ?>
+                                        </select>
+                                    </th>
+                                    <th scope="col">Percent</th>
+                                    <th scope="col">Point</th>
+                                    <th scope="col" class="width10">Qualified</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(course,index) in courses">
+                                    <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
+                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span>/<span class="numberhave">0</span></td>
+                                    <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span>/<span class="numberhave">100</span></td>
+                                    <td><span class="numberhave">{{ course.pass_score }}</span></td>
+                                    <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule < 0"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                    <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination" v-if="totalPage > 1">
+                                <v-pagination
+                                    v-model="current"
+                                    :page-count="totalPage"
+                                    :classes="bootstrapPaginationClasses"
+                                    :labels="customLabels"
+                                    @input="onPageChange"
+                                ></v-pagination>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block certificate-badge">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs justify-content-center">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#certificate">certificate</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#badge">badge</a>
+                            </li>
+                        </ul>
+
+                        <!-- Tab panes -->
+                        <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
                                 <div class="row col-12">
-                                    <?php foreach ($badges as $badge) { ?>
+                                    <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-3">
                                             <div class="item-image">
-                                                <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
+                                                <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
                                             </div>
                                             <div class="item-content">
-                                                <p class="item-content__name"><?php echo $badge->name; ?></p>
-                                                <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                                <p class="item-content__name"><?php echo $certificate->name; ?></p>
+                                                <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
                                             </div>
                                         </div>
                                     <?php } ?>
                                 </div>
                             </div>
+                            <div id="badge" class="container tab-pane fade">
+                                <div id="certificate" class="tab-pane active">
+                                    <br/>
+                                    <div class="row col-12">
+                                        <?php foreach ($badges as $badge) { ?>
+                                            <div class="col-3">
+                                                <div class="item-image">
+                                                    <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
+                                                </div>
+                                                <div class="item-content">
+                                                    <p class="item-content__name"><?php echo $badge->name; ?></p>
+                                                    <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                                </div>
+                                            </div>
+                                        <?php } ?>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
+                    </div>
                 </div>
             </div>
-        </div>
-        <div class="clear-fix"></div>
-    </section>
+            <div class="clear-fix"></div>
+        </section>
+    </div>
+
     <?php echo $OUTPUT->footer(); ?>
 </div>
 

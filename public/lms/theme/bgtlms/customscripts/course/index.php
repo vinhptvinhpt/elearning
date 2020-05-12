@@ -166,7 +166,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 
     .btn-click {
-        background: #862055 0% 0% no-repeat padding-box;
+        background: #862055 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
     }
@@ -231,7 +231,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-position: center center;
         background-size: cover;
         min-height: 150px;
-        padding: 0;
+        padding: 0 !important;
     }
 
     .course-block__image img {
@@ -339,7 +339,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     .btn-click-active {
         background: transparent linear-gradient(97deg, #A30088 0%, #862055 100%) 0% 0% no-repeat padding-box;
-        color: #FFFFFF;
+        color: #FFFFFF !important;
     }
 
     .block-search, .header-block__quick-filter__main ul {
@@ -409,172 +409,174 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     /*}*/
 </style>
 <body>
-<div class="wrapper" id="app"><!-- wrapper -->
-    <template>
-    <section class="section section--header"><!-- section -->
-        <div class="container">
-            <div class="header-block">
-                <div class="header-block__logo">
-                    <img src="images/logo-black-course.png" alt="">
-                </div>
-                <div class="header-block__search">
-                    <div class="header-block__search__title">
-                        <p class="title-header">Available courses</p>
-                        <p>Search your target courses here</p>
+<div class="wrapper"><!-- wrapper -->
+    <?php echo $OUTPUT->header(); ?>
+    <div id="app">
+        <section class="section section--header"><!-- section -->
+            <div class="container">
+                <div class="header-block">
+                    <div class="header-block__logo">
+                        <img src="images/logo-black-course.png" alt="">
                     </div>
-                    <div class="header-block__search__btn-search">
-                        <div class="row col-12 block-search">
-                            <div class="col-2 block-search__select">
-                                <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
-                                        v-model="category">
-                                    <option value="0">All course</option>
-                                    <?php foreach ($categories as $category) { ?>
-                                        <option
-                                            value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                    <?php } ?>
-                                </select>
-                            </div>
-                            <div class="col-5 block-search__btn">
-                                <input type="text" class="form-control input-search" v-model="txtSearch">
-                                <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
-                                                                                  aria-hidden="true"></i><input
-                                        type="button"></div>
-                            </div>
+                    <div class="header-block__search">
+                        <div class="header-block__search__title">
+                            <p class="title-header">Available courses</p>
+                            <p>Search your target courses here</p>
                         </div>
-                    </div>
-                </div>
-                <div class="header-block__quick-filter">
-                    <div class="header-block__quick-filter__title"><p>Quick Filter</p></div>
-                    <div class="header-block__quick-filter__main">
-                        <ul>
-                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
-                            <?php foreach ($categories as $category) { ?>
-                                <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
-                                    category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
-                            <?php } ?>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!--    body-->
-    <section class="section section-content section-course-info">
-        <div class="container">
-            <div class="col-12 row">
-                <div class="col-4 block clctgr0" v-for="(course,index) in courses">
-                    <div class="row col-12 course-block">
-                        <div class="col-5 course-block__image">
-                            <img :src="urlTms+course.course_avatar" alt="">
-                        </div>
-                        <div class="col-7">
-                            <div class="course-info">
-                                <div class="info-text">
-                                    <div class="course-info__title">
-                                        <a :href="'lms/course/view.php?id='+course.id"
-                                           :title="course.fullname"><p class="title-course">
-                                                <i></i>{{course.fullname}}</p></a>
-                                    </div>
-                                    <div class="course-info__detail">
-                                        <ul>
-                                            <li class="teacher">
-                                                <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
-                                            </li>
-                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
-                                            </li>
-                                            <li class="units">
-                                                <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
-                                            </li>
-                                        </ul>
-                                    </div>
+                        <div class="header-block__search__btn-search">
+                            <div class="row col-12 block-search">
+                                <div class="col-2 block-search__select">
+                                    <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
+                                            v-model="category">
+                                        <option value="0">All course</option>
+                                        <?php foreach ($categories as $category) { ?>
+                                            <option
+                                                value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                        <?php } ?>
+                                    </select>
                                 </div>
-                                <div class="btn-show btn-show-all btn-page">
-                                    <button class="btn btn-click"><a
-                                            :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                    </button>
+                                <div class="col-5 block-search__btn">
+                                    <input type="text" class="form-control input-search" v-model="txtSearch">
+                                    <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
+                                                                                                 aria-hidden="true"></i><input
+                                            type="button"></div>
                                 </div>
-
                             </div>
                         </div>
                     </div>
-                </div>
-
-            </div>
-            <div class="pagination" v-if="totalPage > 1">
-<!--                <v-pagination v-model="currentPage" :page-count="total"></v-pagination>-->
-                <v-pagination
-                    v-model="current"
-                    :page-count="totalPage"
-                    :classes="bootstrapPaginationClasses"
-                    :labels="customLabels"
-                    @input="onPageChange"
-                ></v-pagination>
-            </div>
-        </div>
-    </section>
-
-    <section class="section-footer">
-        <footer>
-            <div class="container-fluid row">
-                <div class="footer-logo">
-                    <img src="images/logo-write.png" alt="">
-                </div>
-                <div class="col-12 row footer-full">
-                    <!--            Helps-->
-                    <div class="footer-block col-3">
-                        <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <!--                   FAQs-->
-                    <div class="footer-block col-3">
-                        <div class="footer-block__title"><p class="footer-title">FQAs</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="footer-block col-3">
-                        <div class="footer-block__title"><p class="footer-title">Contact</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                            </ul>
-                        </div>
-                    </div>
-
-                    <div class="footer-block col-3">
-                        <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
+                    <div class="header-block__quick-filter">
+                        <div class="header-block__quick-filter__title"><p>Quick Filter</p></div>
+                        <div class="header-block__quick-filter__main">
+                            <ul>
+                                <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
+                                <?php foreach ($categories as $category) { ?>
+                                    <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
+                                        category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>
                 </div>
-
             </div>
-        </footer>
-    </section>
-    </template>
+        </section>
+
+        <!--    body-->
+        <section class="section section-content section-course-info">
+            <div class="container">
+                <div class="col-12 row">
+                    <div class="col-4 block clctgr0" v-for="(course,index) in courses">
+                        <div class="row col-12 course-block">
+                            <div class="col-5 course-block__image">
+                                <img :src="urlTms+course.course_avatar" alt="">
+                            </div>
+                            <div class="col-7">
+                                <div class="course-info">
+                                    <div class="info-text">
+                                        <div class="course-info__title">
+                                            <a :href="'lms/course/view.php?id='+course.id"
+                                               :title="course.fullname"><p class="title-course">
+                                                    <i></i>{{course.fullname}}</p></a>
+                                        </div>
+                                        <div class="course-info__detail">
+                                            <ul>
+                                                <li class="teacher">
+                                                    <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
+                                                </li>
+                                                <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
+                                                </li>
+                                                <li class="units">
+                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                    <div class="btn-show btn-show-all btn-page">
+                                        <button class="btn btn-click"><a
+                                                :href="'lms/course/view.php?id='+course.id">Learn more</a>
+                                        </button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="pagination" v-if="totalPage > 1">
+                    <!--                <v-pagination v-model="currentPage" :page-count="total"></v-pagination>-->
+                    <v-pagination
+                        v-model="current"
+                        :page-count="totalPage"
+                        :classes="bootstrapPaginationClasses"
+                        :labels="customLabels"
+                        @input="onPageChange"
+                    ></v-pagination>
+                </div>
+            </div>
+        </section>
+
+        <section class="section-footer">
+            <footer>
+                <div class="container-fluid row">
+                    <div class="footer-logo">
+                        <img src="images/logo-write.png" alt="">
+                    </div>
+                    <div class="col-12 row footer-full">
+                        <!--            Helps-->
+                        <div class="footer-block col-3">
+                            <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
+                            <div class="footer-block__ul">
+                                <ul class="footer-ul">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/">Courses</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!--                   FAQs-->
+                        <div class="footer-block col-3">
+                            <div class="footer-block__title"><p class="footer-title">FQAs</p></div>
+                            <div class="footer-block__ul">
+                                <ul class="footer-ul">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/">Courses</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="footer-block col-3">
+                            <div class="footer-block__title"><p class="footer-title">Contact</p></div>
+                            <div class="footer-block__ul">
+                                <ul class="footer-ul">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/">Courses</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="footer-block col-3">
+                            <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
+                            <div class="footer-block__ul">
+                                <ul class="footer-ul">
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/">Courses</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                    <li><a href="/">Profile</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </footer>
+        </section>
+    </div>
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 
