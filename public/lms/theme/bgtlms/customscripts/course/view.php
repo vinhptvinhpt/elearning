@@ -55,7 +55,7 @@
     }
 
     body {
-        font-size: 14px;
+        font-size: 14px !important;
         font-family: Roboto-Bold;
     }
 
@@ -69,8 +69,9 @@
     .prev-btn:hover{
         cursor: pointer;
     }
+
     .progress-bar{
-        background-color: #862055;
+        background-color: #862055 !important;
     }
 
     .progress-info{
@@ -190,6 +191,10 @@
     }
 
     .course-content{
+        display: none;
+    }
+
+    #courseunit{
         display: none;
     }
 
@@ -384,7 +389,8 @@
     }
 
     .progress{
-    height: 0.5em;
+        height: 0.5em !important;
+        border-radius: 0 !important;
     }
 
     .info-course-btn{
@@ -427,7 +433,7 @@
         <div class="container">
 <!--                progress info-->
            <div class="progress-info">
-               <div class="progress-info__title"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a><span title="<?php echo $course->fullname; ?>"> <?php echo $course->fullname; ?></span></div>
+               <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
                <div class="progress-info__content">
                    <div class="row col-12">
                        <div class="col-4 info-course-detail">
@@ -573,15 +579,6 @@
                 var getID = $(".unit").first().attr('id');
                 var ID = getID.substring(5, getID.length);
                 ClickNav(getID, ID);
-                // $('#'+getID).addClass('unit-click');
-                // $('#detail-' + ID).css('display', 'block');
-                // $('.unit').not($('#'+getID)).each(function () {
-                //     $('#'+getID).removeClass('unit-click');
-                // });
-                // $('.main-detail').not($('#detail-' + ID)).each(function () {
-                //     $('#'+getID).css('display', 'none');
-                //     $('#'+getID).removeClass('unit-click');
-                // });
             }
         });
 
@@ -610,15 +607,6 @@
             var getID = $(this).attr('id');
             var ID = getID.substring(5, getID.length);
             ClickNav(getID, ID);
-            // $(this).addClass('unit-click');
-            // $('#detail-' + getID).css('display', 'block');
-            // $('.unit').not($(this)).each(function () {
-            //     $(this).removeClass('unit-click');
-            // });
-            // $('.main-detail').not($('#detail-' + getID)).each(function () {
-            //     $(this).css('display', 'none');
-            //     $(this).removeClass('unit-click');
-            // });
         });
 
         //return back url
@@ -628,14 +616,14 @@
 
         //function click
         function ClickNav(getID, ID){
+            $('.unit').not($('#'+getID)).each(function () {
+                $(this).removeClass('unit-click');
+            });
             $('#'+getID).addClass('unit-click');
             $('#detail-' + ID).css('display', 'block');
-            $('.unit').not($('#'+getID)).each(function () {
-                $('#'+getID).removeClass('unit-click');
-            });
             $('.main-detail').not($('#detail-' + ID)).each(function () {
-                $('#'+getID).css('display', 'none');
-                $('#'+getID).removeClass('unit-click');
+                $(this).css('display', 'none');
+                $(this).removeClass('unit-click');
             });
         }
     });
