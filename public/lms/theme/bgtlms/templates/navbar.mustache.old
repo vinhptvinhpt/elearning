@@ -49,11 +49,11 @@
         </ul>
         <ul class="nav navbar-nav ml-auto">
             <div>
-            {{{ output.search_box }}}
-        </div>
+                {{{ output.search_box }}}
+            </div>
             <!-- navbar_plugin_output -->
             <li class="nav-item">
-            {{{ output.navbar_plugin_output }}}
+                {{{ output.navbar_plugin_output }}}
             </li>
             <!-- user_menu -->
             <li class="nav-item d-flex align-items-center">
