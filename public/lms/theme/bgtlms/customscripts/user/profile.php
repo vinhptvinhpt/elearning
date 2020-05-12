@@ -1,5 +1,6 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
@@ -158,6 +159,12 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
     .info-detail ul li{
         font-family: Roboto-Regular;
+        text-transform: capitalize;
+    }
+
+    .info-detail ul li p{
+        margin: 0;
+        display: contents;
     }
 
     .info-learn{
@@ -465,15 +472,16 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
         <div class="info-user">
             <div class="avatar"><img src="images/avatar.png" alt=""></div>
             <div class="address">
-                <p>Van Anh Tran</p>
-                <p class="address-detail">Vietnam, Hanoi, Hoan Kiem</p>
+                <p>{{ user.fullname }}</p>
+                <p class="address-detail">{{ user.address }}</p>
             </div>
             <div class="info-detail">
                 <ul>
-                    <li>Position: Sales Senior Manager</li>
-                    <li>Department: Sales</li>
-                    <li>Experience: 3 years</li>
-                    <li>Line Manager: Doan Thi Thanh Loan</li>
+                    <li>Position: {{ user.position }}</li>
+                    <li>Department: {{ user.departmentname }}</li>
+                    <li v-if="user.yearworking > 0">Experience: {{linemanager.yearworking}} years</li>
+                    <li v-else>Experience: Under 1 year</li>
+                    <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
                     <li>Company: Easia Travel</li>
                 </ul>
             </div>
@@ -518,26 +526,27 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
                             <div class="col-6 block-content6">
                                 <div class="row block-progress">
-                                    <p>Required Courses</p>
-                                    <div class="progress col-11">
-                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                    <div class="col-1 progress-number"><span>70/123</span></div>
-                                </div>
-                                <div class="row block-progress">
                                     <p>Current Courses</p>
                                     <div class="progress col-11">
-                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar progress-current" role="progressbar" style="width: 0%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                    <div class="col-1 progress-number"><span>110/212</span></div>
+                                    <div class="col-1 progress-number"><span>{{ progressCurrentCourse }}</span></div>
                                 </div>
                                 <div class="row block-progress">
-                                    <p>Optional Courses</p>
+                                    <p>Required Courses</p>
                                     <div class="progress col-11">
-                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar progress-required" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
-                                    <div class="col-1 progress-number"><span>12/15</span></div>
+                                    <div class="col-1 progress-number"><span>{{ progressRequiredCourse }}</span></div>
                                 </div>
+
+<!--                                <div class="row block-progress">-->
+<!--                                    <p>Optional Courses</p>-->
+<!--                                    <div class="progress col-11">-->
+<!--                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-1 progress-number"><span>12/15</span></div>-->
+<!--                                </div>-->
                             </div>
                         </div>
                     </div>
@@ -558,17 +567,19 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                                         <?php } ?>
                                     </select>
                                 </th>
-                                <th scope="col">Progress</th>
-                                <th scope="col">Test</th>
+                                <th scope="col">Percent</th>
+                                <th scope="col">Point</th>
                                 <th scope="col" class="width10">Qualified</th>
                             </tr>
                             </thead>
                             <tbody>
                             <tr v-for="(course,index) in courses">
                                 <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
-                                <td><span class="numberget">9</span>/<span class="numberhave">9</span></td>
-                                <td><span class="numberget">100</span>/<span class="numberhave">100</span></td>
-                                <td class="icon-circle icon-circle-green"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                <td v-if="course.numofmodule == 0"><span class="numberget">0</span>/<span class="numberhave">0</span></td>
+                                <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span>/<span class="numberhave">100</span></td>
+                                <td><span class="numberhave">{{ course.pass_score }}</span></td>
+                                <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule < 0"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                             </tr>
                             </tbody>
                         </table>
@@ -655,8 +666,17 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
             category: 0,
             txtSearch: '',
             courses: [],
+            totalCourse: 0,
+            requiredCourse: 0,
+            currentCourse: 0,
+            linemanagers: [],
+            user: {},
             urlTms: '',
             clctgr: true,
+            progressRequiredCourse: '0/0',
+            progressCurrentCourse: '0/0',
+            url: '<?php echo $CFG->wwwroot; ?>',
+            user_id: <?php echo $USER->id; ?>,
             current: 1,
             totalPage: 0,
             recordPerPage: 3,
@@ -677,7 +697,6 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
         },
         methods: {
             onPageChange: function(){
-                // console.log(this.category);
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
@@ -685,7 +704,6 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                 if(page == 1)
                     this.current = 1;
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
-                let url = '<?php echo $CFG->wwwroot; ?>';
                 const params = new URLSearchParams();
                 params.append('category', category);
                 params.append('txtSearch', this.txtSearch);
@@ -695,7 +713,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
                 axios({
                     method: 'post',
-                    url: url + '/coursesearch.php',
+                    url: this.url + '/coursesearch.php',
                     data: params,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -707,11 +725,43 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                         this.totalPage = response.data.totalPage;
                     })
                     .catch(error => {
+                        console.log("Error");
+                    });
+            },
+            getProfile: function(){
+                const params = new URLSearchParams();
+                params.append('user_id', this.user_id);
+
+                axios({
+                    method: 'post',
+                    url: this.url + '/pusher/profile.php',
+                    data: params,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                    .then(response => {
+                        this.user = response.data.profile;
+                        this.linemanagers = response.data.linemanagers;
+
+                        //set progress
+                        this.progressCurrentCourse = response.data.currentcourses.length + "/"+response.data.totalCourse;
+                        this.progressRequiredCourse = response.data.requiredcourses.length + "/"+response.data.totalCourse;
+
+                        //
+                        $('.progress-current').css('width', response.data.currentcourses.length*100/response.data.totalCourse+'%');
+                        $('.progress-required').css('width', response.data.requiredcourses.length*100/response.data.totalCourse+'%');
+
+
+                    })
+                    .catch(error => {
+                        console.log("Error ", error);
                     });
             }
         },
         mounted() {
             this.searchCourse();
+            this.getProfile();
         }
     })
 
