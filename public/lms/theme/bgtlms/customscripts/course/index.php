@@ -613,7 +613,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             urlTms: '',
             clctgr: true,
             current: 1,
-            totalPage: 5,
+            totalPage: 0,
             recordPerPage: 3,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/

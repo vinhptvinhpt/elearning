@@ -13,7 +13,7 @@
 ?>
 
 <html>
-<title>Trang chủ</title>
+<title>Thông tin khóa học <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
@@ -64,6 +64,9 @@
         text-decoration: none;
     }
 /*    view*/
+    .prev-btn:hover{
+        cursor: pointer;
+    }
     .progress-bar{
         background-color: #862055;
     }
@@ -250,18 +253,18 @@
         cursor: pointer;
         box-shadow: 3px 3px 6px #00000029;
     }
-    .unit-done{
+    .unit-click{
         border: 2px solid #862055;
     }
-    .unit-done .unit__title{
+    .unit-click .unit__title{
         background: #862055 0% 0% no-repeat;
     }
-    .unit-done .unit__title p{
+    .unit-click .unit__title p{
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #FFFFFF;
     }
-    .unit-done .unit__icon i{
+    .unit-click .unit__icon i{
         color: #00A426;
     }
 
@@ -394,7 +397,7 @@
             display: block;
         }
 
-        .unit__title p, .unit-learning .unit__title p, .unit-done .unit__title p{
+        .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p{
             font-size: 14px;
         }
         .info-course-detail{
@@ -416,7 +419,7 @@
         <div class="container">
 <!--                progress info-->
            <div class="progress-info">
-               <div class="progress-info__title"><a href="lms/my" class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a><span> <?php echo $course->fullname; ?></span></div>
+               <div class="progress-info__title"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a><span> <?php echo $course->fullname; ?></span></div>
                <div class="progress-info__content">
                    <div class="row col-12">
                        <div class="col-4 info-course-detail">
@@ -437,12 +440,6 @@
                                    <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
                                </div>
                            </div>
-<!--                           <div class="col-3"><span>PROGRESS</span></div>-->
-<!--                           <div class="col-9">-->
-<!--                               <div class="progress">-->
-<!--                                   <div class="progress-bar" role="progressbar" style="width: 50%;" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100">50%</div>-->
-<!--                               </div>-->
-<!--                           </div>-->
                        </div>
                        <div class="col-2 info-course-btn">
                            <a href="" class="btn btn-start-course btn-click">start course</a>
@@ -520,57 +517,6 @@
                                 </div>
                             </div>
                         <?php } ?>
-<!--                        <div class="unit unit-done">-->
-<!--                            <div class="unit__title"><p>Unit 1: Effective time management menthod</p></div>-->
-<!--                            <div class="unit__progress">-->
-<!--                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>-->
-<!--                                <div class="unit__progress-number">-->
-<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">90</span>/<span class="percent-total">100</span></p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!---->
-<!--                        <div class="unit unit-learning">-->
-<!--                            <div class="unit__title"><p>Unit 2: Time Management Test 01</p></div>-->
-<!--                            <div class="unit__progress">-->
-<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
-<!--                                <div class="unit__progress-number">-->
-<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">50</span>/<span class="percent-total">100</span></p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!---->
-<!--                        <div class="unit">-->
-<!--                            <div class="unit__title"><p>Unit 3: Time Management Test 02</p></div>-->
-<!--                            <div class="unit__progress">-->
-<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
-<!--                                <div class="unit__progress-number">-->
-<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!---->
-<!--                        <div class="unit">-->
-<!--                            <div class="unit__title"><p>Unit 4: Time Management Test 01</p></div>-->
-<!--                            <div class="unit__progress">-->
-<!--                                <div class="unit__icon"><i class="fa fa-check" aria-hidden="true"></i></div>-->
-<!--                                <div class="unit__progress-number">-->
-<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-<!---->
-<!--                        <div class="unit">-->
-<!--                            <div class="unit__title"><p>Unit 5: Time Management Test 01</p></div>-->
-<!--                            <div class="unit__progress">-->
-<!--                                <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>-->
-<!--                                <div class="unit__progress-number">-->
-<!--                                    <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                        </div>-->
-
-
                     </div>
                 </div>
 
@@ -637,15 +583,20 @@
         $('.unit').click(function(){
             var getID = $(this).attr('id');
             getID = getID.substring(5, getID.length);
-            $(this).toggleClass('unit-done');
+            $(this).addClass('unit-click');
             $('#detail-' + getID).css('display', 'block');
             $('.unit').not($(this)).each(function () {
-                $(this).removeClass('unit-done');
+                $(this).removeClass('unit-click');
             });
             $('.main-detail').not($('#detail-' + getID)).each(function () {
                 $(this).css('display', 'none');
-                $(this).removeClass('unit-done');
+                $(this).removeClass('unit-click');
             });
+        });
+
+        //return back url
+        $('.prev-btn').click(function () {
+            history.back();
         });
     });
 
