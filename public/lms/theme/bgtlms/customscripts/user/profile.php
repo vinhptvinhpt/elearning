@@ -430,7 +430,7 @@ if($USER->id > 0){
 <?php
 ?>
 <div class="wrapper"><!-- wrapper -->
-
+    <?php echo $OUTPUT->header(); ?>
     <!--    body-->
     <section class="section section-content">
         <div class="info-user">
@@ -751,7 +751,7 @@ if($USER->id > 0){
         </div>
         <div class="clear-fix"></div>
     </section>
-
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 <script>
