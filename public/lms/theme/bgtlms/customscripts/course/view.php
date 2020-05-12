@@ -6,6 +6,8 @@
 
     $units = get_course_contents($id);
 
+    $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
+
 //    $units = json_encode(get_course_contents($id));
 //    echo $units;
 //    die;
@@ -416,7 +418,8 @@
 
 
 </style>
-<body>
+
+<body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
     <section class="section section--header"><!-- section -->
@@ -605,6 +608,46 @@
     });
 
 
+</script>
+<script>
+    $(document).ready(function() {
+        var x = document.getElementsByTagName("BODY")[0];
+        var classes = x.className.toString().split(/\s+/);
+        let course_id = '0';
+        let context_id = '0';
+        let module_id = '0';
+        let category_id = '0';
+        let currentUrl = window.location.href;
+
+        //screen course detail
+        if (classes.includes("pagelayout-course")) {
+            classes.forEach(function(classItem) {
+                if (classItem.startsWith('course-')) {
+                    course_id = classItem.substring(7, classItem.length);
+                }
+            });
+            $.ajax({
+                url:'/elearning-easia/public/lms/pusher/resume.php',
+                data: {
+                    'course_id': course_id
+                },
+                type: 'POST',
+                success: function(data) {
+                    if (data.length !== 0) {
+                        r = confirm("Do you want to continue last activity in course?");
+                        if (r == true) {
+                            window.location.href = data;
+                        } else {
+                            return;
+                        }
+                    }
+                },
+                error: function(e){
+                    console.log(e);
+                }
+            });
+        }
+    });
 </script>
 
 </body>
