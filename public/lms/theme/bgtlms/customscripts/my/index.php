@@ -5,6 +5,10 @@ session_start();
 
 $sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
 $courses = array_values($DB->get_records_sql($sql));
+
+$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = '.$USER->id;
+$profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
+
 $courses_current = array();
 $courses_all_required = array();
 $courses_optional = array();
@@ -215,6 +219,7 @@ $countBlock = 1;
         border-radius: 50%;
         margin: 0 !important;
         padding-right: 0 !important;
+        height: fit-content;
     }
     .avatar img{
         margin-top: 15%;
@@ -229,7 +234,7 @@ $countBlock = 1;
         /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     }
     .info-user_info{
-        padding: 10px !important;
+        padding: 10% 1% 1% 10% !important;
         width: 100% !important;
     }
     .info-user_info p{
@@ -574,18 +579,77 @@ $countBlock = 1;
         <header><!-- header -->
             <div class="content">
                 <div class="slider">
-                    <div id="myCarousel" class="carousel slide" data-ride="carousel">
-                        <!-- Indicators -->
-                        <ol class="carousel-indicators">
-                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                            <li data-target="#myCarousel" data-slide-to="1"></li>
-                            <li data-target="#myCarousel" data-slide-to="2"></li>
-                        </ol>
-
-                        <!-- Wrapper for slides -->
+<!--                    <div id="myCarousel" class="carousel slide" data-ride="carousel">-->
+<!--                        <ol class="carousel-indicators">-->
+<!--                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>-->
+<!--                            <li data-target="#myCarousel" data-slide-to="1"></li>-->
+<!--                            <li data-target="#myCarousel" data-slide-to="2"></li>-->
+<!--                        </ol>-->
+<!---->
+<!--                        <div class="carousel-inner">-->
+<!--                            <div class="item active">-->
+<!--                                <img src="images/17580-[Converted]-01-1.png" alt="Chania">-->
+<!--                                <div class="slide-logo">-->
+<!--                                    <img src="images/logo-black-1.png" alt="">-->
+<!--                                </div>-->
+<!--                                <div class="carousel-caption">-->
+<!--                                    <h3>Easia</h3>-->
+<!--                                    <p>ACADEMY</p>-->
+<!--                                </div>-->
+<!--                                <div class="slide-image">-->
+<!--                                    <img src="images/1a-01.png" alt="">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!---->
+<!--                               <div class="item">-->
+<!--                                   <img src="images/17580-[Converted]-01.png" alt="Chicago">-->
+<!--                                   <div class="carousel-caption">-->
+<!--                                       <h3>Easia</h3>-->
+<!--                                       <p>ACADEMY</p>-->
+<!--                                   </div>-->
+<!--                               </div>-->
+<!---->
+<!--                               <div class="item">-->
+<!--                                   <img src="images/17580-[Converted]-01.png" alt="New York">-->
+<!--                                   <div class="carousel-caption">-->
+<!--                                       <h3>Easia</h3>-->
+<!--                                       <p>ACADEMY</p>-->
+<!--                                   </div>-->
+<!--                               </div>-->
+<!--                           </div>-->
+<!---->
+<!--                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">-->
+<!--                                <span class="glyphicon glyphicon-chevron-left"></span>-->
+<!--                                <span class="sr-only">Previous</span>-->
+<!--                            </a>-->
+<!--                            <a class="right carousel-control" href="#myCarousel" data-slide="next">-->
+<!--                                <span class="glyphicon glyphicon-chevron-right"></span>-->
+<!--                                <span class="sr-only">Next</span>-->
+<!--                            </a>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <div id="demo" class="carousel slide" data-ride="carousel">
+                        <ul class="carousel-indicators">
+                            <li data-target="#demo" data-slide-to="0" class="active"></li>
+                            <li data-target="#demo" data-slide-to="1"></li>
+                            <li data-target="#demo" data-slide-to="2"></li>
+                        </ul>
                         <div class="carousel-inner">
-                            <div class="item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Chania">
+                            <div class="carousel-item active">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <div class="slide-logo">
+                                    <img src="images/logo-black-1.png" alt="">
+                                </div>
+                                <div class="carousel-caption">
+                                    <h3>Easia</h3>
+                                    <p>ACADEMY</p>
+                                </div>
+                              <div class="slide-image">
+                                       <img src="images/1a-01.png" alt="">
+                                 </div>
+                            </div>
+                            <div class="carousel-item active">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
                                 <div class="slide-logo">
                                     <img src="images/logo-black-1.png" alt="">
                                 </div>
@@ -597,34 +661,26 @@ $countBlock = 1;
                                     <img src="images/1a-01.png" alt="">
                                 </div>
                             </div>
-
-                            <!--                           <div class="item">-->
-                            <!--                               <img src="images/17580-[Converted]-01.png" alt="Chicago">-->
-                            <!--                               <div class="carousel-caption">-->
-                            <!--                                   <h3>Easia</h3>-->
-                            <!--                                   <p>ACADEMY</p>-->
-                            <!--                               </div>-->
-                            <!--                           </div>-->
-
-                            <!--                           <div class="item">-->
-                            <!--                               <img src="images/17580-[Converted]-01.png" alt="New York">-->
-                            <!--                               <div class="carousel-caption">-->
-                            <!--                                   <h3>Easia</h3>-->
-                            <!--                                   <p>ACADEMY</p>-->
-                            <!--                               </div>-->
-                            <!--                           </div>-->
-                            <!--                       </div>-->
-
-                            <!-- Left and right controls -->
-                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">
-                                <span class="glyphicon glyphicon-chevron-left"></span>
-                                <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="right carousel-control" href="#myCarousel" data-slide="next">
-                                <span class="glyphicon glyphicon-chevron-right"></span>
-                                <span class="sr-only">Next</span>
-                            </a>
+                            <div class="carousel-item active">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <div class="slide-logo">
+                                    <img src="images/logo-black-1.png" alt="">
+                                </div>
+                                <div class="carousel-caption">
+                                    <h3>Easia</h3>
+                                    <p>ACADEMY</p>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="images/1a-01.png" alt="">
+                                </div>
+                            </div>
                         </div>
+                        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                            <span class="carousel-control-prev-icon"></span>
+                        </a>
+                        <a class="carousel-control-next" href="#demo" data-slide="next">
+                            <span class="carousel-control-next-icon"></span>
+                        </a>
                     </div>
                 </div>
         </header>
@@ -638,11 +694,11 @@ $countBlock = 1;
                     <div class="info">
                         <div class="info-user col-sm-12">
                             <div class="avatar col-sm-4">
-                                <img src="images/avatar.png" alt="">
+                                <img src="<?php if(is_null($profile->avatar)) echo 'images/avatar.png';  else echo $profile->avatar; ?>" alt="">
                             </div>
                             <div class="info-user_info col-sm-8">
-                                <p class="username">Van Anh Tran</p>
-                                <p class="userposition">Sales Senior Manager</p>
+                                <p class="username"><?php echo $profile->fullname; ?></p>
+                                <p class="userposition"><?php if(is_null($profile->exactlypostion)) echo $profile->position; else echo $profile->exactlypostion; ?></p>
                             </div>
                         </div>
                         <div class="info-courses">

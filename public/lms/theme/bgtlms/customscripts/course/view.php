@@ -99,10 +99,11 @@
         width: 100%;
     }
     .info-course-detail ul li{
-        margin-right: 10%;
+        margin-right: 8%;
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
         color: #737373;
+        font-size: 14px !important;
     }
 
     .info-course-progress > span{
@@ -469,7 +470,7 @@
             <!--                click tab - nav-->
             <div class="nav-course">
                 <ul class="nav nav-tabs-courses">
-                    <li class="nav-item nav-click active">
+                    <li class="nav-item nav-click nav-introduction">
                         <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
                     </li>
                     <li class="nav-item nav-click">
@@ -487,7 +488,7 @@
                 <div class="col-8 course-block-info">
 
                     <div class="course-block course-description">
-                        <div class="course-block__title"><p>Course description</p></div>
+<!--                        <div class="course-block__title"><p>Course description</p></div>-->
                         <div class="course-block__content">
                             <?php echo $course->summary; ?>
 <!--                            <p>Do you usually leave the office late?</p>-->
@@ -570,6 +571,10 @@
                 var getId =  $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
+            $('.nav-click').not($(this)).each(function () {
+                $(this).removeClass('active');
+            });
+            $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
 
         $(".nav-click a").click(function() {
@@ -580,6 +585,9 @@
                 var ID = getID.substring(5, getID.length);
                 ClickNav(getID, ID);
             }
+            $('.nav-click a').not($(this)).each(function () {
+                $(this).removeClass('active');
+            });
         });
 
         $(".nav-tabs-courses a").click(function(){
