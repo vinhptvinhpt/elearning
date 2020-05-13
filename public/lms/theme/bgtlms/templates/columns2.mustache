@@ -110,6 +110,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
         let context_id = '0';
         let module_id = '0';
         let category_id = '0';
+        let activity_id = {{ activityid }};
         let currentUrl = window.location.href;
 
         //screen learning course / module view
@@ -129,12 +130,14 @@ require(['theme_bgtlms/drawer'], function(mod) {
                 }
              });
 
+             //init screen
              $.ajax({
-                 url:'/lms/pusher/study.php',
+                 url:'/elearning-easia/public/lms/pusher/study.php',
                  data: {
                      'course_id': course_id,
                      'context_id': context_id,
                      'module_id': module_id,
+                     'activity_id': activity_id,
                      'category_id': category_id,
                      'url': currentUrl,
                      'type': 'init'
@@ -152,10 +155,11 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
             window.addEventListener('beforeunload', function (e) {
                $.ajax({
-                   url:'/lms/pusher/study.php',
+                   url:'/elearning-easia/public/lms/pusher/study.php',
                    data: {
                        'course_id': course_id,
                        'context_id': context_id,
+                       'activity_id': activity_id,
                        'module_id': module_id,
                        'category_id': category_id,
                        'url': currentUrl,
@@ -177,10 +181,11 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click next activity
              $( "#next-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/lms/pusher/study.php',
+                     url:'/elearning-easia/public/lms/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
+                         'activity_id': activity_id,
                          'module_id': module_id,
                          'category_id': category_id,
                          'url': currentUrl,
@@ -199,10 +204,11 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click prev activity
              $( "#prev-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/lms/pusher/study.php',
+                     url:'/elearning-easia/public/lms/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
+                         'activity_id': activity_id,
                          'module_id': module_id,
                          'category_id': category_id,
                          'url': currentUrl,
@@ -221,7 +227,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
             $('#header-search-box-container').removeClass("hide");
         }
 
-        //screen course detail
+        //screen course detail => move to course detail customscripts/course/view.php
         /*
         if (classes.includes("pagelayout-course")) {
             classes.forEach(function(classItem) {

@@ -41,6 +41,7 @@ $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
 $courseid = $PAGE->course->id;
+
 $pagelayout = $PAGE->pagelayout;
 
 $incourse = false;
@@ -58,8 +59,9 @@ $templatecontext = [
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
     'courseid' => $courseid,
+    'activityid' => 0,
     'pagelayout' => $pagelayout,
-    'incourse' => $incourse
+    'incourse' => $incourse,
 ];
 
 $nav = $PAGE->flatnav;

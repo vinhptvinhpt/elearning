@@ -15,4 +15,4 @@ if (!isguestuser()) {     // Guests can never edit their profile.
         }
     }
 }
-echo 0;
+echo '';
