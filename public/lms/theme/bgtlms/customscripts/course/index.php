@@ -197,6 +197,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         -webkit-box-orient: vertical;
         overflow: hidden;
         height: 3.25rem;
+        font-family: Roboto-Bold !important;
     }
 
     .course-info__title {
@@ -235,11 +236,25 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-size: cover;
         min-height: 150px;
         padding: 0 !important;
+        position: relative;
     }
 
-    .course-block__image img {
-        width: 100%;
-        min-height: 100%;
+    .course-block__image img{
+        width: 32%;
+        height: 26%;
+        position: absolute;
+        top: 3%;
+        right: 3%;
+    }
+
+    .course-block__image span{
+        font-size: 13px;
+        font-family: Nunito-Bold;
+        color: #FFFFFF;
+        position: absolute;
+        top: 11%;
+        right: 8%;
+        letter-spacing: 1px;
     }
 
     .section--header {
@@ -334,9 +349,10 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
         border-radius: 4px;
-        font-family: Nunito-Sans-Regular;
-        font-size: 13px;
-        color: #737373;
+        /*font-family: Roboto-Bold !important;*/
+        font-family: Nunito-Bold;
+        font-size: 13px !important;
+        color: #737373 !important;
         letter-spacing: 0.45px;
         margin-right: 2%;
         min-width: 135px;
@@ -482,6 +498,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
 <!--                            <div class="col-6 course-block__image" :style="background-image: url('urlTms+course.course_avatar')">-->
 <!--                                <img :src="urlTms+course.course_avatar" alt="">-->
+<!--                                <img src="images/Component8–1.png" alt=""><span>--><?php //echo intval($course->numoflearned*100/$course->numofmodule); ?><!--%</span>-->
+                                <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
+                                <template v-else-if="course.numofmodule == 0"><img src="images/Component8–1.png" alt=""><span>0%</span></template>
+                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
+<!--                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>-->
                             </div>
                             <div class="col-7">
                                 <div class="course-info">
@@ -628,7 +649,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             clctgr: true,
             current: 1,
             totalPage: 0,
-            recordPerPage: 3,
+            recordPerPage: 9,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',

@@ -14,7 +14,10 @@ $courses_all_required = array();
 $courses_optional = array();
 $courses_completed = array();
 foreach ($courses as $course){
-    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+    if($course->id == 506){
+        array_push($courses_completed, $course);
+    }
+    else if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
         array_push($courses_all_required, $course);
     }
     else if($course->numoflearned/$course->numofmodule == 1){
@@ -27,6 +30,7 @@ foreach ($courses as $course){
 // Set session variables
 $_SESSION["courses_current"] = $courses_current;
 $_SESSION["courses_all_required"] = $courses_all_required;
+$_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
 $countBlock = 1;
@@ -50,6 +54,10 @@ $countBlock = 1;
     @font-face {
         font-family: Nunito-Sans;
         src: url('fonts/NunitoSans-Black.ttf');
+    }
+    @font-face {
+        font-family: Nunito-Sans-Bold;
+        src: url('fonts/NunitoSans-Bold.ttf');
     }
     @font-face {
         font-family: Nunito-Sans-Regular;
@@ -108,19 +116,24 @@ $countBlock = 1;
         background: #862055 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
+        padding: 9px 14px !important;
     }
     .btn-click a{
         text-align: left;
-        font: Bold 14px Roboto-Regular;
+        font-family: Roboto-Regular;
         letter-spacing: 0.45px;
         color: #FFFFFF;
         text-transform: uppercase;
         opacity: 1;
         /*font-family: Roboto;*/
     }
+    .courses{
+        margin-bottom: 70px;
+    }
     .info-course p{
-        margin: 0;
+        margin: 0 0 5px 0;
         font-family: Roboto-Regular;
+        font-size: 14px !important;
     }
     img{
         width: 100%;
@@ -201,10 +214,25 @@ $countBlock = 1;
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
+        position: relative;
     }
 
     .block-item__image img{
-        width: 100%;
+        width: 32%;
+        height: 26%;
+        position: absolute;
+        top: 3%;
+        right: 3%;
+    }
+
+    .block-item__image span{
+        font-size: 14px;
+        font-family: Nunito-Sans-Bold;
+        color: #FFFFFF;
+        position: absolute;
+        top: 10%;
+        right: 10%;
+        letter-spacing: 1px;
     }
 
     .info-user{
@@ -711,11 +739,11 @@ $countBlock = 1;
                                         <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
+                                        <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo count($courses_completed)*100/count($courses); ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                        <text x="18" y="20.35" class="percentage">0%</text>
+                                        <text x="18" y="20.35" class="percentage"><?php echo intval(count($courses_completed)*100/count($courses)); ?> %</text>
                                     </svg>
                                 </div>
 
@@ -799,6 +827,8 @@ $countBlock = 1;
     <!--                                            <div class="col-sm-6 block-items__item">-->
                                                     <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
     <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+<!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
+                                                        <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
@@ -847,6 +877,7 @@ $countBlock = 1;
                                             <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
 <!--                                            <div class="col-sm-6 block-items__item">-->
                                                 <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                    <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
 <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
                                                 </div>
                                                 <div class="block-item__content">
@@ -895,6 +926,7 @@ $countBlock = 1;
                                         <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
                                             <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
                                                 <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                    <img src="images/Badge-examples 2.png" alt="">
                                                 </div>
                                                 <div class="block-item__content">
                                                     <div class="block-item__content_text">

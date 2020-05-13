@@ -421,6 +421,10 @@
             height: 0 !important;
             line-height: 1 !important;
         }
+
+        #user-notifications .alert-warning{
+            opacity: 1 !important;
+        }
     }
 
 
@@ -448,12 +452,22 @@
                            <span class="col-3">PROGRESS</span>
 
                            <div class="col-9">
-                               <hgroup class="speech-bubble">
-                                   <h7><?php echo $course->numoflearned; ?>/<?php echo $course->numofmodule; ?></h7>
-                               </hgroup>
-                               <div class="progress">
-                                   <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                               </div>
+                               <?php if($course->id != 506){ ?>
+                                   <hgroup class="speech-bubble">
+                                       <h7><?php echo $course->numoflearned; ?>/<?php echo $course->numofmodule; ?></h7>
+                                   </hgroup>
+                                   <div class="progress">
+                                       <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                   </div>
+                               <?php }else{?>
+                                   <hgroup class="speech-bubble">
+                                       <h7><?php echo $course->numofmodule; ?>/<?php echo $course->numofmodule; ?></h7>
+                                   </hgroup>
+                                   <div class="progress">
+                                       <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numofmodule*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numofmodule*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
+                                   </div>
+
+                               <?php } ?>
                            </div>
                        </div>
                        <div class="col-2 info-course-btn">

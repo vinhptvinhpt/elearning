@@ -9,6 +9,9 @@ $certificates = array_values($DB->get_records_sql($sqlGetCertificates));
 
 $sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and tms_traninning_programs.auto_badge = 1 and student_certificate.userid = '.$USER->id;
 $badges = array_values($DB->get_records_sql($sqlGetBadges));
+
+session_start();
+$percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
 ?>
 
 <html>
@@ -511,14 +514,14 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                                                 <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="#862055" stroke-dasharray="0,100" d="M18 2.0845
+                                                <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo $percent; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
 
 
 
-                                                <text x="18" y="20.35" class="percentage">0%</text>
+                                                <text x="18" y="20.35" class="percentage"><?php echo $percent; ?>%</text>
                                             </svg>
                                         </div>
                                     </div>
@@ -584,11 +587,13 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                                 <tbody>
                                 <tr v-for="(course,index) in courses">
                                     <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span></td>
+                                    <td v-if="course.id == 506"><span class="numberget">100</span></td>
+                                    <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
+                                    <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
                                     <td v-if="course.finalgrade == null"><span class="numberhave">0</span></td>
                                     <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
-                                    <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule < 0"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                    <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
+                                    <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                 </tr>
                                 </tbody>
