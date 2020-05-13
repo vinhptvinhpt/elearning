@@ -260,12 +260,12 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
     .item-image{
         box-shadow: 3px 3px 6px #0000004D;
         border-radius: 10px;
-        max-height: 185px;
+        max-height: 300px;
         max-width: 185px;
     }
 
     .item-image img{
-        max-height: 134px;
+        /*max-height: 134px;*/
     }
 
     .item-content{
@@ -479,7 +479,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
     <div id="app">
         <section class="section section-content">
             <div class="info-user">
-                <div class="avatar"><img src="images/avatar.png" alt=""></div>
+                <div class="avatar"><img :src="user.avatar" alt=""></div>
                 <div class="address">
                     <p>{{ user.fullname }}</p>
                     <p class="address-detail">{{ user.address }}</p>
@@ -584,9 +584,10 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
                                 <tbody>
                                 <tr v-for="(course,index) in courses">
                                     <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span>/<span class="numberhave">0</span></td>
-                                    <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span>/<span class="numberhave">100</span></td>
-                                    <td><span class="numberhave">{{ course.pass_score }}</span></td>
+                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span></td>
+                                    <td v-else><span class="numberget">{{ course.numoflearned*100/course.numofmodule }}</span></td>
+                                    <td v-if="course.finalgrade == null"><span class="numberhave">0</span></td>
+                                    <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
                                     <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule < 0"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                 </tr>

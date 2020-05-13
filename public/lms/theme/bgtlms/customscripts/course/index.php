@@ -409,6 +409,10 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         margin-top: 5%;
     }
 
+    .nodata{
+
+    }
+
     /*.course-info__list-lessons ul li a{*/
     /*    */
     /*}*/
@@ -469,7 +473,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         <section class="section section-content section-course-info">
             <div class="container">
                 <div class="col-12 row">
-                    <div class="col-4 block clctgr0" v-for="(course,index) in courses">
+                    <template v-if="courses.length == 0">
+                        <div class="row col-12"><p class="nodata">No data</p></div>
+                    </template>
+                    <template v-else>
+                        <div class="col-4 block clctgr0" v-for="(course,index) in courses">
                         <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
 <!--                            <div class="col-6 course-block__image" :style="background-image: url('urlTms+course.course_avatar')">-->
@@ -506,6 +514,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                             </div>
                         </div>
                     </div>
+                    </template>
 
                 </div>
                 <div class="pagination" v-if="totalPage > 1">
