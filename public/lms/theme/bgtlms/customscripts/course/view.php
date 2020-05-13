@@ -6,6 +6,9 @@
 
     $units = get_course_contents($id);
 
+//    echo json_encode($units);
+//    die;
+
     $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
 
 //    $units = json_encode(get_course_contents($id));
