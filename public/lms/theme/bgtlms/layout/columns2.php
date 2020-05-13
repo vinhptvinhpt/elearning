@@ -58,7 +58,7 @@ $templatecontext = [
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
     'courseid' => $courseid,
-    'activityid' => $section,
+    'activityid' => $section ? $section : 0,
     'pagelayout' => $pagelayout,
     'incourse' => $incourse,
 ];
