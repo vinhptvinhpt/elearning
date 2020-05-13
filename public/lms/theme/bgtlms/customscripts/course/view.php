@@ -543,13 +543,13 @@
                                 <div class="detail-content">
                                     <ul class="detail-list">
                                         <?php foreach ($unit['modules'] as $module) {  ?>
-                                            <li><a href=""><?php echo $module['name']; ?></a> </li>
+                                            <li><a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a> </li>
                                         <?php } ?>
                                     </ul>
                                 </div>
 
                                 <div class="detail-btn">
-                                    <a href="" class="btn btn-click btn-start-unit">Start unit</a>
+                                    <a href="<?php echo $unit['modules'][0]['url']; ?>" class="btn btn-click btn-start-unit">Start unit</a>
                                 </div>
                             </div>
                         <?php } ?>
@@ -643,10 +643,6 @@
         var x = document.getElementsByTagName("BODY")[0];
         var classes = x.className.toString().split(/\s+/);
         let course_id = '0';
-        let context_id = '0';
-        let module_id = '0';
-        let category_id = '0';
-        let currentUrl = window.location.href;
 
         //screen course detail
         if (classes.includes("pagelayout-course")) {
