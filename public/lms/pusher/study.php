@@ -12,6 +12,8 @@ $conn = new mysqli($servername, $username, $password, $dbname);
 
 
 if (!isguestuser()) {     // Guests can never edit their profile.
+
+
     $userid = $USER->id ? $USER->id : 0;       // Owner of the page.
     $course_id = $_REQUEST['course_id'] ? $_REQUEST['course_id'] : 0;
     $activity_id = $_REQUEST['activity_id'] ? $_REQUEST['activity_id'] : 0;
@@ -19,10 +21,9 @@ if (!isguestuser()) {     // Guests can never edit their profile.
     $url = $_REQUEST['url'] ? $_REQUEST['url'] : '';
     $type = $_REQUEST['type'] ? $_REQUEST['type'] : ''; //final, init
 
-    if ($userid != 0 && $course_id != 0 && $module_id != 0) {
+    if ($userid != 0 && $course_id != 0 && $activity_id != 0 && $module_id != 0) {
         $now = time();
-
-        $sql = "SELECT * from tms_learning_activity_logs WHERE user_id = $userid AND course_id = $course_id AND activity = $activity_id AND module_id = $module_id ORDER BY id desc LIMIT 1";
+        $sql = "SELECT * from tms_learning_activity_logs WHERE user_id = $userid AND course_id = $course_id AND activity_id = $activity_id AND module_id = $module_id ORDER BY id desc LIMIT 1";
         $log = $DB->get_records_sql($sql);
 
         $today = date('Y-m-d H:i:s', $now);
