@@ -120,7 +120,7 @@ require_once(__DIR__ . '/../../../../config.php');
 
     .wrap-login100{
         position: absolute;
-        top: 20%;
+        top: 23%;
         left: 20%;
         z-index: 1;
         background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -165,7 +165,7 @@ require_once(__DIR__ . '/../../../../config.php');
     .wrap-btn100 a{
         /*width: 130px;*/
         margin-left: 35%;
-        padding: 2% 10%;
+        padding: 0% 8%;
         background: #862055 0% 0% no-repeat padding-box;
         border-radius: 4px;
         color: #ffffff;
@@ -259,7 +259,7 @@ require_once(__DIR__ . '/../../../../config.php');
         /*    font-size: 14px;*/
         /*}*/
         .wrap-btn100 a{
-            font-size: 24px;
+            font-size: 20px;
         }
     }
 

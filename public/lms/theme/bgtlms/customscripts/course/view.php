@@ -366,7 +366,7 @@
     .speech-bubble {
         position: relative;
         background: #862055;
-        border-radius: .4em;
+        border-radius: 4px;
         width: 50px;
         padding: 1px 0px;
         /*margin: 0.7em 0;*/

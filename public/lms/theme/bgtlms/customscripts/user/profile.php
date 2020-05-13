@@ -124,6 +124,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
     }
 
     /*    View*/
+    .nav-tabs .nav-link:hover{
+
+    }
 
     .col-6.block-content6{
         margin-top: 10px;

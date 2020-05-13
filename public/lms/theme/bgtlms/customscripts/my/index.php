@@ -252,6 +252,7 @@ $countBlock = 1;
     .avatar img{
         margin-top: 15%;
         margin-bottom: 15%;
+        border-radius: 50%;
     }
     .info{
         /*padding: 15px 0;*/
