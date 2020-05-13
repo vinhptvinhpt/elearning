@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\TmsLearnerHistory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -55,6 +56,59 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
             ->where('ttu.user_id', '=', $user_id)
             ->select('ttp.id', 'ttp.name')->groupBy('ttp.id')->get();
 
+        return response()->json($lstData);
+    }
+
+    public function getLearnerHistory(Request $request)
+    {
+        // TODO: Implement getLearnerHistory() method.
+        $user_id = $request->input('user_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $trainning_id = $request->input('trainning_id');
+
+        $param = [
+            'user_id' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $lstData = TmsLearnerHistory::where('user_id', '=', $user_id)->select('id', 'trainning_id', 'trainning_name', 'course_code', 'course_name');
+
+        if ($keyword) {
+            $lstData = $lstData->where('course_name', 'like', '%' . $keyword . '%');
+        }
+
+        if ($trainning_id) {
+            $lstData = $lstData->where('trainning_id', '=', $trainning_id);
+        }
+
+        $totalCourse = count($lstData->get()); //lấy tổng số khóa học hiện tại
+
+        $lstData = $lstData->orderBy('id', 'desc');
+
+        $lstData = $lstData->paginate($row);
+        $total = ceil($lstData->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $lstData->currentPage(),
+            ],
+            'data' => $lstData,
+            'total_course' => $totalCourse
+        ];
+
+
+
+        return response()->json($response);
+    }
+
+    public function getTrainningHistory($user_id)
+    {
+        // TODO: Implement getLearnerHistory() method.
+        $lstData = TmsLearnerHistory::where('user_id', '=', $user_id)->select('trainning_id as id', 'trainning_name')->groupBy('trainning_id')->get();
         return response()->json($lstData);
     }
 }
