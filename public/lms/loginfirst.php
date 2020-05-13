@@ -1,5 +1,4 @@
 <?php
-
 use core\session\exception as CoreException;
 use Horde\Socket\Client\Exception;
 
