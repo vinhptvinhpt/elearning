@@ -392,7 +392,7 @@ require_once(__DIR__ . '/../../../../config.php');
     /*Iphone(480 x 640)*/
     @media screen and (max-width: 320px){
         .wrap-login100{
-            width: 50%;
+            width: 85%;
             left: 7%;
         }
         .before-main-content{
@@ -413,7 +413,7 @@ require_once(__DIR__ . '/../../../../config.php');
             -webkit-text-stroke-color: #FFFFFF;
         }
         .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{
-            font-size: 10px !important;
+            font-size: 16px !important;
         }
 
         .wrap-content .logo{

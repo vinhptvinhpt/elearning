@@ -117,6 +117,11 @@
         text-transform: uppercase;
     }
 
+    .info-course-progress .col-9{
+        position: absolute;
+        bottom: 32px;
+        right: 0;
+    }
     .progress-info__content{
         /*margin-top: 2%;*/
     }
@@ -149,6 +154,7 @@
 
     .nav-course .nav .nav-item a.active{
         color: #202020;
+        font-weight: 700;
     }
 
     .section-nav{
@@ -399,37 +405,208 @@
 
     .info-course-btn{
         padding: 2% 1%;
+        text-align: right;
     }
 
     .course-block-img img{
         border-radius: 3%;
     }
-    @media only screen and (max-width: 777px) {
+
+    @media only screen and (max-width: 1368px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 13px !important;
+        }
+    }
+
+    @media only screen and (max-width: 1024px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 12px !important;
+        }
+    }
+
+    @media only screen and (max-width: 991px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 12px !important;
+        }
+        .info-course-progress > span {
+            font-size: 11px;
+        }
+        .info-course-detail ul {
+            display: -webkit-inline-box;
+        }
+    }
+
+
+    @media only screen and (max-width: 768px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .info-course-detail ul li {
+            font-size: 12px !important;
+            margin: 0 auto;
+        }
+        .info-course-detail, .info-course-detail ul{
+            max-width: 100% !important;
+        }
+        .block{
+            display: contents;
+        }
         .progress-info, .btn-click {
             font-size: 10px;
+            /*margin-top: 5%;*/
         }
 
         .info-course-progress{
             display: block;
+            max-width: 92% !important;
+            /*margin-top: 7%;*/
+        }
+        .info-course-btn{
+            max-width: 90% !important;
+        }
+        .info-course-progress .col-9 {
+            bottom: 24px;
         }
 
         .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p{
             font-size: 14px;
         }
         .info-course-detail{
-            height: 0 !important;
-            line-height: 1 !important;
+            /*height: 0 !important;*/
+            /*line-height: 1 !important;*/
         }
         .info-course-progress .col-3{
-            height: 0 !important;
-            line-height: 1 !important;
+            /*height: 0 !important;*/
+            /*line-height: 1 !important;*/
         }
 
         #user-notifications .alert-warning{
             opacity: 1 !important;
         }
+        .progress-info__content {
+            /* margin-top: 2%; */
+            /*margin-top: 1%;*/
+        }
+
+        .progress-info__content .row{
+            display: block;
+        }
+
+        .detail-list li a{
+            padding-left: 6%;
+        }
+        .nav-course .nav{
+            width: 100%;
+        }
+        .nav-tabs-courses .nav-click{
+            margin: 0 auto;
+        }
+        .nav-course .nav .nav-item a{
+            font-size: 17px;
+        }
+        .nav-introduction{
+            margin-right: 0 !important;
+        }
+        .nav-unit{
+            margin-left: 0 !important;
+        }
     }
 
+    @media only screen and (max-width: 480px) {
+        .progress-info, .btn-click {
+            margin-top: 8%;
+        }
+        .info-course-btn{
+            padding-top: 0;
+        }
+        .btn-start-course{
+            margin-top: 5%;
+            /*margin: 0;*/
+        }
+        .nav-course .nav{
+            width: 100%;
+        }
+        .nav-tabs-courses .nav-click{
+            margin: 0 auto;
+        }
+        .nav-course .nav .nav-item a{
+            font-size: 14px;
+        }
+        .nav-introduction{
+            margin-right: 0 !important;
+        }
+        .nav-unit{
+            margin-left: 0 !important;
+        }
+        .detail-list li a{
+            padding-left: 12%;
+        }
+    }
+
+    @media only screen and (max-width: 320px) {
+        .info-course-progress > span {
+            font-size: 10px;
+        }
+        .info-course-progress .col-9 {
+            bottom: 19px;
+        }
+        .course-block-info{
+            max-width: 100%;
+            width: 100%;
+            display: contents;
+        }
+        .course-block-img{
+            display: none;
+        }
+        .detail-list li a {
+            padding-left: 18%;
+            font-size: 13px;
+        }
+        .detail-title p {
+            font-size: 13px;
+        }
+        .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p {
+            font-size: 11px;
+            word-break: break-word;
+        }
+
+        .unit__progress-number p {
+            font-size: 11px;
+        }
+        .unit-info{
+            padding-left: 0 !important;
+        }
+        #courseunit{
+            padding: 0;
+            margin: 0;
+        }
+        .btn-start-unit{
+            font-size: 11px !important;
+            padding: 5px !important;
+        }
+    }
 
 </style>
 
@@ -443,7 +620,7 @@
            <div class="progress-info">
                <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
                <div class="progress-info__content">
-                   <div class="row col-12">
+                   <div class="row">
                        <div class="col-4 info-course-detail">
                            <ul>
                                <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</li>
@@ -452,7 +629,7 @@
                            </ul>
                        </div>
                        <div class="col-6 row info-course-progress">
-                           <span class="col-3">PROGRESS</span>
+                           <span class="col-3">PROGRESS </span>
 
                            <div class="col-9">
                                <?php if($course->id != 506){ ?>
@@ -490,7 +667,7 @@
                     <li class="nav-item nav-click nav-introduction">
                         <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
                     </li>
-                    <li class="nav-item nav-click">
+                    <li class="nav-item nav-click nav-unit">
                         <a class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
                     </li>
                 </ul>
@@ -616,7 +793,12 @@
         });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
-        var marginLeft = getPercent - 7;
+        var marginLeft = 0;
+        // var screenWidth = $(window).width();
+        // if(screenWidth < 768)
+        //     marginLeft = getPercent - 9;
+        // else if(screenWidth >= 768)
+            marginLeft = getPercent - 6;
         $('.speech-bubble').css('left', marginLeft+'%');
 
         //set height and line height

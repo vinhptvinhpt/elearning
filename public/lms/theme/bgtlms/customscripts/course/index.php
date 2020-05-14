@@ -430,12 +430,77 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     /*1920*/
-    @media screen and (max-width: 1920px) and (min-width: 1368px){
+    @media screen and (max-width: 1920px) and (min-width: 1369px){
         .btn-click-course{
             min-width: 188px;
             font-size: 18px !important;
             padding: 13px !important;
         }
+    }
+
+    @media screen and (max-width: 1368px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .btn-click-course{
+            margin-top: 2%;
+        }
+    }
+
+    @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .btn-click-course{
+            margin-top: 2%;
+        }
+    }
+
+
+    @media only screen and (max-width: 768px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+
+        .btn-click-course{
+            margin-top: 2%;
+        }
+
+        .course-block {
+            margin: 1% 0 !important;
+        }
+
+        .section-course-info {
+            margin-bottom: 5%;
+        }
+    }
+
+    @media only screen and (max-width: 480px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+
+    }
+
+    @media only screen and (max-width: 320px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+
     }
 
     /*.course-info__list-lessons ul li a{*/

@@ -438,10 +438,18 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
 
     /*Ipad ngang(1024 x 768)*/
     @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
 
     }
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
         .info-user{
             padding-left: 25%;
             margin-bottom: 15px;
@@ -460,14 +468,29 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
     }
     /*Tablet nhỏ(480 x 640)*/
     @media screen and (max-width: 480px){
-
-
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
         .item-content p{
             font-size: 10px;
+        }
+
+        .block-content12{
+            display: block !important;
+        }
+        .col-6.block-content6 {
+            max-width: 100%;
+            margin: 0 15px;
+            padding-bottom: 15px;
         }
     }
     /*Iphone(480 x 640)*/
     @media screen and (max-width: 320px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
 
     }
     /*Smart phone nhỏ*/
