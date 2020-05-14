@@ -468,6 +468,7 @@ class BussinessRepository implements IBussinessInterface
             $checkRole->root_user = false;
             $checkRole->has_role_manager = false;
             $checkRole->has_role_leader = false;
+            $checkRole->has_role_admin = false;
         }
 
         $response['roles'] = $checkRole;
