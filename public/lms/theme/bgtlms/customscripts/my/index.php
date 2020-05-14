@@ -155,7 +155,7 @@ $countBlock = 1;
         display: flex;
         padding: 0 !important;
         overflow: hidden;
-        height: 210px;
+        /*height: 210px;*/
     }
 
     .block-items{
@@ -166,7 +166,8 @@ $countBlock = 1;
     }
 
     .block-items__item-first{
-        margin: 0 2% 1% 0;
+        /*margin: 0 2% 1% 0;*/
+        margin-right: 2%;
     }
 
     .block-item__content_btn{
@@ -252,6 +253,7 @@ $countBlock = 1;
     .avatar img{
         margin-top: 15%;
         margin-bottom: 15%;
+        border-radius: 50%;
     }
     .info{
         /*padding: 15px 0;*/
@@ -272,6 +274,7 @@ $countBlock = 1;
         opacity: 1;
         font-size: 13px;
         margin-bottom: 1%;
+        margin-top: 4%;
     }
     .username{
         font: Bold 15px Roboto-Bold;
@@ -596,6 +599,266 @@ $countBlock = 1;
         font-family: Roboto-Regular;
         fill: #862055;
     }
+
+    /*1920*/
+    @media screen and (max-width: 1920px) and (min-width: 1368px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .title-course,.info-user_info p, .footer-title, .block-item__image span {
+            font-size: 24px;
+        }
+
+        .info-course p {
+             font-size: 20px !important;
+         }
+
+        .progress-note ul li, .text-course, .text-number{
+            font-size: 20px;
+        }
+
+        .btn-click {
+            padding: 13px 26px !important;
+        }
+
+        .btn-click a, .footer-ul li a {
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 32px;
+        }
+
+        .circle-progress{
+            margin-right: 10%;
+        }
+
+        .carousel-caption p, .carousel-caption h3{
+            font-size: 145px;
+        }
+
+        .carousel-caption p{
+            -webkit-text-stroke-width: 4px;
+        }
+
+    }
+
+    /*1368*/
+    @media screen and (max-width: 1368px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 110px;
+        }
+        .title-course, .info-user_info p, .footer-title, .block-item__image span {
+            font-size: 18px;
+        }
+
+        .block-item__image span{
+            font-size: 14px;
+        }
+        .title {
+            font-size: 23px;
+        }
+        .info-course p {
+            font-size: 15px !important;
+        }
+        .btn-click a, .footer-ul li a {
+            font-size: 13px;
+        }
+        .btn-click {
+            padding: 9px 14px !important;
+        }
+        .progress-note ul li, .text-course, .text-number {
+            font-size: 14px;
+        }
+    }
+
+    /*1024*/
+    @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 78px;
+        }
+
+        .title-course, .info-user_info p, .footer-title, .block-item__image span {
+            font-size: 14px;
+        }
+
+        .bg-img{
+            height: 300px;
+        }
+        .block-item__image span {
+            font-size: 12px;
+            top: 11%;
+            right: 5%;
+        }
+        .title {
+            font-size: 19px;
+        }
+        .btn-click {
+            padding: 5px 9px !important;
+        }
+        .btn-click a, .footer-ul li a {
+            font-size: 12px;
+        }
+        .progress-note ul li, .text-course, .text-number {
+            font-size: 12px;
+        }
+        .circle-progress{
+            width: 50%;
+        }
+        .circular-chart {
+            max-width: 92%;
+            margin: 15% 0 5% 0;
+        }
+    }
+
+    /*768*/
+    @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+
+        .carousel-item .bg-img{
+            height: 250px;
+        }
+
+        .title-course,.info-user_info p, .footer-title, .block-item__image span {
+            font-size: 12px;
+        }
+
+        .info-course p {
+            font-size: 13px !important;
+        }
+
+        .progress-note ul li, .text-course, .text-number{
+            font-size: 13px;
+        }
+
+        .btn-click {
+            padding: 5px 13px !important;
+        }
+
+        .btn-click a, .footer-ul li a {
+            font-size: 12px;
+        }
+
+        .title {
+            font-size: 18px;
+        }
+
+        .circle-progress{
+            margin-right: 10%;
+        }
+
+        .carousel-caption p, .carousel-caption h3{
+            font-size: 40px;
+        }
+
+        .carousel-caption p{
+            -webkit-text-stroke-width: 2px;
+        }
+
+        .slide-logo img {
+            top: 25%;
+            left: 5%;
+        }
+
+        .courses{
+            padding-left: 20px;
+        }
+        .block-items{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .avatar img{
+            /*width: 40% !important;*/
+            /*width: 40%;*/
+            /*margin: 5% 0;*/
+            /*margin-left: 40%;*/
+        }
+        .info-user_info {
+            padding: 5% 1% 1% 5% !important;
+        }
+
+    }
+
+    /*480*/
+    @media screen and (max-width: 480px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 30px;
+        }
+
+        .carousel-item .bg-img{
+            height: 200px;
+        }
+
+        .slide-logo img{
+            top: 27%;
+        }
+
+        .avatar {
+            width: inherit !important;
+        }
+
+        .avatar img{
+            width: 40%;
+            margin: 5% 0;
+            margin-left: 25%;
+        }
+
+        .info-user_info{
+            padding: 0 !important;
+            margin-top: 4%;
+        }
+
+        .course-block__top, .courses-block__content__item{
+            margin: 0 !important;
+        }
+
+        .block-items__item{
+            max-width: 100% !important;
+            margin:5% 0 !important;
+            ma
+        }
+
+        .title{
+            font-size: 15px;
+        }
+
+
+        .courses{
+            padding-left: 20px;
+        }
+        .block-items{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+    }
+
+    /*Iphone(480 x 640)*/
+    @media screen and (max-width: 320px){
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 25px;
+        }
+        .info-user_info {
+            margin-top: 3%;
+        }
+    }
 </style>
 <body>
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
@@ -607,55 +870,6 @@ $countBlock = 1;
         <header><!-- header -->
             <div class="content">
                 <div class="slider">
-<!--                    <div id="myCarousel" class="carousel slide" data-ride="carousel">-->
-<!--                        <ol class="carousel-indicators">-->
-<!--                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>-->
-<!--                            <li data-target="#myCarousel" data-slide-to="1"></li>-->
-<!--                            <li data-target="#myCarousel" data-slide-to="2"></li>-->
-<!--                        </ol>-->
-<!---->
-<!--                        <div class="carousel-inner">-->
-<!--                            <div class="item active">-->
-<!--                                <img src="images/17580-[Converted]-01-1.png" alt="Chania">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="images/logo-black-1.png" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>Easia</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.png" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!---->
-<!--                               <div class="item">-->
-<!--                                   <img src="images/17580-[Converted]-01.png" alt="Chicago">-->
-<!--                                   <div class="carousel-caption">-->
-<!--                                       <h3>Easia</h3>-->
-<!--                                       <p>ACADEMY</p>-->
-<!--                                   </div>-->
-<!--                               </div>-->
-<!---->
-<!--                               <div class="item">-->
-<!--                                   <img src="images/17580-[Converted]-01.png" alt="New York">-->
-<!--                                   <div class="carousel-caption">-->
-<!--                                       <h3>Easia</h3>-->
-<!--                                       <p>ACADEMY</p>-->
-<!--                                   </div>-->
-<!--                               </div>-->
-<!--                           </div>-->
-<!---->
-<!--                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">-->
-<!--                                <span class="glyphicon glyphicon-chevron-left"></span>-->
-<!--                                <span class="sr-only">Previous</span>-->
-<!--                            </a>-->
-<!--                            <a class="right carousel-control" href="#myCarousel" data-slide="next">-->
-<!--                                <span class="glyphicon glyphicon-chevron-right"></span>-->
-<!--                                <span class="sr-only">Next</span>-->
-<!--                            </a>-->
-<!--                        </div>-->
-<!--                    </div>-->
                     <div id="demo" class="carousel slide" data-ride="carousel">
                         <ul class="carousel-indicators">
                             <li data-target="#demo" data-slide-to="0" class="active"></li>
@@ -664,7 +878,7 @@ $countBlock = 1;
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="images/logo-black-1.png" alt="">
                                 </div>
@@ -677,7 +891,7 @@ $countBlock = 1;
                                  </div>
                             </div>
                             <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="images/logo-black-1.png" alt="">
                                 </div>
@@ -690,7 +904,7 @@ $countBlock = 1;
                                 </div>
                             </div>
                             <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="images/logo-black-1.png" alt="">
                                 </div>
@@ -731,7 +945,7 @@ $countBlock = 1;
                         </div>
                         <div class="info-courses">
                             <div class="info-progress">
-                                <div>
+                                <div class="circle-progress">
                                     <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                         <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831

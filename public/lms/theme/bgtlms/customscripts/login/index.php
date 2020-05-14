@@ -120,8 +120,8 @@ require_once(__DIR__ . '/../../../../config.php');
 
     .wrap-login100{
         position: absolute;
-        top: 25%;
-        left: 22%;
+        top: 23%;
+        left: 20%;
         z-index: 1;
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 3px 3px 6px #00000029;
@@ -165,7 +165,7 @@ require_once(__DIR__ . '/../../../../config.php');
     .wrap-btn100 a{
         /*width: 130px;*/
         margin-left: 35%;
-        padding: 2% 10%;
+        padding: 0% 8%;
         background: #862055 0% 0% no-repeat padding-box;
         border-radius: 4px;
         color: #ffffff;
@@ -212,6 +212,56 @@ require_once(__DIR__ . '/../../../../config.php');
     .bg-show{
 
     }
+    /*1920*/
+    @media screen and (max-width: 1920px){
+        .wrap-content .logo {
+            margin: 5% 0 5% 27%;
+            width: 50%;
+        }
+
+        .before-main-content p, .before-main-content h3{
+            font-size: 120px;
+        }
+        .wrap-content p{
+            font-size: 31px;
+        }
+        .wrap-input100 input{
+            font-size: 20px;
+        }
+        .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a{
+            font-size: 18px;
+        }
+        .wrap-btn100 a{
+            font-size: 24px;
+        }
+    }
+
+    /*1368*/
+    @media screen and (max-width: 1368px){
+        .wrap-content .logo {
+            /*margin: 5% 0 5% 27%;*/
+            /*width: 50%;*/
+        }
+
+        .before-main-content p, .before-main-content h3{
+            font-size: 86px;
+        }
+        .wrap-content p{
+            font-size: 21px;
+        }
+        .wrap-input100 input{
+            font-size: 20px;
+        }
+        .wrap-input100 input, .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a, .wrap-btn100 a{
+            font-size: 16px;
+        }
+        /*.wrap-input100 input, .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a, .wrap-btn100 a{*/
+        /*    font-size: 14px;*/
+        /*}*/
+        .wrap-btn100 a{
+            font-size: 20px;
+        }
+    }
 
     /*Ipad ngang(1024 x 768)*/
     @media screen and (max-width: 1024px){
@@ -227,6 +277,9 @@ require_once(__DIR__ . '/../../../../config.php');
         .before-main-content p, .before-main-content h3{
             font-size: 70px;
         }
+        .wrap-input100 input, .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a, .wrap-btn100 a{
+            font-size: 14px;
+        }
         .before-main-content h3{
             left: 15%;
         }
@@ -236,13 +289,13 @@ require_once(__DIR__ . '/../../../../config.php');
             -webkit-text-stroke-width: 1px;
             -webkit-text-stroke-color: #FFFFFF;
         }
-        .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{
-            font-size: 10px !important;
-        }
+        /*.wrap-login100, .wrap-forgot100 span, .wrap-forgot100 a{*/
+        /*    font-size: 10px !important;*/
+        /*}*/
 
         .wrap-content .logo{
-            margin: 15% 0;
-            width: 100%;
+            /*margin: 15% 0;*/
+            width: 50%;
         }
 
         .btn-click{
@@ -252,45 +305,57 @@ require_once(__DIR__ . '/../../../../config.php');
     }
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px){
-        .wrap-login100{
-            width: 40%;
-            left: 10%;
-        }
+        /*.wrap-login100{*/
+        /*    width: 40%;*/
+        /*    left: 10%;*/
+        /*}*/
+        /*.before-main-content{*/
+        /*    height: 80%;*/
+        /*    width: 48%;*/
+        /*    right: 8%;*/
+        /*}*/
+        /*.before-main-content p, .before-main-content h3{*/
+        /*    font-size: 70px;*/
+        /*}*/
+        /*.before-main-content h3{*/
+        /*    left: 15%;*/
+        /*}*/
+        /*.before-main-content p{*/
+        /*    top: 44%;*/
+        /*    -webkit-text-fill-color: #1d151500;*/
+        /*    -webkit-text-stroke-width: 1px;*/
+        /*    -webkit-text-stroke-color: #FFFFFF;*/
+        /*}*/
+        /*.wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{*/
+        /*    font-size: 10px !important;*/
+        /*}*/
+
+        /*.wrap-content .logo{*/
+        /*    margin: 15% 0;*/
+        /*    width: 100%;*/
+        /*}*/
+
+        /*.btn-click{*/
+        /*    font-size: 10px;*/
+        /*    margin-left: 20%;*/
+        /*}*/
         .before-main-content{
-            height: 80%;
-            width: 48%;
-            right: 8%;
+            display: none;
         }
-        .before-main-content p, .before-main-content h3{
-            font-size: 70px;
-        }
-        .before-main-content h3{
+        .wrap-login100{
+            width: 70%;
+            position: absolute;
             left: 15%;
+            top: 10%;
         }
-        .before-main-content p{
-            top: 44%;
-            -webkit-text-fill-color: #1d151500;
-            -webkit-text-stroke-width: 1px;
-            -webkit-text-stroke-color: #FFFFFF;
-        }
-        .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{
-            font-size: 10px !important;
-        }
-
-        .wrap-content .logo{
-            margin: 15% 0;
-            width: 100%;
-        }
-
-        .btn-click{
-            font-size: 10px;
-            margin-left: 20%;
+        .wrap-content p{
+            font-size: 21px;
         }
     }
     /*Tablet nhỏ(480 x 640)*/
     @media screen and (max-width: 480px){
         .wrap-login100{
-            width: 50%;
+            width: 85%;
             left: 7%;
         }
         .before-main-content{
@@ -311,12 +376,12 @@ require_once(__DIR__ . '/../../../../config.php');
             -webkit-text-stroke-color: #FFFFFF;
         }
         .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{
-            font-size: 10px !important;
+            font-size: 16px !important;
         }
 
         .wrap-content .logo{
-            margin: 15% 0;
-            width: 100%;
+            /*margin: 15% 0;*/
+            width: 50%;
         }
 
         .btn-click{
@@ -327,7 +392,7 @@ require_once(__DIR__ . '/../../../../config.php');
     /*Iphone(480 x 640)*/
     @media screen and (max-width: 320px){
         .wrap-login100{
-            width: 50%;
+            width: 85%;
             left: 7%;
         }
         .before-main-content{
@@ -348,7 +413,7 @@ require_once(__DIR__ . '/../../../../config.php');
             -webkit-text-stroke-color: #FFFFFF;
         }
         .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{
-            font-size: 10px !important;
+            font-size: 16px !important;
         }
 
         .wrap-content .logo{
