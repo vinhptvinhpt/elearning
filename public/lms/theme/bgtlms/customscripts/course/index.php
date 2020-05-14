@@ -429,6 +429,15 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     }
 
+    /*1920*/
+    @media screen and (max-width: 1920px) and (min-width: 1368px){
+        .btn-click-course{
+            min-width: 188px;
+            font-size: 18px !important;
+            padding: 13px !important;
+        }
+    }
+
     /*.course-info__list-lessons ul li a{*/
     /*    */
     /*}*/
