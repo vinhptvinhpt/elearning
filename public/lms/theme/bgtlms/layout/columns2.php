@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 user_preference_allow_ajax_update('drawer-open-nav', PARAM_ALPHA);
 require_once($CFG->libdir . '/behat/lib.php');
 
+
 if (isloggedin()) {
     $navdraweropen = (get_user_preferences('drawer-open-nav', 'true') == 'true');
 } else {
@@ -41,12 +42,25 @@ $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
 $courseid = $PAGE->course->id;
-$section = $PAGE->cm->section;
+$cmid = $PAGE->cm->id ? $PAGE->cm->id : 0;
+$section = $PAGE->cm->section ? $PAGE->cm->section: 0;
 $pagelayout = $PAGE->pagelayout;
 $incourse = false;
+$units = [];
+$modules = [];
 if ($pagelayout == 'incourse') {
+    require_once('courselib.php');
+    $params = array('id' => $courseid);
+    $units = get_course_contents($PAGE->course->id);
+
+    foreach ($units as $unit) {
+        if ($unit['id'] == $section) {
+            $modules = $unit['modules'];
+        }
+    }
     $incourse = true;
 }
+
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -58,9 +72,12 @@ $templatecontext = [
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
     'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
     'courseid' => $courseid,
-    'activityid' => $section ? $section : 0,
+    'activityid' => $section,
+    'cmid' => $cmid,
     'pagelayout' => $pagelayout,
     'incourse' => $incourse,
+    'units' => $units,
+    'modules' => $modules
 ];
 
 $nav = $PAGE->flatnav;
