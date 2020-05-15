@@ -64,7 +64,7 @@
     {{/incourse}}
 
     <div id="page" class="{{#incourse}}container{{/incourse}}">
-        <div id="page-content" class="row">
+        <div id="page-content" class="row mt-3">
             <div id="region-main-box" style="width: 100%">
                 {{#hasregionmainsettingsmenu}}
                 <div id="region-main-settings-menu" class="d-print-none {{#hasblocks}}has-blocks{{/hasblocks}}">
@@ -91,6 +91,7 @@
         </div>
     </div>
     {{{ output.standard_after_main_region_html }}}
+    {{> theme_bgtlms/nav-drawer-timeline }}
     {{> theme_bgtlms/footer }}
 </div>
 

@@ -20,14 +20,13 @@
 <nav class="fixed-top navbar navbar-light bg-white navbar-expand moodle-has-zindex" aria-label="{{#str}}sitemenubar, admin{{/str}}">
 
         <div class="container">
-
                 <div class="d-inline-block mr-1">
                     <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/view.php?id={{ courseid }}">
                         <i class="fa fa-arrow-left"></i>
                     </a>
                 </div>
-                <div class="d-inline-block mr-1">
-                    <a class="btn btn-sm btn-nav-left-top"><i class="fa fa-list"></i></a>
+                <div class="d-inline-block mr-1" data-region="drawer-toggle" >
+                    <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn btn-sm btn-nav-left-top" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav">{{#pix}}i/menubars{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
                 </div>
                 <div class="d-inline-block mr-1">
                     <a href="{{{ config.wwwroot }}}" class="btn btn-sm btn-nav-left-top"><i class="fa fa-home"></i></a>
@@ -36,19 +35,27 @@
                     <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/index.php"><i class="fa fa-university"></i></a>
                 </div>
 
+                <!--{{ output.page_title}}-->
 
-<!--                <div style="margin-left: 100px; max-width: 500px;">-->
-<!--                    <h3>{{{ output.page_title }}}</h3>-->
-<!--                </div>-->
-
-                <div style="width: 40%;" class="ml-5 dropdown topbar-dropdown">
-                    <select>
-                        {{#modules}}
+                <div style="width: 40%;" class="ml-5 dropdown">
+                    <a class="dropdown-toggle topbar-dropdown-menu-option current-option-selected" id="topbar-dropdown" type="button" data-toggle="dropdown">
+                        {{sectionname}}
+                        <span class="caret"></span>
+                    </a>
+                    <ul class="dropdown-menu topbar-dropdown-menu" role="menu" aria-labelledby="topbar-dropdown">
+                        {{#units}}
                             {{#.}}
-                                <option value="{{id}}">{{name}}</option>
+                                <li role="presentation">
+                                    <a role="menuitem" class="topbar-dropdown-menu-option" tabindex="-1" href="{{courseurl}}#section-{{section}}">{{name}}</a>
+                                </li>
                             {{/.}}
-                        {{/modules}}
-                    </select>
+                        {{/units}}
+                        <li role="presentation" class="divider"></li>
+                        <li role="presentation" style="padding: 0 10px">
+                            <a class="btn btn-md btn-navigate-topbar navigate-prev-section btn-hide" style="float: left" href="{{courseurl}}#section-{{prevsectionno}}">PREV LESSION</a>
+                            <a class="btn btn-md btn-navigate-topbar navigate-next-section btn-hide" style="float: right" href="{{courseurl}}#section-{{nextsectionno}}">NEXT LESSON</a>
+                        </li>
+                    </ul>
                 </div>
 
                 <ul class="nav navbar-nav ml-auto">
@@ -70,6 +77,45 @@
 
 <script>
     $(document).ready(function() {
-        $("div.topbar-dropdown select").val("{{ cmid }}");
+        let prevsectionno = {{ prevsectionno }};
+        let nextsectionno = {{ nextsectionno }};
+        if (prevsectionno !== 0) {
+            $('.navigate-prev-section').removeClass('btn-hide');
+        }
+        if (nextsectionno !== 0) {
+            $('.navigate-next-section').removeClass('btn-hide');
+        }
     });
 </script>
+<style>
+    .topbar-dropdown-menu {
+        width: 100%;
+    }
+    .topbar-dropdown-menu-option {
+        color: #212529;
+        padding-left: 10px;
+        line-height: 2rem;
+        font-family: Roboto, sans-serif;
+    }
+
+    .current-option-selected {
+        font-weight: bold;
+    }
+
+    .btn-navigate-topbar  {
+        background-color: #862055;
+        color: #ffffff;
+    }
+    .btn-navigate-topbar:hover {
+        color: #ffffff;
+    }
+
+    .btn-hide {
+        display: none;
+    }
+    /* display header h2 for  module content, now display none*/
+    span#maincontent + h2 {
+        display: block;
+    }
+
+</style>

@@ -44,23 +44,44 @@ $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
 $courseid = $PAGE->course->id;
 $cmid = $PAGE->cm->id ? $PAGE->cm->id : 0;
 $section = $PAGE->cm->section ? $PAGE->cm->section: 0;
+$sectionname = '';
 $pagelayout = $PAGE->pagelayout;
 $incourse = false;
 $units = [];
 $modules = [];
+$courseurl = '';
+$prevsectionno = 0;
+$nextsectionno = 0;
+$currentsectionno = 0;
+$modulesidsstring = '';
+
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
     $units = get_course_contents($PAGE->course->id);
+    $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
 
     foreach ($units as $unit) {
+        $sectionno = $unit['section'];
         if ($unit['id'] == $section) {
             $modules = $unit['modules'];
+            $sectionname = $unit['name'];
+            $currentsectionno = $sectionno;
+        } else {
+            if ($sectionno > $currentsectionno) {
+                if ($nextsectionno == 0) {
+                    $nextsectionno = $sectionno;
+                }
+            } else {
+                $prevsectionno = $sectionno;
+            }
         }
     }
     $incourse = true;
+    if (!empty($modules)) {
+        $modulesidsstring = implode(',', array_column($modules, 'id'));
+    }
 }
-
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -77,7 +98,12 @@ $templatecontext = [
     'pagelayout' => $pagelayout,
     'incourse' => $incourse,
     'units' => $units,
-    'modules' => $modules
+    'modules' => $modules,
+    'courseurl' => $courseurl,
+    'sectionname' => $sectionname,
+    'prevsectionno' => $prevsectionno,
+    'nextsectionno' => $nextsectionno,
+    'modulesidsstring' => $modulesidsstring
 ];
 
 $nav = $PAGE->flatnav;

@@ -1,0 +1,19 @@
+{{!
+    @template theme_bgtlms/nav-drawer
+
+
+    Example context (json): {}
+}}
+<div id="nav-drawer" data-region="drawer" class="d-print-none moodle-has-zindex {{^navdraweropen}}closed{{/navdraweropen}}" aria-hidden="{{#navdraweropen}}false{{/navdraweropen}}{{^navdraweropen}}true{{/navdraweropen}}" tabindex="-1">
+    {{> theme_bgtlms/flat_navigation_timeline }}
+</div>
+
+<style>
+    #nav-drawer {
+        padding-top: 3rem;
+        width: 300px;
+    }
+    #nav-drawer.closed {
+        left: -300px;
+    }
+</style>
