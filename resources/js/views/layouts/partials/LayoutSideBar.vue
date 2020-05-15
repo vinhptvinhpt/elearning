@@ -20,13 +20,14 @@
                     </li>
 
                     <li class="nav-item" v-if="slug_can('tms-system-user-view')
-                    || slug_can('tms-system-organize-view')
+                        || slug_can('tms-system-organize-view')
                         || slug_can('tms-access-manage-branch-view')
                         || slug_can('tms-access-manage-saleroom-view')
                         || slug_can('tms-access-market-view')
                         || slug_can('tms-system-teacher-view')
                         || slug_can('tms-system-student-view')
                         || slug_can('tms-system-market-view')
+                        || slug_can('tms-system-employee-view')
                         ">
                         <a class="nav-link has-submenu collapse-level-1" id="quan_ly_he_thong"
                            @click="toggleMenu('', 'quan_ly_he_thong','auth_drp')"
@@ -382,11 +383,11 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">
-                                <router-link to="/tms/report/base" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>
-                                </router-link>
-                            </li>
+<!--                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">-->
+<!--                                <router-link to="/tms/report/base" class="nav-link">-->
+<!--                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>-->
+<!--                                </router-link>-->
+<!--                            </li>-->
                             <li class="nav-item" v-if="slug_can('tms-report-report-view')">
                                 <router-link to="/tms/report/detail" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.bao_cao_danh_gia') }}</span>

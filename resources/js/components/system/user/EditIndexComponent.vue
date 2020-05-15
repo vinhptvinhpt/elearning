@@ -318,7 +318,9 @@
                 <user-course-grade :user_id="user_id" :training_name="training_name" :username="users.username"
                                    :fullname="users.fullname"></user-course-grade>
             </div>
-
+            <div class="col-12 hk-sec-wrapper">
+                <learner-history :user_id="user_id"></learner-history>
+            </div>
         </div>
     </div>
 </template>
@@ -326,11 +328,12 @@
 <script>
     import UserSchedule from './ScheduleComponent'
     import UserCourseGrade from './UserCourseGradeComponent'
+    import LearnerHistory from './LearnerHistoryComponent'
     import Const from '../../../services/const'
 
 
     export default {
-        components: {UserSchedule, UserCourseGrade},
+        components: {UserSchedule, UserCourseGrade, LearnerHistory},
         props: ['user_id', 'type'],
         data() {
             return {

@@ -22,7 +22,9 @@
         <div class="container">
 
                 <div class="d-inline-block mr-1">
-                    <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/view.php?id={{ courseid }}"><i class="fa fa-arrow-left"></i></a>
+                    <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/view.php?id={{ courseid }}">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
                 </div>
                 <div class="d-inline-block mr-1">
                     <a class="btn btn-sm btn-nav-left-top"><i class="fa fa-list"></i></a>
@@ -34,8 +36,19 @@
                     <a class="btn btn-sm btn-nav-left-top" href="{{ config.wwwroot }}/course/index.php"><i class="fa fa-university"></i></a>
                 </div>
 
-                <div style="margin-left: 100px; max-width: 500px;">
-                    <h3>{{{ output.page_title }}}</h3>
+
+<!--                <div style="margin-left: 100px; max-width: 500px;">-->
+<!--                    <h3>{{{ output.page_title }}}</h3>-->
+<!--                </div>-->
+
+                <div style="width: 40%;" class="ml-5 dropdown topbar-dropdown">
+                    <select>
+                        {{#modules}}
+                            {{#.}}
+                                <option value="{{id}}">{{name}}</option>
+                            {{/.}}
+                        {{/modules}}
+                    </select>
                 </div>
 
                 <ul class="nav navbar-nav ml-auto">
@@ -53,5 +66,10 @@
                     </li>
                 </ul>
         </div>
-
 </nav>
+
+<script>
+    $(document).ready(function() {
+        $("div.topbar-dropdown select").val("{{ cmid }}");
+    });
+</script>
