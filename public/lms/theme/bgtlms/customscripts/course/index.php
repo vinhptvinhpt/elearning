@@ -1,5 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+$type = optional_param('type', 0, PARAM_INT);
+if($type != 0){
+
+}
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
@@ -163,7 +167,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 
     .btn-click {
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
     }
@@ -320,26 +324,26 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         display: flex;
     }
 
-    .btn-seach {
+    .btn-search {
         border: 1px solid #707070;
         border-left: 0;
     }
 
-    .btn-seach i {
+    .btn-search i {
         position: absolute;
         color: #FFFFFF;
         top: 25%;
         padding: 3px 10px;
     }
 
-    .btn-seach input {
-        background-color: #A30088;
+    .btn-search input {
+        background-color: <?=$_SESSION["color"]?>;
         width: 100%;
         border: 2px solid #FFFFFF;
         padding: 5px 15px;
     }
 
-    .btn-seach input:hover, .btn-seach i:hover {
+    .btn-search input:hover, .btn-search i:hover {
         cursor: pointer;
     }
 
@@ -490,6 +494,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .section-course-info {
             margin-bottom: 5%;
         }
+        .click-page{
+            margin-left: 7% !important;
+        }
     }
 
     @media only screen and (max-width: 480px) {
@@ -501,6 +508,24 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             display: contents;
         }
 
+        .logo, .search-input-form{
+            display: none;
+        }
+
+        .search-input-wrapper>div .icon {
+            position: inherit !important;
+        }
+
+        .click-page{
+            width: 130px;
+        }
+        .click-page ul li i{
+            display: none;
+        }
+        .click-page{
+            margin-left: 20% !important;
+        }
+
     }
 
     @media only screen and (max-width: 320px) {
@@ -510,6 +535,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         }
         .block{
             display: contents;
+        }
+        .click-page{
+            margin-left: 5% !important;
         }
 
     }
@@ -547,7 +575,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </div>
                                 <div class="col-5 block-search__btn">
                                     <input type="text" class=" input-search" v-model="txtSearch">
-                                    <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
+                                    <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search"
                                                                                                  aria-hidden="true"></i><input
                                             type="button"></div>
                                 </div>

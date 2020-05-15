@@ -82,7 +82,7 @@
     }
 
     .progress-bar{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
     }
 
     .progress-info{
@@ -134,7 +134,7 @@
         /*margin-top: 2%;*/
     }
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         text-align: left;
         font-family: Roboto-Regular;
@@ -144,10 +144,19 @@
     }
 
     .nav-course .nav{
-        width: 30%;
+        width: 100%;
         margin: auto;
     }
 
+    .nav-introduction{
+        margin: 0 auto;
+        margin-right: 0;
+    }
+
+    .nav-unit{
+        margin: 0 auto;
+        margin-left: 0;
+    }
 
     .nav-course .nav .nav-item a{
         text-align: left;
@@ -230,7 +239,7 @@
     .detail-list li i{
         font-size: 23px;
         margin-right: 1%;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
     }
     .detail-list li a{
         background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
@@ -283,10 +292,10 @@
         box-shadow: 3px 3px 6px #00000029;
     }
     .unit-click{
-        border: 2px solid #862055;
+        border: 2px solid <?=$_SESSION["color"]?>;
     }
     .unit-click .unit__title{
-        background: #862055 0% 0% no-repeat;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat;
     }
     .unit-click .unit__title p{
         font-size: 17px;
@@ -379,7 +388,7 @@
 
     .speech-bubble {
         position: relative;
-        background: #862055;
+        background: <?=$_SESSION["color"]?>;
         border-radius: 4px;
         width: 50px;
         padding: 1px 0px;
@@ -400,7 +409,7 @@
         width: 0;
         height: 0;
         border: 15px solid transparent;
-        border-top-color: #862055;
+        border-top-color: <?=$_SESSION["color"]?>;
         border-bottom: 0;
         margin-left: -20px;
         margin-bottom: -10px;
@@ -444,6 +453,21 @@
         .info-course-detail ul li{
             font-size: 12px !important;
         }
+
+        /*.nav-tabs-courses{*/
+        /*    width: 100% !important;*/
+        /*}*/
+        /*.nav-unit{*/
+        /*    margin-left: 0 !important;*/
+        /*}*/
+
+        /*.nav-introduction{*/
+        /*    margin-right: 0 !important;*/
+        /*}*/
+
+        /*.nav-tabs-courses li{*/
+        /*    margin: 0 auto;*/
+        /*}*/
     }
 
     @media only screen and (max-width: 991px) {
@@ -473,7 +497,6 @@
         }
         .info-course-detail ul li {
             font-size: 12px !important;
-            margin: 0 auto;
         }
         .info-course-detail, .info-course-detail ul{
             max-width: 100% !important;
@@ -525,9 +548,7 @@
         .detail-list li a{
             padding-left: 6%;
         }
-        .nav-course .nav{
-            width: 100%;
-        }
+
         .nav-tabs-courses .nav-click{
             margin: 0 auto;
         }
@@ -539,6 +560,9 @@
         }
         .nav-unit{
             margin-left: 0 !important;
+        }
+        .click-page{
+            margin-left: 7% !important;
         }
     }
 
@@ -552,9 +576,6 @@
         .btn-start-course{
             margin-top: 5%;
             /*margin: 0;*/
-        }
-        .nav-course .nav{
-            width: 100%;
         }
         .nav-tabs-courses .nav-click{
             margin: 0 auto;
@@ -570,6 +591,23 @@
         }
         .detail-list li a{
             padding-left: 12%;
+        }
+
+        .logo, .search-input-form{
+            display: none;
+        }
+
+        .search-input-wrapper>div .icon {
+            position: inherit !important;
+        }
+        .click-page{
+            width: 130px;
+        }
+        .click-page ul li i{
+            display: none;
+        }
+        .click-page{
+            margin-left: 20% !important;
         }
     }
 
@@ -613,6 +651,9 @@
         .btn-start-unit{
             font-size: 11px !important;
             padding: 5px !important;
+        }
+        .click-page{
+            margin-left: 5% !important;
         }
     }
 

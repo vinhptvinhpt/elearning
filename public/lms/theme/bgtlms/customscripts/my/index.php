@@ -33,6 +33,20 @@ $_SESSION["courses_all_required"] = $courses_all_required;
 $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
+//set for full page
+$organization_id = 1;
+//#0e311a
+if($organization_id == 1){
+    $_SESSION["organizationName"] = 'Easia';
+    $_SESSION["color"] = '#862055';
+    $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+}
+else if($organization_id == 2){
+    $_SESSION["organizationName"] = 'Begodi';
+    $_SESSION["color"] = '#0e311a';
+    $_SESSION["pathLogo"] = 'images/Begodi.jpg';
+}
+
 $countBlock = 1;
 //echo shell_exec('select * from mdl_user limit 1');
 
@@ -90,7 +104,7 @@ $countBlock = 1;
     }
 
     .border-completed{
-        color: #862055 !important;
+        color: <?=$_SESSION["color"]?> !important;
     }
 
     .border-studying{
@@ -113,7 +127,7 @@ $countBlock = 1;
     }
 
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
         padding: 9px 14px !important;
@@ -143,7 +157,8 @@ $countBlock = 1;
         padding: 0 !important;
     }
     .block-items{
-        margin: 0;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .block-items__item{
         background-color: white;
@@ -237,7 +252,7 @@ $countBlock = 1;
     }
 
     .info-user{
-        background-color: #862055;
+        background-color: <?=$_SESSION["color"]?>;
         width: 100%;
         /*height: 130px;*/
         display: flex;
@@ -434,7 +449,7 @@ $countBlock = 1;
         text-align: left;
         font-family: Nunito-Sans;
         letter-spacing: 0px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
         opacity: 1;
         font-size: 100px;
     }
@@ -447,7 +462,7 @@ $countBlock = 1;
         font-size: 103px;
         -webkit-text-fill-color: white;
         -webkit-text-stroke-width: 2px;
-        -webkit-text-stroke-color: #862055;
+        -webkit-text-stroke-color: <?=$_SESSION["color"]?>;
         letter-spacing: 7px;
         margin: -3% 0 0 10%;
     }
@@ -597,7 +612,7 @@ $countBlock = 1;
     }
     .percentage{
         font-family: Roboto-Regular;
-        fill: #862055;
+        fill: <?=$_SESSION["color"]?>;
     }
 
     /*1920*/
@@ -790,6 +805,10 @@ $countBlock = 1;
             padding: 5% 1% 1% 5% !important;
         }
 
+        .click-page{
+            margin-left: 7% !important;
+        }
+
     }
 
     /*480*/
@@ -797,6 +816,12 @@ $countBlock = 1;
         .drawer-open-left .over-wrap{
             opacity: 0 !important;
             display: none;
+        }
+
+        .circular-chart {
+            max-width: 50%;
+            margin: 0 auto;
+            margin-top: 5%;
         }
 
         .carousel-caption p, .carousel-caption h3 {
@@ -848,6 +873,23 @@ $countBlock = 1;
             padding: 0 !important;
             margin: 0 !important;
         }
+
+        .logo, .search-input-form{
+            display: none;
+        }
+
+        .search-input-wrapper>div .icon {
+            position: inherit !important;
+        }
+        .click-page{
+            width: 130px;
+        }
+        .click-page ul li i{
+            display: none;
+        }
+        .click-page{
+            margin-left: 20% !important;
+        }
     }
 
     /*Iphone(480 x 640)*/
@@ -857,6 +899,9 @@ $countBlock = 1;
         }
         .info-user_info {
             margin-top: 3%;
+        }
+        .click-page{
+            margin-left: 5% !important;
         }
     }
 </style>
@@ -880,36 +925,36 @@ $countBlock = 1;
                             <div class="carousel-item active">
                                 <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
                                 <div class="carousel-caption">
-                                    <h3>Easia</h3>
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
                               <div class="slide-image">
                                        <img src="images/1a-01.png" alt="">
                                  </div>
                             </div>
-                            <div class="carousel-item active">
+                            <div class="carousel-item">
                                 <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
                                 <div class="carousel-caption">
-                                    <h3>Easia</h3>
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
                                     <img src="images/1a-01.png" alt="">
                                 </div>
                             </div>
-                            <div class="carousel-item active">
+                            <div class="carousel-item">
                                 <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
                                 <div class="carousel-caption">
-                                    <h3>Easia</h3>
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
@@ -953,7 +998,7 @@ $countBlock = 1;
                                         <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo count($courses_completed)*100/count($courses); ?>,100" d="M18 2.0845
+                                        <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo count($courses_completed)*100/count($courses); ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
@@ -963,7 +1008,7 @@ $countBlock = 1;
 
                                 <div class="progress-note">
                                     <ul>
-                                        <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
+                                        <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
                                         <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
                                         <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                     </ul>
@@ -1024,7 +1069,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">CURRENT COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=1">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
@@ -1075,7 +1120,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">ALL REQUIRED COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=2">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
@@ -1125,7 +1170,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">COMPLETED COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=3">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
