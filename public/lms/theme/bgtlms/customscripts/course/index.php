@@ -1,6 +1,5 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
-
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
@@ -435,6 +434,18 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             min-width: 188px;
             font-size: 18px !important;
             padding: 13px !important;
+        }
+        .header-block__search__title p {
+            font-size: 18px;
+        }
+        .course-select, .input-search {
+            font-size: 18px !important;
+        }
+        .input-search {
+            padding: 0 2%;
+        }
+        .btn-click-course {
+            margin-bottom: 2%;
         }
     }
 

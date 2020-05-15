@@ -1,22 +1,3 @@
-<?php
-    require_once("courselib.php");
-    $id = optional_param('id', 0, PARAM_INT);
-    $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
-    $course = array_values($DB->get_records_sql($sql))[0];
-
-    $units = get_course_contents($id);
-
-//    echo json_encode($units);
-//    die;
-
-    $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
-
-//    $units = json_encode(get_course_contents($id));
-//    echo $units;
-//    die;
-
-?>
-
 <html>
 <title>Thông tin khóa học <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
@@ -69,6 +50,33 @@
         text-decoration: none;
     }
 /*    view*/
+    .alert-block{
+        opacity: 1 !important;
+    }
+    #page{
+        margin-right: 4%;
+        /*margin-right: */<?//=$marginPage?>/*;*/
+    }
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+    }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .closebtn:hover {
+        color: black;
+    }
     .prev-btn:hover{
         cursor: pointer;
     }
@@ -609,7 +617,39 @@
     }
 
 </style>
+<?php
+require_once("courselib.php");
+$id = optional_param('id', 0, PARAM_INT);
+// [VinhPT][EAsia] Course IP address restrict
 
+$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
+
+if($result_ip){
+    $list_access_ip = json_decode($result_ip)->list_access_ip;
+    if ($list_access_ip){
+        if(!in_array(getremoteaddr(), $list_access_ip)){
+            $root_url = $CFG->wwwroot;
+            $url_to_page = new moodle_url($root_url);
+            $message_ip_access = "You do not have permission to access this course";
+            redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+        }
+    }
+}
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
+$course = array_values($DB->get_records_sql($sql))[0];
+
+$units = get_course_contents($id);
+
+//    echo json_encode($units);
+//    die;
+
+$bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
+
+//    $units = json_encode(get_course_contents($id));
+//    echo $units;
+//    die;
+
+?>
 <body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
@@ -839,6 +879,7 @@
 </script>
 <script>
     $(document).ready(function() {
+        $('#page').css('margin-right', '0');
         var x = document.getElementsByTagName("BODY")[0];
         var classes = x.className.toString().split(/\s+/);
         let course_id = '0';
