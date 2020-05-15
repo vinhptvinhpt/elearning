@@ -91,7 +91,9 @@
         </div>
     </div>
     {{{ output.standard_after_main_region_html }}}
-    {{> theme_bgtlms/nav-drawer-timeline }}
+    {{#incourse}}
+        {{> theme_bgtlms/nav-drawer-timeline }}
+    {{/incourse}}
     {{> theme_bgtlms/footer }}
 </div>
 
