@@ -10,28 +10,12 @@
 
 <style>
     @font-face {
-        font-family: Nunito-Sans;
-        src: url('fonts/NunitoSans-Black.ttf');
-    }
-    @font-face {
-        font-family: Nunito-Sans-Regular;
-        src: url('fonts/NunitoSans-Regular.ttf');
-    }
-    @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
     @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-    @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
-    }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
     }
 
     img{
@@ -130,9 +114,7 @@
         bottom: 32px;
         right: 0;
     }
-    .progress-info__content{
-        /*margin-top: 2%;*/
-    }
+
     .btn-click{
         background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
@@ -271,7 +253,6 @@
     }
 
     .detail-title p{
-        /*font-family: Roboto-Bold;*/
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #202020;
@@ -373,13 +354,10 @@
         box-shadow: 3px 3px 6px #0000002E;
         border: 1px solid #707070;
         border-radius: 4px;
-        /*opacity: 0.4;*/
-        /*color: #3E3E3E;*/
     }
     .prev-btn i{
         padding: 1%;
         color: #3E3E3E;
-        /*opacity: 1;*/
     }
 
     .course-block__content-answer{
@@ -392,7 +370,6 @@
         border-radius: 4px;
         width: 50px;
         padding: 1px 0px;
-        /*margin: 0.7em 0;*/
         margin: 0;
         margin-bottom: 1em;
         text-align: center;
@@ -453,21 +430,6 @@
         .info-course-detail ul li{
             font-size: 12px !important;
         }
-
-        /*.nav-tabs-courses{*/
-        /*    width: 100% !important;*/
-        /*}*/
-        /*.nav-unit{*/
-        /*    margin-left: 0 !important;*/
-        /*}*/
-
-        /*.nav-introduction{*/
-        /*    margin-right: 0 !important;*/
-        /*}*/
-
-        /*.nav-tabs-courses li{*/
-        /*    margin: 0 auto;*/
-        /*}*/
     }
 
     @media only screen and (max-width: 991px) {
@@ -489,7 +451,6 @@
         }
     }
 
-
     @media only screen and (max-width: 768px) {
         .drawer-open-left, .over-wrap{
             opacity: 0 !important;
@@ -506,13 +467,11 @@
         }
         .progress-info, .btn-click {
             font-size: 10px;
-            /*margin-top: 5%;*/
         }
 
         .info-course-progress{
             display: block;
             max-width: 92% !important;
-            /*margin-top: 7%;*/
         }
         .info-course-btn{
             max-width: 90% !important;
@@ -524,21 +483,9 @@
         .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p{
             font-size: 14px;
         }
-        .info-course-detail{
-            /*height: 0 !important;*/
-            /*line-height: 1 !important;*/
-        }
-        .info-course-progress .col-3{
-            /*height: 0 !important;*/
-            /*line-height: 1 !important;*/
-        }
 
         #user-notifications .alert-warning{
             opacity: 1 !important;
-        }
-        .progress-info__content {
-            /* margin-top: 2%; */
-            /*margin-top: 1%;*/
         }
 
         .progress-info__content .row{
@@ -575,7 +522,6 @@
         }
         .btn-start-course{
             margin-top: 5%;
-            /*margin: 0;*/
         }
         .nav-tabs-courses .nav-click{
             margin: 0 auto;
@@ -681,15 +627,7 @@ $course = array_values($DB->get_records_sql($sql))[0];
 
 $units = get_course_contents($id);
 
-//    echo json_encode($units);
-//    die;
-
 $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
-
-//    $units = json_encode(get_course_contents($id));
-//    echo $units;
-//    die;
-
 ?>
 <body <?php echo $bodyattributes ?>>
 
@@ -763,28 +701,10 @@ $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-
                 <div class="col-8 course-block-info">
 
                     <div class="course-block course-description">
-<!--                        <div class="course-block__title"><p>Course description</p></div>-->
                         <div class="course-block__content">
                             <?php echo $course->summary; ?>
-<!--                            <p>Do you usually leave the office late?</p>-->
-<!--                            <p>Do you often miss your deadlines?</p>-->
-<!--                            <p>Do you feel guilty that you can’t find enough time for your family?</p>-->
-<!--                            <p>Do you wish that you had 48 hours in every day to do everything you want to do?</p>-->
-<!--                            <p class="course-block__content-answer">If your answer to any of these is yes, then this is your chance to learn how to make time work for you. We invite you to attend the first “Time management” training workshop</p>-->
                         </div>
                     </div>
-<!--                    <div class="course-block course-outcome">-->
-<!--                        <div class="course-block__title"><p>Learning outcomes</p></div>-->
-<!--                        <div class="course-block__content">-->
-<!--                            <p>At the end of this training course, you will be able to </p>-->
-<!--                            <ul class="list-outcome">-->
-<!--                                <li>Prioritize</li>-->
-<!--                                <li>Schedule your day</li>-->
-<!--                                <li>And stay focused to shorten working time</li>-->
-<!--                                <li>Increase productivity</li>-->
-<!--                            </ul>-->
-<!--                        </div>-->
-<!--                    </div>-->
                 </div>
                 <div class="col-4 course-block-img">
                     <img src="/elearning-easia/public<?php echo $course->course_avatar; ?>" alt="">
@@ -874,12 +794,7 @@ $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-
         });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
-        var marginLeft = 0;
-        // var screenWidth = $(window).width();
-        // if(screenWidth < 768)
-        //     marginLeft = getPercent - 9;
-        // else if(screenWidth >= 768)
-            marginLeft = getPercent - 6;
+        var marginLeft = getPercent - 6;
         $('.speech-bubble').css('left', marginLeft+'%');
 
         //set height and line height

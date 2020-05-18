@@ -89,10 +89,7 @@ $countBlock = 1;
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
-    }
+
     body{
         font-size: 14px;
     }
@@ -116,7 +113,6 @@ $countBlock = 1;
 
     .title{
         text-align: left;
-        /*font: Black 145px/198px Nunito-Sans;*/
         font-family: Nunito-Sans;
         font-size: 20px;
         letter-spacing: 0px;
@@ -139,7 +135,6 @@ $countBlock = 1;
         color: #FFFFFF;
         text-transform: uppercase;
         opacity: 1;
-        /*font-family: Roboto;*/
     }
     .courses{
         margin-bottom: 70px;
@@ -164,13 +159,11 @@ $countBlock = 1;
         background-color: white;
         -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        /*margin: 1%;*/
         max-width: 49% !important;
         margin-bottom: 5%;
         display: flex;
         padding: 0 !important;
         overflow: hidden;
-        /*height: 210px;*/
     }
 
     .block-items{
@@ -181,7 +174,6 @@ $countBlock = 1;
     }
 
     .block-items__item-first{
-        /*margin: 0 2% 1% 0;*/
         margin-right: 2%;
     }
 
@@ -192,7 +184,6 @@ $countBlock = 1;
 
     .title-course{
         text-align: left;
-        /*font: Bold 17px Roboto-Bold;*/
         letter-spacing: 0.6px;
         font-size: 17px;
         font-family: Roboto-Bold;
@@ -226,7 +217,6 @@ $countBlock = 1;
     .block-item__image{
         width: 80%;
         padding: 0;
-        /*max-width: 45%;*/
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
@@ -254,7 +244,6 @@ $countBlock = 1;
     .info-user{
         background-color: <?=$_SESSION["color"]?>;
         width: 100%;
-        /*height: 130px;*/
         display: flex;
         padding: 0 !important;
     }
@@ -271,12 +260,8 @@ $countBlock = 1;
         border-radius: 50%;
     }
     .info{
-        /*padding: 15px 0;*/
         margin: 40px 0;
-        /*background: #FFFFFF 0% 0% no-repeat padding-box;*/
         box-shadow: 3px 3px 6px #00000029;
-        /*-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
-        /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     }
     .info-user_info{
         padding: 10% 1% 1% 10% !important;
@@ -297,7 +282,6 @@ $countBlock = 1;
 
     }
     .userposition{
-        /*font: Light 12px Roboto-Light;*/
         letter-spacing: 0.5px;
         font-family: Roboto-Light;
     }
@@ -386,21 +370,6 @@ $countBlock = 1;
         top: 0;
         left: 0;
     }
-
-    /*
-    *
-    * ==========================================
-    * FOR DEMO PURPOSE
-    * ==========================================
-    *
-    */
-
-    /*.info-progress {*/
-    /*    background: #ff7e5f;*/
-    /*    background: -webkit-linear-gradient(to right, #ff7e5f, #feb47b);*/
-    /*    background: linear-gradient(to right, #ff7e5f, #feb47b);*/
-    /*    min-height: 100vh;*/
-    /*}*/
 
     .rounded-lg {
         border-radius: 1rem;
@@ -518,7 +487,6 @@ $countBlock = 1;
     }
     .footer-logo {
         height: 11%;
-        /*margin-top: 1%;*/
     }
     .footer-logo img{
         width: 15%;
@@ -530,19 +498,11 @@ $countBlock = 1;
         margin-top: 5%;
     }
 
-    .content .container-fluid{
-        /*padding: 4%;*/
-    }
-
     .block-note{
         width: 10px;
         height: 10px;
         border-radius: 50%;
         display: inline-flex;
-    }
-
-    .block-item__content_btn .btn{
-        /*width: 100%;*/
     }
 
     .block-item__content_text a{
@@ -564,8 +524,6 @@ $countBlock = 1;
     .col-right{
         padding-left: 0 !important;
     }
-
-
 
     .circular-chart {
         display: block;
@@ -795,12 +753,6 @@ $countBlock = 1;
             margin: 0 !important;
         }
 
-        .avatar img{
-            /*width: 40% !important;*/
-            /*width: 40%;*/
-            /*margin: 5% 0;*/
-            /*margin-left: 40%;*/
-        }
         .info-user_info {
             padding: 5% 1% 1% 5% !important;
         }
@@ -906,9 +858,7 @@ $countBlock = 1;
     }
 </style>
 <body>
-<!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
-<?php
-?>
+
 <div class="wrapper"><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
@@ -1281,63 +1231,6 @@ $countBlock = 1;
 
 <script>
     $(function() {
-
-        $(".progress").each(function() {
-
-            var value = $(this).attr('data-value');
-            // var valueCompleted = $(this).attr('data-value-completed');
-            var valueStudying = $(this).attr('data-value-studying');
-            var left = $(this).find('.progress-left .progress-bar');
-            var right = $(this).find('.progress-right .progress-bar');
-
-            if (value > 0) {
-                if (value <= 50) {
-                    left.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-                }
-                else {
-                    left.css('transform', 'rotate(180deg)');
-                    right.css('transform', 'rotate(-' + percentageToDegrees(value-50) + 'deg)');
-                }
-            }
-
-            if (valueStudying > 0) {
-                if (valueStudying <= 50) {
-                    left.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-                }
-                else {
-                    left.css('transform', 'rotate(180deg)');
-                    right.css('transform', 'rotate(-' + percentageToDegrees(value-50) + 'deg)');
-                }
-            }
-
-
-            // if (valueCompleted > 0) {
-            //     if (valueCompleted <= 50) {
-            //         right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-            //     }
-            //     else {
-            //         right.css('transform', 'rotate(180deg)');
-            //         left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)');
-            //     }
-            // }
-
-            // if (valueStudying > 0) {
-            //     if (valueStudying <= 50) {
-            //         right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-            //     }
-            //     else {
-            //         right.css('transform', 'rotate(180deg)');
-            //         left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)');
-            //     }
-            // }
-
-        });
-
-        function percentageToDegrees(percentage) {
-            return percentage / 100 * 360
-        }
-
-        //localStorage.setItem('courses', <?php //json_decode($courses_current); ?>//);
         localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
     });
 

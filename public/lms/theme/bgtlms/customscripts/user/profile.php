@@ -48,20 +48,12 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         src: url('fonts/Roboto-Bold.ttf');
     }
     @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-    @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
     @font-face {
         font-family: Roboto-Italic;
         src: url('fonts/Roboto-Italic.ttf');
-    }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
     }
     @font-face {
         font-family: Nunito-Bold;
@@ -400,40 +392,8 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         font-size: 14px;
         font-family: Roboto-Bold;
         background-color: #f1f3f9 !important;
-        /*background-color: #F1F1F1 !important;*/
         border: none !important;
     }
-
-    /*.table-keep thead th {*/
-    /*    !*position: sticky;*!*/
-    /*    top: 0;*/
-    /*}*/
-
-    /*.table-keep {*/
-    /*    display: flex;*/
-    /*    flex-flow: column;*/
-    /*    width: 100%;*/
-    /*    overflow-y: auto;*/
-    /*    height: 200px;*/
-    /*    min-height: 200px;*/
-    /*}*/
-
-    /*.table-keep thead {*/
-    /*    flex: 0 0 auto;*/
-    /*}*/
-
-    /*.table-keep tbody {*/
-    /*    flex: 1 1 auto;*/
-    /*    display: block;*/
-    /*    overflow-y: auto;*/
-    /*    overflow-x: hidden;*/
-    /*}*/
-
-    /*.table-keep tr {*/
-    /*    width: 100%;*/
-    /*    display: table;*/
-    /*    table-layout: fixed;*/
-    /*}*/
 
 
     /*Ipad ngang(1024 x 768)*/
@@ -491,10 +451,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
             opacity: 0 !important;
             display: none;
         }
-
-    }
-    /*Smart phone nhỏ*/
-    @media screen and (max-width: 240px){
 
     }
 </style>
@@ -577,14 +533,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                         </div>
                                         <div class="col-1 progress-number"><span>{{ progressRequiredCourse }}</span></div>
                                     </div>
-
-                                    <!--                                <div class="row block-progress">-->
-                                    <!--                                    <p>Optional Courses</p>-->
-                                    <!--                                    <div class="progress col-11">-->
-                                    <!--                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
-                                    <!--                                    </div>-->
-                                    <!--                                    <div class="col-1 progress-number"><span>12/15</span></div>-->
-                                    <!--                                </div>-->
                                 </div>
                             </div>
                         </div>
@@ -696,10 +644,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
 
 <script>
     $(document).ready(function(){
-        // $(".nav-tabs a").click(function(){
-        //     var getHref = $(this).attr('href').replace('#', '');
-        //     $(getHref).addClass('active');
-        // });
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -784,7 +728,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                     }
                 })
                     .then(response => {
-                        console.log(response.data);
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
 
