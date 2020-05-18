@@ -508,9 +508,6 @@
         .nav-unit{
             margin-left: 0 !important;
         }
-        .click-page{
-            margin-left: 7% !important;
-        }
     }
 
     @media only screen and (max-width: 480px) {
@@ -537,23 +534,6 @@
         }
         .detail-list li a{
             padding-left: 12%;
-        }
-
-        .logo, .search-input-form{
-            display: none;
-        }
-
-        .search-input-wrapper>div .icon {
-            position: inherit !important;
-        }
-        .click-page{
-            width: 130px;
-        }
-        .click-page ul li i{
-            display: none;
-        }
-        .click-page{
-            margin-left: 20% !important;
         }
     }
 
@@ -597,9 +577,6 @@
         .btn-start-unit{
             font-size: 11px !important;
             padding: 5px !important;
-        }
-        .click-page{
-            margin-left: 5% !important;
         }
     }
 

@@ -441,20 +441,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-
         .btn-click-course{
             margin-top: 2%;
         }
-
         .course-block {
             margin: 1% 0 !important;
         }
-
         .section-course-info {
             margin-bottom: 5%;
-        }
-        .click-page{
-            margin-left: 7% !important;
         }
     }
 
@@ -466,25 +460,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-
-        .logo, .search-input-form{
-            display: none;
-        }
-
-        .search-input-wrapper>div .icon {
-            position: inherit !important;
-        }
-
-        .click-page{
-            width: 130px;
-        }
-        .click-page ul li i{
-            display: none;
-        }
-        .click-page{
-            margin-left: 20% !important;
-        }
-
     }
 
     @media only screen and (max-width: 320px) {
@@ -495,10 +470,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-        .click-page{
-            margin-left: 5% !important;
-        }
-
     }
 
 </style>

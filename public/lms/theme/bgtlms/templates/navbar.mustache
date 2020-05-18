@@ -63,10 +63,62 @@
     });
 </script>
 <style>
+    @font-face {
+        font-family: Roboto-Regular;
+        src: url('../../fonts/Roboto-Regular.ttf');
+    }
     .dropdown-divider{
         margin: 0 !important;
     }
     .dropdown-item{
         line-height: initial;
+    }
+    .click-page{
+        margin: 0 auto;
+    }
+    /*Ipad dọc(768 x 1024)*/
+    @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .click-page{
+            margin-left: 7% !important;
+        }
+    }
+    /*Tablet nhỏ(480 x 640)*/
+    @media screen and (max-width: 480px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .search-input-wrapper>div .icon {
+            position: inherit !important;
+        }
+        .click-page{
+            width: 130px;
+        }
+        .click-page ul li i{
+            display: none;
+        }
+        .logo, .search-input-form{
+            display: none;
+        }
+        .dropdown .dropdown-menu{
+            margin-top: 100%;
+        }
+    }
+    /*Iphone(480 x 640)*/
+    @media screen and (max-width: 320px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .click-page{
+            margin-left: 5% !important;
+        }
+        .dropdown .dropdown-menu{
+            margin-top: 100%;
+        }
     }
 </style>

@@ -386,7 +386,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         width: 100%;
     }
 
-
     /*custom*/
     #region-main{
         font-size: 14px;
@@ -417,11 +416,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         .info-user, .info-learn{
             width: 100%;
         }
-
         .block-content12{
             display: block;
         }
-
         .block-content6{
             max-width: 96%;
         }
@@ -435,7 +432,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         .item-content p{
             font-size: 10px;
         }
-
         .block-content12{
             display: block !important;
         }
@@ -451,7 +447,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
             opacity: 0 !important;
             display: none;
         }
-
+        .info-user_info {
+            margin-top: 3%;
+        }
     }
 </style>
 <body>

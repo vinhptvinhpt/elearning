@@ -699,52 +699,40 @@ $countBlock = 1;
             opacity: 0 !important;
             display: none;
         }
-
         .carousel-item .bg-img{
             height: 250px;
         }
-
         .title-course,.info-user_info p, .footer-title, .block-item__image span {
             font-size: 12px;
         }
-
         .info-course p {
             font-size: 13px !important;
         }
-
         .progress-note ul li, .text-course, .text-number{
             font-size: 13px;
         }
-
         .btn-click {
             padding: 5px 13px !important;
         }
-
         .btn-click a, .footer-ul li a {
             font-size: 12px;
         }
-
         .title {
             font-size: 18px;
         }
-
         .circle-progress{
             margin-right: 10%;
         }
-
         .carousel-caption p, .carousel-caption h3{
             font-size: 40px;
         }
-
         .carousel-caption p{
             -webkit-text-stroke-width: 2px;
         }
-
         .slide-logo img {
             top: 25%;
             left: 5%;
         }
-
         .courses{
             padding-left: 20px;
         }
@@ -752,13 +740,8 @@ $countBlock = 1;
             padding: 0 !important;
             margin: 0 !important;
         }
-
         .info-user_info {
             padding: 5% 1% 1% 5% !important;
-        }
-
-        .click-page{
-            margin-left: 7% !important;
         }
 
     }
@@ -769,78 +752,49 @@ $countBlock = 1;
             opacity: 0 !important;
             display: none;
         }
-
         .circular-chart {
             max-width: 50%;
             margin: 0 auto;
             margin-top: 5%;
         }
-
         .carousel-caption p, .carousel-caption h3 {
             font-size: 30px;
         }
-
         .carousel-item .bg-img{
             height: 200px;
         }
-
         .slide-logo img{
             top: 27%;
         }
-
         .avatar {
             width: inherit !important;
         }
-
         .avatar img{
             width: 40%;
             margin: 5% 0;
             margin-left: 25%;
         }
-
         .info-user_info{
             padding: 0 !important;
             margin-top: 4%;
         }
-
         .course-block__top, .courses-block__content__item{
             margin: 0 !important;
         }
-
         .block-items__item{
             max-width: 100% !important;
             margin:5% 0 !important;
             ma
         }
-
         .title{
             font-size: 15px;
         }
-
-
         .courses{
             padding-left: 20px;
         }
         .block-items{
             padding: 0 !important;
             margin: 0 !important;
-        }
-
-        .logo, .search-input-form{
-            display: none;
-        }
-
-        .search-input-wrapper>div .icon {
-            position: inherit !important;
-        }
-        .click-page{
-            width: 130px;
-        }
-        .click-page ul li i{
-            display: none;
-        }
-        .click-page{
-            margin-left: 20% !important;
         }
     }
 
@@ -851,9 +805,6 @@ $countBlock = 1;
         }
         .info-user_info {
             margin-top: 3%;
-        }
-        .click-page{
-            margin-left: 5% !important;
         }
     }
 </style>
