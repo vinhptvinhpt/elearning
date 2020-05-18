@@ -430,18 +430,18 @@
 
                 </ul>
 
-                <hr class="nav-separator"
-                    v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-                <div class="nav-header"
-                     v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
+
+
+                <!--
+                <hr class="nav-separator" v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
+                <div class="nav-header" v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
                     <span>{{ trans.get('keys.ho_tro') }}</span>
                     <span>{{ trans.get('keys.ht') }}</span>
                 </div>
                 <ul class="navbar-nav flex-column"
                     v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
                     <li class="nav-item">
-                        <a class="nav-link has-submenu collapse-level-1"
-                           @click="toggleMenu('', 'huong_dan_su_dung','bc_drp')"
+                        <a class="nav-link has-submenu collapse-level-1" @click="toggleMenu('', 'huong_dan_su_dung','bc_drp')"
                            href="javascript:void(0);" id="huong_dan_su_dung"
                            data-level="collapse-level-1">
                             <i class="fa fa-exclamation" aria-hidden="true"></i>
@@ -462,44 +462,7 @@
                         </ul>
                     </li>
                 </ul>
-
-                <hr class="nav-separator"
-                    v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-                <div class="nav-header"
-                     v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-                    <span>{{ trans.get('keys.ho_tro') }}</span>
-                    <span>{{ trans.get('keys.ht') }}</span>
-                </div>
-                <ul class="navbar-nav flex-column"
-                    v-if="slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-
-                    <li class="nav-item" v-if="slug_can('tms-support-market-view')">
-                        <router-link to="/tms/support/manage-market" class="nav-link">
-                            <span class="nav-link-text"> {{ trans.get('keys.huong_dan_su_dung') }}</span>
-                        </router-link>
-                    </li>
-
-                </ul>
-
-
-                <hr class="nav-separator"
-                    v-if="!slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-                <div class="nav-header"
-                     v-if="!slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-                    <span>{{ trans.get('keys.ho_tro') }}</span>
-                    <span>{{ trans.get('keys.ht') }}</span>
-                </div>
-                <ul class="navbar-nav flex-column"
-                    v-if="!slug_can('tms-support-market-view') && slug_can('tms-support-admin-view')">
-
-                    <li class="nav-item" v-if="slug_can('tms-support-admin-view')">
-                        <router-link to="/tms/support/admin" class="nav-link">
-                            <span class="nav-link-text"> {{ trans.get('keys.huong_dan_su_dung') }}</span>
-                        </router-link>
-                    </li>
-
-                </ul>
-
+                -->
             </div>
         </div>
     </nav>
