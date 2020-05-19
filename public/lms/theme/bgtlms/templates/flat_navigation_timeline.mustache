@@ -4,7 +4,7 @@
     <ol class="flat-nav-list">
         {{#modules}}
             {{#.}}
-                <li class="flat-nav-item module-id-{{ id }}"><a href="{{ url }}">{{ name }}</a></li>
+                <li class="flat-nav-item module-id-{{ id }}"><a href="{{{ url }}}">{{{ name }}}</a></li>
             {{/.}}
         {{/modules}}
     </ol>

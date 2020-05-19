@@ -111,10 +111,6 @@
         background-color: #f1f3f9;
     }
 
-    .navbar h3 {
-        margin-top: .5rem;
-    }
-
     .btn-nav-left-top {
         border: 1px solid #d4d4d4;
     }
@@ -139,13 +135,16 @@
         max-height: 200px;
     }
 
-    {{#incourse}}
-
-    #page {
-        padding: 0 !important;
+    @media (max-width: 767px){
+        .path-mod-quiz .activity-navigation .col-md-4 {
+            flex: 0 0 50% !important;
+            max-width: 50% !important;
+        }
     }
 
-    {{/incourse}}
+    #header-search-box-container {
+        display:grid;
+    }
 
     .search-input-form{
         margin-bottom: 0;
