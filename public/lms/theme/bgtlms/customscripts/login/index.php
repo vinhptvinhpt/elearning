@@ -16,20 +16,8 @@ require_once(__DIR__ . '/../../../../config.php');
 
 <style>
     @font-face {
-        font-family: Nunito-Sans;
-        src: url('fonts/NunitoSans-Black.ttf');
-    }
-    @font-face {
-        font-family: Nunito-Sans-Regular;
-        src: url('fonts/NunitoSans-Regular.ttf');
-    }
-    @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
-    }
-    @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
     }
     @font-face {
         font-family: Roboto-Regular;
@@ -39,11 +27,6 @@ require_once(__DIR__ . '/../../../../config.php');
         font-family: Roboto-Italic;
         src: url('fonts/Roboto-Italic.ttf');
     }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
-    }
-
     @font-face{
         font-family:UTM Bebas;
         src:url("fonts/UTM Bebas.ttf") format("woff"),
@@ -209,16 +192,12 @@ require_once(__DIR__ . '/../../../../config.php');
         margin: 5% 0 5% 31%;
     }
 
-    .bg-show{
-
-    }
     /*1920*/
     @media screen and (max-width: 1920px){
         .wrap-content .logo {
             margin: 5% 0 5% 27%;
             width: 50%;
         }
-
         .before-main-content p, .before-main-content h3{
             font-size: 120px;
         }
@@ -238,11 +217,6 @@ require_once(__DIR__ . '/../../../../config.php');
 
     /*1368*/
     @media screen and (max-width: 1368px){
-        .wrap-content .logo {
-            /*margin: 5% 0 5% 27%;*/
-            /*width: 50%;*/
-        }
-
         .before-main-content p, .before-main-content h3{
             font-size: 86px;
         }
@@ -255,9 +229,6 @@ require_once(__DIR__ . '/../../../../config.php');
         .wrap-input100 input, .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a, .wrap-btn100 a{
             font-size: 16px;
         }
-        /*.wrap-input100 input, .wrap-remember100, .wrap-forgot100 p span, .wrap-forgot100 p a, .wrap-btn100 a{*/
-        /*    font-size: 14px;*/
-        /*}*/
         .wrap-btn100 a{
             font-size: 20px;
         }
@@ -289,15 +260,9 @@ require_once(__DIR__ . '/../../../../config.php');
             -webkit-text-stroke-width: 1px;
             -webkit-text-stroke-color: #FFFFFF;
         }
-        /*.wrap-login100, .wrap-forgot100 span, .wrap-forgot100 a{*/
-        /*    font-size: 10px !important;*/
-        /*}*/
-
         .wrap-content .logo{
-            /*margin: 15% 0;*/
             width: 50%;
         }
-
         .btn-click{
             font-size: 10px;
             margin-left: 20%;
@@ -305,40 +270,6 @@ require_once(__DIR__ . '/../../../../config.php');
     }
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px){
-        /*.wrap-login100{*/
-        /*    width: 40%;*/
-        /*    left: 10%;*/
-        /*}*/
-        /*.before-main-content{*/
-        /*    height: 80%;*/
-        /*    width: 48%;*/
-        /*    right: 8%;*/
-        /*}*/
-        /*.before-main-content p, .before-main-content h3{*/
-        /*    font-size: 70px;*/
-        /*}*/
-        /*.before-main-content h3{*/
-        /*    left: 15%;*/
-        /*}*/
-        /*.before-main-content p{*/
-        /*    top: 44%;*/
-        /*    -webkit-text-fill-color: #1d151500;*/
-        /*    -webkit-text-stroke-width: 1px;*/
-        /*    -webkit-text-stroke-color: #FFFFFF;*/
-        /*}*/
-        /*.wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a{*/
-        /*    font-size: 10px !important;*/
-        /*}*/
-
-        /*.wrap-content .logo{*/
-        /*    margin: 15% 0;*/
-        /*    width: 100%;*/
-        /*}*/
-
-        /*.btn-click{*/
-        /*    font-size: 10px;*/
-        /*    margin-left: 20%;*/
-        /*}*/
         .before-main-content{
             display: none;
         }

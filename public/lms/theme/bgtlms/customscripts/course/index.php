@@ -25,40 +25,21 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 <style>
     @font-face {
-        font-family: Nunito-Sans;
-        src: url('fonts/NunitoSans-Black.ttf');
-    }
-
-    @font-face {
         font-family: Nunito-Sans-Regular;
         src: url('fonts/NunitoSans-Regular.ttf');
     }
-
     @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
-
-    @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-
     @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
-
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
-    }
-
     @font-face {
         font-family: Nunito-Bold;
         src: url('fonts/Nunito-Bold.ttf');
     }
-
     img {
         width: 100%;
     }
@@ -82,12 +63,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 0.5;
     }
 
-    /*.title-course{*/
-    /*    display: -webkit-box;*/
-    /*    -webkit-line-clamp: 2;*/
-    /*    -webkit-box-orient: vertical;*/
-    /*    overflow: hidden;*/
-    /*}*/
     /*    view*/
     /*    paging*/
     .pagination{
@@ -113,7 +88,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .course-info__detail ul {
-        /*display: inline-flex;*/
         padding: 0;
         width: 100%;
     }
@@ -125,10 +99,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         color: #737373;
     }
 
-    .course-info__list-lessons {
-
-    }
-
     .course-info__list-lessons ul {
         padding: 5% 0;
         padding-top: 0;
@@ -136,10 +106,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 
     .course-info__list-lessons ul li {
-        /*display: -webkit-box;*/
-        /*-webkit-line-clamp: 1;*/
-        /*-webkit-box-orient: vertical;*/
-        /*overflow: hidden;*/
         padding: 1% 0;
         margin-top: 3%;
         border-bottom: 1px solid #C7C7C7;
@@ -155,7 +121,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         display: inline-flex;
         width: 100%;
     }
-
 
     .course-info__list-lessons ul li a span {
         display: -webkit-box;
@@ -179,7 +144,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         color: #FFFFFF !important;
         text-transform: uppercase;
         font-size: 13px;
-        /*font-family: Roboto;*/
     }
 
     .percent {
@@ -222,9 +186,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         margin-right: 4%;
     }
 
-    .block{
-        /*padding: 0 !important;*/
-    }
     .course-block {
         background-color: #ffffff;
         position: relative;
@@ -352,7 +313,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
         border-radius: 4px;
-        /*font-family: Roboto-Bold !important;*/
         font-family: Nunito-Bold;
         font-size: 13px !important;
         color: #737373 !important;
@@ -415,7 +375,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     .footer-logo {
         height: 11%;
-        /*margin-top: 1%;*/
     }
 
     .footer-logo img {
@@ -482,20 +441,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-
         .btn-click-course{
             margin-top: 2%;
         }
-
         .course-block {
             margin: 1% 0 !important;
         }
-
         .section-course-info {
             margin-bottom: 5%;
-        }
-        .click-page{
-            margin-left: 7% !important;
         }
     }
 
@@ -507,25 +460,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-
-        .logo, .search-input-form{
-            display: none;
-        }
-
-        .search-input-wrapper>div .icon {
-            position: inherit !important;
-        }
-
-        .click-page{
-            width: 130px;
-        }
-        .click-page ul li i{
-            display: none;
-        }
-        .click-page{
-            margin-left: 20% !important;
-        }
-
     }
 
     @media only screen and (max-width: 320px) {
@@ -536,15 +470,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .block{
             display: contents;
         }
-        .click-page{
-            margin-left: 5% !important;
-        }
-
     }
 
-    /*.course-info__list-lessons ul li a{*/
-    /*    */
-    /*}*/
 </style>
 <body>
 <div class="wrapper"><!-- wrapper -->
@@ -609,13 +536,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                         <div class="col-4 block clctgr0" v-for="(course,index) in courses">
                         <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
-<!--                            <div class="col-6 course-block__image" :style="background-image: url('urlTms+course.course_avatar')">-->
-<!--                                <img :src="urlTms+course.course_avatar" alt="">-->
-<!--                                <img src="images/Component8–1.png" alt=""><span>--><?php //echo intval($course->numoflearned*100/$course->numofmodule); ?><!--%</span>-->
                                 <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
                                 <template v-else-if="course.numofmodule == 0"><img src="images/Component8–1.png" alt=""><span>0%</span></template>
                                 <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
-<!--                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>-->
                             </div>
                             <div class="col-7">
                                 <div class="course-info">
@@ -652,7 +575,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
                 </div>
                 <div class="pagination" v-if="totalPage > 1">
-                    <!--                <v-pagination v-model="currentPage" :page-count="total"></v-pagination>-->
                     <v-pagination
                         v-model="current"
                         :page-count="totalPage"
@@ -731,7 +653,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 <script>
     $(document).ready(function () {
-
         //tab categories click
         $('.btn-click-course').click(function () {
             var category = $(this).attr('category');
@@ -740,12 +661,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             $('.btn-click-course').not($('#ctgr' + category)).each(function () {
                 $(this).removeClass(' btn-click-active');
             });
-
-            // //show category
-            // $('.clctgr' + category).css('display', 'block');
-            // $('.block').not($('.clctgr' + category)).each(function () {
-            //     $(this).css('display', 'none');
-            // });
         });
 
 
