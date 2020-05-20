@@ -583,6 +583,26 @@
 </style>
 <?php
 require_once("courselib.php");
+function get_client_ip_server() {
+    $ipaddress = '';
+    if ($_SERVER['HTTP_CLIENT_IP'])
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if($_SERVER['HTTP_X_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_X_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if($_SERVER['HTTP_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if($_SERVER['REMOTE_ADDR'])
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = 'UNKNOWN';
+
+    return $ipaddress;
+}
+
 $id = optional_param('id', 0, PARAM_INT);
 // [VinhPT][EAsia] Course IP address restrict
 
@@ -592,6 +612,7 @@ if($result_ip){
     $list_access_ip = json_decode($result_ip)->list_access_ip;
     if ($list_access_ip){
         if(!in_array(getremoteaddr(), $list_access_ip)){
+//        if(!in_array(get_client_ip_server(), $list_access_ip)){
             $root_url = $CFG->wwwroot;
             $url_to_page = new moodle_url($root_url);
             $message_ip_access = "You do not have permission to access this course";

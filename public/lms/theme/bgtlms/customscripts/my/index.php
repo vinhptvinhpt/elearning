@@ -2,7 +2,6 @@
 require_once(__DIR__ . '/../../../../config.php');
 // Start the session
 session_start();
-
 $sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -34,18 +33,36 @@ $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
-$organization_id = 1;
+$organization_id = 2;
+$organizationCode = strtolower($_SESSION["organizationCode"]);
+switch ($organizationCode) {
+    case "easia":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+        }
+        break;
+    case "exotic":
+        break;
+    case "begodi":
+        break;
+    case "avana":
+        break;
+    default:
+        break;
+}
 //#0e311a
-if($organization_id == 1){
-    $_SESSION["organizationName"] = 'Easia';
-    $_SESSION["color"] = '#862055';
-    $_SESSION["pathLogo"] = 'images/logo-black-1.png';
-}
-else if($organization_id == 2){
-    $_SESSION["organizationName"] = 'Begodi';
-    $_SESSION["color"] = '#0e311a';
-    $_SESSION["pathLogo"] = 'images/Begodi.jpg';
-}
+//if($organization_id == 1){
+//    $_SESSION["organizationName"] = 'Easia';
+//    $_SESSION["color"] = '#862055';
+//    $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+//}
+//else if($organization_id == 2){
+//    $_SESSION["organizationName"] = 'Begodi';
+//    $_SESSION["color"] = '#CAB143';
+//    $_SESSION["pathLogo"] = 'images/Begodi.jpg';
+//}
 
 $countBlock = 1;
 //echo shell_exec('select * from mdl_user limit 1');
@@ -584,8 +601,8 @@ $countBlock = 1;
         }
 
         .info-course p {
-             font-size: 20px !important;
-         }
+            font-size: 20px !important;
+        }
 
         .progress-note ul li, .text-course, .text-number{
             font-size: 20px;
@@ -832,9 +849,9 @@ $countBlock = 1;
                                     <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
-                              <div class="slide-image">
-                                       <img src="images/1a-01.png" alt="">
-                                 </div>
+                                <div class="slide-image">
+                                    <img src="images/1a-01.png" alt="">
+                                </div>
                             </div>
                             <div class="carousel-item">
                                 <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
@@ -933,12 +950,12 @@ $countBlock = 1;
                                 </div>
 
                                 <!--                                optional-courses-->
-<!--                                <div class="info-statistic__optional-courses">-->
-<!--                                    <a class="info-text">-->
-<!--                                        <div class="text-course">Optional courses</div>-->
-<!--                                        <div class="text-number">--><?php //echo count($courses_optional); ?><!--</div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
+                                <!--                                <div class="info-statistic__optional-courses">-->
+                                <!--                                    <a class="info-text">-->
+                                <!--                                        <div class="text-course">Optional courses</div>-->
+                                <!--                                        <div class="text-number">--><?php //echo count($courses_optional); ?><!--</div>-->
+                                <!--                                    </a>-->
+                                <!--                                </div>-->
 
                                 <!--                                completed-courses-->
                                 <div class="info-statistic__completed-courses">
@@ -984,10 +1001,10 @@ $countBlock = 1;
                                         <?php if(count($courses_current) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-    <!--                                            <div class="col-sm-6 block-items__item">-->
+                                                    <!--                                            <div class="col-sm-6 block-items__item">-->
                                                     <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-    <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-<!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
+                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                        <!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
                                                         <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                     </div>
                                                     <div class="block-item__content">
@@ -1033,28 +1050,28 @@ $countBlock = 1;
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
                                         <?php if(count($courses_all_required) > 0) {  ?>
-                                        <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
-                                            <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-<!--                                            <div class="col-sm-6 block-items__item">-->
-                                                <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                    <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
-<!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-                                                </div>
-                                                <div class="block-item__content">
-                                                    <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
-                                                        <div class="info-course">
-                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
-                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
-                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                            <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
+                                                <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
+                                                    <!--                                            <div class="col-sm-6 block-items__item">-->
+                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                        <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                    </div>
+                                                    <div class="block-item__content">
+                                                        <div class="block-item__content_text">
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <div class="info-course">
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-item__content_btn">
+                                                            <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
                                                         </div>
                                                     </div>
-                                                    <div class="block-item__content_btn">
-                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
                                             <p>No data</p>
                                         <?php }  ?>
@@ -1083,26 +1100,26 @@ $countBlock = 1;
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
                                         <?php if(count($courses_completed) > 0) {  ?>
-                                        <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
-                                            <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-                                                <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                    <img src="images/Badge-examples 2.png" alt="">
-                                                </div>
-                                                <div class="block-item__content">
-                                                    <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
-                                                        <div class="info-course">
-                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
-                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
-                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                            <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
+                                                <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
+                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                        <img src="images/Badge-examples 2.png" alt="">
+                                                    </div>
+                                                    <div class="block-item__content">
+                                                        <div class="block-item__content_text">
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <div class="info-course">
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-item__content_btn">
+                                                            <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
                                                         </div>
                                                     </div>
-                                                    <div class="block-item__content_btn">
-                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
                                             <p>No data</p>
                                         <?php }  ?>
@@ -1110,11 +1127,49 @@ $countBlock = 1;
                                 </div>
                             </div>
                         </div>
-                        </div>
                     </div>
                 </div>
-
             </div>
+
+        </div>
+    </section>
+
+    <section class="path-calendar">
+        <?php
+
+        require_once(__DIR__ . '/../../../../config.php');
+        require_once(__DIR__ . '/../../../../course/lib.php');
+        require_once(__DIR__ . '/../../../../calendar/lib.php');
+
+
+        $categoryid = null;
+        $courseid = 1;
+        $view = 'month';
+        $time = time();
+        $lookahead = null;
+        $calendar = calendar_information::create($time, $courseid, $categoryid);
+
+        $strcalendar = get_string('calendar', 'calendar');
+        // Print title and header
+        $PAGE->set_pagelayout('standard');
+//        $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
+//        $PAGE->set_heading($COURSE->fullname);
+
+        $renderer = $PAGE->get_renderer('core_calendar');
+//        $calendar->add_sidecalendar_blocks($renderer, true, $view);
+        echo $renderer->start_layout();
+        echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
+        echo $OUTPUT->heading(get_string('calendar', 'calendar'));
+        list($data, $template) = calendar_get_view($calendar, $view, true, false, $lookahead);
+        echo $renderer->render_from_template($template, $data);
+
+        echo html_writer::end_tag('div');
+
+        list($data, $template) = calendar_get_footer_options($calendar);
+        echo $renderer->render_from_template($template, $data);
+        echo $renderer->complete_layout();
+
+        ?>
     </section>
 
     <section class="section-footer">
