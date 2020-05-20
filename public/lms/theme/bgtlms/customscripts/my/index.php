@@ -190,6 +190,15 @@ $countBlock = 1;
         height: -webkit-fill-available;
     }
 
+    .path-calendar{
+        position: inherit;
+        margin-bottom: 2%;
+    }
+
+    .section-footer{
+        position: relative;
+    }
+
     .block-items__item-first{
         margin-right: 2%;
     }
@@ -431,6 +440,9 @@ $countBlock = 1;
         text-decoration: none;
     }
 
+    .carousel-caption{
+        bottom: 0 !important;
+    }
     .carousel-caption h3{
         text-align: left;
         font-family: Nunito-Sans;
@@ -456,7 +468,7 @@ $countBlock = 1;
     .slide-logo img{
         position: absolute;
         width: 15%;
-        top: 10%;
+        top: 5%;
         left: 3%;
     }
     .slide-image img{
@@ -591,7 +603,7 @@ $countBlock = 1;
     }
 
     /*1920*/
-    @media screen and (max-width: 1920px) and (min-width: 1368px){
+    @media screen and (max-width: 1920px){
         .drawer-open-left .over-wrap{
             opacity: 0 !important;
             display: none;
@@ -674,7 +686,7 @@ $countBlock = 1;
             display: none;
         }
         .carousel-caption p, .carousel-caption h3 {
-            font-size: 78px;
+            font-size: 55px;
         }
 
         .title-course, .info-user_info p, .footer-title, .block-item__image span {
@@ -707,6 +719,9 @@ $countBlock = 1;
         .circular-chart {
             max-width: 92%;
             margin: 15% 0 5% 0;
+        }
+        .path-calendar{
+            margin-bottom: 32%;
         }
     }
 
@@ -760,7 +775,9 @@ $countBlock = 1;
         .info-user_info {
             padding: 5% 1% 1% 5% !important;
         }
-
+        .path-calendar{
+            margin-bottom: 42%;
+        }
     }
 
     /*480*/
@@ -813,6 +830,9 @@ $countBlock = 1;
             padding: 0 !important;
             margin: 0 !important;
         }
+        .path-calendar{
+            margin-bottom: 70%;
+        }
     }
 
     /*Iphone(480 x 640)*/
@@ -823,12 +843,15 @@ $countBlock = 1;
         .info-user_info {
             margin-top: 3%;
         }
+        .path-calendar{
+            margin-bottom: 125%;
+        }
     }
 </style>
 <body>
 
 <div class="wrapper"><!-- wrapper -->
-    <?php echo $OUTPUT->header(); ?>
+<!--    --><?php //echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
         <header><!-- header -->
             <div class="content">
@@ -1135,28 +1158,30 @@ $countBlock = 1;
     </section>
 
     <section class="path-calendar">
+<!--    <section class="path-calendar">-->
         <?php
 
         require_once(__DIR__ . '/../../../../config.php');
         require_once(__DIR__ . '/../../../../course/lib.php');
         require_once(__DIR__ . '/../../../../calendar/lib.php');
 
-
-        $categoryid = null;
-        $courseid = 1;
-        $view = 'month';
+        $categoryid = optional_param('category', null, PARAM_INT);
+        $courseid = optional_param('course', SITEID, PARAM_INT);
+        $view = optional_param('view', 'month', PARAM_ALPHA);
         $time = time();
-        $lookahead = null;
+        $lookahead = optional_param('lookahead', null, PARAM_INT);
+
         $calendar = calendar_information::create($time, $courseid, $categoryid);
 
-        $strcalendar = get_string('calendar', 'calendar');
+        $PAGE->navbar->add(userdate($time, get_string('strftimemonthyear')));
         // Print title and header
         $PAGE->set_pagelayout('standard');
 //        $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
 //        $PAGE->set_heading($COURSE->fullname);
 
         $renderer = $PAGE->get_renderer('core_calendar');
-//        $calendar->add_sidecalendar_blocks($renderer, true, $view);
+        $calendar->add_sidecalendar_blocks($renderer, true, $view);
+        echo $OUTPUT->header();
         echo $renderer->start_layout();
         echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
         echo $OUTPUT->heading(get_string('calendar', 'calendar'));
@@ -1167,7 +1192,9 @@ $countBlock = 1;
 
         list($data, $template) = calendar_get_footer_options($calendar);
         echo $renderer->render_from_template($template, $data);
+
         echo $renderer->complete_layout();
+        echo $OUTPUT->footer();
 
         ?>
     </section>
@@ -1232,7 +1259,7 @@ $countBlock = 1;
             </div>
         </footer>
     </section>
-    <?php echo $OUTPUT->footer(); ?>
+<!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
 <script>
