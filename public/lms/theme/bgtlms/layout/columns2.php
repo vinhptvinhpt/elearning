@@ -54,13 +54,13 @@ $prevsectionno = 0;
 $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
+$permission_edit = false;
 
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
     $units = get_course_contents($PAGE->course->id);
     $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
-
     foreach ($units as $unit) {
         $sectionno = $unit['section'];
         if ($unit['id'] == $section) {
@@ -81,7 +81,37 @@ if ($pagelayout == 'incourse') {
     if (!empty($modules)) {
         $modulesidsstring = implode(',', array_column($modules, 'id'));
     }
+
+    global $DB;
+
+    $course_category = $PAGE->course->category;
+
+    $sqlCheck = 'SELECT permission_slug from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+    $check = $DB->get_records_sql($sqlCheck);
+
+    $permissions = array_keys($check);
+
+    foreach ($permissions as $permission) {
+        if ($permission == 'tms-educate-libraly-edit' && $course_category = 3) {
+            $permission_edit = true;
+            break;
+        }
+        if ($permission == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+            $permission_edit = true;
+            break;
+        }
+        if ($permission == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+            $permission_edit = true;
+            break;
+        }
+    }
 }
+
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -103,7 +133,8 @@ $templatecontext = [
     'sectionname' => $sectionname,
     'prevsectionno' => $prevsectionno,
     'nextsectionno' => $nextsectionno,
-    'modulesidsstring' => $modulesidsstring
+    'modulesidsstring' => $modulesidsstring,
+    'permission_edit' => $permission_edit
 ];
 
 $nav = $PAGE->flatnav;

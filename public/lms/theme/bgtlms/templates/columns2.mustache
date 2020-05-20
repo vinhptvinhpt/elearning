@@ -63,13 +63,15 @@
         {{> theme_bgtlms/navbar }}
     {{/incourse}}
 
-    <div id="page" class="{{#incourse}}container{{/incourse}}">
-        <div id="page-content" class="row mt-3">
-            <div id="region-main-box" style="width: 100%">
+    <div id="page" class="{{#incourse}}container container-fluid{{/incourse}}">
+        <div id="page-content" class="row mt-3 pb-3">
+            <div id="region-main-box" class="col-12">
                 {{#hasregionmainsettingsmenu}}
-                <div id="region-main-settings-menu" class="d-print-none {{#hasblocks}}has-blocks{{/hasblocks}}">
-                    <div> {{{ output.region_main_settings_menu }}} </div>
-                </div>
+                    {{#permission_edit}}
+                        <div id="region-main-settings-menu" class="d-print-none {{#hasblocks}}has-blocks{{/hasblocks}}">
+                            <div> {{{ output.region_main_settings_menu }}} </div>
+                        </div>
+                    {{/permission_edit}}
                 {{/hasregionmainsettingsmenu}}
                 <section id="region-main" {{#hasblocks}}class="has-blocks mb-3"{{/hasblocks}} aria-label="{{#str}}content{{/str}}">
 
