@@ -46,10 +46,20 @@ switch ($organizationCode) {
     case "exotic":
         break;
     case "begodi":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/Begodi.jpg';
+        }
         break;
     case "avana":
         break;
     default:
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+        }
         break;
 }
 //#0e311a
@@ -468,7 +478,7 @@ $countBlock = 1;
     .slide-logo img{
         position: absolute;
         width: 15%;
-        top: 5%;
+        top: 15%;
         left: 3%;
     }
     .slide-image img{

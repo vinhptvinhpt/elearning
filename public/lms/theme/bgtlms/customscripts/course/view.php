@@ -135,6 +135,18 @@
         margin-right: 0;
     }
 
+    .nav-setting{
+        margin-right: 15px;
+        margin-top: 8px;
+    }
+
+    .nav-setting a{
+        color: #862055 !important;
+        border: 1px solid #862055;
+        padding: 5px;
+        border-radius: 15px;
+    }
+
     .nav-unit{
         margin: 0 auto;
         margin-left: 0;
@@ -159,6 +171,7 @@
     .section-nav{
         border-top: 1px solid #C7C7C7;
         margin: 1% 0;
+        margin-bottom: 0;
     }
 
     .section-course-info{
@@ -686,6 +699,9 @@ $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-
                     </li>
                     <li class="nav-item nav-click nav-unit">
                         <a class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
+                    </li>
+                    <li class="nav-item nav-click nav-setting">
+                        <a class="" role="tab"><i class="fa fa-cog" aria-hidden="true"></i> Edit course</a>
                     </li>
                 </ul>
             </div>
