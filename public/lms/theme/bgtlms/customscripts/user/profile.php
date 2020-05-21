@@ -241,13 +241,30 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         text-transform: uppercase;
         border: 0;
     }
+    .nav-tabs .nav-item{
+        margin-bottom: 0 !important;
+    }
+    .nav-tabs .nav-show:hover + .nav-item{
+        margin-bottom: 0 !important;
+    }
+    .nav-tabs .nav-item.show .nav-show, .nav-tabs .nav-show.active{
+        color: #0c0c0c !important;
+    }
     .nav-link:hover{
         color: #202020;
+    }
+    .nav-show{
+        font-size: 23px;
+        letter-spacing: 0.8px;
+        color: #737373;
+        text-transform: uppercase;
+        padding: .5rem 1rem;
+        display: block;
     }
     .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
         border: 0;
     }
-    .nav-tabs, .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active, .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover{
+    .nav-tabs, .nav-tabs .nav-item.show .nav-show, .nav-tabs .nav-show.active, .nav-tabs .nav-show:focus, .nav-tabs .nav-show:hover{
         border: none;
     }
     .nav-tabs .active a{
@@ -484,8 +501,8 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <div class="title"><p>Overall</p></div>
                         <div class="block-content">
                             <div class="row col-12 block-content12">
-                                <div class="col-6 row block-content6">
-                                    <div class="col-6">
+                                <div class="col-lg-6 col-md-6 row block-content6">
+                                    <div class="col-lg-6 col-md-6">
                                         <div>
                                             <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                                 <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
@@ -505,7 +522,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-lg-6 col-md-6">
                                         <div class="progress-note">
                                             <ul>
                                                 <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
@@ -516,7 +533,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                     </div>
                                 </div>
 
-                                <div class="col-6 block-content6">
+                                <div class="col-6 col-md-6 block-content6">
                                     <div class="row block-progress">
                                         <p>Current Courses</p>
                                         <div class="progress col-10">
@@ -585,10 +602,10 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#certificate">certificate</a>
+                                <a class="nav-show active" data-toggle="tab" href="#certificate">certificate</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#badge">badge</a>
+                                <a class="nav-show" data-toggle="tab" href="#badge">badge</a>
                             </li>
                         </ul>
 
@@ -596,9 +613,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
-                                <div class="row col-12">
+                                <div class="row col-lg-12">
                                     <?php foreach ($certificates as $certificate) { ?>
-                                        <div class="col-3">
+                                        <div class="col-lg-3">
                                             <div class="item-image">
                                                 <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
                                             </div>
@@ -613,9 +630,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                             <div id="badge" class="container tab-pane fade">
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
-                                    <div class="row col-12">
+                                    <div class="row col-lg-12">
                                         <?php foreach ($badges as $badge) { ?>
-                                            <div class="col-3">
+                                            <div class="col-lg-3">
                                                 <div class="item-image">
                                                     <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
                                                 </div>

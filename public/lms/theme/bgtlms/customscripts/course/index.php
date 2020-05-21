@@ -535,7 +535,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     </template>
                     <template v-else>
                         <div class="col-4 block clctgr0" v-for="(course,index) in courses">
-                        <div class="row col-12 course-block">
+                            <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
                                 <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
                                 <template v-else-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
@@ -571,7 +571,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </div>
                     </template>
 
                 </div>

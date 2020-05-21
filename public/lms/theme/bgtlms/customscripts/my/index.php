@@ -42,6 +42,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#862055';
             $_SESSION["pathLogo"] = 'images/logo-black-1.png';
             $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-easia.png';
         }
         break;
     case "exoticvoyages":
@@ -50,6 +51,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#CAB143';
             $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-exotic.png';
         }
         break;
     case "begodi":
@@ -58,6 +60,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#FFFFFF';
             $_SESSION["pathLogo"] = 'images/begodi.jpg';
             $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-begodi.png';
         }
         break;
     case "avana":
@@ -66,6 +69,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#202020';
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-avana.png';
         }
         break;
     default:
@@ -74,6 +78,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-phh.png';
         }
         break;
 }
@@ -905,7 +910,7 @@ $countBlock = 1;
         <header><!-- header -->
             <div class="content">
                 <div class="slider">
-                    <div id="demo" class="carousel slide" data-ride="carousel">
+                    <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
                         <ul class="carousel-indicators">
                             <li data-target="#demo" data-slide-to="0" class="active"></li>
                             <li data-target="#demo" data-slide-to="1"></li>
@@ -913,7 +918,7 @@ $countBlock = 1;
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
@@ -926,7 +931,7 @@ $countBlock = 1;
                                 </div>
                             </div>
                             <div class="carousel-item">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
@@ -939,7 +944,7 @@ $countBlock = 1;
                                 </div>
                             </div>
                             <div class="carousel-item">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500" class="bg-img">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
                                     <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
