@@ -551,6 +551,9 @@
         .detail-list li a{
             padding-left: 12%;
         }
+        .info-course-progress{
+            margin-top: 10px;
+        }
     }
 
     @media only screen and (max-width: 320px) {
@@ -593,6 +596,10 @@
         .btn-start-unit{
             font-size: 11px !important;
             padding: 5px !important;
+        }
+        .nav-course .nav{
+            display: block;
+            margin-bottom: 15px;
         }
     }
 

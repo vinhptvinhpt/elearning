@@ -674,7 +674,7 @@ $countBlock = 1;
         }
 
         .path-calendar{
-            margin-bottom: 0%;
+            margin-bottom: 28px;
         }
 
     }
