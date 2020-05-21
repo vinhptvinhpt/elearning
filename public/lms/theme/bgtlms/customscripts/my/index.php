@@ -95,6 +95,8 @@ switch ($organizationCode) {
 //}
 
 $countBlock = 1;
+$percentCompleted = intval(count($courses_completed) * 100 / count($courses));
+$percentStudying = intval(count($courses_current) * 100 / count($courses));
 //echo shell_exec('select * from mdl_user limit 1');
 
 ?>
@@ -990,14 +992,14 @@ $countBlock = 1;
                                         <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="<?php echo $percentCompleted+$percentStudying; ?>,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo count($courses_completed)*100/count($courses); ?>,100" d="M18 2.0845
+                                        <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                        <text x="18" y="20.35" class="percentage"><?php echo intval(count($courses_completed)*100/count($courses)); ?> %</text>
+                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %</text>
                                     </svg>
                                 </div>
 

@@ -52,11 +52,6 @@
 
 <script>
     $(document).ready(function() {
-        // $('.usermenu .dropdown').click(function(){
-        //     $('#action-menu-1-menu').toggleClass('show');
-        //     console.log("hihi");
-        // });
-
         $('.userbutton').click(function(){
             $('#action-menu-1-menu').toggleClass('show');
         });
@@ -65,7 +60,7 @@
 <style>
     @font-face {
         font-family: Roboto-Regular;
-        src: url('../../fonts/Roboto-Regular.ttf');
+        src: url('{{ getPathPublic }}/fonts/Roboto-Regular.ttf');
     }
     .dropdown-divider{
         margin: 0 !important;

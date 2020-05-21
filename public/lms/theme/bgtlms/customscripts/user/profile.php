@@ -11,7 +11,8 @@ $sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificat
 $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
 session_start();
-$percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
+$percentCompleted = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
+$percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["totalCourse"]);
 ?>
 
 <html>
@@ -115,11 +116,11 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         white-space: nowrap;
     }
 
-    /*    View*/
-    .nav-tabs .nav-link:hover{
-
+    .tr-title a{
+        color: #3469FF;
     }
 
+    /*    View*/
     .col-6.block-content6{
         margin-top: 10px;
     }
@@ -508,17 +509,17 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                                 <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                                <path class="that-circle" stroke="#FFC400" stroke-dasharray="<?php echo ($percentCompleted+$percentStudying); ?>,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percent; ?>,100" d="M18 2.0845
+                                                <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
 
 
 
-                                                <text x="18" y="20.35" class="percentage"><?php echo $percent; ?>%</text>
+                                                <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?>%</text>
                                             </svg>
                                         </div>
                                     </div>
@@ -579,7 +580,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                     <td v-if="course.id == 506"><span class="numberget">100</span></td>
                                     <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
-                                    <td v-if="course.finalgrade == null"><span class="numberhave">0</span></td>
+                                    <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
                                     <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
@@ -681,7 +682,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
             user_id: <?php echo $USER->id; ?>,
             current: 1,
             totalPage: 0,
-            recordPerPage: 3,
+            recordPerPage: 6,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
