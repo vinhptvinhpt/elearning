@@ -37,6 +37,7 @@ $extraclasses = [];
 if ($navdraweropen) {
     $extraclasses[] = 'drawer-open-left';
 }
+$pathLogo = $_SESSION["pathLogo"];
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
@@ -55,6 +56,7 @@ $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
+
 
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
@@ -111,7 +113,10 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
         }
     }
 }
-
+//else{
+//    echo $_SESSION["pathLogo"];
+//    die;
+//}
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -134,7 +139,8 @@ $templatecontext = [
     'prevsectionno' => $prevsectionno,
     'nextsectionno' => $nextsectionno,
     'modulesidsstring' => $modulesidsstring,
-    'permission_edit' => $permission_edit
+    'permission_edit' => $permission_edit,
+    'pathLogo' => $pathLogo,
 ];
 
 $nav = $PAGE->flatnav;

@@ -322,7 +322,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .btn-click-active {
-        background: transparent linear-gradient(97deg, #A30088 0%, #862055 100%) 0% 0% no-repeat padding-box;
+        background: transparent linear-gradient(97deg, <?=$_SESSION["color"]?> 0%, <?=$_SESSION["color"]?> 100%) 0% 0% no-repeat padding-box;
         color: #FFFFFF !important;
     }
 
@@ -462,6 +462,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         }
     }
 
+
     @media only screen and (max-width: 320px) {
         .drawer-open-left .over-wrap{
             opacity: 0 !important;
@@ -481,7 +482,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             <div class="container">
                 <div class="header-block">
                     <div class="header-block__logo">
-                        <img src="images/logo-black-course.png" alt="">
+                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
                     </div>
                     <div class="header-block__search">
                         <div class="header-block__search__title">
@@ -537,8 +538,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                         <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
                                 <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
-                                <template v-else-if="course.numofmodule == 0"><img src="images/Component8–1.png" alt=""><span>0%</span></template>
-                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
+                                <template v-else-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
                             </div>
                             <div class="col-7">
                                 <div class="course-info">

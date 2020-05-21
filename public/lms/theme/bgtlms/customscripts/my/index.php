@@ -41,24 +41,39 @@ switch ($organizationCode) {
             $_SESSION["organizationName"] = 'Easia';
             $_SESSION["color"] = '#862055';
             $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
         }
         break;
-    case "exotic":
+    case "exoticvoyages":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+        }
         break;
     case "begodi":
         {
             $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/Begodi.jpg';
+            $_SESSION["color"] = '#FFFFFF';
+            $_SESSION["pathLogo"] = 'images/begodi.jpg';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
         }
         break;
     case "avana":
+        {
+            $_SESSION["organizationName"] = 'AVANA';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+        }
         break;
     default:
         {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
         }
         break;
 }
@@ -213,6 +228,9 @@ $countBlock = 1;
         margin-right: 2%;
     }
 
+    .path-calendar .maincalendar .heightcontainer{
+        height: auto !important;
+    }
     .block-item__content_btn{
         width: 100%;
         text-align: right;
@@ -491,6 +509,7 @@ $countBlock = 1;
 
     .carousel-caption{
         left: 5%;
+        top: 28%;
     }
 
     .section-footer{
@@ -654,6 +673,10 @@ $countBlock = 1;
             -webkit-text-stroke-width: 4px;
         }
 
+        .path-calendar{
+            margin-bottom: 0%;
+        }
+
     }
 
     /*1368*/
@@ -765,6 +788,10 @@ $countBlock = 1;
         .circle-progress{
             margin-right: 10%;
         }
+        .carousel-caption {
+            top: 35%;
+        }
+
         .carousel-caption p, .carousel-caption h3{
             font-size: 40px;
         }
@@ -842,6 +869,18 @@ $countBlock = 1;
         }
         .path-calendar{
             margin-bottom: 70%;
+        }
+    }
+
+    @media screen and (max-width: 425px){
+        .path-calendar{
+            margin-bottom: 80%;
+        }
+    }
+
+    @media screen and (max-width: 375px){
+        .path-calendar{
+            margin-bottom: 97%;
         }
     }
 
@@ -1038,7 +1077,7 @@ $countBlock = 1;
                                                     <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
                                                         <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
                                                         <!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
-                                                        <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                        <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
@@ -1087,7 +1126,7 @@ $countBlock = 1;
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
                                                     <!--                                            <div class="col-sm-6 block-items__item">-->
                                                     <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                        <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                        <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                         <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
                                                     </div>
                                                     <div class="block-item__content">

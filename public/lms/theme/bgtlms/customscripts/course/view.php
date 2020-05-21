@@ -141,8 +141,8 @@
     }
 
     .nav-setting a{
-        color: #862055 !important;
-        border: 1px solid #862055;
+        color: <?=$_SESSION["color"]?> !important;
+        border: 1px solid <?=$_SESSION["color"]?>;
         padding: 5px;
         border-radius: 15px;
     }
@@ -520,6 +520,9 @@
         }
         .nav-unit{
             margin-left: 0 !important;
+        }
+        .nav-setting{
+            margin-top: 8px !important;
         }
     }
 

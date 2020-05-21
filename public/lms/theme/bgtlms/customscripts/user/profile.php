@@ -104,8 +104,8 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         color: #737373;
     }
     .page-item.active .page-link{
-        background: #862055 0% 0% no-repeat padding-box !important;
-        border-color: #862055 !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
+        border-color: <?=$_SESSION["color"]?> !important;
     }
 
     .table-select, .tr-title{
@@ -177,7 +177,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         margin-bottom: 15px;
     }
     .title{
-        background: #862055 0% 0% no-repeat padding-box;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box;
         border-radius: 10px 10px 0px 0px;
     }
     .title p{
@@ -227,7 +227,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
     .numberget{
         font-family: Nunito-Sans-Bold;
         letter-spacing: 1.1px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
     }
     .numberhave{
         color: #737373;
@@ -355,7 +355,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         padding: 0 !important;
     }
     .progress-bar{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
     }
 
     .progress-number span{
@@ -379,7 +379,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
 
     .percentage{
         font-family: Roboto-Regular;
-        fill: #862055;
+        fill: <?=$_SESSION["color"]?>;
     }
 
     .block-content{
@@ -494,7 +494,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                                 <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo $percent; ?>,100" d="M18 2.0845
+                                                <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percent; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
@@ -508,7 +508,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                     <div class="col-6">
                                         <div class="progress-note">
                                             <ul>
-                                                <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
+                                                <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
                                                 <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
                                                 <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                             </ul>
