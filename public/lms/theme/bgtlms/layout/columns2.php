@@ -57,7 +57,7 @@ $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
 
-
+$getPathPublic = '';
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
@@ -113,10 +113,9 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
         }
     }
 }
-//else{
-//    echo $_SESSION["pathLogo"];
-//    die;
-//}
+else if(strpos($bodyattributes, 'search')){
+    $getPathPublic =   str_replace('lms', '', $CFG->wwwroot);
+}
 
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
@@ -141,6 +140,7 @@ $templatecontext = [
     'modulesidsstring' => $modulesidsstring,
     'permission_edit' => $permission_edit,
     'pathLogo' => $pathLogo,
+    'getPathPublic' => $getPathPublic
 ];
 
 $nav = $PAGE->flatnav;

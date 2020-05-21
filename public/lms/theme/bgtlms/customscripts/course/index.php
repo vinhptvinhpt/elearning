@@ -591,7 +591,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             <footer>
                 <div class="container-fluid row">
                     <div class="footer-logo">
-                        <img src="images/logo-write.png" alt="">
+                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
                     </div>
                     <div class="col-12 row footer-full">
                         <!--            Helps-->
