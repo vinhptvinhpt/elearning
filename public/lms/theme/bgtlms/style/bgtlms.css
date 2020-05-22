@@ -1,0 +1,48 @@
+.search-result-block h2{
+    text-transform: uppercase;
+    width: 100%;
+    border-bottom: 2px solid lightgrey;
+}
+
+.search-filter-block h4{
+    text-transform: uppercase;
+}
+
+.search-input:focus {
+    outline: 0 !important;
+    border-color: initial;
+    box-shadow: none;
+}
+
+.search_label_button {
+    border: 1px solid #862055;
+    color: #862055;
+    width: 100%;
+}
+
+.col-title-container {
+    padding-right: 0;
+}
+
+.ss-main .ss-multi-selected .ss-values .ss-value {
+    background-color: #862055 !important;
+}
+
+.ss-value-delete {
+    font-weight: bold;
+    margin: 0 0 0 10px !important;
+}
+
+.btn-bgtlms {
+    text-transform: uppercase;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #862055 !important;
+    border-color: #86170f !important;
+}
+
+.btn-bgtlms-clear {
+    text-transform: uppercase;
+    font-weight: bold;
+    border-color: #000000 !important;
+}

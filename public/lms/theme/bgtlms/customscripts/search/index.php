@@ -334,8 +334,6 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
     });
 
     function resetForm() {
-        selectArea.search('');
-        selectArea.search('cuonghq')
 
     }
 
