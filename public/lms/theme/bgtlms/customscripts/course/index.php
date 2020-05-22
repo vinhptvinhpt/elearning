@@ -1,6 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+$type = optional_param('type', 0, PARAM_INT);
+if($type != 0){
 
+}
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
@@ -22,40 +25,21 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 <style>
     @font-face {
-        font-family: Nunito-Sans;
-        src: url('fonts/NunitoSans-Black.ttf');
-    }
-
-    @font-face {
         font-family: Nunito-Sans-Regular;
         src: url('fonts/NunitoSans-Regular.ttf');
     }
-
     @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
-
-    @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-
     @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
-
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
-    }
-
     @font-face {
         font-family: Nunito-Bold;
         src: url('fonts/Nunito-Bold.ttf');
     }
-
     img {
         width: 100%;
     }
@@ -79,12 +63,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 0.5;
     }
 
-    /*.title-course{*/
-    /*    display: -webkit-box;*/
-    /*    -webkit-line-clamp: 2;*/
-    /*    -webkit-box-orient: vertical;*/
-    /*    overflow: hidden;*/
-    /*}*/
     /*    view*/
     /*    paging*/
     .pagination{
@@ -110,7 +88,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .course-info__detail ul {
-        /*display: inline-flex;*/
         padding: 0;
         width: 100%;
     }
@@ -122,10 +99,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         color: #737373;
     }
 
-    .course-info__list-lessons {
-
-    }
-
     .course-info__list-lessons ul {
         padding: 5% 0;
         padding-top: 0;
@@ -133,10 +106,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 
     .course-info__list-lessons ul li {
-        /*display: -webkit-box;*/
-        /*-webkit-line-clamp: 1;*/
-        /*-webkit-box-orient: vertical;*/
-        /*overflow: hidden;*/
         padding: 1% 0;
         margin-top: 3%;
         border-bottom: 1px solid #C7C7C7;
@@ -153,7 +122,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         width: 100%;
     }
 
-
     .course-info__list-lessons ul li a span {
         display: -webkit-box;
         -webkit-line-clamp: 1;
@@ -164,7 +132,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 
     .btn-click {
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
     }
@@ -176,7 +144,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         color: #FFFFFF !important;
         text-transform: uppercase;
         font-size: 13px;
-        /*font-family: Roboto;*/
     }
 
     .percent {
@@ -219,9 +186,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         margin-right: 4%;
     }
 
-    .block{
-        /*padding: 0 !important;*/
-    }
     .course-block {
         background-color: #ffffff;
         position: relative;
@@ -321,26 +285,26 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         display: flex;
     }
 
-    .btn-seach {
+    .btn-search {
         border: 1px solid #707070;
         border-left: 0;
     }
 
-    .btn-seach i {
+    .btn-search i {
         position: absolute;
         color: #FFFFFF;
         top: 25%;
         padding: 3px 10px;
     }
 
-    .btn-seach input {
-        background-color: #A30088;
+    .btn-search input {
+        background-color: <?=$_SESSION["color"]?>;
         width: 100%;
         border: 2px solid #FFFFFF;
         padding: 5px 15px;
     }
 
-    .btn-seach input:hover, .btn-seach i:hover {
+    .btn-search input:hover, .btn-search i:hover {
         cursor: pointer;
     }
 
@@ -349,7 +313,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
         border-radius: 4px;
-        /*font-family: Roboto-Bold !important;*/
         font-family: Nunito-Bold;
         font-size: 13px !important;
         color: #737373 !important;
@@ -359,7 +322,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .btn-click-active {
-        background: transparent linear-gradient(97deg, #A30088 0%, #862055 100%) 0% 0% no-repeat padding-box;
+        background: transparent linear-gradient(97deg, <?=$_SESSION["color"]?> 0%, <?=$_SESSION["color"]?> 100%) 0% 0% no-repeat padding-box;
         color: #FFFFFF !important;
     }
 
@@ -412,7 +375,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     .footer-logo {
         height: 11%;
-        /*margin-top: 1%;*/
     }
 
     .footer-logo img {
@@ -429,9 +391,88 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     }
 
-    /*.course-info__list-lessons ul li a{*/
-    /*    */
-    /*}*/
+    /*1920*/
+    @media screen and (max-width: 1920px) and (min-width: 1369px){
+        .btn-click-course{
+            min-width: 188px;
+            font-size: 18px !important;
+            padding: 13px !important;
+        }
+        .header-block__search__title p {
+            font-size: 18px;
+        }
+        .course-select, .input-search {
+            font-size: 18px !important;
+        }
+        .input-search {
+            padding: 0 2%;
+        }
+        .btn-click-course {
+            margin-bottom: 2%;
+        }
+    }
+
+    @media screen and (max-width: 1368px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .btn-click-course{
+            margin-top: 2%;
+        }
+    }
+
+    @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .btn-click-course{
+            margin-top: 2%;
+        }
+    }
+
+
+    @media only screen and (max-width: 768px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .btn-click-course{
+            margin-top: 2%;
+        }
+        .course-block {
+            margin: 1% 0 !important;
+        }
+        .section-course-info {
+            margin-bottom: 5%;
+        }
+    }
+
+    @media only screen and (max-width: 480px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+    }
+
+
+    @media only screen and (max-width: 320px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+    }
+
 </style>
 <body>
 <div class="wrapper"><!-- wrapper -->
@@ -441,7 +482,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             <div class="container">
                 <div class="header-block">
                     <div class="header-block__logo">
-                        <img src="images/logo-black-course.png" alt="">
+                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
                     </div>
                     <div class="header-block__search">
                         <div class="header-block__search__title">
@@ -462,7 +503,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </div>
                                 <div class="col-5 block-search__btn">
                                     <input type="text" class=" input-search" v-model="txtSearch">
-                                    <div class="btn-seach" @click="searchCourse(category, 1)"><i class="fa fa-search"
+                                    <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search"
                                                                                                  aria-hidden="true"></i><input
                                             type="button"></div>
                                 </div>
@@ -494,15 +535,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     </template>
                     <template v-else>
                         <div class="col-4 block clctgr0" v-for="(course,index) in courses">
-                        <div class="row col-12 course-block">
+                            <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
-<!--                            <div class="col-6 course-block__image" :style="background-image: url('urlTms+course.course_avatar')">-->
-<!--                                <img :src="urlTms+course.course_avatar" alt="">-->
-<!--                                <img src="images/Component8–1.png" alt=""><span>--><?php //echo intval($course->numoflearned*100/$course->numofmodule); ?><!--%</span>-->
                                 <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
-                                <template v-else-if="course.numofmodule == 0"><img src="images/Component8–1.png" alt=""><span>0%</span></template>
-                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
-<!--                                <template v-else><img src="images/Component8–1.png" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>-->
+                                <template v-else-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
                             </div>
                             <div class="col-7">
                                 <div class="course-info">
@@ -534,12 +571,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </div>
                             </div>
                         </div>
-                    </div>
+                        </div>
                     </template>
 
                 </div>
                 <div class="pagination" v-if="totalPage > 1">
-                    <!--                <v-pagination v-model="currentPage" :page-count="total"></v-pagination>-->
                     <v-pagination
                         v-model="current"
                         :page-count="totalPage"
@@ -555,7 +591,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             <footer>
                 <div class="container-fluid row">
                     <div class="footer-logo">
-                        <img src="images/logo-write.png" alt="">
+                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
                     </div>
                     <div class="col-12 row footer-full">
                         <!--            Helps-->
@@ -618,7 +654,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 <script>
     $(document).ready(function () {
-
         //tab categories click
         $('.btn-click-course').click(function () {
             var category = $(this).attr('category');
@@ -627,12 +662,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             $('.btn-click-course').not($('#ctgr' + category)).each(function () {
                 $(this).removeClass(' btn-click-active');
             });
-
-            // //show category
-            // $('.clctgr' + category).css('display', 'block');
-            // $('.block').not($('.clctgr' + category)).each(function () {
-            //     $(this).css('display', 'none');
-            // });
         });
 
 

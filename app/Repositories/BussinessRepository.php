@@ -468,6 +468,7 @@ class BussinessRepository implements IBussinessInterface
             $checkRole->root_user = false;
             $checkRole->has_role_manager = false;
             $checkRole->has_role_leader = false;
+            $checkRole->has_role_admin = false;
         }
 
         $response['roles'] = $checkRole;
@@ -1005,6 +1006,28 @@ class BussinessRepository implements IBussinessInterface
                     'sortorder' => 0,
                     'status' => 0
                 ]);
+            }
+
+            if ($course->category != 2) { //ko phai thu vien khoa hoc
+                $tms_trainning = TmsTrainningProgram::firstOrCreate([
+                    'code' => $course->shortname . $course->id,
+                    'name' => $course->fullname,
+                    'style' => 1,
+                    'run_cron' => 1,
+                    'time_start' => 0,
+                    'time_end' => 0,
+                    'auto_certificate' => 1,
+                    'auto_badge' => 1,
+                    'deleted' => 2 //KNL ko hien thi tren he thong
+                ]);
+
+                if ($tms_trainning) {
+                    TmsTrainningCourse::firstOrCreate([
+                        'trainning_id' => $tms_trainning->id,
+                        'sample_id' => $course->id,
+                        'course_id' => $course->id
+                    ]);
+                }
             }
 
             //write log to mdl_logstore_standard_log
@@ -4483,6 +4506,7 @@ class BussinessRepository implements IBussinessInterface
                 'tud.confirm as confirm', 'tud.phone as phone',
                 'ttp.name as training_name', 'ttp.id as training_id')
             ->whereNull('sc.id')
+            ->whereRaw('(ttp.auto_certificate = 0 AND ttp.auto_badge = 0)')
             ->groupBy('ttc.user_id', 'ttc.trainning_id');
 
         if (strlen($keyword) != 0) {

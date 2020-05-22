@@ -11,7 +11,8 @@ $sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificat
 $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
 session_start();
-$percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
+$percentCompleted = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
+$percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["totalCourse"]);
 ?>
 
 <html>
@@ -48,20 +49,12 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         src: url('fonts/Roboto-Bold.ttf');
     }
     @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-    @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
     @font-face {
         font-family: Roboto-Italic;
         src: url('fonts/Roboto-Italic.ttf');
-    }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
     }
     @font-face {
         font-family: Nunito-Bold;
@@ -112,8 +105,8 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         color: #737373;
     }
     .page-item.active .page-link{
-        background: #862055 0% 0% no-repeat padding-box !important;
-        border-color: #862055 !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
+        border-color: <?=$_SESSION["color"]?> !important;
     }
 
     .table-select, .tr-title{
@@ -123,8 +116,11 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         white-space: nowrap;
     }
 
-    /*    View*/
+    .tr-title a{
+        color: #3469FF;
+    }
 
+    /*    View*/
     .col-6.block-content6{
         margin-top: 10px;
     }
@@ -182,7 +178,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         margin-bottom: 15px;
     }
     .title{
-        background: #862055 0% 0% no-repeat padding-box;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box;
         border-radius: 10px 10px 0px 0px;
     }
     .title p{
@@ -232,7 +228,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
     .numberget{
         font-family: Nunito-Sans-Bold;
         letter-spacing: 1.1px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
     }
     .numberhave{
         color: #737373;
@@ -246,13 +242,30 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         text-transform: uppercase;
         border: 0;
     }
+    .nav-tabs .nav-item{
+        margin-bottom: 0 !important;
+    }
+    .nav-tabs .nav-show:hover + .nav-item{
+        margin-bottom: 0 !important;
+    }
+    .nav-tabs .nav-item.show .nav-show, .nav-tabs .nav-show.active{
+        color: #0c0c0c !important;
+    }
     .nav-link:hover{
         color: #202020;
+    }
+    .nav-show{
+        font-size: 23px;
+        letter-spacing: 0.8px;
+        color: #737373;
+        text-transform: uppercase;
+        padding: .5rem 1rem;
+        display: block;
     }
     .nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
         border: 0;
     }
-    .nav-tabs, .nav-tabs .nav-item.show .nav-link, .nav-tabs .nav-link.active, .nav-tabs .nav-link:focus, .nav-tabs .nav-link:hover{
+    .nav-tabs, .nav-tabs .nav-item.show .nav-show, .nav-tabs .nav-show.active, .nav-tabs .nav-show:focus, .nav-tabs .nav-show:hover{
         border: none;
     }
     .nav-tabs .active a{
@@ -360,7 +373,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         padding: 0 !important;
     }
     .progress-bar{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
     }
 
     .progress-number span{
@@ -384,61 +397,36 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
 
     .percentage{
         font-family: Roboto-Regular;
-        fill: #862055;
+        fill: <?=$_SESSION["color"]?>;
     }
 
     .block-content{
         width: 100%;
     }
 
-
     /*custom*/
     #region-main{
         font-size: 14px;
         font-family: Roboto-Bold;
         background-color: #f1f3f9 !important;
-        /*background-color: #F1F1F1 !important;*/
         border: none !important;
     }
-
-    /*.table-keep thead th {*/
-    /*    !*position: sticky;*!*/
-    /*    top: 0;*/
-    /*}*/
-
-    /*.table-keep {*/
-    /*    display: flex;*/
-    /*    flex-flow: column;*/
-    /*    width: 100%;*/
-    /*    overflow-y: auto;*/
-    /*    height: 200px;*/
-    /*    min-height: 200px;*/
-    /*}*/
-
-    /*.table-keep thead {*/
-    /*    flex: 0 0 auto;*/
-    /*}*/
-
-    /*.table-keep tbody {*/
-    /*    flex: 1 1 auto;*/
-    /*    display: block;*/
-    /*    overflow-y: auto;*/
-    /*    overflow-x: hidden;*/
-    /*}*/
-
-    /*.table-keep tr {*/
-    /*    width: 100%;*/
-    /*    display: table;*/
-    /*    table-layout: fixed;*/
-    /*}*/
 
 
     /*Ipad ngang(1024 x 768)*/
     @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
 
     }
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
         .info-user{
             padding-left: 25%;
             margin-bottom: 15px;
@@ -446,30 +434,40 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
         .info-user, .info-learn{
             width: 100%;
         }
-
         .block-content12{
             display: block;
         }
-
         .block-content6{
             max-width: 96%;
         }
     }
     /*Tablet nhỏ(480 x 640)*/
     @media screen and (max-width: 480px){
-
-
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
         .item-content p{
             font-size: 10px;
+        }
+        .block-content12{
+            display: block !important;
+        }
+        .col-6.block-content6 {
+            max-width: 100%;
+            margin: 0 15px;
+            padding-bottom: 15px;
         }
     }
     /*Iphone(480 x 640)*/
     @media screen and (max-width: 320px){
-
-    }
-    /*Smart phone nhỏ*/
-    @media screen and (max-width: 240px){
-
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .info-user_info {
+            margin-top: 3%;
+        }
     }
 </style>
 <body>
@@ -504,31 +502,31 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <div class="title"><p>Overall</p></div>
                         <div class="block-content">
                             <div class="row col-12 block-content12">
-                                <div class="col-6 row block-content6">
-                                    <div class="col-6">
+                                <div class="col-lg-6 col-md-6 row block-content6">
+                                    <div class="col-lg-6 col-md-6">
                                         <div>
                                             <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                                 <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                                <path class="that-circle" stroke="#FFC400" stroke-dasharray="<?php echo ($percentCompleted+$percentStudying); ?>,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                                <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo $percent; ?>,100" d="M18 2.0845
+                                                <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
 
 
 
-                                                <text x="18" y="20.35" class="percentage"><?php echo $percent; ?>%</text>
+                                                <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?>%</text>
                                             </svg>
                                         </div>
                                     </div>
-                                    <div class="col-6">
+                                    <div class="col-lg-6 col-md-6">
                                         <div class="progress-note">
                                             <ul>
-                                                <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
+                                                <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
                                                 <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
                                                 <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                             </ul>
@@ -536,7 +534,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                     </div>
                                 </div>
 
-                                <div class="col-6 block-content6">
+                                <div class="col-6 col-md-6 block-content6">
                                     <div class="row block-progress">
                                         <p>Current Courses</p>
                                         <div class="progress col-10">
@@ -551,14 +549,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                         </div>
                                         <div class="col-1 progress-number"><span>{{ progressRequiredCourse }}</span></div>
                                     </div>
-
-                                    <!--                                <div class="row block-progress">-->
-                                    <!--                                    <p>Optional Courses</p>-->
-                                    <!--                                    <div class="progress col-11">-->
-                                    <!--                                        <div class="progress-bar" role="progressbar" style="width: 50%" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>-->
-                                    <!--                                    </div>-->
-                                    <!--                                    <div class="col-1 progress-number"><span>12/15</span></div>-->
-                                    <!--                                </div>-->
                                 </div>
                             </div>
                         </div>
@@ -590,7 +580,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                                     <td v-if="course.id == 506"><span class="numberget">100</span></td>
                                     <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
-                                    <td v-if="course.finalgrade == null"><span class="numberhave">0</span></td>
+                                    <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
                                     <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
@@ -613,10 +603,10 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-link active" data-toggle="tab" href="#certificate">certificate</a>
+                                <a class="nav-show active" data-toggle="tab" href="#certificate">certificate</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" data-toggle="tab" href="#badge">badge</a>
+                                <a class="nav-show" data-toggle="tab" href="#badge">badge</a>
                             </li>
                         </ul>
 
@@ -624,9 +614,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                         <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
-                                <div class="row col-12">
+                                <div class="row col-lg-12">
                                     <?php foreach ($certificates as $certificate) { ?>
-                                        <div class="col-3">
+                                        <div class="col-lg-3">
                                             <div class="item-image">
                                                 <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
                                             </div>
@@ -641,9 +631,9 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                             <div id="badge" class="container tab-pane fade">
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
-                                    <div class="row col-12">
+                                    <div class="row col-lg-12">
                                         <?php foreach ($badges as $badge) { ?>
-                                            <div class="col-3">
+                                            <div class="col-lg-3">
                                                 <div class="item-image">
                                                     <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
                                                 </div>
@@ -670,10 +660,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
 
 <script>
     $(document).ready(function(){
-        // $(".nav-tabs a").click(function(){
-        //     var getHref = $(this).attr('href').replace('#', '');
-        //     $(getHref).addClass('active');
-        // });
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -696,7 +682,7 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
             user_id: <?php echo $USER->id; ?>,
             current: 1,
             totalPage: 0,
-            recordPerPage: 3,
+            recordPerPage: 6,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
@@ -758,7 +744,6 @@ $percent = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCour
                     }
                 })
                     .then(response => {
-                        console.log(response.data);
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
 

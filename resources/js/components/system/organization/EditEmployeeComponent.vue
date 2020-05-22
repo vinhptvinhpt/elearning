@@ -83,11 +83,8 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
-                        {{trans.get('keys.quay_lai')}}
-                      </router-link>
-
-
+                      <router-link v-if="selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
+                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
                       <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
                     </div>
                   </div>

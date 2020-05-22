@@ -73,7 +73,6 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 # cron nhac nho lau ko tham gia khoa hoc
 57 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/sendRemindAccess?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
-
 # cron them du lieu vao bang notification cho mail enrol hoc vien vao khoa hoc ky nang mem
 5 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertSuggestSSC?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 

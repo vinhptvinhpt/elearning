@@ -1,19 +1,3 @@
-<?php
-    require_once("courselib.php");
-    $id = optional_param('id', 0, PARAM_INT);
-    $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
-    $course = array_values($DB->get_records_sql($sql))[0];
-
-    $units = get_course_contents($id);
-
-    $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
-
-//    $units = json_encode(get_course_contents($id));
-//    echo $units;
-//    die;
-
-?>
-
 <html>
 <title>Thông tin khóa học <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
@@ -26,28 +10,12 @@
 
 <style>
     @font-face {
-        font-family: Nunito-Sans;
-        src: url('fonts/NunitoSans-Black.ttf');
-    }
-    @font-face {
-        font-family: Nunito-Sans-Regular;
-        src: url('fonts/NunitoSans-Regular.ttf');
-    }
-    @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
     @font-face {
-        font-family: Roboto-Light;
-        src: url('fonts/Roboto-Light.ttf');
-    }
-    @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
-    }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
     }
 
     img{
@@ -66,12 +34,39 @@
         text-decoration: none;
     }
 /*    view*/
+    .alert-block{
+        opacity: 1 !important;
+    }
+    #page{
+        margin-right: 4%;
+        /*margin-right: */<?//=$marginPage?>/*;*/
+    }
+    .alert {
+        padding: 20px;
+        background-color: #f44336;
+        color: white;
+    }
+
+    .closebtn {
+        margin-left: 15px;
+        color: white;
+        font-weight: bold;
+        float: right;
+        font-size: 22px;
+        line-height: 20px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+
+    .closebtn:hover {
+        color: black;
+    }
     .prev-btn:hover{
         cursor: pointer;
     }
 
     .progress-bar{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
     }
 
     .progress-info{
@@ -114,11 +109,14 @@
         text-transform: uppercase;
     }
 
-    .progress-info__content{
-        /*margin-top: 2%;*/
+    .info-course-progress .col-9{
+        position: absolute;
+        bottom: 32px;
+        right: 0;
     }
+
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         text-align: left;
         font-family: Roboto-Regular;
@@ -128,10 +126,31 @@
     }
 
     .nav-course .nav{
-        width: 30%;
+        width: 100%;
         margin: auto;
     }
 
+    .nav-introduction{
+        margin: 0 auto;
+        margin-right: 0;
+    }
+
+    .nav-setting{
+        margin-right: 15px;
+        margin-top: 8px;
+    }
+
+    .nav-setting a{
+        color: <?=$_SESSION["color"]?> !important;
+        border: 1px solid <?=$_SESSION["color"]?>;
+        padding: 5px;
+        border-radius: 15px;
+    }
+
+    .nav-unit{
+        margin: 0 auto;
+        margin-left: 0;
+    }
 
     .nav-course .nav .nav-item a{
         text-align: left;
@@ -146,11 +165,13 @@
 
     .nav-course .nav .nav-item a.active{
         color: #202020;
+        font-weight: 700;
     }
 
     .section-nav{
         border-top: 1px solid #C7C7C7;
         margin: 1% 0;
+        margin-bottom: 0;
     }
 
     .section-course-info{
@@ -213,7 +234,7 @@
     .detail-list li i{
         font-size: 23px;
         margin-right: 1%;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
     }
     .detail-list li a{
         background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
@@ -245,7 +266,6 @@
     }
 
     .detail-title p{
-        /*font-family: Roboto-Bold;*/
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #202020;
@@ -266,10 +286,10 @@
         box-shadow: 3px 3px 6px #00000029;
     }
     .unit-click{
-        border: 2px solid #862055;
+        border: 2px solid <?=$_SESSION["color"]?>;
     }
     .unit-click .unit__title{
-        background: #862055 0% 0% no-repeat;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat;
     }
     .unit-click .unit__title p{
         font-size: 17px;
@@ -347,13 +367,10 @@
         box-shadow: 3px 3px 6px #0000002E;
         border: 1px solid #707070;
         border-radius: 4px;
-        /*opacity: 0.4;*/
-        /*color: #3E3E3E;*/
     }
     .prev-btn i{
         padding: 1%;
         color: #3E3E3E;
-        /*opacity: 1;*/
     }
 
     .course-block__content-answer{
@@ -362,11 +379,10 @@
 
     .speech-bubble {
         position: relative;
-        background: #862055;
-        border-radius: .4em;
+        background: <?=$_SESSION["color"]?>;
+        border-radius: 4px;
         width: 50px;
         padding: 1px 0px;
-        /*margin: 0.7em 0;*/
         margin: 0;
         margin-bottom: 1em;
         text-align: center;
@@ -383,7 +399,7 @@
         width: 0;
         height: 0;
         border: 15px solid transparent;
-        border-top-color: #862055;
+        border-top-color: <?=$_SESSION["color"]?>;
         border-bottom: 0;
         margin-left: -20px;
         margin-bottom: -10px;
@@ -396,40 +412,244 @@
 
     .info-course-btn{
         padding: 2% 1%;
+        text-align: right;
     }
 
     .course-block-img img{
         border-radius: 3%;
     }
-    @media only screen and (max-width: 777px) {
+
+    @media only screen and (max-width: 1368px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 13px !important;
+        }
+    }
+
+    @media only screen and (max-width: 1024px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 12px !important;
+        }
+    }
+
+    @media only screen and (max-width: 991px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .block{
+            display: contents;
+        }
+        .info-course-detail ul li{
+            font-size: 12px !important;
+        }
+        .info-course-progress > span {
+            font-size: 11px;
+        }
+        .info-course-detail ul {
+            display: -webkit-inline-box;
+        }
+    }
+
+    @media only screen and (max-width: 768px) {
+        .drawer-open-left, .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .info-course-detail ul li {
+            font-size: 12px !important;
+        }
+        .info-course-detail, .info-course-detail ul{
+            max-width: 100% !important;
+        }
+        .block{
+            display: contents;
+        }
         .progress-info, .btn-click {
             font-size: 10px;
         }
 
         .info-course-progress{
             display: block;
+            max-width: 92% !important;
+        }
+        .info-course-btn{
+            max-width: 90% !important;
+        }
+        .info-course-progress .col-9 {
+            bottom: 24px;
         }
 
         .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p{
             font-size: 14px;
         }
-        .info-course-detail{
-            height: 0 !important;
-            line-height: 1 !important;
-        }
-        .info-course-progress .col-3{
-            height: 0 !important;
-            line-height: 1 !important;
-        }
 
         #user-notifications .alert-warning{
             opacity: 1 !important;
         }
+
+        .progress-info__content .row{
+            display: block;
+        }
+
+        .detail-list li a{
+            padding-left: 6%;
+        }
+
+        .nav-tabs-courses .nav-click{
+            margin: 0 auto;
+        }
+        .nav-course .nav .nav-item a{
+            font-size: 17px;
+        }
+        .nav-introduction{
+            margin-right: 0 !important;
+        }
+        .nav-unit{
+            margin-left: 0 !important;
+        }
+        .nav-setting{
+            margin-top: 8px !important;
+        }
     }
 
+    @media only screen and (max-width: 480px) {
+        .progress-info, .btn-click {
+            margin-top: 8%;
+        }
+        .info-course-btn{
+            padding-top: 0;
+        }
+        .btn-start-course{
+            margin-top: 5%;
+        }
+        .nav-tabs-courses .nav-click{
+            margin: 0 auto;
+        }
+        .nav-course .nav .nav-item a{
+            font-size: 14px;
+        }
+        .nav-introduction{
+            margin-right: 0 !important;
+        }
+        .nav-unit{
+            margin-left: 0 !important;
+        }
+        .detail-list li a{
+            padding-left: 12%;
+        }
+        .info-course-progress{
+            margin-top: 10px;
+        }
+    }
+
+    @media only screen and (max-width: 320px) {
+        .info-course-progress > span {
+            font-size: 10px;
+        }
+        .info-course-progress .col-9 {
+            bottom: 19px;
+        }
+        .course-block-info{
+            max-width: 100%;
+            width: 100%;
+            display: contents;
+        }
+        .course-block-img{
+            display: none;
+        }
+        .detail-list li a {
+            padding-left: 18%;
+            font-size: 13px;
+        }
+        .detail-title p {
+            font-size: 13px;
+        }
+        .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p {
+            font-size: 11px;
+            word-break: break-word;
+        }
+
+        .unit__progress-number p {
+            font-size: 11px;
+        }
+        .unit-info{
+            padding-left: 0 !important;
+        }
+        #courseunit{
+            padding: 0;
+            margin: 0;
+        }
+        .btn-start-unit{
+            font-size: 11px !important;
+            padding: 5px !important;
+        }
+        .nav-course .nav{
+            display: block;
+            margin-bottom: 15px;
+        }
+    }
 
 </style>
+<?php
+require_once("courselib.php");
+function get_client_ip_server() {
+    $ipaddress = '';
+    if ($_SERVER['HTTP_CLIENT_IP'])
+        $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
+    else if($_SERVER['HTTP_X_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_X_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_X_FORWARDED'];
+    else if($_SERVER['HTTP_FORWARDED_FOR'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED_FOR'];
+    else if($_SERVER['HTTP_FORWARDED'])
+        $ipaddress = $_SERVER['HTTP_FORWARDED'];
+    else if($_SERVER['REMOTE_ADDR'])
+        $ipaddress = $_SERVER['REMOTE_ADDR'];
+    else
+        $ipaddress = 'UNKNOWN';
 
+    return $ipaddress;
+}
+
+$id = optional_param('id', 0, PARAM_INT);
+// [VinhPT][EAsia] Course IP address restrict
+
+$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
+
+if($result_ip){
+    $list_access_ip = json_decode($result_ip)->list_access_ip;
+    if ($list_access_ip){
+        if(!in_array(getremoteaddr(), $list_access_ip)){
+//        if(!in_array(get_client_ip_server(), $list_access_ip)){
+            $root_url = $CFG->wwwroot;
+            $url_to_page = new moodle_url($root_url);
+            $message_ip_access = "You do not have permission to access this course";
+            redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+        }
+    }
+}
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
+$course = array_values($DB->get_records_sql($sql))[0];
+
+$units = get_course_contents($id);
+
+$bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
+?>
 <body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
@@ -440,7 +660,7 @@
            <div class="progress-info">
                <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
                <div class="progress-info__content">
-                   <div class="row col-12">
+                   <div class="row">
                        <div class="col-4 info-course-detail">
                            <ul>
                                <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</li>
@@ -449,7 +669,7 @@
                            </ul>
                        </div>
                        <div class="col-6 row info-course-progress">
-                           <span class="col-3">PROGRESS</span>
+                           <span class="col-3">PROGRESS </span>
 
                            <div class="col-9">
                                <?php if($course->id != 506){ ?>
@@ -487,8 +707,11 @@
                     <li class="nav-item nav-click nav-introduction">
                         <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
                     </li>
-                    <li class="nav-item nav-click">
+                    <li class="nav-item nav-click nav-unit">
                         <a class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
+                    </li>
+                    <li class="nav-item nav-click nav-setting">
+                        <a class="" role="tab"><i class="fa fa-cog" aria-hidden="true"></i> Edit course</a>
                     </li>
                 </ul>
             </div>
@@ -502,28 +725,10 @@
                 <div class="col-8 course-block-info">
 
                     <div class="course-block course-description">
-<!--                        <div class="course-block__title"><p>Course description</p></div>-->
                         <div class="course-block__content">
                             <?php echo $course->summary; ?>
-<!--                            <p>Do you usually leave the office late?</p>-->
-<!--                            <p>Do you often miss your deadlines?</p>-->
-<!--                            <p>Do you feel guilty that you can’t find enough time for your family?</p>-->
-<!--                            <p>Do you wish that you had 48 hours in every day to do everything you want to do?</p>-->
-<!--                            <p class="course-block__content-answer">If your answer to any of these is yes, then this is your chance to learn how to make time work for you. We invite you to attend the first “Time management” training workshop</p>-->
                         </div>
                     </div>
-<!--                    <div class="course-block course-outcome">-->
-<!--                        <div class="course-block__title"><p>Learning outcomes</p></div>-->
-<!--                        <div class="course-block__content">-->
-<!--                            <p>At the end of this training course, you will be able to </p>-->
-<!--                            <ul class="list-outcome">-->
-<!--                                <li>Prioritize</li>-->
-<!--                                <li>Schedule your day</li>-->
-<!--                                <li>And stay focused to shorten working time</li>-->
-<!--                                <li>Increase productivity</li>-->
-<!--                            </ul>-->
-<!--                        </div>-->
-<!--                    </div>-->
                 </div>
                 <div class="col-4 course-block-img">
                     <img src="/elearning-easia/public<?php echo $course->course_avatar; ?>" alt="">
@@ -613,7 +818,7 @@
         });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
-        var marginLeft = getPercent - 7;
+        var marginLeft = getPercent - 6;
         $('.speech-bubble').css('left', marginLeft+'%');
 
         //set height and line height
@@ -654,6 +859,7 @@
 </script>
 <script>
     $(document).ready(function() {
+        $('#page').css('margin-right', '0');
         var x = document.getElementsByTagName("BODY")[0];
         var classes = x.className.toString().split(/\s+/);
         let course_id = '0';

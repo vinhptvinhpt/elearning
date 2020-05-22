@@ -279,6 +279,9 @@
                     paginated: 1 // có phân trang
                 })
                     .then(response => {
+                        if (response.data.status === 'warning') {
+                          toastr['warning'](response.data.message, current_pos.trans.get('keys.thong_bao'));
+                        }
                         this.posts = response.data.data ? response.data.data.data : [];
                         this.current = response.data.pagination ? response.data.pagination.current_page : 1;
                         this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
@@ -306,11 +309,10 @@
                 })
                     .then(response => {
                         if(response.data.key) {
-                            roam_message('error', response.data.message);
+                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             $('.form-control').removeClass('error');
                             $('#organization_'+response.data.key).addClass('error');
                         }else{
-                            roam_message(response.data.status, response.data.message);
                             if(response.data.status === 'success'){
                                 //reset form
                                 this.organization.description = this.organization.name = this.organization.code = '';
@@ -320,10 +322,11 @@
                                 //reload form
                                 this.selectParent();
                             }
+                            toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                         }
                     })
                     .catch(error => {
-                        roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                      toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     })
             },
             onPageChange() {

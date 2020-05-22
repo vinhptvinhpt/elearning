@@ -110,7 +110,7 @@
                 trainning_id: '',
                 trainningUser: []
             }
-        }, 
+        },
         methods: {
             getTrainningUser() {
                 axios.get('/api/system/get_trainning_history/' + this.user_id)

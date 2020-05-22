@@ -144,8 +144,9 @@
                                 <input type="text" id="inputAddress" v-model="users.address" class="form-control mb-4">
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
-                              <label for="inputCity">{{trans.get('keys.van_phong')}}</label>
+                              <label for="inputCity">{{trans.get('keys.van_phong')}} *</label>
                               <input v-model="users.city" type="text" id="inputCity" :placeholder="trans.get('keys.nhap_van_phong')" class="form-control mb-4">
+                              <label v-if="!users.city" class="required text-danger city_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
                               <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
@@ -182,7 +183,7 @@
 <!--                            </div>-->
 
                             <div v-if="roles && type === 'system'" class="col-12 form-group">
-                                <label for="inputRole">{{trans.get('keys.quyen')}}</label>
+                                <label for="inputRole">{{trans.get('keys.quyen')}} *</label>
                                 <select v-model="users.role" class="form-control selectpicker" id="inputRole" multiple >
                                     <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
                                 </select>
@@ -203,7 +204,7 @@
                             </div>
 
                             <div v-if="roles && type === 'system'" class="col-md-4 col-sm-6 form-group">
-                              <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}}</label>
+                              <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} *</label>
                               <treeselect v-model="users.employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                               <label v-if="!users.employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
 
@@ -779,6 +780,11 @@
                 }
                 if(!this.users.fullname){
                     $('.fullname_required').show();
+                    return;
+                }
+
+                if(!this.users.city){
+                    $('.city_required').show();
                     return;
                 }
                 // if(this.users.training.trainning_id === 0){

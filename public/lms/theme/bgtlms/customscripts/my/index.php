@@ -2,7 +2,6 @@
 require_once(__DIR__ . '/../../../../config.php');
 // Start the session
 session_start();
-
 $sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -33,7 +32,71 @@ $_SESSION["courses_all_required"] = $courses_all_required;
 $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
+//set for full page
+$organization_id = 2;
+$organizationCode = strtolower($_SESSION["organizationCode"]);
+switch ($organizationCode) {
+    case "easia":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-easia.png';
+        }
+        break;
+    case "exoticvoyages":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-exotic.png';
+        }
+        break;
+    case "begodi":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#FFFFFF';
+            $_SESSION["pathLogo"] = 'images/begodi.jpg';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-begodi.png';
+        }
+        break;
+    case "avana":
+        {
+            $_SESSION["organizationName"] = 'AVANA';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-avana.png';
+        }
+        break;
+    default:
+        {
+            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-phh.png';
+        }
+        break;
+}
+//#0e311a
+//if($organization_id == 1){
+//    $_SESSION["organizationName"] = 'Easia';
+//    $_SESSION["color"] = '#862055';
+//    $_SESSION["pathLogo"] = 'images/logo-black-1.png';
+//}
+//else if($organization_id == 2){
+//    $_SESSION["organizationName"] = 'Begodi';
+//    $_SESSION["color"] = '#CAB143';
+//    $_SESSION["pathLogo"] = 'images/Begodi.jpg';
+//}
+
 $countBlock = 1;
+$percentCompleted = intval(count($courses_completed) * 100 / count($courses));
+$percentStudying = intval(count($courses_current) * 100 / count($courses));
 //echo shell_exec('select * from mdl_user limit 1');
 
 ?>
@@ -75,10 +138,7 @@ $countBlock = 1;
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
-    @font-face {
-        font-family: Awsome;
-        src: url('fonts/fa-solid-900.ttf');
-    }
+
     body{
         font-size: 14px;
     }
@@ -90,7 +150,7 @@ $countBlock = 1;
     }
 
     .border-completed{
-        color: #862055 !important;
+        color: <?=$_SESSION["color"]?> !important;
     }
 
     .border-studying{
@@ -102,7 +162,6 @@ $countBlock = 1;
 
     .title{
         text-align: left;
-        /*font: Black 145px/198px Nunito-Sans;*/
         font-family: Nunito-Sans;
         font-size: 20px;
         letter-spacing: 0px;
@@ -113,7 +172,7 @@ $countBlock = 1;
     }
 
     .btn-click{
-        background: #862055 0% 0% no-repeat padding-box !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         opacity: 1;
         padding: 9px 14px !important;
@@ -125,7 +184,6 @@ $countBlock = 1;
         color: #FFFFFF;
         text-transform: uppercase;
         opacity: 1;
-        /*font-family: Roboto;*/
     }
     .courses{
         margin-bottom: 70px;
@@ -143,19 +201,18 @@ $countBlock = 1;
         padding: 0 !important;
     }
     .block-items{
-        margin: 0;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     .block-items__item{
         background-color: white;
         -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-        /*margin: 1%;*/
         max-width: 49% !important;
         margin-bottom: 5%;
         display: flex;
         padding: 0 !important;
         overflow: hidden;
-        height: 210px;
     }
 
     .block-items{
@@ -165,10 +222,22 @@ $countBlock = 1;
         height: -webkit-fill-available;
     }
 
-    .block-items__item-first{
-        margin: 0 2% 1% 0;
+    .path-calendar{
+        position: inherit;
+        margin-bottom: 2%;
     }
 
+    .section-footer{
+        position: relative;
+    }
+
+    .block-items__item-first{
+        margin-right: 2%;
+    }
+
+    .path-calendar .maincalendar .heightcontainer{
+        height: auto !important;
+    }
     .block-item__content_btn{
         width: 100%;
         text-align: right;
@@ -176,7 +245,6 @@ $countBlock = 1;
 
     .title-course{
         text-align: left;
-        /*font: Bold 17px Roboto-Bold;*/
         letter-spacing: 0.6px;
         font-size: 17px;
         font-family: Roboto-Bold;
@@ -210,7 +278,6 @@ $countBlock = 1;
     .block-item__image{
         width: 80%;
         padding: 0;
-        /*max-width: 45%;*/
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
@@ -236,9 +303,8 @@ $countBlock = 1;
     }
 
     .info-user{
-        background-color: #862055;
+        background-color: <?=$_SESSION["color"]?>;
         width: 100%;
-        /*height: 130px;*/
         display: flex;
         padding: 0 !important;
     }
@@ -252,14 +318,11 @@ $countBlock = 1;
     .avatar img{
         margin-top: 15%;
         margin-bottom: 15%;
+        border-radius: 50%;
     }
     .info{
-        /*padding: 15px 0;*/
         margin: 40px 0;
-        /*background: #FFFFFF 0% 0% no-repeat padding-box;*/
         box-shadow: 3px 3px 6px #00000029;
-        /*-webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
-        /*box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);*/
     }
     .info-user_info{
         padding: 10% 1% 1% 10% !important;
@@ -272,6 +335,7 @@ $countBlock = 1;
         opacity: 1;
         font-size: 13px;
         margin-bottom: 1%;
+        margin-top: 4%;
     }
     .username{
         font: Bold 15px Roboto-Bold;
@@ -279,7 +343,6 @@ $countBlock = 1;
 
     }
     .userposition{
-        /*font: Light 12px Roboto-Light;*/
         letter-spacing: 0.5px;
         font-family: Roboto-Light;
     }
@@ -369,21 +432,6 @@ $countBlock = 1;
         left: 0;
     }
 
-    /*
-    *
-    * ==========================================
-    * FOR DEMO PURPOSE
-    * ==========================================
-    *
-    */
-
-    /*.info-progress {*/
-    /*    background: #ff7e5f;*/
-    /*    background: -webkit-linear-gradient(to right, #ff7e5f, #feb47b);*/
-    /*    background: linear-gradient(to right, #ff7e5f, #feb47b);*/
-    /*    min-height: 100vh;*/
-    /*}*/
-
     .rounded-lg {
         border-radius: 1rem;
     }
@@ -427,11 +475,14 @@ $countBlock = 1;
         text-decoration: none;
     }
 
+    .carousel-caption{
+        bottom: 0 !important;
+    }
     .carousel-caption h3{
         text-align: left;
         font-family: Nunito-Sans;
         letter-spacing: 0px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
         opacity: 1;
         font-size: 100px;
     }
@@ -444,7 +495,7 @@ $countBlock = 1;
         font-size: 103px;
         -webkit-text-fill-color: white;
         -webkit-text-stroke-width: 2px;
-        -webkit-text-stroke-color: #862055;
+        -webkit-text-stroke-color: <?=$_SESSION["color"]?>;
         letter-spacing: 7px;
         margin: -3% 0 0 10%;
     }
@@ -452,7 +503,7 @@ $countBlock = 1;
     .slide-logo img{
         position: absolute;
         width: 15%;
-        top: 10%;
+        top: 15%;
         left: 3%;
     }
     .slide-image img{
@@ -465,6 +516,7 @@ $countBlock = 1;
 
     .carousel-caption{
         left: 5%;
+        top: 28%;
     }
 
     .section-footer{
@@ -500,7 +552,6 @@ $countBlock = 1;
     }
     .footer-logo {
         height: 11%;
-        /*margin-top: 1%;*/
     }
     .footer-logo img{
         width: 15%;
@@ -512,19 +563,11 @@ $countBlock = 1;
         margin-top: 5%;
     }
 
-    .content .container-fluid{
-        /*padding: 4%;*/
-    }
-
     .block-note{
         width: 10px;
         height: 10px;
         border-radius: 50%;
         display: inline-flex;
-    }
-
-    .block-item__content_btn .btn{
-        /*width: 100%;*/
     }
 
     .block-item__content_text a{
@@ -546,8 +589,6 @@ $countBlock = 1;
     .col-right{
         padding-left: 0 !important;
     }
-
-
 
     .circular-chart {
         display: block;
@@ -594,69 +635,284 @@ $countBlock = 1;
     }
     .percentage{
         font-family: Roboto-Regular;
-        fill: #862055;
+        fill: <?=$_SESSION["color"]?>;
+    }
+
+    /*1920*/
+    @media screen and (max-width: 1920px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .title-course,.info-user_info p, .footer-title, .block-item__image span {
+            font-size: 24px;
+        }
+
+        .info-course p {
+            font-size: 20px !important;
+        }
+
+        .progress-note ul li, .text-course, .text-number{
+            font-size: 20px;
+        }
+
+        .btn-click {
+            padding: 13px 26px !important;
+        }
+
+        .btn-click a, .footer-ul li a {
+            font-size: 18px;
+        }
+
+        .title {
+            font-size: 32px;
+        }
+
+        .circle-progress{
+            margin-right: 10%;
+        }
+
+        .carousel-caption p, .carousel-caption h3{
+            font-size: 145px;
+        }
+
+        .carousel-caption p{
+            -webkit-text-stroke-width: 4px;
+        }
+
+        .path-calendar{
+            margin-bottom: 28px;
+        }
+
+    }
+
+    /*1368*/
+    @media screen and (max-width: 1368px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 110px;
+        }
+        .title-course, .info-user_info p, .footer-title, .block-item__image span {
+            font-size: 18px;
+        }
+
+        .block-item__image span{
+            font-size: 14px;
+        }
+        .title {
+            font-size: 23px;
+        }
+        .info-course p {
+            font-size: 15px !important;
+        }
+        .btn-click a, .footer-ul li a {
+            font-size: 13px;
+        }
+        .btn-click {
+            padding: 9px 14px !important;
+        }
+        .progress-note ul li, .text-course, .text-number {
+            font-size: 14px;
+        }
+    }
+
+    /*1024*/
+    @media screen and (max-width: 1024px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 55px;
+        }
+
+        .title-course, .info-user_info p, .footer-title, .block-item__image span {
+            font-size: 14px;
+        }
+
+        .bg-img{
+            height: 300px;
+        }
+        .block-item__image span {
+            font-size: 12px;
+            top: 11%;
+            right: 5%;
+        }
+        .title {
+            font-size: 19px;
+        }
+        .btn-click {
+            padding: 5px 9px !important;
+        }
+        .btn-click a, .footer-ul li a {
+            font-size: 12px;
+        }
+        .progress-note ul li, .text-course, .text-number {
+            font-size: 12px;
+        }
+        .circle-progress{
+            width: 50%;
+        }
+        .circular-chart {
+            max-width: 92%;
+            margin: 15% 0 5% 0;
+        }
+        .path-calendar{
+            margin-bottom: 32%;
+        }
+    }
+
+    /*768*/
+    @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .carousel-item .bg-img{
+            height: 250px;
+        }
+        .title-course,.info-user_info p, .footer-title, .block-item__image span {
+            font-size: 12px;
+        }
+        .info-course p {
+            font-size: 13px !important;
+        }
+        .progress-note ul li, .text-course, .text-number{
+            font-size: 13px;
+        }
+        .btn-click {
+            padding: 5px 13px !important;
+        }
+        .btn-click a, .footer-ul li a {
+            font-size: 12px;
+        }
+        .title {
+            font-size: 18px;
+        }
+        .circle-progress{
+            margin-right: 10%;
+        }
+        .carousel-caption {
+            top: 35%;
+        }
+
+        .carousel-caption p, .carousel-caption h3{
+            font-size: 40px;
+        }
+        .carousel-caption p{
+            -webkit-text-stroke-width: 2px;
+        }
+        .slide-logo img {
+            top: 25%;
+            left: 5%;
+        }
+        .courses{
+            padding-left: 20px;
+        }
+        .block-items{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .info-user_info {
+            padding: 5% 1% 1% 5% !important;
+        }
+        .path-calendar{
+            margin-bottom: 42%;
+        }
+    }
+
+    /*480*/
+    @media screen and (max-width: 480px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .circular-chart {
+            max-width: 50%;
+            margin: 0 auto;
+            margin-top: 5%;
+        }
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 30px;
+        }
+        .carousel-item .bg-img{
+            height: 200px;
+        }
+        .slide-logo img{
+            top: 27%;
+        }
+        .avatar {
+            width: inherit !important;
+        }
+        .avatar img{
+            width: 40%;
+            margin: 5% 0;
+            margin-left: 25%;
+        }
+        .info-user_info{
+            padding: 0 !important;
+            margin-top: 4%;
+        }
+        .course-block__top, .courses-block__content__item{
+            margin: 0 !important;
+        }
+        .block-items__item{
+            max-width: 100% !important;
+            margin:5% 0 !important;
+            ma
+        }
+        .title{
+            font-size: 15px;
+        }
+        .courses{
+            padding-left: 20px;
+        }
+        .block-items{
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+        .path-calendar{
+            margin-bottom: 70%;
+        }
+    }
+
+    @media screen and (max-width: 425px){
+        .path-calendar{
+            margin-bottom: 80%;
+        }
+    }
+
+    @media screen and (max-width: 375px){
+        .path-calendar{
+            margin-bottom: 97%;
+        }
+    }
+
+    /*Iphone(480 x 640)*/
+    @media screen and (max-width: 320px){
+        .carousel-caption p, .carousel-caption h3 {
+            font-size: 25px;
+        }
+        .info-user_info {
+            margin-top: 3%;
+        }
+        .path-calendar{
+            margin-bottom: 125%;
+        }
     }
 </style>
 <body>
-<!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
-<?php
-?>
+
 <div class="wrapper"><!-- wrapper -->
-    <?php echo $OUTPUT->header(); ?>
+<!--    --><?php //echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
         <header><!-- header -->
             <div class="content">
                 <div class="slider">
-<!--                    <div id="myCarousel" class="carousel slide" data-ride="carousel">-->
-<!--                        <ol class="carousel-indicators">-->
-<!--                            <li data-target="#myCarousel" data-slide-to="0" class="active"></li>-->
-<!--                            <li data-target="#myCarousel" data-slide-to="1"></li>-->
-<!--                            <li data-target="#myCarousel" data-slide-to="2"></li>-->
-<!--                        </ol>-->
-<!---->
-<!--                        <div class="carousel-inner">-->
-<!--                            <div class="item active">-->
-<!--                                <img src="images/17580-[Converted]-01-1.png" alt="Chania">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="images/logo-black-1.png" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>Easia</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.png" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!---->
-<!--                               <div class="item">-->
-<!--                                   <img src="images/17580-[Converted]-01.png" alt="Chicago">-->
-<!--                                   <div class="carousel-caption">-->
-<!--                                       <h3>Easia</h3>-->
-<!--                                       <p>ACADEMY</p>-->
-<!--                                   </div>-->
-<!--                               </div>-->
-<!---->
-<!--                               <div class="item">-->
-<!--                                   <img src="images/17580-[Converted]-01.png" alt="New York">-->
-<!--                                   <div class="carousel-caption">-->
-<!--                                       <h3>Easia</h3>-->
-<!--                                       <p>ACADEMY</p>-->
-<!--                                   </div>-->
-<!--                               </div>-->
-<!--                           </div>-->
-<!---->
-<!--                            <a class="left carousel-control" href="#myCarousel" data-slide="prev">-->
-<!--                                <span class="glyphicon glyphicon-chevron-left"></span>-->
-<!--                                <span class="sr-only">Previous</span>-->
-<!--                            </a>-->
-<!--                            <a class="right carousel-control" href="#myCarousel" data-slide="next">-->
-<!--                                <span class="glyphicon glyphicon-chevron-right"></span>-->
-<!--                                <span class="sr-only">Next</span>-->
-<!--                            </a>-->
-<!--                        </div>-->
-<!--                    </div>-->
-                    <div id="demo" class="carousel slide" data-ride="carousel">
+                    <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
                         <ul class="carousel-indicators">
                             <li data-target="#demo" data-slide-to="0" class="active"></li>
                             <li data-target="#demo" data-slide-to="1"></li>
@@ -664,38 +920,38 @@ $countBlock = 1;
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
                                 <div class="carousel-caption">
-                                    <h3>Easia</h3>
-                                    <p>ACADEMY</p>
-                                </div>
-                              <div class="slide-image">
-                                       <img src="images/1a-01.png" alt="">
-                                 </div>
-                            </div>
-                            <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
-                                <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
-                                </div>
-                                <div class="carousel-caption">
-                                    <h3>Easia</h3>
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
                                     <img src="images/1a-01.png" alt="">
                                 </div>
                             </div>
-                            <div class="carousel-item active">
-                                <img src="images/17580-[Converted]-01-1.png" alt="Los Angeles" width="1100" height="500">
+                            <div class="carousel-item">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
                                 <div class="slide-logo">
-                                    <img src="images/logo-black-1.png" alt="">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
                                 </div>
                                 <div class="carousel-caption">
-                                    <h3>Easia</h3>
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
+                                    <p>ACADEMY</p>
+                                </div>
+                                <div class="slide-image">
+                                    <img src="images/1a-01.png" alt="">
+                                </div>
+                            </div>
+                            <div class="carousel-item">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
+                                <div class="slide-logo">
+                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
+                                </div>
+                                <div class="carousel-caption">
+                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
@@ -731,25 +987,25 @@ $countBlock = 1;
                         </div>
                         <div class="info-courses">
                             <div class="info-progress">
-                                <div>
+                                <div class="circle-progress">
                                     <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                         <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="0,100"  d="M18 2.0845
+                                        <path class="that-circle" stroke="#FFC400" stroke-dasharray="<?php echo $percentCompleted+$percentStudying; ?>,100"  d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
-                                        <path class="that-circle" stroke="#862055" stroke-dasharray="<?php echo count($courses_completed)*100/count($courses); ?>,100" d="M18 2.0845
+                                        <path class="that-circle" stroke="<?=$_SESSION["color"]?>" stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                                 a 15.9155 15.9155 0 0 1 0 31.831
                                 a 15.9155 15.9155 0 0 1 0 -31.831" />
 
-                                        <text x="18" y="20.35" class="percentage"><?php echo intval(count($courses_completed)*100/count($courses)); ?> %</text>
+                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %</text>
                                     </svg>
                                 </div>
 
                                 <div class="progress-note">
                                     <ul>
-                                        <li><div class="block-note" style="background-color: #862055"></div> Completed</li>
+                                        <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
                                         <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
                                         <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                     </ul>
@@ -773,12 +1029,12 @@ $countBlock = 1;
                                 </div>
 
                                 <!--                                optional-courses-->
-<!--                                <div class="info-statistic__optional-courses">-->
-<!--                                    <a class="info-text">-->
-<!--                                        <div class="text-course">Optional courses</div>-->
-<!--                                        <div class="text-number">--><?php //echo count($courses_optional); ?><!--</div>-->
-<!--                                    </a>-->
-<!--                                </div>-->
+                                <!--                                <div class="info-statistic__optional-courses">-->
+                                <!--                                    <a class="info-text">-->
+                                <!--                                        <div class="text-course">Optional courses</div>-->
+                                <!--                                        <div class="text-number">--><?php //echo count($courses_optional); ?><!--</div>-->
+                                <!--                                    </a>-->
+                                <!--                                </div>-->
 
                                 <!--                                completed-courses-->
                                 <div class="info-statistic__completed-courses">
@@ -810,7 +1066,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">CURRENT COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=1">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
@@ -824,11 +1080,11 @@ $countBlock = 1;
                                         <?php if(count($courses_current) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-    <!--                                            <div class="col-sm-6 block-items__item">-->
+                                                    <!--                                            <div class="col-sm-6 block-items__item">-->
                                                     <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-    <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-<!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
-                                                        <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                        <!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
+                                                        <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
@@ -861,7 +1117,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">ALL REQUIRED COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=2">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
@@ -873,28 +1129,28 @@ $countBlock = 1;
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
                                         <?php if(count($courses_all_required) > 0) {  ?>
-                                        <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
-                                            <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-<!--                                            <div class="col-sm-6 block-items__item">-->
-                                                <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                    <img src="images/Component8–1.png" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
-<!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
-                                                </div>
-                                                <div class="block-item__content">
-                                                    <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
-                                                        <div class="info-course">
-                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
-                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
-                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                            <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
+                                                <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
+                                                    <!--                                            <div class="col-sm-6 block-items__item">-->
+                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                        <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                    </div>
+                                                    <div class="block-item__content">
+                                                        <div class="block-item__content_text">
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <div class="info-course">
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-item__content_btn">
+                                                            <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
                                                         </div>
                                                     </div>
-                                                    <div class="block-item__content_btn">
-                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
                                             <p>No data</p>
                                         <?php }  ?>
@@ -911,7 +1167,7 @@ $countBlock = 1;
                                 <div class="col-sm-12 course-block__top-show">
                                     <div class=" col-sm-6 title">COMPLETED COURSES</div>
                                     <div class="col-sm-6 btn-show btn-show-all">
-                                        <button class="btn btn-click"><a href="">Show All</a></button>
+                                        <button class="btn btn-click"><a href="lms/course/index.php?type=3">Show All</a></button>
                                     </div>
                                 </div>
                             </div>
@@ -923,26 +1179,26 @@ $countBlock = 1;
                                     <div class="col-sm-12 row block-items">
                                         <!--                                        block 1-->
                                         <?php if(count($courses_completed) > 0) {  ?>
-                                        <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
-                                            <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-                                                <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                    <img src="images/Badge-examples 2.png" alt="">
-                                                </div>
-                                                <div class="block-item__content">
-                                                    <div class="block-item__content_text">
-                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
-                                                        <div class="info-course">
-                                                            <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
-                                                            <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
-                                                            <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                            <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
+                                                <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
+                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                        <img src="images/Badge-examples 2.png" alt="">
+                                                    </div>
+                                                    <div class="block-item__content">
+                                                        <div class="block-item__content_text">
+                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                            <div class="info-course">
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="block-item__content_btn">
+                                                            <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
                                                         </div>
                                                     </div>
-                                                    <div class="block-item__content_btn">
-                                                        <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                    </div>
                                                 </div>
-                                            </div>
-                                            <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                         <?php } else { ?>
                                             <p>No data</p>
                                         <?php }  ?>
@@ -950,18 +1206,60 @@ $countBlock = 1;
                                 </div>
                             </div>
                         </div>
-                        </div>
                     </div>
                 </div>
-
             </div>
+
+        </div>
+    </section>
+
+    <section class="path-calendar">
+<!--    <section class="path-calendar">-->
+        <?php
+
+        require_once(__DIR__ . '/../../../../config.php');
+        require_once(__DIR__ . '/../../../../course/lib.php');
+        require_once(__DIR__ . '/../../../../calendar/lib.php');
+
+        $categoryid = optional_param('category', null, PARAM_INT);
+        $courseid = optional_param('course', SITEID, PARAM_INT);
+        $view = optional_param('view', 'month', PARAM_ALPHA);
+        $time = time();
+        $lookahead = optional_param('lookahead', null, PARAM_INT);
+
+        $calendar = calendar_information::create($time, $courseid, $categoryid);
+
+        $PAGE->navbar->add(userdate($time, get_string('strftimemonthyear')));
+        // Print title and header
+        $PAGE->set_pagelayout('standard');
+//        $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
+//        $PAGE->set_heading($COURSE->fullname);
+
+        $renderer = $PAGE->get_renderer('core_calendar');
+        $calendar->add_sidecalendar_blocks($renderer, true, $view);
+        echo $OUTPUT->header();
+        echo $renderer->start_layout();
+        echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
+        echo $OUTPUT->heading(get_string('calendar', 'calendar'));
+        list($data, $template) = calendar_get_view($calendar, $view, true, false, $lookahead);
+        echo $renderer->render_from_template($template, $data);
+
+        echo html_writer::end_tag('div');
+
+        list($data, $template) = calendar_get_footer_options($calendar);
+        echo $renderer->render_from_template($template, $data);
+
+        echo $renderer->complete_layout();
+        echo $OUTPUT->footer();
+
+        ?>
     </section>
 
     <section class="section-footer">
         <footer>
             <div class="container-fluid row">
                 <div class="footer-logo">
-                    <img src="images/logo-write.png" alt="">
+                    <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
                 </div>
                 <div class="col-12 row footer-full">
                     <!--            Helps-->
@@ -1017,68 +1315,11 @@ $countBlock = 1;
             </div>
         </footer>
     </section>
-    <?php echo $OUTPUT->footer(); ?>
+<!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
 <script>
     $(function() {
-
-        $(".progress").each(function() {
-
-            var value = $(this).attr('data-value');
-            // var valueCompleted = $(this).attr('data-value-completed');
-            var valueStudying = $(this).attr('data-value-studying');
-            var left = $(this).find('.progress-left .progress-bar');
-            var right = $(this).find('.progress-right .progress-bar');
-
-            if (value > 0) {
-                if (value <= 50) {
-                    left.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-                }
-                else {
-                    left.css('transform', 'rotate(180deg)');
-                    right.css('transform', 'rotate(-' + percentageToDegrees(value-50) + 'deg)');
-                }
-            }
-
-            if (valueStudying > 0) {
-                if (valueStudying <= 50) {
-                    left.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-                }
-                else {
-                    left.css('transform', 'rotate(180deg)');
-                    right.css('transform', 'rotate(-' + percentageToDegrees(value-50) + 'deg)');
-                }
-            }
-
-
-            // if (valueCompleted > 0) {
-            //     if (valueCompleted <= 50) {
-            //         right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-            //     }
-            //     else {
-            //         right.css('transform', 'rotate(180deg)');
-            //         left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)');
-            //     }
-            // }
-
-            // if (valueStudying > 0) {
-            //     if (valueStudying <= 50) {
-            //         right.css('transform', 'rotate(' + percentageToDegrees(value) + 'deg)');
-            //     }
-            //     else {
-            //         right.css('transform', 'rotate(180deg)');
-            //         left.css('transform', 'rotate(' + percentageToDegrees(value - 50) + 'deg)');
-            //     }
-            // }
-
-        });
-
-        function percentageToDegrees(percentage) {
-            return percentage / 100 * 360
-        }
-
-        //localStorage.setItem('courses', <?php //json_decode($courses_current); ?>//);
         localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
     });
 

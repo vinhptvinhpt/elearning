@@ -128,7 +128,7 @@
       current_roles: Object,
       roles_ready: Boolean,
       id: [ String, Number ],
-      slugs: Object
+      slugs: [Array, Object]
     },
     //components: {vPagination},
     data() {

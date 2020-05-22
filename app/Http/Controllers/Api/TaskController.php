@@ -17,6 +17,7 @@ use App\MdlUserEnrolments;
 use App\ModelHasRole;
 use App\Role;
 use App\StudentCertificate;
+use App\TmsLearnerHistory;
 use App\TmsLog;
 use App\TmsNotification;
 use App\TmsSaleRoomUser;
@@ -215,12 +216,12 @@ class TaskController extends Controller
                     $arrData = [];
                 }
 
-                usleep(50);
+                usleep(100);
             }
 
             CourseCompletion::insert($arrData);
 
-            usleep(100);
+            sleep(1);
         }
     }
 
@@ -271,8 +272,83 @@ class TaskController extends Controller
 
             TmsTrainningComplete::insert($arrData);
 
-            usleep(500);
+            sleep(1);
         }
+
+        sleep(5);
+
+        //tu dong gen ma chung chi cho hoc vien
+        $listStudentsDone = DB::table('tms_trainning_complete as ttc')
+            ->join('mdl_user as mu', 'mu.id', '=', 'ttc.user_id')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mu.id')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->leftJoin('student_certificate as sc', function ($join) {
+                $join->on('sc.userid', '=', 'mu.id');
+                $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
+            })
+            ->select('tud.user_id', 'ttp.id as training_id')
+            ->whereNull('sc.id')
+            ->whereRaw('(ttp.auto_certificate = 1 OR ttp.auto_badge = 1)')
+            ->groupBy('ttc.user_id', 'ttc.trainning_id')->get();
+
+        $arrDataST = [];
+        $data_item = [];
+
+        $num = 0;
+        $limit = 200;
+
+        foreach ($listStudentsDone as $st) {
+
+            $certificatecode = $st->user_id . $this->randomNumber(7 - strlen($st->user_id));
+
+            $data_item['trainning_id'] = $st->training_id;
+            $data_item['userid'] = $st->user_id;
+            $data_item['code'] = $certificatecode;
+            $data_item['status'] = 1;
+            $data_item['timecertificate'] = time();
+
+            array_push($arrDataST, $data_item);
+            $num++;
+
+            if ($num >= $limit) {
+                StudentCertificate::insert($arrDataST);
+                $num = 0;
+                $arrDataST = [];
+            }
+
+
+            usleep(100); //sleep tranh tinh trang query db lien tiep
+
+            //insert du lieu lich su hoc tap
+            $lstHistory = DB::table('course_completion as cc')
+                ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
+                ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
+                ->where('cc.userid', '=', $st->user_id)
+                ->where('cc.training_id', '=', $st->training_id)
+                ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->get();
+
+            $arr_data_his = [];
+            $data_item_his = [];
+
+            foreach ($lstHistory as $his) {
+                $data_item_his['trainning_id'] = $st->training_id;
+                $data_item_his['trainning_name'] = $his->trainning_name;
+                $data_item_his['user_id'] = $st->user_id;
+                $data_item_his['course_id'] = $his->course_id;
+                $data_item_his['course_code'] = $his->course_code;
+                $data_item_his['course_name'] = $his->course_name;
+
+                array_push($arr_data_his, $data_item_his);
+            }
+            TmsLearnerHistory::insert($arr_data_his);
+
+            usleep(100); //sleep tranh tinh trang query db lien tiep
+
+        }
+
+        StudentCertificate::insert($arrDataST);
+
     }
     #endregion
 
@@ -731,6 +807,7 @@ class TaskController extends Controller
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
+            ->where('ttp.deleted', '=', 0)
             ->select('ttc.trainning_id', 'ttc.course_id')->get();
 
         if ($lstData) {
@@ -781,6 +858,7 @@ class TaskController extends Controller
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
+            ->where('ttp.deleted', '=', 0)
             ->select('ttc.trainning_id', 'ttc.course_id')->get();
 
         if ($lstData) {
@@ -1746,6 +1824,7 @@ class TaskController extends Controller
             usleep(100);
         }
     }
+
     /**
      *
      * uydd Tự động cấp chứng chỉ và huy hiệu
