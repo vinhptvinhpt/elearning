@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\MdlContext;
 use App\MdlCourse;
 use App\Repositories\MdlCourseRepository;
+use App\TmsTrainningCourse;
+use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
 use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
@@ -173,6 +175,28 @@ class CourseController extends Controller
             \DB::beginTransaction();
 
             $course = $this->mdlCourseRepository->store($request);
+
+            if ($course->category != 2) { //ko phai thu vien khoa hoc
+                $tms_trainning = TmsTrainningProgram::firstOrCreate([
+                    'code' => $course->shortname . $course->id,
+                    'name' => $course->fullname,
+                    'style' => 1,
+                    'run_cron' => 1,
+                    'time_start' => 0,
+                    'time_end' => 0,
+                    'auto_certificate' => 1,
+                    'auto_badge' => 1,
+                    'deleted' => 2 //KNL ko hien thi tren he thong
+                ]);
+
+                if ($tms_trainning) {
+                    TmsTrainningCourse::firstOrCreate([
+                        'trainning_id' => $tms_trainning->id,
+                        'sample_id' => $course->id,
+                        'course_id' => $course->id
+                    ]);
+                }
+            }
 
             //write log to mdl_logstore_standard_log
             $app_name = Config::get('constants.domain.APP_NAME');
@@ -438,7 +462,8 @@ class CourseController extends Controller
         return $this->mdlCourseRepository->apiGetListDocument($request);
     }
 
-    public function apiEnrolUserCourseConcent(Request $request){
+    public function apiEnrolUserCourseConcent(Request $request)
+    {
         return $this->bussinessRepository->apiEnrolUserCourseConcent($request);
     }
 
