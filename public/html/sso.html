@@ -2,9 +2,9 @@
 <html>
 <head>
     <title>SSO IFRAME</title>
-    <script src="/elearning-easia/public/sso/sso_common.js"></script>
-    <script src="/elearning-easia/public/sso/sso_rest.js"></script>
-    <script src="/elearning-easia/public/sso/sso.js"></script>
+    <script src="/sso/sso_common.js"></script>
+    <script src="/sso/sso_rest.js"></script>
+    <script src="/sso/sso.js"></script>
     <script>
         //GET your params from sslssso.js config or generate this page dynamically on server
 
@@ -14,7 +14,7 @@
 
         var validate = !(getGetParam("validate") == 'false');
         if (validate && !validationUrl)
-            validationUrl = getOrigin() + '/elearning-easia/public/sso/authentoken';
+            validationUrl = getOrigin() + '/sso/authentoken';
 
 
         var config = {
