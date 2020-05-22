@@ -174,7 +174,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         $listCourses = $listCourses->where('c.deleted', '=', 0);
 
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -216,6 +215,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
         }
 
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         $listCourses = $listCourses->orderBy('c.id', 'desc');
 
