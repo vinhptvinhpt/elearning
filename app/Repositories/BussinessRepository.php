@@ -6,6 +6,7 @@ namespace App\Repositories;
 
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
+use App\TmsLearnerHistory;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
@@ -467,6 +468,7 @@ class BussinessRepository implements IBussinessInterface
             $checkRole->root_user = false;
             $checkRole->has_role_manager = false;
             $checkRole->has_role_leader = false;
+            $checkRole->has_role_admin = false;
         }
 
         $response['roles'] = $checkRole;
@@ -1004,6 +1006,28 @@ class BussinessRepository implements IBussinessInterface
                     'sortorder' => 0,
                     'status' => 0
                 ]);
+            }
+
+            if ($course->category != 2) { //ko phai thu vien khoa hoc
+                $tms_trainning = TmsTrainningProgram::firstOrCreate([
+                    'code' => $course->shortname . $course->id,
+                    'name' => $course->fullname,
+                    'style' => 1,
+                    'run_cron' => 1,
+                    'time_start' => 0,
+                    'time_end' => 0,
+                    'auto_certificate' => 1,
+                    'auto_badge' => 1,
+                    'deleted' => 2 //KNL ko hien thi tren he thong
+                ]);
+
+                if ($tms_trainning) {
+                    TmsTrainningCourse::firstOrCreate([
+                        'trainning_id' => $tms_trainning->id,
+                        'sample_id' => $course->id,
+                        'course_id' => $course->id
+                    ]);
+                }
             }
 
             //write log to mdl_logstore_standard_log
@@ -3263,12 +3287,13 @@ class BussinessRepository implements IBussinessInterface
     //New report screen
     public function apiListDetail(Request $request)
     {
+        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
         $course_id = $request->input('course_id');
         $start_date = $request->input('start_date');
         $end_date = $request->input('end_date');
-        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
+        $country = $request->input('country');
 
         $show_courses = false;
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
@@ -3280,7 +3305,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_user_detail.fullname',
             'tms_traninning_programs.id as training_id',
             'tms_traninning_programs.name as training_name',
-            'tms_user_detail.confirm',
+            'tms_user_detail.confirm'
         );
 
         if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
@@ -3362,6 +3387,10 @@ class BussinessRepository implements IBussinessInterface
 
         if (strlen($course_id) != 0 && $course_id != 0) {
             $query = $query->where('mdl_course.id', '=', $course_id);
+        }
+
+        if (strlen($country) != 0) {
+            $query = $query->where('tms_user_detail.country', '=', $country);
         }
 
         if (strlen($start_date) > 0) {
@@ -4477,25 +4506,9 @@ class BussinessRepository implements IBussinessInterface
                 'tud.confirm as confirm', 'tud.phone as phone',
                 'ttp.name as training_name', 'ttp.id as training_id')
             ->whereNull('sc.id')
+            ->whereRaw('(ttp.auto_certificate = 0 AND ttp.auto_badge = 0)')
             ->groupBy('ttc.user_id', 'ttc.trainning_id');
 
-
-//        $listStudentsDone = DB::table('course_completion')
-//            ->join('tms_user_detail', 'course_completion.userid', '=', 'tms_user_detail.user_id')
-//            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-//            ->leftJoin('tms_traninning_programs', 'course_completion.training_id', '=', 'tms_traninning_programs.id')
-//            ->leftJoin('student_certificate', function($join)
-//            {
-//                $join->on('course_completion.userid', '=', 'student_certificate.userid');
-//                $join->on('course_completion.training_id', '=', 'student_certificate.trainning_id');
-//            })
-//            ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm', 'tms_user_detail.phone as phone', 'tms_traninning_programs.name as training_name')
-//            ->whereNull('student_certificate.id')
-//            ->whereNotNull('course_completion.training_id')
-//            ->groupBy('course_completion.userid', 'course_completion.training_id');
-//            ->groupBy('student_certificate.userid', 'student_certificate.trainning_id');
-//        dd($listStudentsDone->toSql());
-        //search
         if (strlen($keyword) != 0) {
             $listStudentsDone->where(function ($query) use ($keyword) {
                 $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
@@ -4546,6 +4559,32 @@ class BussinessRepository implements IBussinessInterface
 
 
                 usleep(10); //sleep tranh tinh trang query db lien tiep
+
+                //insert du lieu lich su hoc tap
+                $lstHistory = DB::table('course_completion as cc')
+                    ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
+                    ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
+                    ->where('cc.userid', '=', $user['user_id'])
+                    ->where('cc.training_id', '=', $user['training_id'])
+                    ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                    ->get();
+
+                $arr_data_his = [];
+                $data_item_his = [];
+
+                foreach ($lstHistory as $his) {
+                    $data_item_his['trainning_id'] = $user['training_id'];
+                    $data_item_his['trainning_name'] = $his->trainning_name;
+                    $data_item_his['user_id'] = $user['user_id'];
+                    $data_item_his['course_id'] = $his->course_id;
+                    $data_item_his['course_code'] = $his->course_code;
+                    $data_item_his['course_name'] = $his->course_name;
+
+                    array_push($arr_data_his, $data_item_his);
+                }
+                TmsLearnerHistory::insert($arr_data_his);
+
+                usleep(10); //sleep tranh tinh trang query db lien tiep
             }
 
             StudentCertificate::insert($arr_data);
@@ -4581,6 +4620,31 @@ class BussinessRepository implements IBussinessInterface
                 ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
                 ->where('mdl_user.id', '=', $user_id)->first();
             $this->sendMail($get_user, $certificatecode);
+
+            usleep(10); //sleep tranh tinh trang query db lien tiep
+            //insert du lieu lich su hoc tap
+            $lstHistory = DB::table('course_completion as cc')
+                ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
+                ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
+                ->where('cc.userid', '=', $user_id)
+                ->where('cc.training_id', '=', $trainning_id)
+                ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->get();
+
+            $arr_data_his = [];
+            $data_item_his = [];
+
+            foreach ($lstHistory as $his) {
+                $data_item_his['trainning_id'] = $trainning_id;
+                $data_item_his['trainning_name'] = $his->trainning_name;
+                $data_item_his['user_id'] = $user_id;
+                $data_item_his['course_id'] = $his->course_id;
+                $data_item_his['course_code'] = $his->course_code;
+                $data_item_his['course_name'] = $his->course_name;
+
+                array_push($arr_data_his, $data_item_his);
+            }
+            TmsLearnerHistory::insert($arr_data_his);
 
             $response->status = true;
             $response->message = __('cap_ma_thanh_cong');

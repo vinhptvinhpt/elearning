@@ -310,6 +310,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
     Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');
+    Route::post('/api/system/get_learner_history', 'Backend\SystemController@apiGetLearnerHistory');
+    Route::get('/api/system/get_trainning_history/{user_id}', 'Backend\SystemController@apiGetTrainningHistory');
 
     //System cctc
     Route::get('/system/organize', 'Backend\SystemOrganizeController@viewIndex')->name('system.organize');

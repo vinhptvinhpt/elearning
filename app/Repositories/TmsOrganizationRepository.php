@@ -36,15 +36,24 @@ class TmsOrganizationRepository implements ICommonInterface
         ];
 
         $current_user_id = \Auth::user()->id;
-        $current_user_role = Role::ADMIN;
+        $current_user_role = '';
         if ($request->session()->has($current_user_id . '_roles_and_slugs')) {
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-            if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+            if ($current_user_roles_and_slugs['roles']->has_role_admin || $current_user_roles_and_slugs['roles']->root_user) {
+                $current_user_role = Role::ADMIN;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
                 $current_user_role = Role::ROLE_MANAGER;
-            }
-            if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
                 $current_user_role = Role::ROLE_LEADER;
             }
+        }
+
+        if (strlen($current_user_role) == 0) {
+            $response = [
+                'status' => 'warning',
+                'message' => __('tai_khoan_khong_co_quyen')
+            ];
+            return response()->json($response);
         }
 
         $validator = validate_fails($request, $param);
@@ -104,6 +113,7 @@ class TmsOrganizationRepository implements ICommonInterface
         $total = ceil($list->total() / $row);
 
         $response = [
+            'status' => 'success',
             'pagination' => [
                 'total' => $total,
                 'current_page' => $list->currentPage(),

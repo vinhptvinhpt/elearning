@@ -19,47 +19,101 @@
 }}
 <nav class="fixed-top navbar navbar-light bg-white navbar-expand moodle-has-zindex" aria-label="{{#str}}sitemenubar, admin{{/str}}">
 
-        <div data-region="drawer-toggle" class="d-inline-block mr-3">
-            <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn nav-link float-sm-left mr-1 btn-light bg-gray" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav">{{#pix}}i/menubars{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
+        <div class="container">
+<!--            logo-->
+            <div class="logo">
+                <a href="{{ config.wwwroot }}/my/index.php"><img src="{{ getPathPublic }}{{ pathLogo }}" alt=""></a>
+            </div>
+            <!-- search_box -->
+            <div id="header-search-box-container">
+                {{{ output.search_box }}}
+            </div>
+            <div class="click-page">
+                <ul class="nav navbar-nav ml-auto">
+                    <li><a href="{{ config.wwwroot }}/my/index.php"><i class="fa fa-home"></i> Home</a></li>
+                    <li><a href="{{ config.wwwroot }}/course/index.php"><i class="fa fa-university"></i> Courses</a></li>
+                </ul>
+            </div>
+
+            <ul class="nav navbar-nav ml-auto">
+                <!-- navbar_plugin_output -->
+                <li class="nav-item d-flex align-items-center">
+                    {{{ output.navbar_plugin_output }}}
+                </li>
+                <!-- user_menu -->
+                <li class="nav-item user_menu d-flex align-items-center">
+                    {{{ output.user_menu }}}
+                </li>
+            </ul>
+
         </div>
 
-        <!-- <a href="{{{ config.wwwroot }}}" class="navbar-brand {{# output.should_display_navbar_logo }}has-logo{{/ output.should_display_navbar_logo }} -->
-            <!-- {{^ output.should_display_navbar_logo }} -->
-                <!-- d-none d-sm-inline -->
-            <!-- {{/ output.should_display_navbar_logo }} -->
-                <!-- "> -->
-            <!-- {{# output.should_display_navbar_logo }} -->
-                <!-- <span class="logo d-none d-sm-inline"> -->
-                    <!-- <img style="max-width: 400%;"src="{{output.get_compact_logo_url}}" alt="{{sitename}}"> -->
-                <!-- </span> -->
-            <!-- {{/ output.should_display_navbar_logo }} -->
-            <!-- <span class="site-name d-none d-md-inline">{{{ sitename }}}</span> -->
-        <!-- </a> -->
-
-        <a class="navbar-brand d-none d-sm-flex" href="{{{ config.wwwroot }}}">
-            <img id="vl_logo" class="brand-img d-inline-block" style="max-height: 36px;"
-                src="/lms/theme/bgtlms/img/logo-vietlott.png" alt="Vietlott"/>
-        </a>
-
-        <ul class="navbar-nav d-none d-md-flex">
-            <!-- custom_menu -->
-            {{{ output.custom_menu }}}
-            <!-- page_heading_menu -->
-            {{{ output.page_heading_menu }}}
-        </ul>
-        <ul class="nav navbar-nav ml-auto">
-            <div>
-            {{{ output.search_box }}}
-        </div>
-            <!-- navbar_plugin_output -->
-            <li class="nav-item">
-            {{{ output.navbar_plugin_output }}}
-            </li>
-            <!-- user_menu -->
-            <li class="nav-item d-flex align-items-center">
-                {{{ output.user_menu }}}
-            </li>
-        </ul>
-        <!-- search_box -->
 </nav>
 
+<script>
+    $(document).ready(function() {
+        $('.userbutton').click(function(){
+            $('#action-menu-1-menu').toggleClass('show');
+        });
+    });
+</script>
+<style>
+    @font-face {
+        font-family: Roboto-Regular;
+        src: url('{{ getPathPublic }}/fonts/Roboto-Regular.ttf');
+    }
+    .dropdown-divider{
+        margin: 0 !important;
+    }
+    .dropdown-item{
+        line-height: initial;
+    }
+    .click-page{
+        margin: 0 auto;
+    }
+    /*Ipad dọc(768 x 1024)*/
+    @media screen and (max-width: 768px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .click-page{
+            margin-left: 7% !important;
+        }
+    }
+    /*Tablet nhỏ(480 x 640)*/
+    @media screen and (max-width: 480px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .search-input-wrapper>div .icon {
+            position: inherit !important;
+        }
+        .click-page{
+            width: 130px;
+        }
+        .click-page ul li i{
+            display: none;
+        }
+        .logo, .search-input-form{
+            display: none;
+        }
+        .dropdown .dropdown-menu{
+            margin-top: 100%;
+        }
+    }
+    /*Iphone(480 x 640)*/
+    @media screen and (max-width: 320px){
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+        .click-page{
+            margin-left: 5% !important;
+        }
+        .dropdown .dropdown-menu{
+            margin-top: 100%;
+        }
+    }
+</style>
