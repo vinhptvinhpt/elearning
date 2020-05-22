@@ -1081,8 +1081,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                             <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
                                                     <!--                                            <div class="col-sm-6 block-items__item">-->
-                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
-                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                    <div class="block-item__image" style="background-image: url('/<?php echo $course->course_avatar; ?>')">
+                                                        <!--                                                    <img src="/--><?php //echo $course->course_avatar; ?><!--" alt="">-->
                                                         <!--                                                        --><?php //if($countBlock % 2 != 0) echo "block-items__item-first"; ?>
                                                         <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                     </div>
@@ -1132,9 +1132,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                             <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
                                                     <!--                                            <div class="col-sm-6 block-items__item">-->
-                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                    <div class="block-item__image" style="background-image: url('/<?php echo $course->course_avatar; ?>')">
                                                         <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
-                                                        <!--                                                    <img src="/elearning-easia/public--><?php //echo $course->course_avatar; ?><!--" alt="">-->
+                                                        <!--                                                    <img src="/--><?php //echo $course->course_avatar; ?><!--" alt="">-->
                                                     </div>
                                                     <div class="block-item__content">
                                                         <div class="block-item__content_text">
@@ -1181,7 +1181,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                         <?php if(count($courses_completed) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
                                                 <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
-                                                    <div class="block-item__image" style="background-image: url('/elearning-easia/public<?php echo $course->course_avatar; ?>')">
+                                                    <div class="block-item__image" style="background-image: url('/<?php echo $course->course_avatar; ?>')">
                                                         <img src="images/Badge-examples 2.png" alt="">
                                                     </div>
                                                     <div class="block-item__content">

@@ -137,7 +137,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
 
              //init screen
              $.ajax({
-                 url:'/elearning-easia/public/lms/pusher/study.php',
+                 url:'/lms/pusher/study.php',
                  data: {
                      'course_id': course_id,
                      'context_id': context_id,
@@ -160,7 +160,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
             window.addEventListener('beforeunload', function (e) {
                $.ajax({
-                   url:'/elearning-easia/public/lms/pusher/study.php',
+                   url:'/lms/pusher/study.php',
                    data: {
                        'course_id': course_id,
                        'context_id': context_id,
@@ -186,7 +186,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click next activity
              $( "#next-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/elearning-easia/public/lms/pusher/study.php',
+                     url:'/lms/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
@@ -209,7 +209,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click prev activity
              $( "#prev-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/elearning-easia/public/lms/pusher/study.php',
+                     url:'/lms/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
