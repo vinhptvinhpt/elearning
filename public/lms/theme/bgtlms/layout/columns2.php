@@ -88,7 +88,7 @@ if ($pagelayout == 'incourse') {
 
     $course_category = $PAGE->course->category;
 
-    $sqlCheck = 'SELECT permission_slug from `model_has_roles` as `mhr`
+    $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
 inner join `roles` on `roles`.`id` = `mhr`.`role_id`
 left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
 inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
@@ -96,18 +96,24 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
 
     $check = $DB->get_records_sql($sqlCheck);
 
-    $permissions = array_keys($check);
+    $permissions = array_values($check);
 
     foreach ($permissions as $permission) {
-        if ($permission == 'tms-educate-libraly-edit' && $course_category = 3) {
+
+        if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
             $permission_edit = true;
             break;
         }
-        if ($permission == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+
+        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
             $permission_edit = true;
             break;
         }
-        if ($permission == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+            $permission_edit = true;
+            break;
+        }
+        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
             $permission_edit = true;
             break;
         }
