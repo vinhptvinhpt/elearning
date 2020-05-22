@@ -135,7 +135,6 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 'id' => 'number',
                 'organization_id' => 'number',
                 'position' => 'code',
-                'enabled' => 'number',
             ];
 
             $validator = validate_fails($request, $param);

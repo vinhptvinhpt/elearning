@@ -122,8 +122,8 @@ class CourseController extends Controller
             date_default_timezone_set('Asia/Ho_Chi_Minh');
 
             $param = [
-                'fullname' => 'text',
                 'shortname' => 'code',
+                'fullname' => 'text',
                 'description' => 'longtext',
                 'pass_score' => 'number',
                 'category_id' => 'number',
@@ -139,7 +139,17 @@ class CourseController extends Controller
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $msg = $validator['message'];
+                $category_id = $request->input('category_id');
+                if($category_id == 2){
+                    $msg = str_replace('shortname', __('ma_thu_vien'), $msg);
+                    $msg = str_replace('fullname', __('ten_thu_vien'), $msg);
+                }
+                else{
+                    $msg = str_replace('shortname', __('ma_khoa_hoc'), $msg);
+                    $msg = str_replace('fullname', __('ten_khoa_hoc'), $msg);
+                }
+                $response->message = $msg;
                 return response()->json($response);
             }
 
