@@ -110,12 +110,13 @@ $areaids = optional_param('areaids', '', PARAM_RAW);
 
 
 $data = $mform->get_data();
+
 if (!$data && $q) {
     // Data can also come from the URL.
-
     $data = new stdClass();
     $data->q = $q;
     $data->title = $title;
+    /*
     $areaids = optional_param('areaids', '', PARAM_RAW);
     if (!empty($areaids)) {
         $areaids = explode(',', $areaids);
@@ -126,13 +127,55 @@ if (!$data && $q) {
         $courseids = explode(',', $courseids);
         $data->courseids = clean_param_array($courseids, PARAM_INT);
     }
-    $data->timestart = optional_param('timestart', 0, PARAM_INT);
-    $data->timeend = optional_param('timeend', 0, PARAM_INT);
+    */
+
+    function cleanEmptyValue(&$array) {
+        foreach ($array as $key => $item) {
+            if ($item == '') {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+
+    /*Map query params and pass to custom form*/
+    $area_ids = $_REQUEST['areaids'];
+    $area_ids = array_filter($area_ids);
+
+    if (!empty($areaids)) {
+        $data->areaids = clean_param_array($areaids, PARAM_ALPHANUMEXT);
+    }
+
+    $course_ids = $_REQUEST['courseids'];
+    $course_ids = array_filter($course_ids);
+    if (!empty($course_ids)) {
+        $data->courseids = clean_param_array($course_ids, PARAM_INT);
+    }
+
+    //$data->timestart = optional_param('timestart', 0, PARAM_INT);
+    //$data->timeend = optional_param('timeend', 0, PARAM_INT);
+
+    if ($_REQUEST['timestart_custom'] && strlen($_REQUEST['timestart_custom']) != 0) {
+        $timestart_full = $_REQUEST['timestart_custom'];
+        $timestart = strtotime($timestart_full. ":00");
+        $data->timestart = $timestart;
+    }
+
+    if ($_REQUEST['timeend_custom'] && strlen($_REQUEST['timeend_custom']) != 0) {
+        $timeend_full = $_REQUEST['timeend_custom'];
+        $timeend = strtotime($timeend_full. ":00");
+        $data->timeend = $timeend;
+    }
 
     $data->context = $contextid;
     $data->mycoursesonly = $mycoursesonly;
-
     $mform->set_data($data);
+}
+
+//Check params 'q' required
+$missing_q = 0;
+if (strlen($_REQUEST['cat']) != 0 && strlen($q) == 0) { //Có search nhưng không truyền params 'q'
+    $missing_q = 1;
 }
 
 // Convert the 'search within' option, if used, to course or context restrictions.
@@ -183,7 +226,20 @@ $PAGE->set_url($url);
 
 // We are ready to render.
 echo $OUTPUT->header();
-echo $OUTPUT->heading($pagetitle);
+?>
+<style>
+    .hide {
+        display: none;
+    }
+    .span-error {
+        border-color: #dc3545;
+    }
+    .id-q-icon-error {
+        color: #dc3545;
+    }
+</style>
+<?php
+//echo $OUTPUT->heading($pagetitle); //Ẩn title
 
 // Get the results.
 if ($data) {
@@ -205,9 +261,14 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             <div class="row">
                 <div class="col-12">
                     <div class="input-group">
-                        <input class="form-control search-input py-2 border-right-0 border" type="text" name="q" id="id_q" value="<?= $q ?>">
-                        <span class="input-group-append"><div class="input-group-text bg-transparent"><i class="fa fa-search"></i></div></span>
+                        <input class="form-control search-input py-2 border-right-0" type="text" name="q" id="id_q" value="<?= $q ?>">
+                        <span class="input-group-append">
+                            <div class="input-group-text bg-transparent" id="id-q-append">
+                                <i class="fa fa-search" id="id-q-icon"></i>
+                            </div>
+                        </span>
                     </div>
+                    <small id="error-missing-q" class="text-danger hide">Search query is required</small>
                 </div>
             </div>
             <h4 class="mt-3">Filter</h4>
@@ -266,6 +327,8 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
                     <input size="16" type="text"  name="timeend_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
                 </div>
             </div>
+            <input type="hidden" id="cat" name="cat" value="core-all">
+            <input type="hidden" id="mform_isexpanded_id_filtersection" name="mform_isexpanded_id_filtersection" value="1">
             <input type="submit" class="btn btn-md btn-bgtlms" name="submitbutton" id="id_submitbutton" value="Search">
             <button type="button" class="btn btn-md btn-bgtlms-clear" onclick="resetForm()">CLEAR</button>
         </form>
@@ -292,6 +355,36 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
 </div>
 
 <script>
+
+    $(document).ready(function() {
+        let missing_q_text = $("#error-missing-q");
+        let q_input = $("#id_q");
+        let q_input_append = $("#id-q-append");
+        let q_input_icon = $("#id-q-icon");
+
+    <?php if ($missing_q == 1) {  ?>
+            missing_q_text.removeClass("hide");
+            q_input.addClass('is-invalid');
+            q_input_append.addClass('span-error');
+            q_input_icon.addClass('id-q-icon-error');
+        <?php } ?>
+
+        if(q_input.val() && !missing_q_text.hasClass("hide")) { //Có giá trị thì remove error text
+            missing_q_text.addClass("hide");
+            q_input.removeClass('is-invalid');
+            q_input_append.removeClass('span-error');
+            q_input_icon.removeClass('id-q-icon-error');
+        }
+        q_input.on('input', function() {
+            if(q_input.val() && !missing_q_text.hasClass("hide")) { //Có giá trị thì remove error text
+                missing_q_text.addClass("hide");
+                q_input.removeClass('is-invalid');
+                q_input_append.removeClass('span-error');
+                q_input_icon.removeClass('id-q-icon-error');
+            }
+        });
+    });
+
     let selectArea = new SlimSelect({
         select: '#id_areaids',
         placeholder: '<?=  get_string('allareas', 'search')  ?>',
@@ -337,6 +430,9 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
         //console.log(selectArea.selected());
         selectArea.set(['']);
         selectCourse.set(['']);
+        $(".form_datetime").val("");
+        $("#id_title").val("");
+        $("#id_q").val("");
     }
 
     function hideSelectedAll(type) {

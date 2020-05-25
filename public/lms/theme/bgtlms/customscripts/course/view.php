@@ -798,7 +798,7 @@ foreach ($permissions as $permission) {
                                     <p><?php echo $unit['name']; ?></p>
                                 </div>
                                 <div class="detail-content">
-                                    <?php if ($unit['modules'] && !empty($module)) {
+                                    <?php if ($unit['modules'] && !empty($unit['modules'])) {
                                         foreach ($unit['modules'] as $module) {  ?>
                                         <ul class="detail-list">
                                             <li><a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a> </li>
