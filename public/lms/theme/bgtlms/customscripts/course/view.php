@@ -804,10 +804,11 @@ foreach ($permissions as $permission) {
                                         <?php } ?>
                                     </ul>
                                 </div>
-
+                                <?php if($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                 <div class="detail-btn">
                                     <a href="<?php echo $unit['modules'][0]['url']; ?>" class="btn btn-click btn-start-unit">Start unit</a>
                                 </div>
+                                <?php } ?>
                             </div>
                         <?php } ?>
                     </div>
