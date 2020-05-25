@@ -638,10 +638,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         fill: <?=$_SESSION["color"]?>;
     }
 
-    .logo {
-        max-width: 13%;
-    }
-
     /*1920*/
     @media screen and (max-width: 1920px){
         .drawer-open-left .over-wrap{
