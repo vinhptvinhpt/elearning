@@ -122,7 +122,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ]);
 
             if ($role_id && $role_id != 0 && $tms_trainning) {
-                $trainning_role = TmsTrainningGroup::firstOrCreate([
+                TmsTrainningGroup::firstOrCreate([
                     'trainning_id' => $tms_trainning->id,
                     'group_id' => $role_id,
                     'type' => 0
@@ -130,7 +130,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             if ($organization_id && $organization_id != 0 && $tms_trainning) {
-                $trainning_organization = TmsTrainningGroup::firstOrCreate([
+                TmsTrainningGroup::firstOrCreate([
                     'trainning_id' => $tms_trainning->id,
                     'group_id' => $organization_id,
                     'type' => 1
@@ -321,7 +321,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $lstData = DB::table('tms_traninning_programs as ttp')
             ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
             ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
-            ->where('ttp.deleted', '=', 0);
+            ->where('ttp.deleted', '=', 0)
+            ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -360,6 +361,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
+            ->where('deleted', '!=', 2)//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung
             ->orderBy('id', 'desc')->get();
         return response()->json($response);
     }

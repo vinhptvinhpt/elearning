@@ -307,5 +307,7 @@
     "to_chuc_nay_da_ton_tai_mau_chung_chi": "This organization already exists a certificate template",
     "thoi_gian_hoc": "Actual learning hours",
     "so_nguoi_tham_gia": "Number of participation",
-    "thoi_luong_hoc": "Training duration"
+    "thoi_luong_hoc": "Training duration",
+    "ma_thu_vien": "Library code",
+    "ten_thu_vien": "Library name"
 }

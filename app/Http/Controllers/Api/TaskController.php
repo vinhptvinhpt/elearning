@@ -17,6 +17,7 @@ use App\MdlUserEnrolments;
 use App\ModelHasRole;
 use App\Role;
 use App\StudentCertificate;
+use App\TmsLearnerHistory;
 use App\TmsLog;
 use App\TmsNotification;
 use App\TmsSaleRoomUser;
@@ -215,12 +216,12 @@ class TaskController extends Controller
                     $arrData = [];
                 }
 
-                usleep(50);
+                usleep(100);
             }
 
             CourseCompletion::insert($arrData);
 
-            usleep(100);
+            sleep(1);
         }
     }
 
@@ -271,8 +272,83 @@ class TaskController extends Controller
 
             TmsTrainningComplete::insert($arrData);
 
-            usleep(500);
+            sleep(1);
         }
+
+        sleep(5);
+
+        //tu dong gen ma chung chi cho hoc vien
+        $listStudentsDone = DB::table('tms_trainning_complete as ttc')
+            ->join('mdl_user as mu', 'mu.id', '=', 'ttc.user_id')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mu.id')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->leftJoin('student_certificate as sc', function ($join) {
+                $join->on('sc.userid', '=', 'mu.id');
+                $join->on('sc.trainning_id', '=', 'ttc.trainning_id');
+            })
+            ->select('tud.user_id', 'ttp.id as training_id')
+            ->whereNull('sc.id')
+            ->whereRaw('(ttp.auto_certificate = 1 OR ttp.auto_badge = 1)')
+            ->groupBy('ttc.user_id', 'ttc.trainning_id')->get();
+
+        $arrDataST = [];
+        $data_item = [];
+
+        $num = 0;
+        $limit = 200;
+
+        foreach ($listStudentsDone as $st) {
+
+            $certificatecode = $st->user_id . $this->randomNumber(7 - strlen($st->user_id));
+
+            $data_item['trainning_id'] = $st->training_id;
+            $data_item['userid'] = $st->user_id;
+            $data_item['code'] = $certificatecode;
+            $data_item['status'] = 1;
+            $data_item['timecertificate'] = time();
+
+            array_push($arrDataST, $data_item);
+            $num++;
+
+            if ($num >= $limit) {
+                StudentCertificate::insert($arrDataST);
+                $num = 0;
+                $arrDataST = [];
+            }
+
+
+            usleep(100); //sleep tranh tinh trang query db lien tiep
+
+            //insert du lieu lich su hoc tap
+            $lstHistory = DB::table('course_completion as cc')
+                ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
+                ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
+                ->where('cc.userid', '=', $st->user_id)
+                ->where('cc.training_id', '=', $st->training_id)
+                ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->get();
+
+            $arr_data_his = [];
+            $data_item_his = [];
+
+            foreach ($lstHistory as $his) {
+                $data_item_his['trainning_id'] = $st->training_id;
+                $data_item_his['trainning_name'] = $his->trainning_name;
+                $data_item_his['user_id'] = $st->user_id;
+                $data_item_his['course_id'] = $his->course_id;
+                $data_item_his['course_code'] = $his->course_code;
+                $data_item_his['course_name'] = $his->course_name;
+
+                array_push($arr_data_his, $data_item_his);
+            }
+            TmsLearnerHistory::insert($arr_data_his);
+
+            usleep(100); //sleep tranh tinh trang query db lien tiep
+
+        }
+
+        StudentCertificate::insert($arrDataST);
+
     }
     #endregion
 
@@ -731,6 +807,58 @@ class TaskController extends Controller
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
+            ->where('ttp.deleted', '=', 0)
+            ->select('ttc.trainning_id', 'ttc.course_id')->get();
+
+        if ($lstData) {
+            foreach ($lstData as $data) {
+                //raw query lay so hoc vien da enrol vao course
+                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue 
+                            join mdl_enrol me on me.id = mue.enrolid join mdl_course mc on mc.id = me.courseid
+                            where mc.id = ' . $data->course_id . ') as ue';
+
+                $leftJoin = DB::raw($leftJoin);
+
+                //lay danh sach hoc vien nam trong KNL chua dc enroll vao khoa hoc
+                $users = DB::table('tms_traninning_users as ttu')
+                    ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')
+                    ->leftJoin($leftJoin, 'ue.userid', '=', 'ttu.user_id')
+                    ->where('ttp.id', '=', $data->trainning_id)
+                    ->whereNull('ue.enrolid')->groupBy('ttu.user_id')->pluck('ttu.user_id')->toArray();
+
+                if (count($users) > 0) {
+                    // enroll user to course in competency framework
+                    // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
+                    // he thong dang set mac dinh user tao ra deu co quyen student
+                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, false);
+                }
+
+                usleep(100);
+            }
+        }
+
+        usleep(100);
+        //cap nhat trang thai cho cron
+        $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+            Config::get('constants.domain.STOP_CRON'));
+    }
+
+    //cron enroll user to competency framework, run cron by time
+    public function autoEnrolTrainningCron()
+    {
+        $result = $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_READ_FLAG'), '');
+        $result = json_decode($result, true);
+
+        if ($result['flag'] == 'stop')
+            return;
+
+
+        //lay danh sach khoa hoc theo tung khung nang luc
+        $lstData = DB::table('tms_trainning_courses as ttc')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.run_cron', '=', 1)
+            ->where('ttc.deleted', '=', 0)
+            ->where('ttp.deleted', '=', 0)
             ->select('ttc.trainning_id', 'ttc.course_id')->get();
 
         if ($lstData) {
@@ -1479,11 +1607,222 @@ class TaskController extends Controller
         //cap nhat trang thai cho cron
         $this->updateFlagCron(Config::get('constants.domain.ENROLL_TRAINNING'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
             Config::get('constants.domain.STOP_CRON'));
-        
+
         usleep(100);
         //khoi dong cron enroll hoc vien vao khoa hoc trong KNL
         $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
             Config::get('constants.domain.START_CRON'));
+    }
+
+    //them user vao KNL trong TH user duoc tao moi, cron chay theo thoi gian
+    function autoAddTrainningUserCron()
+    {
+        $queryArray = [];
+        $num = 0;
+        $limit = 300;
+        //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
+        $trainningArray = DB::table('tms_traninning_programs as ttp')
+            ->select('ttp.id', 'ttg.id as ttg_id')
+            ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
+            ->where('ttp.deleted', '=', 0)
+            ->whereNull('ttg.id')
+            ->pluck('ttp.id');
+
+
+        if (!empty($trainningArray)) {
+            foreach ($trainningArray as $trainning) {
+                $leftjoin = '(SELECT ttu.trainning_id,ttu.user_id
+                    FROM tms_traninning_users ttu
+                     where ttu.trainning_id =' . $trainning . ') as ttpp';
+                $leftjoin = DB::raw($leftjoin);
+                $users = DB::table('tms_user_detail as tud')
+                    ->select('ttpp.trainning_id', 'tud.user_id')
+                    ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
+                    ->where('tud.deleted', '0', 0)
+                    ->whereNull('ttpp.trainning_id')
+                    ->pluck('tud.user_id');
+                if (!empty($users)) {
+                    foreach ($users as $user) {
+                        $queryItem = [];
+                        $queryItem['trainning_id'] = $trainning;
+                        $queryItem['user_id'] = $user;
+                        array_push($queryArray, $queryItem);
+                        $num++;
+                        if ($num >= $limit) {
+                            TmsTrainningUser::insert($queryArray);
+                            $num = 0;
+                            $queryArray = [];
+                        }
+                    }
+                }
+            }
+            TmsTrainningUser::insert($queryArray);
+            $num = 0;
+            $queryArray = [];
+        }
+
+        sleep(1);
+        //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
+        //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
+        $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
+
+        foreach ($lstDataTrainning as $trainning) {
+            if ($trainning->total_tr == 2) {
+                //region xu ly cho TH KNL ap dung cho ca role va cctc
+                $trainning_gr = TmsTrainningGroup::where('trainning_id', $trainning->trainning_id)->select('group_id', 'type')->get();
+                $role_id = 0;
+                $org_id = 0;
+                foreach ($trainning_gr as $ttr) {
+                    if ($ttr->type == 0) {
+                        $role_id = $ttr->group_id;
+                    } else {
+                        $org_id = $ttr->group_id;
+                    }
+                }
+
+                usleep(100);
+
+                //raw query lay so user nam trong cctc
+                $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $org_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                            UNION 
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
+                            ) as org_tp';
+
+                $org_query = DB::raw($org_query);
+
+                //raw query lay so user nam trong role
+                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
+                                join (
+                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
+                                ) as ttgg on ttgg.trainning_id = ttp.id 
+                                join model_has_roles mhr on mhr.role_id = ttgg.group_id 
+                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
+                                ) ttp_r';
+
+                $role_query = DB::raw($role_query);
+
+                //raw query lay so user nam trong KNL
+                $trr_query = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning->trainning_id . ') ttu';
+                $trr_query = DB::raw($trr_query);
+
+                //lay danh sach user nam trong cctc va role nhung chua  dc add vao KNL
+                $users = DB::table($org_query)->join($role_query, 'ttp_r.user_id', '=', 'org_tp.org_uid')
+                    ->leftJoin($trr_query, 'ttu.user_id', '=', 'org_tp.org_uid')
+                    ->whereNull('ttu.trainning_id')->groupBy('org_tp.org_uid')->pluck('org_tp.org_uid');
+
+                //add user to compentecy
+                if (count($users) > 0) {
+                    foreach ($users as $user) {
+                        $queryItem = [];
+
+                        $queryItem['trainning_id'] = $trainning->trainning_id;
+                        $queryItem['user_id'] = $user;
+                        array_push($queryArray, $queryItem);
+                        $num++;
+
+                        if ($num >= $limit) {
+                            TmsTrainningUser::insert($queryArray);
+                            $num = 0;
+                            $queryArray = [];
+                        }
+                    }//endforeach
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+                //endregion
+            } else {
+                if ($trainning->type == 0) {
+                    //region Nhóm quyền
+                    $users = DB::table('tms_traninning_programs as ttp')
+                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
+                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
+                        })
+                        ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
+                            $join->on('ttu.trainning_id', '=', 'ttp.id');
+                            $join->on('ttu.user_id', '=', 'mhr.model_id');
+                        })
+                        ->where('ttp.deleted', '=', 0)
+                        ->whereNotNull('ttg.group_id')
+                        ->whereNull('ttu.id')->groupBy('mhr.model_id')
+                        ->pluck('mhr.model_id as user_id');
+
+                    if (count($users) > 0) {
+                        foreach ($users as $user) {
+                            $queryItem = [];
+
+                            $queryItem['trainning_id'] = $trainning->trainning_id;
+                            $queryItem['user_id'] = $user;
+                            array_push($queryArray, $queryItem);
+                            $num++;
+
+                            if ($num >= $limit) {
+                                TmsTrainningUser::insert($queryArray);
+                                $num = 0;
+                                $queryArray = [];
+                            }
+                        }//endforeach
+                        TmsTrainningUser::insert($queryArray);
+                        $num = 0;
+                        $queryArray = [];
+                    }
+
+                    //endregion
+                } else {
+                    //region Cơ cấu tổ chức
+                    //lay danh sach user nam trong co cau to chuc va ko nam trong KNL
+                    $tblQuery = '(select  ttoe.organization_id, ttoe.user_id
+                                    from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $trainning->group_id . ') initialisation
+                                    where   find_in_set(ttoe.parent_id, @pv)
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                                    UNION 
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $trainning->group_id . ') as org_us';
+
+                    $tblQuery = DB::raw($tblQuery);
+
+                    $leftJoin = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning->trainning_id . ') ttu';
+                    $leftJoin = DB::raw($leftJoin);
+
+                    $users = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
+                        ->whereNull('ttu.trainning_id')->groupBy('org_us.user_id')
+                        ->pluck('org_us.user_id')->toArray();
+
+                    if (count($users) > 0) {
+                        foreach ($users as $user) {
+                            $queryItem = [];
+
+                            $queryItem['trainning_id'] = $trainning->trainning_id;
+                            $queryItem['user_id'] = $user;
+                            array_push($queryArray, $queryItem);
+                            $num++;
+
+                            if ($num >= $limit) {
+                                TmsTrainningUser::insert($queryArray);
+                                $num = 0;
+                                $queryArray = [];
+                            }
+                        }//endforeach
+                        TmsTrainningUser::insert($queryArray);
+                        $num = 0;
+                        $queryArray = [];
+                    }
+                    //endregion
+                }
+            }
+
+            usleep(100);
+        }
     }
 
     /**

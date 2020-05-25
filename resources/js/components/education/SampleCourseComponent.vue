@@ -46,7 +46,7 @@
                                                                 *</label>
                                                             <input v-model="shortname" type="text" id="inputText1-1"
                                                                    :placeholder="trans.get('keys.nhap_ma_thu_vien')"
-                                                                   class="form-control mb-4" v-focus="">
+                                                                   class="form-control mb-4">
                                                             <label v-if="!shortname"
                                                                    class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                                         </div>

@@ -415,4 +415,14 @@ class SystemController extends Controller
     {
         return $this->bussinessRepository->apiConfirmEmail($no_id, $email);
     }
+
+    public function apiGetLearnerHistory(Request $request)
+    {
+        return $this->userRepository->getLearnerHistory($request);
+    }
+
+    public function apiGetTrainningHistory($user_id)
+    {
+        return $this->userRepository->getTrainningHistory($user_id);
+    }
 }

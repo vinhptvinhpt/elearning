@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 user_preference_allow_ajax_update('drawer-open-nav', PARAM_ALPHA);
 require_once($CFG->libdir . '/behat/lib.php');
 
+
 if (isloggedin()) {
     $navdraweropen = (get_user_preferences('drawer-open-nav', 'true') == 'true');
 } else {
@@ -36,10 +37,92 @@ $extraclasses = [];
 if ($navdraweropen) {
     $extraclasses[] = 'drawer-open-left';
 }
+$pathLogo = $_SESSION["pathLogo"];
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
 $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
+$courseid = $PAGE->course->id;
+$cmid = $PAGE->cm->id ? $PAGE->cm->id : 0;
+$section = $PAGE->cm->section ? $PAGE->cm->section: 0;
+$sectionname = '';
+$pagelayout = $PAGE->pagelayout;
+$incourse = false;
+$units = [];
+$modules = [];
+$courseurl = '';
+$prevsectionno = 0;
+$nextsectionno = 0;
+$currentsectionno = 0;
+$modulesidsstring = '';
+$permission_edit = false;
+
+$getPathPublic = '';
+if ($pagelayout == 'incourse') {
+    require_once('courselib.php');
+    $params = array('id' => $courseid);
+    $units = get_course_contents($PAGE->course->id);
+    $courseurl = new moodle_url('/course/view.php', array('id' => $courseid));
+    foreach ($units as $unit) {
+        $sectionno = $unit['section'];
+        if ($unit['id'] == $section) {
+            $modules = $unit['modules'];
+            $sectionname = $unit['name'];
+            $currentsectionno = $sectionno;
+        } else {
+            if ($sectionno > $currentsectionno) {
+                if ($nextsectionno == 0) {
+                    $nextsectionno = $sectionno;
+                }
+            } else {
+                $prevsectionno = $sectionno;
+            }
+        }
+    }
+    $incourse = true;
+    if (!empty($modules)) {
+        $modulesidsstring = implode(',', array_column($modules, 'id'));
+    }
+
+    global $DB;
+
+    $course_category = $PAGE->course->category;
+
+    $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+    $check = $DB->get_records_sql($sqlCheck);
+
+    $permissions = array_values($check);
+
+    foreach ($permissions as $permission) {
+
+        if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
+            $permission_edit = true;
+            break;
+        }
+
+        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+            $permission_edit = true;
+            break;
+        }
+        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+            $permission_edit = true;
+            break;
+        }
+        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+            $permission_edit = true;
+            break;
+        }
+    }
+}
+else if(strpos($bodyattributes, 'search')){
+    $getPathPublic =   str_replace('lms', '', $CFG->wwwroot);
+}
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -48,7 +131,22 @@ $templatecontext = [
     'bodyattributes' => $bodyattributes,
     'navdraweropen' => $navdraweropen,
     'regionmainsettingsmenu' => $regionmainsettingsmenu,
-    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu)
+    'hasregionmainsettingsmenu' => !empty($regionmainsettingsmenu),
+    'courseid' => $courseid,
+    'activityid' => $section,
+    'cmid' => $cmid,
+    'pagelayout' => $pagelayout,
+    'incourse' => $incourse,
+    'units' => $units,
+    'modules' => $modules,
+    'courseurl' => $courseurl,
+    'sectionname' => $sectionname,
+    'prevsectionno' => $prevsectionno,
+    'nextsectionno' => $nextsectionno,
+    'modulesidsstring' => $modulesidsstring,
+    'permission_edit' => $permission_edit,
+    'pathLogo' => $pathLogo,
+    'getPathPublic' => $getPathPublic
 ];
 
 $nav = $PAGE->flatnav;
@@ -106,7 +204,7 @@ if ($nav->get('coursehome') && $pagetype != "enrol-index") {
     // $url_par = new moodle_url($participants_url);
     // $participants_node->action = $url_par;
 
-    // add node nội dung khoá học 
+    // add node nội dung khoá học
     $array_content = array(
         'text' => get_string('coursecontentlabel'),
         'key' => 'content_course',
@@ -147,7 +245,7 @@ if ($nav->get('coursehome') && $pagetype != "enrol-index") {
     // }
 }
 
-// Case category of course is category "Khoá học tập trung" (categoryid = 3) 
+// Case category of course is category "Khoá học tập trung" (categoryid = 3)
 // Add mark grade for offline courses
 if ($PAGE->course->category == "5") {
     if ($nav->get('log')) {
@@ -217,7 +315,7 @@ if ($nav->get('mycourses')) {
 }
 // [VinhPT][12.11.2019] Page vietlot_introduction and Guideline
 if ($pagetype == "my-index") {
-    // Vietlot introduction node 
+    // Vietlot introduction node
     $above_node = "calendar";
     $url = "/my/vietlot_introduction.php";
     $urlvl = new moodle_url($url);
