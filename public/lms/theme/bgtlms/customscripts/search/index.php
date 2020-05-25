@@ -334,7 +334,9 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
     });
 
     function resetForm() {
-
+        //console.log(selectArea.selected());
+        selectArea.set(['']);
+        selectCourse.set(['']);
     }
 
     function hideSelectedAll(type) {
