@@ -26,18 +26,12 @@ require_once(__DIR__ . '/../../../../config.php');
 //require_once(__DIR__ . '/../../search/classes/output/form/mysearch.php');
 require_once(__DIR__ . '/searchlib.php');
 
-//echo json_encode($_REQUEST);die;
-
 $page = optional_param('page', 0, PARAM_INT);
 $q = optional_param('q', '', PARAM_NOTAGS);
 $title = optional_param('title', '', PARAM_NOTAGS);
 $contextid = optional_param('context', 0, PARAM_INT);
 $cat = optional_param('cat', '', PARAM_NOTAGS);
 $mycoursesonly = optional_param('mycoursesonly', 0, PARAM_INT);
-
-
-/*Map query params and pass to custom form*/
-
 
 if (\core_search\manager::is_search_area_categories_enabled()) {
     $cat = \core_search\manager::get_search_area_category_by_name($cat);
@@ -122,6 +116,7 @@ if (!$data && $q) {
     $data = new stdClass();
     $data->q = $q;
     $data->title = $title;
+    /*
     $areaids = optional_param('areaids', '', PARAM_RAW);
     if (!empty($areaids)) {
         $areaids = explode(',', $areaids);
@@ -132,12 +127,48 @@ if (!$data && $q) {
         $courseids = explode(',', $courseids);
         $data->courseids = clean_param_array($courseids, PARAM_INT);
     }
-    $data->timestart = optional_param('timestart', 0, PARAM_INT);
-    $data->timeend = optional_param('timeend', 0, PARAM_INT);
+    */
+
+    function cleanEmptyValue(&$array) {
+        foreach ($array as $key => $item) {
+            if ($item == '') {
+                unset($array[$key]);
+            }
+        }
+        return $array;
+    }
+
+    /*Map query params and pass to custom form*/
+    $area_ids = $_REQUEST['areaids'];
+    $area_ids = array_filter($area_ids);
+
+    if (!empty($areaids)) {
+        $data->areaids = clean_param_array($areaids, PARAM_ALPHANUMEXT);
+    }
+
+    $course_ids = $_REQUEST['courseids'];
+    $course_ids = array_filter($course_ids);
+    if (!empty($course_ids)) {
+        $data->courseids = clean_param_array($course_ids, PARAM_INT);
+    }
+
+    //$data->timestart = optional_param('timestart', 0, PARAM_INT);
+    //$data->timeend = optional_param('timeend', 0, PARAM_INT);
+
+    if ($_REQUEST['timestart_custom'] && strlen($_REQUEST['timestart_custom']) != 0) {
+        $timestart_full = $_REQUEST['timestart_custom'];
+        $timestart = strtotime($timestart_full. ":00");
+        $data->timestart = $timestart;
+    }
+
+    if ($_REQUEST['timeend_custom'] && strlen($_REQUEST['timeend_custom']) != 0) {
+        $timeend_full = $_REQUEST['timeend_custom'];
+        $timeend = strtotime($timeend_full. ":00");
+        $data->timeend = $timeend;
+    }
 
     $data->context = $contextid;
     $data->mycoursesonly = $mycoursesonly;
-
     $mform->set_data($data);
 }
 
