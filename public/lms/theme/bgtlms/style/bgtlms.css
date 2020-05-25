@@ -46,3 +46,7 @@
     font-weight: bold;
     border-color: #000000 !important;
 }
+
+.logo {
+    max-width: 13%;
+}

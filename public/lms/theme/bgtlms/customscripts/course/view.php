@@ -649,6 +649,42 @@ $course = array_values($DB->get_records_sql($sql))[0];
 $units = get_course_contents($id);
 
 $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
+
+//Check permission edit course
+$permission_edit = false;
+$course_category = $course->category;
+
+$sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$check = $DB->get_records_sql($sqlCheck);
+
+$permissions = array_values($check);
+
+foreach ($permissions as $permission) {
+
+    if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
+        $permission_edit = true;
+        break;
+    }
+
+    if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+        $permission_edit = true;
+        break;
+    }
+    if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+        $permission_edit = true;
+        break;
+    }
+    if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+        $permission_edit = true;
+        break;
+    }
+}
+
 ?>
 <body <?php echo $bodyattributes ?>>
 
@@ -710,9 +746,11 @@ $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-
                     <li class="nav-item nav-click nav-unit">
                         <a class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
                     </li>
-                    <li class="nav-item nav-click nav-setting">
-                        <a class="" role="tab"><i class="fa fa-cog" aria-hidden="true"></i> Edit course</a>
-                    </li>
+                    <?php if ($permission_edit) { ?>
+                        <li class="nav-item nav-click nav-setting">
+                            <a class="" role="tab"><i class="fa fa-cog" aria-hidden="true"></i> Edit course</a>
+                        </li>
+                    <?php } ?>
                 </ul>
             </div>
         </div>
@@ -766,10 +804,11 @@ $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-
                                         <?php } ?>
                                     </ul>
                                 </div>
-
+                                <?php if($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                 <div class="detail-btn">
                                     <a href="<?php echo $unit['modules'][0]['url']; ?>" class="btn btn-click btn-start-unit">Start unit</a>
                                 </div>
+                                <?php } ?>
                             </div>
                         <?php } ?>
                     </div>
