@@ -64,6 +64,9 @@
     {{/incourse}}
 
     <div id="page" class="{{#incourse}}container container-fluid{{/incourse}}">
+        {{#editing}}
+            {{{ output.full_header }}}
+        {{/editing}}
         <div id="page-content" class="row mt-3 pb-3">
             <div id="region-main-box" class="col-12">
                 {{#hasregionmainsettingsmenu}}
@@ -137,7 +140,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
 
              //init screen
              $.ajax({
-                 url:'/lms/pusher/study.php',
+                 url:'{{ wwwroot }}/pusher/study.php',
                  data: {
                      'course_id': course_id,
                      'context_id': context_id,
@@ -160,7 +163,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
             window.addEventListener('beforeunload', function (e) {
                $.ajax({
-                   url:'/lms/pusher/study.php',
+                   url:'{{ wwwroot }}/pusher/study.php',
                    data: {
                        'course_id': course_id,
                        'context_id': context_id,
@@ -186,7 +189,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click next activity
              $( "#next-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/lms/pusher/study.php',
+                     url:'{{ wwwroot }}/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
@@ -209,7 +212,7 @@ require(['theme_bgtlms/drawer'], function(mod) {
              //Click prev activity
              $( "#prev-activity-link" ).click(function() {
                  $.ajax({
-                     url:'/lms/pusher/study.php',
+                     url:'{{ wwwroot }}/pusher/study.php',
                      data: {
                          'course_id': course_id,
                          'context_id': context_id,
@@ -231,36 +234,5 @@ require(['theme_bgtlms/drawer'], function(mod) {
         } else {
             $('#header-search-box-container').removeClass("hide");
         }
-
-        //screen course detail => move to course detail customscripts/course/view.php
-        /*
-        if (classes.includes("pagelayout-course")) {
-            classes.forEach(function(classItem) {
-                if (classItem.startsWith('course-')) {
-                    course_id = classItem.substring(7, classItem.length);
-                }
-            });
-            $.ajax({
-                 url:'/lms/pusher/resume.php',
-                 data: {
-                     'course_id': course_id
-                 },
-                 type: 'POST',
-                 success: function(data) {
-                     if (data.length !== 0) {
-                          r = confirm("Do you want to continue last activity in course?");
-                          if (r == true) {
-                            window.location.href = data;
-                          } else {
-                            return;
-                          }
-                     }
-                 },
-                 error: function(e){
-                   console.log(e);
-                 }
-            });
-        }
-        */
   });
 </script>
