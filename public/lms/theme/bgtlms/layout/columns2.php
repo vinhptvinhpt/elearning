@@ -37,6 +37,7 @@ $extraclasses = [];
 if ($navdraweropen) {
     $extraclasses[] = 'drawer-open-left';
 }
+$wwwroot = $CFG->wwwroot;
 $pathLogo = $_SESSION["pathLogo"];
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
@@ -56,8 +57,8 @@ $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
-
 $getPathPublic = '';
+
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
@@ -118,9 +119,12 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
     }
+} else if(strpos($bodyattributes, 'search')){
+    $getPathPublic =   str_replace('lms', '', $wwwroot);
 }
-else if(strpos($bodyattributes, 'search')){
-    $getPathPublic =   str_replace('lms', '', $CFG->wwwroot);
+$editing = false;
+if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
+    $editing = true;
 }
 
 $templatecontext = [
@@ -137,6 +141,7 @@ $templatecontext = [
     'cmid' => $cmid,
     'pagelayout' => $pagelayout,
     'incourse' => $incourse,
+    'editing' => $editing,
     'units' => $units,
     'modules' => $modules,
     'courseurl' => $courseurl,
@@ -146,7 +151,8 @@ $templatecontext = [
     'modulesidsstring' => $modulesidsstring,
     'permission_edit' => $permission_edit,
     'pathLogo' => $pathLogo,
-    'getPathPublic' => $getPathPublic
+    'getPathPublic' => $getPathPublic,
+    'wwwroot' => $wwwroot
 ];
 
 $nav = $PAGE->flatnav;

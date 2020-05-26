@@ -5,6 +5,7 @@
 <base href="../../">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
@@ -140,11 +141,15 @@
         margin-top: 8px;
     }
 
-    .nav-setting a{
+    .setting-link {
         color: <?=$_SESSION["color"]?> !important;
         border: 1px solid <?=$_SESSION["color"]?>;
         padding: 5px;
         border-radius: 15px;
+    }
+
+    #menu-edit::after {
+        display: none;
     }
 
     .nav-unit{
@@ -419,6 +424,10 @@
         border-radius: 3%;
     }
 
+    .setting-option {
+        padding: 0 1rem;
+    }
+
     @media only screen and (max-width: 1368px) {
         .drawer-open-left, .over-wrap{
             opacity: 0 !important;
@@ -630,13 +639,13 @@ $id = optional_param('id', 0, PARAM_INT);
 // [VinhPT][EAsia] Course IP address restrict
 
 $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
+$root_url = $CFG->wwwroot;
 
 if($result_ip){
     $list_access_ip = json_decode($result_ip)->list_access_ip;
     if ($list_access_ip){
         if(!in_array(getremoteaddr(), $list_access_ip)){
 //        if(!in_array(get_client_ip_server(), $list_access_ip)){
-            $root_url = $CFG->wwwroot;
             $url_to_page = new moodle_url($root_url);
             $message_ip_access = "You do not have permission to access this course";
             redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
@@ -684,7 +693,9 @@ foreach ($permissions as $permission) {
         break;
     }
 }
-
+//Check section
+$section_no = isset($_REQUEST['section_no']) ? $_REQUEST['section_no'] : '';
+$source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
 ?>
 <body <?php echo $bodyattributes ?>>
 
@@ -744,11 +755,20 @@ foreach ($permissions as $permission) {
                         <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
                     </li>
                     <li class="nav-item nav-click nav-unit">
-                        <a class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
+                        <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
                     </li>
                     <?php if ($permission_edit) { ?>
-                        <li class="nav-item nav-click nav-setting">
-                            <a class="" role="tab"><i class="fa fa-cog" aria-hidden="true"></i> Edit course</a>
+                        <li class="nav-item nav-setting">
+                            <a class="dropdown-toggle setting-link" id="menu-edit" data-toggle="dropdown">
+                                <i class="fa fa-cog" aria-hidden="true"></i>
+                                Edit course
+                            </a>
+                            <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&notifyeditingon=1&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course completion</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
+                            </ul>
                         </li>
                     <?php } ?>
                 </ul>
@@ -777,8 +797,8 @@ foreach ($permissions as $permission) {
             <div class="row col-12 course-content" id="courseunit">
                 <div class="col-5 unit-info">
                     <div class="list-units">
-                        <?php foreach ($units as $unit) {  ?>
-                            <div class="unit" id="unit_<?php echo $unit['id']; ?>">
+                        <?php foreach ($units as $no => $unit) {  ?>
+                            <div class="unit" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
                                 <div class="unit__progress">
                                     <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
@@ -819,7 +839,7 @@ foreach ($permissions as $permission) {
             </div>
         </div>
     </section>
-    <?php echo $OUTPUT->footer(); ?>
+<!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
 
@@ -850,15 +870,21 @@ foreach ($permissions as $permission) {
             $('.nav-click a').not($(this)).each(function () {
                 $(this).removeClass('active');
             });
-        });
 
-        $(".nav-tabs-courses a").click(function(){
-            var getId =  $(this).attr('href');
-            $('.course-content').not($(getId)).each(function(){
+            $('.course-content').not($(getHref)).each(function(){
                 $(this).css('display', 'none');
             });
-            $(getId).css('display', 'flex');
+            $(getHref).css('display', 'flex');
         });
+
+        // $(".nav-click a").click(function(){
+        //     console.log(3);
+        //     var getId =  $(this).attr('href');
+        //     $('.course-content').not($(getId)).each(function(){
+        //         $(this).css('display', 'none');
+        //     });
+        //     $(getId).css('display', 'flex');
+        // });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
         var marginLeft = getPercent - 6;
@@ -896,45 +922,53 @@ foreach ($permissions as $permission) {
                 $(this).removeClass('unit-click');
             });
         }
+        //Click tab unit list and curent unit by url params
+        <?php if (strlen($section_no) != 0) { ?>
+            $("#unit-link").trigger("click");
+            $("#unit-link").addClass('active');
+            $("[section-no=<?php echo $section_no ?>]").trigger("click");
+        <?php } ?>
     });
-
-
 </script>
-<script>
-    $(document).ready(function() {
-        $('#page').css('margin-right', '0');
-        var x = document.getElementsByTagName("BODY")[0];
-        var classes = x.className.toString().split(/\s+/);
-        let course_id = '0';
 
-        //screen course detail
-        if (classes.includes("pagelayout-course")) {
-            classes.forEach(function(classItem) {
-                if (classItem.startsWith('course-')) {
-                    course_id = classItem.substring(7, classItem.length);
-                }
-            });
-            $.ajax({
-                url:'/elearning-easia/public/lms/pusher/resume.php',
-                data: {
-                    'course_id': course_id
-                },
-                type: 'POST',
-                success: function(data) {
-                    if (data.length !== 0) {
-                        r = confirm("Do you want to continue last activity in course?");
-                        if (r == true) {
-                            window.location.href = data;
-                        } else {
-                            return;
-                        }
+<script>
+    //Notify tiếp tục module đang học dở
+    $(document).ready(function() {
+        <?php if ($id != $source) { ?> //Vào từ màn khóa học khác
+            $('#page').css('margin-right', '0');
+            var x = document.getElementsByTagName("BODY")[0];
+            var classes = x.className.toString().split(/\s+/);
+            let course_id = '0';
+
+            //screen course detail
+            if (classes.includes("pagelayout-course")) {
+                classes.forEach(function(classItem) {
+                    if (classItem.startsWith('course-')) {
+                        course_id = classItem.substring(7, classItem.length);
                     }
-                },
-                error: function(e){
-                    console.log(e);
-                }
-            });
-        }
+                });
+                $.ajax({
+                    url:'<?php echo $root_url ?>/pusher/resume.php',
+                    data: {
+                        'course_id': course_id
+                    },
+                    type: 'POST',
+                    success: function(data) {
+                        if (data.length !== 0) {
+                            r = confirm("Do you want to continue last activity in course?");
+                            if (r == true) {
+                                window.location.href = data;
+                            } else {
+                                return;
+                            }
+                        }
+                    },
+                    error: function(e){
+                        console.log(e);
+                    }
+                });
+            }
+        <?php } ?>
     });
 </script>
 
@@ -943,5 +977,9 @@ foreach ($permissions as $permission) {
 
 
 <?php
-die;
+if (isset($_GET['notifyeditingon']) && $_GET['notifyeditingon'] == 1) {
+    //do nothing
+} else {
+    die;
+}
 ?>
