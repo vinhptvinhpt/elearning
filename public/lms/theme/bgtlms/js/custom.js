@@ -105,7 +105,7 @@
 
 
         if ($('.activity-navigation .btn-link').length > 0) {
-            if (($("#page-mod-quiz-attempt").length > 0) || ($("#gamebgt_display").length > 0)) {
+            if (($("#page-mod-quiz-attempt").length > 0)) {
                 var pre_title = $('.activity-navigation a#prev-activity-link').attr('title');
 
                 var pre_href = $('.activity-navigation a#prev-activity-link').attr('href');
@@ -118,7 +118,7 @@
                 $('.activity-navigation a#prev-activity-link').click(function(e) {
                     window.onbeforeunload = null;
                     e.preventDefault();
-                    if (confirm("Bạn có chắc chắn dừng bài thi và chuyển sang " + pre_title)) {
+                    if (confirm("Finish your quiz and go to next activity " + pre_title)) {
                         window.location.replace(pre_href);
                     }
                 });
@@ -128,7 +128,7 @@
                 $('.activity-navigation a#next-activity-link').click(function(e) {
                     window.onbeforeunload = null;
                     e.preventDefault();
-                    if (confirm("Bạn có chắc chắn dừng bài thi và chuyển sang " + next_title)) {
+                    if (confirm("Finish your quiz and go to next activity " + next_title)) {
                         window.location.replace(next_href);
                     }
                 });
@@ -136,13 +136,12 @@
 
             } else {
                 $('.activity-navigation a#prev-activity-link').html('Previous');
-                var pre_title = $('.activity-navigation a#prev-activity-link').attr('title');
-                $('.activity-navigation a#prev-activity-link').append('<span class="title">' + pre_title + '</span>');
+                // var pre_title = $('.activity-navigation a#prev-activity-link').attr('title');
+                // $('.activity-navigation a#prev-activity-link').append('<span class="title">' + pre_title + '</span>');
 
                 $('.activity-navigation a#next-activity-link').html('Next');
-                var next_title = $('.activity-navigation a#next-activity-link').attr('title');
-                $('.activity-navigation a#next-activity-link').append('<span class="title">' + next_title + '</span>');
-
+                // var next_title = $('.activity-navigation a#next-activity-link').attr('title');
+                // $('.activity-navigation a#next-activity-link').append('<span class="title">' + next_title + '</span>');
             }
         }
 
