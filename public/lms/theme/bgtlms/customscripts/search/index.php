@@ -139,15 +139,14 @@ if (!$data && $q) {
     }
 
     /*Map query params and pass to custom form*/
-    $area_ids = $_REQUEST['areaids'];
-    $area_ids = array_filter($area_ids);
-
+    $params_area_ids = isset($_REQUEST['areaids']) ? $_REQUEST['areaids'] : [];
+    $area_ids = array_filter($params_area_ids);
     if (!empty($areaids)) {
         $data->areaids = clean_param_array($areaids, PARAM_ALPHANUMEXT);
     }
 
-    $course_ids = $_REQUEST['courseids'];
-    $course_ids = array_filter($course_ids);
+    $params_course_ids = isset($_REQUEST['courseids']) ? $_REQUEST['courseids'] : [];
+    $course_ids = array_filter($params_course_ids);
     if (!empty($course_ids)) {
         $data->courseids = clean_param_array($course_ids, PARAM_INT);
     }
@@ -155,14 +154,16 @@ if (!$data && $q) {
     //$data->timestart = optional_param('timestart', 0, PARAM_INT);
     //$data->timeend = optional_param('timeend', 0, PARAM_INT);
 
-    if ($_REQUEST['timestart_custom'] && strlen($_REQUEST['timestart_custom']) != 0) {
-        $timestart_full = $_REQUEST['timestart_custom'];
+    $params_timestart_custom = isset($_REQUEST['timestart_custom']) ? $_REQUEST['timestart_custom'] : '';
+    if (strlen($params_timestart_custom) != 0) {
+        $timestart_full = $params_timestart_custom;
         $timestart = strtotime($timestart_full. ":00");
         $data->timestart = $timestart;
     }
 
-    if ($_REQUEST['timeend_custom'] && strlen($_REQUEST['timeend_custom']) != 0) {
-        $timeend_full = $_REQUEST['timeend_custom'];
+    $params_timeend_custom = isset($_REQUEST['timeend_custom']) ? $_REQUEST['timeend_custom'] : '';
+    if (strlen($params_timeend_custom) != 0) {
+        $timeend_full = $params_timeend_custom;
         $timeend = strtotime($timeend_full. ":00");
         $data->timeend = $timeend;
     }
@@ -273,20 +274,20 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             </div>
             <h4 class="mt-3">Filter</h4>
             <div class="row">
-                <div class="col-3 col-title-container">
+                <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
                     <label class="btn search_label_button">Title</label>
                 </div>
-                <div class="col-9">
+                <div class="col-md-9 col-sm-6 col-xs-12">
                     <div class="input-group">
-                        <input class="form-control" type="text" name="title" id="id_title" value="">
+                        <input class="form-control" type="text" name="title" id="id_title" value="<?php echo (strlen($data->title) != 0 ? $data->title : '') ?>">
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-3 col-title-container">
-                    <label class="btn search_label_button">Search area</label>
+            <div class="row mt-3">
+                <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
+                    <label class="btn search_label_button">Area</label>
                 </div>
-                <div class="col-9">
+                <div class="col-md-9 col-sm-6 col-xs-12">
                     <!--http://slimselectjs.com-->
                     <!--https://www.cssscript.com/multi-select-dropdown-component-javascript-slim-select/-->
                     <select multiple name="areaids[]" id="id_areaids">
@@ -297,11 +298,11 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
                     </select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-3 col-title-container">
+            <div class="row mt-3">
+                <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
                     <label class="btn search_label_button">Course</label>
                 </div>
-                <div class="col-9">
+                <div class="col-md-9 col-sm-6 col-xs-12">
                     <select multiple name="courseids[]" id="id_courseids">
                         <option value="" selected><?= get_string('allcourses', 'search') ?></option>
                         <?php foreach ($course_selection as $course_id => $course_name) { ?>
@@ -310,27 +311,32 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
                     </select>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-6 col-title-container">
+            <div class="row mt-3">
+                <div class="col-md-5 col-sm-5 col-xs-12 col-title-container">
                     <label class="btn search_label_button">Modified before</label>
                 </div>
-                <div class="col-6">
+                <div class="col-md-7 col-sm-7 col-xs-12">
                     <!--https://www.malot.fr/bootstrap-datetimepicker/-->
-                    <input size="16" type="text" name="timestart_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
+                    <input size="16" type="text" value="<?php echo $params_timestart_custom ?>" name="timestart_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
+                    <a onclick="clearPicker('timestart_custom')" class="clear-picker clear-timestart_custom hide"><i class="fa fa-remove"></i></a>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-6 col-title-container">
+
+            <div class="row mt-3">
+                <div class="col-md-5 col-sm-5 col-xs-12 col-title-container">
                     <label class="btn search_label_button">Modified after</label>
                 </div>
-                <div class="col-6">
-                    <input size="16" type="text"  name="timeend_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
+                <div class="col-md-7 col-sm-7 col-xs-12">
+                    <input size="16" type="text" value="<?php echo $params_timeend_custom ?>"  name="timeend_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
+                    <a onclick="clearPicker('timeend_custom')" class="clear-picker clear-timeend_custom hide"><i class="fa fa-remove"></i></a>
                 </div>
             </div>
             <input type="hidden" id="cat" name="cat" value="core-all">
             <input type="hidden" id="mform_isexpanded_id_filtersection" name="mform_isexpanded_id_filtersection" value="1">
-            <input type="submit" class="btn btn-md btn-bgtlms" name="submitbutton" id="id_submitbutton" value="Search">
-            <button type="button" class="btn btn-md btn-bgtlms-clear" onclick="resetForm()">CLEAR</button>
+            <div class="text-center mt-3">
+                <input type="submit" class="btn btn-md btn-bgtlms" name="submitbutton" id="id_submitbutton" value="Search">
+                <button type="button" class="btn btn-md btn-bgtlms-clear" onclick="resetForm()">CLEAR</button>
+            </div>
         </form>
     </div>
     <div class="col-8 search-result-block">
@@ -362,7 +368,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
         let q_input_append = $("#id-q-append");
         let q_input_icon = $("#id-q-icon");
 
-    <?php if ($missing_q == 1) {  ?>
+        <?php if ($missing_q == 1) {  ?>
             missing_q_text.removeClass("hide");
             q_input.addClass('is-invalid');
             q_input_append.addClass('span-error');
@@ -383,6 +389,34 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
                 q_input_icon.removeClass('id-q-icon-error');
             }
         });
+
+        <?php if (!empty($params_area_ids)) { ?>
+            let selected_area_ids = [];
+            <?php foreach ($params_area_ids as $area_id) {?>
+                selected_area_ids.push('<?php echo $area_id ?>');
+            <?php } ?>
+            selectArea.set(selected_area_ids);
+        <?php } ?>
+
+        <?php if (!empty($params_course_ids)) { ?>
+            let selected_course_ids = [];
+            <?php foreach ($params_course_ids as $course_id) {?>
+                selected_course_ids.push('<?php echo $course_id ?>');
+            <?php } ?>
+            selectCourse.set(selected_course_ids);
+        <?php } ?>
+    });
+
+    $(".form_datetime").on("change", function() {
+        let name = $(this).attr("name");
+        let remove = $(".clear-" + name);
+        if ($(this).val() === '') {
+            if (!remove.hasClass('hide')) {
+                remove.addClass('hide')
+            }
+        } else {
+            remove.removeClass('hide')
+        }
     });
 
     let selectArea = new SlimSelect({
@@ -433,6 +467,19 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
         $(".form_datetime").val("");
         $("#id_title").val("");
         $("#id_q").val("");
+
+        let remove = $(".clear-picker");
+        if (!remove.hasClass('hide')) {
+            remove.addClass('hide');
+        }
+    }
+
+    function clearPicker(picker) {
+        $('input[name=' + picker+ ']').val("");
+        let remove = $(".clear-" + picker);
+        if (!remove.hasClass('hide')) {
+            remove.addClass('hide');
+        }
     }
 
     function hideSelectedAll(type) {

@@ -5984,6 +5984,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $dataSurvey = TmsSurvey::with(['questions', 'questions.question_data', 'questions.question_data.answers'])->findOrFail($id)->toArray();
+
         return response()->json($dataSurvey);
     }
 
