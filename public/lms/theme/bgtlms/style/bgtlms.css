@@ -18,10 +18,7 @@
     border: 1px solid #862055;
     color: #862055;
     width: 100%;
-}
-
-.col-title-container {
-    padding-right: 0;
+    white-space: inherit;
 }
 
 .ss-main .ss-multi-selected .ss-values .ss-value {
@@ -51,3 +48,22 @@
     max-width: 13%;
     margin-right: 10px;
 }
+
+.clear-picker {
+    position: absolute;
+    top: 0.25rem;
+    right: 1.2rem;
+}
+
+@media screen and (min-width: 992px){
+    .col-title-container {
+        padding-right: 0;
+    }
+}
+
+@media screen and (max-width: 545px){
+    .btn-bgtlms-clear {
+        margin-top: 5px;
+    }
+}
+
