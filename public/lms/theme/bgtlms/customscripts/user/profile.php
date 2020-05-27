@@ -13,6 +13,7 @@ $badges = array_values($DB->get_records_sql($sqlGetBadges));
 session_start();
 $percentCompleted = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
 $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["totalCourse"]);
+$user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 ?>
 
 <html>
@@ -473,6 +474,7 @@ $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["tot
 <body>
 <!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
 <?php
+
 ?>
 <div class="wrapper" ><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
@@ -660,6 +662,7 @@ $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["tot
 
 <script>
     $(document).ready(function(){
+
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -674,12 +677,11 @@ $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["tot
             currentCourse: 0,
             linemanagers: [],
             user: {},
-            urlTms: '',
             clctgr: true,
             progressRequiredCourse: '0/0',
             progressCurrentCourse: '0/0',
             url: '<?php echo $CFG->wwwroot; ?>',
-            user_id: <?php echo $USER->id; ?>,
+            user_id: <?php echo $user_id ?>,
             current: 1,
             totalPage: 0,
             recordPerPage: 6,
@@ -706,7 +708,6 @@ $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["tot
                 this.category = category || this.category;
                 if(page == 1)
                     this.current = 1;
-                this.urlTms = 'http://localhost:8888/elearning-easia/public';
                 const params = new URLSearchParams();
                 params.append('category', category);
                 params.append('txtSearch', this.txtSearch);
@@ -734,7 +735,6 @@ $percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["tot
             getProfile: function(){
                 const params = new URLSearchParams();
                 params.append('user_id', this.user_id);
-
                 axios({
                     method: 'post',
                     url: this.url + '/pusher/profile.php',
