@@ -115,744 +115,746 @@ Vue.use(NProgress);
 
 const routes = [
 
-  /*
-   |--------------------------------------------------------------------------
-   | Admin Backend Routes
-   |--------------------------------------------------------------------------|
-   */
-  {
-    path: '/tms',
-    component: LayoutDashboard, // Change the desired Layout here
-    meta: {requiresAuth: true},
-    children: [
-      // Dashboard
-      {
-        path: 'dashboard',
-        component: DashboardIndexComponent,
-        name: 'Dashboard'
-      },
-      //Organize
-      //-departments
-      {
-        path: 'system/organize/department',
-        component: IndexDepartmentComponent,
-        name: 'DepartmentIndex'
-      },
-      {
-        path: 'system/organize/department/edit/:id',
-        component: EditDepartmentComponent,
-        name: 'EditDepartment',
-        props: (route) => ({id: route.params.id})
-      },
-      //-city
-      {
-        path: 'system/organize/city',
-        component: IndexCityComponent,
-        name: 'CityIndex',
-        props: (route) => ({
-          department: route.query.department_id ? route.query.department_id : 0,
-        })
-      },
-      {
-        path: 'system/organize/city/edit/:city_id',
-        component: EditCityComponent,
-        name: 'EditCity',
-        props: (route) => ({id: route.params.city_id})
-      },
-      {
-        path: 'system/organize/departments/city/:id',
-        component: DepartmentCityComponent,
-        name: 'DepartmentCityIndex',
-        props: (route) => ({id: route.params.id})
-      },
-      //-branch
-      {
-        path: 'system/organize/branch',
-        component: IndexBranchComponent,
-        name: 'BranchIndex',
-        props: (route) => ({
-          city_id: route.query.city ? route.query.city : 0,
-          code: route.query.code
-        })
-      },
-      {
-        path: 'system/organize/branch/edit/:branch_id',
-        component: EditBranchComponent,
-        name: 'EditBranch',
-        props: (route) => ({
-          id: route.params.branch_id,
-          city_id: route.query.city ? route.query.city : 0,
-        })
-      },
-      {
-        path: 'system/organize/city/branch/:city',
-        component: CityBranchComponent,
-        name: 'BranchIndexByCity',
-        props: (route) => ({
-          id: route.params.city,
-        })
-      },
-      //-saleroom
-      {
-        path: 'system/organize/saleroom',
-        component: IndexSaleRoomComponent,
-        name: 'SaleroomIndex',
-        props: (route) => ({
-          branch_id: route.query.branch_id ? route.query.branch_id : 0,
-          code: route.query.code
-        })
-      },
-      {
-        path: 'system/organize/saleroom/edit/:saleroom_id',
-        component: EditSaleRoomComponent,
-        name: 'EditSaleroom',
-        props: (route) => ({
-          id: route.params.saleroom_id,
-          branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
-          root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom',
-        })
-      },
-      {
-        path: 'system/organize/branch/saleroom/:branch_id',
-        component: BranchSaleroomComponent,
-        name: 'SaleroomIndexByBranch',
-        props: (route) => ({
-          id: route.params.branch_id,
-        })
-      },
-      //Branch for branch master & owner
-      {
-        path: 'branch/list', //master only
-        component: IndexBranchByRoleComponent,
-        name: 'BranchIndexByRole',
-        props: (route) => ({
-          master_id: route.query.master_id ? route.query.master_id : '',
-        })
-      },
-      {
-        path: 'branch/edit/:branch_id',
-        component: BranchEditByRoleComponent,
-        name: 'BranchEditByRole',
-        props: (route) => ({
-          id: route.params.branch_id ? route.params.branch_id : 0,
-        })
-      },
-      {
-        path: 'branch/user', //list user
-        component: BranchUserByRoleComponent,
-        name: 'BranchUserIndexByRole',
-        props: (route) => ({
-          id: route.query.branch_id ? route.query.branch_id : 0,
-          owner_type: !route.query.branch_id || route.query.branch_id === 0 ? 'owner' : 'master',
-          branch_type: 'agents',
-          saleroom_type: 'pos',
-        })
-      },
-      {
-        path: 'branch/:branch_id/user/:user_id/view', //view saleroom user
-        component: SaleroomUserViewComponent,
-        name: 'BranchUserViewByRole',
-        props: (route) => ({
-          branch_id: route.params.branch_id ? route.params.branch_id : 0,
-          user_id: route.params.user_id ? route.params.user_id : 0,
-          owner_type: route.query.type ? route.query.type : 0,
-        })
-      },
-      {
-        path: 'branch/:branch_id/user/:user_id/view', //edit saleroom user
-        component: SaleroomUserEditComponent,
-        name: 'BranchUserEditByRole',
-        props: (route) => ({
-          branch_id: route.params.branch_id ? route.params.branch_id : 0,
-          user_id: route.params.user_id ? route.params.user_id : 0,
-          owner_type: route.query.type ? route.query.type : 0,
-        })
-      },
-      //Saleroom for branch master or branch owner
-      {
-        path: 'saleroom/list',
-        component: SaleroomIndexComponent,
-        name: 'SaleroomIndexByRole',
-        props: (route) => ({
-          branch_id: route.query.branch_id ? route.query.branch_id : 0,
-        })
-      },
-      {
-        path: 'saleroom/:saleroom_id/edit',
-        component: EditSaleroomComponent,
-        name: 'SaleroomEditByRole',
-        props: (route) => ({
-          id: route.params.saleroom_id ? route.params.saleroom_id : 0,
-          owner_type: route.query.type ? route.query.type : '',
-        })
-      },
-      {
-        path: 'saleroom/:saleroom_id/user', //list user
-        component: SaleroomUserComponent,
-        name: 'SaleroomUserIndexByRole',
-        props: (route) => ({
-          id: route.params.saleroom_id ? route.params.saleroom_id : 0,
-          type: 'pos',
-          owner_type: route.query.type ? route.query.type : 0,
-        })
-      },
-      {
-        path: 'saleroom/:saleroom_id/user/:user_id/view', //view saleroom user
-        component: SaleroomUserViewComponent,
-        name: 'SaleroomUserViewByRole',
-        props: (route) => ({
-          saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
-          user_id: route.params.user_id ? route.params.user_id : 0,
-          owner_type: route.query.type ? route.query.type : 0,
-          type: 'saleroom',
-        })
-      },
-      {
-        path: 'saleroom/:saleroom_id/user/:user_id/edit', //edit saleroom user
-        component: SaleroomUserEditComponent,
-        name: 'SaleroomUserEditByRole',
-        props: (route) => ({
-          saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
-          user_id: route.params.user_id ? route.params.user_id : 0,
-          owner_type: route.query.type ? route.query.type : 0,
-          type: 'saleroom',
-        })
-      },
-      //Saleroom user for pos manager
-      {
-        path: 'sale_room_user', //edit saleroom user
-        component: SaleRoomUserIndexComponent,
-        name: 'SaleRoomUserIndex'
-      },
-      {
-        path: 'user/view/:name_section/:user_id', //edit saleroom user
-        component: ViewUserComponent,
-        name: 'SaleRoomUserView',
-        props: (route) => ({
-          name_section: route.params.name_section ? route.params.name_section : '',
-          user_id: route.params.user_id ? route.params.user_id : 0,
-        })
-      },
-      //User
-      {
-        path: 'profile',
-        component: ProfileComponent,
-        name: 'Profile',
-        props: (route) => ({
-          type: 'system',
-        })
-      },
-      {
-        path: 'profile/edit',
-        component: ProfileEditComponent,
-        name: 'ProfileEdit',
-        props: (route) => ({
-          type: 'system',
-          userid: route.params.user_id
-        })
-      },
-      {
-        path: 'system/user/edit/:user_id',
-        component: EditIndexComponent,
-        name: 'EditUserById',
-        props: (route) => ({
-          type: route.query.type,
-          user_id: route.params.user_id
-        })
-      },
-      {
-        path: 'system/user/edit_detail/:user_id',
-        component: EditComponent,
-        name: 'EditDetailUserById',
-        props: (route) => ({
-          type: route.query.type,
-          user_id: route.params.user_id
-        })
-      },
-      {
-        path: 'system/user',
-        component: IndexComponent,
-        name: 'SystemUserList',
-        props: (route) => ({type: 'system'})
-      },
-      {
-        path: 'system/view_user_market',
-        component: IndexUserMarketComponent,
-        name: 'SystemUserMarketList',
-        props: (route) => ({type: route.query.type})
-      },
-      {
-        path: 'system/user_market',
-        component: UserMarketComponent,
-        name: 'UserMarketIndex',
-      },
-      {
-        path: 'system/user_market/organize/:user_id',
-        component: UserMarketOrganizeComponent,
-        name: 'UserMarketOrganize',
-        props: (route) => ({user_id: route.params.user_id})
-      },
-      {
-        path: 'system/branch_master',
-        component: BranchMasterComponent,
-        name: 'BranchMasterIndex',
-      },
-      {
-        path: 'education/user_teacher',
-        component: IndexComponent,
-        name: 'TeacherIndex',
-        props: (route) => ({type: 'teacher'})
-      },
-      {
-        path: 'education/user_student',
-        component: IndexComponent,
-        name: 'StudentIndex',
-        props: (route) => ({type: 'student'})
-      },
-      {
-        path: 'system/user/trash',
-        component: UserTrashComponent,
-        name: 'userTrashIndex',
-        props: (route) => ({type: 'system'})
-      },
-      {
-        path: 'system/organize/branch/user_list/:branch_id',
-        component: BranchListUserComponent,
-        name: 'ListUserByBranch',
-        props: (route) => ({id: route.params.branch_id})
-      },
-      {
-        path: 'system/organize/saleroom/user/:saleroom_id',
-        component: SaleRoomUserComponent,
-        name: 'ListUserBySaleroom',
-        props: (route) => ({
-          id: route.params.saleroom_id,
-          branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
-          root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom'
-        })
-      },
-      {
-        path: 'system/organize/branch/add_user/:branch_id',
-        component: BranchAddUserComponent,
-        name: 'AddUserByBranch',
-        props: (route) => ({id: route.params.branch_id})
-      },
-      {
-        path: 'excel/import/user',
-        component: ImportIndexComponent,
-        name: 'ImportIndex',
-        props: (route) => ({query: route.params.type ? route.params.type : 'system'})
-      },
-      //Roles
-      {
-        path: 'role',
-        component: RoleIndexComponent,
-        name: 'RoleIndex'
-      },
-      {
-        path: 'role/edit/:role_id',
-        component: RoleEditComponent,
-        name: 'RoleEdit',
-        props: (route) => ({role_id: route.params.role_id})
-      },
-      {
-        path: 'role/list_user/:role_id',
-        component: RoleListUserComponent,
-        name: 'RoleUserIndex',
-        props: (route) => ({role_id: route.params.role_id})
-      },
-      {
-        path: 'permission',
-        component: PermissionIndexComponent,
-        name: 'IndexPermission'
-      },
-      {
-        path: 'permission/slug_info/:slug',
-        component: PermissionAddComponent,
-        name: 'AddPermission',
-        props: (route) => ({slug: route.params.slug})
-      },
-      {
-        path: 'permission/detail/:id',
-        component: PermissionDetailComponent,
-        name: 'DetailPermission',
-        props: (route) => ({permission_id: route.params.id})
-      },
-      //Activity log
-      {
-        path: 'activity_log',
-        component: ActivityLogComponent,
-        name: 'ActivityLog'
-      },
-      //Report
-      {
-        path: 'report/detail',
-        component: ReportDetailComponent,
-        name: 'ReportIndex'
-      },
-      {
-        path: 'report/base',
-        component: ReportBaseComponent,
-        name: 'ReportBaseIndex'
-      },
-      //Survey
-      {
-        path: 'survey/list',
-        component: SurveyListComponent,
-        name: 'SurveyIndex'
-      },
-      {
-        path: 'survey/create',
-        component: SurveyCreateComponent,
-        name: 'SurveyCreate'
-      },
-      {
-        path: 'survey/viewlayout/:survey_id',
-        component: SurveyPresentComponent,
-        name: 'SurveyPresent',
-        props: (route) => ({survey_id: route.params.survey_id})
-      },
-      {
-        path: 'survey/statistic/:survey_id',
-        component: SurveyStatisticComponent,
-        name: 'SurveyStatistic',
-        props: (route) => ({survey_id: route.params.survey_id})
-      },
-      {
-        path: 'survey/statistic/:survey_id',
-        component: SurveyEditComponent,
-        name: 'SurveyDetail',
-        props: (route) => ({survey_id: route.params.survey_id})
-      },
-      {
-        path: 'survey/restore',
-        component: SurveyRestoreComponent,
-        name: 'SurveyRestore'
-      },
-      {
-        path: 'question/create/:survey_id',
-        component: QuestionAddComponent,
-        name: 'QuestionCreate',
-        props: (route) => ({sur_id: route.params.survey_id})
-      },
-      {
-        path: 'question/list',
-        component: QuestionListComponent,
-        name: 'QuestionIndex',
-      },
-      {
-        path: 'question/detail/:question_id',
-        component: QuestionEditComponent,
-        name: 'QuestionDetail',
-        props: (route) => ({ques_id: route.params.question_id})
-      },
-      //Settings
-      //-configuration
-      {
-        path: 'configuration',
-        component: SettingIndexComponent,
-        name: 'Configuration'
-      },
-      //-notification
-      {
-        path: 'notification',
-        component: NotificationIndexComponent,
-        name: 'Notification'
-      },
-      //Education
-      //-course sample
-      {
-        path: 'education/course/course_sample',
-        component: SampleCourseComponent,
-        name: 'SampleCourseIndex',
-      },
-      {
-        path: 'education/course/detail_sample/:id',
-        component: CourseSampleEditComponent,
-        name: 'SampleCourseDetail',
-        props: (route) => ({course_id: route.params.id})
-      },
-      {
-        path: 'education/course/detail/:id',
-        component: CourseEditComponent,
-        name: 'CourseDetail',
-        props: (route) => ({course_id: route.params.id})
-      },
-      {
-        path: 'education/course/detail_concentrate/:id',
-        component: CourseEditConcentComponent,
-        name: 'CourseConcentrateDetail',
-        props: (route) => ({course_id: route.params.id})
-      },
-      {
-        path: 'education/course/clone/:course_id',
-        component: CourseCloneComponent,
-        name: 'CourseClone',
-        props: (route) => ({course_id: route.params.course_id})
-      },
-      {
-        path: 'education/course/list',
-        component: CourseListComponent,
-        name: 'CourseIndex',
-      },
-      {
-        path: 'education/course/list_restore',
-        component: CourseRestoreComponent,
-        name: 'CourseRestoreIndex',
-      },
-      {
-        path: 'certificate/student/uncertificate',
-        component: StudentUncertificateComponent,
-        name: 'StudentUncertificate',
-      },
-      {
-        path: 'certificate/image',
-        component: ImageCertificateComponent,
-        name: 'ImageCertificate',
-        props: (route) => ({
-          code: route.query.code,
-          badge: route.query.badge
-        })
-      },
-      // badge
-      {
-        path: 'badge/setting',
-        component: SettingCertificateComponent,
-        name: 'SettingBadge',
-        props: (route) => ({
-          type: route.query.type
-        })
-      },
-      {
-        path: 'education/course/list_concentrate',
-        component: CourseConcenComponent,
-        name: 'CourseConcentrateIndex',
-      },
-      {
-        path: 'education/course/create',
-        component: CourseCreateComponent,
-        name: 'CourseCreate',
-      },
-      {
-        path: 'education/course/create_concentrate',
-        component: CourseCreateConcenComponent,
-        name: 'CourseCreateConcern',
-      },
-      {
-        path: 'education/course/enrol/:id/:come_from',
-        component: EnrolComponent,
-        name: 'CourseEnrol',
-        props: (route) => ({
-          course_id: route.params.id,
-          come_from: route.params.come_from
-        })
-      },
-      {
-        path: 'education/course/statistic/:id/:come_from',
-        component: CourseStatisticComponent,
-        name: 'CourseStatistic',
-        props: (route) => ({
-          course_id: route.params.id,
-          come_from: route.params.come_from
-        })
-      },
-      { //không dùng nữa
-        path: 'education/attendance',
-        component: AttendanceComponent,
-        name: 'Attendance',
-        props: (route) => ({
-          course_id: route.params.course_id,
-          course_name: route.params.course_name,
-          come_form: route.params.come_form
-        })
-      },
-      {
-        path: 'certificate/setting',
-        component: SettingCertificateComponent,
-        name: 'SettingCertificate',
-        props: (route) => ({
-          type: route.query.type,
-        })
-      },
-      {
-        path: 'certificate/edit/:id',
-        component: EditCertificateComponent,
-        name: 'EditCertificate',
-        props: (route) => ({
-          id: route.params.id,
-          type: route.params.type
-        })
-      },
-      {
-        path: 'education/resetexam',
-        component: ListUserExam,
-        name: 'UserExam'
-      },
-      {
-        path: 'education/invite/:id/:come_from',
-        component: InviteStudentComponent,
-        name: 'InviteStudent',
-        props: (route) => ({
-          course_id: route.params.id,
-          come_from: route.params.come_from,
-          course_name: route.params.course_name,
-        })
-      },
+    /*
+     |--------------------------------------------------------------------------
+     | Admin Backend Routes
+     |--------------------------------------------------------------------------|
+     */
+    {
+        path: '/tms',
+        component: LayoutDashboard, // Change the desired Layout here
+        meta: {requiresAuth: true},
+        children: [
+            // Dashboard
+            {
+                path: 'dashboard',
+                component: DashboardIndexComponent,
+                name: 'Dashboard'
+            },
+            //Organize
+            //-departments
+            {
+                path: 'system/organize/department',
+                component: IndexDepartmentComponent,
+                name: 'DepartmentIndex'
+            },
+            {
+                path: 'system/organize/department/edit/:id',
+                component: EditDepartmentComponent,
+                name: 'EditDepartment',
+                props: (route) => ({id: route.params.id})
+            },
+            //-city
+            {
+                path: 'system/organize/city',
+                component: IndexCityComponent,
+                name: 'CityIndex',
+                props: (route) => ({
+                    department: route.query.department_id ? route.query.department_id : 0,
+                })
+            },
+            {
+                path: 'system/organize/city/edit/:city_id',
+                component: EditCityComponent,
+                name: 'EditCity',
+                props: (route) => ({id: route.params.city_id})
+            },
+            {
+                path: 'system/organize/departments/city/:id',
+                component: DepartmentCityComponent,
+                name: 'DepartmentCityIndex',
+                props: (route) => ({id: route.params.id})
+            },
+            //-branch
+            {
+                path: 'system/organize/branch',
+                component: IndexBranchComponent,
+                name: 'BranchIndex',
+                props: (route) => ({
+                    city_id: route.query.city ? route.query.city : 0,
+                    code: route.query.code
+                })
+            },
+            {
+                path: 'system/organize/branch/edit/:branch_id',
+                component: EditBranchComponent,
+                name: 'EditBranch',
+                props: (route) => ({
+                    id: route.params.branch_id,
+                    city_id: route.query.city ? route.query.city : 0,
+                })
+            },
+            {
+                path: 'system/organize/city/branch/:city',
+                component: CityBranchComponent,
+                name: 'BranchIndexByCity',
+                props: (route) => ({
+                    id: route.params.city,
+                })
+            },
+            //-saleroom
+            {
+                path: 'system/organize/saleroom',
+                component: IndexSaleRoomComponent,
+                name: 'SaleroomIndex',
+                props: (route) => ({
+                    branch_id: route.query.branch_id ? route.query.branch_id : 0,
+                    code: route.query.code
+                })
+            },
+            {
+                path: 'system/organize/saleroom/edit/:saleroom_id',
+                component: EditSaleRoomComponent,
+                name: 'EditSaleroom',
+                props: (route) => ({
+                    id: route.params.saleroom_id,
+                    branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
+                    root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom',
+                })
+            },
+            {
+                path: 'system/organize/branch/saleroom/:branch_id',
+                component: BranchSaleroomComponent,
+                name: 'SaleroomIndexByBranch',
+                props: (route) => ({
+                    id: route.params.branch_id,
+                })
+            },
+            //Branch for branch master & owner
+            {
+                path: 'branch/list', //master only
+                component: IndexBranchByRoleComponent,
+                name: 'BranchIndexByRole',
+                props: (route) => ({
+                    master_id: route.query.master_id ? route.query.master_id : '',
+                })
+            },
+            {
+                path: 'branch/edit/:branch_id',
+                component: BranchEditByRoleComponent,
+                name: 'BranchEditByRole',
+                props: (route) => ({
+                    id: route.params.branch_id ? route.params.branch_id : 0,
+                })
+            },
+            {
+                path: 'branch/user', //list user
+                component: BranchUserByRoleComponent,
+                name: 'BranchUserIndexByRole',
+                props: (route) => ({
+                    id: route.query.branch_id ? route.query.branch_id : 0,
+                    owner_type: !route.query.branch_id || route.query.branch_id === 0 ? 'owner' : 'master',
+                    branch_type: 'agents',
+                    saleroom_type: 'pos',
+                })
+            },
+            {
+                path: 'branch/:branch_id/user/:user_id/view', //view saleroom user
+                component: SaleroomUserViewComponent,
+                name: 'BranchUserViewByRole',
+                props: (route) => ({
+                    branch_id: route.params.branch_id ? route.params.branch_id : 0,
+                    user_id: route.params.user_id ? route.params.user_id : 0,
+                    owner_type: route.query.type ? route.query.type : 0,
+                })
+            },
+            {
+                path: 'branch/:branch_id/user/:user_id/view', //edit saleroom user
+                component: SaleroomUserEditComponent,
+                name: 'BranchUserEditByRole',
+                props: (route) => ({
+                    branch_id: route.params.branch_id ? route.params.branch_id : 0,
+                    user_id: route.params.user_id ? route.params.user_id : 0,
+                    owner_type: route.query.type ? route.query.type : 0,
+                })
+            },
+            //Saleroom for branch master or branch owner
+            {
+                path: 'saleroom/list',
+                component: SaleroomIndexComponent,
+                name: 'SaleroomIndexByRole',
+                props: (route) => ({
+                    branch_id: route.query.branch_id ? route.query.branch_id : 0,
+                })
+            },
+            {
+                path: 'saleroom/:saleroom_id/edit',
+                component: EditSaleroomComponent,
+                name: 'SaleroomEditByRole',
+                props: (route) => ({
+                    id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+                    owner_type: route.query.type ? route.query.type : '',
+                })
+            },
+            {
+                path: 'saleroom/:saleroom_id/user', //list user
+                component: SaleroomUserComponent,
+                name: 'SaleroomUserIndexByRole',
+                props: (route) => ({
+                    id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+                    type: 'pos',
+                    owner_type: route.query.type ? route.query.type : 0,
+                })
+            },
+            {
+                path: 'saleroom/:saleroom_id/user/:user_id/view', //view saleroom user
+                component: SaleroomUserViewComponent,
+                name: 'SaleroomUserViewByRole',
+                props: (route) => ({
+                    saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+                    user_id: route.params.user_id ? route.params.user_id : 0,
+                    owner_type: route.query.type ? route.query.type : 0,
+                    type: 'saleroom',
+                })
+            },
+            {
+                path: 'saleroom/:saleroom_id/user/:user_id/edit', //edit saleroom user
+                component: SaleroomUserEditComponent,
+                name: 'SaleroomUserEditByRole',
+                props: (route) => ({
+                    saleroom_id: route.params.saleroom_id ? route.params.saleroom_id : 0,
+                    user_id: route.params.user_id ? route.params.user_id : 0,
+                    owner_type: route.query.type ? route.query.type : 0,
+                    type: 'saleroom',
+                })
+            },
+            //Saleroom user for pos manager
+            {
+                path: 'sale_room_user', //edit saleroom user
+                component: SaleRoomUserIndexComponent,
+                name: 'SaleRoomUserIndex'
+            },
+            {
+                path: 'user/view/:name_section/:user_id', //edit saleroom user
+                component: ViewUserComponent,
+                name: 'SaleRoomUserView',
+                props: (route) => ({
+                    name_section: route.params.name_section ? route.params.name_section : '',
+                    user_id: route.params.user_id ? route.params.user_id : 0,
+                })
+            },
+            //User
+            {
+                path: 'profile',
+                component: ProfileComponent,
+                name: 'Profile',
+                props: (route) => ({
+                    type: 'system',
+                })
+            },
+            {
+                path: 'profile/edit',
+                component: ProfileEditComponent,
+                name: 'ProfileEdit',
+                props: (route) => ({
+                    type: 'system',
+                    userid: route.params.user_id
+                })
+            },
+            {
+                path: 'system/user/edit/:user_id',
+                component: EditIndexComponent,
+                name: 'EditUserById',
+                props: (route) => ({
+                    type: route.query.type,
+                    user_id: route.params.user_id
+                })
+            },
+            {
+                path: 'system/user/edit_detail/:user_id',
+                component: EditComponent,
+                name: 'EditDetailUserById',
+                props: (route) => ({
+                    type: route.query.type,
+                    user_id: route.params.user_id
+                })
+            },
+            {
+                path: 'system/user',
+                component: IndexComponent,
+                name: 'SystemUserList',
+                props: (route) => ({type: 'system'})
+            },
+            {
+                path: 'system/view_user_market',
+                component: IndexUserMarketComponent,
+                name: 'SystemUserMarketList',
+                props: (route) => ({type: route.query.type})
+            },
+            {
+                path: 'system/user_market',
+                component: UserMarketComponent,
+                name: 'UserMarketIndex',
+            },
+            {
+                path: 'system/user_market/organize/:user_id',
+                component: UserMarketOrganizeComponent,
+                name: 'UserMarketOrganize',
+                props: (route) => ({user_id: route.params.user_id})
+            },
+            {
+                path: 'system/branch_master',
+                component: BranchMasterComponent,
+                name: 'BranchMasterIndex',
+            },
+            {
+                path: 'education/user_teacher',
+                component: IndexComponent,
+                name: 'TeacherIndex',
+                props: (route) => ({type: 'teacher'})
+            },
+            {
+                path: 'education/user_student',
+                component: IndexComponent,
+                name: 'StudentIndex',
+                props: (route) => ({type: 'student'})
+            },
+            {
+                path: 'system/user/trash',
+                component: UserTrashComponent,
+                name: 'userTrashIndex',
+                props: (route) => ({type: 'system'})
+            },
+            {
+                path: 'system/organize/branch/user_list/:branch_id',
+                component: BranchListUserComponent,
+                name: 'ListUserByBranch',
+                props: (route) => ({id: route.params.branch_id})
+            },
+            {
+                path: 'system/organize/saleroom/user/:saleroom_id',
+                component: SaleRoomUserComponent,
+                name: 'ListUserBySaleroom',
+                props: (route) => ({
+                    id: route.params.saleroom_id,
+                    branch_id: route.query.branch_id && route.query.branch_id !== 0 ? route.query.branch_id : 0,
+                    root: route.query.branch_id && route.query.branch_id !== 0 ? 'branch' : 'saleroom'
+                })
+            },
+            {
+                path: 'system/organize/branch/add_user/:branch_id',
+                component: BranchAddUserComponent,
+                name: 'AddUserByBranch',
+                props: (route) => ({id: route.params.branch_id})
+            },
+            {
+                path: 'excel/import/user',
+                component: ImportIndexComponent,
+                name: 'ImportIndex',
+                props: (route) => ({query: route.params.type ? route.params.type : 'system'})
+            },
+            //Roles
+            {
+                path: 'role',
+                component: RoleIndexComponent,
+                name: 'RoleIndex'
+            },
+            {
+                path: 'role/edit/:role_id',
+                component: RoleEditComponent,
+                name: 'RoleEdit',
+                props: (route) => ({role_id: route.params.role_id})
+            },
+            {
+                path: 'role/list_user/:role_id',
+                component: RoleListUserComponent,
+                name: 'RoleUserIndex',
+                props: (route) => ({role_id: route.params.role_id})
+            },
+            {
+                path: 'permission',
+                component: PermissionIndexComponent,
+                name: 'IndexPermission'
+            },
+            {
+                path: 'permission/slug_info/:slug',
+                component: PermissionAddComponent,
+                name: 'AddPermission',
+                props: (route) => ({slug: route.params.slug})
+            },
+            {
+                path: 'permission/detail/:id',
+                component: PermissionDetailComponent,
+                name: 'DetailPermission',
+                props: (route) => ({permission_id: route.params.id})
+            },
+            //Activity log
+            {
+                path: 'activity_log',
+                component: ActivityLogComponent,
+                name: 'ActivityLog'
+            },
+            //Report
+            {
+                path: 'report/detail',
+                component: ReportDetailComponent,
+                name: 'ReportIndex'
+            },
+            {
+                path: 'report/base',
+                component: ReportBaseComponent,
+                name: 'ReportBaseIndex'
+            },
+            //Survey
+            {
+                path: 'survey/list',
+                component: SurveyListComponent,
+                name: 'SurveyIndex'
+            },
+            {
+                path: 'survey/create',
+                component: SurveyCreateComponent,
+                name: 'SurveyCreate'
+            },
+            {
+                path: 'survey/viewlayout/:survey_id',
+                component: SurveyPresentComponent,
+                name: 'SurveyPresent',
+                props: (route) => ({survey_id: route.params.survey_id})
+            },
+            {
+                path: 'survey/statistic/:survey_id',
+                component: SurveyStatisticComponent,
+                name: 'SurveyStatistic',
+                props: (route) => ({survey_id: route.params.survey_id})
+            },
+            {
+                path: 'survey/statistic/:survey_id',
+                component: SurveyEditComponent,
+                name: 'SurveyDetail',
+                props: (route) => ({survey_id: route.params.survey_id})
+            },
+            {
+                path: 'survey/restore',
+                component: SurveyRestoreComponent,
+                name: 'SurveyRestore'
+            },
+            {
+                path: 'question/create/:survey_id',
+                component: QuestionAddComponent,
+                name: 'QuestionCreate',
+                props: (route) => ({sur_id: route.params.survey_id})
+            },
+            {
+                path: 'question/list',
+                component: QuestionListComponent,
+                name: 'QuestionIndex',
+            },
+            {
+                path: 'question/detail/:question_id',
+                component: QuestionEditComponent,
+                name: 'QuestionDetail',
+                props: (route) => ({ques_id: route.params.question_id})
+            },
+            //Settings
+            //-configuration
+            {
+                path: 'configuration',
+                component: SettingIndexComponent,
+                name: 'Configuration'
+            },
+            //-notification
+            {
+                path: 'notification',
+                component: NotificationIndexComponent,
+                name: 'Notification'
+            },
+            //Education
+            //-course sample
+            {
+                path: 'education/course/course_sample',
+                component: SampleCourseComponent,
+                name: 'SampleCourseIndex',
+            },
+            {
+                path: 'education/course/detail_sample/:id',
+                component: CourseSampleEditComponent,
+                name: 'SampleCourseDetail',
+                props: (route) => ({course_id: route.params.id})
+            },
+            {
+                path: 'education/course/detail/:id',
+                component: CourseEditComponent,
+                name: 'CourseDetail',
+                props: (route) => ({course_id: route.params.id})
+            },
+            {
+                path: 'education/course/detail_concentrate/:id',
+                component: CourseEditConcentComponent,
+                name: 'CourseConcentrateDetail',
+                props: (route) => ({course_id: route.params.id})
+            },
+            {
+                path: 'education/course/clone/:course_id',
+                component: CourseCloneComponent,
+                name: 'CourseClone',
+                props: (route) => ({course_id: route.params.course_id})
+            },
+            {
+                path: 'education/course/list',
+                component: CourseListComponent,
+                name: 'CourseIndex',
+            },
+            {
+                path: 'education/course/list_restore',
+                component: CourseRestoreComponent,
+                name: 'CourseRestoreIndex',
+            },
+            {
+                path: 'certificate/student/uncertificate',
+                component: StudentUncertificateComponent,
+                name: 'StudentUncertificate',
+            },
+            {
+                path: 'certificate/image',
+                component: ImageCertificateComponent,
+                name: 'ImageCertificate',
+                props: (route) => ({
+                    code: route.query.code,
+                    badge: route.query.badge
+                })
+            },
+            // badge
+            {
+                path: 'badge/setting',
+                component: SettingCertificateComponent,
+                name: 'SettingBadge',
+                props: (route) => ({
+                    type: route.query.type
+                })
+            },
+            {
+                path: 'education/course/list_concentrate',
+                component: CourseConcenComponent,
+                name: 'CourseConcentrateIndex',
+            },
+            {
+                path: 'education/course/create',
+                component: CourseCreateComponent,
+                name: 'CourseCreate',
+            },
+            {
+                path: 'education/course/create_concentrate',
+                component: CourseCreateConcenComponent,
+                name: 'CourseCreateConcern',
+            },
+            {
+                path: 'education/course/enrol/:id/:come_from',
+                component: EnrolComponent,
+                name: 'CourseEnrol',
+                props: (route) => ({
+                    course_id: route.params.id,
+                    come_from: route.params.come_from
+                })
+            },
+            {
+                path: 'education/course/statistic/:id/:come_from',
+                component: CourseStatisticComponent,
+                name: 'CourseStatistic',
+                props: (route) => ({
+                    course_id: route.params.id,
+                    come_from: route.params.come_from
+                })
+            },
+            { //không dùng nữa
+                path: 'education/attendance',
+                component: AttendanceComponent,
+                name: 'Attendance',
+                props: (route) => ({
+                    course_id: route.params.course_id,
+                    course_name: route.params.course_name,
+                    come_form: route.params.come_form
+                })
+            },
+            {
+                path: 'certificate/setting',
+                component: SettingCertificateComponent,
+                name: 'SettingCertificate',
+                props: (route) => ({
+                    type: route.query.type,
+                })
+            },
+            {
+                path: 'certificate/edit/:id',
+                component: EditCertificateComponent,
+                name: 'EditCertificate',
+                props: (route) => ({
+                    id: route.params.id,
+                    type: route.params.type
+                })
+            },
+            {
+                path: 'education/resetexam',
+                component: ListUserExam,
+                name: 'UserExam'
+            },
+            {
+                path: 'education/invite/:id/:come_from',
+                component: InviteStudentComponent,
+                name: 'InviteStudent',
+                props: (route) => ({
+                    course_id: route.params.id,
+                    come_from: route.params.come_from,
+                    course_name: route.params.course_name,
+                })
+            },
 
-      //Email
-      {
-        path: 'email_template/list',
-        component: TemplateIndexComponent,
-        name: 'EmailTemplateIndex'
-      },
-      {
-        path: 'email_template/detail/:name_file',
-        component: TemplateDetailComponent,
-        name: 'EmailTemplateDetail',
-        props: (route) => ({
-          name_file: route.params.name_file ? route.params.name_file : 0
-        })
-      },
+            //Email
+            {
+                path: 'email_template/list',
+                component: TemplateIndexComponent,
+                name: 'EmailTemplateIndex'
+            },
+            {
+                path: 'email_template/detail/:name_file',
+                component: TemplateDetailComponent,
+                name: 'EmailTemplateDetail',
+                props: (route) => ({
+                    name_file: route.params.name_file ? route.params.name_file : 0
+                })
+            },
 
-      //Organization new
-      {
-        path: 'organization',
-        component: IndexOrganizationComponent,
-        name: 'IndexOrganization',
-        props: (route) => ({
-          source_page: route.params.source_page ? route.params.source_page : 0
-        })
-      },
-      {
-        path: 'organization/edit/:id',
-        component: EditOrganizationComponent,
-        name: 'EditOrganization',
-        props: (route) => ({
-          id: route.params.id,
-          source_page: route.params.source_page ? route.params.source_page : 0
-        })
-      },
-      {
-        path: 'organization-employee',
-        component: IndexEmployeeComponent,
-        name: 'IndexEmployee',
-        props: (route) => ({
-          organization_id: route.query.organization_id,
-          source_page: route.params.source_page ? route.params.source_page : 0
-        })
-      },
-      {
-        path: 'organization-employee/edit/:id',
-        component: EditEmployeeComponent,
-        name: 'EditEmployee',
-        props: (route) => ({
-          id: route.params.id,
-          source_page: route.params.source_page ? route.params.source_page : 0,
-          organization_id: route.query.organization_id ? route.query.organization_id : 0,
-        })
-      },
-      // Trainning
-      {
-        path: 'trainning/certification',
-        component: TrainningListComponent,
-        name: 'TrainningCertificationIndex',
-        props: (route) => ({
-          type: route.query.type ? route.query.type : 0
-        })
-      },
-      {
-        path: 'trainning/list',
-        component: TrainningListComponent,
-        name: 'TrainningIndex',
-        props: (route) => ({
-          type: route.query.type ? route.query.type : 0
-        })
-      },
-      {
-        path: 'trainning/detail/:id',
-        component: TrainningEditComponent,
-        name: 'TrainningEdit',
-        props: (route) => ({
-          id: route.params.id,
-        })
-      },
-      {
-        path: 'trainning/list_user/:trainning_id',
-        component: ListUserComponent,
-        name: 'ListUserTrainning',
-        props: (route) => ({
-          trainning_id: route.params.trainning_id,
-        })
-      },
-    ]
-  },
-  /*
-   |--------------------------------------------------------------------------
-   | Single Page Routes
-   |--------------------------------------------------------------------------|
-   */
-  {
-    path: '/page',
-    component: LayoutPage, // Change the desired Layout here
-    meta: {requiresAuth: false},
-    children: [
-      {
-        path: 'invitation/confirm/:invitation_id',
-        component: ConfirmInvitationComponent,
-        name: 'ConfirmInvitation',
-        props: (route) => ({
-          invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
-        })
-      },
-      {
-        path: 'email/confirm/:no_id/:email',
-        component: ConfirmEmailComponent,
-        name: 'ConfirmEmail',
-        props: (route) => ({
-          no_id: route.params.no_id,
-          email: route.params.email
-        })
-      },
-    ]
-  },
+            //Organization new
+            {
+                path: 'organization',
+                component: IndexOrganizationComponent,
+                name: 'IndexOrganization',
+                props: (route) => ({
+                    source_page: route.params.source_page ? route.params.source_page : 0
+                })
+            },
+            {
+                path: 'organization/edit/:id',
+                component: EditOrganizationComponent,
+                name: 'EditOrganization',
+                props: (route) => ({
+                    id: route.params.id,
+                    source_page: route.params.source_page ? route.params.source_page : 0
+                })
+            },
+            {
+                path: 'organization-employee',
+                component: IndexEmployeeComponent,
+                name: 'IndexEmployee',
+                props: (route) => ({
+                    organization_id: route.query.organization_id,
+                    source_page: route.params.source_page ? route.params.source_page : 0
+                })
+            },
+            {
+                path: 'organization-employee/edit/:id',
+                component: EditEmployeeComponent,
+                name: 'EditEmployee',
+                props: (route) => ({
+                    id: route.params.id,
+                    source_page: route.params.source_page ? route.params.source_page : 0,
+                    organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                })
+            },
+            // Trainning
+            {
+                path: 'trainning/certification',
+                component: TrainningListComponent,
+                name: 'TrainningCertificationIndex',
+                props: (route) => ({
+                    type: route.query.type ? route.query.type : 0
+                })
+            },
+            {
+                path: 'trainning/list',
+                component: TrainningListComponent,
+                name: 'TrainningIndex',
+                props: (route) => ({
+                    type: route.query.type ? route.query.type : 0
+                })
+            },
+            {
+                path: 'trainning/detail/:id',
+                component: TrainningEditComponent,
+                name: 'TrainningEdit',
+                props: (route) => ({
+                    id: route.params.id,
+                })
+            },
+            {
+                path: 'trainning/list_user/:trainning_id',
+                component: ListUserComponent,
+                name: 'ListUserTrainning',
+                props: (route) => ({
+                    trainning_id: route.params.trainning_id,
+                })
+            },
+        ]
+    },
+    /*
+     |--------------------------------------------------------------------------
+     | Single Page Routes
+     |--------------------------------------------------------------------------|
+     */
+    {
+        path: '/page',
+        component: LayoutPage, // Change the desired Layout here
+        meta: {requiresAuth: false},
+        children: [
+            {
+                path: 'invitation/confirm/:invitation_id',
+                component: ConfirmInvitationComponent,
+                name: 'ConfirmInvitation',
+                props: (route) => ({
+                    invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
+                })
+            },
+            {
+                path: 'email/confirm/:no_id/:email',
+                component: ConfirmEmailComponent,
+                name: 'ConfirmEmail',
+                props: (route) => ({
+                    no_id: route.params.no_id,
+                    email: route.params.email
+                })
+            },
+        ]
+    },
 
-  //  DEFAULT ROUTE
-  {path: '*', component: NotFoundPage}
+    //  DEFAULT ROUTE
+    {path: '*', component: NotFoundPage}
 ];
 
 const router = new VueRouter({
-  routes,
-  mode: 'history',
-  linkActiveClass: 'active'
+    routes,
+    mode: 'history',
+    linkActiveClass: 'active'
 });
 
 router.beforeResolve((to, from, next) => {
-  if (to.name) {
-    NProgress.start();
-  }
-  next();
+    if (to.name) {
+        NProgress.start();
+    }
+    next();
 });
 
 router.beforeEach((to, from, next) => {
-  //  If the next route is requires user to be Logged IN
-  if (to.matched.some(m => m.meta.requiresAuth)) {
-    return AuthService.check().then(authenticated => {
-      if (!authenticated) {
-        let baseUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
-        let fullUrl = location.href;
-        window.location.replace(baseUrl + '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + fullUrl);
-        //return next({ path: '/login' }); //not working
-      } else {
+    //  If the next route is requires user to be Logged IN
+    if (to.matched.some(m => m.meta.requiresAuth)) {
+        //allow multi device login with same account -- thold
+        // return AuthService.check().then(authenticated => {
+        //   if (!authenticated) {
+        //     let baseUrl = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '');
+        //     let fullUrl = location.href;
+        //     window.location.replace(baseUrl + '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + fullUrl);
+        //     //return next({ path: '/login' }); //not working
+        //   } else {
+        //     return next();
+        //   }
+        // });
         return next();
-      }
-    });
-  }
+    }
 
-  return next();
+    return next();
 });
 
 router.afterEach((to, from) => {
-  NProgress.done();
+    NProgress.done();
 });
 
 export default router;

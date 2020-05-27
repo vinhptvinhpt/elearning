@@ -174,16 +174,20 @@ class LoginController extends Controller
                 return response()->json(['status' => 'invalid_credentials'], 401);
             }
 
-            $token = compact('token');
-            $checkUser->token = $token['token'];
-            $checkUser->save();
+            if (empty($checkUser->token)) {
+                $token = compact('token');
+                $checkUser->token = $token['token'];
+                $checkUser->save();
+            }
+
+            $token = $checkUser->token;
 
             Auth::login($checkUser, $remember);
 
             $response['username'] = $checkUser->username;
             $response['avatar'] = Auth::user()->detail['avatar'];
             $response['fullname'] = Auth::user()->detail['fullname'];
-            $response['jwt'] = $token['token'];
+            $response['jwt'] = $token;
             $response['status'] = 'SUCCESS';
             // [VinhPT]
             // Get description for user check
