@@ -287,6 +287,7 @@
 
         normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time);
     }
+    
 
     function normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time) {
         $.ajax({
