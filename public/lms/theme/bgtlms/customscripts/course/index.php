@@ -177,14 +177,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .block {
-        padding-bottom: 4%;
+        padding-bottom: 2%;
         max-width: 48%;
         padding-right: 0 !important;
     }
 
-    .block-first {
-        margin-right: 4%;
-    }
 
     .course-block {
         background-color: #ffffff;
@@ -221,13 +218,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         letter-spacing: 1px;
     }
 
-    .section--header {
+    .section-header {
         background-image: url('images/course/list/bg.png');
         width: 100%;
         background-repeat: no-repeat;
         background-position: center center;
         background-size: cover;
-        padding-bottom: 1%;
     }
 
     .header-block__logo img {
@@ -331,7 +327,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .section-course-info {
-        margin-top: 3%;
+        margin: 1rem 0;
     }
 
     /*footer*/
@@ -385,10 +381,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     .footer-full {
         padding-bottom: 1%;
         margin-top: 5%;
-    }
-
-    .nodata{
-
     }
 
     /*1920*/
@@ -447,9 +439,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         .course-block {
             margin: 1% 0 !important;
         }
-        .section-course-info {
-            margin-bottom: 5%;
-        }
     }
 
     @media only screen and (max-width: 480px) {
@@ -478,7 +467,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 <div class="wrapper"><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
     <div id="app">
-        <section class="section section--header"><!-- section -->
+        <section class="section section-header"><!-- section -->
             <div class="container">
                 <div class="header-block">
                     <div class="header-block__logo">
@@ -503,9 +492,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </div>
                                 <div class="col-5 block-search__btn">
                                     <input type="text" class=" input-search" v-model="txtSearch">
-                                    <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search"
-                                                                                                 aria-hidden="true"></i><input
-                                            type="button"></div>
+                                    <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
                                 </div>
                             </div>
                         </div>
@@ -529,25 +516,22 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
-                <div class="col-12 row">
+                <div class="col-12 row pt-2">
                     <template v-if="courses.length == 0">
-                        <div class="row col-12"><p class="nodata">No data</p></div>
+                        <div class="row col-12 pt-1"><h3>No course to display</h3></div>
                     </template>
                     <template v-else>
                         <div class="col-4 block clctgr0" v-for="(course,index) in courses">
                             <div class="row col-12 course-block">
                             <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
-                                <template v-if="course.id == 506"><img src="images/Badge-examples 2.png" alt=""></template>
-                                <template v-else-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                <template v-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
                                 <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
                             </div>
                             <div class="col-7">
                                 <div class="course-info">
                                     <div class="info-text">
                                         <div class="course-info__title">
-                                            <a :href="'lms/course/view.php?id='+course.id"
-                                               :title="course.fullname"><p class="title-course">
-                                                    <i></i>{{course.fullname}}</p></a>
+                                            <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname"><p class="title-course"><i></i>{{course.fullname}}</p></a>
                                         </div>
                                         <div class="course-info__detail">
                                             <ul>
@@ -562,18 +546,16 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                             </ul>
                                         </div>
                                     </div>
-                                    <div class="btn-show btn-show-all btn-page">
+                                  <!--  <div class="btn-show btn-show-all btn-page">
                                         <button class="btn btn-click"><a
                                                 :href="'lms/course/view.php?id='+course.id">Learn more</a>
                                         </button>
-                                    </div>
-
+                                    </div>-->
                                 </div>
                             </div>
                         </div>
                         </div>
                     </template>
-
                 </div>
                 <div class="pagination" v-if="totalPage > 1">
                     <v-pagination

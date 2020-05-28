@@ -70,3 +70,36 @@
     margin-top: 4rem !important;
 }
 
+.course-block:hover {
+    box-shadow: 3px 3px 6px #00000069;
+}
+
+.click-page .nav{
+    min-width: 190px;
+}
+
+.click-page ul li{
+    font-family: Roboto-Regular;
+    font-size: 14px;
+    margin-right: 10%;
+}
+
+.current-selected a {
+    color: #3469FF !important;
+}
+
+.current-selected i {
+    color: #3469FF !important;
+}
+
+/* Extend container */
+@media (min-width: 1600px) {
+    .container {
+        max-width: 1440px;
+    }
+}
+@media (min-width: 2000px) {
+    .container {
+        max-width: 1800px;
+    }
+}
