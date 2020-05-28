@@ -918,7 +918,11 @@
     "da_hoan_thanh_khung_nang_luc": "Competency framework completed",
     "hoan_thanh_khoa_hoc": "Course completed",
     "lich_su_hoc_tap": "Learning history",
-    "lich_su_khoa_hoc": "Courses history"
+    "lich_su_khoa_hoc": "Courses history",
+    "cau_hoi_min_max": "Min max question",
+    "gia_tri_ban_nhap_khong_hop_le": "The value of min should not be greater than max",
+    "gia_tri_min": "Min value",
+    "gia_tri_max": "Max value"
   },
   "vi.keys": {
     "language": "",
@@ -1839,6 +1843,10 @@
     "da_hoan_thanh_khung_nang_luc": "Hoàn thành khung năng lực",
     "hoan_thanh_khoa_hoc": "Hoàn thành khóa học",
     "lich_su_hoc_tap": "Lịch sử học tập",
-    "lich_su_khoa_hoc": "Lịch sử khóa học"
+    "lich_su_khoa_hoc": "Lịch sử khóa học",
+    "cau_hoi_min_max": "Câu hỏi min max",
+    "gia_tri_ban_nhap_khong_hop_le": "Giá trị min không được lớn hơn max",
+    "gia_tri_min": "Min",
+    "gia_tri_max": "Max"
   }
 }

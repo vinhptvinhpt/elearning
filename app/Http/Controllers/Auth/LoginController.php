@@ -216,16 +216,15 @@ class LoginController extends Controller
 
     public function logout(Request $request)
     {
+        $token = $request->input('token');
         try {
-            $token = $request->input('token');
             if ($token) {
                 JWTAuth::invalidate($token);
             }
-            Auth::logout();
         } catch (\Exception $e) {
             return response()->json(['status' => 'FAILED']);
         }
-
+        Auth::logout();
         return response()->json(['status' => 'SUCCESS']);
     }
 

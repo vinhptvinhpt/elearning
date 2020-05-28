@@ -30,6 +30,7 @@ export default {
 
     async logout() {
         try {
+            console.log('123');
             let token = Ls.get('auth.token');
             var data = {token: token};
             await axios.post('/api/auth/logout', data);
@@ -37,8 +38,9 @@ export default {
             Ls.remove('auth.token');
             Ls.remove('auth.user');
             Ls.remove('auth.lang');
-
-            Ls.set('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye', 'logout');
+            Ls.remove('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye');
+            // Ls.set('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye', 'logout');
+            // sslssso.logout();
         } catch (error) {
             console.log('Error', error.message);
         }
