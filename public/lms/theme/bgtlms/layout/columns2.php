@@ -119,9 +119,10 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
     }
-} else if(strpos($bodyattributes, 'search')){
-    $getPathPublic =   str_replace('lms', '', $wwwroot);
 }
+
+$getPathPublic =   str_replace('lms', '', $wwwroot);
+
 $editing = false;
 if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
     $editing = true;
