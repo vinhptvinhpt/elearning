@@ -37,7 +37,8 @@
 <script>
     var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
 
-    if (localStorage.getItem(logoutCookie) == undefined || localStorage.getItem(logoutCookie) == 'logout') {
+    var cookieValue = localStorage.getItem(logoutCookie);
+    if (cookieValue == undefined || cookieValue == 'logout') {
         displayLogin();
     }
 
@@ -59,6 +60,7 @@
 
     // Fired after validating JWT on page onLoad process, or after a successful identification
     function onIdentification(operation) {
+        console.log('onIdentification');
         if (operation.status === 'SUCCESS' && localStorage.getItem("remember") == 'save') {
             $.ajax({
                 type: "POST",
@@ -70,8 +72,8 @@
                 success: function (data) {
                     if (data.status === "SUCCESS") {
                         sslssso.login(data.jwt);
-                        // loginLMS(data);
-                        window.location.href = '/tms/dashboard';
+                        loginLMS(data);
+                        // window.location.href = '/tms/dashboard';
                     } else {
                         swal({
                             title: "Thông báo",

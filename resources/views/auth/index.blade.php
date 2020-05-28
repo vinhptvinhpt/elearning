@@ -48,7 +48,7 @@
                         password.</label>
                 </div>
                 <div class="wrap-remember100">
-                    <input type="checkbox">
+                    <input type="checkbox" checked id="ip-checkbox">
                     <span>Remeber login</span>
                 </div>
                 <div class="wrap-btn100">
@@ -287,7 +287,7 @@
 
         normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time);
     }
-    
+
 
     function normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time) {
         $.ajax({
@@ -319,7 +319,7 @@
                         avatar: data.avatar,
                         fullname: data.fullname
                     };
-                    localStorage.setItem(logoutCookie, '');
+                    localStorage.setItem(logoutCookie, 'login');
                     localStorage.setItem('auth.token', data.jwt);
                     localStorage.setItem('auth.user', JSON.stringify(userinfo));
                     localStorage.setItem('auth.lang', 'en');

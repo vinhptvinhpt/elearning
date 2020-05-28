@@ -10,10 +10,11 @@ class TmsQuestion extends Model
     const GROUP = 'group';
     const MULTIPLE_CHOICE = 'multiplechoice';
     const FILL_TEXT = 'ddtotext';
+    const MIN_MAX = 'minmax';
 
     protected $table = 'tms_questions';
     protected $fillable = [
-        'survey_id', 'type_question', 'display', 'name', 'content', 'created_by', 'status', 'total_answer', 'isdeleted', 'total_choice'
+        'survey_id', 'type_question', 'display', 'name', 'content', 'created_by', 'status', 'total_answer', 'isdeleted', 'total_choice', 'other_data'
     ];
 
 

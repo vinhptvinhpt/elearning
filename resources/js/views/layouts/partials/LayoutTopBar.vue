@@ -26,8 +26,8 @@
                 </a>
                 <div class="dropdown-menu dropdown-menu-right" data-dropdown-in="flipInX" data-dropdown-out="flipOutX">
                     <router-link class="dropdown-item" :to="{ name: 'Profile' }">
-                      <i class="dropdown-icon zmdi zmdi-account"></i>
-                      <span>{{ trans.get('keys.thong_tin_ca_nhan') }}</span>
+                        <i class="dropdown-icon zmdi zmdi-account"></i>
+                        <span>{{ trans.get('keys.thong_tin_ca_nhan') }}</span>
                     </router-link>
                     <a class="dropdown-item" href="#"><i
                             class="dropdown-icon zmdi zmdi-settings"></i><span>{{ trans.get('keys.cai_dat') }}</span></a>
@@ -49,7 +49,8 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text"><span class="text-dark text-capitalize">{{ username }}</span><br>đã thêm bạn vào khóa học <strong>ABC001</strong></div>
+                                        <div class="notifications-text"><span class="text-dark text-capitalize">{{ username }}</span><br>đã
+                                            thêm bạn vào khóa học <strong>ABC001</strong></div>
                                         <div class="notifications-time">12 phút</div>
                                     </div>
                                 </div>
@@ -67,7 +68,8 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text">Bạn có 1 tin nhắn từ <span class="text-dark text-capitalize">{{ username }}</span></div>
+                                        <div class="notifications-text">Bạn có 1 tin nhắn từ <span
+                                                class="text-dark text-capitalize">{{ username }}</span></div>
                                         <div class="notifications-time">1 giờ</div>
                                     </div>
                                 </div>
@@ -140,20 +142,20 @@
                 </div>
             </li>
             <li class="nav-item language_dropdown">
-<!--                <a class="nav-link dropdown-toggle no-caret" href="#" role="button" data-toggle="dropdown"-->
-<!--                   aria-haspopup="true" aria-expanded="false">-->
-<!--                    <span v-bind:class="classObject">-->
+                <!--                <a class="nav-link dropdown-toggle no-caret" href="#" role="button" data-toggle="dropdown"-->
+                <!--                   aria-haspopup="true" aria-expanded="false">-->
+                <!--                    <span v-bind:class="classObject">-->
 
-<!--                    </span>-->
-<!--                    <i class="fa fa-sort-desc"></i>-->
-<!--                </a>-->
+                <!--                    </span>-->
+                <!--                    <i class="fa fa-sort-desc"></i>-->
+                <!--                </a>-->
                 <div class="dropdown-menu dropdown-menu-right">
-<!--                  <template v-if="domainWeb.indexOf('localhost') == 0 || domainWeb.indexOf('127') == 0">-->
-<!--                    <a class="dropdown-item" @click="setLang('vi')"><span-->
-<!--                      class="language_icon language_vi"></span> Tiếng Việt</a>-->
-<!--                  </template>-->
-<!--                    <a class="dropdown-item" @click="setLang('en')"><span-->
-<!--                            class="language_icon language_en"></span> English</a>-->
+                    <!--                  <template v-if="domainWeb.indexOf('localhost') == 0 || domainWeb.indexOf('127') == 0">-->
+                    <!--                    <a class="dropdown-item" @click="setLang('vi')"><span-->
+                    <!--                      class="language_icon language_vi"></span> Tiếng Việt</a>-->
+                    <!--                  </template>-->
+                    <!--                    <a class="dropdown-item" @click="setLang('en')"><span-->
+                    <!--                            class="language_icon language_en"></span> English</a>-->
                 </div>
             </li>
         </ul>
@@ -209,9 +211,25 @@
 
             },
             logOut() {
-                Auth.logout().then(() => {
-                    window.location.href = '/';
-                })
+                // Auth.logout().then(() => {
+                //     // sslssso.logout();
+                //     // window.location.href = '/';
+                // });
+
+                let token = Ls.get('auth.token');
+
+                axios.post('/bgtlogout', {token: token})
+                    .then(response => {
+                        Ls.remove('auth.token');
+                        Ls.remove('auth.user');
+                        Ls.remove('auth.lang');
+                        Ls.remove('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye');
+                        sslssso.logout();
+                        window.location.href = '/';
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
             },
             gotoDashboard() {
                 this.$router.replace('/tms/dashboard')
