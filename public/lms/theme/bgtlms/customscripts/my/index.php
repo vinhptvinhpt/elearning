@@ -508,10 +508,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
     .slide-image img{
         position: absolute;
-        width: 20%;
         bottom: 0;
         right: 6%;
-        width: 30%;
+        width: 25%;
     }
 
     .carousel-caption{
@@ -973,9 +972,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     <!--    body-->
     <section class="section section-content">
         <div class="content">
-            <div class="container-fluid">
+            <div class="container">
                 <div class="row">
-                    <div class="col-sm-3 col-left">
+                    <div class="col-3">
                         <div class="info">
                             <div class="info-user col-sm-12">
                                 <div class="avatar col-sm-4">
@@ -1056,13 +1055,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-sm-1"></div>
-                    <div class="col-sm-8 col-right">
+                    <div class="col-9">
                         <div class="courses">
-
-                            <!--                        current course-->
+                            <!--current course-->
                             <div class="courses-block">
-                                <!--                            top-->
+                                <!--top-->
                                 <div class="course-block__top row">
                                     <div class="col-sm-12 course-block__top-show">
                                         <div class=" col-sm-6 title">CURRENT COURSES</div>
@@ -1071,13 +1068,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                         </div>
                                     </div>
                                 </div>
-
-                                <!--                            content-->
+                                <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row">
-                                        <!--                                    line 1-->
+                                        <!--line 1-->
                                         <div class="col-sm-12 row block-items">
-                                            <!--                                        block 1-->
+                                            <!--block 1-->
                                             <?php if(count($courses_current) > 0) {  ?>
                                                 <?php $countBlock = 1; foreach ($courses_current as $course) {  ?>
                                                     <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
@@ -1093,9 +1089,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
                                                             </div>
-                                                            <div class="block-item__content_btn">
-                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                            </div>
+<!--                                                            <div class="block-item__content_btn">-->
+<!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--">Learn More</a></button>-->
+<!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
@@ -1103,14 +1099,13 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                 <p>No data</p>
                                             <?php }  ?>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
 
-                            <!--                        all required courses-->
+                            <!--all required courses-->
                             <div class="courses-block">
-                                <!--                            top-->
+                                <!--top-->
                                 <div class="course-block__top row">
                                     <div class="col-sm-12 course-block__top-show">
                                         <div class=" col-sm-6 title">ALL REQUIRED COURSES</div>
@@ -1119,13 +1114,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                         </div>
                                     </div>
                                 </div>
-
-                                <!--                            content-->
+                                <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row">
-                                        <!--                                    line 1-->
+                                        <!--line 1-->
                                         <div class="col-sm-12 row block-items">
-                                            <!--                                        block 1-->
+                                            <!--block 1-->
                                             <?php if(count($courses_all_required) > 0) {  ?>
                                                 <?php  $countBlock = 1; foreach ($courses_all_required as $course) { ?>
                                                     <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
@@ -1141,9 +1135,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
                                                             </div>
-                                                            <div class="block-item__content_btn">
-                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                            </div>
+<!--                                                            <div class="block-item__content_btn">-->
+<!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--">Learn More</a></button>-->
+<!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
@@ -1156,9 +1150,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 </div>
                             </div>
 
-                            <!--                        completed courses-->
+                            <!--completed courses-->
                             <div class="courses-block">
-                                <!--                            top-->
+                                <!--top-->
                                 <div class="course-block__top row">
                                     <div class="col-sm-12 course-block__top-show">
                                         <div class=" col-sm-6 title">COMPLETED COURSES</div>
@@ -1167,13 +1161,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                         </div>
                                     </div>
                                 </div>
-
-                                <!--                            content-->
+                                <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row">
-                                        <!--                                    line 1-->
+                                        <!--line 1-->
                                         <div class="col-sm-12 row block-items">
-                                            <!--                                        block 1-->
+                                            <!--block 1-->
                                             <?php if(count($courses_completed) > 0) {  ?>
                                                 <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
                                                     <div class="col-sm-6 block-items__item <?php if($countBlock % 2 != 0) echo "block-items__item-first"; ?>">
@@ -1189,9 +1182,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
                                                             </div>
-                                                            <div class="block-item__content_btn">
-                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=<?php echo $course->id; ?>">Learn More</a></button>
-                                                            </div>
+<!--                                                            <div class="block-item__content_btn">-->
+<!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--">Learn More</a></button>-->
+<!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
@@ -1211,44 +1204,48 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     <section class="path-calendar">
 <!--    <section class="path-calendar">-->
-        <?php
+        <div class="container">
+            <div class="row">
+                <?php
 
-        require_once(__DIR__ . '/../../../../config.php');
-        require_once(__DIR__ . '/../../../../course/lib.php');
-        require_once(__DIR__ . '/../../../../calendar/lib.php');
+                require_once(__DIR__ . '/../../../../config.php');
+                require_once(__DIR__ . '/../../../../course/lib.php');
+                require_once(__DIR__ . '/../../../../calendar/lib.php');
 
-        $categoryid = optional_param('category', null, PARAM_INT);
-        $courseid = optional_param('course', SITEID, PARAM_INT);
-        $view = optional_param('view', 'month', PARAM_ALPHA);
-        $time = time();
-        $lookahead = optional_param('lookahead', null, PARAM_INT);
+                $categoryid = optional_param('category', null, PARAM_INT);
+                $courseid = optional_param('course', SITEID, PARAM_INT);
+                $view = optional_param('view', 'month', PARAM_ALPHA);
+                $time = time();
+                $lookahead = optional_param('lookahead', null, PARAM_INT);
 
-        $calendar = calendar_information::create($time, $courseid, $categoryid);
+                $calendar = calendar_information::create($time, $courseid, $categoryid);
 
-        $PAGE->navbar->add(userdate($time, get_string('strftimemonthyear')));
-        // Print title and header
-        $PAGE->set_pagelayout('standard');
-//        $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
-//        $PAGE->set_heading($COURSE->fullname);
+                $PAGE->navbar->add(userdate($time, get_string('strftimemonthyear')));
+                // Print title and header
+                $PAGE->set_pagelayout('standard');
+                //        $PAGE->set_title("$course->shortname: $strcalendar: $pagetitle");
+                //        $PAGE->set_heading($COURSE->fullname);
 
-        $renderer = $PAGE->get_renderer('core_calendar');
-        $calendar->add_sidecalendar_blocks($renderer, true, $view);
-        echo $OUTPUT->header();
-        echo $renderer->start_layout();
-        echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
-        echo $OUTPUT->heading(get_string('calendar', 'calendar'));
-        list($data, $template) = calendar_get_view($calendar, $view, true, false, $lookahead);
-        echo $renderer->render_from_template($template, $data);
+                $renderer = $PAGE->get_renderer('core_calendar');
+                $calendar->add_sidecalendar_blocks($renderer, true, $view);
+                echo $OUTPUT->header();
+                echo $renderer->start_layout();
+                echo html_writer::start_tag('div', array('class'=>'heightcontainer'));
+                echo $OUTPUT->heading(get_string('calendar', 'calendar'));
+                list($data, $template) = calendar_get_view($calendar, $view, true, false, $lookahead);
+                echo $renderer->render_from_template($template, $data);
 
-        echo html_writer::end_tag('div');
+                echo html_writer::end_tag('div');
 
-        list($data, $template) = calendar_get_footer_options($calendar);
-        echo $renderer->render_from_template($template, $data);
+                list($data, $template) = calendar_get_footer_options($calendar);
+                echo $renderer->render_from_template($template, $data);
 
-        echo $renderer->complete_layout();
-        echo $OUTPUT->footer();
+                echo $renderer->complete_layout();
+                echo $OUTPUT->footer();
 
-        ?>
+                ?>
+            </div>
+        </div>
     </section>
 
     <section class="section-footer">

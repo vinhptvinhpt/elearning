@@ -48,6 +48,7 @@ $cmid = $PAGE->cm->id ? $PAGE->cm->id : 0;
 $section = $PAGE->cm->section ? $PAGE->cm->section: 0;
 $sectionname = '';
 $pagelayout = $PAGE->pagelayout;
+$bodyid = $OUTPUT->body_id();
 $incourse = false;
 $units = [];
 $modules = [];
@@ -128,6 +129,9 @@ if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
     $editing = true;
 }
 
+$top_bar_home = $bodyid == 'page-my-index' ? 'current-selected' : '';
+$top_bar_course = $bodyid == 'page-course-index' ? 'current-selected' : '';
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -153,7 +157,9 @@ $templatecontext = [
     'permission_edit' => $permission_edit,
     'pathLogo' => $pathLogo,
     'getPathPublic' => $getPathPublic,
-    'wwwroot' => $wwwroot
+    'wwwroot' => $wwwroot,
+    'top_bar_home' => $top_bar_home,
+    'top_bar_course' => $top_bar_course
 ];
 
 $nav = $PAGE->flatnav;
