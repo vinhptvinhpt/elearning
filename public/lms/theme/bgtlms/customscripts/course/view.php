@@ -618,15 +618,12 @@ require_once("courselib.php");
 
 $edit        = optional_param('edit', -1, PARAM_BOOL);
 $notifyeditingon        = optional_param('notifyeditingon', -1, PARAM_BOOL);
-$editting_mode = false;
 $id = optional_param('id', 0, PARAM_INT);
 
 if ($notifyeditingon == 1) {
-    $editting_mode = true;
 } else if ($edit == 1) {
     //do nothing
     $USER->editing = 1;
-    $editting_mode = true;
     $url = new moodle_url("/course/viewedit.php?id=".$id, array('notifyeditingon' => 1));
     redirect($url);
 }
@@ -712,6 +709,9 @@ foreach ($permissions as $permission) {
 //Check section
 $section_no = isset($_REQUEST['section_no']) ? $_REQUEST['section_no'] : '';
 $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
+if ($edit == 0) {
+    $source = $id;
+}
 ?>
 <body <?php echo $bodyattributes ?>>
 
@@ -732,7 +732,7 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
                            </ul>
                        </div>
                        <div class="col-6 row info-course-progress">
-                           <span class="col-3">PROGRESS </span>
+                           <span class="col-3">PROGRESS</span>
 
                            <div class="col-9">
                                <?php if($course->id != 506){ ?>
@@ -780,7 +780,7 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
                                 Edit course
                             </a>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&notifyeditingon=1&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course completion</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
@@ -805,7 +805,7 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
                     </div>
                 </div>
                 <div class="col-4 course-block-img">
-                    <img src="/elearning-easia/public<?php echo $course->course_avatar; ?>" alt="">
+                    <img src="<?php echo $course->course_avatar; ?>" alt="">
                 </div>
             </div>
 
@@ -993,9 +993,5 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
 
 
 <?php
-
-
-if (!$editting_mode) {
     die;
-}
 ?>

@@ -10,7 +10,7 @@ $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
 $avatar = "images" . DIRECTORY_SEPARATOR . "default_avatar.png";
 if (strlen($profile->avatar) != 0) {
     $avatar_url = $CONFIG->wwwtmsbase.$profile->avatar;
-    if (file_exists($avatar_url)) {
+    if (file_exists($avatar_url) && is_file($avatar_url)) {
         $avatar = $avatar_url;
     }
 }
