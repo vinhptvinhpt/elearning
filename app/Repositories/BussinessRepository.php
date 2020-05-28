@@ -5636,6 +5636,8 @@ class BussinessRepository implements IBussinessInterface
             $question_content = $request->input('question_content');
             $anwsers = $request->input('anwsers');
             $question_childs = $request->input('question_childs');
+            $min = $request->input('min_value');
+            $max = $request->input('max_value');
 
             $param = [
                 'question_content' => 'longtext',
@@ -5663,7 +5665,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $count_ques_child = 0;
-            if ($type_question == \App\TmsQuestion::GROUP) {
+            if ($type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::MIN_MAX) {
                 $count_ques_child = count($question_childs);
                 if ($count_ques_child == 0) {
                     $response->status = false;
@@ -5684,6 +5686,10 @@ class BussinessRepository implements IBussinessInterface
             $tms_question->status = 1;
             $tms_question->total_answer = count($anwsers);
             $tms_question->isdeleted = 0;
+
+
+            $other_data = json_encode(array('min' => $min, 'max' => $max));
+            $tms_question->other_data = $other_data;
             $tms_question->save();
 
 
@@ -5730,6 +5736,28 @@ class BussinessRepository implements IBussinessInterface
                         $tms_question_ans->save();
                     }
 
+                    sleep(0.01);
+                }
+            } else if ($type_question == \App\TmsQuestion::MIN_MAX) {
+
+                for ($m = 0; $m < $count_ques_child; $m++) {
+                    $tms_ques_data = new TmsQuestionData();
+                    $tms_ques_data->question_id = $tms_question->id;
+                    $tms_ques_data->content = $question_childs[$m]['content'];
+                    $tms_ques_data->created_by = Auth::user()->id;
+                    $tms_ques_data->status = 1;
+                    $tms_ques_data->type_question = \App\TmsQuestion::MIN_MAX;
+                    $tms_ques_data->save();
+
+                    for ($i = $min; $i <= $max; $i++) {
+
+                        $tms_question_ans = new TmsQuestionAnswer();
+                        $tms_question_ans->content = $i;
+                        $tms_question_ans->question_id = $tms_ques_data->id;
+                        $tms_question_ans->save();
+
+                        sleep(0.01);
+                    }
                     sleep(0.01);
                 }
             } else {
@@ -5798,6 +5826,8 @@ class BussinessRepository implements IBussinessInterface
             $question_content = $request->input('question_content');
             $anwsers = $request->input('anwsers');
             $question_childs = $request->input('question_childs');
+            $min = $request->input('min_value');
+            $max = $request->input('max_value');
 
             $param = [
                 'question_content' => 'longtext',
@@ -5824,7 +5854,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $count_ques_child = 0;
-            if ($type_question == \App\TmsQuestion::GROUP) {
+            if ($type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::MIN_MAX) {
                 $count_ques_child = count($question_childs);
                 if ($count_ques_child == 0) {
                     $response->status = false;
@@ -5851,6 +5881,10 @@ class BussinessRepository implements IBussinessInterface
             $tms_question->status = 1;
             $tms_question->total_answer = $count_ans;
             $tms_question->isdeleted = 0;
+
+            $other_data = json_encode(array('min' => $min, 'max' => $max));
+            $tms_question->other_data = $other_data;
+
             $tms_question->save();
 
 
@@ -5905,6 +5939,28 @@ class BussinessRepository implements IBussinessInterface
                         $tms_question_ans->save();
                     }
 
+                    sleep(0.01);
+                }
+            } else if ($type_question == \App\TmsQuestion::MIN_MAX) {
+
+                TmsQuestionData::where('question_id', $id)->delete();
+
+                for ($m = 0; $m < $count_ques_child; $m++) {
+                    $tms_ques_data = new TmsQuestionData();
+                    $tms_ques_data->question_id = $tms_question->id;
+                    $tms_ques_data->content = $question_childs[$m]['content'];
+                    $tms_ques_data->created_by = Auth::user()->id;
+                    $tms_ques_data->status = 1;
+                    $tms_ques_data->type_question = \App\TmsQuestion::MIN_MAX;
+                    $tms_ques_data->save();
+
+                    for ($i = $min; $i <= $max; $i++) {
+                        $tms_question_ans = new TmsQuestionAnswer();
+                        $tms_question_ans->content = $i;
+                        $tms_question_ans->question_id = $tms_ques_data->id;
+                        $tms_question_ans->save();
+                        sleep(0.01);
+                    }
                     sleep(0.01);
                 }
             } else {
@@ -6230,6 +6286,43 @@ class BussinessRepository implements IBussinessInterface
                             }
                         }
                     }
+                    $quesModel->lstQuesChild = $data_childs;
+                    array_push($datas, $quesModel);
+                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+
+                    $data_childs = array();
+                    for ($j = 0; $j < $count_data; $j++) {
+
+                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
+                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+                                $quesChildModel = new QuestionChildModel();
+                                $quesChildModel->questionid = $lstData[$j]->ques_id;
+                                $quesChildModel->question_content = $lstData[$j]->content;
+
+                                $total_ques = 0;
+                                $answers = array();
+                                for ($k = 0; $k < $count_data; $k++) {
+                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
+                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+                                            $ansModel = new AnswerModel();
+                                            $ansModel->answerid = $lstData[$k]->an_id;
+                                            $ansModel->answer_content = $lstData[$k]->ans_content;
+                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            $total_ques += $ansModel->total_choice;
+                                            array_push($answers, $ansModel);
+                                        }
+                                    }
+                                }
+
+                                $quesChildModel->total_choice = $total_ques;
+                                $quesChildModel->lstAnswers = $answers;
+
+                                array_push($data_childs, $quesChildModel);
+                            }
+                        }
+                    }
+
+                    $data_childs = my_array_unique($data_childs, true);
                     $quesModel->lstQuesChild = $data_childs;
                     array_push($datas, $quesModel);
                 } else {

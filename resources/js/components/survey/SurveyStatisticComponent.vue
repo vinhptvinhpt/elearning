@@ -130,6 +130,11 @@
                                                                     :index_question="index" :chart_type="chart_type"
                                                 ></question-statistic>
                                             </div>
+                                            <div v-if="question.type_question=='minmax'">
+                                                <min-max-question-statistic :question="question" :index_question="index"
+                                                                            :chart_type="chart_type"
+                                                ></min-max-question-statistic>
+                                            </div>
                                             <div v-else>
                                                 <group-question-statistic :question="question" :index_question="index"
                                                                           :chart_type="chart_type"
@@ -153,10 +158,11 @@
     //import vPagination from 'vue-plain-pagination'
     import QuestionStatistic from "./template/StatisticQuestionComponent";
     import GroupQuestionStatistic from "./template/StatisticsGroupQuesComponent";
+    import MinMaxQuestionStatistic from "./template/StatisticMinMaxQuesComponent"
 
     export default {
         props: ['survey_id'],
-        components: {QuestionStatistic, GroupQuestionStatistic},
+        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic},
         //components: {vPagination},
         data() {
             return {

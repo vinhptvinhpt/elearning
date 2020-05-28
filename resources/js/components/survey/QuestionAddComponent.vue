@@ -53,6 +53,8 @@
                                                     <option value="ddtotext">{{trans.get('keys.dien_cau_tra_loi')}}
                                                     </option>
                                                     <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>
+                                                    <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}
+                                                    </option>
                                                 </select>
                                                 <label v-if="!type_question"
                                                        class="required text-danger type_question_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -70,16 +72,14 @@
                                             <div class="col-12 form-group">
                                                 <label for="inputText1-2">{{trans.get('keys.noi_dung_cau_hoi')}}
                                                     (*)</label>
-<!--                                                <textarea v-model="question_content" class="form-control" rows="5"-->
-<!--                                                          id="article_ckeditor"-->
-<!--                                                          :placeholder="trans.get('keys.noi_dung')"></textarea>-->
                                                 <ckeditor v-model="question_content"
                                                           :config="editorConfig"></ckeditor>
                                                 <label v-if="!question_content"
                                                        class="required text-danger question_content_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                         </form>
-                                        <div id="multiple-answer">
+                                        <div v-if="type_question=='multiplechoice' || type_question=='group'"
+                                             id="multiple-answer">
 
                                             <div class="button-list" style="text-align: center;">
                                                 <h5>{{trans.get('keys.phan_tra_loi')}}</h5>
@@ -104,7 +104,41 @@
                                             </div>
                                         </div>
                                         <br/>
-                                        <div id="group-question">
+                                        <div v-if="type_question=='minmax'" id="minmax-question">
+                                            <div class="row">
+                                                <div class="col-12 col-lg-12">
+                                                    <form action="" class="form-row">
+                                                        <div class="col-4 form-group">
+                                                            <label for="inputText1-2">{{trans.get('keys.gia_tri_min')}}
+                                                                *</label>
+                                                            <input v-model="min_value" type="number" min="0"
+                                                                   :placeholder="trans.get('keys.nhap_ma')"
+                                                                   class="form-control mb-4">
+                                                            <label v-if="!min_value"
+                                                                   class="required text-danger question_name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                                                        </div>
+
+                                                        <div class="col-4 form-group">
+                                                            <label for="inputText1-2">{{trans.get('keys.gia_tri_max')}}
+                                                                *</label>
+                                                            <input v-model="max_value" type="number" min="0"
+                                                                   :placeholder="trans.get('keys.nhap_ma')"
+                                                                   class="form-control mb-4">
+                                                            <label v-if="!max_value"
+                                                                   class="required text-danger question_name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                                                        </div>
+
+                                                    </form>
+
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        <br/>
+                                        <div v-if="type_question=='group' || type_question=='minmax'"
+                                             id="group-question">
                                             <div class="button-list" style="text-align: center;">
                                                 <h5>{{trans.get('keys.cau_hoi_con')}}</h5>
                                                 <div class="col-md-12 margin_buttom_0">
@@ -164,7 +198,7 @@
             return {
                 survey_id: '',
                 surveys: [],
-                type_question: 'multiplechoice',
+                type_question: '',
                 display: '1',
                 question_name: '',
                 question_content: '',
@@ -172,6 +206,8 @@
                 index_anwser: 0,
                 question_childs: [],
                 index_ques_child: 0,
+                min_value: 0,
+                max_value: 0,
                 editorConfig: {
                     filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
                     // The configuration of the editor.
@@ -184,22 +220,6 @@
             }
         },
         methods: {
-            firstLoadLayout() {
-                if (this.type_question === 'ddtotext') { // TH la cau hoi dien dap an
-                    $('#multiple-answer').hide();
-                    $('#group-question').hide();
-                } else if (this.type_question === 'multiplechoice') {
-                    $('#multiple-answer').show();
-                    $('#group-question').hide();
-                } else {
-                    $('#multiple-answer').show();
-                    $('#group-question').show();
-                }
-
-                if (this.sur_id != 'off') {
-                    this.survey_id = this.sur_id;
-                }
-            },
             getSurveys() {
                 axios.get('/api/question/listsurvey')
                     .then(response => {
@@ -246,7 +266,7 @@
                     return;
                 }
 
-               // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+                // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
                 if (!this.question_content) {
                     $('.question_content_required').show();
@@ -255,7 +275,6 @@
 
                 if (this.type_question === 'multiplechoice' && this.anwsers.length === 0) {
                     toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
-
                     return;
                 }
 
@@ -264,19 +283,32 @@
                     return;
                 }
 
+                if (this.type_question === 'minmax' && this.min_value > this.max_value) {
+                    toastr['warning'](this.trans.get('keys.gia_tri_ban_nhap_khong_hop_le'), this.trans.get('keys.thong_bao'));
+                    return;
+                }
+
+                if (this.type_question === 'minmax' && this.question_childs.length === 0) {
+                    toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi_hoac_cau_hoi_con'), this.trans.get('keys.thong_bao'));
+                    return;
+                }
+
                 let current_pos = this;
+
                 axios.post('/api/question/create', {
                     survey_id: this.survey_id,
                     type_question: this.type_question,
                     question_name: this.question_name,
                     question_content: this.question_content,
                     anwsers: this.anwsers,
-                    question_childs: this.question_childs
+                    question_childs: this.question_childs,
+                    min_value: this.min_value,
+                    max_value: this.max_value
                 })
                     .then(response => {
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            this.$router.push({ name: 'QuestionIndex' });
+                            this.$router.push({name: 'QuestionIndex'});
 
                         } else {
                             toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
@@ -289,7 +321,10 @@
             }
         },
         mounted() {
-            this.firstLoadLayout();
+            if (this.sur_id != 'off') {
+                this.survey_id = this.sur_id;
+            }
+            //this.firstLoadLayout();
             this.getSurveys();
         }
     }
