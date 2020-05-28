@@ -615,7 +615,24 @@
 </style>
 <?php
 require_once("courselib.php");
-function get_client_ip_server() {
+
+$edit        = optional_param('edit', -1, PARAM_BOOL);
+$notifyeditingon        = optional_param('notifyeditingon', -1, PARAM_BOOL);
+$editting_mode = false;
+$id = optional_param('id', 0, PARAM_INT);
+
+if ($notifyeditingon == 1) {
+    $editting_mode = true;
+} else if ($edit == 1) {
+    //do nothing
+    $USER->editing = 1;
+    $editting_mode = true;
+    $url = new moodle_url("/course/viewedit.php?id=".$id, array('notifyeditingon' => 1));
+    redirect($url);
+}
+
+function get_client_ip_server()
+{
     $ipaddress = '';
     if ($_SERVER['HTTP_CLIENT_IP'])
         $ipaddress = $_SERVER['HTTP_CLIENT_IP'];
@@ -635,7 +652,6 @@ function get_client_ip_server() {
     return $ipaddress;
 }
 
-$id = optional_param('id', 0, PARAM_INT);
 // [VinhPT][EAsia] Course IP address restrict
 
 $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
@@ -977,9 +993,9 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
 
 
 <?php
-if (isset($_GET['notifyeditingon']) && $_GET['notifyeditingon'] == 1) {
-    //do nothing
-} else {
+
+
+if (!$editting_mode) {
     die;
 }
 ?>
