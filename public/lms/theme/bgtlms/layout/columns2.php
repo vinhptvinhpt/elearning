@@ -131,7 +131,7 @@ if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
 
 $top_bar_home = $bodyid == 'page-my-index' ? 'current-selected' : '';
 $top_bar_course = $bodyid == 'page-course-index' ? 'current-selected' : '';
-
+$wwwtms= $CFG->wwwtms;
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -159,7 +159,8 @@ $templatecontext = [
     'getPathPublic' => $getPathPublic,
     'wwwroot' => $wwwroot,
     'top_bar_home' => $top_bar_home,
-    'top_bar_course' => $top_bar_course
+    'top_bar_course' => $top_bar_course,
+    'wwwtms' => $wwwtms
 ];
 
 $nav = $PAGE->flatnav;
