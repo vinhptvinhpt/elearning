@@ -130,7 +130,12 @@
                                                                     :index_question="index" :chart_type="chart_type"
                                                 ></question-statistic>
                                             </div>
-                                            <div v-if="question.type_question=='minmax'">
+                                            <div v-else-if="question.type_question=='checkbox'">
+                                                <checkbox-statistic :question="question.lstQuesChild[0]"
+                                                                    :index_question="index" :chart_type="chart_type"
+                                                ></checkbox-statistic>
+                                            </div>
+                                            <div v-else-if="question.type_question=='minmax'">
                                                 <min-max-question-statistic :question="question" :index_question="index"
                                                                             :chart_type="chart_type"
                                                 ></min-max-question-statistic>
@@ -159,10 +164,11 @@
     import QuestionStatistic from "./template/StatisticQuestionComponent";
     import GroupQuestionStatistic from "./template/StatisticsGroupQuesComponent";
     import MinMaxQuestionStatistic from "./template/StatisticMinMaxQuesComponent"
+    import CheckboxStatistic from "./template/StatisticCheckboxComponent"
 
     export default {
         props: ['survey_id'],
-        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic},
+        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic, CheckboxStatistic},
         //components: {vPagination},
         data() {
             return {

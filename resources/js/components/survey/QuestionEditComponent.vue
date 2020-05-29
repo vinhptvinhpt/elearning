@@ -56,6 +56,8 @@
                                                     <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>
                                                     <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}
                                                     </option>
+                                                    <option value="checkbox">{{trans.get('keys.cau_hoi_checkbox')}}
+                                                    </option>
                                                 </select>
                                                 <label v-if="!question.type_question"
                                                        class="required text-danger type_question_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -80,7 +82,7 @@
                                                        class="required text-danger question_content_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                         </form>
-                                        <div v-if="question.type_question=='multiplechoice' || question.type_question=='group'"
+                                        <div v-if="question.type_question=='multiplechoice' || question.type_question=='group' || question.type_question=='checkbox'"
                                              id="multiple-answer">
                                             <div class="button-list" style="text-align: center;">
                                                 <h5>{{trans.get('keys.phan_tra_loi')}}</h5>
@@ -249,7 +251,7 @@
                         if (this.question.type_question === 'ddtotext') { // TH la cau hoi dien dap an
                             // $('#multiple-answer').hide();
                             // $('#group-question').hide();
-                        } else if (this.question.type_question === 'multiplechoice') {
+                        } else if (this.question.type_question === 'multiplechoice' || this.question.type_question === 'checkbox') {
                             // $('#multiple-answer').show();
                             // $('#group-question').hide();
                             this.getAnswerQuestions();
@@ -258,10 +260,9 @@
                             // $('#group-question').show();
                             let other_data = response.data.other_data;
                             other_data = JSON.parse(other_data);
-                            let min_value = other_data.min;
-                            let max_value = other_data.max;
-                            this.question.max_value = max_value;
-                            this.question.min_value = min_value;
+
+                            this.question.max_value = other_data.max;
+                            this.question.min_value = other_data.min;
 
                             this.getAnswerQuestions();
                             this.getQuestionChilds();
@@ -350,6 +351,11 @@
                 if (this.question.type_question === 'multiplechoice' && this.anwsers.length === 0) {
                     toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
 
+                    return;
+                }
+
+                if (this.question.type_question === 'checkbox' && this.anwsers.length === 0) {
+                    toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
                     return;
                 }
 

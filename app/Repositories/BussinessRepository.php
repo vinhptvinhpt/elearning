@@ -5655,7 +5655,7 @@ class BussinessRepository implements IBussinessInterface
 
 
             $count_ans = 0;
-            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP) {
+            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::CHECKBOX) {
                 $count_ans = count($anwsers);
                 if ($count_ans == 0) {
                     $response->status = false;
@@ -5725,6 +5725,27 @@ class BussinessRepository implements IBussinessInterface
                 $tms_ques_data->created_by = Auth::user()->id;
                 $tms_ques_data->status = 1;
                 $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
+                $tms_ques_data->save();
+
+                for ($i = 0; $i < $count_ans; $i++) {
+
+                    if (!empty($anwsers[$i]['content'])) {
+                        $tms_question_ans = new TmsQuestionAnswer();
+                        $tms_question_ans->content = $anwsers[$i]['content'];
+                        $tms_question_ans->question_id = $tms_ques_data->id;
+                        $tms_question_ans->save();
+                    }
+
+                    sleep(0.01);
+                }
+            } else if ($type_question == \App\TmsQuestion::CHECKBOX) { //insert dap an trong TH la cau hoi chon dap an
+
+                $tms_ques_data = new TmsQuestionData();
+                $tms_ques_data->question_id = $tms_question->id;
+                $tms_ques_data->content = $question_content;
+                $tms_ques_data->created_by = Auth::user()->id;
+                $tms_ques_data->status = 1;
+                $tms_ques_data->type_question = \App\TmsQuestion::CHECKBOX;
                 $tms_ques_data->save();
 
                 for ($i = 0; $i < $count_ans; $i++) {
@@ -5844,7 +5865,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $count_ans = 0;
-            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP) {
+            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::CHECKBOX) {
                 $count_ans = count($anwsers);
                 if ($count_ans == 0) {
                     $response->status = false;
@@ -5929,6 +5950,33 @@ class BussinessRepository implements IBussinessInterface
                 $tms_ques_data->created_by = Auth::user()->id;
                 $tms_ques_data->status = 1;
                 $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
+                $tms_ques_data->save();
+
+                for ($i = 0; $i < $count_ans; $i++) {
+                    if (!empty($anwsers[$i]['content'])) {
+                        $tms_question_ans = new TmsQuestionAnswer();
+                        $tms_question_ans->content = $anwsers[$i]['content'];
+                        $tms_question_ans->question_id = $tms_ques_data->id;
+                        $tms_question_ans->save();
+                    }
+
+                    sleep(0.01);
+                }
+            } else if ($type_question == \App\TmsQuestion::CHECKBOX) { //insert dap an trong TH la cau hoi chon dap an
+
+                $questionData = TmsQuestionData::query();
+                $questionData = $questionData->where('question_id', $id)->select('id')->first();
+
+                //xóa tất cả các đáp án và insert lại
+                TmsQuestionAnswer::where('question_id', $questionData->id)->delete();
+                TmsQuestionData::where('question_id', $id)->delete();
+
+                $tms_ques_data = new TmsQuestionData();
+                $tms_ques_data->question_id = $tms_question->id;
+                $tms_ques_data->content = $question_content;
+                $tms_ques_data->created_by = Auth::user()->id;
+                $tms_ques_data->status = 1;
+                $tms_ques_data->type_question = \App\TmsQuestion::CHECKBOX;
                 $tms_ques_data->save();
 
                 for ($i = 0; $i < $count_ans; $i++) {
@@ -6072,6 +6120,7 @@ class BussinessRepository implements IBussinessInterface
             \DB::beginTransaction();
 
             $count_multi = count($question_answers);
+
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
                 for ($i = 0; $i < $count_multi; $i++) {
                     $tms_survey_user = new TmsSurveyUser();
@@ -6268,6 +6317,41 @@ class BussinessRepository implements IBussinessInterface
                                 for ($k = 0; $k < $count_data; $k++) {
                                     if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
                                         if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
+                                            $ansModel = new AnswerModel();
+                                            $ansModel->answerid = $lstData[$k]->an_id;
+                                            $ansModel->answer_content = $lstData[$k]->ans_content;
+                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            $total_ques += $ansModel->total_choice;
+                                            array_push($answers, $ansModel);
+                                        }
+                                    }
+                                }
+
+                                $quesChildModel->total_choice = $total_ques;
+                                $quesChildModel->lstAnswers = $answers;
+
+                                array_push($data_childs, $quesChildModel);
+                                break;
+                            }
+                        }
+                    }
+                    $quesModel->lstQuesChild = $data_childs;
+                    array_push($datas, $quesModel);
+                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
+                    $data_childs = array();
+                    for ($j = 0; $j < $count_data; $j++) {
+
+                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
+                            if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
+                                $quesChildModel = new QuestionChildModel();
+                                $quesChildModel->questionid = $lstData[$j]->ques_id;
+                                $quesChildModel->question_content = $lstData[$j]->content;
+
+                                $total_ques = 0;
+                                $answers = array();
+                                for ($k = 0; $k < $count_data; $k++) {
+                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
+                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
@@ -6524,6 +6608,80 @@ class BussinessRepository implements IBussinessInterface
                     }
                     $quesModel->lstQuesChild = $data_childs;
                     array_push($datas, $quesModel);
+                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
+                    $data_childs = array();
+                    for ($j = 0; $j < $count_data; $j++) {
+
+                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
+                            if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
+                                $quesChildModel = new QuestionChildModel();
+                                $quesChildModel->questionid = $lstData[$j]->ques_id;
+                                $quesChildModel->question_content = $lstData[$j]->content;
+
+                                $total_ques = 0;
+                                $answers = array();
+                                for ($k = 0; $k < $count_data; $k++) {
+                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
+                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
+                                            $ansModel = new AnswerModel();
+                                            $ansModel->indexAns = 'Đáp án ' . $k;
+                                            $ansModel->answerid = $lstData[$k]->an_id;
+                                            $ansModel->answer_content = $lstData[$k]->ans_content;
+                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            $total_ques += $ansModel->total_choice;
+                                            array_push($answers, $ansModel);
+                                        }
+                                    }
+                                }
+
+                                $quesChildModel->total_choice = $total_ques;
+                                $quesChildModel->lstAnswers = $answers;
+
+                                array_push($data_childs, $quesChildModel);
+                                break;
+                            }
+                        }
+                    }
+                    $quesModel->lstQuesChild = $data_childs;
+                    array_push($datas, $quesModel);
+                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+
+                    $data_childs = array();
+                    for ($j = 0; $j < $count_data; $j++) {
+
+                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
+                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+                                $quesChildModel = new QuestionChildModel();
+                                $quesChildModel->questionid = $lstData[$j]->ques_id;
+                                $quesChildModel->question_content = $lstData[$j]->content;
+
+                                $total_ques = 0;
+                                $answers = array();
+                                for ($k = 0; $k < $count_data; $k++) {
+                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
+                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
+                                            $ansModel = new AnswerModel();
+                                            $ansModel->indexAns = 'Đáp án ' . $k;
+                                            $ansModel->answerid = $lstData[$k]->an_id;
+                                            $ansModel->answer_content = $lstData[$k]->ans_content;
+                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            $total_ques += $ansModel->total_choice;
+                                            array_push($answers, $ansModel);
+                                        }
+                                    }
+                                }
+
+                                $quesChildModel->total_choice = $total_ques;
+                                $quesChildModel->lstAnswers = $answers;
+
+                                array_push($data_childs, $quesChildModel);
+                            }
+                        }
+                    }
+
+                    $data_childs = my_array_unique($data_childs, true);
+                    $quesModel->lstQuesChild = $data_childs;
+                    array_push($datas, $quesModel);
                 } else {
 
                     $data_childs = array();
@@ -6577,7 +6735,7 @@ class BussinessRepository implements IBussinessInterface
         if ($countkey > 0) {
             foreach ($arrKeys as $key) {
                 $dataObj = $datas[$key];
-                if ($dataObj->type_question === \App\TmsQuestion::GROUP) {
+                if ($dataObj->type_question === \App\TmsQuestion::GROUP || $dataObj->type_question === \App\TmsQuestion::MIN_MAX) {
                     $arrKeyGrs = array_keys($dataObj->lstQuesChild);
 
                     $count_group = count($arrKeyGrs);

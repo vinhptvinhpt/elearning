@@ -922,7 +922,8 @@
     "cau_hoi_min_max": "Min max question",
     "gia_tri_ban_nhap_khong_hop_le": "The value of min should not be greater than max",
     "gia_tri_min": "Min value",
-    "gia_tri_max": "Max value"
+    "gia_tri_max": "Max value",
+    "cau_hoi_checkbox": "Checkbox question"
   },
   "vi.keys": {
     "language": "",
@@ -1847,6 +1848,7 @@
     "cau_hoi_min_max": "Câu hỏi min max",
     "gia_tri_ban_nhap_khong_hop_le": "Giá trị min không được lớn hơn max",
     "gia_tri_min": "Min",
-    "gia_tri_max": "Max"
+    "gia_tri_max": "Max",
+    "cau_hoi_checkbox": "Câu hỏi checkbox"
   }
 }

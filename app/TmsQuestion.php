@@ -11,6 +11,7 @@ class TmsQuestion extends Model
     const MULTIPLE_CHOICE = 'multiplechoice';
     const FILL_TEXT = 'ddtotext';
     const MIN_MAX = 'minmax';
+    const CHECKBOX = 'checkbox';
 
     protected $table = 'tms_questions';
     protected $fillable = [
