@@ -61,6 +61,16 @@
     }
 }
 
+@media screen and (max-width: 1000px){
+    .cms-link {
+        display: none;
+    }
+}
+
+.cms-link img {
+    width: 30px;
+}
+
 @media screen and (max-width: 545px){
     .btn-bgtlms-clear {
         margin-top: 5px;

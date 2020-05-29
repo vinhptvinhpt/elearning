@@ -1096,7 +1096,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                             <?php } else { ?>
-                                                <p>No data</p>
+                                                <h3>No course to display</h3>
                                             <?php }  ?>
                                         </div>
                                     </div>
@@ -1142,7 +1142,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                             <?php } else { ?>
-                                                <p>No data</p>
+                                                <h3>No course to display</h3>
                                             <?php }  ?>
                                         </div>
 
@@ -1189,7 +1189,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                     </div>
                                                     <?php  $countBlock++; if($countBlock == 5) break; } ?>
                                             <?php } else { ?>
-                                                <p>No data</p>
+                                                <h3>No course to display</h3>
                                             <?php }  ?>
                                         </div>
                                     </div>
