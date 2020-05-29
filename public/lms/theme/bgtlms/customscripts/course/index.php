@@ -523,37 +523,37 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <template v-else>
                         <div class="col-4 block clctgr0" v-for="(course,index) in courses">
                             <div class="row col-12 course-block">
-                            <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
-                                <template v-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
-                                <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
-                            </div>
-                            <div class="col-7">
-                                <div class="course-info">
-                                    <div class="info-text">
-                                        <div class="course-info__title">
-                                            <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname"><p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
+                                    <template v-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                    <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
+                                </div>
+                                <div class="col-7">
+                                    <div class="course-info">
+                                        <div class="info-text">
+                                            <div class="course-info__title">
+                                                <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname"><p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                            </div>
+                                            <div class="course-info__detail">
+                                                <ul>
+                                                    <li class="teacher">
+                                                        <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
+                                                    </li>
+                                                    <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
+                                                    </li>
+                                                    <li class="units">
+                                                        <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
-                                        <div class="course-info__detail">
-                                            <ul>
-                                                <li class="teacher">
-                                                    <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
-                                                </li>
-                                                <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
-                                                </li>
-                                                <li class="units">
-                                                    <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
-                                                </li>
-                                            </ul>
-                                        </div>
+                                      <!--  <div class="btn-show btn-show-all btn-page">
+                                            <button class="btn btn-click"><a
+                                                    :href="'lms/course/view.php?id='+course.id">Learn more</a>
+                                            </button>
+                                        </div>-->
                                     </div>
-                                  <!--  <div class="btn-show btn-show-all btn-page">
-                                        <button class="btn btn-click"><a
-                                                :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                        </button>
-                                    </div>-->
                                 </div>
                             </div>
-                        </div>
                         </div>
                     </template>
                 </div>
