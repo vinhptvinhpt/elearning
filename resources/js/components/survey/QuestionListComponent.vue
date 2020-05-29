@@ -59,6 +59,7 @@
                                             <option value="ddtotext">{{trans.get('keys.dien_cau_tra_loi')}}</option>
                                             <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>
                                             <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}</option>
+                                            <option value="checkbox">{{trans.get('keys.cau_hoi_checkbox')}}</option>
                                         </select>
                                     </div>
                                 </div>
@@ -115,6 +116,7 @@
                                                 <span v-if="ques.type_question=='ddtotext'">{{trans.get('keys.dien_cau_tra_loi')}}</span>
                                                 <span v-if="ques.type_question=='group'">{{trans.get('keys.cau_hoi_nhom')}}</span>
                                                 <span v-if="ques.type_question=='minmax'">{{trans.get('keys.cau_hoi_min_max')}}</span>
+                                                <span v-if="ques.type_question=='checkbox'">{{trans.get('keys.cau_hoi_checkbox')}}</span>
                                             </td>
                                             <td>{{ ques.survey_code }} - {{ ques.survey_name }}</td>
                                             <td class="text-center">

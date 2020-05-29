@@ -44,6 +44,10 @@
                                         <min-max-question :question="question" :index_question="index"
                                                           :question_answers="question_answers"></min-max-question>
                                     </div>
+                                    <div v-else-if="question.type_question=='checkbox'">
+                                        <checkbox-question :question="question" :index_question="index"
+                                                           :question_answers="question_answers"></checkbox-question>
+                                    </div>
                                 </div>
                             </div>
                             <div class="button-list">
@@ -69,6 +73,7 @@
     import DDToText from "./template/DDToTextComponent";
     import GroupQuestion from "./template/GroupQuestionComponent";
     import MinMaxQuestion from "./template/MinMaxComponent"
+    import CheckboxQuestion from "./template/CheckboxQuestionComponent"
 
     export default {
         props: ['survey_id'],
@@ -76,7 +81,8 @@
             MultipleChoice,
             DDToText,
             GroupQuestion,
-            MinMaxQuestion
+            MinMaxQuestion,
+            CheckboxQuestion
         },
         data() {
             return {
