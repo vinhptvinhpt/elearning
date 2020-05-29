@@ -55,6 +55,8 @@
                                                     <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>
                                                     <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}
                                                     </option>
+                                                    <option value="checkbox">{{trans.get('keys.cau_hoi_checkbox')}}
+                                                    </option>
                                                 </select>
                                                 <label v-if="!type_question"
                                                        class="required text-danger type_question_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -78,7 +80,7 @@
                                                        class="required text-danger question_content_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                         </form>
-                                        <div v-if="type_question=='multiplechoice' || type_question=='group'"
+                                        <div v-if="type_question=='multiplechoice' || type_question=='group' || type_question=='checkbox'"
                                              id="multiple-answer">
 
                                             <div class="button-list" style="text-align: center;">
@@ -274,6 +276,11 @@
                 }
 
                 if (this.type_question === 'multiplechoice' && this.anwsers.length === 0) {
+                    toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
+                    return;
+                }
+
+                if (this.type_question === 'checkbox' && this.anwsers.length === 0) {
                     toastr['warning'](this.trans.get('keys.ban_chua_nhap_cau_tra_loi'), this.trans.get('keys.thong_bao'));
                     return;
                 }
