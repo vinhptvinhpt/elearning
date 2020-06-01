@@ -53,7 +53,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             return response()->json([]);
         }
 
-        $ready =  false;
+        $ready = false;
 //        if (strlen($role_id) != 0) {
 //            $listCourses = DB::table('mdl_course as c')
 //                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
@@ -86,32 +86,53 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        }
 //        else {
 
-            //Kiểm tra xem có phải role thuộc organization hay không
-            $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            if ($checkRole === true) {
-                $listCourses = DB::table('mdl_course as c')
+        //Kiểm tra xem có phải role thuộc organization hay không
+        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+        if ($checkRole === true) {
+            $listCourses = DB::table('mdl_course as c')
+                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                ->where(function ($query) {
+                    /* @var $query Builder */
+                    $query
+                        ->whereIn('c.id', function ($q1) { //enrol
+                            /* @var $q1 Builder */
+                            $q1->select('mdl_course.id')
+                                ->from('mdl_user_enrolments as mue')
+                                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                ->where('mue.userid', '=', \Auth::user()->id);
+                        })
+                        ->orWhereIn('c.id', function ($q2) { //organization
+                            /* @var $q2 Builder */
+                            $q2->select('mdl_course.id')
+                                ->from('tms_organization_employee')
+                                ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                                ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                        });
+                })->select(
+                    'c.id',
+                    'c.fullname',
+                    'c.shortname',
+                    'c.startdate',
+                    'c.enddate',
+                    'c.visible',
+                    'c.category',
+                    'c.deleted',
+                    'mccc.gradepass as pass_score'
+                );
+            $ready = true;
+        } else {
+            //Kiểm tra xem có phải role teacher hay không
+            $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+            if ($checkRole === TRUE) {
+                $listCourses = DB::table('mdl_user_enrolments as mue')
+                    ->where('mue.userid', '=', \Auth::user()->id)
+                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                    ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
                     ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                    ->where(function($query){
-                        /* @var $query Builder */
-                        $query
-                            ->whereIn('c.id', function ($q1) { //enrol
-                                /* @var $q1 Builder */
-                                $q1->select('mdl_course.id')
-                                    ->from('mdl_user_enrolments as mue')
-                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-                                    ->where('mue.userid', '=', \Auth::user()->id);
-                            })
-                            ->orWhereIn('c.id', function ($q2) { //organization
-                                /* @var $q2 Builder */
-                                $q2->select('mdl_course.id')
-                                    ->from('tms_organization_employee')
-                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-                            });
-                    })->select(
+                    ->select(
                         'c.id',
                         'c.fullname',
                         'c.shortname',
@@ -123,29 +144,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         'mccc.gradepass as pass_score'
                     );
                 $ready = true;
-            } else {
-                //Kiểm tra xem có phải role teacher hay không
-                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-                if ($checkRole === TRUE) {
-                    $listCourses = DB::table('mdl_user_enrolments as mue')
-                        ->where('mue.userid', '=', \Auth::user()->id)
-                        ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                        ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
-                        ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                        ->select(
-                            'c.id',
-                            'c.fullname',
-                            'c.shortname',
-                            'c.startdate',
-                            'c.enddate',
-                            'c.visible',
-                            'c.category',
-                            'c.deleted',
-                            'mccc.gradepass as pass_score'
-                        );
-                    $ready = true;
-                }
             }
+        }
         //}
         if (!$ready) {
             //Không thuộc các trường hợp trên
@@ -279,8 +279,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         ->from('tms_role_course')
                         ->where('role_id', $role_id);
                 });
-            }
-            else { //List khóa học đã phân quyền cho role này
+            } else { //List khóa học đã phân quyền cho role này
                 $listCourses = $listCourses->whereIn('c.id', function ($query) use ($role_id) {
                     $query->select('course_id')
                         ->from('tms_role_course')
@@ -292,8 +291,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         //là khóa học mẫu
         if ($sample == 1) {
             $listCourses = $listCourses->where('c.category', '=', 2); //2 là khóa học mẫu
-        }
-        else {
+        } else {
             $listCourses = $listCourses->where('c.category', '!=', 2);
 //            $listCourses = $listCourses->where('c.category', '!=', 5);
         }
@@ -519,7 +517,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
             $access_ip = rtrim($access_ip, ",");
         }
-        $access_ip .=  ']}';
+        $access_ip .= ']}';
         return $access_ip;
     }
 
@@ -627,7 +625,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $startdate = new Carbon($startdate);
                 $startdate = $startdate->subHour(7);
 
-                if(!is_null($enddate)){
+                if (!is_null($enddate)) {
                     $enddate = new Carbon($enddate);
                     $enddate = $enddate->subHour(7);
                 }
@@ -700,7 +698,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 DB::table('mdl_enrol')
                     ->where('courseid', '=', $course->id)
                     ->where('enrol', '=', 'self')
-                    ->where('roleid', '=', 5) //quyền học viên
+                    ->where('roleid', '=', 5)//quyền học viên
                     ->delete();
             }
 
