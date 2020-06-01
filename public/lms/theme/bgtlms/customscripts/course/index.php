@@ -28,18 +28,22 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         font-family: Nunito-Sans-Regular;
         src: url('fonts/NunitoSans-Regular.ttf');
     }
+
     @font-face {
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
+
     @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
+
     @font-face {
         font-family: Nunito-Bold;
         src: url('fonts/Nunito-Bold.ttf');
     }
+
     img {
         width: 100%;
     }
@@ -65,24 +69,28 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     /*    view*/
     /*    paging*/
-    .pagination{
+    .pagination {
         margin: 0 auto;
         padding: 1%;
     }
-    .pagination li{
+
+    .pagination li {
         margin: 0% 5% !important;
     }
-    .pagination li button{
+
+    .pagination li button {
         background: #FFFFFF 0% 0% no-repeat padding-box;
         border-radius: 4px;
         font-family: Nunito-Bold;
         letter-spacing: 0.45px;
         color: #737373;
     }
-    .page-item.active .page-link{
+
+    .page-item.active .page-link {
         background: #862055 0% 0% no-repeat padding-box !important;
         border-color: #862055 !important;
     }
+
     .course-info__detail {
         padding: 5% 0;
     }
@@ -103,7 +111,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding: 5% 0;
         padding-top: 0;
     }
-
 
     .course-info__list-lessons ul li {
         padding: 1% 0;
@@ -163,7 +170,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        height: 3.25rem;
         font-family: Roboto-Bold !important;
     }
 
@@ -189,6 +195,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding: 0 !important;;
         box-shadow: 3px 3px 6px #00000029;
         margin: 0 !important;
+        height: 100%;
     }
 
     .course-block__image {
@@ -200,7 +207,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         position: relative;
     }
 
-    .course-block__image img{
+    .course-block__image img {
         width: 32%;
         height: 26%;
         position: absolute;
@@ -208,7 +215,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         right: 3%;
     }
 
-    .course-block__image span{
+    .course-block__image span {
         font-size: 13px;
         font-family: Nunito-Bold;
         color: #FFFFFF;
@@ -378,88 +385,52 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         position: absolute;
     }
 
-    .footer-full {
-        padding-bottom: 1%;
-        margin-top: 5%;
-    }
-
     /*1920*/
-    @media screen and (max-width: 1920px) and (min-width: 1369px){
-        .btn-click-course{
+    @media screen and (max-width: 1920px) and (min-width: 1369px) {
+        .btn-click-course {
             min-width: 188px;
             font-size: 18px !important;
             padding: 13px !important;
         }
+
         .header-block__search__title p {
             font-size: 18px;
         }
+
         .course-select, .input-search {
             font-size: 18px !important;
         }
+
         .input-search {
             padding: 0 2%;
         }
+
         .btn-click-course {
             margin-bottom: 2%;
         }
     }
 
-    @media screen and (max-width: 1368px){
-        .drawer-open-left .over-wrap{
+    @media screen and (max-width: 1368px) {
+        .drawer-open-left .over-wrap {
             opacity: 0 !important;
             display: none;
-        }
-        .btn-click-course{
-            margin-top: 2%;
         }
     }
 
-    @media screen and (max-width: 1024px){
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-        .btn-click-course{
-            margin-top: 2%;
+    .footer-logo {
+        width: 246px;
+        height: 75px;
+    }
+
+    @media screen and (min-width: 2000px) {
+        .col-xxl-3 {
+            flex: 0 0 25% !important;
+            max-width: 25% !important;
         }
     }
 
-
-    @media only screen and (max-width: 768px) {
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-        .block{
-            display: contents;
-        }
-        .btn-click-course{
-            margin-top: 2%;
-        }
-        .course-block {
-            margin: 1% 0 !important;
-        }
-    }
-
-    @media only screen and (max-width: 480px) {
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-        .block{
-            display: contents;
-        }
-    }
-
-
-    @media only screen and (max-width: 320px) {
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-        .block{
-            display: contents;
-        }
+    .title-course {
+        min-height: 3.25rem;
     }
 
 </style>
@@ -471,7 +442,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             <div class="container">
                 <div class="header-block">
                     <div class="header-block__logo">
-                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
+                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="Logo">
                     </div>
                     <div class="header-block__search">
                         <div class="header-block__search__title">
@@ -516,13 +487,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
-                <div class="col-12 row pt-2">
+
+                <div class="row pt-2">
                     <template v-if="courses.length == 0">
-                        <div class="row col-12 pt-1"><h3>No course to display</h3></div>
+                        <div class="col-12 pt-1"><h3>No course to display</h3></div>
                     </template>
                     <template v-else>
-                        <div class="col-4 block clctgr0" v-for="(course,index) in courses">
-                            <div class="row col-12 course-block">
+                        <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0" v-for="(course,index) in courses">
+                            <div class="row course-block">
                                 <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
                                     <template v-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
                                     <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
@@ -557,6 +529,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                         </div>
                     </template>
                 </div>
+
                 <div class="pagination" v-if="totalPage > 1">
                     <v-pagination
                         v-model="current"
@@ -571,13 +544,13 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
         <section class="section-footer">
             <footer>
-                <div class="container-fluid row">
-                    <div class="footer-logo">
-                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="">
+                <div class="container">
+                    <div class="row">
+                        <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo Light" class="footer-logo mt-1">
                     </div>
-                    <div class="col-12 row footer-full">
-                        <!--            Helps-->
-                        <div class="footer-block col-3">
+                    <div class="row mb-3">
+                        <!--Helps-->
+                        <div class="footer-block col-sm-3 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
@@ -588,10 +561,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </ul>
                             </div>
                         </div>
-
-                        <!--                   FAQs-->
-                        <div class="footer-block col-3">
-                            <div class="footer-block__title"><p class="footer-title">FQAs</p></div>
+                        <!--FAQs-->
+                        <div class="footer-block col-sm-3 col-xs-6">
+                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
                                     <li><a href="/">Home</a></li>
@@ -601,19 +573,18 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 </ul>
                             </div>
                         </div>
-
-                        <div class="footer-block col-3">
+                        <div class="footer-block col-sm-3 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Contact</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
                                     <li><a href="/">Home</a></li>
                                     <li><a href="/">Courses</a></li>
                                     <li><a href="/">Profile</a></li>
+                                    <li><a href="/">Profile</a></li>
                                 </ul>
                             </div>
                         </div>
-
-                        <div class="footer-block col-3">
+                        <div class="footer-block col-sm-3 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
@@ -625,7 +596,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                             </div>
                         </div>
                     </div>
-
                 </div>
             </footer>
         </section>

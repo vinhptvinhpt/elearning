@@ -14,12 +14,13 @@
         font-family: Roboto-Bold;
         src: url('fonts/Roboto-Bold.ttf');
     }
+
     @font-face {
         font-family: Roboto-Regular;
         src: url('fonts/Roboto-Regular.ttf');
     }
 
-    img{
+    img {
         width: 100%;
     }
 
@@ -28,20 +29,25 @@
         font-family: Roboto-Bold;
     }
 
-    ul{
+    ul {
         list-style: none;
     }
-    a{
+
+    a {
         text-decoration: none;
     }
-/*    view*/
-    .alert-block{
+
+    /*    view*/
+    .alert-block {
         opacity: 1 !important;
     }
-    #page{
+
+    #page {
         margin-right: 4%;
-        /*margin-right: */<?//=$marginPage?>/*;*/
+        /*margin-right: */
+    <?//=$marginPage?> /*;*/
     }
+
     .alert {
         padding: 20px;
         background-color: #f44336;
@@ -62,19 +68,20 @@
     .closebtn:hover {
         color: black;
     }
-    .prev-btn:hover{
+
+    .prev-btn:hover {
         cursor: pointer;
     }
 
-    .progress-bar{
+    .progress-bar {
         background-color: <?=$_SESSION["color"]?> !important;
     }
 
-    .progress-info{
+    .progress-info {
         overflow: hidden;
     }
 
-    .progress-info__title span{
+    .progress-info__title span {
         text-align: left;
         letter-spacing: 0.8px;
         color: #202020;
@@ -85,16 +92,17 @@
         overflow: hidden;
     }
 
-    .info-course-detail{
+    .info-course-detail {
         padding: 0;
     }
 
-    .info-course-detail ul{
+    .info-course-detail ul {
         display: inline-flex;
         padding: 0;
         width: 100%;
     }
-    .info-course-detail ul li{
+
+    .info-course-detail ul li {
         margin-right: 8%;
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
@@ -102,7 +110,7 @@
         font-size: 14px !important;
     }
 
-    .info-course-progress > span{
+    .info-course-progress > span {
         text-align: left;
         text-transform: uppercase;
         letter-spacing: 0.5px;
@@ -110,13 +118,13 @@
         text-transform: uppercase;
     }
 
-    .info-course-progress .col-9{
+    .info-course-progress .col-9 {
         position: absolute;
         bottom: 32px;
         right: 0;
     }
 
-    .btn-click{
+    .btn-click {
         background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         text-align: left;
@@ -126,24 +134,24 @@
         text-transform: uppercase;
     }
 
-    .nav-course .nav{
+    .nav-course .nav {
         width: 100%;
         margin: auto;
     }
 
-    .nav-introduction{
+    .nav-introduction {
         margin: 0 auto;
         margin-right: 0;
     }
 
-    .nav-setting{
+    .nav-setting {
         margin-right: 15px;
         margin-top: 8px;
     }
 
     .setting-link {
         color: <?=$_SESSION["color"]?> !important;
-        border: 1px solid <?=$_SESSION["color"]?>;
+        border: 1px solid<?=$_SESSION["color"]?>;
         padding: 5px;
         border-radius: 15px;
     }
@@ -152,56 +160,58 @@
         display: none;
     }
 
-    .nav-unit{
+    .nav-unit {
         margin: 0 auto;
         margin-left: 0;
     }
 
-    .nav-course .nav .nav-item a{
+    .nav-course .nav .nav-item a {
         text-align: left;
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #737373;
     }
 
-    .nav-course .nav li.active a{
+    .nav-course .nav li.active a {
         color: #202020;
     }
 
-    .nav-course .nav .nav-item a.active{
+    .nav-course .nav .nav-item a.active {
         color: #202020;
         font-weight: 700;
     }
 
-    .section-nav{
+    .section-nav {
         border-top: 1px solid #C7C7C7;
         margin: 1% 0;
         margin-bottom: 0;
     }
 
-    .section-course-info{
+    .section-course-info {
         background-color: #F1F1F1;
         padding: 2% 0;
     }
 
-    .course-main{
+    .course-main {
         background-color: #FFFFFF;
         padding: 5%;
     }
 
-    .course-block{
+    .course-block {
         margin-bottom: 2em;
     }
-    .course-block__title{
+
+    .course-block__title {
         font-size: 23px;
         letter-spacing: 0.8px;
         color: #202020;
     }
-    .course-block__title p{
+
+    .course-block__title p {
         margin-bottom: 0.5em;
     }
 
-    .course-block__content, .course-block__content p, .course-block__content ul li{
+    .course-block__content, .course-block__content p, .course-block__content ul li {
         font-family: Roboto-Regular;
         font-size: 13px;
         letter-spacing: 0.99px;
@@ -209,39 +219,42 @@
         opacity: 1;
         margin: 0;
     }
-    .course-block__content ul li{
+
+    .course-block__content ul li {
         list-style: disc;
     }
 
-    .list-outcome{
+    .list-outcome {
         padding: 0 15px;
     }
 
-    .course-content{
+    .course-content {
         display: none;
     }
 
-    #courseunit{
+    #courseunit {
         display: none;
     }
 
-    .main-detail{
+    .main-detail {
         display: none;
         display: none;
     }
 
-    .detail-list li{
+    .detail-list li {
         font-family: Roboto-Regular;
         font-size: 14px;
         letter-spacing: 0.99px;
         margin: 2% 0;
     }
-    .detail-list li i{
+
+    .detail-list li i {
         font-size: 23px;
         margin-right: 1%;
         color: <?=$_SESSION["color"]?>;
     }
-    .detail-list li a{
+
+    .detail-list li a {
         background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
         background-repeat: no-repeat;
         background-position: left;
@@ -253,24 +266,24 @@
         background-size: 20px 16px;
     }
 
-    .detail-btn{
+    .detail-btn {
         text-align: right;
         width: 100%;
         padding-bottom: 3%;
     }
 
-    .detail-content{
+    .detail-content {
         padding: 2% 0;
         border-top: 1px solid #C7C7C7;
         border-bottom: 1px solid #C7C7C7;
         margin-bottom: 3%;
     }
 
-    .detail-title{
-    padding: 2% 0;
+    .detail-title {
+        padding: 2% 0;
     }
 
-    .detail-title p{
+    .detail-title p {
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #202020;
@@ -278,7 +291,7 @@
         margin: 0;
     }
 
-    .unit{
+    .unit {
         border-radius: 4px;
         margin-bottom: 3%;
         position: relative;
@@ -286,50 +299,57 @@
         background: #FFFFFF 0% 0% no-repeat padding-box;
         overflow: hidden;
     }
-    .unit:hover{
+
+    .unit:hover {
         cursor: pointer;
         box-shadow: 3px 3px 6px #00000029;
     }
-    .unit-click{
-        border: 2px solid <?=$_SESSION["color"]?>;
+
+    .unit-click {
+        border: 2px solid<?=$_SESSION["color"]?>;
     }
-    .unit-click .unit__title{
+
+    .unit-click .unit__title {
         background: <?=$_SESSION["color"]?> 0% 0% no-repeat;
     }
-    .unit-click .unit__title p{
+
+    .unit-click .unit__title p {
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #FFFFFF;
     }
-    .unit-click .unit__icon i{
+
+    .unit-click .unit__icon i {
         color: #00A426;
     }
 
-    .unit-learning .unit__title p{
+    .unit-learning .unit__title p {
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #202020;
     }
-    .unit-learning .unit__icon i{
+
+    .unit-learning .unit__icon i {
         color: #ff000e;
     }
-    .unit__title{
+
+    .unit__title {
         padding: 2%;
         background-color: #FFFFFF;
     }
 
-    .unit__title p{
+    .unit__title p {
         font-size: 17px;
         letter-spacing: 0.6px;
         color: #737373;
     }
 
 
-    .unit__progress{
+    .unit__progress {
         border-top: 1px solid #3333;
     }
 
-    .unit__icon i{
+    .unit__icon i {
         position: absolute;
         color: #737373;
         font-size: 17px;
@@ -341,31 +361,36 @@
         box-shadow: 3px 3px 6px #00000029;
     }
 
-    .unit__progress-number{
+    .unit__progress-number {
         padding: 2%;
         color: #737373;
         font-family: Roboto-Regular;
     }
-    .unit__progress-number p{
+
+    .unit__progress-number p {
         margin: 0;
     }
-    .unit__progress-number i{
+
+    .unit__progress-number i {
         letter-spacing: 0.5px;
         font-weight: 700;
     }
-    .percent-get{
+
+    .percent-get {
         letter-spacing: 0.5px;
     }
 
-    .percent-total{
+    .percent-total {
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
     }
-    .unit-detail{
+
+    .unit-detail {
         background-color: #FFFFFF;
         height: fit-content;
     }
-    .prev-btn{
+
+    .prev-btn {
         font-size: 23px;
         font-weight: 700;
         background: #FFFFFF 0% 0% no-repeat padding-box;
@@ -373,12 +398,13 @@
         border: 1px solid #707070;
         border-radius: 4px;
     }
-    .prev-btn i{
+
+    .prev-btn i {
         padding: 1%;
         color: #3E3E3E;
     }
 
-    .course-block__content-answer{
+    .course-block__content-answer {
         margin-top: 3%;
     }
 
@@ -393,7 +419,7 @@
         text-align: center;
         color: white;
         font-weight: bold;
-        text-shadow: 0 -0.05em 0.1em rgba(0,0,0,.3);
+        text-shadow: 0 -0.05em 0.1em rgba(0, 0, 0, .3);
     }
 
     .speech-bubble:after {
@@ -410,17 +436,17 @@
         margin-bottom: -10px;
     }
 
-    .progress{
+    .progress {
         height: 0.5em !important;
         border-radius: 0 !important;
     }
 
-    .info-course-btn{
+    .info-course-btn {
         padding: 2% 1%;
         text-align: right;
     }
 
-    .course-block-img img{
+    .course-block-img img {
         border-radius: 3%;
     }
 
@@ -429,108 +455,126 @@
     }
 
     @media only screen and (max-width: 1368px) {
-        .drawer-open-left, .over-wrap{
+        .drawer-open-left, .over-wrap {
             opacity: 0 !important;
             display: none;
         }
-        .block{
+
+        .block {
             display: contents;
         }
-        .info-course-detail ul li{
+
+        .info-course-detail ul li {
             font-size: 13px !important;
         }
     }
 
     @media only screen and (max-width: 1024px) {
-        .drawer-open-left, .over-wrap{
+        .drawer-open-left, .over-wrap {
             opacity: 0 !important;
             display: none;
         }
-        .block{
+
+        .block {
             display: contents;
         }
-        .info-course-detail ul li{
+
+        .info-course-detail ul li {
             font-size: 12px !important;
         }
     }
 
     @media only screen and (max-width: 991px) {
-        .drawer-open-left, .over-wrap{
+        .drawer-open-left, .over-wrap {
             opacity: 0 !important;
             display: none;
         }
-        .block{
+
+        .block {
             display: contents;
         }
-        .info-course-detail ul li{
+
+        .info-course-detail ul li {
             font-size: 12px !important;
         }
+
         .info-course-progress > span {
             font-size: 11px;
         }
+
         .info-course-detail ul {
             display: -webkit-inline-box;
         }
     }
 
     @media only screen and (max-width: 768px) {
-        .drawer-open-left, .over-wrap{
+        .drawer-open-left, .over-wrap {
             opacity: 0 !important;
             display: none;
         }
+
         .info-course-detail ul li {
             font-size: 12px !important;
         }
-        .info-course-detail, .info-course-detail ul{
+
+        .info-course-detail, .info-course-detail ul {
             max-width: 100% !important;
         }
-        .block{
+
+        .block {
             display: contents;
         }
+
         .progress-info, .btn-click {
             font-size: 10px;
         }
 
-        .info-course-progress{
+        .info-course-progress {
             display: block;
             max-width: 92% !important;
         }
-        .info-course-btn{
+
+        .info-course-btn {
             max-width: 90% !important;
         }
+
         .info-course-progress .col-9 {
             bottom: 24px;
         }
 
-        .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p{
+        .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p {
             font-size: 14px;
         }
 
-        #user-notifications .alert-warning{
+        #user-notifications .alert-warning {
             opacity: 1 !important;
         }
 
-        .progress-info__content .row{
+        .progress-info__content .row {
             display: block;
         }
 
-        .detail-list li a{
+        .detail-list li a {
             padding-left: 6%;
         }
 
-        .nav-tabs-courses .nav-click{
+        .nav-tabs-courses .nav-click {
             margin: 0 auto;
         }
-        .nav-course .nav .nav-item a{
+
+        .nav-course .nav .nav-item a {
             font-size: 17px;
         }
-        .nav-introduction{
+
+        .nav-introduction {
             margin-right: 0 !important;
         }
-        .nav-unit{
+
+        .nav-unit {
             margin-left: 0 !important;
         }
-        .nav-setting{
+
+        .nav-setting {
             margin-top: 8px !important;
         }
     }
@@ -539,28 +583,36 @@
         .progress-info, .btn-click {
             margin-top: 8%;
         }
-        .info-course-btn{
+
+        .info-course-btn {
             padding-top: 0;
         }
-        .btn-start-course{
+
+        .btn-start-course {
             margin-top: 5%;
         }
-        .nav-tabs-courses .nav-click{
+
+        .nav-tabs-courses .nav-click {
             margin: 0 auto;
         }
-        .nav-course .nav .nav-item a{
+
+        .nav-course .nav .nav-item a {
             font-size: 14px;
         }
-        .nav-introduction{
+
+        .nav-introduction {
             margin-right: 0 !important;
         }
-        .nav-unit{
+
+        .nav-unit {
             margin-left: 0 !important;
         }
-        .detail-list li a{
+
+        .detail-list li a {
             padding-left: 12%;
         }
-        .info-course-progress{
+
+        .info-course-progress {
             margin-top: 10px;
         }
     }
@@ -569,24 +621,30 @@
         .info-course-progress > span {
             font-size: 10px;
         }
+
         .info-course-progress .col-9 {
             bottom: 19px;
         }
-        .course-block-info{
+
+        .course-block-info {
             max-width: 100%;
             width: 100%;
             display: contents;
         }
-        .course-block-img{
+
+        .course-block-img {
             display: none;
         }
+
         .detail-list li a {
             padding-left: 18%;
             font-size: 13px;
         }
+
         .detail-title p {
             font-size: 13px;
         }
+
         .unit__title p, .unit-learning .unit__title p, .unit-click .unit__title p {
             font-size: 11px;
             word-break: break-word;
@@ -595,18 +653,22 @@
         .unit__progress-number p {
             font-size: 11px;
         }
-        .unit-info{
+
+        .unit-info {
             padding-left: 0 !important;
         }
-        #courseunit{
+
+        #courseunit {
             padding: 0;
             margin: 0;
         }
-        .btn-start-unit{
+
+        .btn-start-unit {
             font-size: 11px !important;
             padding: 5px !important;
         }
-        .nav-course .nav{
+
+        .nav-course .nav {
             display: block;
             margin-bottom: 15px;
         }
@@ -669,6 +731,17 @@ $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_du
 $course = array_values($DB->get_records_sql($sql))[0];
 
 $units = get_course_contents($id);
+
+$start_course_link = '';
+if (!empty($units)) {
+    $first_unit_modules = $units[0]['modules'];
+    if ($units[0]['modules'] && !empty($units[0]['modules'])) {
+        $first_module = $units[0]['modules'][0];
+        if ($first_module) {
+            $start_course_link = $first_module['url'];
+        }
+    }
+}
 
 $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
 
@@ -754,7 +827,7 @@ if ($edit == 0) {
                            </div>
                        </div>
                        <div class="col-2 info-course-btn">
-                           <a href="" class="btn btn-start-course btn-click">start course</a>
+                           <a href="<?php echo $start_course_link ?>" <?php if(strlen($start_course_link) == 0) { ?>onclick="notifyNoContent()" <?php } ?> class="btn btn-start-course btn-click">start course</a>
                        </div>
                    </div>
                </div>
@@ -945,6 +1018,9 @@ if ($edit == 0) {
             $("[section-no=<?php echo $section_no ?>]").trigger("click");
         <?php } ?>
     });
+    function notifyNoContent() {
+        alert("Course has no content, please try again later");
+    }
 </script>
 
 <script>
