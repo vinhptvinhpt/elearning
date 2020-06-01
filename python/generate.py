@@ -10,6 +10,8 @@ import json
 import textwrap
 import random
 from random import randint
+import os
+import time
 
 # !/usr/bin/python
 sys.path.append('/venv/Lib/site-packages')
@@ -131,7 +133,7 @@ if __name__ == '__main__':
             
             link_badge = record_badge[0].replace('/storage/upload/', '')
             path_badge = os.path.join(path_gen_img, link_badge)
-            img_badge = Image.open(path_badge)
+            
 
             #lay toa do text tren mau huy hieu
             coordinates_badge = json.loads(record_badge[1])
@@ -148,7 +150,8 @@ if __name__ == '__main__':
             image_new_height_bg = coordinates_badge["image_height"]
 
             #resize badge ve kich thuoc da luu trong db
-            img_badge = img_badge.resize((image_new_width_bg, image_new_height_bg), Image.ANTIALIAS)
+            #img_badge = Image.open(path_badge)
+            #img_badge = img_badge.resize((image_new_width_bg, image_new_height_bg), Image.ANTIALIAS)
 
             fullnameWidth_bg = coordinates_badge["fullnameWidth"]
             fullnameHeight_bg = coordinates_badge["fullnameHeight"]
@@ -185,6 +188,23 @@ if __name__ == '__main__':
                     auto_badge = row[9]
                     try:
                         if auto_cer == 1:
+
+                            path_cer = path_gen_img + '/certificate/'+code+ '_certificate.png'
+
+                            if os.path.exists(path_cer):
+                                try:
+                                    os.remove(path_cer)
+                                except OSError as e:
+                                    print "Failed with cer:", e.strerror # look what it says
+                                    print "Error code cer:", e.code
+
+                            # open image
+                            img = Image.open(path_image)
+                            img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
+            
+                            # width and height of image
+                            image_width, image_height = img.size
+
                             #region in anh chung chi
                             #lay thong tin co cau to chuc
                             sql_query_org = "SELECT f.id, f.level, f.code FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)FROM (SELECT @id := " + str(org_id) +") tmp1 JOIN tms_organization ON @id IS NOT NULL) tmp2 JOIN tms_organization f ON tmp2._id = f.id where f.level = 2 limit 1"
@@ -212,7 +232,7 @@ if __name__ == '__main__':
                             name_utf8 = name.decode('utf8')
                             
                             name_utf8_training = training_name
-                            name_utf8_training = "Leading with emotional intelligence"
+                            #name_utf8_training = "Leading with emotional intelligence"
                             #name_utf8_training = name_utf8_training.upper()
                             
                             # open image
@@ -312,9 +332,23 @@ if __name__ == '__main__':
                             
                             # save image
                             img.save(os.path.join(path_gen_img, 'certificate', code + '_certificate.png'))
+                            time.sleep(0.3)
                             #endregion
 
                         if auto_badge == 1:
+
+                            path_bag = path_gen_img + '/certificate/'+code+ '_badge.png'
+
+                            if os.path.exists(path_bag):
+                                try:
+                                    os.remove(path_bag)
+                                except OSError as e:
+                                    print "Failed with:", e.strerror # look what it says
+                                    print "Error code:", e.code
+                            
+                            #khoi tao bien tai day de tranh hien tuong bien bi giu lai sau khi gen anh xong, tam thoi fix
+                            img_badge = Image.open(path_badge)
+                            img_badge = img_badge.resize((image_new_width_bg, image_new_height_bg), Image.ANTIALIAS)
                             #region in anh huy hieu
                             name_utf8_training = training_name
                             
@@ -369,17 +403,21 @@ if __name__ == '__main__':
                                 y = y + line_height + 150
 
                             img_badge.save(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
+                            time.sleep(0.3)
                             #endregion
 
 
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
-                        #cursor.execute(sql, (student_certificate_id,))
+                        cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
-                        #cursor.execute(sql_update_confirm, (get_user_id,))
+                        cursor.execute(sql_update_confirm, (get_user_id,))
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
-                        #cursor.execute(sql, (student_certificate_id,))
+                        cursor.execute(sql, (student_certificate_id,))
+                    
+                    #gian cach thoi gian chay script
+                    time.sleep(0.3)
                 num = num + 1
                 if num >= limit:
                     connection.commit()
