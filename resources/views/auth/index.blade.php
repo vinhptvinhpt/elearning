@@ -29,7 +29,7 @@
         <form method="POST" class="login-form" id="loginform">
             @csrf
             <div class="wrap-content">
-                <img src="../images/logo-black.png" class="logo" alt="">
+                <img src="../images/logo-black-login.png" class="logo" alt="">
                 <p class="title-login">Welcome <br/> sign in to continue</p>
                 <div class="wrap-input100">
                     <input oninput="changeInput(this)" id="username" class="form-control" name="username"
