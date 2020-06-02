@@ -68,7 +68,7 @@ switch ($organizationCode) {
         break;
     case "avana":
         {
-            $_SESSION["organizationName"] = 'AVANA';
+            $_SESSION["organizationName"] = 'Avana';
             $_SESSION["color"] = '#202020';
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
@@ -78,12 +78,12 @@ switch ($organizationCode) {
         break;
     default:
         {
-            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["organizationName"] = 'Phh';
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
             $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.png';
         }
         break;
 }
@@ -121,6 +121,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     @font-face {
         font-family: Nunito-Sans;
         src: url('fonts/NunitoSans-Black.ttf');
+    }
+
+    @font-face {
+        font-family: HelveticaLTStd-Bold;
+        src: url('fonts/Helvetica Neue LT Std 75 Bold.otf');
+    }
+
+    @font-face {
+        font-family: HelveticaLTStd-Light.otf;
+        src: url('fonts/HelveticaLTStd-Light.otf');
     }
 
     @font-face {
@@ -166,8 +176,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-size: 20px;
         letter-spacing: 0px;
         color: #202020;
-        text-transform: uppercase;
+        /*text-transform: uppercase;*/
         opacity: 1;
+    }
+
+    .title h2{
+        font-family: HelveticaLTStd-Bold;
+        font-size: 1.5em;
+    }
+    .title span{
+        font-family: HelveticaLTStd-Light;
     }
 
     .btn-click {
@@ -175,6 +193,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         border-radius: 4px;
         opacity: 1;
         padding: 9px 14px !important;
+    }
+
+    .btn-click a:hover, .btn-click:hover{
+     opacity: 0.9;
+        color: #ffffff !important;
     }
 
     .btn-click a {
@@ -198,6 +221,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     img {
         width: 100%;
+    }
+
+    .carousel-control-prev, .carousel-control-next,
+    .carousel-indicators {
+        display:none !important;
     }
 
     .btn-show-all {
@@ -405,7 +433,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .carousel-caption h3 {
         text-align: left;
-        font-family: Nunito-Sans;
+        font-family: HelveticaLTStd-Bold;
         letter-spacing: 0px;
         color: <?=$_SESSION["color"]?>;
         opacity: 1;
@@ -414,7 +442,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .carousel-caption p {
         text-align: left;
-        font-family: Nunito-Sans;
+        font-family: HelveticaLTStd-Light;
         text-transform: uppercase;
         opacity: 1;
         color: white;
@@ -424,6 +452,21 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         -webkit-text-stroke-color: <?=$_SESSION["color"]?>;
         letter-spacing: 7px;
         margin: -3% 0 0 10%;
+    }
+
+    .carousel-caption h1{
+        font-family: HelveticaLTStd-Bold;
+        color: #ffffff;
+        position: absolute;
+        font-size: 66px;
+        position: absolute;
+        bottom: 25%;
+        letter-spacing: 3px;
+    }
+
+    .carousel-caption span{
+        font-family: HelveticaLTStd-Light;
+        /*font-size: 45px;*/
     }
 
     .slide-logo img {
@@ -569,9 +612,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
 <div class="wrapper"><!-- wrapper -->
 <!--    --><?php //echo $OUTPUT->header(); ?>
+<!--    --><?php //echo  ?>
     <section class="section section--header"><!-- section -->
         <header><!-- header -->
-            <div class="content">
+            <div class="content content-slider">
                 <div class="slider">
                     <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
                         <ul class="carousel-indicators">
@@ -581,44 +625,43 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
-                                <div class="slide-logo">
-                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
-                                </div>
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" class="bg-img">
+<!--                                <div class="slide-logo">-->
+<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
+<!--                                </div>-->
                                 <div class="carousel-caption">
-                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
-                                    <p>ACADEMY</p>
+                                    <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
                                 </div>
-                                <div class="slide-image">
-                                    <img src="images/1a-01.png" alt="">
-                                </div>
+<!--                                <div class="slide-image">-->
+<!--                                    <img src="images/1a-01.png" alt="">-->
+<!--                                </div>-->
                             </div>
-                            <div class="carousel-item">
-                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
-                                <div class="slide-logo">
-                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
-                                </div>
-                                <div class="carousel-caption">
-                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
-                                    <p>ACADEMY</p>
-                                </div>
-                                <div class="slide-image">
-                                    <img src="images/1a-01.jpg" alt="">
-                                </div>
-                            </div>
-                            <div class="carousel-item">
-                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" height="500" class="bg-img">
-                                <div class="slide-logo">
-                                    <img src="<?php echo $_SESSION["pathLogo"];  ?>" alt="">
-                                </div>
-                                <div class="carousel-caption">
-                                    <h3><?php echo $_SESSION["organizationName"]; ?></h3>
-                                    <p>ACADEMY</p>
-                                </div>
-                                <div class="slide-image">
-                                    <img src="images/1a-01.jpg" alt="">
-                                </div>
-                            </div>
+<!--                            <div class="carousel-item">-->
+<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
+<!--                                <div class="slide-logo">-->
+<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
+<!--                                </div>-->
+<!--                                <div class="carousel-caption">-->
+<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
+<!--                                    <p>ACADEMY</p>-->
+<!--                                </div>-->
+<!--                                <div class="slide-image">-->
+<!--                                    <img src="images/1a-01.jpg" alt="">-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <div class="carousel-item">-->
+<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
+<!--                                <div class="slide-logo">-->
+<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
+<!--                                </div>-->
+<!--                                <div class="carousel-caption">-->
+<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
+<!--                                    <p>ACADEMY</p>-->
+<!--                                </div>-->
+<!--                                <div class="slide-image">-->
+<!--                                    <img src="images/1a-01.jpg" alt="">-->
+<!--                                </div>-->
+<!--                            </div>-->
                         </div>
                         <a class="carousel-control-prev" href="#demo" data-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -696,14 +739,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-9 col-sm-8 col-xs-12">
+                    <div class="col-md-1 colsm-1"></div>
+                    <div class="col-md-8 col-sm-7 col-xs-12">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title">CURRENT COURSES</div>
+                                        <div class="col-6 title"><h2>Current <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a href="lms/course/index.php?type=1">Show All</a></button>
                                         </div>
@@ -749,7 +793,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title">ALL REQUIRED COURSES</div>
+                                        <div class="col-6 title"><h2>All required <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a href="lms/course/index.php?type=2">Show All</a></button>
                                         </div>
@@ -795,7 +839,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title">COMPLETED COURSES</div>
+                                        <div class="col-6 title"><h2>Completed <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a href="lms/course/index.php?type=3">Show All</a></button>
                                         </div>
@@ -949,6 +993,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 <script>
     $(function() {
         localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
+
+        var heightTopBar = $('.navbar-expand').outerHeight();
+        $('.content-slider').css('margin-top', heightTopBar+'px');
+
+        $('.slider').slick({
+            dots: false,
+            prevArrow: false,
+            nextArrow: false
+        });
     });
 </script>
 </body>
