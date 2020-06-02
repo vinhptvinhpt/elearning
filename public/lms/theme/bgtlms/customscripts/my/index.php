@@ -603,7 +603,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
-                                    <img src="images/1a-02.jpg" alt="">
+                                    <img src="images/1a-01.jpg" alt="">
                                 </div>
                             </div>
                             <div class="carousel-item">
@@ -616,7 +616,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <p>ACADEMY</p>
                                 </div>
                                 <div class="slide-image">
-                                    <img src="images/1a-03.jpg" alt="">
+                                    <img src="images/1a-01.jpg" alt="">
                                 </div>
                             </div>
                         </div>
