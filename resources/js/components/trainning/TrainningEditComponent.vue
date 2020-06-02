@@ -684,16 +684,12 @@
                 } else {
                     this.$router.push({name: 'TrainningIndex'});
                 }
-            },
-            setFileInput() {
-                $('.dropify').dropify();
             }
         },
         mounted() {
             this.getDetailTrainning();
             this.listOrganization();
             this.getRoles();
-            //this.setFileInput();
         }
     }
 </script>

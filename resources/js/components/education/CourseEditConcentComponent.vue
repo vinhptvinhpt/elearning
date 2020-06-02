@@ -223,9 +223,6 @@
             }
         },
         methods: {
-            setFileInput() {
-                $('.dropify').dropify();
-            },
             getCategories() {
                 axios.post('/api/courses/get_list_category')
                     .then(response => {
@@ -276,7 +273,6 @@
 
                         this.course.pass_score = Math.floor(response.data.pass_score);
 
-                        this.setFileInput();
                     })
                     .catch(error => {
                         console.log(error.response.data);

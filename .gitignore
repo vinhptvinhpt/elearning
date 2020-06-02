@@ -13,3 +13,4 @@ Homestead.yaml
 /public/assets/js/app.js.map
 .vscode
 package-lock.json
+/public/lms/config.php

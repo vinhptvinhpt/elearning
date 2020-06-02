@@ -220,9 +220,6 @@
                 .catch(error => {
                   console.log(error);
                 })
-            },
-            setFileInput() {
-              $('.dropify').dropify();
             }
         },
         mounted() {
@@ -230,7 +227,6 @@
             //this.listDepartment();
             //this.getUser();
             this.fetch();
-            this.setFileInput();
         }
     }
     function convertUtf8(str) {
