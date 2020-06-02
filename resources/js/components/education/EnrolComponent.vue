@@ -535,9 +535,6 @@
           this.$router.push({name: 'CourseConcentrateIndex'});
         }
       },
-      setFileInput() {
-        $('.dropify').dropify();
-      },
       uncheckEnrolAll() {
         this.allSelected = true;
         this.selectAllEnrol();
@@ -587,7 +584,6 @@
     mounted() {
       //this.getUserNeedEnrol();
       //this.getCurrentUserEnrol();
-      this.setFileInput();
       this.selectOrganization();
     }
   }

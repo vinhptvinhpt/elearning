@@ -457,9 +457,6 @@
                 else
                     this.$router.push({name: 'SettingBadge', query: {type: this.certificate.type}});
             },
-            setFileInput() {
-                $('.dropify').dropify();
-            },
             onClickImage(e) {
                 var posX_click = `${e.clientX}`;
                 var posY_click = `${e.clientY}`;
@@ -743,7 +740,6 @@
         },
         mounted() {
             this.certificateData();
-            this.setFileInput();
             this.fetchOrganization();
         }
     }

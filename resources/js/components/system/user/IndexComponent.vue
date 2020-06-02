@@ -523,9 +523,6 @@
           .catch(error => {
             console.log(error);
           });
-      },
-      setFileInput() {
-        $('.dropify').dropify();
       }
     },
     mounted() {
@@ -533,7 +530,6 @@
       this.getListRole();
       this.fetch();
       //this.getUserForFilter();
-      this.setFileInput();
       this.getUser();
     }
   }

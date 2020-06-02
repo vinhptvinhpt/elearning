@@ -742,9 +742,6 @@
                         roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },
-            setFileInput() {
-                $('.dropify').dropify();
-            },
             clearFileInput() {
                 $('.dropify-clear').click();
             },
@@ -831,7 +828,6 @@
             //this.getCitys();
             //this.get_branch();
             //this.getTrainingProgram();
-            this.setFileInput();
             this.selectOrganization(this.organization_id);
             this.getRoles();
             this.getCountries();

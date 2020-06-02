@@ -310,14 +310,10 @@
             },
             goBack() {
                 this.$router.push({name: 'CourseConcentrateIndex'});
-            },
-            setFileInput() {
-                $('.dropify').dropify();
             }
         },
         mounted() {
             // this.getCategories();
-            this.setFileInput();
         }
     }
 </script>

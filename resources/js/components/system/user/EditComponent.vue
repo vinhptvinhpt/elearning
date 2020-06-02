@@ -935,9 +935,6 @@
                 console.log(error);
               })
             },
-            setFileInput() {
-              $('.dropify').dropify();
-            },
             setOptions(list, current_id) {
               let outPut = [];
               for (const [key, item] of Object.entries(list)) {
@@ -993,7 +990,6 @@
             this.getRoles();
             //this.getCitys();
             this.userData();
-            this.setFileInput();
             this.getCountries();
         }
     }

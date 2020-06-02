@@ -269,7 +269,6 @@
                         }
                         //Convert text-area to ck editor
                         this.setEditor();
-                        this.setFileInput();
 
                     })
                     .catch(error => {
@@ -374,9 +373,6 @@
                 //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
                 // };
                 // CKEDITOR.replace('article_ckeditor', options);
-            },
-            setFileInput() {
-                $('.dropify').dropify();
             }
         },
         mounted() {

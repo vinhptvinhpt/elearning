@@ -239,15 +239,11 @@
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
 
-      },
-      setFileInput() {
-        $('.dropify').dropify();
       }
     },
     mounted() {
       this.listOrganization();
       this.getRoles();
-      this.setFileInput();
     }
   }
 </script>
