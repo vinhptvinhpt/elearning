@@ -1927,7 +1927,8 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->where('c.id', '=', $course_id)
-            ->where('roles.id', 5)//hoc vien only
+            //->where('roles.id', 5)//hoc vien only
+            ->where('e.roleid', '=', Role::ROLE_STUDENT)
             ->select(
                 'u.id as user_id',
                 'u.username',
