@@ -129,7 +129,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     @font-face {
-        font-family: HelveticaLTStd-Light.otf;
+        font-family: HelveticaLTStd-Light;
         src: url('fonts/HelveticaLTStd-Light.otf');
     }
 
@@ -196,7 +196,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .btn-click a:hover, .btn-click:hover{
-     opacity: 0.9;
+        opacity: 0.8;
         color: #ffffff !important;
     }
 
@@ -459,8 +459,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-family: HelveticaLTStd-Bold;
         color: #ffffff;
         position: absolute;
-        font-size: 66px;
-        position: absolute;
+        font-size: 60px;
         bottom: 25%;
         letter-spacing: 3px;
     }
@@ -679,7 +678,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <div class="content">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 col-sm-4 col-xs-12">
+                    <div class="col-md-3 col-sm-4 col-xs-12 mr-3">
                         <div class="info row">
                             <div class="info-user">
                                 <div class="avatar col-4">
@@ -740,8 +739,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-1 colsm-1"></div>
-                    <div class="col-md-8 col-sm-7 col-xs-12">
+                    <div class="col-md-8 col-sm-7 col-xs-12 ml-5">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">
@@ -802,7 +800,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 </div>
                                 <!--content-->
                                 <div class="courses-block__content">
-                                    <div class="courses-block__content__item row">
+                                    <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_all_required) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_all_required as $course) {  ?>
                                                 <div class="col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
@@ -848,10 +846,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 </div>
                                 <!--content-->
                                 <div class="courses-block__content">
-                                    <div class="courses-block__content__item row">
+                                    <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_completed) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
-                                                <div class="col-md-6 col-sm-6 col-xs-12 mb-3">
+                                                <div class="col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
                                                             <img src="images/Badge-examples 2.png" alt="">
@@ -998,11 +996,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         var heightTopBar = $('.navbar-expand').outerHeight();
         $('.content-slider').css('margin-top', heightTopBar+'px');
 
-        $('.slider').slick({
-            dots: false,
-            prevArrow: false,
-            nextArrow: false
-        });
     });
 </script>
 </body>
