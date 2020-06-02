@@ -326,6 +326,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     .info-user {
         background-color: <?=$_SESSION["color"]?>;
         display: flex;
+        width: 100%;
     }
 
     .avatar {
@@ -806,10 +807,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                             <?php $countBlock = 1; foreach ($courses_all_required as $course) {  ?>
                                                 <div class="col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
-                                                        <div class="block-item__image" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                         </div>
-                                                        <div class="block-item__content">
+                                                        <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
@@ -852,10 +853,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                             <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
                                                 <div class="col-md-6 col-sm-6 col-xs-12 mb-3">
                                                     <div class="block-items__item">
-                                                        <div class="block-item__image" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
+                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
                                                             <img src="images/Badge-examples 2.png" alt="">
                                                         </div>
-                                                        <div class="block-item__content">
+                                                        <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
