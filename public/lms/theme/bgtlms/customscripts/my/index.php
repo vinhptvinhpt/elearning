@@ -83,7 +83,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
             $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
 }
@@ -613,6 +613,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         }
     }
 
+    @media screen and (max-width: 768px) {
+        .title h2{
+            font-size: 20px !important;
+        }
+    }
 </style>
 <body>
 
@@ -631,7 +636,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active">
-                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" class="bg-img">
+                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" class="bg-img" style="max-height: 400px">
 <!--                                <div class="slide-logo">-->
 <!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
 <!--                                </div>-->

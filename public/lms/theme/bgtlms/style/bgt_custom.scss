@@ -1920,6 +1920,11 @@ body .navbar:before {
         max-height: calc(100vh - 70px);
         overflow-y: auto;
     }
+
+    .drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
+        opacity: 0 !important;
+        display: none;
+    }
 }
 
 @media (max-width: 1199px) {
@@ -2161,11 +2166,9 @@ body .navbar:before {
 }
 
 @media (max-width: 1199px) {
-    .drawer-open-left .over-wrap {
-        opacity: 1;
-        height: auto;
-        width: auto;
-        visibility: visible;
+    .drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
+        opacity: 0 !important;
+        display: none !important;
     }
 }
 
@@ -2191,7 +2194,7 @@ body.pagelayout-course.editing ul.topics span.inplaceeditable a img+span.instanc
 
 /* List document azure */
 
-/* 
+/*
     body {
     background: #f9f9fb;
 }
