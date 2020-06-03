@@ -950,6 +950,13 @@ class BackgroundController extends Controller
     //Xóa user & các dữ liệu liên quan khỏi hệ thống
     public function removeUsers() {
         $excludes = [
+            'easiaeditor01',
+            'easiaeditor02',
+            'easiaeditor03',
+            'easiaeditor04',
+            'easiaeditor05',
+            'easiaeditor06',
+            'easiaadmin',
             'easia_editor_03',
             'easia_editor_02',
             'easia_editor_01',
