@@ -118,9 +118,38 @@ class BackgroundController extends Controller
             }
 
             $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+
+            $base_level_organization = '';
+            $base_level_id = '';
+            $base_level = '';
+
+            if (strpos($file_name, 'easia') !== false) {
+                $base_level_organization  = 'easia';
+            } elseif (strpos($file_name, 'begodi') !== false) {
+                $base_level_organization  = 'begodi';
+            } elseif (strpos($file_name, 'avana') !== false) {
+                $base_level_organization  = 'avana';
+            } elseif (strpos($file_name, 'exotic') !== false) {
+                $base_level_organization  = 'exotic';
+            }
+
+            if (strlen($base_level_organization) != 0) {
+                $base_organization = TmsOrganization::firstOrCreate([
+                    'code' => strtoupper($base_level_organization),
+                    'name' => ucwords($base_level_organization)
+                ]);
+            } else {
+                continue;
+            }
+
+            $base_level_id = $base_organization->id;
+            $base_level = $base_organization->level;
+
             $list_uploaded = (new DataImport())->toArray($file_path, '', '');
 
             $response = array();
+
+            //Lấy dữ liệu từ tab Staff List
 
             $list_employee = $list_uploaded['Staff List'];
 
@@ -170,7 +199,9 @@ class BackgroundController extends Controller
                 } else {
                     $organization = TmsOrganization::firstOrCreate([
                         'code' => strtoupper($department_name),
-                        'name' => $department_name
+                        'name' => $department_name,
+                        'parent_id' => $base_level_id,
+                        'level' => $base_level + 1
                     ]);
                 }
 
@@ -957,7 +988,7 @@ class BackgroundController extends Controller
             'easiaeditor05@gmail.com',
             'easiaeditor06@gmail.com',
             'easiaadmin@gmail.com',
-            
+
             'easia_editor_03',
             'easia_editor_02',
             'easia_editor_01',
