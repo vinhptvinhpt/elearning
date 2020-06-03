@@ -90,6 +90,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         clear: both;
     }
 
+    .li-progress:hover{
+        cursor: pointer;
+    }
 /*    paging*/
     .pagination{
         margin: 0 auto;
@@ -528,9 +531,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <div class="col-lg-6 col-md-6">
                                         <div class="progress-note">
                                             <ul>
-                                                <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
-                                                <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
-                                                <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
+                                                <li class="li-progress completed"><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
+                                                <li class="li-progress studying"><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
+                                                <li class="li-progress not-learn"><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                             </ul>
                                         </div>
                                     </div>
@@ -662,7 +665,24 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
 <script>
     $(document).ready(function(){
-
+        $('.li-progress').click(function(){
+            var classes = $(this).attr('class');
+            if(classes.indexOf('studying') > 0)
+            {
+                $('.percentage').text(<?php echo $percentStudying; ?> +' %');
+                $('.percentage').css('fill', '#FFC400');
+            }
+            else if(classes.indexOf('not-learn') > 0)
+            {
+                $('.percentage').text(<?php echo (100 - $percentStudying - $percentCompleted); ?> +' %');
+                $('.percentage').css('fill', '#C7C7C7');
+            }
+            else if(classes.indexOf('completed') > 0)
+            {
+                $('.percentage').text(<?php echo $percentCompleted; ?> +' %');
+                $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
+            }
+        });
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
