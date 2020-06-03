@@ -259,7 +259,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         color: #202020;
     }
     .nav-name{
-        font-size: 23px;
+        font-size: 20px;
         letter-spacing: 0.8px;
         color: #737373;
         text-transform: uppercase;
