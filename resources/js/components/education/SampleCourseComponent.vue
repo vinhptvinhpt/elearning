@@ -255,9 +255,6 @@
             }
         },
         methods: {
-            setEditor() {
-                $('.dropify').dropify();
-            },
             createCourse() {
                 if (!this.shortname) {
                     $('.shortname_required').show();
@@ -376,8 +373,7 @@
             },
         },
         mounted() {
-            this.setEditor();
-           // this.getCourses();
+            // this.getCourses();
             this.fetch();
         }
     }

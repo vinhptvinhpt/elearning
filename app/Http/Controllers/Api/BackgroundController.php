@@ -961,6 +961,8 @@ class BackgroundController extends Controller
             'admin'
         ];
 
+        $exclude_email = ['easia', 'phh'];
+
 //Xóa lần lượt
 
 //        $users = MdlUser::query()
@@ -977,8 +979,8 @@ class BackgroundController extends Controller
 //Xóa cùng lúc
         //Xóa khỏi bảng TmsUserDetail
         TmsUserDetail::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -988,8 +990,8 @@ class BackgroundController extends Controller
         //Xóa dữ liệu liên quan
         //Tms tables
         ModelHasRole::query()
-            ->whereIn('model_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('model_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('model_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -997,8 +999,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsRoleOrganize::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1006,8 +1008,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsSaleRoomUser::query()
-//            ->whereIn('user_id', function ($q) use ($excludes) {
-//                self::buildSubQueryForUser1($q, $excludes);
+//            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+//                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
 //            })
 //            ->orWhereNotIn('user_id', function ($q)  {
 //                self::buildSubQueryForUser2($q);
@@ -1015,8 +1017,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsSurveyUserView::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1024,8 +1026,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsSurveyUser::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1033,8 +1035,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsTrainningUser::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1042,8 +1044,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsUserSaleDetail::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1051,8 +1053,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsDevice::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1060,8 +1062,8 @@ class BackgroundController extends Controller
             ->delete();
 
         TmsLog::query()
-            ->whereIn('user', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1070,8 +1072,8 @@ class BackgroundController extends Controller
 
         //Old organize system
         TmsCity::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1079,8 +1081,8 @@ class BackgroundController extends Controller
             ->update(['user_id' => 0]);
 
         TmsBranchMaster::query()
-//            ->whereIn('master_id', function ($q) use ($excludes) {
-//                self::buildSubQueryForUser1($q, $excludes);
+//            ->whereIn('master_id', function ($q) use ($excludes, $exclude_email) {
+//                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
 //            })
 //            ->orWhereNotIn('master_id', function ($q)  {
 //                self::buildSubQueryForUser2($q);
@@ -1091,8 +1093,8 @@ class BackgroundController extends Controller
         TmsCityBranch::query()->delete();
 
         TmsBranch::query()
-//            ->whereIn('user_id', function ($q) use ($excludes) {
-//                self::buildSubQueryForUser1($q, $excludes);
+//            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+//                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
 //            })
 //            ->orWhereNotIn('user_id', function ($q)  {
 //                self::buildSubQueryForUser2($q);
@@ -1103,8 +1105,8 @@ class BackgroundController extends Controller
         TmsBranchSaleRoom::query()->delete();
 
         TmsSaleRooms::query()
-//            ->whereIn('user_id', function ($q) use ($excludes) {
-//                self::buildSubQueryForUser1($q, $excludes);
+//            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+//                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
 //            })
 //            ->orWhereNotIn('user_id', function ($q)  {
 //                self::buildSubQueryForUser2($q);
@@ -1114,16 +1116,16 @@ class BackgroundController extends Controller
 
         //new tables
         TmsInvitation::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
             })
             ->delete();
         TmsOrganizationEmployee::query()
-            ->whereIn('user_id', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('user_id', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('user_id', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1132,24 +1134,24 @@ class BackgroundController extends Controller
 
         //Not has tms in name tables by dat09
         CourseFinal::query()
-            ->whereIn('userid', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('userid', function ($q)  {
                 self::buildSubQueryForUser2($q);
             })
             ->delete();
         CourseCompletion::query()
-            ->whereIn('userid', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('userid', function ($q)  {
                 self::buildSubQueryForUser2($q);
             })
             ->delete();
         StudentCertificate::query()
-            ->whereIn('userid', function ($q) use ($excludes) {
-                self::buildSubQueryForUser1($q, $excludes);
+            ->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
+                self::buildSubQueryForUser1($q, $excludes, $exclude_email);
             })
             ->orWhereNotIn('userid', function ($q)  {
                 self::buildSubQueryForUser2($q);
@@ -1158,20 +1160,40 @@ class BackgroundController extends Controller
 
         //Temporary
         //Delete Mdl_user data
-        MdlRoleAssignments::query()->whereIn('userid', function ($q) use ($excludes) {
-            self::buildSubQueryForUser1($q, $excludes);
+        MdlRoleAssignments::query()->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
+            self::buildSubQueryForUser1($q, $excludes, $exclude_email);
         })->delete();
 
+        //Xóa user trong bảng mdl_user
         MdlUser::query()
             ->whereNotIn('username', $excludes)
+            ->whereNotIn('email', function ($q1) use ($exclude_email)  {
+                $q1->select('email')->from('mdl_user');
+                foreach ($exclude_email as $exclude_email_item) {
+                    $q1->where('email', 'like', '%@'. $exclude_email_item .'%');
+                }
+            })->delete();
+        //Xóa user trong bảng mdl mà không có trong bảng tms_user_detail
+        MdlUser::query()->whereNotIn('id', function ($q2)  {
+                    $q2->select('user_id')->from('tms_user_detail');
+                })
             ->delete();
     }
 
-    function buildSubQueryForUser1(&$q, $excludes) {
+    function buildSubQueryForUser1(&$q, $excludes, $exclude_email) {
         /**
          * @var $q Builder
          */
-        $q->select('id')->from('mdl_user')->whereNotIn('username', $excludes);
+        $q->select('id')
+            ->from('mdl_user')
+            ->whereNotIn('username', $excludes);
+        foreach ($exclude_email as $exclude_email_item) {
+            $q->whereNotIn('email', function ($q1) use ($exclude_email_item)  {
+                $q1->select('email')
+                    ->from('mdl_user')
+                    ->where('email', 'like', '%@'. $exclude_email_item .'%');
+            });
+        }
     }
 
     function buildSubQueryForUser2(&$q) {

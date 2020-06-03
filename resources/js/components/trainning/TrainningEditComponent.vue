@@ -545,10 +545,6 @@
                 axios.get('/api/trainning/detail/' + this.id)
                     .then(response => {
                         this.trainning = response.data;
-                        setTimeout(function () {
-                            $('.dropify').dropify();
-                        }, 500);
-
                     })
                     .catch(error => {
                         console.log(error.response.data);
