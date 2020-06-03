@@ -187,6 +187,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     .title span{
         font-family: HelveticaLTStd-Light;
     }
+    .carousel-inner .carousel-item{
+        background-repeat: no-repeat;
+        background-position: 100% 50%;
+        background-size: cover;
+        min-height: 400px;
+    }
+
+    .li-progress:hover{
+        cursor: pointer;
+    }
 
     .btn-click {
         background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
@@ -635,8 +645,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             <li data-target="#demo" data-slide-to="2"></li>
                         </ul>
                         <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="<?php echo $_SESSION["pathBackground"];  ?>" alt="Los Angeles" width="1100" class="bg-img" style="max-height: 400px">
+                            <div class="carousel-item active" style="background-image: url('<?php echo $_SESSION["pathBackground"];  ?>')">
+<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" class="bg-img" style="max-height: 400px">-->
 <!--                                <div class="slide-logo">-->
 <!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
 <!--                                </div>-->
@@ -717,9 +727,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 </div>
                                 <div class="progress-note no-padding-col col-7">
                                     <ul>
-                                        <li><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
-                                        <li><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
-                                        <li><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
+                                        <li class="li-progress completed"><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
+                                        <li class="li-progress studying"><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
+                                        <li class="li-progress not-learn"><div class="block-note" style="background-color: #C7C7C7"></div> Not yet learned</li>
                                     </ul>
                                 </div>
                             </div>
@@ -1006,6 +1016,25 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
         var heightTopBar = $('.navbar-expand').outerHeight();
         $('.content-slider').css('margin-top', heightTopBar+'px');
+
+        $('.li-progress').click(function(){
+            var classes = $(this).attr('class');
+            if(classes.indexOf('studying') > 0)
+            {
+                $('.percentage').text(<?php echo $percentStudying; ?> +' %');
+                $('.percentage').css('fill', '#FFC400');
+            }
+            else if(classes.indexOf('not-learn') > 0)
+            {
+                $('.percentage').text(<?php echo (100 - $percentStudying - $percentCompleted); ?> +' %');
+                $('.percentage').css('fill', '#C7C7C7');
+            }
+            else if(classes.indexOf('completed') > 0)
+            {
+                $('.percentage').text(<?php echo $percentCompleted; ?> +' %');
+                $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
+            }
+        });
 
     });
 </script>
