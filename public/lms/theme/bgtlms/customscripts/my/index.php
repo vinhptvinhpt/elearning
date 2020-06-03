@@ -606,6 +606,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         }
     }
 
+    @media only screen and (max-width: 1199px) {
+        .drawer-open-left .over-wrap{
+            opacity: 0 !important;
+            display: none;
+        }
+    }
 
 </style>
 <body>
@@ -678,7 +684,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <div class="content">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 col-sm-4 col-xs-12 mr-3">
+                    <div class="col-md-3 col-sm-4 col-xs-12 mr-xl-3">
                         <div class="info row">
                             <div class="info-user">
                                 <div class="avatar col-4">
@@ -739,7 +745,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8 col-sm-7 col-xs-12 ml-5">
+                    <div class="col-md-8 col-sm-7 col-xs-12 ml-xl-5">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">

@@ -85,6 +85,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 
+    textarea:focus, input:focus {
+        outline: none;
+    }
 
     #region-main-box, #region-main{
         padding: 0 !important;
@@ -458,6 +461,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             margin-bottom: 2%;
         }
     }
+
 
     @media screen and (max-width: 1368px) {
         .drawer-open-left .over-wrap {
