@@ -44,6 +44,16 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         src: url('fonts/Nunito-Bold.ttf');
     }
 
+    @font-face {
+        font-family: HelveticaLTStd-Bold;
+        src: url('fonts/Helvetica Neue LT Std 75 Bold.otf');
+    }
+
+    @font-face {
+        font-family: HelveticaLTStd-Light;
+        src: url('fonts/HelveticaLTStd-Light.otf');
+    }
+
     img {
         width: 100%;
     }
@@ -67,6 +77,21 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         opacity: 0.5;
     }
 
+    select option {
+        margin: 40px;
+        background: rgba(0, 0, 0, 0.3);
+        /*background-color: transparent !important;*/
+        color: #fff;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+    }
+
+    textarea:focus, input:focus {
+        outline: none;
+    }
+
+    #region-main-box, #region-main{
+        padding: 0 !important;
+    }
     /*    view*/
     /*    paging*/
     .pagination {
@@ -226,13 +251,17 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .section-header {
-        background-image: url('images/course/list/bg.png');
+        background-image: url('images/bg-a-03.png');
         width: 100%;
         background-repeat: no-repeat;
-        background-position: center center;
+        background-position: 100% 90%;
         background-size: cover;
+        min-height: 400px;
     }
 
+    .section-header .container{
+        padding-top: calc(100% - 95%);
+    }
     .header-block__logo img {
         width: 25%;
         padding: 4% 0;
@@ -241,10 +270,23 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     .header-block__search__title p {
         font-family: Roboto-Regular;
         letter-spacing: 0.45px;
-        color: #202020;
+        color: #ffffff;
         font-size: 13px;
     }
 
+
+    .header-block__search__title h1{
+        font-family: HelveticaLTStd-Bold;
+        color: #ffffff;
+        font-size: 66px;
+        bottom: 25%;
+        letter-spacing: 3px;
+    }
+
+    .header-block__search__title span{
+        font-family: HelveticaLTStd-Light;
+        /*font-size: 45px;*/
+    }
 
     .header-block__search__title .title-header {
         font-family: Roboto-Bold;
@@ -263,17 +305,27 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         padding: 2% 0;
     }
 
+    .header-block__quick-filter__title h2 {
+        font-family: HelveticaLTStd-Bold;
+        font-size: 2rem;
+    }
+
+    .header-block__quick-filter__title span{
+        font-family: HelveticaLTStd-Light;
+    }
+
     .course-select, .input-search {
         font-size: 13px !important;
         letter-spacing: 0.45px !important;
-        color: #3E3E3E !important;
         font-family: Roboto-Regular;
-        border: 1px solid #707070 !important;
+        border: 1px solid #ffff !important;
         border-radius: inherit !important;
+        background-color: transparent !important;
+        color: #ffffff !important;
     }
 
     .input-search {
-        padding: 2%;
+        /*padding: 2%;*/
         border-right: 0 !important;
         width: 85%;
     }
@@ -289,7 +341,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .btn-search {
-        border: 1px solid #707070;
+        border: 1px solid #ffffff;
         border-left: 0;
     }
 
@@ -301,9 +353,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .btn-search input {
-        background-color: <?=$_SESSION["color"]?>;
+        background-color: transparent;
         width: 100%;
-        border: 2px solid #FFFFFF;
+        border: none;
         padding: 5px 15px;
     }
 
@@ -320,7 +372,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         font-size: 13px !important;
         color: #737373 !important;
         letter-spacing: 0.45px;
-        margin-right: 2%;
+        /*margin-right: 2%;*/
         min-width: 135px;
     }
 
@@ -410,6 +462,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         }
     }
 
+
     @media screen and (max-width: 1368px) {
         .drawer-open-left .over-wrap {
             opacity: 0 !important;
@@ -441,17 +494,17 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         <section class="section section-header"><!-- section -->
             <div class="container">
                 <div class="header-block">
-                    <div class="header-block__logo">
-                        <img src="<?php echo $_SESSION["pathLogo"]; ?>" alt="Logo">
-                    </div>
+<!--                    <div class="header-block__logo">-->
+<!--                        <img src="--><?php //echo $_SESSION["pathLogo"]; ?><!--" alt="Logo">-->
+<!--                    </div>-->
                     <div class="header-block__search">
                         <div class="header-block__search__title">
-                            <p class="title-header">Available courses</p>
+                            <h1>Available <span>Courses</span></h1>
                             <p>Search your target courses here</p>
                         </div>
                         <div class="header-block__search__btn-search">
                             <div class="row col-12 block-search">
-                                <div class="col-2 block-search__select">
+                                <div class="col-5 col-md-2 block-search__select">
                                     <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
                                             v-model="category">
                                         <option value="0">All course</option>
@@ -461,25 +514,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                         <?php } ?>
                                     </select>
                                 </div>
-                                <div class="col-5 block-search__btn">
+                                <div class="col-6 col-md-5 block-search__btn">
                                     <input type="text" class=" input-search" v-model="txtSearch">
                                     <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="header-block__quick-filter">
-                        <div class="header-block__quick-filter__title"><p>Quick Filter</p></div>
-                        <div class="header-block__quick-filter__main">
-                            <ul>
-                                <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
-                                <?php foreach ($categories as $category) { ?>
-                                    <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
-                                        category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
-                                <?php } ?>
-                            </ul>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </section>
@@ -487,7 +529,18 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
-
+                <div class="header-block__quick-filter">
+                    <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
+                    <div class="header-block__quick-filter__main">
+                        <ul>
+                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
+                            <?php foreach ($categories as $category) { ?>
+                                <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
+                                    category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
+                            <?php } ?>
+                        </ul>
+                    </div>
+                </div>
                 <div class="row pt-2">
                     <template v-if="courses.length == 0">
                         <div class="col-12 pt-1"><h3>No course to display</h3></div>
