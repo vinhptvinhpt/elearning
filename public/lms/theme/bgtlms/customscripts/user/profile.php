@@ -258,8 +258,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .nav-link:hover{
         color: #202020;
     }
-    .nav-show{
-        font-size: 23px;
+    .nav-name{
+        font-size: 20px;
         letter-spacing: 0.8px;
         color: #737373;
         text-transform: uppercase;
@@ -586,7 +586,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
                                     <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
+                                    <td v-else><span class="numberhave">{{ Math.floor(course.finalgrade) }}</span></td>
                                     <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
@@ -608,10 +608,10 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-show active" data-toggle="tab" href="#certificate">certificate</a>
+                                <a class="nav-show nav-name active" data-toggle="tab" href="#certificate">certificate</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-show" data-toggle="tab" href="#badge">badge</a>
+                                <a class="nav-show nav-name" data-toggle="tab" href="#badge">badge</a>
                             </li>
                         </ul>
 
