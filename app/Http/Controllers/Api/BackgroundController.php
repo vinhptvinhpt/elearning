@@ -958,11 +958,16 @@ class BackgroundController extends Controller
             'surimen',
             'thuylinh',
             'linhnt',
-            'admin'
+            'admin',
+            'tvadmin_01@gmail.com',
+            'tvtrainee_01@gmail.com'
         ];
 
         $exclude_email = ['easia', 'phh'];
 
+
+        DB::beginTransaction();
+         try {
 //Xóa lần lượt
 
 //        $users = MdlUser::query()
@@ -1178,6 +1183,10 @@ class BackgroundController extends Controller
                     $q2->select('user_id')->from('tms_user_detail');
                 })
             ->delete();
+             DB::commit();
+         } catch (\Exception $e) {
+             DB::rollBack();
+         }
     }
 
     function buildSubQueryForUser1(&$q, $excludes, $exclude_email) {
