@@ -586,7 +586,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
                                     <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
                                     <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberhave">{{ course.finalgrade }}</span></td>
+                                    <td v-else><span class="numberhave">{{ Math.floor(course.finalgrade) }}</span></td>
                                     <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
