@@ -258,7 +258,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .nav-link:hover{
         color: #202020;
     }
-    .nav-show{
+    .nav-name{
         font-size: 23px;
         letter-spacing: 0.8px;
         color: #737373;
@@ -608,10 +608,10 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
                             <li class="nav-item">
-                                <a class="nav-show active" data-toggle="tab" href="#certificate">certificate</a>
+                                <a class="nav-show nav-name active" data-toggle="tab" href="#certificate">certificate</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-show" data-toggle="tab" href="#badge">badge</a>
+                                <a class="nav-show nav-name" data-toggle="tab" href="#badge">badge</a>
                             </li>
                         </ul>
 
