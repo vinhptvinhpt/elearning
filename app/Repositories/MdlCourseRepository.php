@@ -993,22 +993,24 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ->where('lsl.courseid', '=', $course_id)->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
             ->select('lsl.other', DB::raw('"" as name'), 'u.username', 'lsl.action', 'cm.module', 'lsl.timecreated');
 
-        // * union all log
-        $documents = $docDel->unionAll($docDifDel);
 
         if ($keyword) {
-            $documents = $documents
-                ->whereRaw('( other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR username like "%' . $keyword . '%" )');
+            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
         }
 
         if ($action) {
-            $documents = $documents
-                ->where('action', '=', $action);
+            $docDel = $docDel->where('lsl.action', '=', $action);
+            $docDifDel = $docDifDel->where('lsl.action', '=', $action);
         }
 
         if ($module_id > 0) {
-            $documents = $documents->where('module', '=', $module_id);
+            $docDel = $docDel->where('mtrc.module', '=', $module_id);
+            $docDifDel = $docDifDel->where('cm.module', '=', $module_id);
         }
+
+        // * union all log
+        $documents = $docDel->unionAll($docDifDel);
 
         $total_Data = $documents->count();
 
