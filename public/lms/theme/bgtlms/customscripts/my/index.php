@@ -107,7 +107,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 ?>
 
 <html>
-<title>Homepage</title>
+<title>Trang chủ</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
