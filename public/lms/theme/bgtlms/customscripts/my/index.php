@@ -824,7 +824,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_all_required) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_all_required as $course) {  ?>
-                                                <div class="col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
+                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
@@ -870,7 +870,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_completed) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
-                                                <div class="col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
+                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
                                                             <img src="images/Badge-examples 2.png" alt="">
