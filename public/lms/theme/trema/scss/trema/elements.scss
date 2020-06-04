@@ -169,9 +169,12 @@ body #page {
     }
 
     .btn-link {
+        color: $primary;
         background: none;
+
         &:hover {
             background: none;
+            color: darken($primary, 30%);
         }
     }
 

@@ -160,13 +160,7 @@ $THEME->layouts = [
         'file' => 'secure.php',
         'regions' => array('side-pre'),
         'defaultregion' => 'side-pre'
-    ),
-    // Server administration scripts.
-    'course_edit' => array(
-        'file' => 'course_edit.php',
-        'regions' => array('side-pre'),
-        'defaultregion' => 'side-pre',
-    ),
+    )
 ];
 
 $THEME->prescsscallback = 'theme_trema_get_pre_scss';
