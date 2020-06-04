@@ -125,7 +125,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     @font-face {
         font-family: HelveticaLTStd-Bold;
-        src: url('fonts/Helvetica Neue LT Std 75 Bold.otf');
+        src: url('fonts/HelveticaLTStd-Bold.otf');
     }
 
     @font-face {
@@ -191,7 +191,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         background-repeat: no-repeat;
         background-position: 100% 50%;
         background-size: cover;
-        min-height: 400px;
+        min-height: 500px;
     }
 
     .li-progress:hover{
@@ -1014,8 +1014,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     $(function() {
         localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
 
-        var heightTopBar = $('.navbar-expand').outerHeight();
-        $('.content-slider').css('margin-top', heightTopBar+'px');
+        // var heightTopBar = $('.navbar-expand').outerHeight();
+        // $('.content-slider').css('margin-top', heightTopBar+'px');
 
         $('.li-progress').click(function(){
             var classes = $(this).attr('class');

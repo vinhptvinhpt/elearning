@@ -46,7 +46,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     @font-face {
         font-family: HelveticaLTStd-Bold;
-        src: url('fonts/Helvetica Neue LT Std 75 Bold.otf');
+        src: url('fonts/HelveticaLTStd-Bold.otf');
     }
 
     @font-face {
