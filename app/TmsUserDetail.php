@@ -96,5 +96,6 @@ class TmsUserDetail extends Model
 
         //Gọi sang LMS để xóa dữ liệu bên LMS
         //Pending
+        MdlUser::query()->where('id', $user_id)->delete();
     }
 }
