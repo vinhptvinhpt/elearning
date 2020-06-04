@@ -125,7 +125,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     @font-face {
         font-family: HelveticaLTStd-Bold;
-        src: url('fonts/Helvetica Neue LT Std 75 Bold.otf');
+        src: url('fonts/HelveticaLTStd-Bold.otf');
     }
 
     @font-face {
