@@ -160,11 +160,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
                     <div class="change-password">
                         <p>
-                            <a class=" btn-collapse" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                            <a class=" btn-collapse">
+<!--                            <a class=" btn-collapse" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
                                 <i class="fa fa-cog" aria-hidden="true"></i> Chang Password
                             </a>
                         </p>
-                        <div class="collapse" id="collapseExample">
+                        <div class="" id="collapseExample">
                             <div class="">
                                 <div class="col-6 col-12 col-md-6 col-xl-6 col-lg-6">
                                     <div class="row">
@@ -227,7 +228,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 })
                     .then(response => {
                         this.user = response.data.profile;
-                        console.log(this.user);
                     })
                     .catch(error => {
                         console.log("Error ", error);
@@ -255,6 +255,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 })
                     .then(response => {
                         console.log(response.data);
+                        if(response.data)
+                            alert("Chỉnh sửa thành công");
+                            // toastr['success']('Chỉnh sửa thành công', 'Thông báo');
+                        else
+                            alert("Chỉnh sửa thành công");
+                            // toastr['error']('Đã xảy ra lỗi', 'Thông báo');
                     })
                     .catch(error => {
                         console.log("Error ", error);
