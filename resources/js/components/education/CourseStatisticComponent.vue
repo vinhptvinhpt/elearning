@@ -380,9 +380,13 @@
                                             <tbody>
                                             <tr v-for="(att,index) in modules">
                                                 <td>{{ index+1 }}</td>
-                                                <td><a style="color: #007bff;cursor: pointer;"
-                                                       @click="getLogCourse(att.id, 1)">{{ att.name
-                                                    }}</a>
+                                                <td>
+                                                  <template v-if="att.id !== module_id">
+                                                    <a style="cursor: pointer;" class="btn btn-sm btn-default" @click="getLogCourse(att.id, 1, 'set')">{{ att.name }}</a>
+                                                  </template>
+                                                  <template v-else>
+                                                    <a style="cursor: pointer; color: #ffffff" class="btn btn-sm btn-primary" @click="getLogCourse(att.id, 1, 'set')">{{ att.name }}</a>
+                                                  </template>
                                                 </td>
                                             </tr>
                                             </tbody>
@@ -399,7 +403,7 @@
                                                     <label>{{trans.get('keys.kieu_hanh_dong')}}
                                                         <select v-model="actionDoc"
                                                                 class="custom-select custom-select-sm form-control form-control-sm"
-                                                                @click="getLogCourse(module_id, 1)">
+                                                                @click="getLogCourse(module_id, 1, 'search')">
                                                             <option value="">Chọn kiểu</option>
                                                             <option value="viewed">viewed</option>
                                                             <option value="created">created</option>
@@ -416,7 +420,7 @@
                                                     <label>{{trans.get('keys.hien_thi')}}
                                                         <select v-model="rowDoc"
                                                                 class="custom-select custom-select-sm form-control form-control-sm"
-                                                                @click="getLogCourse(module_id, 1)">
+                                                                @click="getLogCourse(module_id, 1, 'search')">
                                                             <option value="5">5</option>
                                                             <option value="10">10</option>
                                                             <option value="20">20</option>
@@ -432,7 +436,7 @@
                                                            :placeholder="trans.get('keys.tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao')+'...'">
                                                     <button type="button" id="btnFilterDoc"
                                                             class="btn btn-primary btn-sm" style="margin-left: 2px;"
-                                                            @click="getLogCourse(module_id, 1)">
+                                                            @click="getLogCourse(module_id, 1, 'search')">
                                                         {{trans.get('keys.tim')}}
                                                     </button>
                                                     <button type="button" id="btnResetDoc"
@@ -525,7 +529,7 @@
                 total_document: 0,
                 totalPagesDoc: 1,
                 module_id: 0,
-                actionDoc: ''
+                actionDoc: '',
             }
         },
         filters: {
@@ -545,12 +549,20 @@
                 this.keywordDoc = '';
                 this.rowDoc = 5;
                 this.actionDoc = '';
-                this.getLogCourse(0, 1);
+                this.getLogCourse(0, 1, 'search');
             },
-            getLogCourse(idModule, paged) {
+            getLogCourse(idModule, paged, type) {
+
+                if (type === 'set') {
+                  if (idModule > 0 && idModule === this.module_id) { //Hủy selected
+                    idModule = 0;
+                  }
+                }
+
                 if (idModule != undefined) {
                     this.module_id = idModule;
                 }
+
                 axios.post('/api/courses/get_list_document_course', {
                     course_id: this.course_id,
                     module_id: this.module_id,
