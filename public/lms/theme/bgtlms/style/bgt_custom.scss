@@ -1921,10 +1921,10 @@ body .navbar:before {
         overflow-y: auto;
     }
 
-    .drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
-        opacity: 0 !important;
-        display: none;
-    }
+    //.drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
+    //    opacity: 0 !important;
+    //    display: none;
+    //}
 }
 
 @media (max-width: 1199px) {
@@ -2166,10 +2166,10 @@ body .navbar:before {
 }
 
 @media (max-width: 1199px) {
-    .drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
-        opacity: 0 !important;
-        display: none !important;
-    }
+    //.drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
+    //    opacity: 0 !important;
+    //    display: none !important;
+    //}
 }
 
 .editing .section .activity .mod-indent-outer {
