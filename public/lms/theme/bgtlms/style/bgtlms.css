@@ -118,3 +118,10 @@
         max-width: 2000px;
     }
 }
+
+@media (min-width: 1200px) {
+    .drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
+        opacity: 1!important;
+        display: block !important;
+    }
+}
