@@ -67,11 +67,14 @@ class TmsOrganizationRepository implements ICommonInterface
             DB::raw(' (select MAX(level) from tms_organization) as max_level')
         );
 
+        $skip_level = false;
+
         if ($current_user_role == Role::ROLE_MANAGER || $current_user_role == Role::ROLE_LEADER) {
             $list->whereIn('id', function ($q) use ($current_user_id) {
                 /* @var $q Builder */
                 $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
             });
+            $skip_level = true;
         }
 
         if ($keyword) {
@@ -95,7 +98,7 @@ class TmsOrganizationRepository implements ICommonInterface
             $list = $list->where('id', '<>', $exclude);
         }
 
-        if (is_numeric($level) && $level != 0) {
+        if (is_numeric($level) && $level != 0 && $skip_level === false) {
             $list = $list->where('level', $level);
         }
 
