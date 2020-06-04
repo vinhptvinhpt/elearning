@@ -43,6 +43,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Excel;
@@ -120,8 +121,6 @@ class BackgroundController extends Controller
             $file_name = pathinfo($file_path, PATHINFO_FILENAME);
 
             $base_level_organization = '';
-            $base_level_id = '';
-            $base_level = '';
 
             if (strpos($file_name, 'easia') !== false) {
                 $base_level_organization  = 'easia';
@@ -137,7 +136,7 @@ class BackgroundController extends Controller
                 $base_organization = TmsOrganization::firstOrCreate([
                     'code' => strtoupper($base_level_organization),
                     'name' => ucwords($base_level_organization)
-                ]);
+                    ]);
             } else {
                 continue;
             }
@@ -184,7 +183,7 @@ class BackgroundController extends Controller
                     $content[] = 'Position is missing';
                 }
 
-                if (str_replace($manager_keys, '', $position_name) != $position_name) {
+                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
                     $role = Role::ROLE_MANAGER;
                 } elseif (strpos($position_name, Role::ROLE_LEADER) !== false) {
                     $role = Role::ROLE_LEADER;
@@ -198,8 +197,8 @@ class BackgroundController extends Controller
                     $content[] = 'Department is missing';
                 } else {
                     $organization = TmsOrganization::firstOrCreate([
-                        'code' => strtoupper($department_name),
-                        'name' => $department_name,
+                        'code' => strtoupper($base_level_organization . "-" . $department_name),
+                        'name' => ucwords($base_level_organization) . "-" . $department_name,
                         'parent_id' => $base_level_id,
                         'level' => $base_level + 1
                     ]);
@@ -424,10 +423,13 @@ class BackgroundController extends Controller
                     ->first();
                 if (!isset($user_detail)) {
                     $user_detail = new TmsUserDetail();
+                    $exist = false;
+                } else {
+                    $exist = true;
                 }
 
                 //check cmtnd
-                if ($user_detail->user_id != $check->id) {
+                if ($user_detail->user_id != $check->id && $exist == true) {
                     $response['message'] = 'Skip update because Personal ID is used by another user ' . $user_detail->fullname;
                 } else {
                     $user_detail->user_id = $check->id;
@@ -1002,7 +1004,10 @@ class BackgroundController extends Controller
             'tvtrainee_01@gmail.com'
         ];
 
-        $exclude_email = ['easia', 'phh'];
+        $exclude_email = [
+            'easia',
+            'phh'
+        ];
 
 
         DB::beginTransaction();
@@ -1209,14 +1214,33 @@ class BackgroundController extends Controller
         })->delete();
 
         //Xóa user trong bảng mdl_user
-        MdlUser::query()
-            ->whereNotIn('username', $excludes)
-            ->whereNotIn('email', function ($q1) use ($exclude_email)  {
-                $q1->select('email')->from('mdl_user');
-                foreach ($exclude_email as $exclude_email_item) {
-                    $q1->where('email', 'like', '%@'. $exclude_email_item .'%');
-                }
-            })->delete();
+        //Server error General error: 1093 You can't specify target table 'mdl_user' for update in FROM clause - mặc dù đã đặt alias??
+//        MdlUser::query()
+//            ->whereNotIn('username', $excludes)
+//            ->whereNotIn('email', function ($q1) use ($exclude_email)  {
+//                $q1->select('mu.email')->from('mdl_user AS mu');
+//                foreach ($exclude_email as $key => $exclude_email_item) {
+//                    if ($key == 0) {
+//                        $q1->where('mu.email', 'like', '%@'. $exclude_email_item .'%');
+//                    } else {
+//                        $q1->orWhere('mu.email', 'like', '%@'. $exclude_email_item .'%');
+//                    }
+//                }
+//            })->delete();
+        $excluded_emails = MdlUser::query();
+        foreach ($exclude_email as $key => $exclude_email_item) {
+            if ($key == 0) {
+                $excluded_emails->where('email', 'like', '%@'. $exclude_email_item .'%');
+            } else {
+                $excluded_emails->orWhere('email', 'like', '%@'. $exclude_email_item .'%');
+            }
+        };
+        $excluded_emails = $excluded_emails->pluck('email');
+         MdlUser::query()
+        ->whereNotIn('username', $excludes)
+        ->whereNotIn('email', $excluded_emails)->delete();
+
+
         //Xóa user trong bảng mdl mà không có trong bảng tms_user_detail
         MdlUser::query()->whereNotIn('id', function ($q2)  {
                     $q2->select('user_id')->from('tms_user_detail');
@@ -1224,6 +1248,7 @@ class BackgroundController extends Controller
             ->delete();
              DB::commit();
          } catch (\Exception $e) {
+             Log::error($e);
              DB::rollBack();
          }
     }

@@ -207,7 +207,7 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if="current_roles.root_user">
+                            <li class="nav-item" v-if="slug_can('tms-system-activity-log-view')">
                                 <router-link to="/tms/activity_log" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.activity_log') }}</span>
                                 </router-link>
