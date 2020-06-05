@@ -64,13 +64,13 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .btn-click{
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 0px 3px 6px #00000029;
-        border: 1px solid #862055;
+        border: 1px solid <?=$_SESSION["color"]?>;
         border-radius: 4px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
         padding: 5px;
     }
     .btn-update{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
         color: #ffffff !important;
     }
     .div-btn{
@@ -96,7 +96,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         width: 100%;
     }
     .change-password p a{
-        color: #862055 !important;
+        color: <?=$_SESSION["color"]?> !important;
         letter-spacing: 0.5px;
     }
     .choose-file{
@@ -105,6 +105,21 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         margin-top: 5%;
         overflow: hidden;
     }
+    @media (min-width: 1600px) {
+        .col-xxl-8{
+            flex: 0 0 66.666667% !important;
+            max-width: 66.666667% !important;
+        }
+        .col-xxl-4{
+            flex: 0 0 33.333333% !important;
+            max-width: 33.333333% !important;
+        }
+        .col-xxl-2{
+            flex: 0 0 16.666667% !important;
+            max-width: 16.666667% !important;
+        }
+    }
+
 </style>
 <body>
 <?php
@@ -128,22 +143,22 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="col-12 col-xs-12 col-md-8 col-xl-8 col-lg-8">
                     <div class="row info-edit">
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Full name <input type="text" class="form-control" v-model="user.fullname">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Date of Birth <input type="date" class="form-control" v-model="user.dob">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Address <input type="text" class="form-control" v-model="user.address">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Email <input type="text" class="form-control" v-model="user.email">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Contact Number <input type="text" class="form-control" v-model="user.phone">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Gender
                             <select class="form-control" v-model="user.sex">
                                 <option value="0">Female</option>
@@ -152,40 +167,40 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
                             <button type="button" class="btn-update btn-click" @click="updateProfile('')">Update Infomation</button>
                         </div>
-                        <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
                             <button type="button" class="btn-cancel btn-click">Cancel</button>
                         </div>
                     </div>
 
-                    <div class="change-password">
-                        <p>
+                    <div class="row change-password">
+                        <p class="col-12">
                             <a class=" btn-collapse">
 <!--                            <a class=" btn-collapse" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
                                 <i class="fa fa-cog" aria-hidden="true"></i> Chang Password
                             </a>
                         </p>
-                        <div class="" id="collapseExample">
-                            <div class="">
-                                <div class="col-6 col-12 col-md-6 col-xl-6 col-lg-6">
+                        <div class="col-12" id="collapseExample">
+                            <div class="row">
+                                <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                                     <div class="row">
-                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 form-group">
+                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 col-xxl-8 info-edit__block form-group">
                                             <input type="password" class="form-control" placeholder="Password" v-model="password">
                                         </div>
-                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 form-group">
+                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 col-xxl-8 info-edit__block form-group">
                                             <input type="password" class="form-control" placeholder="Re-enter Password" v-model="re_password">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
-                                        <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
-                                    </div>
-                                    <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
-                                        <button type="button" class="btn-cancel btn-click">Cancel</button>
-                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
+                                    <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
+                                </div>
+                                <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
+                                    <button type="button" class="btn-cancel btn-click">Cancel</button>
                                 </div>
                             </div>
 
