@@ -22,7 +22,7 @@
     <div class="main-bg"></div>
     <div class="main-content"></div>
     <div class="before-main-content">
-        <h3>Easia</h3>
+        <h3>PHH</h3>
         <p>ACADEMY</p>
     </div>
     <div class="wrap-login100">
@@ -89,7 +89,7 @@
         <form method="POST" class="login-form" id="recoverform" style="display: none;">
             @csrf
             <div class="wrap-content">
-                <img src="../images/logo-black.png" class="logo" alt="">
+                <img src="../images/logo-black-login.png" class="logo" alt="">
                 <p class="title-login"><br/>Password retrieval</p>
                 <div class="wrap-input100">
                     <input class="form-control" id="iprs-user" name="username" type="email" required=""
