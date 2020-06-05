@@ -96,10 +96,10 @@
                                         <thead>
                                         <tr>
                                             <th>{{trans.get('keys.stt')}}</th>
-                                            <th style="width: 10%;">{{trans.get('keys.ma_survey')}}</th>
-                                            <th style="width: 20%;">{{trans.get('keys.ten_survey')}}</th>
-                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>
-                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
+                                            <th style="width: 20%;">{{trans.get('keys.ma_survey')}}</th>
+                                            <th style="width: 40%;">{{trans.get('keys.ten_survey')}}</th>
+<!--                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>-->
+<!--                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>-->
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -113,8 +113,8 @@
                                                 </router-link>
                                             </td>
                                             <td>{{ sur.name }}</td>
-                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>
-                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>
+<!--                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>-->
+<!--                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>-->
                                             <td class="text-center">
 
                                                 <router-link

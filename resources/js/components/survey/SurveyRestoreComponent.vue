@@ -44,23 +44,23 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-6">
-                                        <div class="dataTables_length">
-                                            <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                                            <date-picker v-model="startdate"
-                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>
-                                        </div>
-                                    </div>
-                                    <div class="col-6">
-                                        <div class="dataTables_length">
-                                            <label>{{trans.get('keys.ngay_ket_thuc')}}</label>
-                                            <date-picker v-model="enddate"
-                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>
-                                        </div>
-                                    </div>
-                                </div>
-                                <br/>
+                                <!--                                <div class="row">-->
+                                <!--                                    <div class="col-6">-->
+                                <!--                                        <div class="dataTables_length">-->
+                                <!--                                            <label>{{trans.get('keys.ngay_bat_dau')}}</label>-->
+                                <!--                                            <date-picker v-model="startdate"-->
+                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="col-6">-->
+                                <!--                                        <div class="dataTables_length">-->
+                                <!--                                            <label>{{trans.get('keys.ngay_ket_thuc')}}</label>-->
+                                <!--                                            <date-picker v-model="enddate"-->
+                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
+<!--                                <br/>-->
                                 <div class="row">
                                     <div class="col-6 dataTables_wrapper">
                                         <div class="dataTables_length">
@@ -84,10 +84,10 @@
                                         <thead>
                                         <tr>
                                             <th>{{trans.get('keys.stt')}}</th>
-                                            <th style="width: 10%;">{{trans.get('keys.ma_survey')}}</th>
-                                            <th style="width: 20%;">{{trans.get('keys.ten_survey')}}</th>
-                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>
-                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
+                                            <th style="width: 20%;">{{trans.get('keys.ma_survey')}}</th>
+                                            <th style="width: 40%;">{{trans.get('keys.ten_survey')}}</th>
+                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>-->
+                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>-->
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -96,8 +96,8 @@
                                             <td>{{index+1}}</td>
                                             <td>{{ sur.code }}</td>
                                             <td>{{ sur.name }}</td>
-                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>
-                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>
+                                            <!--                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>-->
+                                            <!--                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>-->
                                             <td class="text-center">
                                                 <button :title="trans.get('keys.khoi_phuc_survey')" data-toggle="modal"
                                                         data-target="#delete-ph-modal"
@@ -189,7 +189,7 @@
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
-                    text:  this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,
@@ -218,7 +218,7 @@
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
-                    text:  this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
                     type: "success",
                     showCancelButton: true,
                     closeOnConfirm: false,

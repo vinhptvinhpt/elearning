@@ -11,6 +11,10 @@ Route::get('/tms/{vue?}', function () {
     return view('layouts.dashboard');
 })->where('vue', '[\/\w\.-]*')->name('home');
 
+Route::get('/survey/{vue?}', function () {
+    return view('layouts.survey');
+})->where('vue', '[\/\w\.-]*')->name('home');
+
 Route::get('/page/{vue?}', function () {
     return view('layouts.page');
 })->where('vue', '[\/\w\.-]*')->name('page');
@@ -539,6 +543,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/survey/viewlayout/{id}', 'Backend\SurveyController@viewDisplaySurveyAdmin');
     Route::get('/api/survey/viewlayout/{id}', 'Backend\SurveyController@apiPresentSurvey');
     Route::post('/api/survey/submit_result/{id}', 'Backend\SurveyController@apiSubmitSurvey');
+    Route::post('/api/survey/submit_resultlms/{id}', 'Backend\SurveyController@apiSubmitSurveyLMS');
     Route::get('/survey/statistic/{id}', 'Backend\SurveyController@viewStatisticSurvey');
     Route::post('/api/survey/statistic_view', 'Backend\SurveyController@apiStatisticSurveyView');
     Route::post('/api/survey/statistic_exam', 'Backend\SurveyController@apiStatisticSurveyExam');

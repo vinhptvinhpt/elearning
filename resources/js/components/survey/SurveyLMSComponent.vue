@@ -4,25 +4,19 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
 
-                    <div class="row">
-                        <div class="col-sm">
-                            <div class="button-list">
-                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"
-                                             class="btn-sm btn-danger">
-                                    {{trans.get('keys.quay_lai')}}
-                                </router-link>
-                            </div>
-                        </div>
-                    </div>
-                    <br/>
+                    <!--                    <div class="row">-->
+                    <!--                        <div class="col-sm">-->
+                    <!--                            <div class="button-list">-->
+                    <!--                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
+                    <!--                                             class="btn-sm btn-danger">-->
+                    <!--                                    {{trans.get('keys.quay_lai')}}-->
+                    <!--                                </router-link>-->
+                    <!--                            </div>-->
+                    <!--                        </div>-->
+                    <!--                    </div>-->
+                    <!--                    <br/>-->
 
                     <h4 class="hk-sec-title">{{trans.get('keys.survey')}}: {{survey.code}} - {{survey.name}}</h4>
-<!--                    <div class="hk-sec-title">{{trans.get('keys.thoi_gian_bat_dau')}}: {{survey.startdate |-->
-<!--                        convertDateTime}}-->
-<!--                    </div>-->
-<!--                    <div class="hk-sec-title">{{trans.get('keys.thoi_gian_ket_thuc')}}: {{survey.enddate |-->
-<!--                        convertDateTime}}-->
-<!--                    </div>-->
                     <br/>
                     <div class="row">
                         <div class="col-sm">
@@ -54,10 +48,10 @@
                                 <button @click="submitAnswer()" type="button" class="btn btn-primary">
                                     {{trans.get('keys.gui')}}
                                 </button>
-                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"
-                                             class="btn btn-secondary">
-                                    {{trans.get('keys.huy')}}
-                                </router-link>
+                                <!--                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
+                                <!--                                             class="btn btn-secondary">-->
+                                <!--                                    {{trans.get('keys.huy')}}-->
+                                <!--                                </router-link>-->
                             </div>
                         </div>
                     </div>
@@ -76,7 +70,7 @@
     import CheckboxQuestion from "./template/CheckboxQuestionComponent"
 
     export default {
-        props: ['survey_id'],
+        props: ['survey_id', 'user_id'],
         components: {
             MultipleChoice,
             DDToText,
@@ -109,14 +103,15 @@
             submitAnswer() {
                 let current_pos = this;
 
-                axios.post('/api/survey/submit_result/' + this.survey_id, {
+                axios.post('/api/survey/submit_resultlms/' + this.survey_id, {
                     question_answers: this.question_answers,
-                    ddtotext: this.survey
+                    ddtotext: this.survey,
+                    user_id: this.user_id
                 })
                     .then(response => {
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            window.history.back();
+                            // window.history.back();
                         } else {
                             toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
