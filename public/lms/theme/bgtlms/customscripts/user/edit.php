@@ -121,7 +121,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <img :src="user.avatar" alt="">
                     </div>
                     <div class="choose-file">
-                        <input type="file">
+<!--                        <input type="file" ref="file" name="file" class="dropify" />-->
+                        <input type="file" ref="file" name="file" class="dropify" id="file" accept="image/*"
+                               @change="selectedFile"/>
                     </div>
                 </div>
                 <div class="col-12 col-xs-12 col-md-8 col-xl-8 col-lg-8">
@@ -215,6 +217,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             re_password: ''
         },
         methods: {
+            selectedFile() {
+                let file = this.$refs.file.files[0];
+                const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
+                if (!file || (validFileTypes.indexOf(file.type) == -1)) {
+                    const input = this.$refs.file;
+                    input.type = 'file';
+                    this.$refs.file.value = '';
+                    alert('Invalid file format');
+                }
+            },
             getProfile: function(){
                 const params = new URLSearchParams();
                 params.append('user_id', this.user_id);
@@ -235,31 +247,42 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             },
             updateProfile: function (type) {
                 const params = new URLSearchParams();
-                params.append('user_id', this.user_id);
-                params.append('fullname', this.user.fullname);
-                params.append('dob', this.user.dob);
-                params.append('address', this.user.address);
-                params.append('email', this.user.email);
-                params.append('phone', this.user.phone);
-                params.append('sex', this.user.sex);
-                params.append('password', this.password);
-                params.append('re_password', this.re_password);
-                params.append('btnType', type);
-                axios({
-                    method: 'post',
-                    url: this.url + '/pusher/update_profile.php',
-                    data: params,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    }
-                })
+                let formData = new FormData();
+                formData.append('user_id', this.user_id);
+                formData.append('fullname', this.user.fullname);
+                formData.append('dob', this.user.dob);
+                formData.append('address', this.user.address);
+                formData.append('email', this.user.email);
+                formData.append('phone', this.user.phone);
+                formData.append('sex', this.user.sex);
+                formData.append('password', this.password);
+                formData.append('re_password', this.re_password);
+                formData.append('btnType', type);
+                formData.append('file', this.$refs.file.files[0]);
+                // axios({
+                //     method: 'post',
+                //     url: this.url + '/pusher/update_profile.php',
+                //     data: params,
+                //     headers: {
+                //         'Content-Type': 'application/x-www-form-urlencoded',
+                //     }
+                // })
+                    axios.post(this.url + '/pusher/update_profile.php', formData,
+                    {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
                     .then(response => {
                         console.log(response.data);
-                        if(response.data)
-                            alert("Chỉnh sửa thành công");
+                        if(response.data.status)
+                        {
+                            alert(response.data.msg);
+                            location.reload();
+                        }
                             // toastr['success']('Chỉnh sửa thành công', 'Thông báo');
                         else
-                            alert("Chỉnh sửa thành công");
+                            alert(response.data.msg);
                             // toastr['error']('Đã xảy ra lỗi', 'Thông báo');
                     })
                     .catch(error => {
