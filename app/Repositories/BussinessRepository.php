@@ -5264,8 +5264,8 @@ class BussinessRepository implements IBussinessInterface
         try {
             $sur_code = $request->input('sur_code');
             $sur_name = $request->input('sur_name');
-            $startdate = $request->input('startdate');
-            $enddate = $request->input('enddate');
+//            $startdate = $request->input('startdate');
+//            $enddate = $request->input('enddate');
             $description = $request->input('description');
 
             $param = [
@@ -5292,8 +5292,10 @@ class BussinessRepository implements IBussinessInterface
             $survey = new TmsSurvey();
             $survey->code = $sur_code;
             $survey->name = $sur_name;
-            $survey->startdate = strtotime($startdate);
-            $survey->enddate = strtotime($enddate);
+//            $survey->startdate = strtotime($startdate);
+//            $survey->enddate = strtotime($enddate);
+            $survey->startdate = strtotime(Carbon::now());
+            $survey->enddate = strtotime(Carbon::now());
             $survey->description = $description;
             $survey->isdeleted = 0;
             $survey->save();
@@ -5323,8 +5325,8 @@ class BussinessRepository implements IBussinessInterface
         try {
             $sur_code = $request->input('sur_code');
             $sur_name = $request->input('sur_name');
-            $startdate = $request->input('startdate');
-            $enddate = $request->input('enddate');
+//            $startdate = $request->input('startdate');
+//            $enddate = $request->input('enddate');
             $description = $request->input('description');
 
             $param = [
@@ -5353,8 +5355,8 @@ class BussinessRepository implements IBussinessInterface
 
             $survey->code = $sur_code;
             $survey->name = $sur_name;
-            $survey->startdate = strtotime($startdate);
-            $survey->enddate = strtotime($enddate);
+//            $survey->startdate = strtotime($startdate);
+//            $survey->enddate = strtotime($enddate);
 
             $survey->description = $description;
             $survey->save();
@@ -6157,6 +6159,86 @@ class BussinessRepository implements IBussinessInterface
                         } else {
                             $tms_survey_user->user_id = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
                         }
+                        $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
+                        $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+
+                        $tms_survey_user->save();
+                        sleep(0.01);
+                    }
+                }
+            }
+
+            \DB::commit();
+
+            $response->status = true;
+            $response->message = __('gui_ket_qua_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+    }
+
+    //api lsubmit ket qua survey
+    //ThoLd (04/10/2019)
+    public function apiSubmitSurveyLMS($id, Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+
+            if (!is_numeric($id)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            $survey = TmsSurvey::findOrFail($id);
+
+            if (!$survey) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_survey');
+                return response()->json($response);
+            }
+
+            $question_answers = $request->input('question_answers');
+            $ddtotext = $request->input('ddtotext');
+            $user_id = $request->input('user_id');
+
+            \DB::beginTransaction();
+
+            $count_multi = count($question_answers);
+
+            if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
+                for ($i = 0; $i < $count_multi; $i++) {
+                    $tms_survey_user = new TmsSurveyUser();
+                    $tms_survey_user->survey_id = $id;
+                    $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
+                    $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
+
+                    $tms_survey_user->user_id = $user_id;
+
+
+                    $tms_survey_user->type_question = $question_answers[$i]['type_ques'];
+                    $tms_survey_user->content_answer = $question_answers[$i]['ans_content'];
+
+                    $tms_survey_user->save();
+
+                    sleep(0.01);
+                }
+            }
+
+            $count_ddtotext = count($ddtotext['questions']);
+            if ($count_ddtotext > 0) { //insert ket qua cau hoi dien dap an
+                for ($j = 0; $j < $count_ddtotext; $j++) {
+
+                    if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
+
+                        $tms_survey_user = new TmsSurveyUser();
+                        $tms_survey_user->survey_id = $id;
+                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['id'];
+
+                        $tms_survey_user->user_id = $user_id;
+                       
                         $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
                         $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
 

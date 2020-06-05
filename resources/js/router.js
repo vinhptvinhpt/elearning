@@ -22,6 +22,7 @@ import NotFoundPage from './views/errors/404.vue';
  */
 
 import LayoutDashboard from "./views/layouts/LayoutDashboard";
+import LayoutSurvey from "./views/layouts/LayoutSurvey";
 import LayoutPage from "./views/layouts/LayoutPage";
 import DashboardIndexComponent from "./components/dashboard/DashboardIndexComponent";
 import ActivityLogComponent from "./components/system/activity/ActivityLogComponent";
@@ -109,6 +110,7 @@ import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
 import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
 import ImageCertificateComponent from "./components/education/ImageCertificateComponent";
+import SurveyLMS from "./components/survey/SurveyLMSComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -813,6 +815,23 @@ const routes = [
                     email: route.params.email
                 })
             },
+        ]
+    },
+    {
+        path: '/survey',
+        component: LayoutSurvey, // Change the desired Layout here
+        meta: {requiresAuth: false},
+        children: [
+            {
+                path: 'present/:survey_id/:user_id',
+                component: SurveyLMS,
+                name: 'SurveyLMS',
+                props: (route) => ({
+                    survey_id: route.params.survey_id,
+                    user_id: route.params.user_id
+                })
+            },
+
         ]
     },
 

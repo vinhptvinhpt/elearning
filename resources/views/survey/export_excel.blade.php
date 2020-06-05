@@ -10,8 +10,8 @@
 
 <h3>{{$dataModel->survey->code}}
     - {{$dataModel->survey->name}}</h3>
-<h4>Bắt đầu {{$dataModel->survey->startdate}}</h4>
-<h4>Kết thúc {{$dataModel->survey->enddate}}</h4>
+{{--<h4>Bắt đầu {{$dataModel->survey->startdate}}</h4>--}}
+{{--<h4>Kết thúc {{$dataModel->survey->enddate}}</h4>--}}
 <br><br>
 <table border="1">
     @foreach($dataModel->statistics as $key => $data)

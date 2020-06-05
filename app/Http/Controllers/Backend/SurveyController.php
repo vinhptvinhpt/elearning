@@ -198,6 +198,11 @@ class SurveyController extends Controller
         return $this->bussinessRepository->apiSubmitSurvey($id, $request);
     }
 
+    public function apiSubmitSurveyLMS($id, Request $request)
+    {
+        return $this->bussinessRepository->apiSubmitSurveyLMS($id, $request);
+    }
+
     public function apiStatisticSurveyView(Request $request)
     {
         return $this->bussinessRepository->apiStatisticSurveyView($request);
