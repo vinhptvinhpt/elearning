@@ -35,7 +35,7 @@ if (isloggedin()) {
 }
 $extraclasses = [];
 if ($navdraweropen) {
-    $extraclasses[] = 'drawer-open-left';
+//    $extraclasses[] = 'drawer-open-left';
 }
 $wwwroot = $CFG->wwwroot;
 $pathLogo = $_SESSION["pathLogo"];

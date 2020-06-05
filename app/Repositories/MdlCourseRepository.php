@@ -14,6 +14,9 @@ use App\MdlGradeItem;
 use App\MdlRole;
 use App\MdlUser;
 use App\Role;
+use App\TmsOrganizationEmployee;
+use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Illuminate\Database\Query\Builder;
@@ -87,22 +90,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        else {
 
         //Kiểm tra xem có phải role thuộc organization hay không
-        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-        if ($checkRole === true) {
+        $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+        if ($checkRoleOrg === true) {
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
                 ->where(function ($query) {
                     /* @var $query Builder */
                     $query
-                        ->whereIn('c.id', function ($q1) { //enrol
-                            /* @var $q1 Builder */
-                            $q1->select('mdl_course.id')
-                                ->from('mdl_user_enrolments as mue')
-                                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-                                ->where('mue.userid', '=', \Auth::user()->id);
-                        })
-                        ->orWhereIn('c.id', function ($q2) { //organization
+                        ->whereIn('c.id', function ($q2) { //organization
                             /* @var $q2 Builder */
                             $q2->select('mdl_course.id')
                                 ->from('tms_organization_employee')
@@ -110,6 +105,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                                 ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
                                 ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
                                 ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                        })
+                        ->orwhereIn('c.id', function ($q1) { //được enrol
+                            /* @var $q1 Builder */
+                            $q1->select('mdl_course.id')
+                                ->from('mdl_user_enrolments as mue')
+                                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                ->where('mue.userid', '=', \Auth::user()->id);
                         });
                 })->select(
                     'c.id',
@@ -433,6 +436,50 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         $course->save();
 
+        //nếu manager hoặc leader tạo khóa
+        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+        if ($checkRole == true) {
+            $organization_employee = TmsOrganizationEmployee::query()->where('user_id', '=', \Auth::user()->id)->first();
+            if (isset($organization_employee)) {
+                if ($organization_employee->organization) {
+                    $role_organization = TmsRoleOrganization::query()->where('organization_id', $organization_employee->organization_id)->first();
+                    if (isset($role_organization)) { //Map course to that roles
+                        $role_course = new TmsRoleCourse();
+                        $role_course->role_id = $role_organization->role_id;
+                        $role_course->course_id = $course->id;
+                        $role_course->save();
+                    } else { //Enable use organization as role and map course to that role
+                        $lastRole = MdlRole::latest()->first();
+
+                        //Tạo quyền bên LMS
+                        $mdlRole = new MdlRole;
+                        $mdlRole->shortname = $organization_employee->organization->code;
+                        $mdlRole->description = $organization_employee->organization->name;
+                        $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+                        $mdlRole->archetype = 'user';
+                        $mdlRole->save();
+
+                        $role = new Role();
+                        $role->mdl_role_id = $mdlRole->id;
+                        $role->name = $organization_employee->organization->code;
+                        $role->description = $organization_employee->organization->name;
+                        $role->guard_name = 'web';
+                        $role->status = 1;
+                        $role->save();
+
+                        $role_organization = new TmsRoleOrganization();
+                        $role_organization->organization_id = $organization_employee->organization_id;
+                        $role_organization->role_id = $role->id;
+                        $role_organization->save();
+
+                        $role_course = new TmsRoleCourse();
+                        $role_course->role_id = $role_organization->role_id;
+                        $role_course->course_id = $course->id;
+                        $role_course->save();
+                    }
+                }
+            }
+        }
         //insert dữ liệu điểm qua môn
         MdlCourseCompletionCriteria::create(array(
             'course' => $course->id,
@@ -993,22 +1040,24 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ->where('lsl.courseid', '=', $course_id)->join('mdl_course_modules as cm', 'cm.id', '=', 'lsl.objectid')
             ->select('lsl.other', DB::raw('"" as name'), 'u.username', 'lsl.action', 'cm.module', 'lsl.timecreated');
 
-        // * union all log
-        $documents = $docDel->unionAll($docDifDel);
 
         if ($keyword) {
-            $documents = $documents
-                ->whereRaw('( other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR username like "%' . $keyword . '%" )');
+            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
         }
 
         if ($action) {
-            $documents = $documents
-                ->where('action', '=', $action);
+            $docDel = $docDel->where('lsl.action', '=', $action);
+            $docDifDel = $docDifDel->where('lsl.action', '=', $action);
         }
 
         if ($module_id > 0) {
-            $documents = $documents->where('module', '=', $module_id);
+            $docDel = $docDel->where('mtrc.module', '=', $module_id);
+            $docDifDel = $docDifDel->where('cm.module', '=', $module_id);
         }
+
+        // * union all log
+        $documents = $docDel->unionAll($docDifDel);
 
         $total_Data = $documents->count();
 

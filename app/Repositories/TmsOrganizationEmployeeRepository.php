@@ -2,6 +2,8 @@
 
 namespace App\Repositories;
 
+use App\MdlRoleAssignments;
+use App\ModelHasRole;
 use App\Role;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
@@ -161,10 +163,27 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //            }
 
             $item = TmsOrganizationEmployee::where('id', $id)->first();
+            $old_pos = $item->position;
             $item->organization_id = $organization_id;
             $item->position = $position;
             $item->enabled = $enabled;
             $item->save();
+
+            if ($position != $old_pos) { //Có sự thay đổi role => cập nhật role hệ thống
+                $old_sys_role = Role::query()->where('name', $old_pos)->first();
+                if ($old_sys_role) {
+                    //Xóa role cũ
+                    ModelHasRole::query()->where('model_id', $user_id)->where('role_id', $old_sys_role->id)->delete();
+                    //remove role of user from table mdl_role_assignments for lms
+                    MdlRoleAssignments::query()->where('userid', $user_id)->where('roleid', $old_sys_role->mdl_role_id)->delete();
+                }
+                //Apply role mới
+                $sys_role = Role::query()->where('name', $position)->first();
+                if ($sys_role) {
+                    add_user_by_role($user_id, $sys_role->id);
+                    enrole_lms($user_id, $sys_role->mdl_role_id, 1);
+                }
+            }
 
             return response()->json(status_message('success', __('cap_nhat_nhan_vien_thanh_cong')));
         } catch (\Exception $e) {

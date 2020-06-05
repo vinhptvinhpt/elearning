@@ -28,7 +28,7 @@
           <div class="row mb-4">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
-                <div class="card">
+                <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i
                       class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi_thu_cong')}}</a>
@@ -42,7 +42,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="card">
+                <div class="card" style="display: none">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"
                        aria-expanded="false"><i class="fal fa-upload mr-3"></i>{{trans.get('keys.tai_len_file_excel')}}</a>
