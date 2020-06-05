@@ -29,12 +29,27 @@ switch ($btnType) {
     case "password":
         {
             try {
-                $new_pass = password_hash($password, PASSWORD_BCRYPT);
-                $sql = "";
-//                echo $sql;
-//                die;
-                $DB->execute('update mdl_user set password = :password where id = :userid', ['password' => $new_pass, 'userid' => $user_id]);
-                $msg = 'Update password successful';
+                if (!validate_password_func($password)){
+                    $status = false;
+                    $msg = 'The password has not been met yet. The password should include uppercase letters, numbers and special characters';
+                }
+                if (!validate_password_func($re_password))
+                {
+                    $status = false;
+                    $msg = 'The password has not been met yet. The password should include uppercase letters, numbers and special characters';
+                }
+                if ($password != $re_password)
+                {
+                    $status = false;
+                    $msg = 'Password not match';
+                }
+
+                if($status){
+                    $new_pass = password_hash($password, PASSWORD_BCRYPT);
+                    $DB->execute('update mdl_user set password = :password where id = :userid', ['password' => $new_pass, 'userid' => $user_id]);
+                    $msg = 'Update password successful';
+                }
+
             }catch (Exception $e){
                 $status = false;
                 $msg = 'Error! An error occurred while updating the password. Please try again later';
@@ -85,3 +100,17 @@ echo json_encode([
 
 
 
+function validate_password_func($password)
+{
+    $validate = true;
+    $uppercase = preg_match('@[A-Z]@', $password);
+    $lowercase = preg_match('@[a-z]@', $password);
+    $number = preg_match('@[0-9]@', $password);
+    $specialChars = preg_match('@[^\w]@', $password);
+
+    //if (!$uppercase || !$lowercase || !$number || !$specialChars || strlen($password) < 8) {
+    if (strlen($password) < 8) {
+        $validate = false;
+    }
+    return $validate;
+}

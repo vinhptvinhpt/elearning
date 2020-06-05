@@ -105,6 +105,25 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         margin-top: 5%;
         overflow: hidden;
     }
+    .btn-collapse i{
+        border: 1px solid <?=$_SESSION["color"]?>;
+        padding: 5px;
+        border-radius: 50%;
+    }
+    .collapse-div{
+        display: none;
+    }
+    .collapse-show{
+        display: block !important;
+    }
+    .btn-collapse:hover{
+        cursor: pointer;
+    }
+    .btn-collapse-active i{
+        background: <?=$_SESSION["color"]?>;
+        color: #ffffff;
+    }
+
     @media (min-width: 1600px) {
         .col-xxl-8{
             flex: 0 0 66.666667% !important;
@@ -171,18 +190,17 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             <button type="button" class="btn-update btn-click" @click="updateProfile('')">Update Infomation</button>
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
-                            <button type="button" class="btn-cancel btn-click">Cancel</button>
+                            <button type="button" class="btn-cancel btn-click btn-cancel-update"><a href="lms/user/profile.php" class="a-link">Cancel</a></button>
                         </div>
                     </div>
 
                     <div class="row change-password">
                         <p class="col-12">
-                            <a class=" btn-collapse">
-<!--                            <a class=" btn-collapse" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
+                            <a class="btn-collapse">
                                 <i class="fa fa-cog" aria-hidden="true"></i> Chang Password
                             </a>
                         </p>
-                        <div class="col-12" id="collapseExample">
+                        <div class="col-12 collapse-div" id="">
                             <div class="row">
                                 <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                                     <div class="row">
@@ -200,7 +218,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
                                 </div>
                                 <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
-                                    <button type="button" class="btn-cancel btn-click">Cancel</button>
+                                    <button type="button" class="btn-cancel btn-click btn-cancel-pass">Cancel</button>
                                 </div>
                             </div>
 
@@ -217,7 +235,17 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 <script>
     $(document).ready(function(){
         $('.btn-collapse').click(function(){
-            $('#collapseExample').toggleClass('show');
+            $(this).toggleClass('btn-collapse-active');
+            $('.collapse-div').toggleClass('collapse-show');
+        });
+
+        $('.btn-cancel-pass').click(function(){
+            $('.collapse-div').removeClass('collapse-show');
+            $('.btn-collapse').removeClass('btn-collapse-active');
+        });
+
+        $('.btn-cancel-update').click(function(){
+            location.href = $('.a-link').attr('href');
         });
     });
 
@@ -261,7 +289,22 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     });
             },
             updateProfile: function (type) {
-                const params = new URLSearchParams();
+                //validate password
+                if(type == 'password'){
+                    if(this.password.length == 0){
+                        alert('Please enter the new password');
+                        return;
+                    }
+                    if( this.re_password.length == 0 ){
+                        alert('Please enter the re-password');
+                        return;
+                    }
+                    if( this.password != this.re_password){
+                        alert('Password not match. Try it again');
+                        return;
+                    }
+                }
+
                 let formData = new FormData();
                 formData.append('user_id', this.user_id);
                 formData.append('fullname', this.user.fullname);
@@ -274,35 +317,26 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 formData.append('re_password', this.re_password);
                 formData.append('btnType', type);
                 formData.append('file', this.$refs.file.files[0]);
-                // axios({
-                //     method: 'post',
-                //     url: this.url + '/pusher/update_profile.php',
-                //     data: params,
-                //     headers: {
-                //         'Content-Type': 'application/x-www-form-urlencoded',
-                //     }
-                // })
-                    axios.post(this.url + '/pusher/update_profile.php', formData,
+
+                axios.post(this.url + '/pusher/update_profile.php', formData,
+                {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                .then(response => {
+                    console.log(response.data);
+                    if(response.data.status)
                     {
-                        headers: {
-                            'Content-Type': 'multipart/form-data'
-                        }
-                    })
-                    .then(response => {
-                        console.log(response.data);
-                        if(response.data.status)
-                        {
-                            alert(response.data.msg);
-                            location.reload();
-                        }
-                            // toastr['success']('Chỉnh sửa thành công', 'Thông báo');
-                        else
-                            alert(response.data.msg);
-                            // toastr['error']('Đã xảy ra lỗi', 'Thông báo');
-                    })
-                    .catch(error => {
-                        console.log("Error ", error);
-                    });
+                        alert(response.data.msg);
+                        location.reload();
+                    }
+                    else
+                        alert(response.data.msg);
+                })
+                .catch(error => {
+                    console.log("Error ", error);
+                });
             }
         },
         mounted() {
