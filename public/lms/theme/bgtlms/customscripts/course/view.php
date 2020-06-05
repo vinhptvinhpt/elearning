@@ -977,6 +977,15 @@ if ($edit == 0) {
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
         var marginLeft = getPercent - 6;
+        var getScreenWidth = screen.width;
+        if(getScreenWidth>=1600){
+            marginLeft = getPercent - 3;
+        }else if(getScreenWidth <420){
+            marginLeft = getPercent - 14;
+        }
+        else if(getScreenWidth <768){
+            marginLeft = getPercent - 10;
+        }
         $('.speech-bubble').css('left', marginLeft+'%');
 
         //set height and line height

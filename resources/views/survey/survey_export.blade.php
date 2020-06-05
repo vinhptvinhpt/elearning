@@ -15,13 +15,13 @@
         <div class="col-sm-12"
              style="text-align: center; font-size: 20px; font-weight: bold;">{{$dataModel->survey->code}}
             - {{$dataModel->survey->name}}</div>
-        <div class="col-sm-12"
-             style="text-align: center; font-size: 16px; font-weight: bold;">Bắt
-            đầu: {{$dataModel->survey->startdate}}
-        </div>
-        <div class="col-sm-12"
-             style="text-align: center; font-size: 16px; font-weight: bold;">Kết thúc : {{$dataModel->survey->enddate}}
-        </div>
+        {{--        <div class="col-sm-12"--}}
+        {{--             style="text-align: center; font-size: 16px; font-weight: bold;">Bắt--}}
+        {{--            đầu: {{$dataModel->survey->startdate}}--}}
+        {{--        </div>--}}
+        {{--        <div class="col-sm-12"--}}
+        {{--             style="text-align: center; font-size: 16px; font-weight: bold;">Kết thúc : {{$dataModel->survey->enddate}}--}}
+        {{--        </div>--}}
     </div>
 </div>
 <div class="container">

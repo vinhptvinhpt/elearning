@@ -45,27 +45,27 @@
                                                        class="required text-danger sur_name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
 
-                                            <div class="col-4 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}}
-                                                    *</label>
-                                                <input v-model="survey.startdate"" type="date"
-                                                id="inputText7"
-                                                class="form-control mb-4">
-                                                <label v-if="!survey.startdate"
-                                                       class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                                            </div>
-                                            <div class="col-4 form-group">
-                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}
-                                                    *</label>
-                                                <input v-model="survey.enddate" type="date"
-                                                       id="inputText6"
-                                                       class="form-control mb-4">
-                                                <label v-if="!survey.enddate"
-                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-                                            </div>
+                                            <!--                                            <div class="col-4 form-group">-->
+                                            <!--                                                <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}}-->
+                                            <!--                                                    *</label>-->
+                                            <!--                                                <input v-model="survey.startdate"" type="date"-->
+                                            <!--                                                id="inputText7"-->
+                                            <!--                                                class="form-control mb-4">-->
+                                            <!--                                                <label v-if="!survey.startdate"-->
+                                            <!--                                                       class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                                            <!--                                            </div>-->
+                                            <!--                                            <div class="col-4 form-group">-->
+                                            <!--                                                <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}-->
+                                            <!--                                                    *</label>-->
+                                            <!--                                                <input v-model="survey.enddate" type="date"-->
+                                            <!--                                                       id="inputText6"-->
+                                            <!--                                                       class="form-control mb-4">-->
+                                            <!--                                                <label v-if="!survey.enddate"-->
+                                            <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                                            <!--                                            </div>-->
 
                                             <div class="col-12 form-group">
-                                                <label for="inputText6">Mô tả</label>
+                                                <label for="inputText1-1">Mô tả</label>
                                                 <!--                        <textarea v-model="survey.description" class="form-control" rows="10"-->
                                                 <!--                                  id="article_ckeditor"-->
                                                 <!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->
