@@ -486,6 +486,7 @@ class ExcelController extends Controller
             ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
             ->leftJoin('tms_user_detail as tud', 'u.id', '=', 'tud.user_id')
             ->where('c.id', '=', $course_id)
+            ->where('e.roleid', 5)//hoc vien only
             ->select(
                 'u.id as user_id',
                 'u.username',
