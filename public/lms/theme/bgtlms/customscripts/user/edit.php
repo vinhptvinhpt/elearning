@@ -137,6 +137,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             flex: 0 0 16.666667% !important;
             max-width: 16.666667% !important;
         }
+        .avt-block, .choose-file{
+            width: 35% !important;
+        }
     }
 
 </style>
