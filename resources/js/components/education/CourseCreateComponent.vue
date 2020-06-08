@@ -103,8 +103,8 @@
                                                 <input v-model="enddate" type="date"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-<!--                                                <label v-if="!enddate"-->
-<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                                                <!--                                                <label v-if="!enddate"-->
+                                                <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
@@ -129,12 +129,13 @@
                                                 <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                                             </div>
 
-                                          <div class="col-12 form-group">
-                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
-                                            <input v-model="access_ip"
-                                                   :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
-                                                   class="form-control mb-4">
-                                          </div>
+                                            <div class="col-12 form-group">
+                                                <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}}
+                                                    (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                                <input v-model="access_ip"
+                                                       :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
+                                                       class="form-control mb-4">
+                                            </div>
 
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
@@ -309,10 +310,22 @@
             },
             goBack() {
                 this.$router.push({name: 'CourseIndex'});
-            }
+            },
+            hintCode() {
+                axios.get('/api/courses/hint_code')
+                    .then(response => {
+                        if (response.data.status) {
+                            this.shortname = response.data.otherData;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+            },
         },
         mounted() {
             this.getCategories();
+            this.hintCode();
         }
     }
 </script>

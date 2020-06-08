@@ -17,6 +17,8 @@
                     <!--                    <br/>-->
 
                     <h4 class="hk-sec-title">{{trans.get('keys.survey')}}: {{survey.code}} - {{survey.name}}</h4>
+                    <div class="hk-sec-title" v-html="survey.description">
+                    </div>
                     <br/>
                     <div class="row">
                         <div class="col-sm">

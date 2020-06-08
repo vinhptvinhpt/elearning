@@ -32,7 +32,7 @@
                                     <div class="col-12 col-lg-3 mb-2">
                                         <div class="card">
                                             <div class="card-body">
-                                                  <input type="file" ref="file" name="file" class="dropify"/>
+                                                <input type="file" ref="file" name="file" class="dropify"/>
                                             </div>
                                         </div>
                                     </div>
@@ -96,8 +96,8 @@
                                                 <input v-model="enddate" type="datetime-local"
                                                        id="inputText8"
                                                        class="form-control mb-4">
-<!--                                                <label v-if="!enddate"-->
-<!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                                                <!--                                                <label v-if="!enddate"-->
+                                                <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
@@ -134,12 +134,13 @@
                                                 <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                                             </div>
 
-                                          <div class="col-12 form-group">
-                                            <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
-                                            <input v-model="access_ip"
-                                                   :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
-                                                   class="form-control mb-4">
-                                          </div>
+                                            <div class="col-12 form-group">
+                                                <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}}
+                                                    (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                                                <input v-model="access_ip"
+                                                       :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
+                                                       class="form-control mb-4">
+                                            </div>
 
 
                                             <div class="col-12 form-group">
@@ -310,9 +311,21 @@
             },
             goBack() {
                 this.$router.push({name: 'CourseConcentrateIndex'});
-            }
+            },
+            hintCode() {
+                axios.get('/api/courses/hint_code')
+                    .then(response => {
+                        if (response.data.status) {
+                            this.shortname = response.data.otherData;
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+            },
         },
         mounted() {
+            this.hintCode();
             // this.getCategories();
         }
     }
