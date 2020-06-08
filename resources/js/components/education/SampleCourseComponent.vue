@@ -35,7 +35,7 @@
                                                 <div class="col-12 col-lg-3 mb-2">
                                                     <div class="card">
                                                         <div class="card-body">
-                                                          <input type="file" ref="file" name="file" class="dropify"/>
+                                                            <input type="file" ref="file" name="file" class="dropify"/>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -301,6 +301,7 @@
                             this.pass_score = '';
                             this.description = '';
                             this.avatar = '';
+                            this.hintCode();
                         } else {
                             toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
                         }
@@ -323,6 +324,17 @@
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
                         this.total_course = response.data.total_course;
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+            },
+            hintCode() {
+                axios.get('/api/courses/hint_code')
+                    .then(response => {
+                        if (response.data.status) {
+                            this.shortname = response.data.otherData;
+                        }
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -374,6 +386,7 @@
         },
         mounted() {
             // this.getCourses();
+            this.hintCode();
             this.fetch();
         }
     }

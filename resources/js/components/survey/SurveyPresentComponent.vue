@@ -17,12 +17,11 @@
                     <br/>
 
                     <h4 class="hk-sec-title">{{trans.get('keys.survey')}}: {{survey.code}} - {{survey.name}}</h4>
-<!--                    <div class="hk-sec-title">{{trans.get('keys.thoi_gian_bat_dau')}}: {{survey.startdate |-->
-<!--                        convertDateTime}}-->
-<!--                    </div>-->
-<!--                    <div class="hk-sec-title">{{trans.get('keys.thoi_gian_ket_thuc')}}: {{survey.enddate |-->
-<!--                        convertDateTime}}-->
-<!--                    </div>-->
+                    <div class="hk-sec-title" v-html="survey.description">
+                    </div>
+                    <!--                    <div class="hk-sec-title">{{trans.get('keys.thoi_gian_ket_thuc')}}: {{survey.enddate |-->
+                    <!--                        convertDateTime}}-->
+                    <!--                    </div>-->
                     <br/>
                     <div class="row">
                         <div class="col-sm">

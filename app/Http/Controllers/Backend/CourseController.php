@@ -141,11 +141,10 @@ class CourseController extends Controller
                 $response->status = false;
                 $msg = $validator['message'];
                 $category_id = $request->input('category_id');
-                if($category_id == 2){
+                if ($category_id == 2) {
                     $msg = str_replace('shortname', __('ma_thu_vien'), $msg);
                     $msg = str_replace('fullname', __('ten_thu_vien'), $msg);
-                }
-                else{
+                } else {
                     $msg = str_replace('shortname', __('ma_khoa_hoc'), $msg);
                     $msg = str_replace('fullname', __('ten_khoa_hoc'), $msg);
                 }
@@ -467,4 +466,8 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiEnrolUserCourseConcent($request);
     }
 
+    public function apiHintCourseCode()
+    {
+        return $this->mdlCourseRepository->apiHintCourseCode();
+    }
 }

@@ -1079,4 +1079,54 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         return response()->json($response);
     }
+
+    public function apiHintCourseCode()
+    {
+        $response = new ResponseModel();
+        try {
+            $code_org = DB::table('mdl_user as mu')->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')
+                ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
+                ->where('mu.id', '=', Auth::id())
+                ->select('tor.code')->first();
+            $num = 0;
+
+            if ($code_org) {
+                $course_code = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->where('deleted', 0)->select('shortname')->orderBy('id', 'desc')->first();
+                if ($course_code) {
+                    $arr_code = explode('_', $course_code->shortname);
+                    foreach ($arr_code as $item) {
+                        if (is_numeric($item)) {
+                            $num = $item + 1;
+                            break;
+                        }
+                    }
+                    $code_hint = $code_org->code . '_' . $num;
+                    if ($num == 0) {
+                        $num = 1;
+                        $code_hint = $code_org->code . '_01';
+                    } else if ($num < 10) {
+                        $code_hint = $code_org->code . '_0' . $num;
+                    }
+                } else {
+                    $num = 1;
+                    $code_hint = $code_org->code . '_01';
+                }
+            }
+
+            if ($num > 0) {
+                $response->status = true;
+                $response->otherData = $code_hint;
+            } else {
+                $response->status = false;
+            }
+
+            $response->message = '';
+
+        } catch (\Exception $e) {
+            \Log::info($e);
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+    }
 }
