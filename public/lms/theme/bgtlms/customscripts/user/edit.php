@@ -64,13 +64,13 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .btn-click{
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 0px 3px 6px #00000029;
-        border: 1px solid #862055;
+        border: 1px solid <?=$_SESSION["color"]?>;
         border-radius: 4px;
-        color: #862055;
+        color: <?=$_SESSION["color"]?>;
         padding: 5px;
     }
     .btn-update{
-        background-color: #862055 !important;
+        background-color: <?=$_SESSION["color"]?> !important;
         color: #ffffff !important;
     }
     .div-btn{
@@ -96,7 +96,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         width: 100%;
     }
     .change-password p a{
-        color: #862055 !important;
+        color: <?=$_SESSION["color"]?> !important;
         letter-spacing: 0.5px;
     }
     .choose-file{
@@ -105,6 +105,43 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         margin-top: 5%;
         overflow: hidden;
     }
+    .btn-collapse i{
+        border: 1px solid <?=$_SESSION["color"]?>;
+        padding: 5px;
+        border-radius: 50%;
+    }
+    .collapse-div{
+        display: none;
+    }
+    .collapse-show{
+        display: block !important;
+    }
+    .btn-collapse:hover{
+        cursor: pointer;
+    }
+    .btn-collapse-active i{
+        background: <?=$_SESSION["color"]?>;
+        color: #ffffff;
+    }
+
+    @media (min-width: 1600px) {
+        .col-xxl-8{
+            flex: 0 0 66.666667% !important;
+            max-width: 66.666667% !important;
+        }
+        .col-xxl-4{
+            flex: 0 0 33.333333% !important;
+            max-width: 33.333333% !important;
+        }
+        .col-xxl-2{
+            flex: 0 0 16.666667% !important;
+            max-width: 16.666667% !important;
+        }
+        .avt-block, .choose-file{
+            width: 35% !important;
+        }
+    }
+
 </style>
 <body>
 <?php
@@ -121,27 +158,29 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <img :src="user.avatar" alt="">
                     </div>
                     <div class="choose-file">
-                        <input type="file">
+<!--                        <input type="file" ref="file" name="file" class="dropify" />-->
+                        <input type="file" ref="file" name="file" class="dropify" id="file" accept="image/*"
+                               @change="selectedFile"/>
                     </div>
                 </div>
                 <div class="col-12 col-xs-12 col-md-8 col-xl-8 col-lg-8">
                     <div class="row info-edit">
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Full name <input type="text" class="form-control" v-model="user.fullname">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Date of Birth <input type="date" class="form-control" v-model="user.dob">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Address <input type="text" class="form-control" v-model="user.address">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Email <input type="text" class="form-control" v-model="user.email">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Contact Number <input type="text" class="form-control" v-model="user.phone">
                         </div>
-                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-4 info-edit__block form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Gender
                             <select class="form-control" v-model="user.sex">
                                 <option value="0">Female</option>
@@ -150,40 +189,39 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         </div>
                     </div>
                     <div class="row">
-                        <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
                             <button type="button" class="btn-update btn-click" @click="updateProfile('')">Update Infomation</button>
                         </div>
-                        <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
-                            <button type="button" class="btn-cancel btn-click">Cancel</button>
+                        <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
+                            <button type="button" class="btn-cancel btn-click btn-cancel-update"><a href="lms/user/profile.php" class="a-link">Cancel</a></button>
                         </div>
                     </div>
 
-                    <div class="change-password">
-                        <p>
-                            <a class=" btn-collapse">
-<!--                            <a class=" btn-collapse" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
+                    <div class="row change-password">
+                        <p class="col-12">
+                            <a class="btn-collapse">
                                 <i class="fa fa-cog" aria-hidden="true"></i> Chang Password
                             </a>
                         </p>
-                        <div class="" id="collapseExample">
-                            <div class="">
-                                <div class="col-6 col-12 col-md-6 col-xl-6 col-lg-6">
+                        <div class="col-12 collapse-div" id="">
+                            <div class="row">
+                                <div class="col-12 col-md-12 col-xl-6 col-lg-6">
                                     <div class="row">
-                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 form-group">
+                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 col-xxl-8 info-edit__block form-group">
                                             <input type="password" class="form-control" placeholder="Password" v-model="password">
                                         </div>
-                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 form-group">
+                                        <div class="col-12 col-xs-12 col-md-12 col-xl-12 col-lg-12 col-xxl-8 info-edit__block form-group">
                                             <input type="password" class="form-control" placeholder="Re-enter Password" v-model="re_password">
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
-                                        <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
-                                    </div>
-                                    <div class="col-12 col-xs-12 col-md-4 col-xl-3 col-lg-3 div-btn form-group">
-                                        <button type="button" class="btn-cancel btn-click">Cancel</button>
-                                    </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
+                                    <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
+                                </div>
+                                <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
+                                    <button type="button" class="btn-cancel btn-click btn-cancel-pass">Cancel</button>
                                 </div>
                             </div>
 
@@ -200,7 +238,17 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 <script>
     $(document).ready(function(){
         $('.btn-collapse').click(function(){
-            $('#collapseExample').toggleClass('show');
+            $(this).toggleClass('btn-collapse-active');
+            $('.collapse-div').toggleClass('collapse-show');
+        });
+
+        $('.btn-cancel-pass').click(function(){
+            $('.collapse-div').removeClass('collapse-show');
+            $('.btn-collapse').removeClass('btn-collapse-active');
+        });
+
+        $('.btn-cancel-update').click(function(){
+            location.href = $('.a-link').attr('href');
         });
     });
 
@@ -215,6 +263,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             re_password: ''
         },
         methods: {
+            selectedFile() {
+                let file = this.$refs.file.files[0];
+                const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
+                if (!file || (validFileTypes.indexOf(file.type) == -1)) {
+                    const input = this.$refs.file;
+                    input.type = 'file';
+                    this.$refs.file.value = '';
+                    alert('Invalid file format');
+                }
+            },
             getProfile: function(){
                 const params = new URLSearchParams();
                 params.append('user_id', this.user_id);
@@ -234,37 +292,54 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     });
             },
             updateProfile: function (type) {
-                const params = new URLSearchParams();
-                params.append('user_id', this.user_id);
-                params.append('fullname', this.user.fullname);
-                params.append('dob', this.user.dob);
-                params.append('address', this.user.address);
-                params.append('email', this.user.email);
-                params.append('phone', this.user.phone);
-                params.append('sex', this.user.sex);
-                params.append('password', this.password);
-                params.append('re_password', this.re_password);
-                params.append('btnType', type);
-                axios({
-                    method: 'post',
-                    url: this.url + '/pusher/update_profile.php',
-                    data: params,
+                //validate password
+                if(type == 'password'){
+                    if(this.password.length == 0){
+                        alert('Please enter the new password');
+                        return;
+                    }
+                    if( this.re_password.length == 0 ){
+                        alert('Please enter the re-password');
+                        return;
+                    }
+                    if( this.password != this.re_password){
+                        alert('Password not match. Try it again');
+                        return;
+                    }
+                }
+
+                let formData = new FormData();
+                formData.append('user_id', this.user_id);
+                formData.append('fullname', this.user.fullname);
+                formData.append('dob', this.user.dob);
+                formData.append('address', this.user.address);
+                formData.append('email', this.user.email);
+                formData.append('phone', this.user.phone);
+                formData.append('sex', this.user.sex);
+                formData.append('password', this.password);
+                formData.append('re_password', this.re_password);
+                formData.append('btnType', type);
+                formData.append('file', this.$refs.file.files[0]);
+
+                axios.post(this.url + '/pusher/update_profile.php', formData,
+                {
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'Content-Type': 'multipart/form-data'
                     }
                 })
-                    .then(response => {
-                        console.log(response.data);
-                        if(response.data)
-                            alert("Chỉnh sửa thành công");
-                            // toastr['success']('Chỉnh sửa thành công', 'Thông báo');
-                        else
-                            alert("Chỉnh sửa thành công");
-                            // toastr['error']('Đã xảy ra lỗi', 'Thông báo');
-                    })
-                    .catch(error => {
-                        console.log("Error ", error);
-                    });
+                .then(response => {
+                    console.log(response.data);
+                    if(response.data.status)
+                    {
+                        alert(response.data.msg);
+                        location.reload();
+                    }
+                    else
+                        alert(response.data.msg);
+                })
+                .catch(error => {
+                    console.log("Error ", error);
+                });
             }
         },
         mounted() {
