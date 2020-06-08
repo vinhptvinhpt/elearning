@@ -60,7 +60,7 @@ switch ($btnType) {
         {
             try {
                 if(!is_null($filename)) {
-                    $path_image = $CFG->dirstorage. DIRECTORY_SEPARATOR . 'user'. DIRECTORY_SEPARATOR. $filename;
+                    $path_image = $CFG->dirstorage. DIRECTORY_SEPARATOR . 'user'. DIRECTORY_SEPARATOR. "avatar_".$user_id.".png";
                     if(!move_uploaded_file($_FILES['file']['tmp_name'], $path_image)){
                         $status=false;
                         $msg = 'Error! An error occurred while updating the avatar. Please try again later';
@@ -77,7 +77,7 @@ switch ($btnType) {
                         " phone = '".$phone."', ".
                         " sex = ".$sex;
                     if($is_avatar)
-                        $sql .= ", avatar = "."'/storage/upload/user/".$filename."'";
+                        $sql .= ", avatar = "."'/storage/upload/user/avatar_".$user_id.".png'";
                     $sql .= " where user_id = ".$user_id;
                     $DB->execute($sql);
                     $msg = 'Update profile successful';
