@@ -379,7 +379,7 @@
                     col1 = this.cleanDataForParent(col2, col1);
                   }
                   if (this.mode_select === 'learning_time') {
-                    pushObject.column2 = Math.round(item.col1_counter / 3600);
+                    pushObject.column2 = Math.round(col1.col1_counter / 3600);
                   } else {
                     pushObject.column2 = Object.keys(col1).length;
                   }
@@ -423,13 +423,23 @@
                   color: "#fff",
                   parent: parent_key
                 };
-                if (typeof item.col1 !== 'undefined') {
-                  pushObject.column2 = this.setUserList(item.col1);
+                if (this.mode_select !== 'learning_time') {
+                  if (typeof item.col1 !== 'undefined') {
+                    pushObject.column2 = this.setUserList(item.col1);
+                  }
+                  if (typeof item.col2 !== 'undefined') {
+                    pushObject.column3 = this.setUserList(item.col2);
+                  }
+                  pushObject.column4 = this.setUserList(item.col3);
+                } else { //learning time
+                  if (typeof item.col1 !== 'undefined') {
+                    pushObject.column2 = item.col1.duration;
+                  }
+                  if (typeof item.col2 !== 'undefined') {
+                    pushObject.column3 = this.setUserList(item.col2);
+                  }
+                  pushObject.column4 = item.col3;
                 }
-                if (typeof item.col2 !== 'undefined') {
-                  pushObject.column3 = this.setUserList(item.col2);
-                }
-                pushObject.column4 = this.setUserList(item.col3);
                 this.report_data.push(pushObject);
               }
             },
