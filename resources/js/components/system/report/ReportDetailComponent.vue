@@ -379,7 +379,7 @@
                     col1 = this.cleanDataForParent(col2, col1);
                   }
                   if (this.mode_select === 'learning_time') {
-                    pushObject.column2 = Math.round(col1.col1_counter / 3600);
+                    pushObject.column2 =  item.col1_counter !== 0 ? roundHour(item.col1_counter) : item.col1_counter;
                   } else {
                     pushObject.column2 = Object.keys(col1).length;
                   }
@@ -423,31 +423,30 @@
                   color: "#fff",
                   parent: parent_key
                 };
-                if (this.mode_select !== 'learning_time') {
-                  if (typeof item.col1 !== 'undefined') {
-                    pushObject.column2 = this.setUserList(item.col1);
-                  }
-                  if (typeof item.col2 !== 'undefined') {
-                    pushObject.column3 = this.setUserList(item.col2);
-                  }
-                  pushObject.column4 = this.setUserList(item.col3);
-                } else { //learning time
-                  if (typeof item.col1 !== 'undefined') {
-                    pushObject.column2 = item.col1.duration;
-                  }
-                  if (typeof item.col2 !== 'undefined') {
-                    pushObject.column3 = this.setUserList(item.col2);
-                  }
-                  pushObject.column4 = item.col3;
+                if (typeof item.col1 !== 'undefined') {
+                  pushObject.column2 = this.setUserList(item.col1, this.mode_select, 2);
                 }
+                if (typeof item.col2 !== 'undefined') {
+                  pushObject.column3 = this.setUserList(item.col2, this.mode_select, 3);
+                }
+                pushObject.column4 = this.setUserList(item.col3, this.mode_select, 4);
                 this.report_data.push(pushObject);
               }
             },
-            setUserList(users) {
+            setUserList(users, mode, col_no) {
               let display_text = '';
               let display_array = [];
               for (const [key, item] of Object.entries(users)) {
-                  display_array.push(item.fullname);
+                  if (mode !== 'learning_time' || col_no === 3) {
+                    display_array.push(item.fullname);
+                  } else {
+                    if (col_no === 2) {
+                      let duration = item.duration !== 0 && item.duration !== null ? roundHour(item.duration) : item.duration;
+                      display_array.push(duration);
+                    } else if (col_no === 4) {
+                      display_array.push(item.estimate_duration);
+                    }
+                  }
               }
               if (display_array.length !== 0) {
                 display_text = display_array.join('<br/>');
@@ -467,7 +466,11 @@
           this.preloadData();
         },
     }
-
+    function roundHour(duration) {
+      //return (parseFloat(duration)/3600).toFixed(2)
+      let hour = duration/3600;
+      return Math.round((hour + Number.EPSILON) * 10000) / 10000
+    }
     function convertUtf8(str) {
         str = str.toLowerCase();
         str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");

@@ -3541,7 +3541,7 @@ class BussinessRepository implements IBussinessInterface
                                 //Update for training
                                 //$data[$item['organization_id']]['training'][$item['training_id']]['col3'] = '';
                                 //Update for course
-                                $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = $user['estimate_duration'] ? $user['estimate_duration'] : 0;
+                                $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = strlen($user['estimate_duration']) != 0 ? $user['estimate_duration'] : 0;
                             }
                             //Update for all counter type
                             self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user, $mode_select);
@@ -3736,15 +3736,12 @@ class BussinessRepository implements IBussinessInterface
                 //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration
                 if (isset($object[$key][$id]) && isset($object[$key][$id]['duration'])) {
                     $object[$key][$id]['duration'] += $user['duration'];
-                } else {
+                } else { //Khởi tạo
                     $object[$key][$id] = $user;
+                    $object[$key][$id]['duration'] = $user['duration'];
                 }
-                //Cộng vào tổng
-                try{
-                    $object['col1_counter'] += $user['duration'];
-                } catch (\Exception $e) {
-                    dd($e->getMessage());
-                }
+                //Cộng vào tổng ủa pảent
+                $object['col1_counter'] += $user['duration'];
             } else { //nếu không gom user bình thường
                 $object[$key][$id] = $user;
             }
