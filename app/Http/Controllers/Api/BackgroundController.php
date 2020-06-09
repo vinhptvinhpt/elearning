@@ -30,6 +30,8 @@ use App\TmsNotification;
 use App\TmsNotificationLog;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
@@ -122,13 +124,13 @@ class BackgroundController extends Controller
 
             $base_level_organization = '';
 
-            if (strpos($file_name, 'easia') !== false) {
+            if (strpos(strtolower($file_name), 'easia') !== false) {
                 $base_level_organization  = 'easia';
-            } elseif (strpos($file_name, 'begodi') !== false) {
+            } elseif (strpos(strtolower($file_name), 'begodi') !== false) {
                 $base_level_organization  = 'begodi';
-            } elseif (strpos($file_name, 'avana') !== false) {
+            } elseif (strpos(strtolower($file_name), 'avana') !== false) {
                 $base_level_organization  = 'avana';
-            } elseif (strpos($file_name, 'exotic') !== false) {
+            } elseif (strpos(strtolower($file_name), 'exotic') !== false) {
                 $base_level_organization  = 'exotic';
             }
 
@@ -148,8 +150,7 @@ class BackgroundController extends Controller
 
             $response = array();
 
-            //Lấy dữ liệu từ tab Staff List
-
+            //Lấy dữ liệu từ tab Staff List <= Required
             $list_employee = $list_uploaded['Staff List'];
 
             foreach ($list_employee as $user) {
@@ -167,8 +168,9 @@ class BackgroundController extends Controller
                 $position_name = $user[6];
                 $city =  $user[7]; //office name
                 $country = $user[8]; //country name
-                if (strlen($country) == 0) {
-                    $content[] = 'Country is missing';
+                if (strlen($country) == 0) {//Set default country vi
+                    $country_code = array_search('Vietnam', $countries,true);
+                    $country = $country_code;
                 } else {
                     $country_code = array_search($country, $countries,true);
                     if ($country_code === false) {
@@ -206,7 +208,7 @@ class BackgroundController extends Controller
 
                 //Validate required fields
                 //email
-                $email = $user[28];
+                $email = trim($user[28]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -216,10 +218,10 @@ class BackgroundController extends Controller
                     }
                 }
                 //name
-                $full_name = $user[1];
-                $first_name = $user[2];
-                $middle_name = $user[3];
-                $last_name = $user[4];
+                $full_name = trim($user[1]);
+                $first_name = trim($user[2]);
+                $middle_name = trim($user[3]);
+                $last_name = trim($user[4]);
 
                 if (strlen($full_name) == 0) {
                     $content[] = 'Full name is missing';
@@ -280,6 +282,11 @@ class BackgroundController extends Controller
                     '',
                     ''
                 );
+
+                $full_name = self::prepareName($full_name);
+                $first_name = self::prepareName($first_name);
+                $middle_name = self::prepareName($middle_name);
+                $last_name = self::prepareName($last_name);
 
                 if (empty($content)) {
                     $createEmployeeResponse = self::createEmployee(
@@ -365,6 +372,11 @@ class BackgroundController extends Controller
         return $check->id;
     }
 
+    function prepareName($name) {
+        $name = mb_strtolower($name, 'UTF-8');
+        return mb_convert_case($name, MB_CASE_TITLE);
+    }
+
     function preparePhoneNo($phone) {
         $plus = '';
         if (strpos($phone, '+') === 0) {
@@ -419,7 +431,7 @@ class BackgroundController extends Controller
                 //cập nhật thông tin chi tiết user
                 $user_detail = TmsUserDetail::query()
                     ->where('email', $email)
-                    ->orWhere('cmtnd', $personal_id)
+                    //->orWhere('cmtnd', $personal_id) //Bỏ check personal_id do trường họp BOM có nhiều account ở các phòng ban khác nhau
                     ->first();
                 if (!isset($user_detail)) {
                     $user_detail = new TmsUserDetail();
@@ -429,9 +441,9 @@ class BackgroundController extends Controller
                 }
 
                 //check cmtnd
-                if ($user_detail->user_id != $check->id && $exist == true) {
-                    $response['message'] = 'Skip update because Personal ID is used by another user ' . $user_detail->fullname;
-                } else {
+                //if ($user_detail->user_id != $check->id && $exist == true) {
+                //    $response['message'] = 'Skip update because Personal ID is used by another user ' . $user_detail->fullname;
+                //} else {
                     $user_detail->user_id = $check->id;
                     $user_detail->fullname = $full_name;
                     $user_detail->cmtnd = $personal_id;
@@ -459,7 +471,7 @@ class BackgroundController extends Controller
                     if (strlen($response['message']) == 0) {
                         $response['message'] = 'Update successfully';
                     }
-                }
+                //}
             } catch (Exception $e) {
                 $response['message'] = $e->getMessage();
             }
@@ -990,7 +1002,6 @@ class BackgroundController extends Controller
             'easiaeditor05@gmail.com',
             'easiaeditor06@gmail.com',
             'easiaadmin@gmail.com',
-
             'easia_editor_03',
             'easia_editor_02',
             'easia_editor_01',
@@ -1251,6 +1262,21 @@ class BackgroundController extends Controller
              Log::error($e);
              DB::rollBack();
          }
+
+         //Clear organization and role
+         $cleanOrganizations = TmsOrganization::query()->where('name', '<>', 'TVE')->get()->toArray();
+         foreach ($cleanOrganizations as $cleanOrganization) {
+             TmsOrganizationEmployee::query()->where('organization_id', $cleanOrganization['id'])->delete();
+             $check = TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->first();
+             if ($check) {
+                 $role_id = $check->role_id;
+                 TmsRoleCourse::query()->where('role_id', $role_id)->delete();
+             }
+             TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->delete();
+             Role::query()->where('description', $cleanOrganization['name'])->delete();
+             MdlRole::query()->where('description', $cleanOrganization['name'])->delete();
+         }
+        TmsOrganization::query()->where('name', '<>', 'TVE')->delete();
     }
 
     function buildSubQueryForUser1(&$q, $excludes, $exclude_email) {

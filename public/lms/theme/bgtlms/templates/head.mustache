@@ -21,184 +21,189 @@
 <html {{{ output.htmlattributes }}}>
 <head>
     <title>{{{ output.page_title }}}</title>
-<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese" rel="stylesheet">
-<link rel="shortcut icon" href="{{{ output.favicon }}}" />
-{{{ output.standard_head_html }}}
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17" />
-<script src="template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
-<script src="/sso/sslssso.js"></script>
-<script src="lms/theme/bgtlms/js/slimselect.js"></script>
-<script src="lms/theme/bgtlms/js/bootstrap-datetimepicker.js"></script>
-<link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/bgtlms.css">
-<link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/slimselect.css">
-<link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/bootstrap-datetimepicker.css">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese"
+          rel="stylesheet">
+    <link rel="shortcut icon" href="{{{ output.favicon }}}"/>
+    {{{ output.standard_head_html }}}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
+    <script src="template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+    <script src="/sso/sslssso.js"></script>
+    <script src="lms/theme/bgtlms/js/slimselect.js"></script>
+    <script src="lms/theme/bgtlms/js/bootstrap-datetimepicker.js"></script>
+    <link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/bgtlms.css">
+    <link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/slimselect.css">
+    <link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/bootstrap-datetimepicker.css">
     <script>
-	$(document).ready(function(){
-		<!-- var currentUrl = window.location.href; -->
-		<!-- var jwtsso = getToken(); -->
-		<!-- if (jwtsso){ -->
-			<!-- $.ajax({ -->
-				<!-- url:'/sso/authentoken', -->
-				<!-- data: {'jwt': jwtsso}, -->
-				<!-- type: 'POST', -->
-				<!-- success: function(data) { -->
-					<!-- data.action = "sso.onidentification"; -->
-					<!-- $.ajax({ -->
-					<!-- url:'/lms/login/index.php', -->
-					<!-- data: data, -->
-					<!-- type: 'POST', -->
-					<!-- success: function(data) {		 -->
-						<!-- if(data == 1){ -->
-							<!-- window.location.href = currentUrl; -->
-						<!-- } -->
-					<!-- }, -->
-					<!-- error: function(ex){ -->
-						<!-- console.log('Lms sso error'); -->
-						<!-- console.log(ex); -->
-					<!-- } -->
-				<!-- }); -->
-				<!-- }, -->
-				<!-- error: function(ex){ -->
-					<!-- console.log('token sso error'); -->
-					<!-- console.log(ex); -->
-				<!-- } -->
-			<!-- }); -->
-		<!-- }else{ -->
-			<!-- $.ajax({ -->
-				<!-- url:'/lms/login/index.php', -->
-				<!-- data: {action:'sso.logout'}, -->
-				<!-- type: 'POST', -->
-				<!-- dataType: 'json', -->
-				<!-- success: function(data) { -->
-					<!-- if(data == 1 && window.location.href != '/lms/login/index.php'){ -->
-						<!-- window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback='+currentUrl; -->
-					<!-- } -->
-				<!-- } -->
-			<!-- }); -->
-		<!-- } -->
-	});
+        $(document).ready(function () {
+            var currentUrl = window.location.href;
+            var jwtsso = getToken();
+            if (jwtsso) {
+                <!-- $.ajax({ -->
+                <!-- url:'/sso/authentoken', -->
+                <!-- data: {'jwt': jwtsso}, -->
+                <!-- type: 'POST', -->
+                <!-- success: function(data) { -->
+                <!-- data.action = "sso.onidentification"; -->
+                <!-- $.ajax({ -->
+                <!-- url:'/lms/login/index.php', -->
+                <!-- data: data, -->
+                <!-- type: 'POST', -->
+                <!-- success: function(data) {		 -->
+                <!-- if(data == 1){ -->
+                <!-- window.location.href = currentUrl; -->
+                <!-- } -->
+                <!-- }, -->
+                <!-- error: function(ex){ -->
+                <!-- console.log('Lms sso error'); -->
+                <!-- console.log(ex); -->
+                <!-- } -->
+                <!-- }); -->
+                <!-- }, -->
+                <!-- error: function(ex){ -->
+                <!-- console.log('token sso error'); -->
+                <!-- console.log(ex); -->
+                <!-- } -->
+                <!-- }); -->
+            } else {
+                $.ajax({
+                    url: '/lms/login/index.php',
+                    data: {action: 'sso.logout'},
+                    type: 'POST',
+                    //dataType: 'json',
+                    success: function (data) {
+                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        //}
+                    }
+                });
+            }
+        });
 
-    function getCookieByName(o) {
-        var e;
-        if (2 === (e = ("; " + document.cookie).split("; " + o + "=")).length) return e.pop().split(";").shift()
-    }
-
-	var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
-	var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
-
-	function isSafariBrowser() {
-		var o = navigator.userAgent.indexOf("Safari") > -1;
-		return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
-	}
-
-	function getToken(){
-		var jwtsso;
-		jwtsso = getCookieByName(safariCookie);
-		return jwtsso;
-	}
-
-</script>
-<style>
-    @font-face {
-        font-family: Roboto-Regular;
-        src: url('fonts/Roboto-Regular.ttf');
-    }
-    /* Custom css */
-
-    body {
-        margin-left: 0px !important;
-        background-color: #f1f3f9;
-    }
-
-
-    #page-wrapper {
-        background-color: #f1f3f9;
-    }
-
-    .btn-nav-left-top {
-        border: 1px solid #d4d4d4;
-    }
-
-    .userbutton .usertext {
-        margin-right: 0 !important;
-    }
-
-    .userbutton .avatars {
-        float: left;
-    }
-
-    .usermenu .dropdown-toggle::after {
-        display: none;
-    }
-
-    .userbutton .caret {
-        margin-left: 0;
-    }
-
-    .navbar {
-        max-height: 200px;
-    }
-
-    @media (max-width: 767px){
-        .path-mod-quiz .activity-navigation .col-md-4 {
-            flex: 0 0 50% !important;
-            max-width: 50% !important;
+        function getCookieByName(o) {
+            var e;
+            if (2 === (e = ("; " + document.cookie).split("; " + o + "=")).length) return e.pop().split(";").shift()
         }
-    }
 
-    #header-search-box-container {
-        display:grid;
-    }
+        var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
+        var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
 
-    .search-input-form{
-        margin-bottom: 0;
-    }
+        function isSafariBrowser() {
+            var o = navigator.userAgent.indexOf("Safari") > -1;
+            return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
+        }
 
-    .click-page .nav{
-        min-width: 190px;
-    }
+        function getToken() {
+            var jwtsso;
+            jwtsso = getCookieByName(safariCookie);
+            return jwtsso;
+        }
 
-    .click-page ul li{
-        font-family: Roboto-Regular;
-        font-size: 14px;
-        margin-right: 10%;
-    }
+    </script>
+    <style>
+        @font-face {
+            font-family: Roboto-Regular;
+            src: url('fonts/Roboto-Regular.ttf');
+        }
 
-    .click-page ul li a, .navbar-nav a i, .popover-region-toggle i{
-        color: #737373;
-    }
+        /* Custom css */
 
-    .click-page .nav li i{
-        font-size: 20px;
-    }
+        body {
+            margin-left: 0px !important;
+            background-color: #f1f3f9;
+        }
 
-    .userbutton {
-        vertical-align: sub;
-    }
 
-    .user_menu{
-        line-height: 41px;
-    }
+        #page-wrapper {
+            background-color: #f1f3f9;
+        }
 
-    .search-input-wrapper>div{
-        position: relative;
-        width: 100%;
-    }
-    .search-input-wrapper>div .icon{
-        position: absolute;
-        top: 0;
-        right: 1%;
-        color: #737373 !important;
-    }
-    .search-input-wrapper{
-        width: 100% !important;
-        padding-left: 0 !important;
-    }
-    #header-search-box-container .search-input-form{
-        margin-left: 2% !important;
-        min-width: 35%;
-    }
+        .btn-nav-left-top {
+            border: 1px solid #d4d4d4;
+        }
 
-</style>
+        .userbutton .usertext {
+            margin-right: 0 !important;
+        }
+
+        .userbutton .avatars {
+            float: left;
+        }
+
+        .usermenu .dropdown-toggle::after {
+            display: none;
+        }
+
+        .userbutton .caret {
+            margin-left: 0;
+        }
+
+        .navbar {
+            max-height: 200px;
+        }
+
+        @media (max-width: 767px) {
+            .path-mod-quiz .activity-navigation .col-md-4 {
+                flex: 0 0 50% !important;
+                max-width: 50% !important;
+            }
+        }
+
+        #header-search-box-container {
+            display: grid;
+        }
+
+        .search-input-form {
+            margin-bottom: 0;
+        }
+
+        .click-page .nav {
+            min-width: 190px;
+        }
+
+        .click-page ul li {
+            font-family: Roboto-Regular;
+            font-size: 14px;
+            margin-right: 10%;
+        }
+
+        .click-page ul li a, .navbar-nav a i, .popover-region-toggle i {
+            color: #737373;
+        }
+
+        .click-page .nav li i {
+            font-size: 20px;
+        }
+
+        .userbutton {
+            vertical-align: sub;
+        }
+
+        .user_menu {
+            line-height: 41px;
+        }
+
+        .search-input-wrapper > div {
+            position: relative;
+            width: 100%;
+        }
+
+        .search-input-wrapper > div .icon {
+            position: absolute;
+            top: 0;
+            right: 1%;
+            color: #737373 !important;
+        }
+
+        .search-input-wrapper {
+            width: 100% !important;
+            padding-left: 0 !important;
+        }
+
+        #header-search-box-container .search-input-form {
+            margin-left: 2% !important;
+            min-width: 35%;
+        }
+
+    </style>
 </head>

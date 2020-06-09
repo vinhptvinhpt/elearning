@@ -309,5 +309,6 @@
     "so_nguoi_tham_gia": "Number of participation",
     "thoi_luong_hoc": "Training duration",
     "ma_thu_vien": "Library code",
-    "ten_thu_vien": "Library name"
+    "ten_thu_vien": "Library name",
+    "nhan_vien_da_tham_gia_phong_ban_khac": "Employee existed in another organization"
 }
