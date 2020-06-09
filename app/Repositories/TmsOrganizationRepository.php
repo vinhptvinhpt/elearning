@@ -69,7 +69,8 @@ class TmsOrganizationRepository implements ICommonInterface
 
         $skip_level = false;
 
-        if ($current_user_role == Role::ROLE_MANAGER || $current_user_role == Role::ROLE_LEADER) {
+        //Ngoại trừ form update có excluded
+        if (($current_user_role == Role::ROLE_MANAGER || $current_user_role == Role::ROLE_LEADER) && strlen($exclude) == 0) {
             $list->whereIn('id', function ($q) use ($current_user_id) {
                 /* @var $q Builder */
                 $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
