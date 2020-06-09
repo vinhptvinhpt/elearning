@@ -1100,16 +1100,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                             break;
                         }
                     }
-                    $code_hint = $code_org->code . '_' . $num;
+                    $code_hint = $code_org->code . '_0' . $num;
                     if ($num == 0) {
                         $num = 1;
-                        $code_hint = $code_org->code . '_01';
+                        $code_hint = $code_org->code . '_001';
                     } else if ($num < 10) {
-                        $code_hint = $code_org->code . '_0' . $num;
+                        $code_hint = $code_org->code . '_00' . $num;
                     }
                 } else {
                     $num = 1;
-                    $code_hint = $code_org->code . '_01';
+                    $code_hint = $code_org->code . '_001';
                 }
             }
 
