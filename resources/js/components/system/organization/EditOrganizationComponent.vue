@@ -79,7 +79,12 @@
 <!--                        </div>-->
 <!--                      </div>-->
 
-                      <treeselect v-model="organization.parent_id" :multiple="false" :options="options" id="organization_parent_id"/>
+                      <treeselect
+                        v-model="organization.parent_id"
+                        :multiple="false"
+                        :options="options"
+                        id="organization_parent_id"
+                      />
 
                     </div>
                   </div>
