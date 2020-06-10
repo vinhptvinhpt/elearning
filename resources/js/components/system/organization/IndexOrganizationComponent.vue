@@ -120,7 +120,7 @@
                   </div>
                   <div class="mt-10 mb-20">
                     <strong>
-                      {{trans.get('keys.tong_so_chi_nhanh_hien_tai')}} :{{totalRow}}
+                      {{trans.get('keys.tong_so')}} :{{totalRow}}
                     </strong>
                   </div>
                   <div class="table-responsive">
