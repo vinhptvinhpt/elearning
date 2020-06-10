@@ -118,7 +118,7 @@
       <user-schedule :user_id="user_id"></user-schedule>
 
       <div class="col-12 hk-sec-wrapper" >
-        <user-course-grade :user_id="user_id"></user-course-grade>
+        <user-course-grade :user_id="user_id" :fullname="users.fullname" :username="users.username"></user-course-grade>
       </div>
 
     </div>
