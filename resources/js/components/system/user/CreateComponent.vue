@@ -167,9 +167,12 @@
 
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} *</label>
-                    <treeselect v-model="input_organization_id" :multiple="false" :options="options"
-                                id="employee_organization_id" :disabled="input_organization_id !== 0"/>
-                    <label v-if="!input_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                    <treeselect v-model="last_organization_id"
+                                :multiple="false"
+                                :options="options"
+                                id="employee_organization_id"
+                                :disabled="this.organization_loaded === 1"/>
+                    <label v-if="!last_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
                 <!--Training-->
@@ -342,12 +345,13 @@
                 branch_select: [],
                 saleroom_select: [],
                 //Treeselect options
-                options: [
+                default_options: [
                     {
                         id: 0,
                         label: this.trans.get('keys.chon_to_chuc')
                     }
                 ],
+                options: [],
                 organization_roles: [
                     'manager',
                     'employee',
@@ -355,7 +359,8 @@
                 ],
                 role_selected: 'user',
                 roleSelectOptions: [],
-                last_organization_id: 0
+                last_organization_id: 0,
+                organization_loaded: 0
             }
         },
         methods: {
@@ -696,28 +701,7 @@
                             roam_message(response.data.status, response.data.message);
 
                             this.clearFileInput();
-                            this.fullname = '';
-                            this.dob = '';
-                            this.email = '';
-                            this.username = '';
-                            this.password = '';
-                            this.passwordConf = '';
-                            this.phone = '';
-                            this.cmtnd = '';
-                            this.address = '';
-                            this.city = '';
-                            this.country = '';
-                            this.inputRole = [5];
-                            this.sex = 1;
-                            this.code = '';
-                            this.start_time = '';
-                            this.working_status = 0;
-                            this.confirm = 0;
-                            this.confirm_address = 0;
-                            this.certificate_code = '';
-                            this.certificate_date = '';
-                            this.branch = 0;
-                            this.saleroom = 0;
+                            this.resetForm();
                             $('span.wrap_password').removeClass('success');
                             $('.closeForm').trigger('click');
                             this.$nextTick(function () {
@@ -774,7 +758,13 @@
                     .then(response => {
                         this.organization_list = response.data;
                         //Set options recursive
-                        this.options = this.setOptions(response.data, current_id);
+                        this.options = this.default_options;
+                        let new_options = this.setOptions(response.data, current_id);
+                        if (new_options.length > 0) {
+                          Array.prototype.push.apply(this.default_options, new_options);
+                          this.options = this.default_options;
+                        }
+                        //this.options = this.setOptions(response.data, current_id);
                         $('.content_search_box').removeClass('loadding');
                     })
                     .catch(error => {
@@ -821,6 +811,35 @@
                 } else {
                     this.role_selected = 'user';
                 }
+            },
+            resetForm() {
+              this.fullname = '';
+              this.dob = '';
+              this.email = '';
+              this.username = '';
+              this.password = '';
+              this.passwordConf = '';
+              this.phone = '';
+              this.cmtnd = '';
+              this.address = '';
+              this.city = '';
+              this.country = '';
+              //this.inputRole = [5];
+              this.inputRole = [];
+              this.sex = 1;
+              this.code = '';
+              this.start_time = '';
+              this.working_status = 0;
+              this.confirm = 0;
+              this.confirm_address = 0;
+              this.certificate_code = '';
+              this.certificate_date = '';
+              this.branch = 0;
+              this.saleroom = 0;
+              //Role admin reset field organization
+              if (this.role_selected !== 'leader' && this.role_selected !== 'manager') {
+                this.last_organization_id = 0;
+              }
             }
         },
         mounted() {
@@ -830,17 +849,29 @@
             this.selectOrganization(this.organization_id);
             this.getRoles();
             this.getCountries();
+            if (this.organization_id !== 0) {
+              this.last_organization_id = this.organization_id;
+              this.organization_loaded = 1;
+            }
         },
         computed: {
-            input_organization_id: {
-                get() {
-                    this.last_organization_id = this.organization_id;
-                    return this.organization_id;
-                },
-                set(value) {
-                    this.last_organization_id = value;
-                }
+          // input_organization_id: {
+          //       get() {
+          //           this.last_organization_id = this.organization_id;
+          //           return this.organization_id;
+          //       },
+          //       set(value) {
+          //           this.last_organization_id = value;
+          //       }
+          //   }
+        },
+        watch: {
+          organization_id: function(newVal, oldVal) {
+            if (newVal !== 0 && newVal !== oldVal) {
+              this.last_organization_id = newVal;
+              this.organization_loaded = 1;
             }
+          }
         }
     }
 
