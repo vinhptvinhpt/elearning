@@ -107,11 +107,12 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div v-if="post.user_course_completionstate == post.user_course_learn && post.user_course_completionstate > 0">
-                                                <span v-if="post.status_user == 1 && post.finalgrade!=undefined && post.finalgrade >= post.gradepass"
-                                                      class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
-                                                <span v-else
-                                                      class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
+                                            <div v-if="post.user_course_completionstate == post.user_course_learn
+                                            && post.user_course_completionstate > 0
+                                            && post.status_user == 1
+                                            && post.finalgrade != undefined
+                                            && post.finalgrade >= post.gradepass">
+                                                <span class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
                                             </div>
                                             <div v-else><span class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>
                                             </div>
