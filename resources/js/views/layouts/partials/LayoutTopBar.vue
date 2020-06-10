@@ -191,7 +191,9 @@
                     var user_info = JSON.parse(obj);
                     this.username = user_info.username;
                     this.fullname = user_info.fullname;
-                    this.avatar = user_info.avatar;
+                    if (user_info.avatar) {
+                      this.avatar = user_info.avatar;
+                    }
                     this.classObject = 'language_icon language_' + lang;
                 }
                 if (obj && obj !== 'undefined') {

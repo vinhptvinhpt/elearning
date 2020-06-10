@@ -354,7 +354,13 @@ class ExcelController extends Controller
                 isset($item['fullname']) ? $item['fullname'] : '',
                 $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)",
                 isset($item['finalgrade']) ? number_format((float)$item['finalgrade'], 2, '.', '') : 0,
-                $item['status_user'] == 1 && floatval($item['finalgrade']) >= floatval($item['gradepass']) && $item['user_course_completionstate'] == $item['user_course_learn'] && $item['user_course_completionstate'] > 0 ? __('hoan_thanh') : __('chua_hoan_thanh')
+
+                $item['status_user'] == 1
+                && floatval($item['finalgrade']) >= floatval($item['gradepass'])
+                && $item['user_course_completionstate'] == $item['user_course_learn']
+                && $item['user_course_completionstate'] > 0
+
+                    ? __('hoan_thanh') : __('chua_hoan_thanh')
             );
         }
 
