@@ -267,6 +267,7 @@
             updateUser(){
                 let userJson = Ls.get('auth.user');
                 let auth = {
+                  fullname: this.users.fullname,
                   username: this.users.username,
                   avatar: this.users.avatar
                 };
@@ -300,10 +301,11 @@
                           this.clearFileInput();
                           if (fileUploaded && fileUploaded !== 'undefined') {
                             if (response.data.avatar) {
-                              auth.avatar = response.data.avatar;
-                              Ls.set('auth.user', JSON.stringify(auth));
+                              auth.avatar = response.data.avatar; //Cap nhat user avatar vao session
                             }
                           }
+                          auth.fullname = this.users.fullname; //Cap nhat user full name vao session
+                          Ls.set('auth.user', JSON.stringify(auth));
                           this.userData();
                           this.$parent.renderTopBarAgain();
                         }else{

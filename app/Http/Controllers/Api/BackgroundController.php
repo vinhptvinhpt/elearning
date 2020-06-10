@@ -137,14 +137,16 @@ class BackgroundController extends Controller
             if (strlen($base_level_organization) != 0) {
                 $base_organization = TmsOrganization::firstOrCreate([
                     'code' => strtoupper($base_level_organization),
-                    'name' => ucwords($base_level_organization)
+                    'name' => ucwords($base_level_organization),
+                    'level' => 1
                     ]);
             } else {
                 continue;
             }
 
+
             $base_level_id = $base_organization->id;
-            $base_level = $base_organization->level;
+            $base_level = 1;
 
             $list_uploaded = (new DataImport())->toArray($file_path, '', '');
 
