@@ -52,7 +52,8 @@ class Role extends Model
     const arr_role_organization = [
         Role::ROLE_EMPLOYEE,
         Role::ROLE_LEADER,
-        Role::ROLE_MANAGER
+        Role::ROLE_MANAGER,
+        Role::TEACHER
     ];
 
     protected $table = 'roles';

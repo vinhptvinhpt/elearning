@@ -203,9 +203,13 @@
                                                     <label class="badge badge-warning">{{ trans.get('keys.leader')
                                                         }}</label>
                                                 </td>
-                                                <td v-else>
+                                                <td v-else-if="item.position === 'employee'">
                                                     <label class="badge badge-info">{{ trans.get('keys.employee')
                                                         }}</label>
+                                                </td>
+                                                <td v-else-if="item.position === 'teacher'">
+                                                    <label class="badge badge-success">{{ trans.get('keys.teacher')
+                                                      }}</label>
                                                 </td>
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
@@ -536,6 +540,10 @@
                     {
                         key: 'employee',
                         value: this.trans.get('keys.employee')
+                    },
+                    {
+                        key: 'teacher',
+                        value: this.trans.get('keys.teacher')
                     }
                 ];
 
@@ -558,6 +566,10 @@
                         response.push({
                             key: 'employee',
                             value: this.trans.get('keys.employee')
+                        });
+                        response.push({
+                          key: 'teacher',
+                          value: this.trans.get('keys.teacher')
                         });
                     }
                     return response;

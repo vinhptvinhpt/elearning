@@ -417,7 +417,8 @@
                 organization_roles: [
                   'manager',
                   'employee',
-                  'leader'
+                  'leader',
+                  'teacher'
                 ]
             }
         },
