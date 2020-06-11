@@ -190,28 +190,16 @@ class LoginController extends Controller
             $redirect_type = 'lms';
             if (count($sru) != 0) {
                 foreach ($sru as $role) {
-                    if ($role->name == Role::ROLE_MANAGER) {
+                    if (in_array($role->name, [
+                            Role::ROLE_MANAGER,
+                            Role::ROLE_LEADER,
+                            Role::ROOT,
+                            Role::ADMIN,
+                            Role::TEACHER
+                        ])) {
                         $redirect_type = "default";
                         break;
-                    } elseif ($role->name == Role::ROLE_LEADER) {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::MANAGE_MARKET) {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::MANAGE_AGENTS) {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::MANAGE_POS) {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::ROOT) {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
-                        $redirect_type = "default";
-                        break;
-                    } elseif ($role->name == Role::TEACHER) {
+                    } elseif ($role->permission_slug == 'tms-system-administrator-grant') {
                         $redirect_type = "default";
                         break;
                     }
