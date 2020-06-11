@@ -115,7 +115,7 @@
                                     <div class="col-6">
                                         <div id="datable_1_filter" class="dataTables_filter" style="float: right;">
                                             <label>
-                                                <router-link :to="{name: 'CourseCreate'}">
+                                                <router-link v-if="slug_can('tms-educate-exam-online-add')" :to="{name: 'CourseCreate'}">
                                                     <button type="button"
                                                             class="btn btn-success btn-md"
                                                             :placeholder="trans.get('keys.tao_moi')"
@@ -172,7 +172,7 @@
                                             </td>
                                             <td class="text-center">
 
-                                                <a :title="trans.get('keys.sua_noi_dung')"
+                                                <a v-if="slug_can('tms-educate-exam-online-edit')" :title="trans.get('keys.sua_noi_dung')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
                                                    :href="lms_url + course.id">
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
@@ -194,13 +194,13 @@
                                                             class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
-                                                <router-link :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
+                                                <router-link v-if="slug_can('tms-educate-exam-online-edit')" :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                              :to="{ name: 'CourseDetail', params: { id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
 
-                                                <button :title="trans.get('keys.xoa')" data-toggle="modal"
+                                                <button v-if="slug_can('tms-educate-exam-online-deleted')" :title="trans.get('keys.xoa')" data-toggle="modal"
                                                         data-target="#delete-ph-modal"
                                                         @click="deletePost(course.id)"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
@@ -233,6 +233,7 @@
     import datePicker from 'vue-bootstrap-datetimepicker'
 
     export default {
+        props: ['slugs'],
         components: {
             //vPagination,
             datePicker
@@ -272,7 +273,10 @@
                 return "";
             }
         },
-        methods: {
+            methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             getCategories() {
                 axios.post('/api/courses/get_list_category')
                     .then(response => {
