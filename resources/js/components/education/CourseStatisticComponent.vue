@@ -132,11 +132,11 @@
                                 </table>
                             </div>
                             <div class="text-right">
-                                <router-link v-if="this.come_from === 'online'"
+                                <router-link v-if="this.come_from === 'online' && slug_can('tms-educate-exam-online-edit')"
                                              :to="{name: 'CourseDetail', params: {id: course_id}}"
                                              class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}
                                 </router-link>
-                                <router-link v-else
+                                <router-link v-else-if="this.come_from === 'offline' && slug_can('tms-educate-exam-offline-edit')"
                                              :to="{name: 'CourseConcentrateDetail', params: {id: course_id}}"
                                              class="btn btn-primary btn-sm">{{trans.get('keys.edit')}}
                                 </router-link>
@@ -502,7 +502,7 @@
     import CourseInfra from './CourseInfrastructureComponent';
 
     export default {
-        props: ['course_id', 'come_from'],
+        props: ['course_id', 'come_from', 'slugs'],
         components: {CourseInfra},
         data() {
             return {
@@ -545,6 +545,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             reset() {
                 this.keywordDoc = '';
                 this.rowDoc = 5;

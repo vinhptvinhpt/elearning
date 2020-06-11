@@ -110,10 +110,10 @@
                 </div>
 
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputCity">{{trans.get('keys.van_phong')}} *</label>
+                    <label for="inputCity">{{trans.get('keys.van_phong')}}</label>
                     <input v-model="city" type="text" id="inputCity" :placeholder="trans.get('keys.nhap_van_phong')"
                            class="form-control mb-4">
-                    <label v-if="!city" class="required text-danger city_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                    <label v-if="!city" class="required text-danger city_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
@@ -592,10 +592,10 @@
                     return;
                 }
 
-                if (!this.city) {
-                    $('.city_required').show();
-                    return;
-                }
+                // if (!this.city) {
+                //     $('.city_required').show();
+                //     return;
+                // }
 
                 if (!this.country) {
                     $('.country_required').show();
@@ -606,6 +606,7 @@
                     $('.inputRole_required').show();
                     return;
                 }
+
 
                 if (!this.last_organization_id) {
                     $('.organization_required').show();

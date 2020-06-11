@@ -775,6 +775,36 @@ class BussinessRepository implements IBussinessInterface
             }
 
             if ($result == 1) {
+
+                //write log to mdl_logstore_standard_log
+                $app_name = Config::get('constants.domain.APP_NAME');
+
+                $key_app = encrypt_key($app_name);
+
+                $dataLog = array(
+                    'app_key' => $key_app,
+                    'courseid' => $course->id,
+                    'action' => 'create',
+                    'description' => json_encode($course),
+                );
+
+                $dataLog = createJWT($dataLog, 'data');
+
+                $data_write = array(
+                    'data' => $dataLog,
+                );
+
+                $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+                $user_id = Auth::id();
+                $checkUser = MdlUser::where('id', $user_id)->first();
+                $token = '';
+                if (isset($checkUser)) {
+                    $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+                }
+                //call api write log
+                callAPI('POST', $url, $data_write, false, $token);
+
+
                 $response->status = true;
                 $response->message = __('xoa_khoa_hoc');
             } else if ($result == 10) {

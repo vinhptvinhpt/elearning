@@ -757,7 +757,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
-                'action' => 'create',
+                'action' => 'edit',
                 'description' => json_encode($course),
             );
 
@@ -768,9 +768,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             );
 
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
+            $user_id = Auth::id();
+            $checkUser = MdlUser::where('id', $user_id)->first();
+            $token = '';
+            if (isset($checkUser)) {
+                $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+            }
             //call api write log
-            callAPI('POST', $url, $data_write, false, '');
+            callAPI('POST', $url, $data_write, false, $token);
 
             $response->status = true;
             $response->message = __('sua_khoa_hoc_thanh_cong');
