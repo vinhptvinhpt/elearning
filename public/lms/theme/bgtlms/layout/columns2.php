@@ -58,6 +58,7 @@ $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
+$permission_tms = false;
 $getPathPublic = '';
 
 if ($pagelayout == 'incourse') {
@@ -101,12 +102,10 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     $permissions = array_values($check);
 
     foreach ($permissions as $permission) {
-
         if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
             $permission_edit = true;
             break;
         }
-
         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
             $permission_edit = true;
             break;
@@ -117,6 +116,13 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
         }
         if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
             $permission_edit = true;
+            break;
+        }
+    }
+
+    foreach ($permissions as $permission) {
+        if (in_array($permission->name, ['root', 'admin', 'manager', 'leader', 'teacher'])) {
+            $permission_tms = true;
             break;
         }
     }
@@ -155,6 +161,7 @@ $templatecontext = [
     'nextsectionno' => $nextsectionno,
     'modulesidsstring' => $modulesidsstring,
     'permission_edit' => $permission_edit,
+    'permission_tms' => $permission_tms,
     'pathLogo' => $pathLogo,
     'getPathPublic' => $getPathPublic,
     'wwwroot' => $wwwroot,

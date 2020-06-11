@@ -152,7 +152,7 @@
                                             <button type="button" @click="goBack()" class="btn btn-secondary btn-sm">
                                                 {{trans.get('keys.huy')}}
                                             </button>
-                                            <button @click="createCourse()" type="button"
+                                            <button v-if="slug_can('tms-educate-exam-online-add')" @click="createCourse()" type="button"
                                                     class="btn btn-primary btn-sm">{{trans.get('keys.tao')}}
                                             </button>
                                         </div>
@@ -179,6 +179,7 @@
     import CKEditor from 'ckeditor4-vue';
 
     export default {
+        props: ['slugs'],
         components: {
             CKEditor
         },
@@ -210,6 +211,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             getCategories() {
                 axios.post('/api/courses/get_list_category_edit')
                     .then(response => {

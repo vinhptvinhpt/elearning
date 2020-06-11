@@ -200,7 +200,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     <div class="row change-password">
                         <p class="col-12">
                             <a class="btn-collapse">
-                                <i class="fa fa-cog" aria-hidden="true"></i> Chang Password
+                                <i class="fa fa-cog" aria-hidden="true"></i> Change Password
                             </a>
                         </p>
                         <div class="col-12 collapse-div" id="">

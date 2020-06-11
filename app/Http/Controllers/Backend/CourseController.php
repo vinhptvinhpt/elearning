@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Backend;
 use App\Http\Controllers\Controller;
 use App\MdlContext;
 use App\MdlCourse;
+use App\MdlUser;
 use App\Repositories\MdlCourseRepository;
 use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
@@ -12,6 +13,7 @@ use App\ViewModel\ResponseModel;
 use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -216,9 +218,14 @@ class CourseController extends Controller
             );
 
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
+            $user_id = Auth::id();
+            $checkUser = MdlUser::where('id', $user_id)->first();
+            $token = '';
+            if (isset($checkUser)) {
+                $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+            }
             //call api write log
-            callAPI('POST', $url, $data_write, false, '');
+            callAPI('POST', $url, $data_write, false, $token);
 
             \DB::commit();
 

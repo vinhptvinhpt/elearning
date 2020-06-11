@@ -64,11 +64,13 @@
                         {{{ output.search_box }}}
                     </div>
                     <!--back to cms-->
-                    <li class="nav-item align-items-center cms-link d-none d-sm-flex">
-                        <a class="nav-link d-inline-block position-relative" style="max-width: 50px" href="{{ wwwtms }}" title="Back to cms">
-                            <img src="{{ getPathPublic }}/images/tms-icon.png" alt="tms-link-image">
-                        </a>
-                    </li>
+                    {{#permission_tms}}
+                        <li class="nav-item align-items-center cms-link d-none d-sm-flex">
+                            <a class="nav-link d-inline-block position-relative" style="max-width: 50px" href="{{ wwwtms }}" title="Back to cms">
+                                <img src="{{ getPathPublic }}/images/tms-icon.png" alt="tms-link-image">
+                            </a>
+                        </li>
+                    {{/permission_tms}}
                     <!-- navbar_plugin_output -->
                     <li class="nav-item d-flex align-items-center">
                         {{{ output.navbar_plugin_output }}}
