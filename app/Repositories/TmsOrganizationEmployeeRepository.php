@@ -51,12 +51,26 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             });
         }
 
-        if (is_numeric($organization_id) && $organization_id != 0) {
-            $list = $list->where('organization_id', $organization_id);
-        }
-
         if (strlen($position) != 0) {
             $list = $list->where('position', $position);
+        }
+
+        $current_user_id = \Auth::user()->id;
+        if ($request->session()->has($current_user_id . '_roles_and_slugs')) {
+            $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
+            if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+                $role = Role::ROLE_MANAGER;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+                $role = Role::ROLE_LEADER;
+            }
+            if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
+                if (strlen($organization_id) == 0 || $organization_id == 0) {
+                    $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+                    if (isset($check)) {
+                        $organization_id =  $check->organization_id;
+                    }
+                }
+            }
         }
 
         if (strlen($role) != 0) {
@@ -65,6 +79,10 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             } elseif ($role == Role::ROLE_LEADER) {
                 $list = $list->whereNotIn('position', [Role::ROLE_MANAGER, Role::ROLE_LEADER]);
             }
+        }
+
+        if (is_numeric($organization_id) && $organization_id != 0) {
+            $list = $list->where('organization_id', $organization_id);
         }
 
         $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));

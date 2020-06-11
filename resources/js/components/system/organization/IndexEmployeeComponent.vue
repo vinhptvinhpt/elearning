@@ -31,7 +31,7 @@
                 <div>
                     <div class="accordion" id="accordion_1">
 
-                        <div class="card">
+                        <div v-if="slug_can('tms-system-employee-add')" class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1"
                                    aria-expanded="true">
@@ -273,7 +273,8 @@
             organization_id: {
                 type: [String, Number],
                 default: ''
-            }
+            },
+            slugs: Array,
         },
         data() {
             return {
@@ -304,6 +305,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             // selectOrganizationItem(input_id){
             //   this.employee.input_organization_id = input_id;
             // },

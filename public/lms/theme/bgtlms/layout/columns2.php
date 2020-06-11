@@ -61,6 +61,16 @@ $permission_edit = false;
 $permission_tms = false;
 $getPathPublic = '';
 
+global $DB;
+$sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$check = $DB->get_records_sql($sqlCheck);
+
+$permissions = array_values($check);
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
@@ -86,21 +96,7 @@ if ($pagelayout == 'incourse') {
     if (!empty($modules)) {
         $modulesidsstring = implode(',', array_column($modules, 'id'));
     }
-
-    global $DB;
-
     $course_category = $PAGE->course->category;
-
-    $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
-inner join `roles` on `roles`.`id` = `mhr`.`role_id`
-left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
-inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
-where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
-
-    $check = $DB->get_records_sql($sqlCheck);
-
-    $permissions = array_values($check);
-
     foreach ($permissions as $permission) {
         if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
             $permission_edit = true;
@@ -119,12 +115,11 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
     }
-
-    foreach ($permissions as $permission) {
-        if (in_array($permission->name, ['root', 'admin', 'manager', 'leader', 'teacher'])) {
-            $permission_tms = true;
-            break;
-        }
+}
+foreach ($permissions as $permission) {
+    if (in_array($permission->name, ['root', 'admin', 'manager', 'leader', 'teacher'])) {
+        $permission_tms = true;
+        break;
     }
 }
 
