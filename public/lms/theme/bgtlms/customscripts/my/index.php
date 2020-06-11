@@ -36,7 +36,7 @@ $_SESSION["totalCourse"] = count($courses);
 $organization_id = 2;
 $organizationCode = strtolower($_SESSION["organizationCode"]);
 switch ($organizationCode) {
-    case "easia":
+    case "EA":
         {
             $_SESSION["organizationName"] = 'Easia';
             $_SESSION["color"] = '#862055';
@@ -46,7 +46,7 @@ switch ($organizationCode) {
             $_SESSION["pathBackground"] = 'images/bg-easia.png';
         }
         break;
-    case "exoticvoyages":
+    case "EV":
         {
             $_SESSION["organizationName"] = 'Exotic voyages';
             $_SESSION["color"] = '#CAB143';
@@ -56,7 +56,7 @@ switch ($organizationCode) {
             $_SESSION["pathBackground"] = 'images/bg-exotic.png';
         }
         break;
-    case "begodi":
+    case "BG":
         {
             $_SESSION["organizationName"] = 'Begodi';
             $_SESSION["color"] = '#FFFFFF';
@@ -66,7 +66,7 @@ switch ($organizationCode) {
             $_SESSION["pathBackground"] = 'images/bg-begodi.png';
         }
         break;
-    case "avana":
+    case "AV":
         {
             $_SESSION["organizationName"] = 'Avana';
             $_SESSION["color"] = '#202020';
@@ -78,7 +78,7 @@ switch ($organizationCode) {
         break;
     default:
         {
-            $_SESSION["organizationName"] = 'Phh';
+            $_SESSION["organizationName"] = 'PHH';
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
