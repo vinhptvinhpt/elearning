@@ -607,7 +607,6 @@
                     return;
                 }
 
-
                 if (!this.last_organization_id) {
                     $('.organization_required').show();
                     return;

@@ -14,7 +14,7 @@
       <div class="col-12">
         <div>
           <div class="accordion" id="accordion_1">
-            <div class="card">
+            <div v-if="slug_can('tms-system-organize-add')" class="card">
               <div class="card-header d-flex justify-content-between">
                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi')}}</a>
               </div>
