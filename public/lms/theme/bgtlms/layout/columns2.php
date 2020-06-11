@@ -98,7 +98,7 @@ if ($pagelayout == 'incourse') {
     }
     $course_category = $PAGE->course->category;
     foreach ($permissions as $permission) {
-        if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
+        if (!in_array($permission->name, ['student', 'employee'])) {
             $permission_edit = true;
             break;
         }
@@ -117,7 +117,7 @@ if ($pagelayout == 'incourse') {
     }
 }
 foreach ($permissions as $permission) {
-    if (in_array($permission->name, ['root', 'admin', 'manager', 'leader', 'teacher'])) {
+    if (!in_array($permission->name, ['student', 'employee'])) {
         $permission_tms = true;
         break;
     }
