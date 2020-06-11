@@ -211,6 +211,9 @@ class LoginController extends Controller
                     } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
                         $redirect_type = "default";
                         break;
+                    } elseif ($role->name == Role::TEACHER) {
+                        $redirect_type = "default";
+                        break;
                     }
                 }
             }
