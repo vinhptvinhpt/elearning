@@ -873,9 +873,11 @@
                 })
                     .then(response => {
                         if(response.data.status){
-                            roam_message(response.data.status,response.data.message);
-                            this.goBack();
-                        }else{
+                          roam_message(response.data.status,response.data.message);
+                          if (response.data.status === 'success') {
+                              this.goBack();
+                          }
+                        } else {
                             roam_message('error',response.data.message);
                             $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');
