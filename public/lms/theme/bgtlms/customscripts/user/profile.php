@@ -417,20 +417,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     }
 
 
-    /*Ipad ngang(1024 x 768)*/
-    @media screen and (max-width: 1024px){
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-
-    }
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px){
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
         .info-user{
             padding-left: 25%;
             margin-bottom: 15px;
@@ -447,10 +435,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     }
     /*Tablet nhỏ(480 x 640)*/
     @media screen and (max-width: 480px){
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
         .item-content p{
             font-size: 10px;
         }
@@ -465,10 +449,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     }
     /*Iphone(480 x 640)*/
     @media screen and (max-width: 320px){
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
         .info-user_info {
             margin-top: 3%;
         }

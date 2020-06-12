@@ -109,8 +109,20 @@
         /* Custom css */
 
         body {
-            margin-left: 0px !important;
             background-color: #f1f3f9;
+        }
+
+        body.drawer-open-left {
+            {{#incourse}}
+                margin-left: 285px !important;
+            {{/incourse}}
+            {{^incourse}}
+                margin-left: 0 !important;
+            {{/incourse}}
+        }
+
+        body:not(.drawer-open-left) {
+            margin-left: 0 !important;
         }
 
 
