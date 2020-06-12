@@ -113,10 +113,6 @@ body {
     margin: 0;
 }
 
-body.drawer-open-left {
-    margin-left: 240px;
-}
-
 .top-logo img {
     max-height: 34px;
     max-width: 45%;
@@ -1982,12 +1978,6 @@ body .navbar:before {
         -ms-flex: 0 0 calc(100% - 20px);
         flex: 0 0 calc(100% - 20px);
         max-width: calc(100% - 20px);
-    }
-    /*.h5p_fixcontent {
-      padding-top: 70%;
-  }*/
-    body.drawer-open-left {
-        margin-left: 0;
     }
     .generalbox iframe,
     .resourcecontent object {

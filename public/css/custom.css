@@ -36,10 +36,6 @@ a {
     margin: 0;
 }
 
-body.drawer-open-left {
-    margin-left: 240px;
-}
-
 .top-logo img {
     max-height: 34px;
     max-width: 45%;

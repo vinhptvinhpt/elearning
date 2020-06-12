@@ -34,7 +34,7 @@ if (isloggedin()) {
 }
 $extraclasses = [];
 if ($navdraweropen) {
-//    $extraclasses[] = 'drawer-open-left';
+    $extraclasses[] = 'drawer-open-left';
 }
 $bodyattributes = $OUTPUT->body_attributes($extraclasses);
 $blockshtml = $OUTPUT->blocks('side-pre');
