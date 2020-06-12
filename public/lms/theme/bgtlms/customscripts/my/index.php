@@ -616,13 +616,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         }
     }
 
-    @media only screen and (max-width: 1199px) {
-        .drawer-open-left .over-wrap{
-            opacity: 0 !important;
-            display: none;
-        }
-    }
-
     @media screen and (max-width: 768px) {
         .title h2{
             font-size: 20px !important;
