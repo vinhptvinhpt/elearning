@@ -728,7 +728,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $data = DB::table('tms_traninning_users as ttu')
                 ->join('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
-                ->where('mu.active', '=', 0)
+                //->where('mu.active', '=', 0)
                 ->select('ttu.id as id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($trainning != 0) {
@@ -741,6 +741,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
 
             $data = $data->orderBy('mu.id', 'desc');
+
             $data = $data->groupBy('mu.id');
             $data = $data->paginate($row);
 
@@ -940,14 +941,16 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                                     UNION
                                     select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
 
+
             $tblQuery = DB::raw($tblQuery);
 
             $leftJoin = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning_id . ') ttu';
             $leftJoin = DB::raw($leftJoin);
 
-            $lstUserIDs = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
+            echo $lstUserIDs = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
                 ->whereNull('ttu.trainning_id')
-                ->pluck('org_us.user_id')->toArray();
+                //->pluck('org_us.user_id')
+                ->toSql(); die;
 
 //            if (count($lstUserIDs) >= Config::get('constants.domain.LIMIT_SUBMIT')) {
 //                $response->status = false;
