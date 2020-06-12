@@ -280,7 +280,7 @@
                 })
                     .then(response => {
                         if (response.data.status === 'warning') {
-                          toastr['warning'](response.data.message, current_pos.trans.get('keys.thong_bao'));
+                          toastr['warning'](response.data.message, this.trans.get('keys.thong_bao'));
                         }
                         this.posts = response.data.data ? response.data.data.data : [];
                         this.current = response.data.pagination ? response.data.pagination.current_page : 1;
@@ -289,7 +289,7 @@
                         this.max_level = response.data.max_level ? response.data.max_level : 0;
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             createOrganization(){
@@ -309,7 +309,7 @@
                 })
                     .then(response => {
                         if(response.data.key) {
-                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                             $('.form-control').removeClass('error');
                             $('#organization_'+response.data.key).addClass('error');
                         }else{
@@ -322,11 +322,11 @@
                                 //reload form
                                 this.selectParent();
                             }
-                            toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
                         }
                     })
                     .catch(error => {
-                      toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                      toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     })
             },
             onPageChange() {
@@ -341,7 +341,8 @@
               this.$route.params.page = value;
             },
             deletePost(url) {
-                swal({
+              let current_pos = this;
+              swal({
                     title: this.trans.get('keys.thong_bao'),
                     text: this.trans.get('keys.ban_co_muon_xoa_to_chuc_nay'),
                     type: "warning",
@@ -354,7 +355,7 @@
                             roam_message(response.data.status, response.data.message);
                         })
                         .catch(error => {
-                            roam_message('error',this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
 
