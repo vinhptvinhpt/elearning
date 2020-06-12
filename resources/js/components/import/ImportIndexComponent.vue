@@ -128,7 +128,7 @@
             //             });
             //         })
             //         .catch(error => {
-            //             console.log(error.response.data);
+            //             console.log(error);
             //         })
             // },
 
@@ -150,7 +150,7 @@
                         });
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     })
             },
             importExcel(){

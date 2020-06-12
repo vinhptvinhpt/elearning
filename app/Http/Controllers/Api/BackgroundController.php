@@ -43,6 +43,7 @@ use App\TmsUserDetail;
 use App\TmsUserSaleDetail;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -118,9 +119,11 @@ class BackgroundController extends Controller
                     ]);
                 }
                 $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
+                $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+            } else {
+                /* @var $file_path UploadedFile */
+                $file_name = $file_path->getClientOriginalName();
             }
-
-            $file_name = pathinfo($file_path, PATHINFO_FILENAME);
 
             $base_level_organization = '';
 

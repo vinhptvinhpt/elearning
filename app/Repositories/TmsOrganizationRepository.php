@@ -218,6 +218,9 @@ class TmsOrganizationRepository implements ICommonInterface
                 $parent = TmsOrganization::where('id', $parent_id)->first();
                 $parent_level = $parent->level;
                 $item->level = $parent_level + 1;
+            } else {
+                $item->level = 1;
+                $item->parent_id = 0;
             }
             $item->name = $name;
             $item->code = $code;

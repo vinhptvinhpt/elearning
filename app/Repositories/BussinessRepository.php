@@ -4937,10 +4937,10 @@ class BussinessRepository implements IBussinessInterface
                     //Add unique field combo to match here
                     //For example, perhaps you only want one entry per user:
                     'organization_id' => $organization_id,
-                    'type' => $type
+                    'type' => $type,
+                    'name' => $name,
                 ], [
                     'path' => $path_avatar,
-                    'name' => $name,
                     'description' => $description,
                     'is_active' => $is_active,
                     'position' => $position
