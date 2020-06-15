@@ -741,7 +741,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
 
             $data = $data->orderBy('mu.id', 'desc');
-
             $data = $data->groupBy('mu.id');
             $data = $data->paginate($row);
 
@@ -941,16 +940,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                                     UNION
                                     select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
 
-
             $tblQuery = DB::raw($tblQuery);
 
             $leftJoin = '(select user_id, trainning_id from tms_traninning_users where trainning_id = ' . $trainning_id . ') ttu';
             $leftJoin = DB::raw($leftJoin);
 
-            echo $lstUserIDs = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
+            $lstUserIDs = DB::table($tblQuery)->leftJoin($leftJoin, 'ttu.user_id', '=', 'org_us.user_id')
                 ->whereNull('ttu.trainning_id')
-                //->pluck('org_us.user_id')
-                ->toSql(); die;
+                ->pluck('org_us.user_id')->toArray();
 
 //            if (count($lstUserIDs) >= Config::get('constants.domain.LIMIT_SUBMIT')) {
 //                $response->status = false;
