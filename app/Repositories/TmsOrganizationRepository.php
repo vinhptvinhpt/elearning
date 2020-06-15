@@ -37,15 +37,21 @@ class TmsOrganizationRepository implements ICommonInterface
 
         $current_user_id = \Auth::user()->id;
         $current_user_role = '';
-        if ($request->session()->has($current_user_id . '_roles_and_slugs')) {
+        if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
+            $current_user_roles_and_slugs = checkRole();
+        } else {
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-            if ($current_user_roles_and_slugs['roles']->has_role_admin || $current_user_roles_and_slugs['roles']->root_user) {
-                $current_user_role = Role::ADMIN;
-            } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
-                $current_user_role = Role::ROLE_MANAGER;
-            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
-                $current_user_role = Role::ROLE_LEADER;
-            }
+        }
+        if ($current_user_roles_and_slugs['roles']->has_role_admin || $current_user_roles_and_slugs['roles']->root_user) {
+            $current_user_role = Role::ADMIN;
+        } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+            $current_user_role = Role::ROLE_MANAGER;
+        } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+            $current_user_role = Role::ROLE_LEADER;
+        }
+        if (in_array('tms-system-user-add', $current_user_roles_and_slugs['slugs'])
+            || in_array('tms-system-student-add', $current_user_roles_and_slugs['slugs'])) {
+            $current_user_role = 'creator';
         }
 
         if (strlen($current_user_role) == 0) {
@@ -214,6 +220,9 @@ class TmsOrganizationRepository implements ICommonInterface
                 $parent = TmsOrganization::where('id', $parent_id)->first();
                 $parent_level = $parent->level;
                 $item->level = $parent_level + 1;
+            } else {
+                $item->level = 1;
+                $item->parent_id = 0;
             }
             $item->name = $name;
             $item->code = $code;

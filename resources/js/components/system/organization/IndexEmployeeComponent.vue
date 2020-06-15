@@ -31,7 +31,7 @@
                 <div>
                     <div class="accordion" id="accordion_1">
 
-                        <div class="card">
+                        <div v-if="slug_can('tms-system-employee-add')" class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1"
                                    aria-expanded="true">
@@ -203,9 +203,13 @@
                                                     <label class="badge badge-warning">{{ trans.get('keys.leader')
                                                         }}</label>
                                                 </td>
-                                                <td v-else>
+                                                <td v-else-if="item.position === 'employee'">
                                                     <label class="badge badge-info">{{ trans.get('keys.employee')
                                                         }}</label>
+                                                </td>
+                                                <td v-else-if="item.position === 'teacher'">
+                                                    <label class="badge badge-success">{{ trans.get('keys.teacher')
+                                                      }}</label>
                                                 </td>
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
@@ -273,7 +277,8 @@
             organization_id: {
                 type: [String, Number],
                 default: ''
-            }
+            },
+            slugs: Array,
         },
         data() {
             return {
@@ -304,6 +309,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             // selectOrganizationItem(input_id){
             //   this.employee.input_organization_id = input_id;
             // },
@@ -532,6 +540,10 @@
                     {
                         key: 'employee',
                         value: this.trans.get('keys.employee')
+                    },
+                    {
+                        key: 'teacher',
+                        value: this.trans.get('keys.teacher')
                     }
                 ];
 
@@ -554,6 +566,10 @@
                         response.push({
                             key: 'employee',
                             value: this.trans.get('keys.employee')
+                        });
+                        response.push({
+                          key: 'teacher',
+                          value: this.trans.get('keys.teacher')
                         });
                     }
                     return response;

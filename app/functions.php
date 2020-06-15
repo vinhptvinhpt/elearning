@@ -29,7 +29,9 @@ use App\TmsCityBranch;
 use App\TmsRoleOrganize;
 use App\TmsSaleRooms;
 use App\TmsSaleRoomUser;
+use App\ViewModel\CheckRoleModel;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -3291,4 +3293,85 @@ function updateFlagCron($filename, $action, $data = null)
         }
     }
     return $result;
+}
+
+//Store user role to session
+function checkRole() {
+    $checkRole = new CheckRoleModel();
+    $permissions = [];
+    $user_id = Auth::id();
+
+    try {
+        $sru = DB::table('model_has_roles as mhr')
+            ->join('roles', 'roles.id', '=', 'mhr.role_id')
+            ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+            ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+            ->where('mhr.model_id', $user_id)
+            ->where('mhr.model_type', 'App/MdlUser')
+            ->get();
+
+        if (count($sru) != 0) {
+
+            foreach ($sru as $role) {
+
+                $permissions[] = $role->permission_slug;
+
+                if ($role->name == Role::ROLE_MANAGER) {
+                    $checkRole->has_role_manager = true;
+                } elseif ($role->name == Role::ROLE_LEADER) {
+                    $checkRole->has_role_leader = true;
+                } elseif ($role->name == Role::MANAGE_MARKET) {
+                    $checkRole->has_user_market = true;
+                } elseif ($role->name == Role::MANAGE_AGENTS) {
+                    $checkRole->has_role_agency = true;
+                } elseif ($role->name == Role::MANAGE_POS) {
+                    $checkRole->has_role_pos = true;
+                } elseif ($role->name == Role::ROOT) {
+                    $checkRole->root_user = true;
+                } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
+                    $checkRole->has_role_admin = true;
+                }
+            }
+
+            //Nếu là root cho phép tất cả các quyền
+            if (tvHasRole(Auth::user()->id, 'Root')
+                || tvHasRole(Auth::user()->id, 'root')
+                || tvHasRole(Auth::user()->id, 'admin')) {
+
+                $permissions = []; //tạo mảng quyền mới
+                //Lay tat ca cac quyen
+                $permission_slugs = DB::table('permission_slug_role as psr')
+                    ->join('model_has_roles as mhr', 'mhr.role_id', '=', 'psr.role_id')
+                    ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                    ->select('psr.permission_slug')->groupBy('psr.permission_slug')->get();
+
+                foreach ($permission_slugs as $per_slug) {
+                    $permissions[] = $per_slug->permission_slug;
+                }
+            }
+
+        }
+
+//            $my_branches = TmsBranchMaster::where('master_id', $user_id)->count();
+//            if ($my_branches > 0)
+//                $checkRole->has_master_agency = true;
+
+
+    } catch (QueryException $e) {
+        $checkRole->has_user_market = false;
+        $checkRole->has_master_agency = false;
+        $checkRole->has_role_agency = false;
+        $checkRole->has_role_pos = false;
+        $checkRole->root_user = false;
+        $checkRole->has_role_manager = false;
+        $checkRole->has_role_leader = false;
+        $checkRole->has_role_admin = false;
+    }
+
+    $response['roles'] = $checkRole;
+    $response['slugs'] = $permissions;
+
+    session([$user_id . '_roles_and_slugs' => $response]);
+
+    return $response;
 }

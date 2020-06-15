@@ -355,7 +355,8 @@
                 organization_roles: [
                     'manager',
                     'employee',
-                    'leader'
+                    'leader',
+                    'teacher'
                 ],
                 role_selected: 'user',
                 roleSelectOptions: [],

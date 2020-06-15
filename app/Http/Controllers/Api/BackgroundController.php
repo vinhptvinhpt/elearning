@@ -43,6 +43,7 @@ use App\TmsUserDetail;
 use App\TmsUserSaleDetail;
 use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -118,9 +119,11 @@ Log::info('107');
                     ]);
                 }
                 $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
+                $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+            } else {
+                /* @var $file_path UploadedFile */
+                $file_name = $file_path->getClientOriginalName();
             }
-
-            $file_name = pathinfo($file_path, PATHINFO_FILENAME);
 
             $base_level_organization = '';
 
@@ -355,12 +358,12 @@ Log::info('348');
     function createOrganizationEmployee($organization_id, $user_id, $role, $description) {
         $check = TmsOrganizationEmployee::with('organization')->where('user_id', $user_id)->first();
         if (isset($check)) {
-            if ($check->organization_id != $organization_id) {
-                return __('nhan_vien_da_tham_gia_phong_ban_khac') . ": " . $check->organization->name;
-            }
+//            if ($check->organization_id != $organization_id) {
+//                return __('nhan_vien_da_tham_gia_phong_ban_khac') . ": " . $check->organization->name;
+//            }
             //overwrite chức vụ
             $check->position = $role;
-            $check->description = $description;
+            $check->organization_id = $organization_id;
             $check->save();
         } else {
             //tạo mới nếu chưa có

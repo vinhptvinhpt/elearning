@@ -234,6 +234,10 @@
           {
             key: 'employee',
             value: this.trans.get('keys.employee')
+          },
+          {
+            key: 'teacher',
+            value: this.trans.get('keys.teacher')
           }
         ];
         if (this.roles_ready) {

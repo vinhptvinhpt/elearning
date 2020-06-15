@@ -160,7 +160,7 @@
                                             <button type="button" @click="goBack()" class="btn btn-secondary btn-sm">
                                                 {{trans.get('keys.huy')}}
                                             </button>
-                                            <button @click="editCourse()" type="button" class="btn btn-primary btn-sm">
+                                            <button v-if="slug_can('tms-educate-exam-online-edit')" @click="editCourse()" type="button" class="btn btn-primary btn-sm">
                                                 {{trans.get('keys.sua')}}
                                             </button>
                                         </div>
@@ -185,7 +185,7 @@
             CKEditor,
             EnrolTeacher
         },
-        props: ['course_id'],
+        props: ['course_id', 'slugs'],
         data() {
             return {
                 course: {
@@ -207,6 +207,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             onChangeCate(event) {
                 if (event.target.value == 3) {
                     $('#pass_score').attr("disabled", true);

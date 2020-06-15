@@ -417,7 +417,8 @@
                 organization_roles: [
                   'manager',
                   'employee',
-                  'leader'
+                  'leader',
+                  'teacher'
                 ]
             }
         },
@@ -802,6 +803,11 @@
                   return;
                 }
 
+                if (!this.users.employee.organization_id) {
+                  $('.organization_required').show();
+                  return;
+                }
+
                 let organization_roles_selected = [];
                 for (const [key, item] of Object.entries(this.roles)) {
                   if (this.users.role.indexOf(item.id) !== -1) {
@@ -867,9 +873,11 @@
                 })
                     .then(response => {
                         if(response.data.status){
-                            roam_message(response.data.status,response.data.message);
-                            this.goBack();
-                        }else{
+                          roam_message(response.data.status,response.data.message);
+                          if (response.data.status === 'success') {
+                              this.goBack();
+                          }
+                        } else {
                             roam_message('error',response.data.message);
                             $('.form-control').removeClass('notValidate');
                             $('#'+response.data.id).addClass('notValidate');

@@ -35,7 +35,7 @@ if (isloggedin()) {
 }
 $extraclasses = [];
 if ($navdraweropen) {
-//    $extraclasses[] = 'drawer-open-left';
+    $extraclasses[] = 'drawer-open-left';
 }
 $wwwroot = $CFG->wwwroot;
 $pathLogo = $_SESSION["pathLogo"];
@@ -58,8 +58,19 @@ $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
+$permission_tms = false;
 $getPathPublic = '';
 
+global $DB;
+$sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$check = $DB->get_records_sql($sqlCheck);
+
+$permissions = array_values($check);
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
     $params = array('id' => $courseid);
@@ -85,28 +96,12 @@ if ($pagelayout == 'incourse') {
     if (!empty($modules)) {
         $modulesidsstring = implode(',', array_column($modules, 'id'));
     }
-
-    global $DB;
-
     $course_category = $PAGE->course->category;
-
-    $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
-inner join `roles` on `roles`.`id` = `mhr`.`role_id`
-left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
-inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
-where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
-
-    $check = $DB->get_records_sql($sqlCheck);
-
-    $permissions = array_values($check);
-
     foreach ($permissions as $permission) {
-
-        if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
+        if (!in_array($permission->name, ['student', 'employee'])) {
             $permission_edit = true;
             break;
         }
-
         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
             $permission_edit = true;
             break;
@@ -119,6 +114,12 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             $permission_edit = true;
             break;
         }
+    }
+}
+foreach ($permissions as $permission) {
+    if (!in_array($permission->name, ['student', 'employee'])) {
+        $permission_tms = true;
+        break;
     }
 }
 
@@ -155,6 +156,7 @@ $templatecontext = [
     'nextsectionno' => $nextsectionno,
     'modulesidsstring' => $modulesidsstring,
     'permission_edit' => $permission_edit,
+    'permission_tms' => $permission_tms,
     'pathLogo' => $pathLogo,
     'getPathPublic' => $getPathPublic,
     'wwwroot' => $wwwroot,
