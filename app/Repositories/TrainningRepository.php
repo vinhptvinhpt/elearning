@@ -728,7 +728,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $data = DB::table('tms_traninning_users as ttu')
                 ->join('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
-                ->where('mu.active', '=', 0)
+                //->where('mu.active', '=', 0)
                 ->select('ttu.id as id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($trainning != 0) {

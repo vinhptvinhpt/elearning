@@ -455,11 +455,6 @@
     }
 
     @media only screen and (max-width: 1368px) {
-        .drawer-open-left, .over-wrap {
-            opacity: 0 !important;
-            display: none;
-        }
-
         .block {
             display: contents;
         }
@@ -470,11 +465,6 @@
     }
 
     @media only screen and (max-width: 1024px) {
-        .drawer-open-left, .over-wrap {
-            opacity: 0 !important;
-            display: none;
-        }
-
         .block {
             display: contents;
         }
@@ -485,11 +475,6 @@
     }
 
     @media only screen and (max-width: 991px) {
-        .drawer-open-left, .over-wrap {
-            opacity: 0 !important;
-            display: none;
-        }
-
         .block {
             display: contents;
         }
@@ -508,11 +493,6 @@
     }
 
     @media only screen and (max-width: 768px) {
-        .drawer-open-left, .over-wrap {
-            opacity: 0 !important;
-            display: none;
-        }
-
         .info-course-detail ul li {
             font-size: 12px !important;
         }

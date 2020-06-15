@@ -190,16 +190,20 @@ class LoginController extends Controller
             $redirect_type = 'lms';
             if (count($sru) != 0) {
                 foreach ($sru as $role) {
-                    if (in_array($role->name, [
-                            Role::ROLE_MANAGER,
-                            Role::ROLE_LEADER,
-                            Role::ROOT,
-                            Role::ADMIN,
-                            Role::TEACHER
-                        ])) {
+                    if (!in_array($role->name, [Role::STUDENT, Role::ROLE_EMPLOYEE])) {
                         $redirect_type = "default";
                         break;
                     }
+//                    if (in_array($role->name, [
+//                            Role::ROLE_MANAGER,
+//                            Role::ROLE_LEADER,
+//                            Role::ROOT,
+//                            Role::ADMIN,
+//                            Role::TEACHER
+//                        ])) {
+//                        $redirect_type = "default";
+//                        break;
+//                    }
                 }
             }
 

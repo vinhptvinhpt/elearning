@@ -118,10 +118,3 @@
         max-width: 2000px;
     }
 }
-
-/* Fix bugs man hinh trang */
-.drawer-open-left, .over-wrap, .drawer-open-left .over-wrap {
-    opacity: 1!important;
-    display: block !important;
-}
-

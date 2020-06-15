@@ -462,14 +462,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         }
     }
 
-
-    @media screen and (max-width: 1368px) {
-        .drawer-open-left .over-wrap {
-            opacity: 0 !important;
-            display: none;
-        }
-    }
-
     .footer-logo {
         width: 246px;
         height: 75px;

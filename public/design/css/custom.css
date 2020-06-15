@@ -35,10 +35,6 @@ a {
     margin: 0;
 }
 
-body.drawer-open-left {
-    margin-left: 240px;
-}
-
 #nav-drawer .list-group-item.active {
     color: #324148;
     background-color: #f5f5f5;
