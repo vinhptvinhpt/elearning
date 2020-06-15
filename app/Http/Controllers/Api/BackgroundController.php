@@ -358,12 +358,12 @@ class BackgroundController extends Controller
     function createOrganizationEmployee($organization_id, $user_id, $role, $description) {
         $check = TmsOrganizationEmployee::with('organization')->where('user_id', $user_id)->first();
         if (isset($check)) {
-            if ($check->organization_id != $organization_id) {
-                return __('nhan_vien_da_tham_gia_phong_ban_khac') . ": " . $check->organization->name;
-            }
+//            if ($check->organization_id != $organization_id) {
+//                return __('nhan_vien_da_tham_gia_phong_ban_khac') . ": " . $check->organization->name;
+//            }
             //overwrite chức vụ
             $check->position = $role;
-            $check->description = $description;
+            $check->organization_id = $organization_id;
             $check->save();
         } else {
             //tạo mới nếu chưa có
