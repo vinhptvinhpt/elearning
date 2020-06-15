@@ -1000,24 +1000,35 @@ class BackgroundController extends Controller
     //Xóa user & các dữ liệu liên quan khỏi hệ thống
     public function removeUsers() {
         $excludes = [
+            //system
             'easiaeditor01@gmail.com',
             'easiaeditor02@gmail.com',
             'easiaeditor03@gmail.com',
             'easiaeditor04@gmail.com',
             'easiaeditor05@gmail.com',
             'easiaeditor06@gmail.com',
+            'easiaeditor07@gmail.com',
+            'easiaeditor08@gmail.com',
+            'easiaeditor09@gmail.com',
+            'easiaeditor10@gmail.com',
+            'easiaeditor11@gmail.com',
             'easiaadmin@gmail.com',
             'easia_editor_03',
             'easia_editor_02',
             'easia_editor_01',
             'easia',
-            'thuyanhpt',
-            'surimen',
             'thuylinh',
             'linhnt',
             'admin',
             'tvadmin_01@gmail.com',
-            'tvtrainee_01@gmail.com'
+            'tvtrainee_01@gmail.com',
+
+            //easia
+            'thuyhoa@easia-travel.com','vuhuy@easia-travel.com','trancong@phh-group.com','thubac@easia-travel.com','thanhhuong@easia-travel.com','vuchung@easia-travel.com','tuyetthanh@easia-travel.com','Vananh@easia-travel.com','xuanchien@easia-travel.com','Trannga@easia-travel.com','duonglinh@easia-travel.com','bichphuong@easia-travel.com','bichdiep@easia-travel.com','lanhuong@easia-travel.com','hongmai@easia-travel.com','quynhtrang@easia-travel.com','haiyen@easia-travel.com','nguyengiang@easia-travel.com','thanhthuy@easia-travel.com','nguyetnt@easia-travel.com','dohien@easia-travel.com','thanhloan@easia-travel.com','huonggiang@easia-travel.com','quanghuy@easia-travel.com','myngoc@easia-travel.com','luongnam@easia-travel.com','bichthao@easia-travel.com','phuongha@easia-travel.com','nguyenphuong@easia-travel.com','thaontp@easia-travel.com','thanhhang@easia-travel.com','nguyenhuyen@easia-travel.com','phuonghoa@easia-travel.com','hongtham@easia-travel.com','nguyenvan@easia-travel.com','maihuong@easia-travel.com','vuthihuong@easia-travel.com','dieulinh@easia-travel.com','hoaly@easia-travel.com','bichquyen@easia-travel.com','thuannguyen@easia-travel.com','hoaithu@easia-travel.com','lethuy@easia-travel.com','nguyenthuphuong@easia-travel.com','nguyenthinhung@easia-travel.com','thutrang@easia-travel.com','hongnhung@easia-travel.com','phanhong@easia-travel.com','nguyentrang@easia-travel.com','tranquan@easia-travel.com','minhtrang@easia-travel.com','taluyen@easia-travel.com','thuylinh@easia-travel.com','thuananh@easia-travel.com','ngoclinh@easia-travel.com','ngoctram@easia-travel.com','minhhang@easia-travel.com','anhtho@easia-travel.com','haianh@easia-travel.com','nguyenngoc@easia-travel.com','doanhoanganh@easia-travel.com','lehoa@easia-travel.com','ngocthang@easia-travel.com','ngocanh@easia-travel.com','trang@easia-travel.com','kimdat@easia-travel.com','hongduc@easia-travel.com','tiengiang@easia-travel.com','thanhquang@easia-travel.com','tienquyet@easia-travel.com','trungkien@easia-travel.com','thanhtung@easia-travel.com','tienduc@easia-travel.com','nguyenthao@easia-travel.com','quachlinh@easia-travel.com','buiduong@easia-travel.com','thuhuong@easia-travel.com','trungdung@easia-travel.com','thucanh@easia-travel.com','lanphuong@easia-travel.com','huyenltt@easia-travel.com','dieuly@easia-travel.com','dominh@easia-travel.com','tavan@easia-travel.com','tienhung@easia-travel.com','haison@easia-travel.com','adam@easia-travel.com','myhanh@easia-travel.com','quangdung@easia-travel.com','maitrang@easia-travel.com','doducanh@easia-travel.com','vuhuong@easia-travel.com','thuhao@easia-travel.com','thuydung@easia-travel.com','phamyen@easia-travel.com','tuyetdung@easia-travel.com','buinhuan@easia-travel.com','thanhcuong@easia-travel.com','manhcuong@easia-travel.com','daovan@easia-travel.com','hoann@easia-travel.com','thuymien@phh-group.com','thuhien@phh-group.com','touyen@phh-group.com','receptionist@phh-group.com','admin@phh-group.com','veronique@easia-travel.com','maianh@easia-travel.com','brice@easia-travel.com','diemmy@easia-travel.com','dean@easia-travel.com','ngongoc@phh-group.com','hoangoanh@easia-travel.com','phuongthao@easia-travel.com','caoson@easia-travel.com','bichtuyen@easia-travel.com','trantrang@easia-travel.com','camly@easia-travel.com','anhthu@easia-travel.com','nhatanh@easia-travel.com','trangnm@easia-travel.com','ngochien@easia-travel.com','dongsang@easia-travel.com','quockhanh@easia-travel.com','kimthao@easia-travel.com','phamhoang@easia-travel.com','baothu@easia-travel.com','kimthu@easia-travel.com','quechau@easia-travel.com','minhphuc@easia-travel.com','quangthang@easia-travel.com','khaiquang@easia-travel.com','hoangyen@easia-travel.com','diemtri@easia-travel.com','minhhoa@easia-travel.com','letho@easia-travel.com','duybao@easia-travel.com','lenhan@easia-travel.com','myvan@easia-travel.com','tuphuong@easia-travel.com','thuytrinh@easia-travel.com','nguyenoanh@easia-travel.com',
+            //exotic
+            'assistant@exoticvoyages.com','tranthuy@exoticvoyages.com','thuhang@exoticvoyages.com','tranhoa@exoticvoyages.com','huyentrang@exoticvoyages.com','buichi@exoticvoyages.com','quynhhoa@exoticvoyages.com','maisen@exoticvoyages.com','hongyen@easia-travel.com','thuthuy@exoticvoyages.com','thanhhung@exoticvoyages.com','hongtham@exoticvoyages.com','thuynguyenvn1996@gmail.com','lehoang@exoticvoyages.com','tuyethang@exoticvoyages.com','trungkien@exoticvoyages.com','khanhlinh@exoticvoyages.com','hongtrang@exoticvoyages.com','nhatruc@exoticvoyages.com','phuongquynh@exoticvoyages.com',
+            //begodi
+            'vuhuy@easia-travel.com','damquynh@exoticvoyages.com','huyhoang@begodi.com','hienluong@begodi.com','contentwriter@begodi.com','vananh@begodi.com','haohiep@begodi.com','tatquang@begodi.com','nguyentrinhthuytien1998@gmail.com','nhungnth@begodi.com','intern.begodi@gmail.com','dungdt@begodi.com','lanhuong@begodi.com','thuphuong@begodi.com','contentwriter02@begodi.com','thuytien@begodi.com','anhntv@begodi.com','xuanquang@begodi.com',
         ];
 
         $exclude_email = [
@@ -1269,19 +1280,19 @@ class BackgroundController extends Controller
          }
 
          //Clear organization and role
-         $cleanOrganizations = TmsOrganization::query()->where('name', '<>', 'TVE')->get()->toArray();
-         foreach ($cleanOrganizations as $cleanOrganization) {
-             TmsOrganizationEmployee::query()->where('organization_id', $cleanOrganization['id'])->delete();
-             $check = TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->first();
-             if ($check) {
-                 $role_id = $check->role_id;
-                 TmsRoleCourse::query()->where('role_id', $role_id)->delete();
-             }
-             TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->delete();
-             Role::query()->where('description', $cleanOrganization['name'])->delete();
-             MdlRole::query()->where('description', $cleanOrganization['name'])->delete();
-         }
-        TmsOrganization::query()->where('name', '<>', 'TVE')->delete();
+//         $cleanOrganizations = TmsOrganization::query()->where('name', '<>', 'TVE')->get()->toArray();
+//         foreach ($cleanOrganizations as $cleanOrganization) {
+//             TmsOrganizationEmployee::query()->where('organization_id', $cleanOrganization['id'])->delete();
+//             $check = TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->first();
+//             if ($check) {
+//                 $role_id = $check->role_id;
+//                 TmsRoleCourse::query()->where('role_id', $role_id)->delete();
+//             }
+//             TmsRoleOrganization::query()->where('organization_id', $cleanOrganization['id'])->delete();
+//             Role::query()->where('description', $cleanOrganization['name'])->delete();
+//             MdlRole::query()->where('description', $cleanOrganization['name'])->delete();
+//         }
+//        TmsOrganization::query()->where('name', '<>', 'TVE')->delete();
     }
 
     function buildSubQueryForUser1(&$q, $excludes, $exclude_email) {
