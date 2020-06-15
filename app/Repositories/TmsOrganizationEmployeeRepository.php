@@ -56,19 +56,25 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
 
         $current_user_id = \Auth::user()->id;
-        if ($request->session()->has($current_user_id . '_roles_and_slugs')) {
+
+        if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
+            $current_user_roles_and_slugs = checkRole();
+        } else {
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-            if ($current_user_roles_and_slugs['roles']->has_role_manager) {
-                $role = Role::ROLE_MANAGER;
-            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
-                $role = Role::ROLE_LEADER;
-            }
-            if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
-                if (strlen($organization_id) == 0 || $organization_id == 0) {
-                    $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
-                    if (isset($check)) {
-                        $organization_id =  $check->organization_id;
-                    }
+        }
+
+        //nếu k kịp lấy role từ frontend => load from session
+        if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+            $role = Role::ROLE_MANAGER;
+        } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+            $role = Role::ROLE_LEADER;
+        }
+
+        if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
+            if (strlen($organization_id) == 0 || $organization_id == 0) {
+                $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+                if (isset($check)) {
+                    $organization_id =  $check->organization_id;
                 }
             }
         }
