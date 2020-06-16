@@ -65,7 +65,7 @@
                                             <!--                                            </div>-->
 
                                             <div class="col-12 form-group">
-                                                <label for="inputText1-1">Mô tả</label>
+                                                <label for="inputText1-1">{{trans.get('keys.mo_ta')}}</label>
                                                 <!--                        <textarea v-model="survey.description" class="form-control" rows="10"-->
                                                 <!--                                  id="article_ckeditor"-->
                                                 <!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->

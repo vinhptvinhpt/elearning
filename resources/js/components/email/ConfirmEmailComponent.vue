@@ -5,7 +5,7 @@
         <section class="hk-sec-wrapper text-center">
           <h5 class="hk-sec-title">{{message}}</h5>
           <br>
-          <a @click="logout()" class="btn btn-primary font-bold" style="color: white">Đăng nhập hệ thống</a>
+          <a @click="logout()" class="btn btn-primary font-bold" style="color: white">Sign in </a>
         </section>
       </div>
     </div>
