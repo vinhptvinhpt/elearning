@@ -305,8 +305,8 @@
                         .catch(error => {
                             $('button.hasLoading').removeClass('loadding');
                             swal({
-                                title: "Thông báo",
-                                text: " Lỗi hệ thống.Thao tác thất bại!",
+                                title: this.trans.get('keys.thong_bao'),
+                                text: this.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,

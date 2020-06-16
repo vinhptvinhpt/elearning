@@ -45,6 +45,14 @@
                 <treeselect v-model="organization.parent_id" :multiple="false" :options="tree_options" id="organization_parent_id"/>
               </div>
             </div>
+            <div class="form-row">
+              <div class="col-sm-12 form-group">
+                <label for="inputDescription">{{trans.get('keys.mo_ta')}}</label>
+                <textarea class="form-control" rows="3" v-model="description"
+                          id="inputDescription"
+                          :placeholder="trans.get('keys.noi_dung')"></textarea>
+              </div>
+            </div>
 
             <div class="form-row" :style="type == 1 ? '' : 'display: none;'">
               <div class="col-12">
@@ -122,6 +130,7 @@
         auto_badge: 1,
         time_start: '',
         time_end: '',
+        description: '',
         date: new Date(),
         organization: {
           name: '',
@@ -217,6 +226,7 @@
         this.formData.append('run_cron', this.run_cron);
         this.formData.append('time_start', this.time_start);
         this.formData.append('time_end', this.time_end);
+        this.formData.append('description', this.description);
         this.formData.append('role_id', this.role ? this.role : 0);
         this.formData.append('organization_id', this.organization.parent_id ? this.organization.parent_id : 0);
         this.formData.append('file', this.$refs.file.files[0]);

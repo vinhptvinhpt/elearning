@@ -313,14 +313,14 @@
         allSelectedRemove: false,
 
         data_import: [{
-          "message": "Ghi danh thành công",
+          "message": this.trans.get('keys.ghi_danh_thanh_cong'),
           "status": "success",
           "username": "khuend2"
         }, {
-          "message": "Ghi danh thành công",
+          "message": this.trans.get('keys.ghi_danh_thanh_cong'),
           "status": "success",
           "username": "hoangkhang"
-        }, {"message": "Ghi danh thành công", "status": "success", "username": "hocvien4"}],
+        }, {"message": this.trans.get('keys.ghi_danh_thanh_cong'), "status": "success", "username": "hocvien4"}],
 
         //Treeselect options
         options: [

@@ -88,6 +88,16 @@
                                                                         id="organization_parent_id"/>
                                                         </div>
                                                     </div>
+
+                                                  <div class="form-row">
+                                                    <div class="col-sm-12 form-group">
+                                                      <label for="inputDescription">{{trans.get('keys.mo_ta')}}</label>
+                                                      <textarea class="form-control" rows="3" v-model="trainning.description"
+                                                                id="inputDescription"
+                                                                :placeholder="trans.get('keys.noi_dung')"></textarea>
+                                                    </div>
+                                                  </div>
+
                                                     <div class="form-row" v-if="trainning.style == 1">
                                                         <div class="col-12">
                                                             <label for="inputText1-1">{{trans.get('keys.thoi_gian_hoan_thanh')}}</label>
@@ -415,7 +425,8 @@
                     auto_badge: 1,
                     time_start: '',
                     time_end: '',
-                    logo: ''
+                    logo: '',
+                    description: ''
                 },
 
                 sampleCourses: [],
@@ -607,6 +618,7 @@
                 this.formData.append('auto_certificate', this.trainning.auto_certificate);
                 this.formData.append('auto_badge', this.trainning.auto_badge);
                 this.formData.append('run_cron', this.trainning.run_cron);
+                this.formData.append('description', this.trainning.description);
                 this.formData.append('time_start', this.trainning.time_start);
                 this.formData.append('time_end', this.trainning.time_end);
                 this.formData.append('role_id', this.trainning.role_id ? this.trainning.role_id : 0);
