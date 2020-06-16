@@ -257,35 +257,53 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-position: 100% 90%;
         background-size: cover;
         min-height: 400px;
+        position: relative;
     }
 
     .section-header .container{
         padding-top: calc(100% - 95%);
     }
-    .header-block__logo img {
-        width: 25%;
-        padding: 4% 0;
-    }
 
-    .header-block__search__title p {
-        font-family: Roboto-Regular;
-        letter-spacing: 0.45px;
-        color: #ffffff;
-        font-size: 13px;
-    }
+    .block-color{
+        width: 99px;
+        height: 93px;
+        background-color: #0080EF;
+        position: absolute;
+        z-index: 1;
+        left: 0%;
+        }
+
+        .header-block{
+            position: absolute;
+            z-index: 2;
+            left: 75px;
+        }
+
+        .header-block__logo img {
+            width: 25%;
+            padding: 4% 0;
+        }
+
+        .header-block__search__title p {
+            font-family: Roboto-Regular;
+            letter-spacing: 0.45px;
+            color: #ffffff;
+            font-size: 16px;
+        }
 
 
-    .header-block__search__title h1{
-        font-family: HelveticaLTStd-Bold;
-        color: #ffffff;
-        font-size: 66px;
-        bottom: 25%;
-        letter-spacing: 3px;
-    }
+        .header-block__search__title h1{
+            font-family: HelveticaLTStd-Bold;
+            color: #ffffff;
+            font-size: 66px;
+            bottom: 25%;
+            letter-spacing: 3px;
+            margin-bottom: 0;
+        }
 
-    .header-block__search__title span{
-        font-family: HelveticaLTStd-Light;
-        /*font-size: 45px;*/
+        .header-block__search__title span{
+            font-family: HelveticaLTStd-Light;
+            /*font-size: 45px;*/
     }
 
     .header-block__search__title .title-header {
@@ -515,6 +533,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     </div>
 
                 </div>
+                <div class="block-color"></div>
             </div>
         </section>
 
