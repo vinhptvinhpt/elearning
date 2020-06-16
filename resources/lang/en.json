@@ -344,5 +344,21 @@
     "huy_hieu_mau": "Sample badge",
     "quyen_truy_cap": "Access rights",
     "xem_huong_dan_cho_chuyen_vien_kinh_doanh": "See the Guide for Sales Professionals",
-    "xem_huong_dan_cho_quan_ly_he_thong": "See Instructions for system management"
+    "xem_huong_dan_cho_quan_ly_he_thong": "See Instructions for system management",
+
+
+    "go_quyen": "Release rights",
+    "dinh_dang_du_lieu_danh_muc_khong_hop_le": "Invalid category data format",
+    "ban_chua_chon_danh_muc_cau_hoi": "You have not selected the question category",
+    "cap_nhat_quyen": "Update permissions",
+    "gan_quyen": "Authorized",
+    "cap_nhat_lai_thong_tin": "update info",
+    "da_het_han": "Expired",
+    "ngay": "Day",
+    "gio": "Hours",
+    "sua_thong_tin_tai_khoan": "Edit account information",
+    "import_thanh_cong": "Import successful",
+    "ma_dai_ly": "Agency code",
+    "loi_du_lieu_kiem_tra_lai": "Data error, check again",
+    "thong_tin_dob_khong_dung_dinh_dang": "Information: date of birth is malformed"
 }

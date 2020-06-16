@@ -2129,13 +2129,13 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $responseModel->status = false;
-                $responseModel->message = 'Định dạng dữ liệu danh mục không hợp lệ';
+                $responseModel->message = __('dinh_dang_du_lieu_danh_muc_khong_hop_le');
                 return response()->json($responseModel);
             }
 
             if (empty($this->category_id)) {
                 $responseModel->status = false;
-                $responseModel->message = 'Bạn chưa chọn danh mục câu hỏi';
+                $responseModel->message = __('ban_chua_chon_danh_muc_cao_hoi');
                 return response()->json($responseModel);
             }
 
@@ -3997,7 +3997,7 @@ class BussinessRepository implements IBussinessInterface
             $type = 'role';
             $url = '/roles/edit/' . $role_id;
             $action = 'update';
-            $info = 'Cập nhật quyền: ' . $name;
+            $info = __('cap_nhat_quyen').': ' . $name;
             devcpt_log_system($type, $url, $action, $info);
             \DB::commit();
             return response()->json(status_message('success', __('cap_nhat_vai_tro_thanh_cong')));
@@ -4033,7 +4033,7 @@ class BussinessRepository implements IBussinessInterface
             $type = 'role';
             $url = '*';
             $action = 'delete';
-            $info = 'Xóa quyền: ' . $role_name;
+            $info = __('xoa_quyen').': ' . $role_name;
             devcpt_log_system($type, $url, $action, $info);
             \DB::commit();
             return response()->json(status_message('success', __('xoa_vai_tro_thanh_cong')));
@@ -4163,7 +4163,7 @@ class BussinessRepository implements IBussinessInterface
                     $type = 'role';
                     $url = '/roles/edit/' . $role_id;
                     $action = 'add';
-                    $info = 'Gán quyền  ' . $role['name'] . ' cho tài khoản' . $mdlUser['username'];
+                    $info = __('gan_quyen').' ' . $role['name'] . ' '.__('cho_tai_khoan').' ' . $mdlUser['username'];
                     devcpt_log_system($type, $url, $action, $info);
 
                     //clear cache LMS roles
@@ -4271,7 +4271,7 @@ class BussinessRepository implements IBussinessInterface
                 $type = 'role';
                 $url = '/roles/edit/' . $role_id;
                 $action = 'remove';
-                $info = 'Gỡ quyền  ' . $role['name'] . ' cho tài khoản' . MdlUser::findOrFail($user_id)['username'];
+                $info = __('go_quyen').'  ' . $role['name'] . ' ' .__('cho_tai_khoan').' ' . MdlUser::findOrFail($user_id)['username'];
                 devcpt_log_system($type, $url, $action, $info);
                 \DB::commit();
                 return response()->json(status_message('success', __('go_nguoi_dung_thanh_cong')));
@@ -7710,7 +7710,7 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->lastname = $convert_name['lastname'];
             $mdlUser->email = $email;
             $mdlUser->save();
-            $infoLog = 'Tài khoản :' . $mdlUser['username'] . 'Update lại thông tin.';
+            $infoLog = __('tai_khoan').' :' . $mdlUser['username'] . __('cap_nhat_lai_thong_tin');
 
             $user = TmsUserDetail::where('user_id', $user_id)->first();
             $user->fullname = $fullname;
@@ -7895,7 +7895,7 @@ class BussinessRepository implements IBussinessInterface
         $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
         $hours = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24) / (60 * 60));
         $minutes = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24 - $hours * 60 * 60) / 60);
-        $diff_time = ($diffs + 30 * 60 * 60 * 24) < 0 ? 'Đã hết hạn' : $days . ' Ngày, ' . $hours . 'Giờ';
+        $diff_time = ($diffs + 30 * 60 * 60 * 24) < 0 ? __('da_het_han') : $days .' '.__('ngay').', ' . $hours . __('gio');
         $diff_time_class = ($diffs + 30 * 60 * 60 * 24) < 0 ? 'text-danger' : 'text-warning';
         $users['diff_time'] = $diff_time;
         $users['diff_time_class'] = $diff_time_class;
@@ -8019,7 +8019,7 @@ class BussinessRepository implements IBussinessInterface
             if ($userByEmail)
                 return response()->json(error_message('inputEmail', __('dia_chi_email_da_ton_tai')));*/
             \DB::beginTransaction();
-            $infoLog = 'Sửa thông tin tài khoản :' . $username;
+            $infoLog = __('sua_thong_tin_tai_khoan').' :' . $username;
             $mdlUser = MdlUser::findOrFail($user_id);
             $mdlUser->username = $username;
             $mdlUser->firstname = $convert_name['firstname'];
@@ -8534,7 +8534,7 @@ class BussinessRepository implements IBussinessInterface
                                 $this->importOutput['rowSuccess']++;
                                 $userOuput['username'] = $user['username'];
                                 $userOuput['status'] = 'success';
-                                $userOuput['message'] = 'Import thành công.';
+                                $userOuput['message'] = __('import_thanh_cong');
                                 array_push($this->importOutput['userOuput'], $userOuput);
 
                                 devcpt_log_system('user', '/system/user/edit/' . $mdlUser->id, 'create', 'Import User: ' . $user['username']);
@@ -8753,7 +8753,7 @@ class BussinessRepository implements IBussinessInterface
                                 //lấy danh sách đại lý
                                 $checkAgencyTM = true;
                                 $agencies = explode(",", $listAgencies);
-                                $messageAgency = 'Mã đại lý: ';
+                                $messageAgency = __('ma_dai_ly').': ';
                                 if ($agencies) {
                                     foreach ($agencies as $agency) {
                                         $checkAgency = TmsBranch::where('code', '=', str_replace(' ', '', $agency))->first();
@@ -9358,13 +9358,13 @@ class BussinessRepository implements IBussinessInterface
             \DB::commit();
             return [
                 'code' => $saleRoomUser->id,
-                'message' => 'Thêm thành công'
+                'message' => __('them_thanh_cong')
             ];
         } catch (\Exception $e) {
             \DB::rollBack();
             return [
                 'code' => 0,
-                'message' => 'Lỗi dữ liệu, kiểm tra lại'
+                'message' => __('loi_du_lieu_kiem_tra_lai')
             ];
         }
     }
@@ -9423,17 +9423,17 @@ class BussinessRepository implements IBussinessInterface
                             $this->importOutput['rowError']++;
                             $userOuput['username'] = $user['username'];
                             $userOuput['status'] = 'error';
-                            $userOuput['message'] = 'Thông tin ';
+                            $userOuput['message'] = __('thong_tin').' ';
                             if ($checkUsername) {
-                                $userOuput['message'] .= 'Tài khoản , ';
+                                $userOuput['message'] .= __('tai_khoan').' , ';
                             }
                             if ($checkEmail) {
-                                $userOuput['message'] .= 'Email , ';
+                                $userOuput['message'] .= __('email').' , ';
                             }
                             if ($checkCmtnd) {
-                                $userOuput['message'] .= 'Số CMTND ';
+                                $userOuput['message'] .= __('so_cmtnd').' ';
                             }
-                            $userOuput['message'] .= 'đã tồn tại.';
+                            $userOuput['message'] .= __('da_ton_tai');
                             array_push($this->importOutput['userOuput'], $userOuput);
                         } //kiểm tra nếu tồn tại các trường và các trường đó không phải là số => sai định dạng
                         else if (($user['confirm'] && !is_numeric($user['confirm'])) ||
@@ -9443,23 +9443,23 @@ class BussinessRepository implements IBussinessInterface
                             //                            !is_numeric($user['confirm']) || !is_numeric($user['cmtnd'])
                             $userOuput['username'] = $user['username'] ? $user['username'] : '';
                             $userOuput['status'] = 'error';
-                            $userOuput['message'] = 'Thông tin : ';
+                            $userOuput['message'] = __('thong_tin').' : ';
                             if (!is_numeric($user['confirm'])) {
                                 $userOuput['message'] .= 'confirm , ';
                             }
                             if (!is_numeric($user['cmtnd'])) {
-                                $userOuput['message'] .= 'Số CMTND , ';
+                                $userOuput['message'] .= __('so_cmtnd').' , ';
                             }
                             if (!is_numeric($user['phone'])) {
-                                $userOuput['message'] .= 'Số điện thoại , ';
+                                $userOuput['message'] .= __('so_dien_thoai').' , ';
                             }
-                            $userOuput['message'] .= ' không đúng định dạng';
+                            $userOuput['message'] .= __('khong_dung_dinh_dang');
                             array_push($this->importOutput['userOuput'], $userOuput);
                         } //kiểm tra nếu tồn tại trường dob mà giá trị sau khi gán = 0 => không hợp lệ
                         else if ($user['dob'] && $timestamp == 0) {
                             $userOuput['username'] = $user['username'] ? $user['username'] : '';
                             $userOuput['status'] = 'error';
-                            $userOuput['message'] = ' Thông tin : dob không đúng định dạng';
+                            $userOuput['message'] = __('thong_tin_dob_khong_dung_dinh_dang');
                             array_push($this->importOutput['userOuput'], $userOuput);
                         } else {
                             \DB::beginTransaction();
@@ -9525,7 +9525,7 @@ class BussinessRepository implements IBussinessInterface
                             $this->importOutput['rowSuccess']++;
                             $userOuput['username'] = $user['username'];
                             $userOuput['status'] = 'success';
-                            $userOuput['message'] = 'Import thành công.';
+                            $userOuput['message'] = __('import_thanh_cong');
                             array_push($this->importOutput['userOuput'], $userOuput);
                             \DB::commit();
                         }
@@ -9533,7 +9533,7 @@ class BussinessRepository implements IBussinessInterface
                         $this->importOutput['rowError']++;
                         $userOuput['username'] = $user['username'];
                         $userOuput['status'] = 'error';
-                        $userOuput['message'] = 'Gặp lỗi khi Import.';
+                        $userOuput['message'] = __('gap_loi_khi_import');
                         array_push($this->importOutput['userOuput'], $userOuput);
                     }
                 }
