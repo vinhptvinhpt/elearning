@@ -492,6 +492,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         }
     }
 
+    @media screen and (max-width: 375px) {
+        .header-block {
+            left: 52px;
+    }
+
     .title-course {
         min-height: 3.25rem;
     }
