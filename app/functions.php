@@ -3329,6 +3329,8 @@ function checkRole() {
                     $checkRole->root_user = true;
                 } elseif ($role->name == Role::ADMIN || $role->permission_slug == 'tms-system-administrator-grant') {
                     $checkRole->has_role_admin = true;
+                } elseif ($role->name === Role::TEACHER) {
+                    $checkRole->has_role_teacher = true;
                 }
             }
 
@@ -3365,6 +3367,7 @@ function checkRole() {
         $checkRole->has_role_manager = false;
         $checkRole->has_role_leader = false;
         $checkRole->has_role_admin = false;
+        $checkRole->has_role_teacher = false;
     }
 
     $response['roles'] = $checkRole;

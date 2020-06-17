@@ -126,13 +126,13 @@
                                                        class="form-control mb-4">
                                             </div>
 
-                                            <div class="col-md-4 col-sm-6 form-group">
+                                            <!--<div class="col-md-4 col-sm-6 form-group">
                                                 <div class="d-sm-block pt-40" style="display:none;"></div>
                                                 <input v-model="allow_register" type="checkbox"
                                                        style="width:20px; height:20px;"
                                                        id="inputText10">
                                                 <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
-                                            </div>
+                                            </div>-->
 
                                             <div class="col-12 form-group">
                                                 <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}}
