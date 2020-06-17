@@ -87,7 +87,7 @@
                 <div class="listData">
                   <h5 class="mb-20">{{trans.get('keys.danh_sach_to_chuc')}}</h5>
                   <div class="row">
-                    <div class="col-sm-8 dataTables_wrapper">
+                    <div class="col-sm-7 dataTables_wrapper">
                       <div class="dataTables_length" style="display: inline-block;">
                         <label>{{trans.get('keys.hien_thi')}}
                           <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getDataList(1)">
@@ -107,85 +107,94 @@
                         </label>
                       </div>
                     </div>
-                    <div class="col-sm-4">
+                    <div class="col-sm-5">
                       <form v-on:submit.prevent="getDataList(1)">
                         <div class="d-flex flex-row form-group">
                           <input  v-model="keyword" type="text" class="form-control search_text" :placeholder="trans.get('keys.nhap_ten_to_chuc')">
                           <button type="button" class="btn btn-primary btn-sm btn_fillter" id="btnFilter" @click="getDataList(1)">
                             {{trans.get('keys.tim')}}
                           </button>
+                          <button v-if="selected_role === 'root' || selected_role === 'admin'" class="btn btn-primary btn-sm btn_fillter" @click="switchTreeView()">
+                            <i v-if="display === 'grid'" class="fal fa-list"></i>
+                            <i v-if="display === 'tree'" class="fal fa-area-chart"></i>
+                          </button>
                         </div>
                       </form>
                     </div>
                   </div>
-                  <div class="mt-10 mb-20">
-                    <strong>
-                      {{trans.get('keys.tong_so')}} :{{totalRow}}
-                    </strong>
-                  </div>
-                  <div class="table-responsive">
-                    <table class="table_res">
-                      <thead>
-                      <th>{{trans.get('keys.stt')}}</th>
-                      <th>{{trans.get('keys.ma_to_chuc')}}</th>
-                      <th>{{trans.get('keys.ten_to_chuc')}}</th>
-                      <th>{{trans.get('keys.truc_thuoc')}}</th>
-                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
-                      <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
-                      </thead>
-                      <tbody>
-                      <tr v-if="posts.length == 0">
-                        <td colspan="6">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
-                      </tr>
-                      <tr v-else v-for="(item,index) in posts">
-                        <td>{{ (current-1)*row+(index+1) }}</td>
-                        <td>{{ item.code }}</td>
-                        <td>{{ item.name }}</td>
-                        <td v-if="item.parent">{{ item.parent.code }} - {{ item.parent.name }}</td>
-                        <td v-else></td>
-                        <td class="text-center" v-if="slug_can('tms-system-employee-view')">
-                          <router-link :title="trans.get('keys.xem_nhan_vien')"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
-                            {{ item.employees.length }}
-                          </router-link>
-                        </td>
-                        <td class="text-center">
-
-                          <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"
-                                       class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
-                            <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
-                          </router-link>
-
-                          <router-link v-if="slug_can('tms-system-organize-edit')" :title="trans.get('keys.sua_to_chuc')"
-                                       class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                       :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
-                            <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
-                          </router-link>
-
-                          <a v-if="slug_can('tms-system-organize-deleted')" href="javascript(0)"
-                             @click.prevent="deletePost('/organization/delete/'+item.id)"
-                             :title="trans.get('keys.xoa_to_chuc')"
-                             class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
-                            <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
-                          </a>
-
-                        </td>
-                      </tr>
-                      </tbody>
-                      <tfoot>
-                      <th>{{trans.get('keys.stt')}}</th>
-                      <th>{{trans.get('keys.ma_to_chuc')}}</th>
-                      <th>{{trans.get('keys.ten_to_chuc')}}</th>
-                      <th>{{trans.get('keys.truc_thuoc')}}</th>
-                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
-                      <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
-                      </tfoot>
-                    </table>
-                    <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
-                      <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
+                  <template v-if="display === 'grid'">
+                    <div class="mt-10 mb-20">
+                      <strong>
+                        {{trans.get('keys.tong_so')}} :{{totalRow}}
+                      </strong>
                     </div>
-                  </div>
+                    <div class="table-responsive">
+                      <table class="table_res">
+                        <thead>
+                        <th>{{trans.get('keys.stt')}}</th>
+                        <th>{{trans.get('keys.ma_to_chuc')}}</th>
+                        <th>{{trans.get('keys.ten_to_chuc')}}</th>
+                        <th>{{trans.get('keys.truc_thuoc')}}</th>
+                        <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
+                        <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                        </thead>
+                        <tbody>
+                        <tr v-if="posts.length == 0">
+                          <td colspan="6">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
+                        </tr>
+                        <tr v-else v-for="(item,index) in posts">
+                          <td>{{ (current-1)*row+(index+1) }}</td>
+                          <td>{{ item.code }}</td>
+                          <td>{{ item.name }}</td>
+                          <td v-if="item.parent">{{ item.parent.code }} - {{ item.parent.name }}</td>
+                          <td v-else></td>
+                          <td class="text-center" v-if="slug_can('tms-system-employee-view')">
+                            <router-link :title="trans.get('keys.xem_nhan_vien')"
+                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
+                              {{ item.employees.length }}
+                            </router-link>
+                          </td>
+                          <td class="text-center">
+
+                            <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"
+                                         class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
+                              <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
+                            </router-link>
+
+                            <router-link v-if="slug_can('tms-system-organize-edit')" :title="trans.get('keys.sua_to_chuc')"
+                                         class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                         :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
+                              <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
+                            </router-link>
+
+                            <a v-if="slug_can('tms-system-organize-deleted')" href="javascript(0)"
+                               @click.prevent="deletePost('/organization/delete/'+item.id)"
+                               :title="trans.get('keys.xoa_to_chuc')"
+                               class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
+                              <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                            </a>
+
+                          </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <th>{{trans.get('keys.stt')}}</th>
+                        <th>{{trans.get('keys.ma_to_chuc')}}</th>
+                        <th>{{trans.get('keys.ten_to_chuc')}}</th>
+                        <th>{{trans.get('keys.truc_thuoc')}}</th>
+                        <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
+                        <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                        </tfoot>
+                      </table>
+                      <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
+                        <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages" :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
+                      </div>
+                    </div>
+                  </template>
+                  <template v-else-if="tree.length !== 0 && display === 'tree'">
+                    <organization-chart :tree="tree"></organization-chart>
+                  </template>
                 </div>
               </div>
             </div>
@@ -200,10 +209,14 @@
     //import VSwitch from 'v-switch-case'
     //Vue.use(VSwitch)
     //import vPagination from 'vue-plain-pagination'
+    import OrganizationChart from "./OrganizationChartComponent";
 
     export default {
-        //components: {vPagination},
-        props: ['slugs'],
+        components: {
+          //vPagination,
+          OrganizationChart,
+        },
+        props: ['slugs', 'selected_role'],
         data() {
             return {
                 organization: {
@@ -213,13 +226,14 @@
                     description: '',
                 },
                 data:[],
-                posts: {},
+                posts: [],
+                tree: [],
                 keyword: '',
                 current: 1,
                 totalPages: 0,
                 totalRow: 0,
                 row: 10,
-                organization_parent_list:[],
+                //organization_parent_list:[],
                 parent_keyword: '',
                 max_level: 0,
                 level: 0,
@@ -229,7 +243,8 @@
                     id: 0,
                     label: this.trans.get('keys.chon_to_chuc')
                   }
-                ]
+                ],
+                display: 'grid'
             }
         },
         methods: {
@@ -247,7 +262,8 @@
                   paginated: 0 //không phân trang,
                 })
                     .then(response => {
-                        this.organization_parent_list = response.data;
+                        //this.organization_parent_list = response.data;
+                        this.tree = response.data;
                         //Set options recursive
                         this.options = this.setOptions(response.data);
                         $('.content_search_box').removeClass('loadding');
@@ -360,9 +376,17 @@
                 });
 
                 return false;
+            },
+            switchTreeView() {
+                if (this.display === 'grid') {
+                  this.display = 'tree';
+                } else {
+                  this.display = 'grid';
+                }
             }
         },
         mounted() {
+          console.log(this.slugs);
           this.setParamsPage(false);
         }
     }

@@ -112,11 +112,11 @@ class TmsOrganizationRepository implements ICommonInterface
         $list = $list->orderBy('level', 'asc');
 
         //Filter or not paginated
-
         if (isset($paginated) && $paginated == 0) {
             return $list->get();
         }
 
+        //List paginated
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
         $list = $list->paginate($row);
         $arrayList =  $list->toArray();
