@@ -170,6 +170,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-decoration: none;
     }
 
+    .block-color{
+        width: 100px;
+        height: 100px;
+        background-color: <?=$_SESSION["color"]?>;
+        position: absolute;
+        bottom: 25%;
+        z-index: 1;
+        left: -7%;
+    }
     .title {
         text-align: left;
         font-family: Nunito-Sans;
@@ -472,6 +481,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-size: 60px;
         bottom: 25%;
         letter-spacing: 3px;
+        z-index: 2;
     }
 
     .carousel-caption span{
@@ -614,11 +624,34 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             flex: 0 0 33.333333% !important;
             max-width: 33.333333% !important;
         }
+        .block-color{
+            width: 165px !important;
+            bottom: 23%;
+        }
+    }
+    @media screen and (max-width: 1024px) {
+        .block-color {
+            width: 80px !important;
+            height: 80px !important;
+            bottom: 26% !important;
+        }
     }
 
     @media screen and (max-width: 768px) {
         .title h2{
             font-size: 20px !important;
+        }
+        .block-color{
+            width: 65px !important;
+            height: 65px !important;
+            bottom: 28% !important;
+        }
+    }
+
+    @media screen and (max-width: 425px) {
+        .block-color{
+            bottom: 48% !important;
+            width: 49px !important;
         }
     }
 </style>
@@ -644,7 +677,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 <!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
 <!--                                </div>-->
                                 <div class="carousel-caption">
+<!--                                    <h1>--><?php //echo $_SESSION["organizationName"]; ?><!-- <span>Academy</span></h1>-->
                                     <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
+                                    <div class="block-color"></div>
                                 </div>
 <!--                                <div class="slide-image">-->
 <!--                                    <img src="images/1a-01.png" alt="">-->
