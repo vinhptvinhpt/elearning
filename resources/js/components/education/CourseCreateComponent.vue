@@ -115,12 +115,12 @@
                                                        class="form-control mb-4">
                                             </div>
 
-                                            <div class="col-md-4 col-sm-6 form-group">
+                                            <!--<div class="col-md-4 col-sm-6 form-group">
                                                 <input v-model="allow_register" type="checkbox"
                                                        style="width:20px; height:20px;"
                                                        id="inputText9">
                                                 <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
-                                            </div>
+                                            </div>-->
 
                                             <div class="col-md-4 col-sm-6 form-group" id="is_end_quiz"
                                                  style="display:none;">

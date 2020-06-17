@@ -14,5 +14,6 @@ class CheckRoleModel
     public $has_role_manager = false;
     public $has_role_leader = false;
     public $has_role_admin = false;
+    public $has_role_teacher = false;
 
 }

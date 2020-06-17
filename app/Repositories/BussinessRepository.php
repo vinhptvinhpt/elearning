@@ -7346,8 +7346,7 @@ class BussinessRepository implements IBussinessInterface
                     } else {
                         $mdlUser->update(['redirect_type' => 'default']);
                     }
-                    //endrole
-
+                    //enrol
                     $data_item['role_id'] = $role['id'];
                     $data_item['model_id'] = $mdlUser->id;
                     $data_item['model_type'] = 'App/MdlUser';
