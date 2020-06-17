@@ -1006,7 +1006,7 @@ section#mod_quiz_navblock a.mod_quiz-next-nav {
     color: #fff;
     background-color: #007bff;
     border-color: #007bff;
-    padding: 6px 13px 5px;
+    padding: 5px 13px 4px;
     line-height: 20px;
     font-size: 13px;
     display: inline-block !important;
@@ -2795,3 +2795,48 @@ body.pagelayout-course.editing ul.topics span.inplaceeditable a img+span.instanc
 /* End List video azure */
 
 /* End Uydd */
+/**
+* Uydd
+ */
+.questionflag.editable {
+    display: flex;
+    -webkit-box-align: center!important;
+    -ms-flex-align: center!important;
+    align-items: center!important;
+}
+
+.questionflagtext {
+    font-size: 14px;
+}
+
+.que .info .editquestion > a {
+    display: flex;
+    -webkit-box-align: center!important;
+    -ms-flex-align: center!important;
+    align-items: center!important;
+    font-size: 14px;
+}
+
+.que .info .editquestion > a i.icon {
+    width: 16px;
+    margin-right: 2px;
+    font-size: 14px;
+    margin-left: -2px;
+}
+
+.qtype_multichoice_clearchoice a {
+    font-size: 14px;
+}
+
+section#mod_quiz_navblock .singlebutton {
+    margin-left: 5px;
+}
+
+body#page-mod-quiz-summary .activity-navigation,
+body#page-mod-quiz-attempt .activity-navigation {
+    display: none;
+}
+body#page-mod-quiz-summary .quizsummaryofattempt,
+body#page-mod-quiz-summary section#region-main h2 + h3 {
+    display: none;
+}
