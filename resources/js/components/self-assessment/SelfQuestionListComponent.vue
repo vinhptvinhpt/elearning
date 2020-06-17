@@ -1,5 +1,4 @@
 <template>
-
     <div class="container-fluid mt-15">
         <div class="row">
             <div class="col">
@@ -8,7 +7,7 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item active">{{ trans.get('keys.quan_tri_survey') }}</li>
+                        <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_cau_hoi_self') }}</li>
                     </ol>
                 </nav>
             </div>
@@ -16,56 +15,61 @@
         <div class="row">
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
-                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_survey')}}</h5>
+                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_cau_hoi_self')}}</h5>
 
                     <div class="row">
                         <div class="col-sm">
                             <div class="table-wrap">
                                 <div class="row">
-                                    <div class="col-6"></div>
                                     <div class="col-6">
-                                        <form v-on:submit.prevent="getSurveys(1)">
+                                        <select v-model="survey_id" class="form-control" id="survey_id">
+                                            <option value="">{{trans.get('keys.chon_self')}}</option>
+                                            <option v-for="sur in surveys" :value="sur.id">
+                                                {{sur.code}} - {{sur.name}}
+                                            </option>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <form v-on:submit.prevent="getQuestions(1)">
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword" type="text"
                                                        class="form-control"
-                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_survey')+' ...'"/>
+                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_cau_hoi')+' ...'">
                                                 <button type="button" id="btnFilter"
-                                                        class="btn btn-primary btn-sm"
-                                                        @click="getSurveys(1)">
+                                                        class="btn btn-primary d-none d-lg-block btn-sm"
+                                                        @click="getQuestions(1)">
                                                     {{trans.get('keys.tim')}}
                                                 </button>
                                             </div>
                                         </form>
                                     </div>
                                 </div>
-                                <!--                                <div class="row">-->
-                                <!--                                    &lt;!&ndash;                                <div class="col-6">&ndash;&gt;-->
-                                <!--                                    &lt;!&ndash;                                    <div class="dataTables_length">&ndash;&gt;-->
-
-                                <!--                                    &lt;!&ndash;                                    </div>&ndash;&gt;-->
-                                <!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
-                                <!--                                    <div class="col-sm-6">-->
-                                <!--                                        <div class="dataTables_length">-->
-                                <!--                                            <label>{{trans.get('keys.ngay_bat_dau')}}</label>-->
-                                <!--                                            <date-picker v-model="startdate"-->
-                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
-                                <!--                                        </div>-->
-                                <!--                                    </div>-->
-                                <!--                                    <div class="col-sm-6">-->
-                                <!--                                        <div class="dataTables_length">-->
-                                <!--                                            <label>{{trans.get('keys.ngay_ket_thuc')}}</label>-->
-                                <!--                                            <date-picker v-model="enddate"-->
-                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
-                                <!--                                        </div>-->
-                                <!--                                    </div>-->
-                                <!--                                </div>-->
-                                <div class="row pt-3">
+<!--                                <div class="row">-->
+<!--                                    <div class="col-6">-->
+<!--                                        <select v-model="survey_id" class="form-control" id="survey_id">-->
+<!--                                            <option value="">{{trans.get('keys.chon_self')}}</option>-->
+<!--                                            <option v-for="sur in surveys" :value="sur.id">-->
+<!--                                                {{sur.code}} - {{sur.name}}-->
+<!--                                            </option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                    <div class="col-6">-->
+<!--                                        <select v-model="type_question"-->
+<!--                                                class="form-control" id="type_question">-->
+<!--                                            <option value="">{{trans.get('keys.chon_loai_cau_hoi_self')}}</option>-->
+<!--                                            <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>-->
+<!--                                            <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}</option>-->
+<!--                                        </select>-->
+<!--                                    </div>-->
+<!--                                </div>-->
+                                <br/>
+                                <div class="row">
                                     <div class="col-6 dataTables_wrapper">
-                                        <div class="dataTables_length d-block">
+                                        <div class="dataTables_length">
                                             <label>{{trans.get('keys.hien_thi')}}
                                                 <select v-model="row"
                                                         class="custom-select custom-select-sm form-control form-control-sm"
-                                                        @change="getSurveys(1)">
+                                                        @change="getQuestions(1)">
                                                     <option value="5">5</option>
                                                     <option value="10">10</option>
                                                     <option value="20">20</option>
@@ -74,11 +78,10 @@
                                             </label>
                                         </div>
                                     </div>
-
                                     <div class="col-6">
                                         <div id="datable_1_filter" class="dataTables_filter" style="float: right;">
                                             <label>
-                                                <router-link to="/tms/survey/create">
+                                                <router-link to="/tms/selfquestion/create/off">
                                                     <button type="button"
                                                             class="btn btn-success btn-sm"
                                                             :placeholder="trans.get('keys.tao_moi')"
@@ -97,52 +100,32 @@
                                         <thead>
                                         <tr>
                                             <th>{{trans.get('keys.stt')}}</th>
-                                            <th style="width: 20%;">{{trans.get('keys.ma_survey')}}</th>
-                                            <th style="width: 40%;">{{trans.get('keys.ten_survey')}}</th>
-                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>-->
-                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>-->
+                                            <th style="width: 10%;">{{trans.get('keys.ten_cau_hoi')}}</th>
+                                            <th style="width: 20%;">{{trans.get('keys.loai_cau_hoi')}}</th>
+                                            <th>{{trans.get('keys.self')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(sur,index) in surveys">
+                                        <tr v-for="(ques,index) in questions">
                                             <td>{{ (current-1)*row+(index+1) }}</td>
+                                            <td>{{ ques.name }}</td>
                                             <td>
-                                                <router-link
-                                                        :to="{name: 'SurveyStatistic', params: {survey_id: sur.id}}">{{
-                                                    sur.code }}
-                                                </router-link>
+                                                <span v-if="ques.type_question=='group'">{{trans.get('keys.cau_hoi_nhom')}}</span>
+                                                <span v-if="ques.type_question=='minmax'">{{trans.get('keys.cau_hoi_min_max')}}</span>
                                             </td>
-                                            <td>{{ sur.name }}</td>
-                                            <!--                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>-->
-                                            <!--                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>-->
+                                            <td>{{ ques.survey_code }} - {{ ques.survey_name }}</td>
                                             <td class="text-center">
-
                                                 <router-link
-                                                        :title="trans.get('keys.giao_dien_trinh_bay_survey')"
+                                                        :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                        :to="{name: 'SurveyPresent', params: {survey_id: sur.id}}">
-                                                    <span class="btn-icon-wrap"><i
-                                                            class="fal fa-arrow-alt-right"></i></span>
-                                                </router-link>
-
-                                                <router-link
-                                                        :title="trans.get('keys.them_cau_hoi_vao_survey')"
-                                                        class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                        :to="{name: 'QuestionCreate', params: {survey_id: sur.id}}">
-                                                    <span class="btn-icon-wrap"><i class="fal fa-question"></i></span>
-                                                </router-link>
-
-                                                <router-link
-                                                        :title="trans.get('keys.sua_thong_tin_khao_sat')"
-                                                        class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                        :to="{name: 'SurveyDetail', params: {survey_id: sur.id}}">
-                                                    <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
-                                                </router-link>
+                                                        :to="{name:'SelfQuestionEdit', params: {question_id: ques.id}}"><span
+                                                        class="btn-icon-wrap"><i
+                                                        class="fal fa-pencil"></i></span></router-link>
 
                                                 <button :title="trans.get('keys.xoa')" data-toggle="modal"
                                                         data-target="#delete-ph-modal"
-                                                        @click="deletePost(sur.id)"
+                                                        @click="deletePost(ques.id)"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
                                                     <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                 </button>
@@ -165,51 +148,44 @@
             </div>
         </div>
     </div>
-
 </template>
 
 <script>
-    //import vPagination from 'vue-plain-pagination'
-    import datePicker from 'vue-bootstrap-datetimepicker'
 
     export default {
-        components: {
-            //vPagination,
-            datePicker
-        },
         data() {
             return {
+                survey_id: '',
                 surveys: [],
+                type_question: '',
                 keyword: '',
                 current: 1,
                 totalPages: 0,
                 row: 5,
-                startdate: '',
-                enddate: '',
-                date: new Date(),
-                options: {
-                    format: 'DD/MM/YYYY',
-                    useCurrent: false,
-                }
-            }
-        },
-        filters: {
-            convertDateTime(value) {
-                var time = new Date(value * 1000);
-                return time.toLocaleDateString();
+                questions: []
             }
         },
         methods: {
-            getSurveys(paged) {
-                axios.post('/api/survey/list', {
+            getSurveys() {
+                axios.get('/api/selfquestion/listself')
+                    .then(response => {
+                        this.surveys = response.data;
+
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+            },
+            getQuestions(paged) {
+                axios.post('/api/selfquestion/list', {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    startdate: this.startdate,
-                    enddate: this.enddate
+                    survey_id: this.survey_id,
+                    type_question: this.type_question
                 })
                     .then(response => {
-                        this.surveys = response.data.data.data;
+                        this.questions = response.data.data.data;
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
                     })
@@ -218,7 +194,7 @@
                     });
             },
             onPageChange() {
-                this.getSurveys();
+                this.getQuestions();
             },
             deletePost(id) {
                 let current_pos = this;
@@ -230,16 +206,17 @@
                     closeOnConfirm: false,
                     showLoaderOnConfirm: true
                 }, function () {
-                    axios.post('/api/survey/delete', {survey_id: id})
+                    axios.post('/api/selfquestion/delete', {question_id: id})
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getSurveys(current_pos.current);
+                                current_pos.getQuestions(this.current);
 
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
                             swal.close();
+
                         })
                         .catch(error => {
                             swal.close();
@@ -251,7 +228,8 @@
             }
         },
         mounted() {
-            // this.getSurveys();
+            this.getSurveys();
+            // this.getQuestions();
         }
     }
 </script>

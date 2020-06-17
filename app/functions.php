@@ -3292,3 +3292,30 @@ function updateFlagCron($filename, $action, $data = null)
     }
     return $result;
 }
+
+//update answer for self-assessment
+function updateAnswerSelfAssessment($tms_answer, $value)
+{
+    switch ($value) {
+        case 1:
+            $tms_answer->content = 'Rarely';
+            break;
+        case 2:
+            $tms_answer->content = 'Often Not';
+            break;
+        case 3:
+            $tms_answer->content = 'Sometimes';
+            break;
+        case 4:
+            $tms_answer->content = 'Usually';
+            break;
+        case 5:
+            $tms_answer->content = 'Always';
+            break;
+        default:
+            $tms_answer->content = 'Always';
+            break;
+    }
+
+    $tms_answer->save();
+}
