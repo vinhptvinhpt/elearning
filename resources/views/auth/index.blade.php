@@ -22,6 +22,7 @@
     <div class="main-bg"></div>
     <div class="main-content"></div>
     <div class="before-main-content">
+        <div class="img_fix_bg"></div>
         <h3>Easia</h3>
         <p>ACADEMY</p>
     </div>
@@ -51,7 +52,7 @@
                     <input type="checkbox" checked id="ip-checkbox">
                     <span>Remeber login</span>
                 </div>
-                <div class="wrap-btn100">
+                <div class="wrap-btn100 text-center">
                     <button style="position: relative;" type="submit" class="btn btn-login">Login
                         <i class="fa fa-spinner" aria-hidden="true"></i></button>
                 </div>
@@ -99,7 +100,7 @@
                 </div>
                 <div class="wrap-input100">
 
-                    <div class="wrap-btn100">
+                    <div class="wrap-btn100 text-center">
                         <button style="position: relative;" type="submit" id="btn-reset" class="btn btn-login">Recovery
                             <i class="fa fa-spinner" aria-hidden="true"></i></button>
                     </div>
@@ -128,7 +129,6 @@
 </div>
 <div class="block">
 
-</div>
 </div>
 
 <script>
