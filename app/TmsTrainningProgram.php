@@ -10,7 +10,7 @@ class TmsTrainningProgram extends Model
 
     protected $table = 'tms_traninning_programs';
     protected $fillable = [
-        'name', 'code', 'deleted', 'time_start', 'time_end', 'run_cron', 'style', 'auto_certificate', 'logo', 'auto_badge'
+        'name', 'code', 'deleted', 'time_start', 'time_end', 'run_cron', 'style', 'auto_certificate', 'logo', 'auto_badge', 'description'
     ];
 
     public function group()

@@ -86,7 +86,7 @@
                                                     <button type="button"
                                                             class="btn btn-success"
                                                             :placeholder="trans.get('keys.tao_moi')"
-                                                            value="Tạo mới"
+                                                            value="trans.get('keys.tao_moi')"
                                                             aria-controls="datable_1">{{trans.get('keys.tao_moi')}}
                                                     </button>
                                                 </router-link>

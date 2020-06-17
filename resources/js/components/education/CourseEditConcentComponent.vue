@@ -8,12 +8,9 @@
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                         <li class="breadcrumb-item">
-                            <router-link :to="{ name: 'CourseConcentrateIndex' }">{{
-                                trans.get('keys.khoa_dao_tao_tap_trung') }}
-                            </router-link>
+                            <router-link :to="{ name: 'CourseConcentrateIndex' }">{{trans.get('keys.khoa_dao_tao_tap_trung') }} </router-link>
                         </li>
-                        <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_khoa_hoc_tap_trung')
-                            }}
+                        <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_khoa_hoc_tap_trung') }}
                         </li>
                     </ol>
                 </nav>

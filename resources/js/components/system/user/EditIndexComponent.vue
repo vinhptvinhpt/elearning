@@ -35,11 +35,9 @@
                                 {{ trans.get('keys.quan_tri_nguoi_dung') }}
                             </router-link>
                         </li>
-                        <li v-if="type === 'teacher'" class="breadcrumb-item active">{{
-                            trans.get('keys.thong_tin_giang_vien') }}
+                        <li v-if="type === 'teacher'" class="breadcrumb-item active">{{ trans.get('keys.thong_tin_giang_vien') }}
                         </li>
-                        <li v-else-if="type === 'student'" class="breadcrumb-item active">{{
-                            trans.get('keys.thong_tin_hoc_vien') }}
+                        <li v-else-if="type === 'student'" class="breadcrumb-item active">{{ trans.get('keys.thong_tin_hoc_vien') }}
                         </li>
                         <li v-else class="breadcrumb-item active">{{ trans.get('keys.thong_tin_nguoi_dung') }}</li>
                     </ol>
@@ -61,9 +59,7 @@
                                 <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                                 </h6>
                                 <p>ID: <strong>{{users.username}}</strong></p>
-                                <p v-if="role_type != 'market'">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code
-                                    ?
-                                    users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>
+                                <p v-if="role_type != 'market'">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>
                                 <!--                <div v-if="type == 'student' && role_type != 'market' && users.confirm == 0">-->
                                 <!--                  <hr>-->
                                 <!--                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>-->
@@ -84,43 +80,35 @@
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.ngay_thang_nam_sinh')}}</div>
-                                        <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.dob && users.dob != 0) ?
-                                            users.dob :
-                                            trans.get('keys.chua_cap_nhat') }}
+                                        <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.dob && users.dob != 0) ? users.dob : trans.get('keys.chua_cap_nhat') }}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.gioi_tinh')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.sex == 1) ? trans.get('keys.nam')
-                                            :
-                                            trans.get('keys.nu')}}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.sex == 1) ? trans.get('keys.nam') : trans.get('keys.nu')}}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.dia_chi_thuong_tru')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.address ? users.address :
-                                            trans.get('keys.chua_cap_nhat') }}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.address ? users.address : trans.get('keys.chua_cap_nhat') }}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.van_phong')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.city ? users.city :
-                                            trans.get('keys.chua_cap_nhat') }}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.city ? users.city : trans.get('keys.chua_cap_nhat') }}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.quoc_gia')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.country ? countries[users.country]
-                                            :
-                                            trans.get('keys.chua_cap_nhat') }}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.country ? countries[users.country] : trans.get('keys.chua_cap_nhat') }}
                                         </div>
                                     </div>
                                 </li>
@@ -133,9 +121,7 @@
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.so_dien_thoai_lien_lac')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.phone ? users.phone :
-                                            trans.get('keys.chua_cap_nhat')
-                                            }}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.phone ? users.phone : trans.get('keys.chua_cap_nhat') }}
                                         </div>
                                     </div>
                                 </li>
@@ -166,16 +152,14 @@
                                 <li v-if="role_type != 'market'">
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.tinh_trang_cong_tac')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.working_status == 0) ?
-                                            trans.get('keys.dang_cong_tac') : trans.get('keys.nghi_cong_tac')}}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.working_status == 0) ? trans.get('keys.dang_cong_tac') : trans.get('keys.nghi_cong_tac')}}
                                         </div>
                                     </div>
                                 </li>
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.ngay_bat_dau_lam_viec')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.start_time ? users.start_time :
-                                            trans.get('keys.chua_cap_nhat')}}
+                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ users.start_time ? users.start_time : trans.get('keys.chua_cap_nhat')}}
                                         </div>
                                     </div>
                                 </li>

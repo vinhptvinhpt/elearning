@@ -12,11 +12,9 @@
                             <router-link to="/tms/certificate/setting">{{ trans.get('keys.danh_sach_chung_chi') }}
                             </router-link>
                         </li>
-                        <li v-if="certificate.type == 1" class="breadcrumb-item active">{{
-                            trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
+                        <li v-if="certificate.type == 1" class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
                         </li>
-                        <li v-else class="breadcrumb-item active">{{
-                            trans.get('keys.chinh_sua_thong_tin_huy_hieu') }}
+                        <li v-else class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_huy_hieu') }}
                         </li>
                     </ol>
                 </nav>

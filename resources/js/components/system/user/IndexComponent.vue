@@ -224,8 +224,7 @@
 
                       <td class="mobile_hide">{{ user.fullname }}</td>
                       <td class="mobile_hide">{{ user.email }}</td>
-                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ? 'Đã có'
-                        : 'Chưa có' }}
+                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ? trans.get('keys.da_co') : trans.get('keys.chua_co') }}
                       </td>
                       <td class="text-center">
                         <router-link

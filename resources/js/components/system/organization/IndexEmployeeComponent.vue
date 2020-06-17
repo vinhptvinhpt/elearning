@@ -17,8 +17,7 @@
                             {{ trans.get('keys.to_chuc') }}
                         </li>
                         <li v-if="organization_selected !== false" class="breadcrumb-item">
-                            <router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{
-                                organization_name }}
+                            <router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{ organization_name }}
                             </router-link>
                         </li>
                         <li class="breadcrumb-item active">{{ trans.get('keys.nhan_vien') }}</li>
@@ -125,8 +124,7 @@
                                 <div class="listData">
                                     <h5 v-if="organization_selected === false" class="mb-20">
                                         {{trans.get('keys.danh_sach_nhan_vien')}}</h5>
-                                    <h5 v-else class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{
-                                        organization_name }}</h5>
+                                    <h5 v-else class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{ organization_name }}</h5>
                                     <div class="row">
                                         <div class="col-sm-8 dataTables_wrapper">
 
@@ -196,20 +194,16 @@
                                                 <td>{{ item.user ? item.user.fullname : '' }}</td>
                                                 <td>{{ item.organization ? item.organization.name : '' }}</td>
                                                 <td v-if="item.position === 'manager'">
-                                                    <label class="badge badge-dark">{{ trans.get('keys.manager')
-                                                        }}</label>
+                                                    <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'leader'">
-                                                    <label class="badge badge-warning">{{ trans.get('keys.leader')
-                                                        }}</label>
+                                                    <label class="badge badge-warning">{{ trans.get('keys.leader') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'employee'">
-                                                    <label class="badge badge-info">{{ trans.get('keys.employee')
-                                                        }}</label>
+                                                    <label class="badge badge-info">{{ trans.get('keys.employee') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'teacher'">
-                                                    <label class="badge badge-success">{{ trans.get('keys.teacher')
-                                                      }}</label>
+                                                    <label class="badge badge-success">{{ trans.get('keys.teacher') }}</label>
                                                 </td>
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"

@@ -8,8 +8,7 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item active">{{
-                            trans.get('keys.danh_sach_hoc_vien_du_dieu_kien_cap_chung_chi') }}
+                        <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_hoc_vien_du_dieu_kien_cap_chung_chi') }}
                         </li>
                     </ol>
                 </nav>

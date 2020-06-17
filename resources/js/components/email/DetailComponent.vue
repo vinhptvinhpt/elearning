@@ -63,12 +63,12 @@
         },
         data() {
             return {
-                StringHello: "Xin chào",
-                StringContent: "Đây là content",
-                StringFullName: "Thông báo từ BQT Elearing tới bạn:",
-                StringUserName: "Với tài khoản:",
-                StringIntro: "Các khóa học sắp được mở ra.",
-                StringThanks: "Cám ơn bạn nhiều",
+                StringHello: "Hello",
+                StringContent: "",
+                StringFullName: "Notice from management Elearing to you:",
+                StringUserName: "With account:",
+                StringIntro: "Courses are about to be opened.",
+                StringThanks: "Thank you so much",
                 IdCourse: "1",
                 NameCourse: "",
                 TimeStart: "",

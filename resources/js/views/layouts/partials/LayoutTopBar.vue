@@ -37,7 +37,7 @@
             </li>
             <li class="nav-item dropdown dropdown-notifications">
                 <div class="dropdown-menu dropdown-menu-right" data-dropdown-in="fadeIn" data-dropdown-out="fadeOut">
-                    <h6 class="dropdown-header">Thông báo <a href="javascript:void(0);" class="">Xem tất cả</a></h6>
+                    <h6 class="dropdown-header">{{ trans.get('keys.thong_bao') }} <a href="javascript:void(0);" class="">Xem tất cả</a></h6>
                     <div class="notifications-nicescroll-bar">
                         <a href="javascript:void(0);" class="dropdown-item">
                             <div class="media">
@@ -49,9 +49,8 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text"><span class="text-dark text-capitalize">{{ username }}</span><br>đã
-                                            thêm bạn vào khóa học <strong>ABC001</strong></div>
-                                        <div class="notifications-time">12 phút</div>
+                                        <div class="notifications-text"><span class="text-dark text-capitalize">{{ username }}</span><br>{{ trans.get('keys.da_them_ban_vao_khoa_hoc') }} <strong>ABC001</strong></div>
+                                        <div class="notifications-time">12 {{ trans.get('keys.phut') }}</div>
                                     </div>
                                 </div>
                             </div>
@@ -68,7 +67,7 @@
                                 </div>
                                 <div class="media-body">
                                     <div>
-                                        <div class="notifications-text">Bạn có 1 tin nhắn từ <span
+                                        <div class="notifications-text">{{ trans.get('keys.ban_co_mot_tin_nhan_tu') }} <span
                                                 class="text-dark text-capitalize">{{ username }}</span></div>
                                         <div class="notifications-time">1 giờ</div>
                                     </div>
