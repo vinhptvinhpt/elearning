@@ -386,7 +386,6 @@
             }
         },
         mounted() {
-          console.log(this.slugs);
           this.setParamsPage(false);
         }
     }
