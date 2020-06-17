@@ -195,12 +195,12 @@ function permission_cat_name()
         'tms-system-administrator' => __('quyen_quan_tri_he_thong'),
         'tms-system-role' => __('quan_ly_phan_quyen'),
         'tms-system-import-user' => __('them_du_lieu_bang_excel'),
-        'tms-system-trash' =>  __('khoi_phuc_thung_rac'),
-        'tms-educate-exam' =>  __('quan_ly_khoa_hoc'),
+        'tms-system-trash' => __('khoi_phuc_thung_rac'),
+        'tms-educate-exam' => __('quan_ly_khoa_hoc'),
         'tms-educate-exam-online' => __('khoa_dao_tao_online'),
         'tms-educate-exam-offline' => __('khoa_dao_tao_tap_trung'),
         'tms-educate-exam-clone' => __('tao_moi_khoa_tu_thu_vien'),
-        'tms-educate-exam-restore' =>  __('khoi_phuc_khoa_dao_tao'),
+        'tms-educate-exam-restore' => __('khoi_phuc_khoa_dao_tao'),
         'tms-educate-uncertificate' => __('danh_sach_hoc_vien'),
         'tms-educate-certificate' => __('chung_chi_mau'),
         'tms-educate-badge' => __('huy_hieu_mau'),
@@ -221,17 +221,17 @@ function permission_cat_name()
         'tms-access-market' => __('truy_cap_du_lieu_(_cua_nhan_vien_giam_sat_thi_truong_duoc_cap_)'),
         'tms-access-manage-branch' => __('truy_cap_du_lieu_cua_truong_dai_ly'),
         'tms-access-manage-saleroom' => __('truy_cap_du_lieu_cua_truong_diem_ban'),
-        'tms-login' =>__('dang_nhap'),
+        'tms-login' => __('dang_nhap'),
         'tms-system-employee' => __('quan_ly_nhan_vien'),
         'tms-educate-exam-organize' => __('quan_ly_khoa_hoc_cua_to_chuc'),
         'tms-system-activity-log' => __('theo_doi_hoat_dong'),
 
         'nav_dashboard' => '<i class="fa fa-tachometer"></i> Dashboard',
         'nav_elearning' => '<i class="fa fa-graduation-cap"></i> Elearning',
-        'nav_notification' => '<i class="fa fa-bell"></i> ' .__('thong_bao'),
-        'nav_system' => '<i class="fa fa-database"></i> '.__('quan_ly_he_thong'),
-        'nav_educate' => '<i class="fa fa-book"></i> '.__('quan_ly_dao_tao'),
-        'nav_report' => '<i class="fa fa-bell-o"></i> '. __('bao_cao'),
+        'nav_notification' => '<i class="fa fa-bell"></i> ' . __('thong_bao'),
+        'nav_system' => '<i class="fa fa-database"></i> ' . __('quan_ly_he_thong'),
+        'nav_educate' => '<i class="fa fa-book"></i> ' . __('quan_ly_dao_tao'),
+        'nav_report' => '<i class="fa fa-bell-o"></i> ' . __('bao_cao'),
         'nav_setting' => '<i class="fa fa-cog"></i> ' . __('cau_hinh_he_thong'),
         'nav_access' => __('quyen_truy_cap'),
         'nav_support' => __('ho_tro'),
@@ -3295,7 +3295,8 @@ function updateFlagCron($filename, $action, $data = null)
 }
 
 //Store user role to session
-function checkRole() {
+function checkRole()
+{
     $checkRole = new CheckRoleModel();
     $permissions = [];
     $user_id = Auth::id();
@@ -3378,28 +3379,29 @@ function checkRole() {
     return $response;
 
 //update answer for self-assessment
-function updateAnswerSelfAssessment($tms_answer, $value)
-{
-    switch ($value) {
-        case 1:
-            $tms_answer->content = 'Rarely';
-            break;
-        case 2:
-            $tms_answer->content = 'Often Not';
-            break;
-        case 3:
-            $tms_answer->content = 'Sometimes';
-            break;
-        case 4:
-            $tms_answer->content = 'Usually';
-            break;
-        case 5:
-            $tms_answer->content = 'Always';
-            break;
-        default:
-            $tms_answer->content = 'Always';
-            break;
-    }
+    function updateAnswerSelfAssessment($tms_answer, $value)
+    {
+        switch ($value) {
+            case 1:
+                $tms_answer->content = 'Rarely';
+                break;
+            case 2:
+                $tms_answer->content = 'Often Not';
+                break;
+            case 3:
+                $tms_answer->content = 'Sometimes';
+                break;
+            case 4:
+                $tms_answer->content = 'Usually';
+                break;
+            case 5:
+                $tms_answer->content = 'Always';
+                break;
+            default:
+                $tms_answer->content = 'Always';
+                break;
+        }
 
-    $tms_answer->save();
+        $tms_answer->save();
+    }
 }
