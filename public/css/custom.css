@@ -332,11 +332,14 @@ p.copyright-index {
 }
 
 /*-------------------------------LOGIN AND RESET -----------------------------------*/
-button.btn-login {
+button.btn-login, .btn-login {
     color: #fff !important;
 }
+.btn-login:hover{
+    cursor: pointer;
+}
 
-button.btn-login i {
+button.btn-login i, .btn-login i {
     display: none;
     position: absolute;
     right: 10px;
@@ -344,7 +347,7 @@ button.btn-login i {
     margin-top: -8px;
 }
 
-button.btn-login.loadding i {
+button.btn-login.loadding i, .loadding i{
     -webkit-animation-name: example_loadding;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;
@@ -366,7 +369,7 @@ button.btn-reset i {
     margin-top: -8px;
 }
 
-button.btn-reset.loadding i {
+button.btn-reset.loadding i, .loadding i {
     -webkit-animation-name: example_loadding;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;
