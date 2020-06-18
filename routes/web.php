@@ -311,6 +311,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/get_training_list', 'Backend\SystemController@apiGetTrainingList');
     Route::post('/system/user/get_list_branch_select', 'Backend\SystemController@apiGetListBranchSelect');
     Route::post('/system/user/get_list_saleroom_select', 'Backend\SystemController@apiGetListSaleRoomSelect');
+    Route::post('/api/system/user/change_status', 'Backend\SystemController@apiUserChangeWorkingStatus');
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
     Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');

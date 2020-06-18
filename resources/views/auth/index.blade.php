@@ -112,10 +112,10 @@
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                     </div>
                     <!-- Success Alert -->
-                    <div class="alert alert-success alert-dismissible" id="forgetSuccess"
+                    <div class="alert alert-success" id="forgetSuccess"
                          style="margin-top: 1rem;display: none">
                         <strong>Thành công!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <button type="button" class="close" data-dismiss="alert" style="position: absolute;top: 2px;right: 5px;">&times;</button>
                     </div>
 
                     <div class="wrap-forgot100" id="div-login">
@@ -198,48 +198,55 @@
         $('#div-login').hide();
     });
 
-    $('#btn-reset').click(function () {
-        $('#btn-reset').addClass('loadding');
-
-        var username = $('#iprs-user').val();
-
-        var usernameMissingText = $('.message.error.missingUsernameForget');
-        var emailMissingText = $('.message.error.missingEmailForget');
-        var forgetSuccessBlock = $('#forgetSuccess');
-        var forgetErrorBlock = $('#forgetError');
-
-        usernameMissingText.hide();
-        emailMissingText.hide();
-        forgetSuccessBlock.hide();
-        forgetErrorBlock.hide();
-
-        if (username.length === 0) {
-            $('#btn-reset').removeClass('loadding');
-            usernameMissingText.show();
-            return;
-        }
-
-        $.ajax({
-            type: "POST",
-            url: '/bgtresetpassword',
-            data: {
-                username: username
-                {{--_token: '{{csrf_token()}}'--}}
-            },
-            success: function (data) {
-                $('#btn-reset').removeClass('loadding');
-                if (data.status) {
-                    forgetSuccessBlock.show();
-                    forgetErrorBlock.hide();
-                    $('#forgetSuccessText').text('' + data.message);
-                } else {
-                    forgetSuccessBlock.hide();
-                    forgetErrorBlock.show();
-                    $('#forgetErrorText').text('' + data.message);
-                }
-            }
-        });
+    $('#recoverform').submit(function () {
+        recoverPassword();
+        return false;
     });
+
+    function recoverPassword(){
+        if(!$('#btn-reset').hasClass('loadding')){
+            $('#btn-reset').addClass('loadding');
+
+            var username = $('#iprs-user').val();
+
+            var usernameMissingText = $('.message.error.missingUsernameForget');
+            var emailMissingText = $('.message.error.missingEmailForget');
+            var forgetSuccessBlock = $('#forgetSuccess');
+            var forgetErrorBlock = $('#forgetError');
+
+            usernameMissingText.hide();
+            emailMissingText.hide();
+            forgetSuccessBlock.hide();
+            forgetErrorBlock.hide();
+
+            if (username.length === 0) {
+                $('#btn-reset').removeClass('loadding');
+                usernameMissingText.show();
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '/bgtresetpassword',
+                data: {
+                    username: username
+                    {{--_token: '{{csrf_token()}}'--}}
+                },
+                success: function (data) {
+                    $('#btn-reset').removeClass('loadding');
+                    if (data.status) {
+                        forgetSuccessBlock.show();
+                        forgetErrorBlock.hide();
+                        $('#forgetSuccessText').text('' + data.message);
+                    } else {
+                        forgetSuccessBlock.hide();
+                        forgetErrorBlock.show();
+                        $('#forgetErrorText').text('' + data.message);
+                    }
+                }
+            });
+        }
+    }
 
     function loginSso(order) {
         var user = $('#username').val();

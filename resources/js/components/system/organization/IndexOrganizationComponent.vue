@@ -128,9 +128,9 @@
                       <thead>
                       <th>{{trans.get('keys.stt')}}</th>
                       <th>{{trans.get('keys.ma_to_chuc')}}</th>
-                      <th>{{trans.get('keys.ten_to_chuc')}}</th>
-                      <th>{{trans.get('keys.truc_thuoc')}}</th>
-                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
+                      <th class="d-none d-sm-table-cell">{{trans.get('keys.ten_to_chuc')}}</th>
+                      <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
+                      <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                       </thead>
                       <tbody>
@@ -140,10 +140,10 @@
                       <tr v-else v-for="(item,index) in posts">
                         <td>{{ (current-1)*row+(index+1) }}</td>
                         <td>{{ item.code }}</td>
-                        <td>{{ item.name }}</td>
-                        <td v-if="item.parent">{{ item.parent.code }} - {{ item.parent.name }}</td>
-                        <td v-else></td>
-                        <td class="text-center" v-if="slug_can('tms-system-employee-view')">
+                        <td class="d-none d-sm-block">{{ item.name }}</td>
+                        <td v-if="item.parent" class="d-none d-sm-table-cell">{{ item.parent.code }} - {{ item.parent.name }}</td>
+                        <td v-else class="d-none d-sm-table-cell"></td>
+                        <td class="text-center d-none d-sm-table-cell" v-if="slug_can('tms-system-employee-view')">
                           <router-link :title="trans.get('keys.xem_nhan_vien')"
                                        :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
                             {{ item.employees.length }}
@@ -174,12 +174,12 @@
                       </tr>
                       </tbody>
                       <tfoot>
-                      <th>{{trans.get('keys.stt')}}</th>
+                      <th style="min-width: 30px;">{{trans.get('keys.stt')}}</th>
                       <th>{{trans.get('keys.ma_to_chuc')}}</th>
-                      <th>{{trans.get('keys.ten_to_chuc')}}</th>
-                      <th>{{trans.get('keys.truc_thuoc')}}</th>
-                      <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
-                      <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                      <th class="d-none d-sm-table-cell">{{trans.get('keys.ten_to_chuc')}}</th>
+                      <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
+                      <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
+                      <th class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                       </tfoot>
                     </table>
                     <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
@@ -321,6 +321,7 @@
                                 $('.form-control').removeClass('error');
                                 //reload form
                                 this.selectParent();
+                                this.getDataList();
                             }
                             toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
                         }

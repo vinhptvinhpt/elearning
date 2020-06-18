@@ -182,11 +182,11 @@ a:hover {
 }
 
 .before-main-content .img_fix_bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    position: absolute;
+    top: -20%;
+    left: -131%;
+    right: -54%;
+    bottom: -5%;
     background-image: url(../images/vietnam-halong-bay-58597.jpg);
     background-repeat: no-repeat;
     background-position: center center;
@@ -211,6 +211,11 @@ a:hover {
         height: 80%;
         width: 48%;
         right: 8%;
+    }
+
+    .before-main-content .img_fix_bg {
+        right: -16.67%;
+        left: -91.67%;
     }
 
     .before-main-content p, .before-main-content h3 {
@@ -238,12 +243,6 @@ a:hover {
     .wrap-login100 {
         width: 40%;
         left: 10%;
-    }
-
-    .before-main-content {
-        height: 80%;
-        width: 48%;
-        right: 8%;
     }
 
     .before-main-content p, .before-main-content h3 {
@@ -279,6 +278,13 @@ a:hover {
         right: 4%;
     }
 
+    .before-main-content .img_fix_bg {
+        right: -5.7%;
+        left: -37.1%;
+        top: -22.8%;
+        bottom: -20%;
+    }
+
     .before-main-content p, .before-main-content h3 {
         font-size: 30px;
     }
@@ -304,12 +310,6 @@ a:hover {
     .wrap-login100 {
         width: 50%;
         left: 7%;
-    }
-
-    .before-main-content {
-        width: 70%;
-        height: 70%;
-        right: 4%;
     }
 
     .before-main-content p, .before-main-content h3 {

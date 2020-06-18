@@ -16,8 +16,8 @@
       <div class="card">
         <div class="card-body">
           <div class="row">
-            <div class="col-6">
-              <select v-model="mode_select" class="form-control">
+            <div class="col-6 mb-1">
+              <select v-model="mode_select" class="form-control mb-0" style="height: 40px;">
                 <option value="certificated">
                   {{ trans.get('keys.da_cap_chung_chi')}}
                 </option>
@@ -32,18 +32,18 @@
                 </option>
               </select>
             </div>
-            <div class="col-6">
+            <div class="col-6 mb-1">
               <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
             </div>
-            <div class="col-6">
-              <select id="training_select" v-model="training_id" class="custom-select" @input="fetchCourses()">
+            <div class="col-6 mb-1">
+              <select id="training_select" v-model="training_id" class="custom-select" @change="fetchCourses()">
                 <option value="0">{{ trans.get('keys.khung_nang_luc') }}</option>
                 <option v-for="training_option in training_options" :value="training_option.id">
                   {{training_option.name}}
                 </option>
               </select>
             </div>
-            <div class="col-6" v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
+            <div class="col-6 mb-1" v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
               <select id="course_select" v-model="course_id" class="custom-select">
                 <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
                 <option v-for="course in course_list" :value="course.id">
@@ -51,13 +51,13 @@
                 </option>
               </select>
             </div>
-            <div class="col-6">
-              <select id="inputCountry" class="form-control custom-select" v-model="country">
+            <div class="col-6 mb-1">
+              <select id="inputCountry" class="custom-select mb-0" v-model="country">
                 <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
                 <option v-for="(country_name, country_code, index) in countries" :value="country_code">{{ country_name }}</option>
               </select>
             </div>
-            <div class="col-6 form-inline">
+            <div class="col-6 form-inline mb-1">
               <div style="width: 50%">
                 <datepicker
                   id="inputStart"
@@ -82,7 +82,7 @@
               </div>
             </div>
             <div class="col-12 text-right">
-                <button id="buttonReport" class="btn btn-primary btn-sm" @click="listData()"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
+                <button id="buttonReport" class="btn btn-primary btn-sm" @click="listData()" :title="trans.get('keys.xem_chi_tiet')"><i class="fal fa-eye"></i>&nbsp;{{ trans.get('keys.xem')}}</button>
             </div>
           </div>
         </div>
@@ -101,9 +101,9 @@
                 <span class="color-box course-color">{{trans.get('keys.khoa_hoc')}}</span>
               </div>
               <div class="col-5 text-right">
-                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
+                <!--<a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
                   <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
-                </a>
+                </a>-->
                 <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
                   <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>
                 </a>
@@ -267,7 +267,8 @@
                 mode_select: this.mode_select,
                 start_date: this.startdate,
                 end_date: this.enddate,
-                country: this.country
+                country: this.country,
+                course_id: this.course_id
               })
                 .then(response => {
                   let list = response.data;
