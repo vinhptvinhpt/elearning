@@ -12,7 +12,8 @@
                             <router-link to="/tms/certificate/setting">{{ trans.get('keys.danh_sach_chung_chi') }}
                             </router-link>
                         </li>
-                        <li v-if="certificate.type == 1" class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
+                        <li v-if="certificate.type == 1" class="breadcrumb-item active">{{
+                            trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
                         </li>
                         <li v-else class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_huy_hieu') }}
                         </li>
@@ -38,6 +39,10 @@
                                     <span id="sp_inputDate" class="spText"></span>
                                     <span id="sp_inputSign" class="spText"></span>
                                     <img :src="logo_path" alt="" class="logo_img" id="sp_inputLogo">
+                                    <img :src="logo_pathsig1" alt="" class="logo_img" id="sp_inputLogoSig1"
+                                         style="width: 25%;">
+                                    <img :src="logo_pathsig2" alt="" class="logo_img" id="sp_inputLogoSig2"
+                                         style="width: 20%;">
                                 </div>
                                 <div class="card-body">
                                     <p>
@@ -85,19 +90,19 @@
                                     <h6 class="d-inline-flex">
                                         {{trans.get('keys.chung_chi_mau')}}
                                         <span class="inline-checkbox ml-3">
-                                                                    <span class="custom-control custom-checkbox custom-control-inline">
-                                                                        <input v-if="certificate.is_active == 1"
-                                                                               class="custom-control-input"
-                                                                               :id="'inputCheck'" type="checkbox"
-                                                                               v-model="certificate.is_active" checked>
-                                                                        <input v-else type="checkbox"
-                                                                               v-model="certificate.is_active"
-                                                                               class="custom-control-input"
-                                                                               :id="'inputCheck'">
-                                                                        <label class="custom-control-label"
-                                                                               :for="'inputCheck'"></label>
-                                                                    </span>
-                                                                </span>
+                                            <span class="custom-control custom-checkbox custom-control-inline">
+                                                <input v-if="certificate.is_active == 1"
+                                                       class="custom-control-input"
+                                                       :id="'inputCheck'" type="checkbox"
+                                                       v-model="certificate.is_active" checked>
+                                                <input v-else type="checkbox"
+                                                       v-model="certificate.is_active"
+                                                       class="custom-control-input"
+                                                       :id="'inputCheck'">
+                                                <label class="custom-control-label"
+                                                       :for="'inputCheck'"></label>
+                                            </span>
+                                        </span>
                                     </h6>
                                 </div>
 
@@ -183,7 +188,7 @@
 
                                 </div>
 
-                                <div class="row col-12" v-if="certificate.type == 1">
+                                <div class="row col-12" v-if="certificate.type == 1" style="display: none;">
                                     <div class="col-5 d-inline-flex">
                                         <span class="inline-checkbox ml-3">
                                             <span class="custom-control custom-checkbox custom-control-inline">
@@ -204,6 +209,30 @@
                                                class="form-control txtNumber" @change="OnchangeTextBox"
                                                :placeholder="trans.get('keys.co_chu')">
                                     </div>
+                                </div>
+
+                                <div class="col-12 d-inline-flex" v-if="certificate.type == 1">
+                                    <span class="inline-checkbox ml-3">
+                                        <span class="custom-control custom-checkbox custom-control-inline">
+                                            <input class="custom-control-input" :id="'inputLogoSig1'" type="checkbox"
+                                                   v-model="certificate_img.pos_logosig1" @click="onClickTypeShow">
+                                            <label class="custom-control-label" :for="'inputLogoSig1'"></label>
+                                        </span>
+                                    </span>
+                                    {{trans.get('keys.toa_do_logo_chuki1')}}
+                                    <span id="span_inputLogoSig1"></span>
+                                </div>
+
+                                <div class="col-12 d-inline-flex" v-if="certificate.type == 1">
+                                    <span class="inline-checkbox ml-3">
+                                        <span class="custom-control custom-checkbox custom-control-inline">
+                                            <input class="custom-control-input" :id="'inputLogoSig2'" type="checkbox"
+                                                   v-model="certificate_img.pos_logosig2" @click="onClickTypeShow">
+                                            <label class="custom-control-label" :for="'inputLogoSig2'"></label>
+                                        </span>
+                                    </span>
+                                    {{trans.get('keys.toa_do_logo_chuki2')}}
+                                    <span id="span_inputLogoSig2"></span>
                                 </div>
 
                                 <div class="row col-12">
@@ -272,6 +301,8 @@
                 imgTop: null,
                 certificate_img: {
                     pos_logo: false,
+                    pos_logosig1: false,
+                    pos_logosig2: false,
                     pos_name: false,
                     pos_program: false,
                     pos_date: false,
@@ -281,6 +312,8 @@
                 currentChoose: "",
                 coordinates: {},
                 logo_path: "",
+                logo_pathsig1: "",
+                logo_pathsig2: "",
                 img_width: 0,
                 img_height: 0,
                 fullName: "Learner name",
@@ -367,6 +400,16 @@
                             return;
                         }
 
+                        if (!this.certificate_img.pos_logosig1) {
+                            toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo_sig1'), this.trans.get('keys.thong_bao'));
+                            return;
+                        }
+
+                        if (!this.certificate_img.pos_logosig2) {
+                            toastr['error'](this.trans.get('keys.hay_chon_toa_do_logo_sig2'), this.trans.get('keys.thong_bao'));
+                            return;
+                        }
+
                         if (!this.certificate_img.pos_name) {
                             toastr['error'](this.trans.get('keys.hay_chon_toa_do_ten'), this.trans.get('keys.thong_bao'));
                             return;
@@ -413,7 +456,7 @@
                 this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 this.coordinates.programSize = $('#ip_inputSizeProgram').val();
                 this.coordinates.text_color = this.text_color;
-                this.coordinates.sign_text = this.sign_text;
+                // this.coordinates.sign_text = this.sign_text;
 
                 this.formData = new FormData();
                 this.certificate.is_active = this.certificate.is_active ? 1 : 0;
@@ -532,6 +575,26 @@
                         this.certificate_img.text_color = true;
                         this.setTextToShowIntoImage(this.currentChoose, this.img_width / 2, this.img_height / 2);
                     }
+                } else if (this.currentChoose == 'inputLogoSig1') {
+                    this.coordinates.logoSig1X = 0;
+                    this.coordinates.logoSig1Y = 0;
+                    this.logo_pathsig1 = "";
+                    if (!this.certificate_img.text_color) {
+                        this.SetShowTextColor();
+                        this.certificate_img.text_color = true;
+                        this.setTextToShowIntoImage(this.currentChoose, this.img_width / 2, this.img_height / 2);
+                    }
+
+                } else if (this.currentChoose == 'inputLogoSig2') {
+                    this.coordinates.logoSig2X = 0;
+                    this.coordinates.logoSig2Y = 0;
+                    this.logo_pathsig2 = "";
+                    if (!this.certificate_img.text_color) {
+                        this.SetShowTextColor();
+                        this.certificate_img.text_color = true;
+                        this.setTextToShowIntoImage(this.currentChoose, this.img_width / 2, this.img_height / 2);
+                    }
+
                 } else {
                     this.coordinates.logoX = 0;
                     this.coordinates.logoY = 0;
@@ -565,6 +628,14 @@
                     this.coordinates.logoX = coordinate_x;
                     this.coordinates.logoY = coordinate_y;
                     this.logo_path = "/logo/easia.png";
+                } else if (name == 'inputLogoSig1' && this.certificate_img.pos_logosig1) {
+                    this.coordinates.logoSig1X = coordinate_x;
+                    this.coordinates.logoSig1Y = coordinate_y;
+                    this.logo_pathsig1 = "/signature/dean.png";
+                } else if (name == 'inputLogoSig2' && this.certificate_img.pos_logosig2) {
+                    this.coordinates.logoSig2X = coordinate_x;
+                    this.coordinates.logoSig2Y = coordinate_y;
+                    this.logo_pathsig2 = "/signature/director.png";
                 } else if (name == 'inputSign' && this.certificate_img.pos_sign) {
                     $('#sp_' + name).text(this.sign_text);
                     $('#sp_' + name).css('font-size', this.coordinates.signSize + 'px');
@@ -590,6 +661,17 @@
                     this.certificate_img.pos_logo = true;
                     this.setTextToShowIntoImage("inputLogo", this.coordinates.logoX, this.coordinates.logoY);
                 }
+
+                if (this.coordinates.logoSig1X > 0) {
+                    this.certificate_img.pos_logosig1 = true;
+                    this.setTextToShowIntoImage("inputLogoSig1", this.coordinates.logoSig1X, this.coordinates.logoSig1Y);
+                }
+
+                if (this.coordinates.logoSig2X > 0) {
+                    this.certificate_img.pos_logosig2 = true;
+                    this.setTextToShowIntoImage("inputLogoSig2", this.coordinates.logoSig2X, this.coordinates.logoSig2Y);
+                }
+
                 if (this.coordinates.programX > 0) {
                     this.certificate_img.pos_program = true;
                     this.SetShowTextProgram();

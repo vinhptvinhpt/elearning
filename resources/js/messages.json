@@ -953,7 +953,9 @@
     "ques_name": "Question name",
     "sec_name": "Section name",
     "total_point": "Total Point",
-    "avg_point": "Average Point"
+    "avg_point": "Average Point",
+    "toa_do_logo_chuki1": "Signature T&D Managerment coordinates",
+    "toa_do_logo_chuki2": "Signature Director coordinates"
   },
   "vi.keys": {
     "language": "",
@@ -1905,6 +1907,8 @@
     "ques_name": "Tên câu hỏi",
     "sec_name": "Tên phần",
     "total_point": "Tổng điểm",
-    "avg_point": "Điểm trung bình"
+    "avg_point": "Điểm trung bình",
+    "toa_do_logo_chuki1": "Tọa độ chữ ký T&D Managerment",
+    "toa_do_logo_chuki2": "Tọa độ chữ ký Giám đốc"
   }
 }
