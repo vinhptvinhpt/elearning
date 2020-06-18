@@ -34,7 +34,7 @@ $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
 $organization_id = 2;
-$organizationCode = strtolower($_SESSION["organizationCode"]);
+$organizationCode = strtoupper($_SESSION["organizationCode"]);
 switch ($organizationCode) {
     case "EA":
         {

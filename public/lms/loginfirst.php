@@ -33,14 +33,26 @@ function cus_login($idorusername)
         $SESSION->userkey = true;
         if ($result) {
             session_start();
-            $sqlGetOrganization = 'SELECT f.id, f.level, f.code 
-            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id) 
-            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= '.$id.')) tmp1 
-            JOIN tms_organization ON @id IS NOT NULL) tmp2 
-            JOIN tms_organization f ON tmp2._id = f.id 
-            where f.level = 2 limit 1';
-            $organnizationCode = array_values($DB->get_records_sql($sqlGetOrganization))[0];
-            $_SESSION["organizationCode"] = $organnizationCode->code;
+            $sqlGetOrganization = 'SELECT f.id, f.level, f.code
+            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
+            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= '.$id.')) tmp1
+            JOIN tms_organization ON @id IS NOT NULL) tmp2
+            JOIN tms_organization f ON tmp2._id = f.id
+            where f.level = 2 or f.level = 1 limit 1';
+            $organizationCode = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+            $organizationCodeFinal = "";
+            if(strpos(strtolower($organizationCode->code), 'begodi')){
+                $organizationCodeFinal = "BG";
+            }
+            else if(strpos(strtolower($organizationCode->code),'easia')){
+                $organizationCodeFinal = "EA";
+            }
+            else if(strpos(strtolower($organizationCode->code), 'exotic')){
+                $organizationCodeFinal = "EV";
+            }else{
+                $organizationCodeFinal = "PH";
+            }
+            $_SESSION["organizationCode"] = $organizationCodeFinal;
             return 1;
         }
         return 0;
