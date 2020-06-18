@@ -9,7 +9,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
 
 <html>
-<title>Danh sách các khóa học</title>
+<title>Available Coures</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">

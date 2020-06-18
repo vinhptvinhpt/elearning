@@ -1,5 +1,5 @@
 <html>
-<title>Thông tin khóa học <?php echo $course->fullname; ?></title>
+<title>Detail course <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">

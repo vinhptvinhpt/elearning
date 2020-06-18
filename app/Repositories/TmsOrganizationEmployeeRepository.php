@@ -63,8 +63,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
         }
 
+
         //nếu k kịp lấy role từ frontend => load from session
-        if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+        if ($current_user_roles_and_slugs['roles']->has_role_admin) {
+            $role = Role::ADMIN;
+        }else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
             $role = Role::ROLE_MANAGER;
         } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
             $role = Role::ROLE_LEADER;
