@@ -249,7 +249,7 @@
               }
             };
           }
-          let newItem = [item.name];
+          //let newItem = [item.name];
           if (item.children.length > 0) {
             newNode.layout = 'hanging';
             hasNode = true;
@@ -258,11 +258,12 @@
               outputs.push(newItemHasChild);
             }
             this.fetchTree(item.children, outputs, nodes);
-          } else {
-            if (item.level === 1) {
-              outputs.push(newItem)
-            }
           }
+          // else {
+          //   if (item.level === 1) {
+          //     outputs.push(newItem)
+          //   }
+          // }
           if (hasNode === true) {
             nodes.push(newNode);
           }
@@ -279,12 +280,14 @@
       this.chartOptions.series[0].data = organizations;
       this.chartOptions.series[0].nodes = nodes;
       //Set height for chart base on number of organizations
-      if (organizations.length > 20 && organizations.length < 35) {
-        this.chartOptions.chart.height = 1000;
+      if (organizations.length < 20) {
+        this.chartOptions.chart.height = 1300;
+      } else if (organizations.length > 20 && organizations.length < 35) {
+        this.chartOptions.chart.height = 1600;
       } else if (organizations.length > 35 && organizations.length < 50) {
         this.chartOptions.chart.height = 1900;
       } else if (organizations.length > 50) {
-        this.chartOptions.chart.height = 2500;
+        this.chartOptions.chart.height = 2200;
       }
     }
   };
