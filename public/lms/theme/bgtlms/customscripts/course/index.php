@@ -577,7 +577,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                             <div class="course-info__detail">
                                                 <ul>
                                                     <li class="teacher">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
                                                     <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
                                                     </li>

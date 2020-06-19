@@ -556,7 +556,7 @@
                 }
             },
             getCountries() {
-                if (this.type === 'system') {
+                //if (this.type === 'system') {
                     axios.post('/system/user/list_country')
                         .then(response => {
                             this.countries = response.data;
@@ -564,7 +564,7 @@
                         .catch(error => {
                             console.log(error.response.data);
                         });
-                }
+                //}
             },
             getCitys() {
                 axios.post('/system/list/list_city')
