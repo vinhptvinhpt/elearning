@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\TmsLearnerHistory;
+use App\TmsUserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -110,5 +111,54 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
         // TODO: Implement getLearnerHistory() method.
         $lstData = TmsLearnerHistory::where('user_id', '=', $user_id)->select('trainning_id as id', 'trainning_name')->groupBy('trainning_id')->get();
         return response()->json($lstData);
+    }
+
+    public function apiUserChangeWorkingStatus(Request $request)
+    {
+        // TODO: Implement apiUserChangeWorkingStatus() method.
+        try {
+
+            $user_id    = $request->input('user_id');
+            $status     = $request->input('status');
+
+            $param = [
+                'user_id'   => 'number',
+                'status'    => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response = [
+                    'status'    => false,
+                    'message'   => __('dinh_dang_du_lieu_khong_hop_le')
+                ];
+                return response()->json($response);
+            }
+
+
+            $user = TmsUserDetail::where('user_id',$user_id)->first();
+
+            if (!$user) {
+                $response = [
+                    'status'    => false,
+                    'message'   => __('khong_tim_thay_tai_khoan')
+                ];
+                return response()->json($response);
+            }
+
+            $user->update(array(
+                'working_status' => $status,
+            ));
+
+            $response = [
+                'status'    => true,
+                'message'   => __('cap_nhat_thanh_cong')
+            ];
+        } catch (\Exception $e) {
+            $response = [
+                'status'    => false,
+                'message'   => $e->getMessage()
+            ];
+        }
+        return response()->json($response);
     }
 }

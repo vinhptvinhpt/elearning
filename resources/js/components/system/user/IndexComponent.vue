@@ -36,9 +36,9 @@
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
                       <system-user-create v-if="roles_ready === true"
-                        :type="type"
-                        :current_roles="current_roles"
-                        :roles_ready="roles_ready"></system-user-create>
+                                          :type="type"
+                                          :current_roles="current_roles"
+                                          :roles_ready="roles_ready"></system-user-create>
                     </div>
                   </div>
                 </div>
@@ -158,7 +158,9 @@
                         <select v-model="roles" class="custom-select custom-select-sm form-control form-control-sm"
                                 @change="getUser(1)">
                           <option value="0">{{trans.get('keys.theo_quyen')}}</option>
-                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
+                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ?
+                            trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}
+                          </option>
                         </select>
                       </label>
                     </div>
@@ -200,6 +202,7 @@
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
                       <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
+                      <th>{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
@@ -224,7 +227,21 @@
 
                       <td class="mobile_hide">{{ user.fullname }}</td>
                       <td class="mobile_hide">{{ user.email }}</td>
-                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ? trans.get('keys.da_co') : trans.get('keys.chua_co') }}
+                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?
+                        trans.get('keys.da_co') : trans.get('keys.chua_co') }}
+                      </td>
+                      <td class="mobile_hide">
+                        <span v-if="user.working_status == 0">
+                         <i class="fa fa-toggle-on text-success" @click="changeStatus(user.user_id,1)"
+                            style="cursor: pointer; font-size: 25px;"
+                            aria-hidden="true"></i>
+                        </span>
+                        <span v-if="user.working_status == 1">
+                           <i class="fa fa-toggle-off"
+                              @click="changeStatus(user.user_id,0)"
+                              style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
+                              aria-hidden="true"></i>
+                        </span>
                       </td>
                       <td class="text-center">
                         <router-link
@@ -251,6 +268,7 @@
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
                       <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
+                      <th>{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </tfoot>
@@ -316,6 +334,30 @@
       }
     },
     methods: {
+      changeStatus(user_id, status) {
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.ban_muon_chuyen_trang_thai_lam_viec'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+          type: "success",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/api/system/user/change_status', {user_id: user_id, status: status})
+            .then(response => {
+              if (response.data.status) {
+                toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                current_pos.getUser();
+              } else {
+                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+              }
+              swal.close();
+            });
+        });
+
+        return false;
+      },
       selectedFile() {
         let file = this.$refs.file.files[0];
         if (!file || (file.type !== 'application/vnd.ms-excel' && file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' && file.type !== '.csv')) {
@@ -433,7 +475,7 @@
             user_delete: user_delete
           })
             .then(response => {
-                swal.close();
+              swal.close();
               if (response.data === 'success') {
                 toastr['success'](current_pos.trans.get('keys.xoa_tai_khoan_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
                 $('#btnFilter').trigger('click');
@@ -453,7 +495,7 @@
       deletePost(url) {
         let current_pos = this;
         swal({
-            title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+          title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
           text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
           type: "warning",
           showCancelButton: true,
@@ -463,7 +505,7 @@
           axios.post(url)
             .then(response => {
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                $('#btnFilter').trigger('click');
+              $('#btnFilter').trigger('click');
               // var url_split = url.split('/');
               // var user_id = url_split[url_split.length - 1];
               //   const index = current_pos.posts.findIndex(post => post.user_id == user_id);

@@ -3428,7 +3428,7 @@ class BussinessRepository implements IBussinessInterface
                 $query_per->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
-                    $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
+                    //$join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
                 });
                 $select_array_per[] = 'course_completion.timecompleted as completed';
             }
@@ -7038,6 +7038,7 @@ class BussinessRepository implements IBussinessInterface
             'mdl_user.username as username',
             'tms_user_detail.user_id as user_id',
             'tms_user_detail.cmtnd as cmtnd',
+            'tms_user_detail.working_status as working_status',
             DB::raw('(select count(mhr.model_id) as user_count from tms_user_detail tud
                 inner join model_has_roles mhr on mhr.model_id = tud.user_id
                 inner join roles r on r.id = mhr.role_id

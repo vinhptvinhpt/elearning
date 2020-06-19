@@ -33,14 +33,14 @@
                                     <div class="col-12 col-lg-12">
                                         <form action="">
                                             <div class="row">
-                                                <div class="col-12 col-lg-3">
+                                                <div class="col-12 col-lg-3 d-none">
                                                     <div class="card">
                                                         <div class="card-body">
                                                             <input type="file" ref="file" name="file" class="dropify"/>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="col-12 col-lg-9">
+                                                <div class="col-12">
                                                     <div class="form-row">
                                                         <div class="col-sm-6 form-group">
                                                             <label for="inputText1-2">{{trans.get('keys.ma_knl')}}
