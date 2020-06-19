@@ -114,12 +114,13 @@
                           <button type="button" class="btn btn-primary btn-sm btn_fillter" id="btnFilter" @click="getDataList(1)">
                             {{trans.get('keys.tim')}}
                           </button>
-                          <button v-if="selected_role === 'root' || selected_role === 'admin'" class="btn btn-primary btn-sm btn_fillter" @click="switchTreeView()">
-                            <i v-if="display === 'grid'" class="fal fa-list"></i>
-                            <i v-if="display === 'tree'" class="fal fa-area-chart"></i>
-                          </button>
+                          <a v-if="selected_role === 'root' || selected_role === 'admin'"  class="btn btn-primary btn-sm" @click="switchTreeView()">
+                            <i v-if="display === 'grid'" class="fal fa-list" style="color: white; vertical-align: bottom !important;"></i>
+                            <i v-if="display === 'tree'" class="fal fa-area-chart" style="color: white; vertical-align: bottom !important;"></i>
+                          </a>
                         </div>
                       </form>
+
                     </div>
                   </div>
                   <template v-if="display === 'grid'">

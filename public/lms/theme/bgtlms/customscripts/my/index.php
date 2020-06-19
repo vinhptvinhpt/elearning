@@ -7,11 +7,21 @@ $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'te
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
 
-$sql = 'select @s:=@s+1 stt, mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration,
+$sql = 'select @s:=@s+1 stt,
+mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
   ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
-    muet.userid as teacher_id, tud.fullname as teacher_name, tor.name as organization_name, muet.timecreated as teacher_created
+    muet.userid as teacher_id,
+    tud.fullname as teacher_name,
+    tor.name as teacher_organization,
+    muet.timecreated as teacher_created,
+    toe.position as teacher_position,
+    toe.description as teacher_description
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
@@ -73,7 +83,7 @@ function push_course(&$array, $course) {
 //          'teacher_created' => $course->teacher_created
 //        );
 //    }
-    if (array_key_exists($course->id, $array)) {
+    if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
         $old_created = $array[$course->id]->teacher_created;
         if ($course->teacher_created > intval($old_created)) {
             $array[$course->id] = $course;
@@ -297,6 +307,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         margin: 0 0 5px 0;
         font-family: Roboto-Regular;
         font-size: 14px !important;
+    }
+
+    .info-course a {
+        margin: 0 0 5px 0;
+        font-family: Roboto-Regular !important;
+        font-size: 14px !important;
+    }
+
+    .info-course a:hover {
+        cursor:pointer;
     }
 
     img {
@@ -785,10 +805,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     </section>
     <!--    body-->
 
-<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
-<!--        Launch demo modal-->
-<!--    </button>-->
-
     <section class="section section-content">
         <div class="content">
             <div class="container">
@@ -881,7 +897,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                         <div class="block-item__content_text">
                                                             <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
-                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
+                                                                <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                   data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                   data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                   data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                   data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                 <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                             </div>
@@ -927,7 +948,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
+                                                                    <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -973,7 +999,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
+                                                                    <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -1131,6 +1162,32 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         });
 
     });
+
+    $(document).on('show.bs.modal','#exampleModal', function (event) {
+        let button = $(event.relatedTarget) // Button that triggered the modal
+        //var teacher_name = button.attr("data-teacher-name");
+        let teacher_name = button.data('teacher-name');// Extract info from data-* attributes
+        let teacher_position = button.data('teacher-position').length > 0 ? button.data('teacher-position') : 'N/A';
+        let teacher_organization = button.data('teacher-organization').length > 0 ? button.data('teacher-organization') : 'PHH Group';
+        let teacher_description = button.data('teacher-description').length > 0 ? button.data('teacher-description') : 'N/A';
+        $( "span.teacher-name" ).html(teacher_name);
+        $( "span.teacher-position" ).html(teacher_position);
+        $( "span.teacher-organization" ).html(teacher_organization);
+        $( "span.teacher-description" ).html(teacher_description);
+    })
+    // $('#exampleModal').on('show.bs.modal', function (event) {
+    //     var button = $(event.relatedTarget) // Button that triggered the modal
+    //     var teacher_name = button.data('teacher-name');// Extract info from data-* attributes
+    //     var teacher_position = button.data('teacher-position');
+    //     var teacher_organization = button.data('teacher-organization');
+    //     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    //     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    //     var modal = $(this)
+    //     //modal.find('.modal-title').text('Instructor info: ' + teacher_name)
+    //     modal.find('.teacher-name').val(teacher_name);
+    //     modal.find('.teacher-position').val(teacher_position);
+    //     modal.find('.teacher-organization').val(teacher_organization);
+    // })
 </script>
 
 <!-- Modal -->
@@ -1138,17 +1195,19 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <h2 class="modal-title" id="exampleModalLabel">Instructor Info</h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                ...
+                Name: <span class="teacher-name" style="font-weight: bold"></span><br>
+                Position: <span class="teacher-position" style="font-weight: bold"></span><br>
+                Description: <span class="teacher-description" style="font-weight: bold"></span><br>
+                Organization: <span class="teacher-organization" style="font-weight: bold"></span>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
