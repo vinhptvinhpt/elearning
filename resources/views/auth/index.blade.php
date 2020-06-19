@@ -114,7 +114,7 @@
                     <!-- Success Alert -->
                     <div class="alert alert-success" id="forgetSuccess"
                          style="margin-top: 1rem;display: none">
-                        <strong>Thành công!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
+                        <strong>Successfully!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
                         <button type="button" class="close" data-dismiss="alert" style="position: absolute;top: 2px;right: 5px;">&times;</button>
                     </div>
 

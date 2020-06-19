@@ -131,7 +131,7 @@
                                                        class="form-control mb-4">
                                             </div>
 
-                                            <div class="col-md-4 col-sm-6 form-group">
+                                            <div class="col-md-4 col-sm-6 form-group d-none">
                                                 <div class="d-sm-block pt-40" style="display:none;"></div>
                                                 <input v-model="course.allow_register" type="checkbox"
                                                        style="width:20px; height:20px;"

@@ -339,9 +339,7 @@ button.btn-login, .btn-login {
     cursor: pointer;
 }
 
-button.btn-login i, .btn-login i {
-    display: none;
-
+.btn-login i {
     position: absolute;
     left: 50%;
     top: 50%;
