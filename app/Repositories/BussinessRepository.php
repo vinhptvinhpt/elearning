@@ -734,9 +734,11 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json($response);
             }
 
+            //Nếu trạng thái là visible thì có thể xóa
 
             $course = MdlCourse::where('id', '=', $id)
                 ->where('startdate', '<=', time())
+                ->where('visible', '=', '1')
                 ->where('enddate', '>=', time())->first();
 
             //nếu tồn tại khóa học trong thời gian học và không phải khóa học mẫu
@@ -7183,11 +7185,14 @@ class BussinessRepository implements IBussinessInterface
 
             $username = strtolower($username);
 
-            //Check scmtnd
-            $userByCmtnd = TmsUserDetail::select('id')->where('cmtnd', $cmtnd)->first();
+            if($cmtnd){
+                //Check scmtnd
+                $userByCmtnd = TmsUserDetail::select('id')->where('cmtnd', $cmtnd)->first();
 
-            if ($userByCmtnd)
-                return response()->json(error_message('inputCmtnd', __('so_cmtnd_da_ton_tai')));
+                if ($userByCmtnd)
+                    return response()->json(error_message('inputCmtnd', __('so_cmtnd_da_ton_tai')));
+            }
+
             //Check user
             $userByUser = MdlUser::where('username', $username)->where('deleted', 1)->count();
             if ($userByUser > 0)

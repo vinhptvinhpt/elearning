@@ -244,12 +244,12 @@ a {
     color: #fff;
 }
 
-button.loadding {
+button.loadding, .loadding {
     position: relative;
     border-color: rgba(255, 255, 255, 0.3);
 }
 
-button.loadding:after {
+button.loadding:after, .loadding:after {
     content: "";
     top: 0;
     left: 0;
@@ -260,11 +260,11 @@ button.loadding:after {
     z-index: 1;
 }
 
-button.btn-login {
+button.btn-login, .btn-login {
     color: #fff !important;
 }
 
-button.btn-login i {
+button.btn-login i, .btn-login i {
     display: none;
     position: absolute;
     right: 10px;
@@ -272,7 +272,7 @@ button.btn-login i {
     margin-top: -8px;
 }
 
-button.btn-login.loadding i {
+button.btn-login.loadding i, .loadding i {
     -webkit-animation-name: example_loadding;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;

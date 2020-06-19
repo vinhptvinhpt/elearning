@@ -85,10 +85,12 @@
                     <label v-if="!email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}} *</label>
-                    <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"
-                           class="form-control mb-4" @input="changeRequired('inputCmtnd')">
-                    <label v-if="!cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}}</label>
+                  <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"
+                         class="form-control mb-4">
+<!--                    <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"-->
+<!--                           class="form-control mb-4" @input="changeRequired('inputCmtnd')">-->
+<!--                    <label v-if="!cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputPhone">{{trans.get('keys.so_dien_thoai_lien_lac')}}</label>
@@ -617,10 +619,10 @@
                 //     $('.email_required').show();
                 //     return;
                 // }
-                if (!this.cmtnd) {
-                    $('.cmtnd_required').show();
-                    return;
-                }
+                // if (!this.cmtnd) {
+                //     $('.cmtnd_required').show();
+                //     return;
+                // }
                 // if(this.training == 0) {
                 //     $('.training_required').show();
                 //     return;

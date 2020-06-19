@@ -34,7 +34,7 @@ $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
 $organization_id = 2;
-$organizationCode = strtolower($_SESSION["organizationCode"]);
+$organizationCode = strtoupper($_SESSION["organizationCode"]);
 switch ($organizationCode) {
     case "EA":
         {
@@ -107,7 +107,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 ?>
 
 <html>
-<title>Trang chủ</title>
+<title>Home</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">

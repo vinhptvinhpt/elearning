@@ -346,7 +346,7 @@
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
                     text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "error",
+                    type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,
                     showLoaderOnConfirm: true

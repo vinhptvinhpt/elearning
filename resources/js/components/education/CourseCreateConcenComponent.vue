@@ -64,12 +64,12 @@
                                             <!--                                            </select>-->
                                             <!--                                        </div>-->
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                                                 <input v-model="pass_score" type="number" id="inputText1-2"
                                                        :placeholder="trans.get('keys.vi_du')+': 50'"
                                                        class="form-control mb-4">
-                                                <label v-if="!pass_score"
-                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!pass_score"-->
+<!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
@@ -250,9 +250,10 @@
                 //     $('.enddate_required').show();
                 //     return;
                 // }
+
+                //Nếu không nhập điểm qua môn thì mặc định là 0
                 if (!this.pass_score) {
-                    $('.pass_score_required').show();
-                    return;
+                    this.pass_score = 0;
                 }
 
                 if (!this.course_place) {
