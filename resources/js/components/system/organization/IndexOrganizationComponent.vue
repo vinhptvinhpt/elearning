@@ -136,6 +136,7 @@
                         <th>{{trans.get('keys.ma_to_chuc')}}</th>
                         <th>{{trans.get('keys.ten_to_chuc')}}</th>
                         <th>{{trans.get('keys.truc_thuoc')}}</th>
+                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
                         <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
                         <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                         </thead>
@@ -155,13 +156,19 @@
                               {{ item.employees.length }}
                             </router-link>
                           </td>
+                          <td class="text-center" v-if="slug_can('tms-system-employee-view')">
+                            <router-link :title="trans.get('keys.xem_nhan_vien')"
+                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current}}">
+                              {{ item.recusive_employees }}
+                            </router-link>
+                          </td>
                           <td class="text-center">
 
-                            <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"
-                                         class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
-                              <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>
-                            </router-link>
+<!--                            <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"-->
+<!--                                         class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->
+<!--                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">-->
+<!--                              <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>-->
+<!--                            </router-link>-->
 
                             <router-link v-if="slug_can('tms-system-organize-edit')" :title="trans.get('keys.sua_to_chuc')"
                                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
@@ -184,6 +191,7 @@
                         <th>{{trans.get('keys.ma_to_chuc')}}</th>
                         <th>{{trans.get('keys.ten_to_chuc')}}</th>
                         <th>{{trans.get('keys.truc_thuoc')}}</th>
+                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
                         <th class="text-center">{{trans.get('keys.nhan_vien')}}</th>
                         <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                         </tfoot>
@@ -299,7 +307,9 @@
                         if (response.data.status === 'warning') {
                           toastr['warning'](response.data.message, this.trans.get('keys.thong_bao'));
                         }
-                        this.posts = response.data.data ? response.data.data.data : [];
+                        let list = response.data.data ? response.data.data.data : [];
+                        list = this.employeeRecursive(list);
+                        this.posts = list;
                         this.current = response.data.pagination ? response.data.pagination.current_page : 1;
                         this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
                         this.totalRow = response.data ? response.data.total : 0;
@@ -384,6 +394,25 @@
                 } else {
                   this.display = 'grid';
                 }
+            },
+            employeeRecursive(list) {
+              for (const [key, item] of Object.entries(list)) {
+                item.recusive_employees = item.employees.length;
+                if (item.children.length > 0) {
+                  item.recusive_employees = item.recusive_employees + this.countEmployee(item.children);
+                }
+              }
+              return list;
+            },
+            countEmployee(list) {
+              let total = 0;
+              for (const [key, item] of Object.entries(list)) {
+                total += item.employees.length;
+                if (item.children.length > 0) {
+                  total += this.countEmployee(item.children);
+                }
+              }
+              return total;
             }
         },
         mounted() {
