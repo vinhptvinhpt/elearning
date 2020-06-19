@@ -748,12 +748,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
                         //set progress
-                        this.progressCurrentCourse = response.data.currentcourses.length + "/"+response.data.totalCourse;
-                        this.progressRequiredCourse = response.data.requiredcourses.length + "/"+response.data.totalCourse;
+                        this.progressCurrentCourse = Object.keys(response.data.currentcourses).length + "/"+response.data.totalCourse;
+                        this.progressRequiredCourse = Object.keys(response.data.requiredcourses).length + "/"+response.data.totalCourse;
 
                         //
-                        $('.progress-current').css('width', response.data.currentcourses.length*100/response.data.totalCourse+'%');
-                        $('.progress-required').css('width', response.data.requiredcourses.length*100/response.data.totalCourse+'%');
+                        $('.progress-current').css('width', Object.keys(response.data.currentcourses).length*100/response.data.totalCourse+'%');
+                        $('.progress-required').css('width', Object.keys(response.data.requiredcourses).length*100/response.data.totalCourse+'%');
 
 
                     })
