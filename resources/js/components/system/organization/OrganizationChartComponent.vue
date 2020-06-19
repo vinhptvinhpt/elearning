@@ -282,12 +282,19 @@
       //Set height for chart base on number of organizations
       if (organizations.length < 20) {
         this.chartOptions.chart.height = 1300;
+        this.chartOptions.exporting.sourceHeight = 1300;
       } else if (organizations.length > 20 && organizations.length < 35) {
         this.chartOptions.chart.height = 1600;
+        this.chartOptions.exporting.sourceHeight = 1600;
+        this.chartOptions.exporting.sourceWidth = 1000;
       } else if (organizations.length > 35 && organizations.length < 50) {
         this.chartOptions.chart.height = 1900;
+        this.chartOptions.exporting.sourceHeight = 1900;
+        this.chartOptions.exporting.sourceWidth = 1000;
       } else if (organizations.length > 50) {
         this.chartOptions.chart.height = 2200;
+        this.chartOptions.exporting.sourceHeight = 2200;
+        this.chartOptions.exporting.sourceWidth = 1000;
       }
     }
   };
