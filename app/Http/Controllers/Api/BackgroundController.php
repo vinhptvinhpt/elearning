@@ -14,6 +14,7 @@ use App\MdlGradeItem;
 use App\MdlRole;
 use App\MdlRoleAssignments;
 use App\MdlUser;
+use App\MdlUserEnrolments;
 use App\ModelHasRole;
 use App\Role;
 use App\StudentCertificate;
@@ -1235,10 +1236,12 @@ class BackgroundController extends Controller
             ->delete();
 
         //Temporary
-        //Delete Mdl_user data
-        MdlRoleAssignments::query()->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
+        //Delete mdl_user_enrolments data
+        MdlUserEnrolments::query()->whereIn('userid', function ($q) use ($excludes, $exclude_email) {
             self::buildSubQueryForUser1($q, $excludes, $exclude_email);
         })->delete();
+
+        //Delete from
 
         //Xóa user trong bảng mdl_user
         //Server error General error: 1093 You can't specify target table 'mdl_user' for update in FROM clause - mặc dù đã đặt alias??
@@ -1316,6 +1319,13 @@ class BackgroundController extends Controller
          * @var $q Builder
          */
         $q->select('id')->from('mdl_user');
+    }
+
+    function deleteLeftoverData() {
+        MdlUserEnrolments::query()->whereNotIn('userid', function ($q2)  {
+            $q2->select('user_id')->from('tms_user_detail');
+        })->delete();
+        //updating
     }
 
 }

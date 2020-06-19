@@ -42,6 +42,7 @@ Route::get('/background/importEmployee', 'Api\BackgroundController@importEmploye
 
 //Clean users, comment lại sau khi dùng xong
 Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
+Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute

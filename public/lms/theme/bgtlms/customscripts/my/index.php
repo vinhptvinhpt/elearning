@@ -2,7 +2,26 @@
 require_once(__DIR__ . '/../../../../config.php');
 // Start the session
 session_start();
-$sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+
+$sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
+$teacher = $DB->get_record_sql($sql_teacher);
+$teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
+
+$sql = 'select @s:=@s+1 stt, mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration,
+( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
+ ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+    muet.userid as teacher_id, tud.fullname as teacher_name, tor.name as organization_name, muet.timecreated as teacher_created
+  from mdl_course mc
+  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_user_enrolments mue on me.id = mue.enrolid
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+  left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
+  where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+
 $courses = array_values($DB->get_records_sql($sql));
 
 $sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = '.$USER->id;
@@ -13,19 +32,39 @@ $courses_all_required = array();
 $courses_optional = array();
 $courses_completed = array();
 foreach ($courses as $course){
-    if($course->id == 506){
-        array_push($courses_completed, $course);
-    }
-    else if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
-        array_push($courses_all_required, $course);
+    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+        push_course($courses_all_required, $course);
     }
     else if($course->numoflearned/$course->numofmodule == 1){
-        array_push($courses_completed, $course);
+        push_course($courses_completed, $course);
     }
     else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-        array_push($courses_current, $course);
+        push_course($courses_current, $course);
     }
 }
+
+function push_course(&$array, $course) {
+//    $teacher = array();
+//    if (strlen($course->teacher_name) != 0) {
+//        $teacher = array(
+//          'id' => $course->teacher_id,
+//          'teacher_name'   => $course->teacher_name,
+//          'organization_name'   => $course->organization_name,
+//          'teacher_created' => $course->teacher_created
+//        );
+//    }
+    if (array_key_exists($course->id, $array)) {
+        $old_created = $array[$course->id]->teacher_created;
+        if ($course->teacher_created > intval($old_created)) {
+            $array[$course->id] = $course;
+        }
+        //$array[$course->id]->teachers[] = $teacher;
+    } else {//mới
+        $array[$course->id] = $course;
+        //$array[$course->id]->teachers = array($teacher);
+    }
+}
+
 // Set session variables
 $_SESSION["courses_current"] = $courses_current;
 $_SESSION["courses_all_required"] = $courses_all_required;
@@ -723,6 +762,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         </header>
     </section>
     <!--    body-->
+
+<!--    <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">-->
+<!--        Launch demo modal-->
+<!--    </button>-->
+
     <section class="section section-content">
         <div class="content">
             <div class="container">
@@ -815,7 +859,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                         <div class="block-item__content_text">
                                                             <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
-                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                 <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                             </div>
@@ -861,7 +905,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -907,7 +951,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $course->teacher_name ?></p>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -1066,6 +1110,28 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     });
 </script>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                ...
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
 
