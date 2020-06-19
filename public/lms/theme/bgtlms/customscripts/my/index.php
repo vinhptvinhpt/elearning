@@ -35,13 +35,13 @@ $sqlGetOrganization = 'SELECT f.id, f.level, f.code
             where f.level = 2 or f.level = 1 limit 1';
 $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
 $organizationCodeGet = "";
-if(strpos(strtolower($organization->code), 'begodi') === 0){
+if(strpos(strtolower($organization->code), 'bg') === 0){
     $organizationCodeGet = "BG";
 }
-else if(strpos(strtolower($organization->code),'easia') === 0){
+else if(strpos(strtolower($organization->code),'ea') === 0){
     $organizationCodeGet = "EA";
 }
-else if(strpos(strtolower($organization->code), 'exotic') === 0){
+else if(strpos(strtolower($organization->code), 'ev') === 0){
     $organizationCodeGet = "EV";
 }else{
     $organizationCodeGet = "PH";
@@ -114,7 +114,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
             $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/bg-exotic.png';
         }
         break;
     case "BG":
@@ -124,7 +124,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/bg-begodi.png';
         }
         break;
     case "AV":
@@ -134,7 +134,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/bg-avana.png';
         }
         break;
     default:
