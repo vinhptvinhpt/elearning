@@ -79,7 +79,7 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}}
+                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h)
                                                     *</label>
                                                 <input v-model="estimate_duration" id="estimate_duration" type="number"
                                                        :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
@@ -108,7 +108,7 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
                                                 <input v-model="course_budget" id="course_budget"
                                                        :placeholder="trans.get('keys.nhap_chi_phi')" type="number"
                                                        step="0.01"

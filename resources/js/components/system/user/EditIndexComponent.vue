@@ -163,7 +163,7 @@
                                         </div>
                                     </div>
                                 </li>
-                                <li v-if="role_type != 'market'">
+<!--                                <li v-if="role_type != 'market'">-->
                                     <!--                  <div class="row">-->
                                     <!--&lt;!&ndash;                    <div class="col-sm-6">{{trans.get('keys.noi_lam_viec')}}</div>&ndash;&gt;-->
                                     <!--                    <div class="col-sm-6 pl-30 pl-sm-15">-->
@@ -266,7 +266,7 @@
 
                                     <!--                    </div>-->
                                     <!--                  </div>-->
-                                </li>
+<!--                                </li>-->
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.quyen_tai_khoan')}}</div>

@@ -39,20 +39,20 @@ function cus_login($idorusername)
             JOIN tms_organization ON @id IS NOT NULL) tmp2
             JOIN tms_organization f ON tmp2._id = f.id
             where f.level = 2 or f.level = 1 limit 1';
-            $organizationCode = array_values($DB->get_records_sql($sqlGetOrganization))[0];
-            $organizationCodeFinal = "";
-            if(strpos(strtolower($organizationCode->code), 'begodi')){
-                $organizationCodeFinal = "BG";
+            $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+            $organizationCodeGet = "";
+            if(strpos(strtolower($organization->code), 'bg') === 0){
+                $organizationCodeGet = "BG";
             }
-            else if(strpos(strtolower($organizationCode->code),'easia')){
-                $organizationCodeFinal = "EA";
+            else if(strpos(strtolower($organization->code),'ea') === 0){
+                $organizationCodeGet = "EA";
             }
-            else if(strpos(strtolower($organizationCode->code), 'exotic')){
-                $organizationCodeFinal = "EV";
+            else if(strpos(strtolower($organization->code), 'ev') === 0){
+                $organizationCodeGet = "EV";
             }else{
-                $organizationCodeFinal = "PH";
+                $organizationCodeGet = "PH";
             }
-            $_SESSION["organizationCode"] = $organizationCodeFinal;
+            $_SESSION["organizationCode"] = $organizationCodeGet;
             return 1;
         }
         return 0;

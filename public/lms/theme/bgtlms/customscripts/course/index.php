@@ -267,7 +267,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     .block-color{
         width: 99px;
         height: 93px;
-        background-color: #0080EF;
+        background-color: <?=$_SESSION["color"]?>;
         position: absolute;
         z-index: 1;
         left: 0%;

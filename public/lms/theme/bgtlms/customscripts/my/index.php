@@ -37,6 +37,26 @@ $courses = array_values($DB->get_records_sql($sql));
 $sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = '.$USER->id;
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
 
+$sqlGetOrganization = 'SELECT f.id, f.level, f.code
+            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
+            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= '.$USER->id.')) tmp1
+            JOIN tms_organization ON @id IS NOT NULL) tmp2
+            JOIN tms_organization f ON tmp2._id = f.id
+            where f.level = 2 or f.level = 1 limit 1';
+$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+$organizationCodeGet = "";
+if(strpos(strtolower($organization->code), 'bg') === 0){
+    $organizationCodeGet = "BG";
+}
+else if(strpos(strtolower($organization->code),'ea') === 0){
+    $organizationCodeGet = "EA";
+}
+else if(strpos(strtolower($organization->code), 'ev') === 0){
+    $organizationCodeGet = "EV";
+}else{
+    $organizationCodeGet = "PH";
+}
+
 $courses_current = array();
 $courses_all_required = array();
 $courses_optional = array();
@@ -83,7 +103,9 @@ $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
 $organization_id = 2;
-$organizationCode = strtoupper($_SESSION["organizationCode"]);
+//$organizationCodeGet
+$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
+
 switch ($organizationCode) {
     case "EA":
         {

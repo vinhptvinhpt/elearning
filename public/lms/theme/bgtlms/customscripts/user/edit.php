@@ -69,6 +69,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         color: <?=$_SESSION["color"]?>;
         padding: 5px;
     }
+    .btn-click a{
+        color: <?=$_SESSION["color"]?>;
+    }
     .btn-update{
         background-color: <?=$_SESSION["color"]?> !important;
         color: #ffffff !important;

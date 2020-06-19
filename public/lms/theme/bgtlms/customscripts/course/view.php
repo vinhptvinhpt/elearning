@@ -940,8 +940,10 @@ if ($edit == 0) {
             var getHref = $(this).attr('href');
             if(getHref.indexOf('unit')>-1){
                 var getID = $(".unit").first().attr('id');
-                var ID = getID.substring(5, getID.length);
-                ClickNav(getID, ID);
+                if(getID){
+                    var ID = getID.substring(5, getID.length);
+                    ClickNav(getID, ID);
+                }
             }
             $('.nav-click a').not($(this)).each(function () {
                 $(this).removeClass('active');

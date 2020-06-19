@@ -58,6 +58,11 @@
                 </div>
 
                 <!-- Error Alert -->
+                <div class="alert alert-danger alert-dismissible message error organizationFail"
+                     style="display: none;margin-top: 1rem">
+                    <strong>Error!</strong>&nbsp;You do not have access to this organization
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
                 <div class="alert alert-danger alert-dismissible message error loginFail"
                      style="display: none;margin-top: 1rem">
                     <strong>Error!</strong>&nbsp;Username or password incorrect
@@ -349,7 +354,7 @@
                     {{--}--}}
 
                 } else if (
-                    data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" ||
+                    data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" || data.status === "FAILORGANIZATION" ||
                     data.status === "INVALID" || data.status === "FAILCONFIRM" || data.status === "FAILCODE" || data.status === "FAILVALIDATECODE"
                 ) {
                     $('.message.error').hide();
@@ -374,6 +379,10 @@
                         $('#confirm_code').addClass('error');
                         $('.message.error.message_confirm_code').show();
                         $('.message.error.message_confirm_code').html('Mã giấy chứng nhận gồm ( a-zA-Z0-9 ), ký tự đặc biệt ( -_./ ).');
+                    }
+
+                    if (data.status === "FAILORGANIZATION") {
+                        $('.message.error.organizationFail').show();
                     }
                 } else {
                     $('.message.error.internalServerError').show();
