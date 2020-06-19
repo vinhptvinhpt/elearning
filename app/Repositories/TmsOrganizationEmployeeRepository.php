@@ -22,6 +22,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         $organization_id = $request->input('organization_id');
         $position = $request->input('position');
         $role = $request->input('role');
+        $view_mode = $request->input('view_mode');
 
         $param = [
             'keyword' => 'text',
@@ -91,7 +92,18 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
 
         if (is_numeric($organization_id) && $organization_id != 0) {
-            $list = $list->where('organization_id', $organization_id);
+            if ($view_mode == 'recursive') {
+                $list->whereIn('user_id', function ($q2) use ($organization_id) {
+                    $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                            from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
+            } else {
+                $list = $list->where('organization_id', $organization_id);
+            }
         }
 
         $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));

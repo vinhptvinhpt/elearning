@@ -208,7 +208,7 @@
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
                                                                  class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                                 :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current }, query: {organization_id: query_organization_id}}">
+                                                                 :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
 
@@ -272,6 +272,7 @@
                 type: [String, Number],
                 default: ''
             },
+            view_mode: String,
             slugs: Array,
         },
         data() {
@@ -348,7 +349,8 @@
                     row: this.row,
                     organization_id: this.query_organization_id,
                     position: this.position,
-                    role: this.selected_role
+                    role: this.selected_role,
+                    view_mode: this.view_mode
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];

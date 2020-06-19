@@ -61,12 +61,12 @@ class BackgroundController extends Controller
 {
     public function test()
     {
-        //path to files folder contain excel files
-        $dir = storage_path() . DIRECTORY_SEPARATOR . "import";
-        //return files or folders in directory above
-        $files = scandir($dir);
-        $files = array_diff($files, array('.', '..'));
-        return response()->json($files);
+//        path to files folder contain excel files
+//        $dir = storage_path() . DIRECTORY_SEPARATOR . "import";
+//        //return files or folders in directory above
+//        $files = scandir($dir);
+//        $files = array_diff($files, array('.', '..'));
+//        return response()->json($files);
     }
 
     public function importEmployee(Request $request)
