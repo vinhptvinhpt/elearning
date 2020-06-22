@@ -103,6 +103,11 @@ class SelfAssessmentController
     {
         return $this->tmsSelfAssessmentRepository->submitSelfAssessment($self_id, $request);
     }
+
+    public function apiSubmitSelfAssessmentLMS($self_id, Request $request)
+    {
+        return $this->tmsSelfAssessmentRepository->submitSelfAssessmentLMS($self_id, $request);
+    }
     //endregion
 
 

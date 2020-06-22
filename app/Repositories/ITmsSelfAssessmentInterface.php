@@ -45,6 +45,9 @@ interface ITmsSelfAssessmentInterface
     //submit result self assessment
     public function submitSelfAssessment($self_id, Request $request);
 
+    //submit result self assessment, link on LMS
+    public function submitSelfAssessmentLMS($self_id, Request $request);
+
     //statistic result self assessment
     public function statisticSelfAssessment(Request $request);
 
