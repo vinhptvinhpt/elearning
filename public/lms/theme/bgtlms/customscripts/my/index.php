@@ -114,7 +114,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/logo-black.png';
             $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
             $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "EV":
@@ -124,7 +124,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
             $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "BG":
@@ -134,7 +134,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "AV":
@@ -144,7 +144,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     default:
