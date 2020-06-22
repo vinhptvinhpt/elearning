@@ -126,9 +126,11 @@
                                 <label v-if="!users.username" class="required text-danger username_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}.</label>
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
-                                <label for="inputCmtnd">{{trans.get('keys.cmnd')}} *</label>
-                                <input type="text" id="inputCmtnd" v-model="users.cmtnd" class="form-control mb-4" @input="changeRequired('inputCmtnd')">
-                                <label v-if="!users.cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                                <label for="inputCmtnd">{{trans.get('keys.cmnd')}}</label>
+                              <input type="text" id="inputCmtnd" v-model="users.cmtnd" class="form-control mb-4">
+<!--                                <input type="text" id="inputCmtnd" v-model="users.cmtnd" class="form-control mb-4"-->
+<!--                                       @input="changeRequired('inputCmtnd')">-->
+<!--                                <label v-if="!users.cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                             </div>
                             <div class="col-md-4 col-sm-6 form-group">
                                 <label for="inputFullname">{{trans.get('keys.ho_va_ten')}} *</label>
@@ -774,10 +776,10 @@
                     $('.email_required').show();
                     return;
                 }
-                if(!this.users.cmtnd){
-                    $('.cmtnd_required').show();
-                    return;
-                }
+                // if(!this.users.cmtnd){
+                //     $('.cmtnd_required').show();
+                //     return;
+                // }
                 if(!this.users.fullname){
                     $('.fullname_required').show();
                     return;
@@ -826,12 +828,16 @@
                 //     return;
                 //   }
                 // }
-                if (this.users.employee.organization_id) {
-                  if (organization_roles_selected.length === 0) {
-                    toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                    return;
-                  }
-                }
+                // if (this.users.employee.organization_id) {
+                //   if (organization_roles_selected.length === 0) {
+                //     toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                //     return;
+                //   }
+                // }
+
+              if(this.users.cmtnd === undefined || this.users.cmtnd === null){
+                this.users.cmtnd = '';
+              }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);

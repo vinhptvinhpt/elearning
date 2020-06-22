@@ -75,16 +75,16 @@
                                                        class="required text-danger category_id_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                                                 <input v-model="course.pass_score" type="number" id="pass_score"
                                                        :placeholder="trans.get('keys.vi_du')+': 50'"
                                                        class="form-control mb-4">
-                                                <label v-if="!course.pass_score"
-                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!course.pass_score"-->
+<!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}}
+                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h)
                                                     *</label>
                                                 <input v-model="course.estimate_duration" id="estimate_duration"
                                                        type="number"
@@ -116,12 +116,12 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} *</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
                                                 <input v-model="course.course_budget" id="course_budget" type="number"
                                                        step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')"
                                                        class="form-control mb-4">
-                                              <label v-if="!course.course_budget"
-                                                     class="required text-danger course_budget_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                              <label v-if="!course.course_budget"-->
+<!--                                                     class="required text-danger course_budget_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group d-none">
@@ -307,20 +307,20 @@
                     return;
                 }
 
-              if (!this.course.course_budget) {
-                $('.course_budget_required').show();
-                return;
-              }
+              // if (!this.course.course_budget) {
+              //   $('.course_budget_required').show();
+              //   return;
+              // }
 
                 // if (!this.course.enddate) {
                 //     $('.enddate_required').show();
                 //     return;
                 // }
 
-                if (!this.course.pass_score && this.course.category != 3) {
-                    $('.pass_score_required').show();
-                    return;
-                }
+                // if (!this.course.pass_score && this.course.category != 3) {
+                //     $('.pass_score_required').show();
+                //     return;
+                // }
 
                 var allow_reg = 0;
                 if (this.course.allow_register) {

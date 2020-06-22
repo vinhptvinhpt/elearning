@@ -5036,31 +5036,39 @@ class BussinessRepository implements IBussinessInterface
             //thực hiện update dữ liệu
 //            $cer = ImageCertificate::where('id', $id)->first();
             //get organization
-            $cer = ImageCertificate::where('organization_id', $organization_id)
-                ->where('type', '=', $type)
-                ->first();
-
-            if (!empty($cer) && $cer->id == $id) {
-                $cer->name = $name;
-                $cer->description = $description;
-                $cer->is_active = $is_active;
-                $cer->position = $position;
-                $cer->organization_id = $organization_id;
-            } else if (!empty($cer) && $cer->id !== $id) {
-                $response->status = false;
-                $response->message = __('to_chuc_nay_da_ton_tai_mau_chung_chi');
-                return response()->json($response);
-            } else {
-                $cer = ImageCertificate::updateOrCreate([
-                    'id' => $id
-                ], [
-                    'name' => $name,
-                    'description' => $description,
-                    'is_active' => $is_active,
-                    'position' => $position,
-                    'organization_id' => $organization_id
-                ]);
-            }
+            $cer = ImageCertificate::where('id', $id)
+                ->where('type', '=', $type)->first();
+//            if($organization_id != 0)
+//                $cer = ImageCertificate::where('organization_id', $organization_id)
+//                ->where('type', '=', $type)
+//                ->first();
+//            else
+//                $cer = ImageCertificate::where('organization_id', $organization_id)
+//                    ->where('type', '=', $type)
+//                    ->first();
+//            if (!empty($cer) && $cer->id == $id) {
+//                $cer->name = $name;
+//                $cer->description = $description;
+//                $cer->is_active = $is_active;
+//                $cer->position = $position;
+//                $cer->organization_id = $organization_id;
+//            }
+//            else if (!empty($cer) && $cer->id !== $id) {
+//                $response->status = false;
+//                $response->message = __('to_chuc_nay_da_ton_tai_mau_chung_chi');
+//                return response()->json($response);
+//            }
+//            else {
+//                $cer = ImageCertificate::updateOrCreate([
+//                    'id' => $id
+//                ], [
+//                    'name' => $name,
+//                    'description' => $description,
+//                    'is_active' => $is_active,
+//                    'position' => $position,
+//                    'organization_id' => $organization_id
+//                ]);
+//            }
 
 
             if ($avatar) {
@@ -5082,6 +5090,7 @@ class BussinessRepository implements IBussinessInterface
             }
             $get_active = DB::table('image_certificate')
                 ->where('is_active', 1)->where('type', '=', $type)->first();
+
             if ($is_active == 0) {
                 if (!$get_active || $get_active->id == $id) {
                     $response->status = false;
@@ -5092,6 +5101,16 @@ class BussinessRepository implements IBussinessInterface
 //                $get_active->is_active = 0;
                 ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->where('type', '=', $type)->update(['is_active' => '0']);
             }
+
+            $cer = ImageCertificate::updateOrCreate([
+                'id' => $id
+            ], [
+                'name' => $name,
+                'description' => $description,
+                'is_active' => $is_active,
+                'position' => $position,
+                'organization_id' => $organization_id
+            ]);
             $cer->save();
             \DB::commit();
             $response->status = true;
@@ -8014,9 +8033,9 @@ class BussinessRepository implements IBussinessInterface
             $convert_name = convert_name($fullname);
             $roles = explode(',', $roles);
             //Check scmtnd
-            $userByCmtnd = TmsUserDetail::select('user_id')->whereNotIn('user_id', [$user_id])->where('cmtnd', $cmtnd)->first();
-            if ($userByCmtnd)
-                return response()->json(error_message('inputCmtnd', __('so_cmtnd_da_ton_tai')));
+//            $userByCmtnd = TmsUserDetail::select('user_id')->whereNotIn('user_id', [$user_id])->where('cmtnd', $cmtnd)->first();
+//            if ($userByCmtnd)
+//                return response()->json(error_message('inputCmtnd', __('so_cmtnd_da_ton_tai')));
             //Check user
             $userByUser = MdlUser::select('id')->whereNotIn('id', [$user_id])->where('username', $username)->first();
             if ($userByUser)
