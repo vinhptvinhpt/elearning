@@ -66,12 +66,12 @@
                                             <!--                                            </select>-->
                                             <!--                                        </div>-->
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                                                 <input v-model="course.pass_score" type="number" id="inputText1-2"
                                                        :placeholder="trans.get('keys.vi_du')+': 50'"
                                                        class="form-control mb-4">
-                                                <label v-if="!course.pass_score"
-                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!course.pass_score"-->
+<!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
                                             <div class="col-md-4 col-sm-6 form-group">
                                                 <label for="inputText1-1">{{trans.get('keys.thoi_gian_du_kien')}}
@@ -125,7 +125,7 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
                                                 <input v-model="course.course_budget" id="course_budget" type="number"
                                                        step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')"
                                                        class="form-control mb-4">
@@ -302,10 +302,10 @@
                 //     $('.enddate_required').show();
                 //     return;
                 // }
-                if (!this.course.pass_score) {
-                    $('.pass_score_required').show();
-                    return;
-                }
+                // if (!this.course.pass_score) {
+                //     $('.pass_score_required').show();
+                //     return;
+                // }
 
                 if (!this.course.course_place) {
                     $('.course_place_required').show();

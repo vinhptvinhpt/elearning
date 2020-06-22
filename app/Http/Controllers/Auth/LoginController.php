@@ -206,7 +206,7 @@ class LoginController extends Controller
                 }
             }
 
-            if(Str::contains(strtolower($host), ['localhost']) == 1){
+            if(Str::contains(strtolower($host), ['localhost']) == 1 || Str::contains(strtolower($host), ['dev']) == 1){
             }else if(Str::contains(strtolower($host), [$partOfUrl]) !== 1){
                 return response()->json(['status' => 'FAILORGANIZATION']);
             }

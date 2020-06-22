@@ -2605,7 +2605,7 @@ function validate_fails($request, $param)
                             "regex:/^[0-9]*$/i"
                         ],
                     ]);
-                    if ($validator->fails() && $request->input($key))
+                    if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
                         return [
                             'key' => $key,
                             //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
