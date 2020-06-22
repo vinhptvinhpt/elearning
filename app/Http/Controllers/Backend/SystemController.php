@@ -430,4 +430,9 @@ class SystemController extends Controller
     {
         return $this->userRepository->apiUserChangeWorkingStatus($request);
     }
+
+    public function apiStatisticLogin(Request $request)
+    {
+        return $this->userRepository->loginStatistic($request);
+    }
 }

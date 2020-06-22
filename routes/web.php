@@ -590,7 +590,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/selfquestion/getlstanswer/{ques_id}', 'Backend\SelfAssessmentController@apiGetListAnswer');
     Route::get('/api/selfquestion/getlstquestionmimax/{ques_id}', 'Backend\SelfAssessmentController@apiGetListQuestionMimax');
     Route::get('/api/selfquestion/getlstquestiongroup/{ques_id}', 'Backend\SelfAssessmentController@apiGetListQuestionGroup');
-
+    Route::post('/api/system/user/login_statistic', 'Backend\SystemController@apiStatisticLogin');
+    Route::post('/exportLoginReport', 'Backend\ExcelController@exportLogLogin');
+    Route::get('/downloadExportLoginReport', 'Backend\ExcelController@downloadExportLoginReport');
     /**
      * Route Đào tạo
      **/

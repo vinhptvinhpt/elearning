@@ -412,6 +412,11 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.bao_cao_danh_gia') }}</span>
                                 </router-link>
                             </li>
+                            <li class="nav-item" v-if="slug_can('tms-report-report-view')">
+                                <router-link to="/tms/report/login_statistic" class="nav-link">
+                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_truy_cap') }}</span>
+                                </router-link>
+                            </li>
                         </ul>
                     </li>
 
