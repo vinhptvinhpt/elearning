@@ -604,7 +604,7 @@
                     return;
                 }
 
-                if (this.inputRole.length === 0) {
+                if (this.type === 'system' && this.inputRole.length === 0) {
                     $('.inputRole_required').show();
                     return;
                 }
