@@ -119,6 +119,7 @@ import SelfQuestionCreate from "./components/self-assessment/SelfQuestionCreateC
 import SelfQuestionEdit from "./components/self-assessment/SelfQuestionEditComponent";
 import SelfPresent from "./components/self-assessment/SelfPresentComponent";
 import SelfStatistic from "./components/self-assessment/SelfStatisticComponent";
+import SelfLMS from "./components/self-assessment/SelfLMSComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -890,6 +891,15 @@ const routes = [
                 name: 'SurveyLMS',
                 props: (route) => ({
                     survey_id: route.params.survey_id,
+                    user_id: route.params.user_id
+                })
+            },
+            {
+                path: 'self/present/:self_id/:user_id',
+                component: SelfLMS,
+                name: 'SelfLMS',
+                props: (route) => ({
+                    self_id: route.params.self_id,
                     user_id: route.params.user_id
                 })
             },
