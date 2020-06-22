@@ -958,7 +958,10 @@
         "toa_do_logo_chuki2": "Signature Director coordinates",
         "ban_muon_chuyen_trang_thai_lam_viec": "You want to change working status",
         "account_status": "Account status",
-        "nhan_vien_truc_thuoc": "Direct employees"
+        "nhan_vien_truc_thuoc": "Direct employees",
+
+        "hay_chon_toa_do_logo_sig1": "Please select logo Signature T&D Managerment coordinates",
+        "hay_chon_toa_do_logo_sig2": "Please select logo Signature Director coordinates"
     },
     "vi.keys": {
         "language": "",

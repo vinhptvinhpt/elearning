@@ -143,7 +143,7 @@
                                     <div class="col-2">
                                         <input id="ip_inputSizeFullName" type="number" min="1"
                                                class="form-control txtNumber" @change="OnchangeTextBox"
-                                               :placeholder="trans.get('keys.co_chu')">
+                                               :placeholder="trans.get('keys.co_chu')" v-model="coordinates.fullnameSize">
                                     </div>
                                 </div>
 
@@ -164,7 +164,7 @@
                                     <div class="col-2">
                                         <input id="ip_inputSizeProgram" type="number" min="1"
                                                class="form-control txtNumber" @change="OnchangeTextBox"
-                                               :placeholder="trans.get('keys.co_chu')">
+                                               :placeholder="trans.get('keys.co_chu')" v-model="coordinates.programSize">
                                     </div>
                                 </div>
 
@@ -369,15 +369,14 @@
                     id: this.id
                 })
                     .then(response => {
-                        console.log('1');
                         this.certificate = response.data;
                         this.organization_id = response.data.organization_id == null ? 0 : response.data.organization_id;
-
                         if (response.data.position !== '')
                             this.coordinates = JSON.parse(response.data.position);
                         this.showCoordinates();
                         this.img_width = this.coordinates.image_width;
                         this.img_height = this.coordinates.image_height;
+                        console.log(this.coordinates);
                     })
                     .catch(error => {
                     })
@@ -453,8 +452,8 @@
                 }
 
 
-                this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
-                this.coordinates.programSize = $('#ip_inputSizeProgram').val();
+                this.coordinates.fullnameSize = Number($('#ip_inputSizeFullName').val());
+                this.coordinates.programSize = Number($('#ip_inputSizeProgram').val());
                 this.coordinates.text_color = this.text_color;
                 // this.coordinates.sign_text = this.sign_text;
 
@@ -769,8 +768,8 @@
             SetShowTextFullName() {
                 $('#ip_inputFullName').css('display', 'block');
                 $('#ip_inputSizeFullName').css('display', 'block');
-                if ($('#ip_inputSizeFullName').val() !== '') {
-                    this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
+                if ($('#ip_inputSizeFullName').val() !== '' && $('#ip_inputSizeFullName').val() !== undefined) {
+                  this.coordinates.fullnameSize = $('#ip_inputSizeFullName').val();
                 } else if (typeof (this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined
                     || this.coordinates.fullnameSize == '') {
                     this.coordinates.fullnameSize = 15;
