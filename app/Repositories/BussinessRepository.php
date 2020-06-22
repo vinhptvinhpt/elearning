@@ -12981,11 +12981,13 @@ class BussinessRepository implements IBussinessInterface
         $data = DB::table('tms_user_detail as tud')
             ->select(
                 'tud.user_id',
+                'mu.username',
                 'tud.fullname',
                 'tud.cmtnd',
                 'tud.email',
                 'tud.phone'
             )
+            ->join('mdl_user as mu','mu.id','=','tud.user_id')
             ->where('tud.deleted', '=', 0)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
@@ -13039,9 +13041,16 @@ class BussinessRepository implements IBussinessInterface
                         ->where('model_type', 'App/MdlUser');
                 });
             }
-
-
         }
+
+        //Bỏ role Root or root
+        $data = $data->whereNotIn('tud.user_id', function ($query) {
+            $query->select('model_id')
+                ->from('model_has_roles')
+                ->join('roles','roles.id','=','model_has_roles.role_id')
+                ->where('roles.name', 'root')
+                ->orWhere('roles.name', 'Root');
+        });
 
         if ($this->keyword) {
             $data = $data->where(function ($q) {

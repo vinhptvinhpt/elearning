@@ -108,11 +108,13 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} *</label>
                                                 <input v-model="course_budget" id="course_budget"
                                                        :placeholder="trans.get('keys.nhap_chi_phi')" type="number"
                                                        step="0.01"
                                                        class="form-control mb-4">
+                                              <label v-if="!course_budget"
+                                                     class="required text-danger course_budget_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
 
                                             <!--<div class="col-md-4 col-sm-6 form-group">
@@ -254,6 +256,11 @@
                     $('.startdate_required').show();
                     return;
                 }
+
+              if (!this.course_budget) {
+                $('.course_budget_required').show();
+                return;
+              }
                 // if (!this.enddate) {
                 //     $('.enddate_required').show();
                 //     return;
