@@ -292,7 +292,6 @@ class BussinessRepository implements IBussinessInterface
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
                 ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
                 ->get();
-
             $online = 0;
             $offline = 0;
             foreach ($courses as $course) {
@@ -1138,80 +1137,83 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-//        $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-        //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
-        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-        if ($checkRole === true) {
+        //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
+        if(tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')){
             $listCourses = DB::table('mdl_course')
-                ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
+                ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
                 ->where('mdl_course.category', '=', $category_id)
-                ->where(function ($query) {
-                    /* @var $query Builder */
-                    $query
-                        ->whereIn('mdl_course.id', function ($q1) { //enrol
-                            /* @var $q1 Builder */
-                            $q1->select('mdl_course.id')
-                                ->from('mdl_user_enrolments as mue')
-                                ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-                                ->where('mue.userid', '=', \Auth::user()->id);
-                        })
-                        ->orWhereIn('mdl_course.id', function ($q2) { //organization
-                            /* @var $q2 Builder */
-                            $q2->select('mdl_course.id')
-                                ->from('tms_organization_employee')
-                                ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                                ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-                                ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-                        });
-                })->select(
+                ->select(
                     'mdl_course.id',
                     'mdl_course.fullname',
                     'mdl_course.shortname',
                     'mdl_course.startdate',
                     'mdl_course.enddate',
                     'mdl_course.visible',
-                    'mdl_course.category',
-                    'mdl_course.deleted',
-                    'mccc.gradepass as pass_score'
+                    'mdl_course_completion_criteria.gradepass as pass_score'
                 );
-        } else {
-            //Kiểm tra xem có phải role teacher hay không
-            $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-            if ($checkRole == true) {
-                $listCourses = DB::table('mdl_user_enrolments')
-                    ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
-                    ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
-                    ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
-                    ->where('mdl_course.category', '=', $category_id)
-                    ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                    ->select(
-                        'mdl_course.id',
-                        'mdl_course.fullname',
-                        'mdl_course.shortname',
-                        'mdl_course.startdate',
-                        'mdl_course.enddate',
-                        'mdl_course.visible',
-                        'mdl_course_completion_criteria.gradepass as pass_score'
-                    );
-            } else {
+        }
+        else{
+            //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
+            $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+            if ($checkRole === true) {
                 $listCourses = DB::table('mdl_course')
-                    ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                    ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
                     ->where('mdl_course.category', '=', $category_id)
-                    ->select(
+                    ->where(function ($query) {
+                        /* @var $query Builder */
+                        $query
+                            ->whereIn('mdl_course.id', function ($q1) { //enrol
+                                /* @var $q1 Builder */
+                                $q1->select('mdl_course.id')
+                                    ->from('mdl_user_enrolments as mue')
+                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                    ->where('mue.userid', '=', \Auth::user()->id);
+                            })
+                            ->orWhereIn('mdl_course.id', function ($q2) { //organization
+                                /* @var $q2 Builder */
+                                $q2->select('mdl_course.id')
+                                    ->from('tms_organization_employee')
+                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                            });
+                    })->select(
                         'mdl_course.id',
                         'mdl_course.fullname',
                         'mdl_course.shortname',
                         'mdl_course.startdate',
                         'mdl_course.enddate',
                         'mdl_course.visible',
-                        'mdl_course_completion_criteria.gradepass as pass_score'
+                        'mdl_course.category',
+                        'mdl_course.deleted',
+                        'mccc.gradepass as pass_score'
                     );
             }
+            else {
+                //Kiểm tra xem có phải role teacher hay không
+                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+                if ($checkRole == true) {
+                    $listCourses = DB::table('mdl_user_enrolments')
+                        ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
+                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                        ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
+                        ->where('mdl_course.category', '=', $category_id)
+                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+                        ->select(
+                            'mdl_course.id',
+                            'mdl_course.fullname',
+                            'mdl_course.shortname',
+                            'mdl_course.startdate',
+                            'mdl_course.enddate',
+                            'mdl_course.visible',
+                            'mdl_course_completion_criteria.gradepass as pass_score'
+                        );
+                }
+            }
         }
-
 
         //là khóa học mẫu
         //        if ($sample == 1) {
@@ -14475,7 +14477,6 @@ class BussinessRepository implements IBussinessInterface
 //            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
 //            ->get();
 
-        dd('hihi');
         $response = DB::table('image_badge as ib')
 //            ->leftJoin('tms_organization as to', 'ib.organization_id', '=', 'to.id')
 //            ->select('ib.id', 'ib.path', 'ib.name', 'ib.description', 'ib.is_active', 'ib.organization_id', 'to.name as organization_name')
