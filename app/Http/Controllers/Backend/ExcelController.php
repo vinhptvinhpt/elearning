@@ -348,13 +348,18 @@ class ExcelController extends Controller
         );
 
         foreach ($data as $key => $item) {
+            $final_grade = 'N/A';
+            if (isset($item['finalgrade'])) {
+                if (is_numeric($item['finalgrade'])) {
+                    $final_grade = strval(number_format((float)$item['finalgrade'], 2, '.', ''));
+                }
+            }
             $export_data[] = array(
                 $key + 1,
                 isset($item['shortname']) ? $item['shortname'] : '',
                 isset($item['fullname']) ? $item['fullname'] : '',
-                $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)",
-                isset($item['finalgrade']) ? number_format((float)$item['finalgrade'], 2, '.', '') : 0,
-
+                $item['user_course_learn'] > 0 ? $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)" : $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(0%)',
+                $final_grade,
                 $item['status_user'] == 1
                 && floatval($item['finalgrade']) >= floatval($item['gradepass'])
                 && $item['user_course_completionstate'] == $item['user_course_learn']
