@@ -521,14 +521,6 @@ label span {
     background: #ddd;
 }
 
-
-
-
-
-
-
-
-
 @media (min-width: 580px){
     #div_confirm_code:after {
         content: "";
