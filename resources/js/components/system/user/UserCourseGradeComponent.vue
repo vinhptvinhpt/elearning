@@ -107,11 +107,10 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div v-if="post.user_course_completionstate == post.user_course_learn
-                                            && post.user_course_completionstate > 0
-                                            && post.status_user == 1
-                                            && post.finalgrade != undefined
-                                            && post.finalgrade >= post.gradepass">
+                                            <div v-if="parseInt(post.status_user) === 1
+                                            && checkGradepass(post.finalgrade, post.gradepass)
+                                            && parseInt(post.user_course_completionstate) === parseInt(post.user_course_learn)
+                                            && parseInt(post.user_course_completionstate) > 0">
                                                 <span class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
                                             </div>
                                             <div v-else><span class="badge badge-warning">{{trans.get('keys.chua_hoan_thanh')}}</span>
@@ -288,6 +287,27 @@
                         toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
+            checkGradepass(finalgrade, gradepass) {
+            let check = false;
+            if ( finalgrade == null ) { //check both undefined and null
+              finalgrade = 0
+            } else {
+              check = true;
+            }
+            if (gradepass == null) {
+              finalgrade = 0
+            } else {
+              check = true;
+            }
+            if (check === true) {
+              let new_final_grade = parseFloat(finalgrade);
+              let new_grade_pass = parseFloat(gradepass);
+              if (new_final_grade >= new_grade_pass) {
+                return true;
+              }
+            }
+            return false;
+          },
         },
         mounted() {
             this.getCourseCategory();
