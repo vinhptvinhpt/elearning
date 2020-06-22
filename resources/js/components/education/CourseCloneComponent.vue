@@ -129,14 +129,14 @@
                                             </div>
 
 
-                                            <div class="col-sm-6 col-md-4 form-group">
-                                                <div class="pt-40 d-sm-block" style="display: none;">
-                                                </div>
-                                                <input v-model="allow_register" type="checkbox"
-                                                       style="width:20px; height:20px;"
-                                                       id="inputText9">
-                                                <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
-                                            </div>
+<!--                                            <div class="col-sm-6 col-md-4 form-group">-->
+<!--                                                <div class="pt-40 d-sm-block" style="display: none;">-->
+<!--                                                </div>-->
+<!--                                                <input v-model="allow_register" type="checkbox"-->
+<!--                                                       style="width:20px; height:20px;"-->
+<!--                                                       id="inputText9">-->
+<!--                                                <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>-->
+<!--                                            </div>-->
 
                                             <div class="col-sm-6 col-md-4 form-group" id="is_end_quiz"
                                                  style="display:none;">
@@ -387,7 +387,7 @@
                 this.formData.append('enddate', this.enddate);
                 this.formData.append('pass_score', this.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.description);
+                this.formData.append('description', this.description == null ? '' : this.description);
                 this.formData.append('category_id', this.category_id);
                 this.formData.append('is_end_quiz', quiz_test);
                 this.formData.append('total_date_course', this.total_date_course);

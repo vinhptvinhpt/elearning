@@ -288,7 +288,7 @@
                 this.formData.append('enddate', this.enddate);
                 this.formData.append('pass_score', this.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.description);
+                this.formData.append('description', this.description == null ? '' : this.description);
                 this.formData.append('category_id', this.category_id);
                 this.formData.append('course_place', '');
                 this.formData.append('is_end_quiz', quiz_test);
@@ -299,6 +299,15 @@
                 this.formData.append('course_budget', this.course_budget);
                 this.formData.append('access_ip', this.access_ip);
                 let current_pos = this;
+
+
+                //console.log(this.formData);
+
+                for (var formDataKey in this.formData) {
+                  console.log(formDataKey);
+                }
+                return;
+
                 axios.post('/api/courses/create', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
@@ -333,6 +342,7 @@
                         console.log(error.response.data);
                     });
             },
+
         },
         mounted() {
             this.getCategories();

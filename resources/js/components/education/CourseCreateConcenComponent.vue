@@ -280,7 +280,7 @@
                 this.formData.append('enddate', this.enddate);
                 this.formData.append('pass_score', this.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.description);
+                this.formData.append('description', this.description == null ? '' : this.description);
                 this.formData.append('course_place', this.course_place);
                 this.formData.append('is_end_quiz', 0);
                 this.formData.append('category_id', 5);
