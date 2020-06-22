@@ -161,4 +161,77 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
+    public function loginStatistic(Request $request)
+    {
+        // TODO: Implement loginStatistic() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $lstData = DB::table('mdl_logstore_standard_log as mls')
+            ->join('mdl_user as u', 'u.id', '=', 'mls.objectid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
+            ->where('mls.target', '=', 'user')
+            ->where('mls.action', '=', 'loggedin')
+            ->where('u.username', '!=', 'admin')
+            ->select('u.id', 'u.username', 'tud.fullname', 'mls.timecreated');
+
+        if ($keyword) {
+            $lstData = $lstData->whereRaw('( tud.fullname like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+        }
+
+        if (empty($startdate) && empty($enddate)) {
+            $now = \date('d-m-Y');
+
+            $startdate = $now . " 00:00:00";
+            $startdate = strtotime($startdate);
+
+            $enddate = $now . " 23:59:59";
+            $enddate = strtotime($enddate);
+
+            $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
+            $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
+        } else {
+            if ($startdate) {
+                $startdate = $startdate . " 00:00:00";
+                $startdate = strtotime($startdate);
+                $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
+            }
+
+            if ($enddate) {
+                $enddate = $enddate . " 23:59:59";
+                $enddate = strtotime($enddate);
+                $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
+            }
+
+        }
+
+        $lstData = $lstData->orderBy('mls.id', 'desc');
+
+        $totalCourse = count($lstData->get()); //lấy tổng số khóa học hiện tại
+
+        $lstData = $lstData->paginate($row);
+        $total = ceil($lstData->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $lstData->currentPage(),
+            ],
+            'data' => $lstData,
+            'total_course' => $totalCourse
+        ];
+
+        return response()->json($response);
+    }
 }

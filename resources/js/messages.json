@@ -962,7 +962,11 @@
     "ban_co_mot_tin_nhan_tu": "You have 1 message from",
     "ban_muon_chuyen_trang_thai_lam_viec": "You want to change working status",
     "account_status": "Account status",
-    "nhan_vien_truc_thuoc": "Direct employees"
+    "nhan_vien_truc_thuoc": "Direct employees",
+    "thong_ke_truy_cap": "Report Access",
+    "tim_kiem_theo_username_or_fullname": "Find by username or fullname...",
+    "tong_so_luot_truy_cap": "Total access",
+    "thoigian": "Time access"
   },
   "vi.keys": {
     "language": "",
@@ -1917,6 +1921,10 @@
     "avg_point": "Điểm trung bình",
     "toa_do_logo_chuki1": "Tọa độ chữ ký T&D Managerment",
     "toa_do_logo_chuki2": "Tọa độ chữ ký Giám đốc",
-    "nhan_vien_truc_thuoc": "Nhân viên trực thuộc"
+    "nhan_vien_truc_thuoc": "Nhân viên trực thuộc",
+    "thong_ke_truy_cap": "Thống kê truy cập",
+    "tim_kiem_theo_username_or_fullname": "Tìm theo họ tên hoặc tên đăng nhập...",
+    "tong_so_luot_truy_cap": "Tổng số lượt truy cập",
+    "thoigian": "Thời gian"
   }
 }

@@ -120,6 +120,7 @@ import SelfQuestionEdit from "./components/self-assessment/SelfQuestionEditCompo
 import SelfPresent from "./components/self-assessment/SelfPresentComponent";
 import SelfStatistic from "./components/self-assessment/SelfStatisticComponent";
 import SelfLMS from "./components/self-assessment/SelfLMSComponent";
+import ReportLogin from "./components/system/report/ReportLoginComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -780,8 +781,7 @@ const routes = [
                 path: 'organization',
                 component: IndexOrganizationComponent,
                 name: 'IndexOrganization',
-                props: (route) => ({
-                })
+                props: (route) => ({})
             },
             {
                 path: 'organization/edit/:id',
@@ -848,6 +848,11 @@ const routes = [
                 props: (route) => ({
                     trainning_id: route.params.trainning_id,
                 })
+            },
+            {
+                path: 'report/login_statistic',
+                component: ReportLogin,
+                name: 'ReportLogin'
             },
         ]
     },
