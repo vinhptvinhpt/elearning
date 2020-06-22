@@ -725,6 +725,136 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($response);
     }
 
+    public function submitSelfAssessmentLMS($self_id, Request $request)
+    {
+        // TODO: Implement submitSelfAssessment() method.
+        $response = new ResponseModel();
+        try {
+
+            if (!is_numeric($self_id)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return response()->json($response);
+            }
+
+            $survey = TmsSelfAssessment::findOrFail($self_id);
+
+            if (!$survey) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_survey');
+                return response()->json($response);
+            }
+
+            $user_id = $request->input('user_id');
+            $question_answers = $request->input('question_answers');
+            $group_ques = $request->input('group_ques');
+            $minmax_gr = $request->input('minmax_gr');
+
+            $arr_self_user = [];
+            $data_item_user = [];
+
+            $num = 0;
+            $limit = 100;
+            foreach ($question_answers as $qa) {
+                //lay du lieu insert vao bang tms_self_users
+                $data_item_user['type_question'] = $qa['type_ques'];
+                $data_item_user['self_id'] = $self_id;
+                $data_item_user['question_parent_id'] = $qa['ques_parent'];
+                $data_item_user['section_id'] = $qa['section_id'];
+                $data_item_user['question_id'] = $qa['ques_id'];
+                $data_item_user['answer_id'] = $qa['ans_id'];
+                $data_item_user['answer_content'] = $qa['ans_content'];
+                $data_item_user['answer_point'] = $qa['point'];
+                $data_item_user['user_id'] = $user_id;
+
+                array_push($arr_self_user, $data_item_user);
+
+                $num++;
+
+                if ($num >= $limit) {
+                    TmsSelfUser::insert($arr_self_user);
+                    $num = 0;
+                    $arr_self_user = [];
+                }
+                usleep(1);
+            }
+            TmsSelfUser::insert($arr_self_user);
+
+            foreach ($group_ques as $gr) {
+                if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
+                    $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::GROUP)
+                        ->where('self_id', '=', $self_id)
+                        ->where('question_parent_id', '=', $gr['ques_parent'])
+                        ->where('section_id', '=', $gr['section_id'])->get();
+
+                    $tms_self_statis = new TmsSelfStatisticUser();
+                    $tms_self_statis->type_question = TmsSelfQuestion::GROUP;
+                    $tms_self_statis->self_id = $self_id;
+                    $tms_self_statis->question_parent_id = $gr['ques_parent'];
+                    $tms_self_statis->section_id = $gr['section_id'];
+
+
+                    $count_dt = count($lstData);
+                    $total_point = 0;
+                    $avg_point = 0;
+                    if ($count_dt > 0) {
+                        foreach ($lstData as $dt) {
+                            $total_point += $dt->answer_point;
+                        }
+                        $avg_point = $total_point / $count_dt;
+                    }
+
+                    $tms_self_statis->total_point = $total_point;
+                    $tms_self_statis->avg_point = $avg_point;
+                    $tms_self_statis->user_id = $user_id;
+                    $tms_self_statis->save();
+
+                    usleep(2);
+                }
+            }
+
+            foreach ($minmax_gr as $mm) {
+                if ($mm['type_ques'] === TmsSelfQuestion::MIN_MAX) {
+                    $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::MIN_MAX)
+                        ->where('self_id', '=', $self_id)
+                        ->where('question_parent_id', '=', $mm['ques_parent'])
+                        ->get();
+
+                    $tms_self_statis = new TmsSelfStatisticUser();
+                    $tms_self_statis->type_question = TmsSelfQuestion::MIN_MAX;
+                    $tms_self_statis->self_id = $self_id;
+                    $tms_self_statis->question_parent_id = $mm['ques_parent'];
+                    $tms_self_statis->section_id = $mm['section_id'];
+
+
+                    $count_dt = count($lstData);
+                    $total_point = 0;
+                    $avg_point = 0;
+                    if ($count_dt > 0) {
+                        foreach ($lstData as $dt) {
+                            $total_point += $dt->answer_point;
+                        }
+                        $avg_point = $total_point / $count_dt;
+                    }
+
+                    $tms_self_statis->total_point = $total_point;
+                    $tms_self_statis->avg_point = $avg_point;
+                    $tms_self_statis->user_id = $user_id;
+                    $tms_self_statis->save();
+                    usleep(2);
+                }
+            }
+
+
+            $response->status = true;
+            $response->message = __('gui_ket_qua_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = $e->getMessage();
+        }
+        return response()->json($response);
+    }
+
     //endregion
 
     //region statistic self assessment

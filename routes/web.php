@@ -578,6 +578,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/self/getbyid/{id}', 'Backend\SelfAssessmentController@apiGetSelfById');
     Route::get('/api/self/viewlayout/{self_id}', 'Backend\SelfAssessmentController@apiViewLayoutSelfAssessment');
     Route::post('/api/self/submit_result/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessment');
+    Route::post('/api/self/submit_resultlms/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessmentLMS');
     Route::post('/api/self/statistic', 'Backend\SelfAssessmentController@apiStatisticSelfAssessment');
 
     Route::post('/api/selfquestion/list', 'Backend\SelfAssessmentController@apiGetListQuestion');

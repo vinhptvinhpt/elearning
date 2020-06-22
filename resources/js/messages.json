@@ -956,8 +956,12 @@
         "avg_point": "Average Point",
         "toa_do_logo_chuki1": "Signature T&D Managerment coordinates",
         "toa_do_logo_chuki2": "Signature Director coordinates",
-        "ban_muon_chuyen_trang_thai_lam_viec": "You want to change working status",
-        "account_status": "Account status",
+       "chon_loai_hoc_lieu_de_hien_thi_danh_sach_tai_lieu_theo_loai_hoc_lieu_duoc_chon": "Select the course type to display the list of materials according to the selected course type",
+    "da_them_ban_vao_khoa_hoc": "Đã thêm bạn vào khóa học",
+    "phut": "Minutes",
+    "ban_co_mot_tin_nhan_tu": "You have 1 message from",
+    "ban_muon_chuyen_trang_thai_lam_viec": "You want to change working status",
+    "account_status": "Account status",
         "nhan_vien_truc_thuoc": "Direct employees"
     },
     "vi.keys": {
