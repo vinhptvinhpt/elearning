@@ -419,7 +419,8 @@
                 organization_roles: [
                   'manager',
                   'employee',
-                  'leader'
+                  'leader',
+                  'teacher'
                 ]
             }
         },
@@ -821,6 +822,7 @@
                   toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                   return;
                 }
+
                 // if (organization_roles_selected.length > 0) {
                 //   if (!this.users.employee.organization_id) {
                 //     toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
@@ -835,9 +837,13 @@
                 //   }
                 // }
 
-              if(this.users.cmtnd === undefined || this.users.cmtnd === null){
-                this.users.cmtnd = '';
-              }
+                if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
+                  toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
+                }
+
+                if(this.users.cmtnd === undefined || this.users.cmtnd === null){
+                  this.users.cmtnd = '';
+                }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
