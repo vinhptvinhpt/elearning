@@ -836,9 +836,13 @@
                   }
                 }
 
-              if(this.users.cmtnd === undefined || this.users.cmtnd === null){
-                this.users.cmtnd = '';
-              }
+                if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
+                  toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
+                }
+
+                if(this.users.cmtnd === undefined || this.users.cmtnd === null){
+                  this.users.cmtnd = '';
+                }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
@@ -997,10 +1001,6 @@
                   });
               // }
             },
-
-          setFileInput() {
-            $('.dropify').dropify();
-          }
         },
         mounted() {
             this.fetch();
@@ -1009,10 +1009,7 @@
             //this.getCitys();
             this.userData();
             this.getCountries();
-        },
-      updated() {
-          this.setFileInput();
-      }
+        }
     }
 </script>
 

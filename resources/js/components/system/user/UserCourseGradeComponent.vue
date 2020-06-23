@@ -295,9 +295,12 @@
               check = true;
             }
             if (gradepass == null) {
-              finalgrade = 0
+              gradepass = 0
             } else {
               check = true;
+            }
+            if (gradepass === 0) {
+              return true;
             }
             if (check === true) {
               let new_final_grade = parseFloat(finalgrade);
