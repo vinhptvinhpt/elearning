@@ -996,6 +996,10 @@
                   });
               // }
             },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.fetch();
@@ -1004,7 +1008,10 @@
             //this.getCitys();
             this.userData();
             this.getCountries();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

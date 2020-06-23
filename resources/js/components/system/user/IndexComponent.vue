@@ -564,6 +564,10 @@
           .catch(error => {
             console.log(error);
           });
+      },
+
+      setFileInput() {
+        $('.dropify').dropify();
       }
     },
     mounted() {
@@ -572,6 +576,9 @@
       this.fetch();
       //this.getUserForFilter();
       this.getUser();
+    },
+    updated() {
+      this.setFileInput();
     }
   }
 

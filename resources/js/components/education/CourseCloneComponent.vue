@@ -425,13 +425,20 @@
                 // window.history.back();
                 this.$router.push({name: 'SampleCourseIndex'});
 
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.getCourseSamples();
             this.getCategories();
             this.getCourseDetail();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 
