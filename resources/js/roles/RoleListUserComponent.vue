@@ -27,7 +27,7 @@
                       <div class="row">
                         <div class="col-sm-5 col-md-8 dataTables_wrapper">
                           <div class="dataTables_length" style="display: inline-block;">
-                            <label>Hiển thị
+                            <label>{{trans.get('keys.hien_thi')}}
                               <select v-model="row2" class="custom-select custom-select-sm form-control form-control-sm" @change="getListAddUsers(1)">
                                 <option value="10">10</option>
                                 <option value="25">25</option>

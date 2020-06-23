@@ -4,7 +4,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 ?>
 
 <html>
-<title>Chỉnh sửa thông tin người dùng</title>
+<title>Update profile</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
@@ -68,6 +68,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         border-radius: 4px;
         color: <?=$_SESSION["color"]?>;
         padding: 5px;
+    }
+    .btn-click a{
+        color: <?=$_SESSION["color"]?>;
     }
     .btn-update{
         background-color: <?=$_SESSION["color"]?> !important;

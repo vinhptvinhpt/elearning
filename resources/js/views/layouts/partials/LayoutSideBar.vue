@@ -104,7 +104,7 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-system-employee-view')">
-                                <router-link to="/tms/organization-employee" class="nav-link">
+                                <router-link :to="{ path: '/tms/organization-employee', query: { view_mode: 'recursive' } }" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
                                 </router-link>
                             </li>
@@ -383,14 +383,38 @@
                                     </li>
                                 </ul>
                             </li>
-<!--                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">-->
-<!--                                <router-link to="/tms/report/base" class="nav-link">-->
-<!--                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>-->
-<!--                                </router-link>-->
-<!--                            </li>-->
+                            <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
+                                <a class="nav-link has-submenu" id="quan_ly_self"
+                                   @click="toggleMenu('bao_cao', 'quan_ly_self','recover_drp_self')"
+                                   href="javascript:void(0);" data-toggle="collapse"
+                                >{{ trans.get('keys.quan_tri_self') }}</a>
+                                <ul id="recover_drp_self"
+                                    class="nav flex-column collapse collapse-level-2 ">
+                                    <li class="nav-item">
+                                        <router-link to="/tms/self/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_self') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/tms/selfquestion/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi_self') }}</span>
+                                        </router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <!--                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">-->
+                            <!--                                <router-link to="/tms/report/base" class="nav-link">-->
+                            <!--                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>-->
+                            <!--                                </router-link>-->
+                            <!--                            </li>-->
                             <li class="nav-item" v-if="slug_can('tms-report-report-view')">
                                 <router-link to="/tms/report/detail" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.bao_cao_danh_gia') }}</span>
+                                </router-link>
+                            </li>
+                            <li class="nav-item" v-if="slug_can('tms-report-report-view')">
+                                <router-link to="/tms/report/login_statistic" class="nav-link">
+                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_truy_cap') }}</span>
                                 </router-link>
                             </li>
                         </ul>
@@ -429,7 +453,6 @@
                     </li>
 
                 </ul>
-
 
 
                 <!--

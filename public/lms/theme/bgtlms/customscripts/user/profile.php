@@ -17,7 +17,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 ?>
 
 <html>
-<title>Thông tin người dùng</title>
+<title>User profile</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
@@ -474,7 +474,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     <ul>
                         <li>Position: {{ user.position }}</li>
                         <li>Department: {{ user.departmentname }}</li>
-                        <li v-if="user.yearworking > 0">Experience: {{linemanager.yearworking}} years</li>
+                        <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
                         <li v-else>Experience: Under 1 year</li>
                         <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
                         <li>Company: Easia Travel</li>
@@ -747,14 +747,13 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .then(response => {
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
-
                         //set progress
-                        this.progressCurrentCourse = response.data.currentcourses.length + "/"+response.data.totalCourse;
-                        this.progressRequiredCourse = response.data.requiredcourses.length + "/"+response.data.totalCourse;
+                        this.progressCurrentCourse = Object.keys(response.data.currentcourses).length + "/"+response.data.totalCourse;
+                        this.progressRequiredCourse = Object.keys(response.data.requiredcourses).length + "/"+response.data.totalCourse;
 
                         //
-                        $('.progress-current').css('width', response.data.currentcourses.length*100/response.data.totalCourse+'%');
-                        $('.progress-required').css('width', response.data.requiredcourses.length*100/response.data.totalCourse+'%');
+                        $('.progress-current').css('width', Object.keys(response.data.currentcourses).length*100/response.data.totalCourse+'%');
+                        $('.progress-required').css('width', Object.keys(response.data.requiredcourses).length*100/response.data.totalCourse+'%');
 
 
                     })

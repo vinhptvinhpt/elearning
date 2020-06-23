@@ -7,6 +7,7 @@ use App\MdlContext;
 use App\MdlCourse;
 use App\MdlUser;
 use App\Repositories\MdlCourseRepository;
+use App\Role;
 use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
@@ -220,6 +221,19 @@ class CourseController extends Controller
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
             $user_id = Auth::id();
             $checkUser = MdlUser::where('id', $user_id)->first();
+
+            //Check role teacher and enrol for creator of course
+            $current_user_roles_and_slugs = checkRole();
+
+            //If user ís not a teacher, assign as teacher
+            $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
+            if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
+                add_user_by_role($user_id, $role_teacher->id);
+                enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+            }
+            //Enrol user to newly created course á teacher
+            enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
+
             $token = '';
             if (isset($checkUser)) {
                 $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';

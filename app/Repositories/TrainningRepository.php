@@ -50,6 +50,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $time_end = $request->input('time_end');
             $role_id = $request->input('role_id');
             $organization_id = $request->input('organization_id');
+            $description = $request->input('description');
             $logo = $request->file('file');
 
             $param = [
@@ -59,6 +60,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'time_end' => 'text',
                 'role_id' => 'number',
                 'organization_id' => 'number',
+                'description' => 'text',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -117,6 +119,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'time_start' => $time_start,
                 'time_end' => $time_end,
                 'logo' => $path_logo,
+                'description' => $description,
                 'auto_certificate' => $auto_certificate ? 1 : 0,
                 'auto_badge' => $auto_badge ? 1 : 0
             ]);
@@ -165,6 +168,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $time_end = $request->input('time_end');
             $role_id = $request->input('role_id');
             $organization_id = $request->input('organization_id');
+            $description = $request->input('description');
             $logo = $request->file('file');
 
             $param = [
@@ -174,6 +178,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'time_end' => 'text',
                 'role_id' => 'number',
                 'organization_id' => 'number',
+                'description' => 'text',
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
@@ -207,6 +212,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->code = $code;
             $trainning->name = $name;
             $trainning->style = $style;
+            $trainning->description = $description;
             $trainning->auto_certificate = $auto_certificate ? 1 : 0;
             $trainning->auto_badge = $auto_badge ? 1 : 0;
             $trainning->run_cron = $run_cron;
@@ -381,6 +387,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'ttp.auto_badge',
                 'ttp.time_start',
                 'ttp.time_end',
+                'ttp.description',
                 'ttp.logo',
                 DB::raw('(select ttr.group_id as role_id from tms_trainning_groups ttr where ttr.type = 0 and ttr.trainning_id = ttp.id) as role_id'),
                 DB::raw('(select tto.group_id as organization_id from tms_trainning_groups tto where tto.type = 1 and tto.trainning_id = ttp.id) as organization_id')

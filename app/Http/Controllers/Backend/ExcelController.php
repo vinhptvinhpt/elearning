@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Backend;
 use App\Exports\AttendanceSheet;
 use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
+use App\Exports\LoginSheet;
 use App\Exports\ReportDetailSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Request;
@@ -348,13 +350,18 @@ class ExcelController extends Controller
         );
 
         foreach ($data as $key => $item) {
+            $final_grade = 'N/A';
+            if (isset($item['finalgrade'])) {
+                if (is_numeric($item['finalgrade'])) {
+                    $final_grade = strval(number_format((float)$item['finalgrade'], 2, '.', ''));
+                }
+            }
             $export_data[] = array(
                 $key + 1,
                 isset($item['shortname']) ? $item['shortname'] : '',
                 isset($item['fullname']) ? $item['fullname'] : '',
-                $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)",
-                isset($item['finalgrade']) ? number_format((float)$item['finalgrade'], 2, '.', '') : 0,
-
+                $item['user_course_learn'] > 0 ? $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)" : $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(0%)',
+                $final_grade,
                 $item['status_user'] == 1
                 && floatval($item['finalgrade']) >= floatval($item['gradepass'])
                 && $item['user_course_completionstate'] == $item['user_course_learn']
@@ -549,5 +556,83 @@ class ExcelController extends Controller
 
     public function download($file_name) {
         return Storage::download($file_name);
+    }
+
+    public function exportLogLogin(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $lstData = DB::table('mdl_logstore_standard_log as mls')
+            ->join('mdl_user as u', 'u.id', '=', 'mls.objectid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
+            ->where('mls.target', '=', 'user')
+            ->where('mls.action', '=', 'loggedin')
+            ->where('u.username', '!=', 'admin')
+            ->select('u.id', 'u.username', 'tud.fullname', 'mls.timecreated');
+
+        if ($keyword) {
+            $lstData = $lstData->whereRaw('( tud.fullname like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+        }
+
+        if (empty($startdate) && empty($enddate)) {
+            $startdate = Carbon::yesterday();
+            $startdate = strtotime($startdate);
+
+
+            $enddate = Carbon::now();
+            $enddate = strtotime($enddate);
+
+            $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
+            $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
+        } else {
+            if ($startdate) {
+                $startdate = strtotime($startdate);
+                $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
+            }
+
+            if ($enddate) {
+                $enddate = strtotime($enddate);
+                $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
+            }
+
+        }
+
+        $datas = $lstData->orderBy('mls.id', 'desc')->get();
+
+        $arr_data = [];
+        $stt = 1;
+        foreach ($datas as $item) {
+            $arr_data[] = array(
+                $stt,
+                $item->username,
+                $item->fullname,
+                date('d M Y H:i:s', $item->timecreated)
+            );
+            $stt++;
+        }
+        $exportExcel = new LoginSheet('Statistic Login Report', $arr_data);
+
+        $filename = "statistic_login_report.xlsx";
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json(storage_path($filename));
+    }
+
+    public function downloadExportLoginReport()
+    {
+        $filename = "statistic_login_report.xlsx";
+        return Storage::download($filename);
     }
 }

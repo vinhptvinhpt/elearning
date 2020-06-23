@@ -3,16 +3,16 @@
     <div class="col-12 col-lg-12">
       <form action="" class="">
         <div class="row">
-          <div class="col-12 col-lg-3">
+          <div class="col-12 col-lg-3 d-none">
             <div class="card">
               <div class="card-body">
                 <p>
-                  <input  type="file" ref="file" name="file" class="dropify"/>
+                  <input type="file" ref="file" name="file" class="dropify"/>
                 </p>
               </div>
             </div>
           </div>
-          <div class="col-12 col-lg-9">
+          <div class="col-12">
             <div class="form-row">
               <div class="col-sm-6 form-group">
                 <label for="inputText1-2">{{trans.get('keys.ma_knl')}} *</label>
@@ -37,12 +37,23 @@
                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                 <select v-model="role" class="form-control selectpicker" id="inputRole" autocomplete="false">
                   <option value="0">{{trans.get('keys.chon_vai_tro')}}</option>
-                  <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>
+                  <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' +
+                    role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}
+                  </option>
                 </select>
               </div>
               <div class="col-sm-6 form-group">
                 <label>{{trans.get('keys.them_co_cau_to_chuc')}}</label>
-                <treeselect v-model="organization.parent_id" :multiple="false" :options="tree_options" id="organization_parent_id"/>
+                <treeselect v-model="organization.parent_id" :multiple="false" :options="tree_options"
+                            id="organization_parent_id"/>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-sm-12 form-group">
+                <label for="inputDescription">{{trans.get('keys.mo_ta')}}</label>
+                <textarea class="form-control" rows="3" v-model="description"
+                          id="inputDescription"
+                          :placeholder="trans.get('keys.noi_dung')"></textarea>
               </div>
             </div>
 
@@ -66,7 +77,8 @@
               <div class="col-sm-4 form-group">
                 <label>{{trans.get('keys.tu_dong_chay_cron')}}</label>
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="run_cron" :checked="run_cron==1?true:false" v-model="run_cron">
+                  <input type="checkbox" class="custom-control-input" id="run_cron" :checked="run_cron==1?true:false"
+                         v-model="run_cron">
                   <label v-if="run_cron == 1" class="custom-control-label" for="run_cron">Yes</label>
                   <label v-else class="custom-control-label" for="run_cron">No</label>
                 </div>
@@ -74,7 +86,8 @@
               <div class="col-sm-4 form-group">
                 <label>{{trans.get('keys.tu_dong_cap_chung_chi')}}</label>
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="auto_certificate" :checked="auto_certificate==1?true:false" v-model="auto_certificate">
+                  <input type="checkbox" class="custom-control-input" id="auto_certificate"
+                         :checked="auto_certificate==1?true:false" v-model="auto_certificate">
                   <label v-if="auto_certificate == 1" class="custom-control-label" for="auto_certificate">Yes</label>
                   <label v-else class="custom-control-label" for="auto_certificate">No</label>
                 </div>
@@ -82,7 +95,8 @@
               <div class="col-sm-4 form-group">
                 <label>{{trans.get('keys.tu_dong_cap_huy_hieu')}}</label>
                 <div class="custom-control custom-switch">
-                  <input type="checkbox" class="custom-control-input" id="auto_badge" :checked="auto_badge==1?true:false" v-model="auto_badge">
+                  <input type="checkbox" class="custom-control-input" id="auto_badge"
+                         :checked="auto_badge==1?true:false" v-model="auto_badge">
                   <label v-if="auto_badge == 1" class="custom-control-label" for="auto_badge">Yes</label>
                   <label v-else class="custom-control-label" for="auto_badge">No</label>
                 </div>
@@ -107,6 +121,7 @@
 
 <script>
   import datePicker from 'vue-bootstrap-datetimepicker'
+
   export default {
     props: ['type'],
     components: {
@@ -122,6 +137,7 @@
         auto_badge: 1,
         time_start: '',
         time_end: '',
+        description: '',
         date: new Date(),
         organization: {
           name: '',
@@ -129,9 +145,9 @@
           parent_id: 0,
           description: '',
         },
-        role:0,
-        roles:{},
-        organization_parent_list:[],
+        role: 0,
+        roles: {},
+        organization_parent_list: [],
 
         language: this.trans.get('keys.language'),
         options: {
@@ -154,7 +170,7 @@
         axios.post('/system/user/list_role')
           .then(response => {
             this.roles = response.data;
-            this.$nextTick(function(){
+            this.$nextTick(function () {
               $('.selectpicker').selectpicker('refresh');
             });
           })
@@ -162,7 +178,7 @@
             console.log(error.response.data);
           });
       },
-      listOrganization(){
+      listOrganization() {
         axios.post('/organization/list', {
           keyword: this.parent_keyword,
           level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
@@ -217,6 +233,7 @@
         this.formData.append('run_cron', this.run_cron);
         this.formData.append('time_start', this.time_start);
         this.formData.append('time_end', this.time_end);
+        this.formData.append('description', this.description);
         this.formData.append('role_id', this.role ? this.role : 0);
         this.formData.append('organization_id', this.organization.parent_id ? this.organization.parent_id : 0);
         this.formData.append('file', this.$refs.file.files[0]);
@@ -230,7 +247,7 @@
             var language = this.language;
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-              this.$router.push({ name: 'TrainningEdit', params: {id: response.data.otherData} });
+              this.$router.push({name: 'TrainningEdit', params: {id: response.data.otherData}});
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
@@ -239,11 +256,18 @@
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
 
+      },
+
+      setFileInput() {
+        $('.dropify').dropify();
       }
     },
     mounted() {
       this.listOrganization();
       this.getRoles();
+    },
+    updated() {
+      this.setFileInput();
     }
   }
 </script>

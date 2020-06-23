@@ -2,30 +2,99 @@
 require_once(__DIR__ . '/../../../../config.php');
 // Start the session
 session_start();
-$sql = 'select mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections, ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule, ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned from mdl_course mc inner join mdl_enrol me on mc.id = me.courseid inner join mdl_user_enrolments mue on me.id = mue.enrolid where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+
+$sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
+$teacher = $DB->get_record_sql($sql_teacher);
+$teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
+
+$sql = 'select @s:=@s+1 stt,
+mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
+( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
+ ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+    muet.userid as teacher_id,
+    tud.fullname as teacher_name,
+    tor.name as teacher_organization,
+    muet.timecreated as teacher_created,
+    toe.position as teacher_position,
+    toe.description as teacher_description
+  from mdl_course mc
+  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_user_enrolments mue on me.id = mue.enrolid
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+  left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
+  where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+
 $courses = array_values($DB->get_records_sql($sql));
 
 $sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = '.$USER->id;
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
+
+$sqlGetOrganization = 'SELECT f.id, f.level, f.code
+            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
+            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= '.$USER->id.')) tmp1
+            JOIN tms_organization ON @id IS NOT NULL) tmp2
+            JOIN tms_organization f ON tmp2._id = f.id
+            where f.level = 2 or f.level = 1 limit 1';
+$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+$organizationCodeGet = "";
+if(strpos(strtolower($organization->code), 'bg') === 0){
+    $organizationCodeGet = "BG";
+}
+else if(strpos(strtolower($organization->code),'ea') === 0){
+    $organizationCodeGet = "EA";
+}
+else if(strpos(strtolower($organization->code), 'ev') === 0){
+    $organizationCodeGet = "EV";
+}else{
+    $organizationCodeGet = "PH";
+}
 
 $courses_current = array();
 $courses_all_required = array();
 $courses_optional = array();
 $courses_completed = array();
 foreach ($courses as $course){
-    if($course->id == 506){
-        array_push($courses_completed, $course);
-    }
-    else if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
-        array_push($courses_all_required, $course);
+    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+        push_course($courses_all_required, $course);
     }
     else if($course->numoflearned/$course->numofmodule == 1){
-        array_push($courses_completed, $course);
+        push_course($courses_completed, $course);
     }
     else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-        array_push($courses_current, $course);
+        push_course($courses_current, $course);
     }
 }
+
+function push_course(&$array, $course) {
+//    $teacher = array();
+//    if (strlen($course->teacher_name) != 0) {
+//        $teacher = array(
+//          'id' => $course->teacher_id,
+//          'teacher_name'   => $course->teacher_name,
+//          'organization_name'   => $course->organization_name,
+//          'teacher_created' => $course->teacher_created
+//        );
+//    }
+    if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
+        $old_created = $array[$course->id]->teacher_created;
+        if ($course->teacher_created > intval($old_created)) {
+            $array[$course->id] = $course;
+        }
+        //$array[$course->id]->teachers[] = $teacher;
+    } else {//mới
+        $array[$course->id] = $course;
+        //$array[$course->id]->teachers = array($teacher);
+    }
+}
+
 // Set session variables
 $_SESSION["courses_current"] = $courses_current;
 $_SESSION["courses_all_required"] = $courses_all_required;
@@ -34,7 +103,9 @@ $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
 $organization_id = 2;
-$organizationCode = strtolower($_SESSION["organizationCode"]);
+//$organizationCodeGet
+$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
+
 switch ($organizationCode) {
     case "EA":
         {
@@ -43,7 +114,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/logo-black.png';
             $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
             $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "EV":
@@ -53,7 +124,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
             $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "BG":
@@ -63,7 +134,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     case "AV":
@@ -73,7 +144,7 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
     default:
@@ -107,7 +178,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 ?>
 
 <html>
-<title>Trang chủ</title>
+<title>Home</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
@@ -170,6 +241,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-decoration: none;
     }
 
+    .block-color{
+        width: 100px;
+        height: 100px;
+        background-color: <?=$_SESSION["color"]?>;
+        position: absolute;
+        bottom: 25%;
+        z-index: 1;
+        left: -7%;
+    }
     .title {
         text-align: left;
         font-family: Nunito-Sans;
@@ -227,6 +307,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         margin: 0 0 5px 0;
         font-family: Roboto-Regular;
         font-size: 14px !important;
+    }
+
+    .info-course a {
+        margin: 0 0 5px 0;
+        font-family: Roboto-Regular !important;
+        font-size: 14px !important;
+    }
+
+    .info-course a:hover {
+        cursor:pointer;
     }
 
     img {
@@ -472,6 +562,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-size: 60px;
         bottom: 25%;
         letter-spacing: 3px;
+        z-index: 2;
     }
 
     .carousel-caption span{
@@ -614,11 +705,34 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             flex: 0 0 33.333333% !important;
             max-width: 33.333333% !important;
         }
+        .block-color{
+            width: 165px !important;
+            bottom: 23%;
+        }
+    }
+    @media screen and (max-width: 1024px) {
+        .block-color {
+            width: 80px !important;
+            height: 80px !important;
+            bottom: 26% !important;
+        }
     }
 
     @media screen and (max-width: 768px) {
         .title h2{
             font-size: 20px !important;
+        }
+        .block-color{
+            width: 65px !important;
+            height: 65px !important;
+            bottom: 28% !important;
+        }
+    }
+
+    @media screen and (max-width: 425px) {
+        .block-color{
+            bottom: 48% !important;
+            width: 49px !important;
         }
     }
 </style>
@@ -644,7 +758,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 <!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
 <!--                                </div>-->
                                 <div class="carousel-caption">
+<!--                                    <h1>--><?php //echo $_SESSION["organizationName"]; ?><!-- <span>Academy</span></h1>-->
                                     <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
+                                    <div class="block-color"></div>
                                 </div>
 <!--                                <div class="slide-image">-->
 <!--                                    <img src="images/1a-01.png" alt="">-->
@@ -688,6 +804,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         </header>
     </section>
     <!--    body-->
+
     <section class="section section-content">
         <div class="content">
             <div class="container">
@@ -780,7 +897,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                         <div class="block-item__content_text">
                                                             <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
-                                                                <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                   data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                   data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                   data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                   data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                 <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                             </div>
@@ -826,7 +948,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                    <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -872,7 +999,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <div class="block-item__content_text">
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <p class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</p>
+                                                                    <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -1030,7 +1162,57 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         });
 
     });
+
+    $(document).on('show.bs.modal','#exampleModal', function (event) {
+        let button = $(event.relatedTarget) // Button that triggered the modal
+        //var teacher_name = button.attr("data-teacher-name");
+        let teacher_name = button.data('teacher-name');// Extract info from data-* attributes
+        let teacher_position = button.data('teacher-position').length > 0 ? button.data('teacher-position') : 'N/A';
+        let teacher_organization = button.data('teacher-organization').length > 0 ? button.data('teacher-organization') : 'PHH Group';
+        let teacher_description = button.data('teacher-description').length > 0 ? button.data('teacher-description') : 'N/A';
+        $( "span.teacher-name" ).html(teacher_name);
+        $( "span.teacher-position" ).html(teacher_position);
+        $( "span.teacher-organization" ).html(teacher_organization);
+        $( "span.teacher-description" ).html(teacher_description);
+    })
+    // $('#exampleModal').on('show.bs.modal', function (event) {
+    //     var button = $(event.relatedTarget) // Button that triggered the modal
+    //     var teacher_name = button.data('teacher-name');// Extract info from data-* attributes
+    //     var teacher_position = button.data('teacher-position');
+    //     var teacher_organization = button.data('teacher-organization');
+    //     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
+    //     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
+    //     var modal = $(this)
+    //     //modal.find('.modal-title').text('Instructor info: ' + teacher_name)
+    //     modal.find('.teacher-name').val(teacher_name);
+    //     modal.find('.teacher-position').val(teacher_position);
+    //     modal.find('.teacher-organization').val(teacher_organization);
+    // })
 </script>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="exampleModalLabel">Instructor Info</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                Name: <span class="teacher-name" style="font-weight: bold"></span><br>
+                Position: <span class="teacher-position" style="font-weight: bold"></span><br>
+                Description: <span class="teacher-description" style="font-weight: bold"></span><br>
+                Organization: <span class="teacher-organization" style="font-weight: bold"></span>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 </body>
 </html>
 

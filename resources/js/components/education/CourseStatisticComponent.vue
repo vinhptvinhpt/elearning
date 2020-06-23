@@ -363,9 +363,7 @@
                     <div class="col-12">
                         <section class="hk-sec-wrapper">
                             <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_tai_lieu_trong_khoa_hoc')}}</h5>
-                            <label style="font-size: 12px;">Chọn loại học liệu để hiển thị danh sách tài liệu theo loại
-                                học liệu được
-                                chọn</label>
+                            <label style="font-size: 12px;">{{trans.get('keys.chon_loai_hoc_lieu_de_hien_thi_danh_sach_tai_lieu_theo_loai_hoc_lieu_duoc_chon')}}</label>
                             <div class="row">
                                 <!--                Danh sách module trong course -->
                                 <div class="col-sm-3">
@@ -404,7 +402,7 @@
                                                         <select v-model="actionDoc"
                                                                 class="custom-select custom-select-sm form-control form-control-sm"
                                                                 @click="getLogCourse(module_id, 1, 'search')">
-                                                            <option value="">Chọn kiểu</option>
+                                                            <option value="">{{trans.get('keys.Choose a style')}}</option>
                                                             <option value="viewed">viewed</option>
                                                             <option value="created">created</option>
                                                             <option value="updated">updated</option>

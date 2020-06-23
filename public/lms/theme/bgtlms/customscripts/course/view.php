@@ -1,5 +1,5 @@
 <html>
-<title>Thông tin khóa học <?php echo $course->fullname; ?></title>
+<title>Detail course <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
@@ -662,11 +662,16 @@ $edit        = optional_param('edit', -1, PARAM_BOOL);
 $notifyeditingon        = optional_param('notifyeditingon', -1, PARAM_BOOL);
 $id = optional_param('id', 0, PARAM_INT);
 
+// Set $USER->editing = 0 to switch to normal view in course
+if ($edit == 0){
+    $USER->editing = 0;
+}
+
+// Switch to edit mode
 if ($notifyeditingon == 1) {
-} else if ($edit == 1) {
-    //do nothing
+} else if ($edit == 1 || $USER->editing == 1) {
     $USER->editing = 1;
-    $url = new moodle_url("/course/viewedit.php?id=".$id, array('notifyeditingon' => 1));
+    $url = new moodle_url("/course/viewedit.php?id=" . $id, array('notifyeditingon' => 1));
     redirect($url);
 }
 
@@ -686,6 +691,36 @@ if($result_ip){
 }
 $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
 $course = array_values($DB->get_records_sql($sql))[0];
+
+$teachers_sql = 'select @s:=@s+1 stt,
+muet.userid as teacher_id,
+tud.fullname as teacher_name,
+toe.position,
+tor.name as organization_name,
+muet.timecreated as teacher_created
+from mdl_course mc
+left join mdl_enrol met on mc.id = met.courseid AND met.roleid = 4
+left join mdl_user_enrolments muet on met.id = muet.enrolid
+left join tms_user_detail tud on tud.user_id = muet.userid
+left join tms_organization_employee toe on toe.user_id = muet.userid
+left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
+where mc.id = ' . $id;
+
+
+$teacher_name = '';
+$teacher_created = 0;
+$teacher_position = '';
+$teacher_organization = '';
+$teachers = array_values($DB->get_records_sql($teachers_sql));
+
+foreach ($teachers as $teacher) {
+    if (intval($teacher->teacher_created) > $teacher_created) {
+        $teacher_created = $teacher->teacher_created;
+        $teacher_name = $teacher->teacher_name;
+        $teacher_position = $teacher->position;
+        $teacher_organization = $teacher->organization_name;
+    }
+}
 
 $units = get_course_contents($id);
 
@@ -756,7 +791,7 @@ if ($edit == 0) {
                    <div class="row">
                        <div class="col-4 info-course-detail">
                            <ul>
-                               <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> Ngo Ngoc</li>
+                               <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $teacher_name ?></li>
                                <li class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</li>
                                <li class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</li>
                            </ul>
@@ -910,8 +945,10 @@ if ($edit == 0) {
             var getHref = $(this).attr('href');
             if(getHref.indexOf('unit')>-1){
                 var getID = $(".unit").first().attr('id');
-                var ID = getID.substring(5, getID.length);
-                ClickNav(getID, ID);
+                if(getID){
+                    var ID = getID.substring(5, getID.length);
+                    ClickNav(getID, ID);
+                }
             }
             $('.nav-click a').not($(this)).each(function () {
                 $(this).removeClass('active');

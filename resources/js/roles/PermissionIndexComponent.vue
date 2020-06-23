@@ -44,7 +44,7 @@
                                   <router-link
                                     :to="{name: 'AddPermission', params: {slug: per_index}}"
                                     class="btn btn-primary btn-sm"
-                                    style="margin-right: 3px;">Gán chức năng</router-link>
+                                    style="margin-right: 3px;">{{trans.get('keys.gan_chuc_nang')}}</router-link>
                                 </td>
                               </tr>
                             </table>

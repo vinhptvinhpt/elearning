@@ -332,26 +332,82 @@ p.copyright-index {
 }
 
 /*-------------------------------LOGIN AND RESET -----------------------------------*/
-button.btn-login {
+button.btn-login, .btn-login {
     color: #fff !important;
 }
-
-button.btn-login i {
-    display: none;
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    margin-top: -8px;
+.btn-login:hover{
+    cursor: pointer;
 }
 
-button.btn-login.loadding i {
+.btn-login i {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    opacity: 0;
+    margin-left: -7px;
+    margin-top: -7px;
+}
+
+.loadding{
+    transition: none !important;
+}
+
+
+.loadding:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+}
+
+.loadding i {
+    opacity: 1 !important;
+
     -webkit-animation-name: example_loadding;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;
     animation-name: example_loadding;
     animation-duration: 1s;
     animation-iteration-count: infinite;
-    display: inline-block;
+}
+
+@keyframes example_loadding {
+    0%   {
+        transform: rotate(36deg);
+    }
+    10%   {
+        transform: rotate(72deg);
+    }
+    20%   {
+        transform: rotate(108deg);
+    }
+    30%   {
+        transform: rotate(144deg);
+    }
+    40%   {
+        transform: rotate(180deg);
+    }
+    50%   {
+        transform: rotate(216deg);
+    }
+    60%   {
+        transform: rotate(252deg);
+    }
+    70%  {
+        transform: rotate(288deg);
+    }
+    80%  {
+        transform: rotate(324deg);
+    }
+    90%  {
+        transform: rotate(360deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
 }
 
 button.btn-reset {
@@ -359,14 +415,15 @@ button.btn-reset {
 }
 
 button.btn-reset i {
-    display: none;
+    opacity: 0;
     position: absolute;
-    right: 10px;
+    right: 5px;
     top: 50%;
     margin-top: -8px;
 }
 
-button.btn-reset.loadding i {
+
+button.btn-reset.loadding i, .loadding i {
     -webkit-animation-name: example_loadding;
     -webkit-animation-duration: 1s;
     -webkit-animation-iteration-count: infinite;
@@ -463,14 +520,6 @@ label span {
     margin-top: 5px;
     background: #ddd;
 }
-
-
-
-
-
-
-
-
 
 @media (min-width: 580px){
     #div_confirm_code:after {

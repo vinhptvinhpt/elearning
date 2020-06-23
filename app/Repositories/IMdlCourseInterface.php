@@ -14,4 +14,5 @@ interface IMdlCourseInterface
     public function updateCourse($id, Request $request);
 
     public function importExcelEnrol(Request $request);
+
 }
