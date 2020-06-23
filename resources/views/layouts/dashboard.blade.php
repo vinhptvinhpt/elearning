@@ -20,14 +20,16 @@
     <link href="/assets/vendors/jquery-toggles/css/toggles.css" rel="stylesheet">
     <link href="/assets/vendors/jquery-toggles/css/themes/toggles-light.css" rel="stylesheet">
     <link href="/assets/dist/css/font-awesome.all.min.css" rel="stylesheet">
-    <link href="/assets/vendors/dropify/dist/css/dropify.min.css" rel="stylesheet">
+
     <link href="/assets/vendors/dropzone/dist/dropzone.css" rel="stylesheet">
+    <link href="/assets/vendors/dropify/dist/css/dropify.min.css" rel="stylesheet">
     <link href="/assets/vendors/select2/dist/css/select2.min.css" rel="stylesheet">
     <link href="/css/bootstrap-datepicker.min.css" rel="stylesheet">
     <link href="/assets/dist/css/style.css" rel="stylesheet">
     <link href="/assets/dist/css/custom.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <link href="/css/responsive.css" rel="stylesheet">
+    
     <link href="/assets/css/laraspace.css" rel="stylesheet" type="text/css">
 </head>
 
