@@ -138,10 +138,10 @@
                                     <td colspan="6">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
                                 </tr>
                                 <tr v-else v-for="(course_object, index) in posts">
-                                    <td>{{index+1}}</td>
+                                    <td>{{ (current-1)*row+(index+1) }}</td>
                                     <td>{{course_object.fullname}}</td>
-                                    <td class="mobile_hide">{{course_object.start}}</td>
-                                    <td class="mobile_hide">{{course_object.end}}</td>
+                                    <td class="mobile_hide">{{ convertDateTime(course_object.start) }}</td>
+                                    <td class="mobile_hide">{{ convertDateTime(course_object.end) }}</td>
                                     <td class="mobile_hide">{{course_object.course_place}}</td>
                                     <template v-if="course_object.category === 5">
                                         <td><span class="badge badge-grey">Offline</span></td>
@@ -423,6 +423,13 @@
                 this.startdate = this.convertTime(startDate);
                 this.enddate = this.convertTime(now);
             },
+            convertDateTime(value) {
+              if(value){
+                var time = new Date(value * 1000);
+                return time.toLocaleDateString();
+              }
+              return "";
+            },
             convertTime(timestamp) {
                 let a = new Date(timestamp);
                 let year = a.getFullYear();
@@ -546,6 +553,7 @@
                 })
                     .then(response => {
                         this.posts = response.data.data.data;
+                        console.log(this.posts);
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
                     })
