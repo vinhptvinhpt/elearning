@@ -4,11 +4,11 @@ return [
     "domain" => [
         'APP_NAME' => 'ELEARNING', //Không sửa đoạn text này khi deploy lên hệ thống mới, key mã hóa bảo mật hệ thống
 
-        'TMS' => 'http://academy.phh-group.com/',
+        'TMS' => 'https://academy.phh-group.com/',
 
         'TMS-LOCAL' => 'http://localhost:8000/',
 
-        'LMS' => 'http://academy.phh-group.com/lms',
+        'LMS' => 'https://academy.phh-group.com/lms',
 
         'DIVA' => 'https://dev-op.quanlydiembanhang.com/elearning-api/v1/', //domain run dev, thời gian đầu test trên domain này, khi nào launch hệ thống chuyển sang domain live
 
