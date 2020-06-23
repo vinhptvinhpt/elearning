@@ -97,7 +97,7 @@ if __name__ == '__main__':
             image_new_height = int(coordinates["image_height"])
 
             dateSize = int(coordinates["dateSize"])
-            signSize = int(coordinates["signSize"])
+            #signSize = int(coordinates["signSize"])
 
             #signX = coordinates["signX"]
             #signY = coordinates["signY"]
@@ -135,7 +135,7 @@ if __name__ == '__main__':
             font_name = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=fullnameSize, encoding="unic")
             font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
             font_date = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=dateSize, encoding="unic")
-            font_sign = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=signSize, encoding="unic")
+            #font_sign = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=signSize, encoding="unic")
             
             #region lay anh badge mau
             sql_select_badge = "select path, position from image_certificate where is_active = 1 and type = 2"
@@ -185,7 +185,7 @@ if __name__ == '__main__':
                 limit = 50
                 
                 for row in records:
-                    
+
                     # 19/3/2020 uydd
                     user_id = row[0]
                     name = row[1].encode('utf-8').strip()
@@ -234,7 +234,21 @@ if __name__ == '__main__':
                                 org_name_root = record_org[2]
 
                             #logo
-                            path_logo = os.path.join(path_gen_logo, org_name_root.lower()+".png")
+                            logo_name = "phh.png"
+                            org_name_lower = org_name_root.lower()
+                            
+                            if("easia" in org_name_lower):
+                                logo_name = "easia.png"
+                            elif("begodi" in org_name_lower):
+                                logo_name = "begodi.png"
+                            elif("exotic" in org_name_lower):
+                                logo_name = "exotic.png"
+                            elif("avana" in org_name_lower):
+                                logo_name = "avana.png"
+                            #elif("phh" in org_name_lower):
+                             #   logo_name = "phh.png"
+                            
+                            path_logo = os.path.join(path_gen_logo, logo_name)
                             logo = Image.open(path_logo)
                             logo_size_width, logo_size_height = logo.size
                             
@@ -453,13 +467,13 @@ if __name__ == '__main__':
 
 
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
-                        #cursor.execute(sql, (student_certificate_id,))
+                        cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
-                        #cursor.execute(sql_update_confirm, (get_user_id,))
+                        cursor.execute(sql_update_confirm, (get_user_id,))
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
-                        #cursor.execute(sql, (student_certificate_id,))
+                        cursor.execute(sql, (student_certificate_id,))
                     
                     #gian cach thoi gian chay script
                     time.sleep(0.3)
