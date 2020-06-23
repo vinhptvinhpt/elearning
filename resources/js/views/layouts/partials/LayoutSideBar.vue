@@ -104,7 +104,7 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-system-employee-view')">
-                                <router-link to="/tms/organization-employee" class="nav-link">
+                                <router-link :to="{ path: '/tms/organization-employee', query: { view_mode: 'recursive' } }" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
                                 </router-link>
                             </li>

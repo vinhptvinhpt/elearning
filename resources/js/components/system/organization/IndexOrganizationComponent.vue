@@ -152,7 +152,7 @@
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
                         <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
-                        <th class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
+                        <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </thead>
                         <tbody>
                         <tr v-if="posts.length == 0">
@@ -172,14 +172,13 @@
                               {{ item.employees.length }}
                             </router-link>
                           </td>
-                          <td class="text-center" v-if="slug_can('tms-system-employee-view')"
-                                        >
+                          <td class="text-center" v-if="slug_can('tms-system-employee-view')">
                             <router-link :title="trans.get('keys.xem_nhan_vien')"
                                          :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current}}">
                               {{ item.recusive_employees }}
                             </router-link>
                           </td>
-                          <td class="text-center">
+                          <td class="text-center" v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')">
 
 <!--                            <router-link v-if="slug_can('tms-system-employee-view')" :title="trans.get('keys.xem_nhan_vien')"-->
 <!--                                         class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->
@@ -211,7 +210,7 @@
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
                         <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
-                        <th class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
+                        <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </tfoot>
                       </table>
                       <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
@@ -276,170 +275,170 @@
       }
     },
     methods: {
-      slug_can(permissionName) {
-        return this.slugs.indexOf(permissionName) !== -1;
-      },
-      selectParentItem(parent_id) {
-        this.organization.parent_id = parent_id;
-      },
-      selectParent() {
-        $('.content_search_box').addClass('loadding');
-        axios.post('/organization/list', {
-          keyword: this.parent_keyword,
-          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
-          paginated: 0 //không phân trang,
-        })
-          .then(response => {
-            //this.organization_parent_list = response.data;
-            this.tree = response.data;
-            //Set options recursive
-            this.options = this.setOptions(response.data);
-            $('.content_search_box').removeClass('loadding');
-          })
-          .catch(error => {
-            $('.content_search_box').removeClass('loadding');
-          })
-      },
-      setOptions(list) {
-        let outPut = [];
-        for (const [key, item] of Object.entries(list)) {
-          let newOption = {
-            id: item.id,
-            label: item.name
-          };
-          if (item.children.length > 0) {
-            newOption.children = this.setOptions(item.children);
-          }
-          outPut.push(newOption);
-        }
-        return outPut;
-      },
-      getDataList(paged) {
-        if (this.display === 'tree') {
-          this.display = 'grid';
-        }
-        axios.post('/organization/list', {
-          page: paged || this.current,
-          keyword: this.keyword,
-          row: this.row,
-          level: this.level,
-          paginated: 1 // có phân trang
-        })
-          .then(response => {
-            if (response.data.status === 'warning') {
-              toastr['warning'](response.data.message, this.trans.get('keys.thong_bao'));
-            }
-            let list = response.data.data ? response.data.data.data : [];
-                        list = this.employeeRecursive(list);
-                        this.posts = list;
-            this.current = response.data.pagination ? response.data.pagination.current_page : 1;
-            this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
-            this.totalRow = response.data ? response.data.total : 0;
-            this.max_level = response.data.max_level ? response.data.max_level : 0;
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      },
-      createOrganization() {
-        if (!this.organization.name) {
-          $('.name_required').show();
-          return;
-        }
-        if (!this.organization.code) {
-          $('.code_required').show();
-          return;
-        }
-        axios.post('/organization/create', {
-          name: this.organization.name,
-          code: this.organization.code,
-          parent_id: this.organization.parent_id,
-          description: this.organization.description
-        })
-          .then(response => {
-            if (response.data.key) {
-              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
-              $('.form-control').removeClass('error');
-              $('#organization_' + response.data.key).addClass('error');
-            } else {
-              if (response.data.status === 'success') {
-                //reset form
-                this.organization.description = this.organization.name = this.organization.code = '';
-                this.organization.parent_id = 0;
-                $(".selected_content").text(this.trans.get('keys.truc_thuoc'));
-                $('.form-control').removeClass('error');
-                //reload form
-                this.selectParent();
-              }
-              toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
-            }
-          })
-          .catch(error => {
-            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
-          })
-      },
-      onPageChange() {
-        let page = this.getParamsPage();
-        this.getDataList(page);
-        this.selectParent();
-      },
-      getParamsPage() {
-        return this.$route.params.page;
-      },
-      setParamsPage(value) {
-        this.$route.params.page = value;
-      },
-      deletePost(url) {
-        let current_pos = this;
-        swal({
-          title: this.trans.get('keys.thong_bao'),
-          text: this.trans.get('keys.ban_co_muon_xoa_to_chuc_nay'),
-          type: "warning",
-          showCancelButton: true,
-          closeOnConfirm: true,
-          showLoaderOnConfirm: true
-        }, function () {
-          axios.post(url)
-            .then(response => {
-              roam_message(response.data.status, response.data.message);
+          slug_can(permissionName) {
+            return this.slugs.indexOf(permissionName) !== -1;
+          },
+          selectParentItem(parent_id) {
+            this.organization.parent_id = parent_id;
+          },
+          selectParent() {
+            $('.content_search_box').addClass('loadding');
+            axios.post('/organization/list', {
+              keyword: this.parent_keyword,
+              level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+              paginated: 0 //không phân trang,
             })
-            .catch(error => {
-              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-            });
-        });
-
-        return false;
-      },
-      switchTreeView() {
-        if (this.display === 'grid') {
-          this.display = 'tree';
-        } else {
-          this.display = 'grid';
-        }
-      },
-            employeeRecursive(list) {
-              for (const [key, item] of Object.entries(list)) {
-                item.recusive_employees = item.employees.length;
-                if (item.children.length > 0) {
-                  item.recusive_employees = item.recusive_employees + this.countEmployee(item.children);
-                }
+              .then(response => {
+                //this.organization_parent_list = response.data;
+                this.tree = response.data;
+                //Set options recursive
+                this.options = this.setOptions(response.data);
+                $('.content_search_box').removeClass('loadding');
+              })
+              .catch(error => {
+                $('.content_search_box').removeClass('loadding');
+              })
+          },
+          setOptions(list) {
+            let outPut = [];
+            for (const [key, item] of Object.entries(list)) {
+              let newOption = {
+                id: item.id,
+                label: item.name
+              };
+              if (item.children.length > 0) {
+                newOption.children = this.setOptions(item.children);
               }
-              return list;
-            },
-            countEmployee(list) {
-              let total = 0;
-              for (const [key, item] of Object.entries(list)) {
-                total += item.employees.length;
-                if (item.children.length > 0) {
-                  total += this.countEmployee(item.children);
-                }
-              }
-              return total;
+              outPut.push(newOption);
             }
-        },
-        mounted() {
-          this.setParamsPage(false);
-        }
+            return outPut;
+          },
+          getDataList(paged) {
+            if (this.display === 'tree') {
+              this.display = 'grid';
+            }
+            axios.post('/organization/list', {
+              page: paged || this.current,
+              keyword: this.keyword,
+              row: this.row,
+              level: this.level,
+              paginated: 1 // có phân trang
+            })
+              .then(response => {
+                if (response.data.status === 'warning') {
+                  toastr['warning'](response.data.message, this.trans.get('keys.thong_bao'));
+                }
+                let list = response.data.data ? response.data.data.data : [];
+                list = this.employeeRecursive(list);
+                this.posts = list;
+                this.current = response.data.pagination ? response.data.pagination.current_page : 1;
+                this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
+                this.totalRow = response.data ? response.data.total : 0;
+                this.max_level = response.data.max_level ? response.data.max_level : 0;
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          },
+          createOrganization() {
+            if (!this.organization.name) {
+              $('.name_required').show();
+              return;
+            }
+            if (!this.organization.code) {
+              $('.code_required').show();
+              return;
+            }
+            axios.post('/organization/create', {
+              name: this.organization.name,
+              code: this.organization.code,
+              parent_id: this.organization.parent_id,
+              description: this.organization.description
+            })
+              .then(response => {
+                if (response.data.key) {
+                  toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                  $('.form-control').removeClass('error');
+                  $('#organization_' + response.data.key).addClass('error');
+                } else {
+                  if (response.data.status === 'success') {
+                    //reset form
+                    this.organization.description = this.organization.name = this.organization.code = '';
+                    this.organization.parent_id = 0;
+                    $(".selected_content").text(this.trans.get('keys.truc_thuoc'));
+                    $('.form-control').removeClass('error');
+                    //reload form
+                    this.selectParent();
+                  }
+                  toastr[response.data.status](response.data.message, this.trans.get('keys.thanh_cong'));
+                }
+              })
+              .catch(error => {
+                toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+              })
+          },
+          onPageChange() {
+            let page = this.getParamsPage();
+            this.getDataList(page);
+            this.selectParent();
+          },
+          getParamsPage() {
+            return this.$route.params.page;
+          },
+          setParamsPage(value) {
+            this.$route.params.page = value;
+          },
+          deletePost(url) {
+            let current_pos = this;
+            swal({
+              title: this.trans.get('keys.thong_bao'),
+              text: this.trans.get('keys.ban_co_muon_xoa_to_chuc_nay'),
+              type: "warning",
+              showCancelButton: true,
+              closeOnConfirm: true,
+              showLoaderOnConfirm: true
+            }, function () {
+              axios.post(url)
+                .then(response => {
+                  roam_message(response.data.status, response.data.message);
+                })
+                .catch(error => {
+                  roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                });
+            });
+
+            return false;
+          },
+          switchTreeView() {
+            if (this.display === 'grid') {
+              this.display = 'tree';
+            } else {
+              this.display = 'grid';
+            }
+          },
+          employeeRecursive(list) {
+            for (const [key, item] of Object.entries(list)) {
+              item.recusive_employees = item.employees.length;
+              if (item.children.length > 0) {
+                item.recusive_employees = item.recusive_employees + this.countEmployee(item.children);
+              }
+            }
+            return list;
+          },
+          countEmployee(list) {
+                let total = 0;
+                for (const [key, item] of Object.entries(list)) {
+                  total += item.employees.length;
+                  if (item.children.length > 0) {
+                    total += this.countEmployee(item.children);
+                  }
+                }
+                return total;
+              }
+      },
+      mounted() {
+        this.setParamsPage(false);
+      }
     }
 </script>
 

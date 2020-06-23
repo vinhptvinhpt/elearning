@@ -303,6 +303,8 @@
                 organization_selected: false
             }
         },
+        mounted() {
+        },
         methods: {
             slug_can(permissionName) {
               return this.slugs.indexOf(permissionName) !== -1;
@@ -343,7 +345,8 @@
             //     })
             // },
             getDataList(paged) {
-                axios.post('/organization-employee/list', {
+              this.$route.params.page = undefined;
+              axios.post('/organization-employee/list', {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
@@ -419,9 +422,8 @@
             //     })
             // },
             onPageChange() {
-
+                let page = this.getParamsPage();
                 let organization_id_string = this.organization_id.toString();
-
                 if (this.organization_id.length !== 0) {
                     //Có truyền organization_id
                     this.query_organization_id = parseInt(organization_id_string);
@@ -429,9 +431,12 @@
                 } else if (this.query_organization_id !== 0 && typeof this.query_organization_id !== 'undefined') {
                     //Chuyển trang khi đã có query_organization_id
                     this.fetchOrganizationInfo(this.query_organization_id);
+                } else {
+                  if (page) {
+                    this.current = page;
+                  }
+                  this.getDataList();
                 }
-
-                this.getDataList();
             },
             getParamsPage() {
                 return this.$route.params.page;
@@ -474,10 +479,11 @@
                             this.organization_selected = true;
                         }
                         //this.employee.input_organization_id = response.data.id;
-                        // gọi list sau trong trường hợp manager / leader
+                        //gọi list sau trong trường hợp manager / leader
                         if (this.roles_ready) {
-                            let page = this.getParamsPage();
-                            this.getDataList(page);
+                            //let page = this.getParamsPage();
+                            //this.getDataList(page);
+                            this.getDataList();
                         }
                     })
                     .catch(error => {
@@ -536,10 +542,6 @@
                     {
                         key: 'employee',
                         value: this.trans.get('keys.employee')
-                    },
-                    {
-                        key: 'teacher',
-                        value: this.trans.get('keys.teacher')
                     }
                 ];
 
@@ -562,10 +564,6 @@
                         response.push({
                             key: 'employee',
                             value: this.trans.get('keys.employee')
-                        });
-                        response.push({
-                          key: 'teacher',
-                          value: this.trans.get('keys.teacher')
                         });
                     }
                     return response;
