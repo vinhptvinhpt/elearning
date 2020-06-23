@@ -171,7 +171,8 @@ class LoginController extends Controller
                 return response()->json(['status' => 'FAILPASSWORD']);
             }
 
-            if (!strpos($username, 'admin')) {
+            if (strpos($username, 'admin') !== false) {
+            } else {
                 //lấy url hiện tại
 //            $host = $request->getSchemeAndHttpHost();
                 $host = Config::get('constants.domain.TMS');
