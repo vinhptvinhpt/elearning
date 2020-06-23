@@ -662,11 +662,16 @@ $edit        = optional_param('edit', -1, PARAM_BOOL);
 $notifyeditingon        = optional_param('notifyeditingon', -1, PARAM_BOOL);
 $id = optional_param('id', 0, PARAM_INT);
 
+// Set $USER->editing = 0 to switch to normal view in course
+if ($edit == 0){
+    $USER->editing = 0;
+}
+
+// Switch to edit mode
 if ($notifyeditingon == 1) {
-} else if ($edit == 1) {
-    //do nothing
+} else if ($edit == 1 || $USER->editing == 1) {
     $USER->editing = 1;
-    $url = new moodle_url("/course/viewedit.php?id=".$id, array('notifyeditingon' => 1));
+    $url = new moodle_url("/course/viewedit.php?id=" . $id, array('notifyeditingon' => 1));
     redirect($url);
 }
 
