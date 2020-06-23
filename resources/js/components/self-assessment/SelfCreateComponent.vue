@@ -22,7 +22,8 @@
                     <div class="card">
                         <div class="card-header d-flex justify-content-between">
                             <a role="button" data-toggle="collapse" href="#collapse_1"
-                               aria-expanded="true"><i class="fal fa-plus mr-3"></i>{{trans.get('keys.tao_moi_self')}}</a>
+                               aria-expanded="true"><i
+                                    class="fal fa-plus mr-3"></i>{{trans.get('keys.tao_moi_self')}}</a>
                         </div>
                         <div id="collapse_1" class="collapse show" data-parent="#accordion_1" role="tabpanel">
                             <div class="card-body">
@@ -52,7 +53,8 @@
                                             </div>
                                         </form>
                                         <div class="button-list">
-                                            <button @click="createSurvey()" type="button" class="btn btn-primary btn-sm">
+                                            <button @click="createSurvey()" type="button"
+                                                    class="btn btn-primary btn-sm">
                                                 {{trans.get('keys.tao')}}
                                             </button>
                                             <router-link to="/tms/self/list" class="btn btn-secondary btn-sm">
