@@ -8,7 +8,8 @@
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                         <li class="breadcrumb-item active">
-                            <router-link to="/tms/education/course/course_sample">{{ trans.get('keys.quan_tri_thu_vien_khoa_hoc') }}
+                            <router-link to="/tms/education/course/course_sample">{{
+                                trans.get('keys.quan_tri_thu_vien_khoa_hoc') }}
                             </router-link>
                         </li>
                     </ol>
@@ -162,10 +163,16 @@
                                             <td>{{ course.fullname }}</td>
                                             <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>
                                             <td class="text-center">
+                                                <!--                                                <a :title="trans.get('keys.sua_noi_dung')"-->
+                                                <!--                                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->
+                                                <!--                                                   :href="lms_url + course.id"-->
+                                                <!--                                                ><span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span></a>-->
+
                                                 <a :title="trans.get('keys.sua_noi_dung')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                   :href="lms_url + course.id"
-                                                ><span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span></a>
+                                                   :href="'/lms/course/viewedit.php?id='+course.id+'&notifyeditingon=1'">
+                                                    <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
+                                                </a>
 
                                                 <router-link
                                                         :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
@@ -386,7 +393,7 @@
         mounted() {
             // this.getCourses();
             this.hintCode();
-            this.fetch();
+            // this.fetch();
         }
     }
 </script>
