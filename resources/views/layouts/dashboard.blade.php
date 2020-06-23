@@ -29,7 +29,7 @@
     <link href="/assets/dist/css/custom.css" rel="stylesheet">
     <link href="/css/style.css" rel="stylesheet">
     <link href="/css/responsive.css" rel="stylesheet">
-    
+
     <link href="/assets/css/laraspace.css" rel="stylesheet" type="text/css">
 </head>
 
