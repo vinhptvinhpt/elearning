@@ -12,7 +12,7 @@ Cài đặt các phần mềm liên quan
 
 
 ## Deploy hệ thống
-
+## Deploy qua Docker
 - Pull source code từ git về folder chỉ định trên server
 - Cấp quyền cho các folder: public, storage, vendor, node_modules
 - cd /path/to/folder/source
@@ -26,7 +26,21 @@ Cài đặt các phần mềm liên quan
                            php artisan key:generate
                            php artisan config:cache
                            php artisan storage:link
-                              
+
+## Deploy thường
+- Run: sudo docker-compose up -d
+- Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
+- Chỉnh sửa config trong file: /config/constanst.php
+- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: {"flag":"stop"} trong folder: {path}/{to}/{folder}/{source}/storage/app/public/cron
+    Nếu ko có folder cron trong src, cần tạo mới folder này
+- Remote vào docker app: sudo docker-compose exec app bash
+- Chạy config cho Laravel: composer install
+                           php artisan key:generate
+                           php artisan config:cache
+                           php artisan storage:link
+- Cài đặt NodeJS và NPM
+- Chạy các lệnh: npm install và npm run dev
+- Cấu hình NGINX trỏ đến thư mục source                              
     
 ## Cài đặt PIP
 Chạy tuần tự các lệnh

@@ -44,24 +44,24 @@
                                         </form>
                                     </div>
                                 </div>
-<!--                                <div class="row">-->
-<!--                                    <div class="col-6">-->
-<!--                                        <select v-model="survey_id" class="form-control" id="survey_id">-->
-<!--                                            <option value="">{{trans.get('keys.chon_self')}}</option>-->
-<!--                                            <option v-for="sur in surveys" :value="sur.id">-->
-<!--                                                {{sur.code}} - {{sur.name}}-->
-<!--                                            </option>-->
-<!--                                        </select>-->
-<!--                                    </div>-->
-<!--                                    <div class="col-6">-->
-<!--                                        <select v-model="type_question"-->
-<!--                                                class="form-control" id="type_question">-->
-<!--                                            <option value="">{{trans.get('keys.chon_loai_cau_hoi_self')}}</option>-->
-<!--                                            <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>-->
-<!--                                            <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}</option>-->
-<!--                                        </select>-->
-<!--                                    </div>-->
-<!--                                </div>-->
+                                <!--                                <div class="row">-->
+                                <!--                                    <div class="col-6">-->
+                                <!--                                        <select v-model="survey_id" class="form-control" id="survey_id">-->
+                                <!--                                            <option value="">{{trans.get('keys.chon_self')}}</option>-->
+                                <!--                                            <option v-for="sur in surveys" :value="sur.id">-->
+                                <!--                                                {{sur.code}} - {{sur.name}}-->
+                                <!--                                            </option>-->
+                                <!--                                        </select>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="col-6">-->
+                                <!--                                        <select v-model="type_question"-->
+                                <!--                                                class="form-control" id="type_question">-->
+                                <!--                                            <option value="">{{trans.get('keys.chon_loai_cau_hoi_self')}}</option>-->
+                                <!--                                            <option value="group">{{trans.get('keys.cau_hoi_nhom')}}</option>-->
+                                <!--                                            <option value="minmax">{{trans.get('keys.cau_hoi_min_max')}}</option>-->
+                                <!--                                        </select>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
                                 <br/>
                                 <div class="row">
                                     <div class="col-6 dataTables_wrapper">

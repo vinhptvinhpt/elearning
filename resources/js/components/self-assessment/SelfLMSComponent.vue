@@ -32,10 +32,10 @@
                                 <button @click="submitAnswer()" type="button" class="btn btn-primary">
                                     {{trans.get('keys.gui')}}
                                 </button>
-<!--                                <router-link :to="{name: 'SelfIndex',params: {self_id: self_id}}"-->
-<!--                                             class="btn btn-secondary">-->
-<!--                                    {{trans.get('keys.huy')}}-->
-<!--                                </router-link>-->
+                                <!--                                <router-link :to="{name: 'SelfIndex',params: {self_id: self_id}}"-->
+                                <!--                                             class="btn btn-secondary">-->
+                                <!--                                    {{trans.get('keys.huy')}}-->
+                                <!--                                </router-link>-->
                             </div>
                         </div>
                     </div>

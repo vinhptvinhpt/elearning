@@ -205,8 +205,8 @@
                                 </select>
                             </div>
 
-                            <div v-if="roles && type === 'system'" class="col-md-4 col-sm-6 form-group">
-                              <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} *</label>
+                            <div v-if="roles" class="col-md-4 col-sm-6 form-group">
+                              <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} </label>
                               <treeselect v-model="users.employee.organization_id" :multiple="false" :options="options" id="employee_organization_id"/>
                               <label v-if="!users.employee.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
 
@@ -419,8 +419,7 @@
                 organization_roles: [
                   'manager',
                   'employee',
-                  'leader',
-                  'teacher'
+                  'leader'
                 ]
             }
         },
@@ -805,10 +804,11 @@
                   return;
                 }
 
-                if (!this.users.employee.organization_id) {
-                  $('.organization_required').show();
-                  return;
-                }
+                // console.log(this.type);
+                // if (this.type == 'system' && !this.users.employee.organization_id) {
+                //   $('.organization_required').show();
+                //   return;
+                // }
 
                 let organization_roles_selected = [];
                 for (const [key, item] of Object.entries(this.roles)) {
@@ -822,20 +822,19 @@
                   toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                   return;
                 }
-
-                // if (organization_roles_selected.length > 0) {
-                //   if (!this.users.employee.organization_id) {
-                //     toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                //     $('.organization_required').show();
-                //     return;
-                //   }
-                // }
-                // if (this.users.employee.organization_id) {
-                //   if (organization_roles_selected.length === 0) {
-                //     toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                //     return;
-                //   }
-                // }
+                if (organization_roles_selected.length > 0) {
+                  if (!this.users.employee.organization_id) {
+                    toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                    $('.organization_required').show();
+                    return;
+                  }
+                }
+                if (this.users.employee.organization_id) {
+                  if (organization_roles_selected.length === 0) {
+                    toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                    return;
+                  }
+                }
 
                 if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
                   toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));

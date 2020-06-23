@@ -146,7 +146,7 @@
 
                                                 <input v-model="is_end_quiz" type="checkbox"
                                                        style="width:20px; height:20px;">
-                                                <label for="inputText9">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
+                                                <label>{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                                             </div>
 
                                           <div class="col-12 form-group">
@@ -425,13 +425,20 @@
                 // window.history.back();
                 this.$router.push({name: 'SampleCourseIndex'});
 
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.getCourseSamples();
             this.getCategories();
             this.getCourseDetail();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

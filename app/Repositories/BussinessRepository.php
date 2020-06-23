@@ -351,8 +351,10 @@ class BussinessRepository implements IBussinessInterface
                     'id',
                     'shortname',
                     'fullname',
-                    \DB::raw('FROM_UNIXTIME(startdate) as start'),
-                    \DB::raw('FROM_UNIXTIME(enddate) as end'),
+                    'startdate as start',
+                    'enddate as end',
+                    //                    \DB::raw('FROM_UNIXTIME(startdate) as start'),
+//                    \DB::raw('FROM_UNIXTIME(enddate) as end'),
                     'course_place',
                     'category'
                 );
