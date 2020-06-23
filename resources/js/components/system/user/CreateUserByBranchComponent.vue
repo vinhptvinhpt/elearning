@@ -336,13 +336,20 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
 
         mounted() {
             this.getCitys();
             this.getSaleroom();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

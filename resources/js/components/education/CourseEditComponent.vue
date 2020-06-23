@@ -383,12 +383,19 @@
                 //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
                 // };
                 // CKEDITOR.replace('article_ckeditor', options);
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.getCategories();
             this.getCourseDetail();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

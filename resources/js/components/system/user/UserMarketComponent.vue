@@ -560,12 +560,19 @@
                 .catch(error => {
                   console.log(error);
                 })
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
           this.fetch();
             //this.getUser();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

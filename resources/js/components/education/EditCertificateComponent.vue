@@ -325,6 +325,9 @@
             }
         },
         methods: {
+          setFileInput(){
+            $('.dropify').dropify();
+          },
             selectedFile(e) {
                 let file = this.$refs.file.files[0];
                 const validFileTypes = ['image/gif', 'image/jpeg', 'image/png', 'image/jpg'];
@@ -354,7 +357,10 @@
                     axios.post(url)
                         .then(response => {
                             toastr['success'](current_pos.trans.get('keys.xoa_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
-                            current_pos.$router.push({name: 'SettingCertificate'});
+                          if (current_pos.certificate.type === 1)
+                            current_pos.$router.push({name: 'SettingCertificate', query: {type: '1'}});
+                          else
+                            current_pos.$router.push({name: 'SettingBadge', query: {type: '2'}});
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
@@ -369,6 +375,7 @@
                     id: this.id
                 })
                     .then(response => {
+                      console.log(response.data);
                         this.certificate = response.data;
                         this.organization_id = response.data.organization_id == null ? 0 : response.data.organization_id;
                         if (response.data.position !== '')
@@ -691,7 +698,8 @@
                 }
             },
             OnchangeTextBox(e) {
-                if (e.currentTarget.id.indexOf('Size') > -1) {
+              console.log(1);
+              if (e.currentTarget.id.indexOf('Size') > -1) {
                     if (e.currentTarget.id.indexOf('FullName') > -1 && this.certificate_img.pos_name) {
                         if ($('#ip_inputSizeFullName').val() < 0)
                             $('#ip_inputSizeFullName').val(15);
@@ -734,8 +742,10 @@
                         $('#sp_inputDate').css('color', this.text_color);
                         $('#sp_inputSign').css('color', this.text_color);
                     }
-                } else {
-                    if (e.currentTarget.id == 'ip_inputFullName' && this.certificate_img.pos_name) {
+                }
+                else {
+
+                  if (e.currentTarget.id == 'ip_inputFullName' && this.certificate_img.pos_name) {
                         $('#sp_inputFullName').text(this.fullName);
                         this.currentChoose = "inputFullName";
                     } else if (e.currentTarget.id == 'ip_inputProgram' && this.certificate_img.pos_program) {
@@ -820,7 +830,10 @@
         mounted() {
             this.certificateData();
             this.fetchOrganization();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 
