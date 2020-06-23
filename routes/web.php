@@ -311,6 +311,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/get_training_list', 'Backend\SystemController@apiGetTrainingList');
     Route::post('/system/user/get_list_branch_select', 'Backend\SystemController@apiGetListBranchSelect');
     Route::post('/system/user/get_list_saleroom_select', 'Backend\SystemController@apiGetListSaleRoomSelect');
+    Route::post('/api/system/user/change_status', 'Backend\SystemController@apiUserChangeWorkingStatus');
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
     Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');
@@ -568,6 +569,30 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/education/user_student/trash', 'Backend\EducationController@viewTrashUserStudent')->name('system.user.student.trash');
     Route::post('/education/user_student/list_trash', 'Backend\EducationController@apiListUserStudentTrash');
 
+
+    //Self Assessment module
+    Route::post('/api/self/list', 'Backend\SelfAssessmentController@apiGetAllSelfAssessment');
+    Route::post('/api/self/create', 'Backend\SelfAssessmentController@apiStoreSelfAssessment');
+    Route::post('/api/self/update/{id}', 'Backend\SelfAssessmentController@apiUpdateSelfAssessment');
+    Route::post('/api/self/delete', 'Backend\SelfAssessmentController@apiDeleteSelf');
+    Route::get('/api/self/getbyid/{id}', 'Backend\SelfAssessmentController@apiGetSelfById');
+    Route::get('/api/self/viewlayout/{self_id}', 'Backend\SelfAssessmentController@apiViewLayoutSelfAssessment');
+    Route::post('/api/self/submit_result/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessment');
+    Route::post('/api/self/submit_resultlms/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessmentLMS');
+    Route::post('/api/self/statistic', 'Backend\SelfAssessmentController@apiStatisticSelfAssessment');
+
+    Route::post('/api/selfquestion/list', 'Backend\SelfAssessmentController@apiGetListQuestion');
+    Route::get('/api/selfquestion/listself', 'Backend\SelfAssessmentController@apiGetListSelfAssessment');
+    Route::post('/api/selfquestion/create', 'Backend\SelfAssessmentController@apiCreateQuestionSelf');
+    Route::post('/api/selfquestion/update/{id}', 'Backend\SelfAssessmentController@apiUpdateQuestionSelf');
+    Route::get('/api/selfquestion/getbyid/{id}', 'Backend\SelfAssessmentController@apiGetQuestionSelfById');
+    Route::post('/api/selfquestion/delete', 'Backend\SelfAssessmentController@apiDelQuestionSelfById');
+    Route::get('/api/selfquestion/getlstanswer/{ques_id}', 'Backend\SelfAssessmentController@apiGetListAnswer');
+    Route::get('/api/selfquestion/getlstquestionmimax/{ques_id}', 'Backend\SelfAssessmentController@apiGetListQuestionMimax');
+    Route::get('/api/selfquestion/getlstquestiongroup/{ques_id}', 'Backend\SelfAssessmentController@apiGetListQuestionGroup');
+    Route::post('/api/system/user/login_statistic', 'Backend\SystemController@apiStatisticLogin');
+    Route::post('/exportLoginReport', 'Backend\ExcelController@exportLogLogin');
+    Route::get('/downloadExportLoginReport', 'Backend\ExcelController@downloadExportLoginReport');
     /**
      * Route Đào tạo
      **/

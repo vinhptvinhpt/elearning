@@ -220,14 +220,21 @@
                 .catch(error => {
                   console.log(error);
                 })
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             //this.listData();
             //this.listDepartment();
             //this.getUser();
             this.fetch();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
     function convertUtf8(str) {
         str = str.toLowerCase();

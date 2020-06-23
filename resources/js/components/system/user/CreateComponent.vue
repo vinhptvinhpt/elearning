@@ -85,10 +85,12 @@
                     <label v-if="!email" class="required text-danger email_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}} *</label>
-                    <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"
-                           class="form-control mb-4" @input="changeRequired('inputCmtnd')">
-                    <label v-if="!cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                    <label for="inputCmtnd">{{trans.get('keys.so_cmtnd')}}</label>
+                  <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"
+                         class="form-control mb-4">
+<!--                    <input v-model="cmtnd" type="text" id="inputCmtnd" :placeholder="trans.get('keys.nhap_so_cmtnd')"-->
+<!--                           class="form-control mb-4" @input="changeRequired('inputCmtnd')">-->
+<!--                    <label v-if="!cmtnd" class="required text-danger cmtnd_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                 </div>
                 <div class="col-md-4 col-sm-6 form-group">
                     <label for="inputPhone">{{trans.get('keys.so_dien_thoai_lien_lac')}}</label>
@@ -166,7 +168,7 @@
                 </div>
 
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} *</label>
+                    <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} </label>
                     <treeselect v-model="last_organization_id"
                                 :multiple="false"
                                 :options="options"
@@ -355,8 +357,7 @@
                 organization_roles: [
                     'manager',
                     'employee',
-                    'leader',
-                    'teacher'
+                    'leader'
                 ],
                 role_selected: 'user',
                 roleSelectOptions: [],
@@ -556,7 +557,7 @@
                 }
             },
             getCountries() {
-                if (this.type === 'system') {
+                //if (this.type === 'system') {
                     axios.post('/system/user/list_country')
                         .then(response => {
                             this.countries = response.data;
@@ -564,7 +565,7 @@
                         .catch(error => {
                             console.log(error.response.data);
                         });
-                }
+                //}
             },
             getCitys() {
                 axios.post('/system/list/list_city')
@@ -603,24 +604,24 @@
                     return;
                 }
 
-                if (this.inputRole.length === 0) {
+                if (this.type === 'system' && this.inputRole.length === 0) {
                     $('.inputRole_required').show();
                     return;
                 }
 
-                if (!this.last_organization_id) {
-                    $('.organization_required').show();
-                    return;
-                }
+                // if (!this.last_organization_id) {
+                //     $('.organization_required').show();
+                //     return;
+                // }
 
                 // if(!this.email){
                 //     $('.email_required').show();
                 //     return;
                 // }
-                if (!this.cmtnd) {
-                    $('.cmtnd_required').show();
-                    return;
-                }
+                // if (!this.cmtnd) {
+                //     $('.cmtnd_required').show();
+                //     return;
+                // }
                 // if(this.training == 0) {
                 //     $('.training_required').show();
                 //     return;
@@ -645,19 +646,19 @@
                     toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                     return;
                 }
-                // if (organization_roles_selected.length > 0) {
-                //     if (!this.organization_id) {
-                //         toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                //         $('.organization_required').show();
-                //         return;
-                //     }
-                // }
-                // if (this.last_organization_id) {
-                //     if (organization_roles_selected.length === 0) {
-                //         toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                //         return;
-                //     }
-                // }
+                if (organization_roles_selected.length > 0) {
+                    if (!this.organization_id) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                        $('.organization_required').show();
+                        return;
+                    }
+                }
+                if (this.last_organization_id) {
+                    if (organization_roles_selected.length === 0) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                        return;
+                    }
+                }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);

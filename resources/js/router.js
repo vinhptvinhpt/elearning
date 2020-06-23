@@ -111,6 +111,16 @@ import ReportBaseComponent from "./components/system/report/ReportBaseComponent"
 import ReportDetailComponent from "./components/system/report/ReportDetailComponent";
 import ImageCertificateComponent from "./components/education/ImageCertificateComponent";
 import SurveyLMS from "./components/survey/SurveyLMSComponent";
+import SelfList from "./components/self-assessment/SelfListComponent";
+import SelfCreate from "./components/self-assessment/SelfCreateComponent";
+import SelfEdit from "./components/self-assessment/SelfEditComponent";
+import SelfQuestionList from "./components/self-assessment/SelfQuestionListComponent";
+import SelfQuestionCreate from "./components/self-assessment/SelfQuestionCreateComponent";
+import SelfQuestionEdit from "./components/self-assessment/SelfQuestionEditComponent";
+import SelfPresent from "./components/self-assessment/SelfPresentComponent";
+import SelfStatistic from "./components/self-assessment/SelfStatisticComponent";
+import SelfLMS from "./components/self-assessment/SelfLMSComponent";
+import ReportLogin from "./components/system/report/ReportLoginComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -548,6 +558,56 @@ const routes = [
                 name: 'QuestionDetail',
                 props: (route) => ({ques_id: route.params.question_id})
             },
+            //Self Assessment
+            {
+                path: 'self/list',
+                component: SelfList,
+                name: 'SelfIndex'
+            },
+            {
+                path: 'self/create',
+                component: SelfCreate,
+                name: 'SelfCreate'
+            },
+            {
+                path: 'self/edit/:self_id',
+                component: SelfEdit,
+                name: 'SelfEdit',
+                props: (route) => ({self_id: route.params.self_id})
+            },
+
+            {
+                path: 'self/viewlayout/:self_id',
+                component: SelfPresent,
+                name: 'SelfPresent',
+                props: (route) => ({self_id: route.params.self_id})
+            },
+
+            {
+                path: 'self/statistic/:self_id',
+                component: SelfStatistic,
+                name: 'SelfStatistic',
+                props: (route) => ({self_id: route.params.self_id})
+            },
+
+            {
+                path: 'selfquestion/list',
+                component: SelfQuestionList,
+                name: 'SelfQuestionIndex'
+            },
+            {
+                path: 'selfquestion/create/:self_id',
+                component: SelfQuestionCreate,
+                name: 'SelfQuestionCreate',
+                props: (route) => ({self_id: route.params.self_id})
+            },
+            {
+                path: 'selfquestion/edit/:question_id',
+                component: SelfQuestionEdit,
+                name: 'SelfQuestionEdit',
+                props: (route) => ({question_id: route.params.question_id})
+            },
+
             //Settings
             //-configuration
             {
@@ -721,9 +781,7 @@ const routes = [
                 path: 'organization',
                 component: IndexOrganizationComponent,
                 name: 'IndexOrganization',
-                props: (route) => ({
-                    source_page: route.params.source_page ? route.params.source_page : 0
-                })
+                props: (route) => ({})
             },
             {
                 path: 'organization/edit/:id',
@@ -731,6 +789,7 @@ const routes = [
                 name: 'EditOrganization',
                 props: (route) => ({
                     id: route.params.id,
+                    //back to org list
                     source_page: route.params.source_page ? route.params.source_page : 0
                 })
             },
@@ -740,7 +799,9 @@ const routes = [
                 name: 'IndexEmployee',
                 props: (route) => ({
                     organization_id: route.query.organization_id,
-                    source_page: route.params.source_page ? route.params.source_page : 0
+                    //back to org list
+                    source_page: route.params.source_page ? route.params.source_page : 0,
+                    view_mode: route.query.view_mode ? route.query.view_mode : '',
                 })
             },
             {
@@ -749,8 +810,10 @@ const routes = [
                 name: 'EditEmployee',
                 props: (route) => ({
                     id: route.params.id,
+                    //Back to employee list
                     source_page: route.params.source_page ? route.params.source_page : 0,
                     organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                    view_mode: route.params.view_mode ? route.params.view_mode : '',
                 })
             },
             // Trainning
@@ -785,6 +848,11 @@ const routes = [
                 props: (route) => ({
                     trainning_id: route.params.trainning_id,
                 })
+            },
+            {
+                path: 'report/login_statistic',
+                component: ReportLogin,
+                name: 'ReportLogin'
             },
         ]
     },
@@ -828,6 +896,15 @@ const routes = [
                 name: 'SurveyLMS',
                 props: (route) => ({
                     survey_id: route.params.survey_id,
+                    user_id: route.params.user_id
+                })
+            },
+            {
+                path: 'self/present/:self_id/:user_id',
+                component: SelfLMS,
+                name: 'SelfLMS',
+                props: (route) => ({
+                    self_id: route.params.self_id,
                     user_id: route.params.user_id
                 })
             },

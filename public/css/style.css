@@ -1122,8 +1122,11 @@ table table tr td {
     right: 10%;
     top: 20%;
 }
-
-
+/*Overwrite high chart label color*/
+.highcharts-label h4 {
+    color: #ffffff;
+    font-size: inherit;
+}
 
 
 

@@ -12,7 +12,10 @@
             </li>
             <li v-if="selected_role === 'root'|| selected_role === 'admin'" class="breadcrumb-item"><router-link :to="{ name: 'EditOrganization', params: {id: employee.organization_id}}">{{ employee.organization.name }}</router-link></li>
             <li class="breadcrumb-item">
-              <router-link :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" >
+              <router-link v-if="selected_role === 'leader' || selected_role === 'manager'" :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {view_mode: view_mode} : {}}" >
+                {{ trans.get('keys.nhan_vien') }}
+              </router-link>
+              <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {organization_id: organization_id, view_mode: view_mode} : {organization_id: organization_id}}" >
                 {{ trans.get('keys.nhan_vien') }}
               </router-link>
             </li>
@@ -83,8 +86,8 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link v-if="selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
-                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}, query: {organization_id: organization_id}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
+                      <router-link v-if="selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {view_mode: view_mode} : {}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
+                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {organization_id: organization_id, view_mode: view_mode} : {organization_id: organization_id}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
                       <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
                     </div>
                   </div>
@@ -106,7 +109,8 @@
       'source_page',
       'organization_id',
       'roles_ready',
-      'selected_role'
+      'selected_role',
+      'view_mode'
     ],
     components: {
       //vPagination
@@ -123,8 +127,8 @@
             name: ''
           }
         },
-        organization_list:[],
-        organization_keyword:'',
+        organization_list: [],
+        organization_keyword: '',
         //Treeselect options
         options: []
       }
@@ -207,7 +211,11 @@
               if (response.data.status === 'success') {
                 toastr[response.data.status](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                 $('.form-control').removeClass('error');
-                this.$router.push({ name: 'IndexEmployee', query: { organization_id: current_pos.employee.organization_id }});
+                let query = { organization_id: current_pos.employee.organization_id };
+                if (this.view_mode === 'recursive') {
+                  query.view_mode = current_pos.view_mode;
+                }
+                this.$router.push({ name: 'IndexEmployee', query: query});
               }
               else {
                 toastr[response.data.status](response.data.message, current_pos.trans.get('keys.that_bai'));
@@ -234,10 +242,6 @@
           {
             key: 'employee',
             value: this.trans.get('keys.employee')
-          },
-          {
-            key: 'teacher',
-            value: this.trans.get('keys.teacher')
           }
         ];
         if (this.roles_ready) {

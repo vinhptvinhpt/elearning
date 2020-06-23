@@ -169,29 +169,29 @@
                 let translated_target = '';
                 switch (action) {
                     case 'created':
-                        translated_action = 'Thêm mới';
+                        translated_action = this.trans.get('keys.them_moi');
                         break;
                     case 'updated':
-                        translated_action = 'Cập nhật';
+                        translated_action = this.trans.get('keys.cap_nhat');
                         break;
                     case 'deleted':
-                        translated_action = 'Xóa';
+                        translated_action = this.trans.get('keys.xoa');
                         break;
                     case 'viewed':
-                        translated_action = 'Xem';
+                        translated_action = this.trans.get('keys.xem');
                         break;
                     case 'restored':
-                        translated_action = 'Sửa';
+                        translated_action = this.trans.get('keys.sua');
                         break;
                     default:
                         translated_action = action;
                 }
                 switch (target) {
                     case 'course':
-                        translated_target = 'Khóa học:';
+                        translated_target = this.trans.get('keys.khoa_hoc')+ ':';
                         break;
                     case 'quiz':
-                        translated_target = 'Bài kiểm tra:';
+                        translated_target = this.trans.get('keys.bai_kiem_tra') + ':';
                         break;
                     default:
                         translated_target = target;

@@ -55,13 +55,8 @@ a:hover {
     width: 35%;
     z-index: 1;
     border-radius: 10px;
-    background-color: white;
-    /*background-image: url('images/vietnam-halong-bay-58597.png');*/
-    background: transparent url('../images/vietnam-halong-bay-58597.png') 0% 0% no-repeat padding-box;
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: cover;
     padding: 8%;
+    overflow: hidden;
 }
 
 .before-main-content p, .before-main-content h3 {
@@ -140,14 +135,16 @@ a:hover {
     width: 100%;
 }
 
+
 .wrap-btn100 button {
     /*width: 130px;*/
-    margin-left: 35%;
+    /*margin-left: 35%;*/
     padding: 2% 10%;
     background: #0080ef 0% 0% no-repeat padding-box;
     border-radius: 4px;
     color: #ffffff;
 }
+
 
 .btn-login {
     background: #0080ef 0% 0% no-repeat padding-box;
@@ -155,7 +152,7 @@ a:hover {
     color: #FFFFFF;
     text-align: center;
     letter-spacing: 0.6px;
-    font-size: 17px;
+    font-size: 12px;
 }
 
 .wrap-forgot100 {
@@ -185,11 +182,33 @@ a:hover {
 }
 
 .wrap-content .logo {
-    margin: 5% 0 5% 31%;
+    margin: 10px auto;
+    display: block;
+    max-width: 100%;
 }
 
-.bg-show {
+#recoverform .wrap-content .logo {
+    max-width: 200px;
+    width: 70%;
+}
 
+.before-main-content .img_fix_bg {
+    position: absolute;
+    top: -20%;
+    left: -131%;
+    right: -54%;
+    bottom: -5%;
+    background-image: url(../images/vietnam-halong-bay-58597.jpg);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+
+@media screen and (min-width: 1024px) {
+    .btn-login {
+        font-size: 14px;
+        padding: 10px 20px;
+    }
 }
 
 /*Ipad ngang(1024 x 768)*/
@@ -205,6 +224,11 @@ a:hover {
         right: 8%;
     }
 
+    .before-main-content .img_fix_bg {
+        right: -16.67%;
+        left: -91.67%;
+    }
+
     .before-main-content p, .before-main-content h3 {
         font-size: 70px;
     }
@@ -222,16 +246,6 @@ a:hover {
 
     .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a {
         font-size: 10px !important;
-    }
-
-    .wrap-content .logo {
-        margin: 15% 0;
-        width: 100%;
-    }
-
-    .btn-login {
-        font-size: 10px;
-        margin-left: 20%;
     }
 }
 
@@ -242,12 +256,6 @@ a:hover {
         left: 10%;
     }
 
-    .before-main-content {
-        height: 80%;
-        width: 48%;
-        right: 8%;
-    }
-
     .before-main-content p, .before-main-content h3 {
         font-size: 70px;
     }
@@ -265,16 +273,6 @@ a:hover {
 
     .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a {
         font-size: 10px !important;
-    }
-
-    .wrap-content .logo {
-        margin: 15% 0;
-        width: 100%;
-    }
-
-    .btn-login {
-        font-size: 10px;
-        margin-left: 20%;
     }
 }
 
@@ -289,6 +287,13 @@ a:hover {
         width: 70%;
         height: 70%;
         right: 4%;
+    }
+
+    .before-main-content .img_fix_bg {
+        right: -5.7%;
+        left: -37.1%;
+        top: -22.8%;
+        bottom: -20%;
     }
 
     .before-main-content p, .before-main-content h3 {
@@ -309,16 +314,6 @@ a:hover {
     .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a {
         font-size: 10px !important;
     }
-
-    .wrap-content .logo {
-        margin: 15% 0;
-        width: 100%;
-    }
-
-    .btn-login {
-        font-size: 10px;
-        margin-left: 20%;
-    }
 }
 
 /*Iphone(480 x 640)*/
@@ -326,12 +321,6 @@ a:hover {
     .wrap-login100 {
         width: 50%;
         left: 7%;
-    }
-
-    .before-main-content {
-        width: 70%;
-        height: 70%;
-        right: 4%;
     }
 
     .before-main-content p, .before-main-content h3 {
@@ -351,16 +340,6 @@ a:hover {
 
     .wrap-login100, .title-login, .wrap-forgot100 span, .wrap-forgot100 a {
         font-size: 10px !important;
-    }
-
-    .wrap-content .logo {
-        margin: 15% 0;
-        width: 100%;
-    }
-
-    .btn-login {
-        font-size: 10px;
-        margin-left: 20%;
     }
 
 }

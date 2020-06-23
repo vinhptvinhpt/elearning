@@ -37,11 +37,15 @@ Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrain
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
+
+
 //Import user by excel file on background
 Route::get('/background/importEmployee', 'Api\BackgroundController@importEmployee');
 
 //Clean users, comment lại sau khi dùng xong
 Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
+Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
+Route::get('/test', 'Api\BackgroundController@test');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute

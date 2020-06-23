@@ -23,9 +23,12 @@ path = os.getcwd()
 # connect to db
 # path = 'D:\\Job\\elearning-easia\\python'
 # path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
+
 path = '/usr/share/nginx/html/source/phh/elearning-easia/python'
 path_gen_img = '/usr/share/nginx/html/source/phh/elearning-easia/storage/app/public/upload'
 path_gen_logo = '/usr/share/nginx/html/source/phh/elearning-easia/public/logo'
+path_gen_signature = '/usr/share/nginx/html/source/phh/elearning-easia/public/signature'
+
 bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
@@ -73,6 +76,12 @@ if __name__ == '__main__':
             logoX = coordinates["logoX"]
             logoY = coordinates["logoY"]
 
+            logoSig1X = coordinates["logoSig1X"]
+            logoSig1Y = coordinates["logoSig1Y"]
+
+            logoSig2X = coordinates["logoSig2X"]
+            logoSig2Y = coordinates["logoSig2Y"]
+
             fullnameX = coordinates["fullnameX"]
             fullnameY = coordinates["fullnameY"]
             fullnameSize = int(coordinates["fullnameSize"])
@@ -90,12 +99,12 @@ if __name__ == '__main__':
             image_new_height = int(coordinates["image_height"])
 
             dateSize = int(coordinates["dateSize"])
-            signSize = int(coordinates["signSize"])
+            #signSize = int(coordinates["signSize"])
 
-            signX = coordinates["signX"]
-            signY = coordinates["signY"]
+            #signX = coordinates["signX"]
+            #signY = coordinates["signY"]
 
-            signText = coordinates["sign_text"]
+            #signText = coordinates["sign_text"]
             textColor = coordinates["text_color"]
 
 
@@ -109,8 +118,14 @@ if __name__ == '__main__':
             positon_logo_X = image_width * logoX / image_new_width
             positon_logo_Y = image_height * logoY / image_new_height
 
+            positon_logosig1_X = image_width * logoSig1X / image_new_width
+            positon_logosig1_Y = image_height * logoSig1Y / image_new_height
+
+            positon_logosig2_X = image_width * logoSig2X / image_new_width
+            positon_logosig2_Y = image_height * logoSig2Y / image_new_height
+
             positon_date_X = image_width * dateX / image_new_width- 20
-            positon_date_Y = image_height * dateY / image_new_height
+            positon_date_Y = image_height * dateY / image_new_height - 10
 
            
             font_size_name_new = image_width * fullnameSize / image_new_width
@@ -122,7 +137,7 @@ if __name__ == '__main__':
             font_name = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=fullnameSize, encoding="unic")
             font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
             font_date = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=dateSize, encoding="unic")
-            font_sign = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=signSize, encoding="unic")
+            #font_sign = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=signSize, encoding="unic")
             
             #region lay anh badge mau
             sql_select_badge = "select path, position from image_certificate where is_active = 1 and type = 2"
@@ -172,7 +187,7 @@ if __name__ == '__main__':
                 limit = 50
                 
                 for row in records:
-                    
+
                     # 19/3/2020 uydd
                     user_id = row[0]
                     name = row[1].encode('utf-8').strip()
@@ -220,7 +235,22 @@ if __name__ == '__main__':
                                 record_org = cursor.fetchone()
                                 org_name_root = record_org[2]
 
-                            path_logo = os.path.join(path_gen_logo, org_name_root.lower()+".png")
+                            #logo
+                            logo_name = "phh.png"
+                            org_name_lower = org_name_root.lower()
+                            
+                            if("easia" in org_name_lower):
+                                logo_name = "easia.png"
+                            elif("begodi" in org_name_lower):
+                                logo_name = "begodi.png"
+                            elif("exotic" in org_name_lower):
+                                logo_name = "exotic.png"
+                            elif("avana" in org_name_lower):
+                                logo_name = "avana.png"
+                            #elif("phh" in org_name_lower):
+                             #   logo_name = "phh.png"
+                            
+                            path_logo = os.path.join(path_gen_logo, logo_name)
                             logo = Image.open(path_logo)
                             logo_size_width, logo_size_height = logo.size
                             
@@ -228,12 +258,32 @@ if __name__ == '__main__':
                             logo_size_height = logo_size_height / 4
                             
                             logo = logo.resize((logo_size_width, logo_size_height), Image.ANTIALIAS)
+
+                            #signature
+                            path_logo_sig1 = os.path.join(path_gen_signature, "dean.png")
+
+                            signature1 = Image.open(path_logo_sig1)
+                            logosig1_size_width, logosig1_size_height = signature1.size
+
+                            #logosig1_size_width = logosig1_size_width / 1.5
+                            #logosig1_size_height = logosig1_size_height / 1.5
+                            signature1 = signature1.resize((logosig1_size_width, logosig1_size_height), Image.ANTIALIAS)
+
+
+                            path_logo_sig2 = os.path.join(path_gen_signature, "director.png")
+
+                            signature2 = Image.open(path_logo_sig2)
+                            logosig2_size_width, logosig2_size_height = signature2.size
+
+                            logosig2_size_width = logosig2_size_width / 8
+                            logosig2_size_height = logosig2_size_height / 8
+                            signature2 = signature2.resize((logosig2_size_width, logosig2_size_height), Image.ANTIALIAS)
                             
                             name_utf8 = name.decode('utf8')
                             
-                            name_utf8_training = training_name
+                            name_utf8_training = training_name + " training" 
                             #name_utf8_training = "Leading with emotional intelligence"
-                            #name_utf8_training = name_utf8_training.upper()
+                            name_utf8_training = name_utf8_training.upper()
                             
                             # open image
                             img = Image.open(path_image)
@@ -250,7 +300,7 @@ if __name__ == '__main__':
                             # endregion
 
                             #region hien thi chu ky tren anh
-                            canvas.text((signX, signY+30), signText, font=font_sign, fill=textColor)
+                            #canvas.text((signX, signY+30), signText, font=font_sign, fill=textColor)
                             #endregion
 
                             #region xu ly hien thi ten khung nang luc tren anh
@@ -329,6 +379,17 @@ if __name__ == '__main__':
                             positon_logo_Y = int(positon_logo_Y)
              
                             img.paste(logo, (positon_logo_X, positon_logo_Y))
+
+                            positon_logosig1_X = int(positon_logosig1_X)
+                            positon_logosig1_Y = int(positon_logosig1_Y)
+             
+                            img.paste(signature1, (positon_logosig1_X, positon_logosig1_Y))
+
+
+                            positon_logosig2_X = int(positon_logosig2_X)
+                            positon_logosig2_Y = int(positon_logosig2_Y)
+             
+                            img.paste(signature2, (positon_logosig2_X, positon_logosig2_Y))
                             
                             # save image
                             img.save(os.path.join(path_gen_img, 'certificate', code + '_certificate.png'))

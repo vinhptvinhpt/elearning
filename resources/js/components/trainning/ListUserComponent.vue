@@ -65,8 +65,7 @@
                                                         </div>
                                                         <div class="mt-10 mb-20">
                                                             <strong>
-                                                                {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{
-                                                                total_out }}
+                                                                {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{ total_out }}
                                                             </strong>
                                                         </div>
                                                         <div class="table-responsive">

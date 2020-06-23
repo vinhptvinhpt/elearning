@@ -22,6 +22,7 @@
     <div class="main-bg"></div>
     <div class="main-content"></div>
     <div class="before-main-content">
+        <div class="img_fix_bg"></div>
         <h3>PHH</h3>
         <p>ACADEMY</p>
     </div>
@@ -51,12 +52,17 @@
                     <input type="checkbox" checked id="ip-checkbox">
                     <span>Remeber login</span>
                 </div>
-                <div class="wrap-btn100">
+                <div class="wrap-btn100 text-center">
                     <button style="position: relative;" type="submit" class="btn btn-login">Login
                         <i class="fa fa-spinner" aria-hidden="true"></i></button>
                 </div>
 
                 <!-- Error Alert -->
+                <div class="alert alert-danger alert-dismissible message error organizationFail"
+                     style="display: none;margin-top: 1rem">
+                    <strong>Error!</strong>&nbsp;You do not have access to this organization
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
                 <div class="alert alert-danger alert-dismissible message error loginFail"
                      style="display: none;margin-top: 1rem">
                     <strong>Error!</strong>&nbsp;Username or password incorrect
@@ -99,7 +105,7 @@
                 </div>
                 <div class="wrap-input100">
 
-                    <div class="wrap-btn100">
+                    <div class="wrap-btn100 text-center">
                         <button style="position: relative;" type="submit" id="btn-reset" class="btn btn-login">Recovery
                             <i class="fa fa-spinner" aria-hidden="true"></i></button>
                     </div>
@@ -111,10 +117,10 @@
                         <button type="button" class="close" data-dismiss="alert">&times;</button>
                     </div>
                     <!-- Success Alert -->
-                    <div class="alert alert-success alert-dismissible" id="forgetSuccess"
+                    <div class="alert alert-success" id="forgetSuccess"
                          style="margin-top: 1rem;display: none">
-                        <strong>Thành công!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Successfully!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
+                        <button type="button" class="close" data-dismiss="alert" style="position: absolute;top: 2px;right: 5px;">&times;</button>
                     </div>
 
                     <div class="wrap-forgot100" id="div-login">
@@ -128,7 +134,6 @@
 </div>
 <div class="block">
 
-</div>
 </div>
 
 <script>
@@ -198,48 +203,55 @@
         $('#div-login').hide();
     });
 
-    $('#btn-reset').click(function () {
-        $('#btn-reset').addClass('loadding');
-
-        var username = $('#iprs-user').val();
-
-        var usernameMissingText = $('.message.error.missingUsernameForget');
-        var emailMissingText = $('.message.error.missingEmailForget');
-        var forgetSuccessBlock = $('#forgetSuccess');
-        var forgetErrorBlock = $('#forgetError');
-
-        usernameMissingText.hide();
-        emailMissingText.hide();
-        forgetSuccessBlock.hide();
-        forgetErrorBlock.hide();
-
-        if (username.length === 0) {
-            $('#btn-reset').removeClass('loadding');
-            usernameMissingText.show();
-            return;
-        }
-
-        $.ajax({
-            type: "POST",
-            url: '/bgtresetpassword',
-            data: {
-                username: username
-                {{--_token: '{{csrf_token()}}'--}}
-            },
-            success: function (data) {
-                $('#btn-reset').removeClass('loadding');
-                if (data.status) {
-                    forgetSuccessBlock.show();
-                    forgetErrorBlock.hide();
-                    $('#forgetSuccessText').text('' + data.message);
-                } else {
-                    forgetSuccessBlock.hide();
-                    forgetErrorBlock.show();
-                    $('#forgetErrorText').text('' + data.message);
-                }
-            }
-        });
+    $('#recoverform').submit(function () {
+        recoverPassword();
+        return false;
     });
+
+    function recoverPassword(){
+        if(!$('#btn-reset').hasClass('loadding')){
+            $('#btn-reset').addClass('loadding');
+
+            var username = $('#iprs-user').val();
+
+            var usernameMissingText = $('.message.error.missingUsernameForget');
+            var emailMissingText = $('.message.error.missingEmailForget');
+            var forgetSuccessBlock = $('#forgetSuccess');
+            var forgetErrorBlock = $('#forgetError');
+
+            usernameMissingText.hide();
+            emailMissingText.hide();
+            forgetSuccessBlock.hide();
+            forgetErrorBlock.hide();
+
+            if (username.length === 0) {
+                $('#btn-reset').removeClass('loadding');
+                usernameMissingText.show();
+                return;
+            }
+
+            $.ajax({
+                type: "POST",
+                url: '/bgtresetpassword',
+                data: {
+                    username: username
+                    {{--_token: '{{csrf_token()}}'--}}
+                },
+                success: function (data) {
+                    $('#btn-reset').removeClass('loadding');
+                    if (data.status) {
+                        forgetSuccessBlock.show();
+                        forgetErrorBlock.hide();
+                        $('#forgetSuccessText').text('' + data.message);
+                    } else {
+                        forgetSuccessBlock.hide();
+                        forgetErrorBlock.show();
+                        $('#forgetErrorText').text('' + data.message);
+                    }
+                }
+            });
+        }
+    }
 
     function loginSso(order) {
         var user = $('#username').val();
@@ -342,7 +354,7 @@
                     {{--}--}}
 
                 } else if (
-                    data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" ||
+                    data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" || data.status === "FAILORGANIZATION" ||
                     data.status === "INVALID" || data.status === "FAILCONFIRM" || data.status === "FAILCODE" || data.status === "FAILVALIDATECODE"
                 ) {
                     $('.message.error').hide();
@@ -367,6 +379,10 @@
                         $('#confirm_code').addClass('error');
                         $('.message.error.message_confirm_code').show();
                         $('.message.error.message_confirm_code').html('Mã giấy chứng nhận gồm ( a-zA-Z0-9 ), ký tự đặc biệt ( -_./ ).');
+                    }
+
+                    if (data.status === "FAILORGANIZATION") {
+                        $('.message.error.organizationFail').show();
                     }
                 } else {
                     $('.message.error.internalServerError').show();

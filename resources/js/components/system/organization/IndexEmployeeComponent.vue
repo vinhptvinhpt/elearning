@@ -17,8 +17,7 @@
                             {{ trans.get('keys.to_chuc') }}
                         </li>
                         <li v-if="organization_selected !== false" class="breadcrumb-item">
-                            <router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{
-                                organization_name }}
+                            <router-link :to="{ name: 'EditOrganization', params: {id: query_organization_id}}">{{ organization_name }}
                             </router-link>
                         </li>
                         <li class="breadcrumb-item active">{{ trans.get('keys.nhan_vien') }}</li>
@@ -125,8 +124,7 @@
                                 <div class="listData">
                                     <h5 v-if="organization_selected === false" class="mb-20">
                                         {{trans.get('keys.danh_sach_nhan_vien')}}</h5>
-                                    <h5 v-else class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{
-                                        organization_name }}</h5>
+                                    <h5 v-else class="mb-20">{{trans.get('keys.danh_sach_nhan_vien')}} - {{ organization_name }}</h5>
                                     <div class="row">
                                         <div class="col-sm-8 dataTables_wrapper">
 
@@ -196,25 +194,21 @@
                                                 <td>{{ item.user ? item.user.fullname : '' }}</td>
                                                 <td>{{ item.organization ? item.organization.name : '' }}</td>
                                                 <td v-if="item.position === 'manager'">
-                                                    <label class="badge badge-dark">{{ trans.get('keys.manager')
-                                                        }}</label>
+                                                    <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'leader'">
-                                                    <label class="badge badge-warning">{{ trans.get('keys.leader')
-                                                        }}</label>
+                                                    <label class="badge badge-warning">{{ trans.get('keys.leader') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'employee'">
-                                                    <label class="badge badge-info">{{ trans.get('keys.employee')
-                                                        }}</label>
+                                                    <label class="badge badge-info">{{ trans.get('keys.employee') }}</label>
                                                 </td>
                                                 <td v-else-if="item.position === 'teacher'">
-                                                    <label class="badge badge-success">{{ trans.get('keys.teacher')
-                                                      }}</label>
+                                                    <label class="badge badge-success">{{ trans.get('keys.teacher') }}</label>
                                                 </td>
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
                                                                  class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                                 :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current }, query: {organization_id: query_organization_id}}">
+                                                                 :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
 
@@ -278,6 +272,7 @@
                 type: [String, Number],
                 default: ''
             },
+            view_mode: String,
             slugs: Array,
         },
         data() {
@@ -307,6 +302,8 @@
                 selected_role: 'user',
                 organization_selected: false
             }
+        },
+        mounted() {
         },
         methods: {
             slug_can(permissionName) {
@@ -348,13 +345,15 @@
             //     })
             // },
             getDataList(paged) {
-                axios.post('/organization-employee/list', {
+              this.$route.params.page = undefined;
+              axios.post('/organization-employee/list', {
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
                     organization_id: this.query_organization_id,
                     position: this.position,
-                    role: this.selected_role
+                    role: this.selected_role,
+                    view_mode: this.view_mode
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
@@ -423,9 +422,8 @@
             //     })
             // },
             onPageChange() {
-
+                let page = this.getParamsPage();
                 let organization_id_string = this.organization_id.toString();
-
                 if (this.organization_id.length !== 0) {
                     //Có truyền organization_id
                     this.query_organization_id = parseInt(organization_id_string);
@@ -433,9 +431,12 @@
                 } else if (this.query_organization_id !== 0 && typeof this.query_organization_id !== 'undefined') {
                     //Chuyển trang khi đã có query_organization_id
                     this.fetchOrganizationInfo(this.query_organization_id);
+                } else {
+                  if (page) {
+                    this.current = page;
+                  }
+                  this.getDataList();
                 }
-
-                this.getDataList();
             },
             getParamsPage() {
                 return this.$route.params.page;
@@ -478,10 +479,11 @@
                             this.organization_selected = true;
                         }
                         //this.employee.input_organization_id = response.data.id;
-                        // gọi list sau trong trường hợp manager / leader
+                        //gọi list sau trong trường hợp manager / leader
                         if (this.roles_ready) {
-                            let page = this.getParamsPage();
-                            this.getDataList(page);
+                            //let page = this.getParamsPage();
+                            //this.getDataList(page);
+                            this.getDataList();
                         }
                     })
                     .catch(error => {
@@ -540,10 +542,6 @@
                     {
                         key: 'employee',
                         value: this.trans.get('keys.employee')
-                    },
-                    {
-                        key: 'teacher',
-                        value: this.trans.get('keys.teacher')
                     }
                 ];
 
@@ -566,10 +564,6 @@
                         response.push({
                             key: 'employee',
                             value: this.trans.get('keys.employee')
-                        });
-                        response.push({
-                          key: 'teacher',
-                          value: this.trans.get('keys.teacher')
                         });
                     }
                     return response;

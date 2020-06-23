@@ -305,8 +305,8 @@
                         .catch(error => {
                             $('button.hasLoading').removeClass('loadding');
                             swal({
-                                title: "Thông báo",
-                                text: " Lỗi hệ thống.Thao tác thất bại!",
+                                title: this.trans.get('keys.thong_bao'),
+                                text: this.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
@@ -424,11 +424,18 @@
                 let new_label = convertUtf8(label);
                 //return this.filterBy(option, new_label, new_search); //can not call components function here
                 return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.getDepartment();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
     function convertUtf8(str) {
         str = str.toLowerCase();

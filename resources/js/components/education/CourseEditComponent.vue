@@ -75,16 +75,16 @@
                                                        class="required text-danger category_id_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                                                <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                                                 <input v-model="course.pass_score" type="number" id="pass_score"
                                                        :placeholder="trans.get('keys.vi_du')+': 50'"
                                                        class="form-control mb-4">
-                                                <label v-if="!course.pass_score"
-                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+<!--                                                <label v-if="!course.pass_score"-->
+<!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}}
+                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h)
                                                     *</label>
                                                 <input v-model="course.estimate_duration" id="estimate_duration"
                                                        type="number"
@@ -116,20 +116,22 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
                                                 <input v-model="course.course_budget" id="course_budget" type="number"
                                                        step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')"
                                                        class="form-control mb-4">
+<!--                                              <label v-if="!course.course_budget"-->
+<!--                                                     class="required text-danger course_budget_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                                             </div>
 
-                                            <div class="col-md-4 col-sm-6 form-group">
+                                            <div class="col-md-4 col-sm-6 form-group d-none">
                                                 <input v-model="course.allow_register" type="checkbox"
                                                        style="width:20px; height:20px;"
                                                        id="inputText9">
                                                 <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                                             </div>
 
-                                            <div class="col-md-4 col-sm-6 form-group" id="is_end_quiz">
+                                            <div class="col-md-4 col-sm-6 form-group d-none" id="is_end_quiz">
                                                 <input v-model="course.is_end_quiz" type="checkbox" id="inputText10"
                                                        style="width:20px; height:20px;">
                                                 <label for="inputText10">{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
@@ -305,15 +307,20 @@
                     return;
                 }
 
+              // if (!this.course.course_budget) {
+              //   $('.course_budget_required').show();
+              //   return;
+              // }
+
                 // if (!this.course.enddate) {
                 //     $('.enddate_required').show();
                 //     return;
                 // }
 
-                if (!this.course.pass_score && this.course.category != 3) {
-                    $('.pass_score_required').show();
-                    return;
-                }
+                // if (!this.course.pass_score && this.course.category != 3) {
+                //     $('.pass_score_required').show();
+                //     return;
+                // }
 
                 var allow_reg = 0;
                 if (this.course.allow_register) {
@@ -336,7 +343,7 @@
                 this.formData.append('enddate', this.course.enddate);
                 this.formData.append('pass_score', this.course.pass_score);
                 //this.formData.append('description', editor_data);
-                this.formData.append('description', this.course.summary === null ? '' : this.course.summary);
+                this.formData.append('description', this.course.summary == null ? '' : this.course.summary);
                 this.formData.append('category_id', this.course.category);
                 this.formData.append('course_place', '');
                 this.formData.append('is_end_quiz', quiz_test);
@@ -376,12 +383,19 @@
                 //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
                 // };
                 // CKEDITOR.replace('article_ckeditor', options);
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
         mounted() {
             this.getCategories();
             this.getCourseDetail();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

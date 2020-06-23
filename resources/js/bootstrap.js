@@ -10,6 +10,17 @@ import 'vue-multiselect/dist/vue-multiselect.min.css';
 import 'vue-select/dist/vue-select.css';
 import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 import 'pc-bootstrap4-datetimepicker/build/css/bootstrap-datetimepicker.css';
+import Highcharts from "highcharts";
+import HighchartsVue from "highcharts-vue";
+import sankeyInit from 'highcharts/modules/sankey';
+import accessibilityInit from 'highcharts/modules/accessibility';
+import exportingInit from 'highcharts/modules/exporting';
+import organizationInit from 'highcharts/modules/organization';
+
+sankeyInit(Highcharts);
+exportingInit(Highcharts);
+accessibilityInit(Highcharts);
+organizationInit(Highcharts);
 
 import {BootstrapVue} from 'bootstrap-vue';
 import VSwitch from 'v-switch-case';
@@ -100,7 +111,7 @@ Vue.use(BootstrapVue);
 Vue.use(VSwitch);
 Vue.use(CKEditor );
 Vue.use(datePicker);
-
+Vue.use(HighchartsVue);
 
 Vue.component('v-pagination', require('vue-plain-pagination'));
 Vue.component('v-select', vSelect);

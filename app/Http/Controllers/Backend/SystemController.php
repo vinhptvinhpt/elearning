@@ -425,4 +425,14 @@ class SystemController extends Controller
     {
         return $this->userRepository->getTrainningHistory($user_id);
     }
+
+    public function apiUserChangeWorkingStatus(Request $request)
+    {
+        return $this->userRepository->apiUserChangeWorkingStatus($request);
+    }
+
+    public function apiStatisticLogin(Request $request)
+    {
+        return $this->userRepository->loginStatistic($request);
+    }
 }

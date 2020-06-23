@@ -1,51 +1,52 @@
 <template>
 
-  <div class="container-fluid mt-15">
-    <div class="row">
-      <div class="col">
-        <nav class="breadcrumb" aria-label="breadcrumb">
-          <ol class="breadcrumb bg-transparent px-0">
-            <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-            <li class="breadcrumb-item">
-              <router-link :to="{ name: 'EmailTemplateIndex' }">
-                {{ trans.get('keys.danh_sach_email_template') }}
-              </router-link>
-            </li>
-            <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_email_template') }}</li>
-          </ol>
-        </nav>
-      </div>
-    </div>
-    <div>
-      <div class="row mx-0">
-        <div class="col-12 hk-sec-wrapper">
-          <h5 class="hk-sec-title">{{trans.get('keys.chinh_sua_email_template')}}: {{name_show}}</h5>
-          <div id="collapse_1" class="collapse show" data-parent="#accordion_1" role="tabpanel">
-            <div class="card-body">
-              <div class="col-12 col-lg-12">
-                <form action>
-                  <div class="col-12 form-group">
-                    <label>{{trans.get('keys.mo_ta')}} <span style="color: red">{{trans.get('keys.chu_y_chi_sua_chu_nhung_doan_van_co_dang_vi_du_fullname_username_khong_duoc_chinh_sua_hoac_xoa')}}</span></label>
-                    <ckeditor v-model="content_html" :config="editorConfig"></ckeditor>
-                  </div>
-
-                  <div class="button-list">
-                    <button @click="editEmailTemplate()" type="button" class="btn btn-primary">
-                      {{trans.get('keys.sua')}}
-                    </button>
-                    <button type="button" @click="goBack()" class="btn btn-secondary">
-                      {{trans.get('keys.huy')}}
-                    </button>
-                  </div>
-                </form>
-              </div>
+    <div class="container-fluid mt-15">
+        <div class="row">
+            <div class="col">
+                <nav class="breadcrumb" aria-label="breadcrumb">
+                    <ol class="breadcrumb bg-transparent px-0">
+                        <li class="breadcrumb-item">
+                            <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
+                        </li>
+                        <li class="breadcrumb-item">
+                            <router-link :to="{ name: 'EmailTemplateIndex' }">
+                                {{ trans.get('keys.danh_sach_email_template') }}
+                            </router-link>
+                        </li>
+                        <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_email_template') }}</li>
+                    </ol>
+                </nav>
             </div>
-          </div>
         </div>
-      </div>
-    </div>
-  </div>
+        <div>
+            <div class="row mx-0">
+                <div class="col-12 hk-sec-wrapper">
+                    <h5 class="hk-sec-title">{{trans.get('keys.chinh_sua_email_template')}}: {{name_show}}</h5>
+                    <div id="collapse_1" class="collapse show" data-parent="#accordion_1" role="tabpanel">
+                        <div class="card-body">
+                            <div class="col-12 col-lg-12">
+                                <form action>
+                                    <div class="col-12 form-group">
+                                        <label>{{trans.get('keys.mo_ta')}} <span style="color: red">{{trans.get('keys.chu_y_chi_sua_chu_nhung_doan_van_co_dang_vi_du_fullname_username_khong_duoc_chinh_sua_hoac_xoa')}}</span></label>
+                                        <ckeditor v-model="content_html" :config="editorConfig"></ckeditor>
+                                    </div>
 
+                                    <div class="button-list">
+                                        <button @click="editEmailTemplate()" type="button" class="btn btn-primary">
+                                            {{trans.get('keys.sua')}}
+                                        </button>
+                                        <button type="button" @click="goBack()" class="btn btn-secondary">
+                                            {{trans.get('keys.huy')}}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 </template>
@@ -59,16 +60,16 @@
     export default {
         props: ["name_file"],
         components: {
-          CKEditor
+            CKEditor
         },
         data() {
             return {
-                StringHello: "Xin chào",
-                StringContent: "Đây là content",
-                StringFullName: "Thông báo từ BQT Elearing tới bạn:",
-                StringUserName: "Với tài khoản:",
-                StringIntro: "Các khóa học sắp được mở ra.",
-                StringThanks: "Cám ơn bạn nhiều",
+                StringHello: "Hello",
+                StringContent: "",
+                StringFullName: "Notice from management Elearing to you:",
+                StringUserName: "With account:",
+                StringIntro: "Courses are about to be opened.",
+                StringThanks: "Thank you so much",
                 IdCourse: "1",
                 NameCourse: "",
                 TimeStart: "",
@@ -83,13 +84,13 @@
                 json_content: {},
                 name_show: '',
                 editorConfig: {
-                  filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
-                  // The configuration of the editor.
-                  //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
-                  filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-                  filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
-                  filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-                  filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
+                    filebrowserUploadMethod: 'form', //fix for response when uppload file is cause filetools-response-error
+                    // The configuration of the editor.
+                    //add responseType=json for original version of ckeditor 4, else cause filetools-response-error
+                    filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                    filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
+                    filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                    filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
                 }
             };
         },
@@ -139,11 +140,11 @@
                                 this.content_html = this.json_content.forgot_password;
                                 break;
                             case 'invite_student':
-                              this.content_html = this.json_content.invite_student;
-                              break;
+                                this.content_html = this.json_content.invite_student;
+                                break;
                             case 'active_email':
-                              this.content_html = this.json_content.active_email;
-                            break;
+                                this.content_html = this.json_content.active_email;
+                                break;
                             default:
                                 break;
                         }
@@ -304,10 +305,10 @@
                     )
                     .then(response => {
                         if (response.data.status) {
-                          toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
-                          this.$router.push({ name: 'EmailTemplateIndex' });
+                            toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+                            this.$router.push({name: 'EmailTemplateIndex'});
                         } else {
-                          toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+                            toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
                         }
                     })
                     .catch(error => {
@@ -315,7 +316,7 @@
                     });
             },
             goBack() {
-              this.$router.push({ name: 'EmailTemplateIndex' });
+                this.$router.push({name: 'EmailTemplateIndex'});
             }
         },
         mounted() {

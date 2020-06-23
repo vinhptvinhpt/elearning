@@ -96,7 +96,7 @@
                         </select> -->
                         <div class="wrap_search_box">
                           <div class="btn_search_box disabled" @click="listDataSearchBox()">
-                            <span>{{ data.saleroom.branch_name ? data.saleroom.branch_name : 'Chọn Đại lý' }}</span>
+                            <span>{{ data.saleroom.branch_name ? data.saleroom.branch_name : trans.get('keys.chon_dai_ly') }}</span>
                           </div>
                           <div class="content_search_box" style="display: none;"><!-- hiển thị lại khi k tích hợp diva -->
                             <input @input="listDataSearchBox()" type="text" v-model="search_box" class="form-control search_box">

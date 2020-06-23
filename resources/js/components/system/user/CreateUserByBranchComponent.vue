@@ -276,9 +276,6 @@
                     return;
                 }
 
-                console.log(this.branch_type);
-                console.log(this.saleroom_type);
-
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
                 this.formData.append('fullname', this.fullname);
@@ -339,13 +336,20 @@
                     .catch(error => {
                         console.log(error.response.data);
                     });
-            }
+            },
+
+          setFileInput() {
+            $('.dropify').dropify();
+          }
         },
 
         mounted() {
             this.getCitys();
             this.getSaleroom();
-        }
+        },
+      updated() {
+          this.setFileInput();
+      }
     }
 </script>
 

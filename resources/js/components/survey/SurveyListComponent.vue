@@ -22,6 +22,7 @@
                         <div class="col-sm">
                             <div class="table-wrap">
                                 <div class="row">
+                                    <div class="col-6"></div>
                                     <div class="col-6">
                                         <form v-on:submit.prevent="getSurveys(1)">
                                             <div class="d-flex flex-row form-group">
@@ -29,7 +30,7 @@
                                                        class="form-control"
                                                        :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_survey')+' ...'"/>
                                                 <button type="button" id="btnFilter"
-                                                        class="btn btn-primary"
+                                                        class="btn btn-primary btn-sm"
                                                         @click="getSurveys(1)">
                                                     {{trans.get('keys.tim')}}
                                                 </button>
@@ -37,27 +38,27 @@
                                         </form>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <!--                                <div class="col-6">-->
-                                    <!--                                    <div class="dataTables_length">-->
+                                <!--                                <div class="row">-->
+                                <!--                                    &lt;!&ndash;                                <div class="col-6">&ndash;&gt;-->
+                                <!--                                    &lt;!&ndash;                                    <div class="dataTables_length">&ndash;&gt;-->
 
-                                    <!--                                    </div>-->
-                                    <!--                                </div>-->
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_length">
-                                            <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                                            <date-picker v-model="startdate"
-                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <div class="dataTables_length">
-                                            <label>{{trans.get('keys.ngay_ket_thuc')}}</label>
-                                            <date-picker v-model="enddate"
-                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>
-                                        </div>
-                                    </div>
-                                </div>
+                                <!--                                    &lt;!&ndash;                                    </div>&ndash;&gt;-->
+                                <!--                                    &lt;!&ndash;                                </div>&ndash;&gt;-->
+                                <!--                                    <div class="col-sm-6">-->
+                                <!--                                        <div class="dataTables_length">-->
+                                <!--                                            <label>{{trans.get('keys.ngay_bat_dau')}}</label>-->
+                                <!--                                            <date-picker v-model="startdate"-->
+                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                    <div class="col-sm-6">-->
+                                <!--                                        <div class="dataTables_length">-->
+                                <!--                                            <label>{{trans.get('keys.ngay_ket_thuc')}}</label>-->
+                                <!--                                            <date-picker v-model="enddate"-->
+                                <!--                                                         :config="{format: 'DD-MM-YYYY'}"></date-picker>-->
+                                <!--                                        </div>-->
+                                <!--                                    </div>-->
+                                <!--                                </div>-->
                                 <div class="row pt-3">
                                     <div class="col-6 dataTables_wrapper">
                                         <div class="dataTables_length d-block">
@@ -98,8 +99,8 @@
                                             <th>{{trans.get('keys.stt')}}</th>
                                             <th style="width: 20%;">{{trans.get('keys.ma_survey')}}</th>
                                             <th style="width: 40%;">{{trans.get('keys.ten_survey')}}</th>
-<!--                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>-->
-<!--                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>-->
+                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.bat_dau')}}</th>-->
+                                            <!--                                            <th class=" mobile_hide">{{trans.get('keys.ket_thuc')}}</th>-->
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -113,8 +114,8 @@
                                                 </router-link>
                                             </td>
                                             <td>{{ sur.name }}</td>
-<!--                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>-->
-<!--                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>-->
+                                            <!--                                            <td class=" mobile_hide">{{ sur.startdate |convertDateTime}}</td>-->
+                                            <!--                                            <td class=" mobile_hide">{{ sur.enddate |convertDateTime}}</td>-->
                                             <td class="text-center">
 
                                                 <router-link
@@ -224,7 +225,7 @@
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
                     text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "success",
+                    type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: false,
                     showLoaderOnConfirm: true
@@ -250,7 +251,7 @@
             }
         },
         mounted() {
-            this.getSurveys();
+            // this.getSurveys();
         }
     }
 </script>

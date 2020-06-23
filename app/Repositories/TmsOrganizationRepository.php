@@ -42,6 +42,11 @@ class TmsOrganizationRepository implements ICommonInterface
         } else {
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
         }
+
+        if (in_array('tms-system-organize-view', $current_user_roles_and_slugs['slugs'])) {
+            $current_user_role = 'tms-system-organize-view';
+        }
+
         if ($current_user_roles_and_slugs['roles']->has_role_admin || $current_user_roles_and_slugs['roles']->root_user) {
             $current_user_role = Role::ADMIN;
         } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
@@ -49,10 +54,11 @@ class TmsOrganizationRepository implements ICommonInterface
         } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
             $current_user_role = Role::ROLE_LEADER;
         }
-        if (in_array('tms-system-user-add', $current_user_roles_and_slugs['slugs'])
-            || in_array('tms-system-student-add', $current_user_roles_and_slugs['slugs'])) {
-            $current_user_role = 'creator';
-        }
+
+//        if (in_array('tms-system-user-add', $current_user_roles_and_slugs['slugs'])
+//            || in_array('tms-system-student-add', $current_user_roles_and_slugs['slugs'])) {
+//            $current_user_role = 'creator';
+//        }
 
         if (strlen($current_user_role) == 0) {
             $response = [
@@ -73,15 +79,27 @@ class TmsOrganizationRepository implements ICommonInterface
             DB::raw(' (select MAX(level) from tms_organization) as max_level')
         );
 
-        $skip_level = false;
-
         //Ngoại trừ form update có excluded
         if (($current_user_role == Role::ROLE_MANAGER || $current_user_role == Role::ROLE_LEADER) && strlen($exclude) == 0) {
-            $list->whereIn('id', function ($q) use ($current_user_id) {
-                /* @var $q Builder */
-                $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
-            });
-            $skip_level = true;
+
+            //Lấy tổ chức hiện tại của user
+//            $list->whereIn('id', function ($q) use ($current_user_id) {
+//                /* @var $q Builder */
+//                $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
+//            });
+            //Lấy tổ chức hiện tại và các tổ chức dưới nó
+            $employee = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+            if (isset($employee)) {
+                $organization_id = $employee->organization_id;
+                $list->whereIn('id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+                });
+            }
         }
 
         if ($keyword) {
@@ -105,18 +123,18 @@ class TmsOrganizationRepository implements ICommonInterface
             $list = $list->where('id', '<>', $exclude);
         }
 
-        if (is_numeric($level) && $level != 0 && $skip_level === false) {
+        if (is_numeric($level) && $level != 0) {
             $list = $list->where('level', $level);
         }
 
         $list = $list->orderBy('level', 'asc');
 
         //Filter or not paginated
-
         if (isset($paginated) && $paginated == 0) {
             return $list->get();
         }
 
+        //List paginated
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
         $list = $list->paginate($row);
         $arrayList =  $list->toArray();
