@@ -168,7 +168,7 @@
                 </div>
 
                 <div class="col-md-4 col-sm-6 form-group">
-                    <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} *</label>
+                    <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} </label>
                     <treeselect v-model="last_organization_id"
                                 :multiple="false"
                                 :options="options"
@@ -609,10 +609,10 @@
                     return;
                 }
 
-                if (!this.last_organization_id) {
-                    $('.organization_required').show();
-                    return;
-                }
+                // if (!this.last_organization_id) {
+                //     $('.organization_required').show();
+                //     return;
+                // }
 
                 // if(!this.email){
                 //     $('.email_required').show();
@@ -646,19 +646,19 @@
                     toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                     return;
                 }
-                // if (organization_roles_selected.length > 0) {
-                //     if (!this.organization_id) {
-                //         toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                //         $('.organization_required').show();
-                //         return;
-                //     }
-                // }
-                // if (this.last_organization_id) {
-                //     if (organization_roles_selected.length === 0) {
-                //         toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                //         return;
-                //     }
-                // }
+                if (organization_roles_selected.length > 0) {
+                    if (!this.organization_id) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                        $('.organization_required').show();
+                        return;
+                    }
+                }
+                if (this.last_organization_id) {
+                    if (organization_roles_selected.length === 0) {
+                        toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                        return;
+                    }
+                }
 
                 this.formData = new FormData();
                 this.formData.append('file', this.$refs.file.files[0]);
