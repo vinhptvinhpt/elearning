@@ -115,7 +115,8 @@
                                     <div class="col-6">
                                         <div id="datable_1_filter" class="dataTables_filter" style="float: right;">
                                             <label>
-                                                <router-link v-if="slug_can('tms-educate-exam-online-add')" :to="{name: 'CourseCreate'}">
+                                                <router-link v-if="slug_can('tms-educate-exam-online-add')"
+                                                             :to="{name: 'CourseCreate'}">
                                                     <button type="button"
                                                             class="btn btn-success btn-md"
                                                             :placeholder="trans.get('keys.tao_moi')"
@@ -172,35 +173,44 @@
                                             </td>
                                             <td class="text-center">
 
-                                                <a v-if="slug_can('tms-educate-exam-online-edit')" :title="trans.get('keys.sua_noi_dung')"
+                                                <!--                                                <a v-if="slug_can('tms-educate-exam-online-edit')" :title="trans.get('keys.sua_noi_dung')"-->
+                                                <!--                                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->
+                                                <!--                                                   :href="lms_url + course.id">-->
+                                                <!--                                                    <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>-->
+                                                <!--                                                </a>-->
+
+                                                <a v-if="slug_can('tms-educate-exam-online-edit')"
+                                                   :title="trans.get('keys.sua_noi_dung')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                   :href="lms_url + course.id">
+                                                   :href="'/lms/course/viewedit.php?id='+course.id+'&notifyeditingon=1'">
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
 
                                                 <router-link
-                                                  :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
-                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
-                                                             :to="{ name: 'InviteStudent', params: { id: course.id, come_from: 'online', course_name: course.fullname } }">
+                                                        :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
+                                                        :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
+                                                        :to="{ name: 'InviteStudent', params: { id: course.id, come_from: 'online', course_name: course.fullname } }">
                                                       <span class="btn-icon-wrap"><i
-                                                        class="fal fa-arrow-alt-right"></i></span>
+                                                              class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
                                                 <router-link
-                                                  :title="trans.get('keys.ghi_danh_khoa_hoc')"
-                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
-                                                             :to="{ name: 'CourseEnrol', params: { id: course.id, come_from: 'online' } }">
+                                                        :title="trans.get('keys.ghi_danh_khoa_hoc')"
+                                                        :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
+                                                        :to="{ name: 'CourseEnrol', params: { id: course.id, come_from: 'online' } }">
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
-                                                <router-link v-if="slug_can('tms-educate-exam-online-edit')" :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
+                                                <router-link v-if="slug_can('tms-educate-exam-online-edit')"
+                                                             :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                              :to="{ name: 'CourseDetail', params: { id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
 
-                                                <button v-if="slug_can('tms-educate-exam-online-deleted')" :title="trans.get('keys.xoa')" data-toggle="modal"
+                                                <button v-if="slug_can('tms-educate-exam-online-deleted')"
+                                                        :title="trans.get('keys.xoa')" data-toggle="modal"
                                                         data-target="#delete-ph-modal"
                                                         @click="deletePost(course.id)"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
@@ -266,16 +276,16 @@
         },
         filters: {
             convertDateTime(value) {
-                if(value){
+                if (value) {
                     var time = new Date(value * 1000);
                     return time.toLocaleDateString();
                 }
                 return "";
             }
         },
-            methods: {
+        methods: {
             slug_can(permissionName) {
-              return this.slugs.indexOf(permissionName) !== -1;
+                return this.slugs.indexOf(permissionName) !== -1;
             },
             getCategories() {
                 axios.post('/api/courses/get_list_category')
@@ -439,7 +449,7 @@
         mounted() {
             this.getCategories();
             this.getCourses();
-            this.fetch();
+            // this.fetch();
             //this.getDataForFilter();
         }
     }
