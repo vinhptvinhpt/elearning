@@ -344,21 +344,22 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         } else {
             $data = MdlCourse::where('category', '<>', 2)
-                ->where("enddate", ">=", $now)
                 ->where("startdate", "<=", $now)
+                ->where("startdate", "<>", 0)
                 ->where("deleted", "=", 0)
+                ->where(function ($query) use ($now) {
+                    $query->where('enddate', '>=', $now)
+                        ->orWhere('enddate', '=', 0);
+                })
                 ->select(
                     'id',
                     'shortname',
                     'fullname',
                     'startdate as start',
                     'enddate as end',
-                    //                    \DB::raw('FROM_UNIXTIME(startdate) as start'),
-//                    \DB::raw('FROM_UNIXTIME(enddate) as end'),
                     'course_place',
                     'category'
                 );
-
             if ($keyword) {
                 //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
                 // code xử lý remove ký tự đầu tiên của keyword đi

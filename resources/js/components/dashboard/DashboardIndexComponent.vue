@@ -553,7 +553,6 @@
                 })
                     .then(response => {
                         this.posts = response.data.data.data;
-                        console.log(this.posts);
                         this.current = response.data.pagination.current_page;
                         this.totalPages = response.data.pagination.total;
                     })
