@@ -1806,7 +1806,7 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
-            $course = MdlCourse::findOrFail($course_id);
+            $course = MdlCourse::find($course_id);
 
             if (empty($course)) {
                 $response->status = false;
@@ -1818,13 +1818,17 @@ class BussinessRepository implements IBussinessInterface
             $dt = Carbon::now();
 
             foreach ($lstUserIDs as $user_id) {
-                $insert_data[] = [
-                    'course_id' => $course_id,
-                    'user_id' => $user_id,
-                    'replied' => 0,
-                    'accepted' => 0,
-                    'created_at' => $dt->toDateTimeString()
-                ];
+                $checkInvitation = TmsInvitation::where('user_id', '=', $user_id)
+                    ->where('course_id', '=', $course_id)->first();
+                if(!$checkInvitation){
+                    $insert_data[] = [
+                        'course_id' => $course_id,
+                        'user_id' => $user_id,
+                        'replied' => 0,
+                        'accepted' => 0,
+                        'created_at' => $dt->toDateTimeString()
+                    ];
+                }
             }
             if (!empty($insert_data)) {
                 TmsInvitation::insert($insert_data);
@@ -5190,7 +5194,8 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
             ->where('tms_user_detail.deleted', 0)
-            ->whereIn('tms_user_detail.user_id', $userArray);
+            ->whereIn('tms_user_detail.user_id', $userArray)
+            ->whereNotIn('mdl_user.username', ['admin']);
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
