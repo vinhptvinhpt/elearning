@@ -2,7 +2,7 @@
     <div>
         <div class="overwrap_search_box"></div>
         <div class="hk-wrapper hk-vertical-nav">
-            <top-bar :key="topBarKey"></top-bar>
+            <top-bar v-if="roles_ready" :key="topBarKey" :current_roles="current_roles" :slugs="slugs"></top-bar>
             <side-bar v-if="roles_ready" :current_roles="current_roles" :slugs="slugs"></side-bar>
             <div id="hk_nav_backdrop" class="hk-nav-backdrop"></div>
             <div class="hk-pg-wrapper" id="app">
