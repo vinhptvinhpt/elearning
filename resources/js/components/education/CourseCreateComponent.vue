@@ -301,14 +301,6 @@
         this.formData.append('access_ip', this.access_ip);
         let current_pos = this;
 
-
-        //console.log(this.formData);
-
-        for (var formDataKey in this.formData) {
-          console.log(formDataKey);
-        }
-        return;
-
         axios.post('/api/courses/create', this.formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
