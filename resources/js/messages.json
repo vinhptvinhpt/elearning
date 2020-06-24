@@ -759,9 +759,9 @@
         "tu_dong_chay_cron": "Auto Enrol Student",
         "tu_dong_cap_chung_chi": "Auto Certification",
         "them_co_cau_to_chuc": "Add Organization",
-        "ban_chi_duoc_chon_1_quyen_trong_nhom": "You can choose only one role in group (Manager/Leader/Executive/Teacher)",
-        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Must select working place when role in group (Manager/Leader/Executive/Teacher) is selected",
-        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Executive/Teacher) before select working place",
+        "ban_chi_duoc_chon_1_quyen_trong_nhom": "You can choose only one role in group (Manager/Leader/Executive)",
+        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Must select working place when role in group (Manager/Leader/Executive) is selected",
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Must select onr role in group (Manager/Leader/Executive) before select working place",
         "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Competency framework completed in time intervals",
         "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Trainees exist in the competency framework. Can not delete!",
         "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "You want remove competency framework assigned to this user!",
@@ -967,7 +967,7 @@
         "thoigian": "Time access",
         "chu_y": "Notice",
         "canh_bao": "Warning",
-        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "If you don't select role in group (Manager/Leader/Executive/Teacher), user will be auto removed from organization"
+        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "If you don't select role in group (Manager/Leader/Executive), user will be auto removed from organization"
     },
     "vi.keys": {
         "language": "",
@@ -1729,9 +1729,9 @@
         "tu_dong_chay_cron": "Tự động Enrol học viên",
         "tu_dong_cap_chung_chi": "Tự động cấp chứng chỉ",
         "them_co_cau_to_chuc": "Thêm cơ cấu tổ chức",
-        "ban_chi_duoc_chon_1_quyen_trong_nhom": "Bạn chỉ được chọn 1 quyền trong nhóm (Manager/Leader/Executive/Teacher)",
-        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Bắt buộc chọn nơi làm việc khi đã chọn quyền trong nhóm (Manager/Leader/Executive/Teacher)",
-        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Executive/Teacher) trước khi chọn nơi làm việc",
+        "ban_chi_duoc_chon_1_quyen_trong_nhom": "Bạn chỉ được chọn 1 quyền trong nhóm (Manager/Leader/Executive)",
+        "ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom": "Bắt buộc chọn nơi làm việc khi đã chọn quyền trong nhóm (Manager/Leader/Executive)",
+        "ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec": "Bạn phải chọn 1 quyền trong nhóm (Manager/Leader/Executive) trước khi chọn nơi làm việc",
         "khung_nang_luc_hoan_thanh_trong_khoang_tg": "Khung năng lực hoàn thành trong khoảng thời gian",
         "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
         "ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay": "Bạn muốn loại khung năng lực gán cho người dùng này!",
@@ -1929,6 +1929,6 @@
         "thoigian": "Thời gian",
         "chu_y": "Chú ý",
         "canh_bao": "Cảnh báo",
-        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "Nếu không chọn quyền trong nhóm (Manager/Leader/Executive/Teacher), người dùng sẽ tự động bị loại ra khỏi tổ chức"
+        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "Nếu không chọn quyền trong nhóm (Manager/Leader/Executive), người dùng sẽ tự động bị loại ra khỏi tổ chức"
     }
 }

@@ -191,7 +191,12 @@
                                             </tr>
                                             <tr v-else v-for="(item,index) in posts">
                                                 <td>{{ (current-1)*row+(index+1) }}</td>
-                                                <td>{{ item.user ? item.user.fullname : '' }}</td>
+                                                <td>
+                                                  <router-link
+                                                    :to="{ name: 'EditUserById', params: { user_id: item.user_id }, query: {type: 'system'} }">
+                                                    {{ item.user ? item.user.fullname : '' }}
+                                                  </router-link>
+                                                </td>
                                                 <td>{{ item.organization ? item.organization.name : '' }}</td>
                                                 <td v-if="item.position === 'manager'">
                                                     <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
