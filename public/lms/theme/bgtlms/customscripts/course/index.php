@@ -1,10 +1,12 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
 $type = optional_param('type', 0, PARAM_INT);
-if($type != 0){
-
+$category_params = 0;
+if (strlen($type) != 0) {
+    $category_params = $type;
 }
-$sqlGetCategories = 'select id, name from mdl_course_categories';
+//Hide client course
+$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
 
@@ -522,7 +524,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                 <div class="col-5 col-md-2 block-search__select">
                                     <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
                                             v-model="category">
-                                        <option value="0">All course</option>
+                                        <option value="0">All courses</option>
                                         <?php foreach ($categories as $category) { ?>
                                             <option
                                                 value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
@@ -686,6 +688,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         });
 
 
+
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -717,7 +720,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         },
         methods: {
             onPageChange: function(){
-                // console.log(this.category);
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
@@ -727,7 +729,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
                 let url = '<?php echo $CFG->wwwroot; ?>';
                 const params = new URLSearchParams();
-                params.append('category', category);
+                params.append('category', this.category);
                 params.append('txtSearch', this.txtSearch);
                 params.append('current', page || this.current);
                 // params.append('pageCount', this.total);
@@ -751,9 +753,21 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             }
         },
         mounted() {
+            this.category = <?php echo $category_params ?>;
+            activeCategogy(this.category);
             this.searchCourse();
         }
     })
+
+    function activeCategogy(category_selected) {
+        var category = $(this).attr('category');
+        var needtoclick = $("[category=" + category_selected +"]")
+        //add class active
+        needtoclick.addClass('btn-click-active');
+        $('.btn-click-course').not($('#ctgr' + category_selected)).each(function () {
+            $(this).removeClass(' btn-click-active');
+        });
+    }
 </script>
 
 
