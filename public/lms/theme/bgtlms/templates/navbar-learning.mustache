@@ -21,18 +21,18 @@
         <div class="topbar-learning">
             <div class="col-md-2 offset-md-1 col-sm-12 col-xs-12 no-padding-topbar">
                 <div class="d-inline-block mr-1">
-                    <a class="btn btn-sm btn-nav-left-top" href="{{{ config.wwwroot }}}/course/view.php?id={{ courseid }}&section_no=0&source={{ courseid }}"">
+                    <a class="btn btn-sm btn-nav-left-top" href="{{{ config.wwwroot }}}/course/view.php?id={{ courseid }}&section_no=0&source={{ courseid }}" title="Back to course detail">
                         <i class="fa fa-arrow-left"></i>
                      </a>
                 </div>
                 <div class="d-inline-block mr-1" data-region="drawer-toggle" >
-                    <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn btn-sm btn-nav-left-top" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav">{{#pix}}i/menubars{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
+                    <button aria-expanded="{{#navdraweropen}}true{{/navdraweropen}}{{^navdraweropen}}false{{/navdraweropen}}" aria-controls="nav-drawer" type="button" class="btn btn-sm btn-nav-left-top" data-action="toggle-drawer" data-side="left" data-preference="drawer-open-nav" title="Table of contents">{{#pix}}i/menubars{{/pix}}<span class="sr-only">{{#str}}sidepanel, core{{/str}}</span></button>
                 </div>
                 <div class="d-inline-block mr-1">
-                    <a href="{{{ config.wwwroot }}}" class="btn btn-sm btn-nav-left-top"><i class="fa fa-home"></i></a>
+                    <a href="{{{ config.wwwroot }}}" class="btn btn-sm btn-nav-left-top" title="Homepage"><i class="fa fa-home"></i></a>
                 </div>
                 <div class="d-inline-block">
-                    <a class="btn btn-sm btn-nav-left-top" href="{{{ config.wwwroot }}}/course/index.php"><i class="fa fa-university"></i></a>
+                    <a class="btn btn-sm btn-nav-left-top" href="{{{ config.wwwroot }}}/course/index.php" title="Course list"><i class="fa fa-university"></i></a>
                 </div>
             </div>
             <div class="col-md-4 col-sm-12 col-xs-12 no-padding-topbar">
