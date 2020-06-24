@@ -344,21 +344,22 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         } else {
             $data = MdlCourse::where('category', '<>', 2)
-                ->where("enddate", ">=", $now)
                 ->where("startdate", "<=", $now)
+                ->where("startdate", "<>", 0)
                 ->where("deleted", "=", 0)
+                ->where(function ($query) use ($now) {
+                    $query->where('enddate', '>=', $now)
+                        ->orWhere('enddate', '=', 0);
+                })
                 ->select(
                     'id',
                     'shortname',
                     'fullname',
                     'startdate as start',
                     'enddate as end',
-                    //                    \DB::raw('FROM_UNIXTIME(startdate) as start'),
-//                    \DB::raw('FROM_UNIXTIME(enddate) as end'),
                     'course_place',
                     'category'
                 );
-
             if ($keyword) {
                 //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
                 // code xử lý remove ký tự đầu tiên của keyword đi
@@ -1817,6 +1818,13 @@ class BussinessRepository implements IBussinessInterface
             $insert_data = [];
             $dt = Carbon::now();
 
+            $send = false;
+
+            if(count($lstUserIDs) == 1 && TmsInvitation::where('user_id', '=', $lstUserIDs[0])
+                    ->where('course_id', '=', $course_id)->first()){
+                $send = true;
+            }
+
             foreach ($lstUserIDs as $user_id) {
                 $checkInvitation = TmsInvitation::where('user_id', '=', $user_id)
                     ->where('course_id', '=', $course_id)->first();
@@ -1835,9 +1843,11 @@ class BussinessRepository implements IBussinessInterface
             }
 
             $response->status = true;
+            $response->send = $send;
             $response->message = __('them_vao_danh_sach_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
+            $response->send = false;
             $response->message = $e->getMessage();
         }
         return json_encode($response);
