@@ -350,7 +350,7 @@
                 this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
                 this.formData.append('allow_register', allow_reg);
                 this.formData.append('offline', 0); //ko phai khoa hoc tap trung
-                this.formData.append('course_budget', this.course.course_budget);
+                this.formData.append('course_budget', this.course.course_budget ? this.course.course_budget : '');
                 this.formData.append('access_ip', this.string_ip);
                 let current_pos = this;
                 axios.post('/api/courses/update/' + this.course_id, this.formData, {
@@ -364,7 +364,11 @@
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             this.$router.push({name: 'CourseIndex'});
                         } else {
-                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                            if (response.data.otherData) {
+                              toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));
+                            } else {
+                              toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                            }
                         }
                     })
                     .catch(error => {

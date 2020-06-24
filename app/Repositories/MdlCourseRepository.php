@@ -646,7 +646,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = 'Định dạng dữ liệu không hợp lệ';
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
                 $response->otherData = $validator;
                 $response->error = $description;
                 return response()->json($response);
