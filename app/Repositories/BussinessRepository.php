@@ -9992,7 +9992,7 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-
+//        dd($user_id, $trainning_id);
         $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
         $category = $category_id['category']['category_id'];
 
@@ -10031,9 +10031,9 @@ class BussinessRepository implements IBussinessInterface
             );
 
         $data = $data->orderBy('c.id', 'desc')->distinct();
-        if ($category) {
-            $data = $data->where('c.category', '=', $category);
-        }
+//        if ($category) {
+//            $data = $data->where('c.category', '=', $category);
+//        }
         if ($this->keyword) {
             $data = $data->where(function ($q) {
                 $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
