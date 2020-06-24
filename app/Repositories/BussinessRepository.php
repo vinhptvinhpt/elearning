@@ -5194,7 +5194,8 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
             ->where('tms_user_detail.deleted', 0)
-            ->whereIn('tms_user_detail.user_id', $userArray);
+            ->whereIn('tms_user_detail.user_id', $userArray)
+            ->whereNotIn('mdl_user.username', ['admin']);
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
