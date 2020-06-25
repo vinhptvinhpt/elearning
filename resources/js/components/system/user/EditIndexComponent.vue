@@ -335,7 +335,6 @@
         },
         methods: {
             slug_can(permissionName) {
-              console.log(this.slugs)
               return this.slugs.indexOf(permissionName) !== -1;
             },
             removeWordPlace(word_place_id) {
