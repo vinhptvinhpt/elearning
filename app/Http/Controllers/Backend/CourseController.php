@@ -156,7 +156,7 @@ class CourseController extends Controller
             }
 
             //check course info exist
-            $courseInfo = MdlCourse::select('id')->where('shortname', $request->input('shortname'))->first();
+            $courseInfo = MdlCourse::select('id')->where('shortname', $request->input('shortname'))->where('deleted', 0)->first();
 
             if ($courseInfo) {
                 $response->status = false;

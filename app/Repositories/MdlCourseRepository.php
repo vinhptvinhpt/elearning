@@ -90,7 +90,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        else {
 
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        if(tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')){
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             //Không thuộc các trường hợp trên
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
@@ -106,16 +106,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.deleted',
                     'mccc.gradepass as pass_score'
                 );
-        }
-        else{
+        } else {
             //Kiểm tra xem có phải role thuộc organization hay không
             $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
             if ($checkRoleOrg === true) {
                 //kiểm tra xem có còn thêm quyền admin nữa không
                 $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["admin"]);
-                if($checkRoleOrg)
+                if ($checkRoleOrg)
                     $ready = false;
-                else{
+                else {
                     $listCourses = DB::table('mdl_course as c')
                         ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
                         ->where(function ($query) {
@@ -151,8 +150,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         );
 //                    $ready = true;
                 }
-            }
-            else {
+            } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
                 if ($checkRole === TRUE) {
@@ -663,7 +661,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
 
             //Check course code
-            $checkCourse = MdlCourse::select('id')->whereNotIn('id', [$course->id])->where('shortname', $shortname)->first();
+            $checkCourse = MdlCourse::select('id')->whereNotIn('id', [$course->id])->where('shortname', $shortname)->where('deleted', 0)->first();
 
             if ($checkCourse) {
                 $response->status = false;
