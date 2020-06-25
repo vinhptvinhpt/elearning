@@ -3807,6 +3807,7 @@ class BussinessRepository implements IBussinessInterface
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->where('mdl_course.deleted', 0)
             ->select(
                 'mdl_course.id',
                 'mdl_course.fullname as name',
