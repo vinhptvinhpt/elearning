@@ -3341,7 +3341,11 @@ class BussinessRepository implements IBussinessInterface
     //New report screen
     public function apiListDetail(Request $request)
     {
-        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
+        $mode_select = $request->input('mode_select');
+        // certificated,
+        // completed_training,
+        // completed_course,
+        // learning_time
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
         $course_id = $request->input('course_id');
@@ -3350,6 +3354,7 @@ class BussinessRepository implements IBussinessInterface
         $country = $request->input('country');
 
         $show_courses = false;
+
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
 
         $select_array = array(
@@ -3360,7 +3365,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_user_detail.confirm'
         );
 
-        if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
+        if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
             $show_courses = true;
         }
 
@@ -3370,22 +3375,27 @@ class BussinessRepository implements IBussinessInterface
             ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
 
         //Lấy theo khung năng lực
-        $query->leftJoin('tms_trainning_groups', function ($join) {
-            /* @var $join JoinClause */
-            $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
-            $join->where('tms_trainning_groups.type', '=', 1);
-        })
-            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
+        //Join tổ chức và khung năng lực - commented 2020 06 25
+//        $query->leftJoin('tms_trainning_groups', function ($join) {
+//            /* @var $join JoinClause */
+//            $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
+//            $join->where('tms_trainning_groups.type', '=', 1);
+//        })
+//            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
+
+        //join người dùng vào KNL - added 2020 06 25
+        $query->leftJoin('tms_traninning_users', 'tms_traninning_users.user_id', '=', 'tms_organization_employee.user_id');
+        $query->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_traninning_users.trainning_id');
 
 
-        //hoàn thành khóa học cũ
+        //hoàn thành khóa học cũ - long time ago
 //        $query->leftjoin('course_final', function ($join) {
 //            $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
 //            $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
 //        });
 //        $select_array[] = 'course_final.timecompleted';
 
-        if ($show_courses) { //complete course and learning time
+        if ($show_courses) { //complete course and learning time => cần tính thêm phân quyền dữ liệu
 
             $addtion_select_for_course = [
                 'mdl_course.id as course_id',
@@ -3393,7 +3403,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.fullname as course_name',
             ];
 
-            if ($training_id == 0) {
+            if ($training_id == 0) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
                 /////////////////////////// PHAN QUYEN DU LIEU ///////////////////////
                 //lấy người dùng theo tổ chức
                 $query_per = TmsOrganization::query()->where('tms_organization.enabled', 1)
@@ -3413,7 +3423,8 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //khóa học trong khung năng lục
-            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id');
+            //$query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id'); //Commented 2020 06 25
+            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_traninning_users.trainning_id');
             $query->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
 
             $select_array = array_merge($select_array, [
@@ -3422,12 +3433,21 @@ class BussinessRepository implements IBussinessInterface
             ]);
             $select_array = array_merge($select_array, $addtion_select_for_course);
 
-        } else {
+        }
+        else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
+
             $select_array = array_merge($select_array, [
                 'tms_traninning_programs.id as training_id',
                 'tms_traninning_programs.name as training_name',
             ]);
-            //Hoàn thành khóa học
+
+            //chứng chỉ
+            if ($mode_select == 'certificated') {
+                $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+                $select_array[] = 'student_certificate.code';
+            }
+
+            //Hoàn thành KNL
             if ($mode_select == 'completed_training') {
                 $query->leftjoin('tms_trainning_complete', function ($join) { //Hoàn thành khung năng lực
                     /* @var $join JoinClause */
@@ -3435,12 +3455,6 @@ class BussinessRepository implements IBussinessInterface
                     $join->on('tms_trainning_complete.trainning_id', '=', 'tms_traninning_programs.id');
                 });
                 $select_array[] = 'tms_trainning_complete.id as completed';
-            }
-
-            //chứng chỉ
-            if ($mode_select == 'certificated') {
-                $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
-                $select_array[] = 'student_certificate.code';
             }
         }
 
@@ -3608,14 +3622,25 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
-    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select)
-    {
+    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select) {
         if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $query = $query->where('tms_organization.id', '=', $organization_id);
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $query = $query->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        } else {
+            //$level_1_ids = TmsOrganization::query()->where('level', 1)->pluck('id')->toArray();
         }
 
         if (strlen($training_id) != 0 && $training_id != 0) {
-            $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+            //$query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+            $query = $query->where('tms_traninning_users.trainning_id', '=', $training_id);
         }
 
         if (strlen($course_id) != 0 && $course_id != 0) {
@@ -3635,10 +3660,10 @@ class BussinessRepository implements IBussinessInterface
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
             }
-            if ($mode_select == 'certificated') { //mode certificated
+            if ($mode_select == 'certificated') {
                 $query = $query->where('student_certificate.timecertificate', '>=', strtotime($start_date));
             }
-            if ($mode_select == 'learning_time') { //mode certificated
+            if ($mode_select == 'learning_time') {
                 $query = $query->where('tms_learning_activity_logs.updated_at', '>=', $start_date);
             }
         }
@@ -3652,11 +3677,11 @@ class BussinessRepository implements IBussinessInterface
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);
             }
-            if ($mode_select == 'certificated') { //mode certificated
+            if ($mode_select == 'certificated') {
                 $query = $query->where('student_certificate.timecertificate', '<=', strtotime($end_date));
             }
-            if ($mode_select == 'learning_time') { //mode certificated
-                $query = $query->where('tms_learning_activity_logs.updated_at', '<>>=', $start_date);
+            if ($mode_select == 'learning_time') {
+                $query = $query->where('tms_learning_activity_logs.updated_at', '<=', $end_date);
             }
         }
     }
@@ -3811,6 +3836,7 @@ class BussinessRepository implements IBussinessInterface
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->where('mdl_course.deleted', 0)
             ->select(
                 'mdl_course.id',
                 'mdl_course.fullname as name',

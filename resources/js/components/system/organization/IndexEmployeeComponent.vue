@@ -207,12 +207,9 @@
                                                 <td v-else-if="item.position === 'employee'">
                                                     <label class="badge badge-info">{{ trans.get('keys.employee') }}</label>
                                                 </td>
-                                                <td v-else-if="item.position === 'teacher'">
-                                                    <label class="badge badge-success">{{ trans.get('keys.teacher') }}</label>
-                                                </td>
                                                 <td>
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
-                                                                 class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                                                 :class="checkEditPermission(user_role, item.position) ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                                  :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
@@ -220,7 +217,7 @@
                                                     <a href="javascript(0)"
                                                        @click.prevent="deletePost('/organization-employee/delete/'+item.id)"
                                                        :title="trans.get('keys.xoa_nhan_vien')"
-                                                       class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
+                                                       :class="checkEditPermission(user_role, item.position) ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user'">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </a>
                                                 </td>
@@ -305,7 +302,8 @@
                 position_list: [],
                 assignBatch: 0,
                 selected_role: 'user',
-                organization_selected: false
+                organization_selected: false,
+                user_role: ''
             }
         },
         mounted() {
@@ -313,6 +311,21 @@
         methods: {
             slug_can(permissionName) {
               return this.slugs.indexOf(permissionName) !== -1;
+            },
+            checkEditPermission(role, row_role) {
+                if (role === 'admin') {
+                  return true
+                }
+                if (role === 'manager') {
+                  if (row_role === 'leader' || row_role === 'employee') {
+                    return true
+                  }
+                } else if (role === 'leader') {
+                  if (row_role === 'employee') {
+                    return true
+                  }
+                }
+                return false;
             },
             // selectOrganizationItem(input_id){
             //   this.employee.input_organization_id = input_id;
@@ -362,6 +375,7 @@
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
+                        this.user_role = response.data.role;
                         this.current = response.data.pagination ? response.data.pagination.current_page : 1;
                         this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
                         this.totalRow = response.data ? response.data.total : 0;
