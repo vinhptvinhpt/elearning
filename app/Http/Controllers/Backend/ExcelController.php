@@ -587,22 +587,25 @@ class ExcelController extends Controller
         }
 
         if (empty($startdate) && empty($enddate)) {
-            $startdate = Carbon::yesterday();
+            $now = \date('d-m-Y');
+
+            $startdate = $now . " 00:00:00";
             $startdate = strtotime($startdate);
 
-
-            $enddate = Carbon::now();
+            $enddate = $now . " 23:59:59";
             $enddate = strtotime($enddate);
 
             $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
             $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
         } else {
             if ($startdate) {
+                $startdate = $startdate . " 00:00:00";
                 $startdate = strtotime($startdate);
                 $lstData = $lstData->where('mls.timecreated', '>=', $startdate);
             }
 
             if ($enddate) {
+                $enddate = $enddate . " 23:59:59";
                 $enddate = strtotime($enddate);
                 $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
             }
