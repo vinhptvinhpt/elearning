@@ -7,6 +7,7 @@
 <link rel="stylesheet" href="css/font-awesome.min.css">
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+
 <style>
     @font-face {
         font-family: Roboto-Bold;
@@ -661,7 +662,7 @@ $notifyeditingon = optional_param('notifyeditingon', -1, PARAM_BOOL);
 $id = optional_param('id', 0, PARAM_INT);
 
 // Set $USER->editing = 0 to switch to normal view in course
-if ($edit == 0) {
+if ($edit == 0){
     $USER->editing = 0;
 }
 
@@ -674,20 +675,20 @@ if ($notifyeditingon == 1) {
 }
 
 // [VinhPT][EAsia] Course IP address restrict
-$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
+$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
-if ($result_ip) {
-    $list_access_ip = json_decode($result_ip)->list_access_ip;
-    if ($list_access_ip) {
-        //if(!in_array(getremoteaddr(), $list_access_ip)){
-        $url_to_page = new moodle_url($root_url);
-        $message_ip_access = "You do not have permission to access this course";
-        //redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
-        //}
-    }
-}
-$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned , mp.display FROM mdl_course mc LEFT JOIN mdl_popup mp on mc.id = mp.course_id Where mc.id = ' . $id;
+//if ($result_ip) {
+//    $list_access_ip = json_decode($result_ip)->list_access_ip;
+//    if ($list_access_ip) {
+//        //if(!in_array(getremoteaddr(), $list_access_ip)){
+//        $url_to_page = new moodle_url($root_url);
+//        $message_ip_access = "You do not have permission to access this course";
+//        //redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+//        //}
+//    }
+//}
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned FROM mdl_course mc WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
 $teachers_sql = 'select @s:=@s+1 stt,
@@ -800,7 +801,6 @@ else {
     }
 }
 ?>
-
 <body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
@@ -810,8 +810,8 @@ else {
             <!--                progress info-->
             <div class="progress-info">
                 <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i
-                                class="fa fa-angle-left"
-                                aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
+                                    class="fa fa-angle-left"
+                                    aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
                 <div class="progress-info__content">
                     <div class="row">
                         <div class="col-4 info-course-detail">
@@ -888,17 +888,17 @@ else {
                             <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
                                                            href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i
-                                            class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                                class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
                                                            href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i
-                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course completion</a>
-                                </li>
+                                                class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course
+                                        completion</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
                                                            href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i
-                                            class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
+                                                class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
                                 <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
                                                            href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i
-                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
+                                                class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
                             </ul>
                         </li>
                     <?php } ?>
@@ -936,7 +936,8 @@ else {
                                     </div>
                                     <div class="unit__progress-number">
                                         <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span
-                                                class="percent-get">__</span>/<span class="percent-total">100</span></p>
+                                                    class="percent-get">__</span>/<span class="percent-total">100</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -975,7 +976,7 @@ else {
             </div>
         </div>
     </section>
-    <!--    --><?php //echo $OUTPUT->footer(); ?>
+<!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
@@ -1005,12 +1006,12 @@ else {
     </div>
 <?php } $_SESSION["displayPopup"] = 2; ?>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
         //get active li to show content
-        $(".nav-click").each(function () {
+        $(".nav-click").each(function() {
             var getClasses = $(this).attr('class');
-            if (getClasses.indexOf('active') > -1) {
-                var getId = $(this).find("a").attr('href');
+            if(getClasses.indexOf('active')>-1){
+                var getId =  $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
             $('.nav-click').not($(this)).each(function () {
@@ -1019,12 +1020,12 @@ else {
             $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
 
-        $(".nav-click a").click(function () {
+        $(".nav-click a").click(function() {
             //set active for first block
             var getHref = $(this).attr('href');
-            if (getHref.indexOf('unit') > -1) {
+            if(getHref.indexOf('unit')>-1){
                 var getID = $(".unit").first().attr('id');
-                if (getID) {
+                if(getID){
                     var ID = getID.substring(5, getID.length);
                     ClickNav(getID, ID);
                 }
@@ -1033,7 +1034,7 @@ else {
                 $(this).removeClass('active');
             });
 
-            $('.course-content').not($(getHref)).each(function () {
+            $('.course-content').not($(getHref)).each(function(){
                 $(this).css('display', 'none');
             });
             $(getHref).css('display', 'flex');
@@ -1092,7 +1093,6 @@ else {
                 $(this).removeClass('unit-click');
             });
         }
-
         //Click tab unit list and curent unit by url params
         <?php if (strlen($section_no) != 0) { ?>
         $("#unit-link").trigger("click");
@@ -1100,7 +1100,6 @@ else {
         $("[section-no=<?php echo $section_no ?>]").trigger("click");
         <?php } ?>
     });
-
     function notifyNoContent() {
         alert("Course has no content, please try again later");
     }
@@ -1114,9 +1113,37 @@ else {
         $("#myModal").modal('show');
     });
 </script>
+
 <script>
     //Notify tiếp tục module đang học dở
     $(document).ready(function () {
+
+        $.getJSON("https://api.ipify.org?format=json",
+            function (data) {
+                var result_ip =  <?php echo $result_ip;  ?>;
+
+                var count_ip = result_ip.list_access_ip.length;
+
+                if (count_ip > 0) {
+                    if (result_ip.list_access_ip.includes(data.ip)) {
+                        continue_learning();
+                    } else {
+                        var message_access = 'You do not have permission to access this course';
+                        alert(message_access);
+                        var url_next =  '<?php echo $url_to_page = new moodle_url($root_url); ?>'';
+                        window.location.href = url_next;
+
+                    }
+                } else {
+                    continue_learning();
+                }
+
+
+            });
+    });
+
+
+    function continue_learning() {
         <?php if ($id != $source) { ?> //Vào từ màn khóa học khác
         $('#page').css('margin-right', '0');
         var x = document.getElementsByTagName("BODY")[0];
@@ -1160,5 +1187,5 @@ else {
 
 
 <?php
-die;
+    die;
 ?>
