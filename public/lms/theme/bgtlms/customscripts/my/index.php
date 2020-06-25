@@ -442,13 +442,20 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         border-radius: 50%;
         margin: 0 !important;
         padding-right: 0 !important;
-        height: fit-content;
+        /*height: fit-content;*/
+
+        text-align: right;
+        width: calc(100% - 10px);
+        height: 100%;
     }
 
     .avatar img {
-        margin-top: 15%;
-        margin-bottom: 15%;
+        /*margin-top: 15%;*/
+        /*margin-bottom: 15%;*/
         border-radius: 50%;
+        height: 80%;
+        width: 80%;
+        margin-top: 10%;
     }
 
     .info {
