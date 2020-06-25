@@ -626,7 +626,7 @@
         this.formData.append('auto_certificate', this.trainning.auto_certificate);
         this.formData.append('auto_badge', this.trainning.auto_badge);
         this.formData.append('run_cron', this.trainning.run_cron);
-        this.formData.append('description', this.trainning.description);
+        this.formData.append('description', this.trainning.description ? this.trainning.description : '');
         this.formData.append('time_start', this.trainning.time_start);
         this.formData.append('time_end', this.trainning.time_end);
         this.formData.append('role_id', this.trainning.role_id ? this.trainning.role_id : 0);
