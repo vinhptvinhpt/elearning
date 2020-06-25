@@ -1120,27 +1120,28 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 ->where('mu.id', '=', Auth::id())
                 ->select('tor.code')->first();
             $num = 0;
-
+            $code_hint = '';
             if ($code_org) {
-                $course_code = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->where('deleted', 0)->select('shortname')->orderBy('id', 'desc')->first();
-                if ($course_code) {
-                    $arr_code = explode('_', $course_code->shortname);
-                    foreach ($arr_code as $item) {
-                        if (is_numeric($item)) {
-                            $num = $item + 1;
-                            break;
+                $courses = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '_%')->where('deleted', 0)->select('shortname')->orderBy('id', 'desc')->get();
+                $arr_code = [];
+                foreach ($courses as $course) {
+                    $arr_data = explode('_', $course->shortname);
+                    $count_dt = count($arr_data);
+                    if ($count_dt > 0) {
+                        if (is_numeric($arr_data[1])) {
+                            array_push($arr_code, (int)$arr_data[1]);
                         }
                     }
-                    $code_hint = $code_org->code . '_0' . $num;
-                    if ($num == 0) {
-                        $num = 1;
-                        $code_hint = $code_org->code . '_001';
-                    } else if ($num < 10) {
-                        $code_hint = $code_org->code . '_00' . $num;
-                    }
-                } else {
+                }
+                
+                $num = max($arr_code);
+
+                if ($num == 0) {
                     $num = 1;
                     $code_hint = $code_org->code . '_001';
+                } else {
+                    $num = $num + 1;
+                    $code_hint = $code_org->code . '_00' . $num;
                 }
             }
 
