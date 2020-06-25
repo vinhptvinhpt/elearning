@@ -1732,6 +1732,10 @@ function callAPI($method, $url, $data, $hasHeader, $user_token)
             'Authorization: Bearer ' . $user_token,
             'X-App-Token: ' . Config::get('constants.domain.DIVA-TOKEN-SYSTEM')
         ));
+    }else{
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/x-www-form-urlencoded'
+        ));
     }
     curl_setopt($curl, CURLOPT_HTTPHEADER, array("Expect:  ")); //add them trong TH server chay qua proxy
 
