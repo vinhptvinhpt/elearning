@@ -70,6 +70,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
 
 $check = $DB->get_records_sql($sqlCheck);
 
+$viewCoursePage = false;
+
 $permissions = array_values($check);
 if ($pagelayout == 'incourse') {
     require_once('courselib.php');
@@ -116,6 +118,11 @@ if ($pagelayout == 'incourse') {
         }
     }
 }
+else{
+    if($bodyid == 'page-course-view')
+        $viewCoursePage = true;
+}
+
 foreach ($permissions as $permission) {
     if (!in_array($permission->name, ['student', 'employee'])) {
         $permission_tms = true;
@@ -162,7 +169,8 @@ $templatecontext = [
     'wwwroot' => $wwwroot,
     'top_bar_home' => $top_bar_home,
     'top_bar_course' => $top_bar_course,
-    'wwwtms' => $wwwtms
+    'wwwtms' => $wwwtms,
+    'viewCoursePage' => $viewCoursePage
 ];
 
 $nav = $PAGE->flatnav;
