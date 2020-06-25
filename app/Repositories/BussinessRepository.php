@@ -1260,9 +1260,14 @@ class BussinessRepository implements IBussinessInterface
                 $listCourses = $listCourses->where('mdl_course.startdate', '>', $unix_now);
             } else if ($status_course == 2) { //các khóa đang diễn ra
                 $listCourses = $listCourses->where('mdl_course.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+//                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
+                    $query->where('mdl_course.enddate', '>=', $unix_now)
+                        ->orWhere('mdl_course.enddate', '=', 0);
+                });
             } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('mdl_course.enddate', '<', $unix_now);
+                $listCourses = $listCourses->where('mdl_course.enddate', '<=', $unix_now)
+                ->where('mdl_course.enddate', '>', 0);
             }
         }
 

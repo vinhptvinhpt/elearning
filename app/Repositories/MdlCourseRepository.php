@@ -240,9 +240,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $listCourses = $listCourses->where('c.startdate', '>', $unix_now);
             } else if ($status_course == 2) { //các khóa đang diễn ra
                 $listCourses = $listCourses->where('c.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
+                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
+                    $query->where('c.enddate', '>=', $unix_now)
+                        ->orWhere('c.enddate', '=', 0);
+                });
+//                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
             } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('c.enddate', '<', $unix_now);
+                $listCourses = $listCourses->where('c.enddate', '<', $unix_now)
+                    ->where('c.enddate', '>', 0);
             }
         }
 
