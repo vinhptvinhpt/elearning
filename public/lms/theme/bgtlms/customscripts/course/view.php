@@ -5,9 +5,6 @@
 <base href="../../">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
@@ -659,13 +656,13 @@
 </style>
 <?php
 require_once("courselib.php");
-
+session_start();
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $notifyeditingon = optional_param('notifyeditingon', -1, PARAM_BOOL);
 $id = optional_param('id', 0, PARAM_INT);
 
 // Set $USER->editing = 0 to switch to normal view in course
-if ($edit == 0) {
+if ($edit == 0){
     $USER->editing = 0;
 }
 
@@ -678,7 +675,7 @@ if ($notifyeditingon == 1) {
 }
 
 // [VinhPT][EAsia] Course IP address restrict
-$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
+$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
 //if ($result_ip) {
@@ -691,7 +688,7 @@ $root_url = $CFG->wwwroot;
 //        //}
 //    }
 //}
-$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned FROM mdl_course mc WHERE mc.id = ' . $id;
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN mdl_popup mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
 $teachers_sql = 'select @s:=@s+1 stt,
@@ -778,6 +775,30 @@ $section_no = isset($_REQUEST['section_no']) ? $_REQUEST['section_no'] : '';
 $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
 if ($edit == 0) {
     $source = $id;
+}
+
+//Check to show popup congratulation
+$percentProgress = $course->numofmodule/$course->numofmodule;
+
+$displayVal = $course->display;
+//if percent of progress = 1 is complete course => display popup congratulation
+if ($percentProgress == 1) {
+    if ($displayVal == null) {
+        $DB->execute("INSERT INTO mdl_popup (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
+        $_SESSION["displayPopup"] = 1;
+    }
+    else if($displayVal == 0){
+        $DB->execute("UPDATE mdl_popup SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
+        $_SESSION["displayPopup"] = 1;
+    }else{
+        $_SESSION["displayPopup"] = 2;
+    }
+}
+else {
+    if ($displayVal == null) {
+        $DB->execute("INSERT INTO mdl_popup (user_id, course_id) VALUES (" . $USER->id . ", " . $course->id . ")");
+        $_SESSION["displayPopup"] = 0;
+    }
 }
 ?>
 <body <?php echo $bodyattributes ?>>
@@ -955,17 +976,42 @@ if ($edit == 0) {
             </div>
         </div>
     </section>
-    <!--    --><?php //echo $OUTPUT->footer(); ?>
+<!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
-
+<?php if ($_SESSION["displayPopup"] == 1) { ?>
+    <!-- Modal congratulation -->
+    <!--<div class="modal fade show" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display: block;" aria-modal="true">-->
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="exampleModalCenterTitle">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
+                        course <?php echo $course->fullname; ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src="images/congratulation.gif" alt="">
+                </div>
+                <div class="modal-footer" style="width: 100%">
+                    <div style="margin: 0 auto">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <!--                    <button type="button" class="btn btn-primary">Save changes</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php } $_SESSION["displayPopup"] = 2; ?>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function(){
         //get active li to show content
-        $(".nav-click").each(function () {
+        $(".nav-click").each(function() {
             var getClasses = $(this).attr('class');
-            if (getClasses.indexOf('active') > -1) {
-                var getId = $(this).find("a").attr('href');
+            if(getClasses.indexOf('active')>-1){
+                var getId =  $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
             $('.nav-click').not($(this)).each(function () {
@@ -974,12 +1020,12 @@ if ($edit == 0) {
             $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
 
-        $(".nav-click a").click(function () {
+        $(".nav-click a").click(function() {
             //set active for first block
             var getHref = $(this).attr('href');
-            if (getHref.indexOf('unit') > -1) {
+            if(getHref.indexOf('unit')>-1){
                 var getID = $(".unit").first().attr('id');
-                if (getID) {
+                if(getID){
                     var ID = getID.substring(5, getID.length);
                     ClickNav(getID, ID);
                 }
@@ -988,7 +1034,7 @@ if ($edit == 0) {
                 $(this).removeClass('active');
             });
 
-            $('.course-content').not($(getHref)).each(function () {
+            $('.course-content').not($(getHref)).each(function(){
                 $(this).css('display', 'none');
             });
             $(getHref).css('display', 'flex');
@@ -1047,7 +1093,6 @@ if ($edit == 0) {
                 $(this).removeClass('unit-click');
             });
         }
-
         //Click tab unit list and curent unit by url params
         <?php if (strlen($section_no) != 0) { ?>
         $("#unit-link").trigger("click");
@@ -1055,10 +1100,18 @@ if ($edit == 0) {
         $("[section-no=<?php echo $section_no ?>]").trigger("click");
         <?php } ?>
     });
-
     function notifyNoContent() {
         alert("Course has no content, please try again later");
     }
+
+    $("#myModal").on('hide.bs.modal', function () {
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Show modal on page load
+        $("#myModal").modal('show');
+    });
 </script>
 
 <script>
@@ -1126,7 +1179,7 @@ if ($edit == 0) {
             });
         }
         <?php } ?>
-    }
+    });
 </script>
 
 </body>
@@ -1134,5 +1187,5 @@ if ($edit == 0) {
 
 
 <?php
-die;
+    die;
 ?>

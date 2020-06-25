@@ -231,6 +231,7 @@ class CourseController extends Controller
                 add_user_by_role($user_id, $role_teacher->id);
                 enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
             }
+
             //Enrol user to newly created course á teacher
             enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
@@ -247,7 +248,6 @@ class CourseController extends Controller
             $response->status = true;
             $response->message = __('tao_moi_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
-
             \DB::rollBack();
             $response->status = false;
             $response->message = $e->getMessage();
