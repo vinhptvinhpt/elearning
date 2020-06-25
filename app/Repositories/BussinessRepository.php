@@ -9833,23 +9833,33 @@ class BussinessRepository implements IBussinessInterface
             $user_clear = $request->input('user_clear');
             if (!is_array($user_clear))
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-            \DB::beginTransaction();
-            foreach ($user_clear as $user_id) {
-                if (!is_numeric($user_id))
-                    return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-                $mdlUser = MdlUser::findOrFail($user_id);
+            //Chỉ có quyền admin trở lên mới được quyền xóa
 
-                //Function clear user khỏi DB
-                TmsUserDetail::clearUser($user_id);
+            if (tvHasRole(Auth::user()->id, 'Root')
+                || tvHasRole(Auth::user()->id, 'root')
+                || tvHasRole(Auth::user()->id, 'admin')) {
+                \DB::beginTransaction();
+                foreach ($user_clear as $user_id) {
+                    if (!is_numeric($user_id))
+                        return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+                    $mdlUser = MdlUser::findOrFail($user_id);
 
-                $type = 'user';
-                $url = '*';
-                $action = 'clear';
-                $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
-                devcpt_log_system($type, $url, $action, $info);
+                    //Function clear user khỏi DB
+                    TmsUserDetail::clearUser($user_id);
+
+                    $type = 'user';
+                    $url = '*';
+                    $action = 'clear';
+                    $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
+                    devcpt_log_system($type, $url, $action, $info);
+                }
+                \DB::commit();
+                return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
             }
-            \DB::commit();
-            return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
+            else{
+                return response()->json(status_message('error', __('ban_khong_co_quyen_xoa')));
+            }
+
         } catch (\Exception  $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }

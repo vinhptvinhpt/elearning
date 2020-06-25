@@ -359,5 +359,6 @@
   "loi_du_lieu_kiem_tra_lai": "Data error, check again",
   "thong_tin_dob_khong_dung_dinh_dang": "Information: date of birth is malformed",
   "ho_ten": "Fullname",
-  "thoi_gian": "Time access"
+  "thoi_gian": "Time access",
+    "ban_khong_co_quyen_xoa": "You do not have permission to delete"
 }
