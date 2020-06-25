@@ -8,6 +8,10 @@ class TmsRoleOrganization extends Model
 {
     protected $table = 'tms_role_organization';
 
+    protected $fillable = [
+        'role_id', 'organization_id'
+    ];
+
     /**
      * Get parent for the organization.
      */
