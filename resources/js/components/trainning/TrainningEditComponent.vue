@@ -478,7 +478,6 @@
       getRoles() {
         axios.post('/system/user/list_role')
           .then(response => {
-            console.log(this.trainning.role_id);
             this.roles = response.data;
             this.$nextTick(function () {
               $('.selectpicker').selectpicker('refresh');

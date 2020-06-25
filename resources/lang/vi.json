@@ -311,5 +311,6 @@
   "nhan_vien_da_tham_gia_phong_ban_khac": "Nhân viên đã tham gia phòng ban khác",
   "nhap_du_lieu_thanh_cong": "Nhập dữ liệu thành công",
   "ho_ten": "Họ và tên",
-  "thoi_gian": "Thời gian"
+  "thoi_gian": "Thời gian",
+    "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa"
 }

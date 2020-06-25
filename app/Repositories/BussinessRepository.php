@@ -1258,9 +1258,14 @@ class BussinessRepository implements IBussinessInterface
                 $listCourses = $listCourses->where('mdl_course.startdate', '>', $unix_now);
             } else if ($status_course == 2) { //các khóa đang diễn ra
                 $listCourses = $listCourses->where('mdl_course.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+//                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
+                    $query->where('mdl_course.enddate', '>=', $unix_now)
+                        ->orWhere('mdl_course.enddate', '=', 0);
+                });
             } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('mdl_course.enddate', '<', $unix_now);
+                $listCourses = $listCourses->where('mdl_course.enddate', '<=', $unix_now)
+                ->where('mdl_course.enddate', '>', 0);
             }
         }
 
@@ -9832,23 +9837,33 @@ class BussinessRepository implements IBussinessInterface
             $user_clear = $request->input('user_clear');
             if (!is_array($user_clear))
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-            \DB::beginTransaction();
-            foreach ($user_clear as $user_id) {
-                if (!is_numeric($user_id))
-                    return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-                $mdlUser = MdlUser::findOrFail($user_id);
+            //Chỉ có quyền admin trở lên mới được quyền xóa
 
-                //Function clear user khỏi DB
-                TmsUserDetail::clearUser($user_id);
+            if (tvHasRole(Auth::user()->id, 'Root')
+                || tvHasRole(Auth::user()->id, 'root')
+                || tvHasRole(Auth::user()->id, 'admin')) {
+                \DB::beginTransaction();
+                foreach ($user_clear as $user_id) {
+                    if (!is_numeric($user_id))
+                        return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+                    $mdlUser = MdlUser::findOrFail($user_id);
 
-                $type = 'user';
-                $url = '*';
-                $action = 'clear';
-                $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
-                devcpt_log_system($type, $url, $action, $info);
+                    //Function clear user khỏi DB
+                    TmsUserDetail::clearUser($user_id);
+
+                    $type = 'user';
+                    $url = '*';
+                    $action = 'clear';
+                    $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
+                    devcpt_log_system($type, $url, $action, $info);
+                }
+                \DB::commit();
+                return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
             }
-            \DB::commit();
-            return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
+            else{
+                return response()->json(status_message('error', __('ban_khong_co_quyen_xoa')));
+            }
+
         } catch (\Exception  $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
