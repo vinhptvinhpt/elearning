@@ -230,11 +230,12 @@
                       <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?
                         trans.get('keys.da_co') : trans.get('keys.chua_co') }}
                       </td>
-                      <td class="mobile_hide">
+                      <td class="mobile_hide" v-if="slug_can('tms-system-user-edit')">
                         <span v-if="user.working_status == 0">
-                         <i class="fa fa-toggle-on text-success" @click="changeStatus(user.user_id,1)"
-                            style="cursor: pointer; font-size: 25px;"
-                            aria-hidden="true"></i>
+                           <i class="fa fa-toggle-on text-success"
+                              @click="changeStatus(user.user_id,1)"
+                              style="cursor: pointer; font-size: 25px;"
+                              aria-hidden="true"></i>
                         </span>
                         <span v-if="user.working_status == 1">
                            <i class="fa fa-toggle-off"
@@ -242,6 +243,10 @@
                               style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
                               aria-hidden="true"></i>
                         </span>
+                      </td>
+                      <td v-else>
+                          <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
+                          <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
                       </td>
                       <td class="text-center">
                         <router-link
