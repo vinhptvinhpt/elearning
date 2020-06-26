@@ -1156,28 +1156,35 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 ->where('mu.id', '=', Auth::id())
                 ->select('tor.code')->first();
             $num = 0;
-            $code_hint = '';
+
             if ($code_org) {
-                $courses = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '_%')->select('shortname')->orderBy('id', 'desc')->get();
+                $courses = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->select('shortname')->orderBy('id', 'desc')->get();
                 $arr_code = [];
+
                 foreach ($courses as $course) {
                     $arr_data = explode('_', $course->shortname);
                     $count_dt = count($arr_data);
                     if ($count_dt > 0) {
-                        if (is_numeric($arr_data[1])) {
-                            array_push($arr_code, (int)$arr_data[1]);
+                        if (is_numeric($arr_data[$count_dt - 1])) {
+                            array_push($arr_code, (int)$arr_data[$count_dt - 1]);
                         }
                     }
                 }
 
-                $num = max($arr_code);
+                $count_code = count($arr_code);
+                if ($count_code > 0) {
+                    $num = max($arr_code);
 
-                if ($num == 0) {
+                    if ($num == 0) {
+                        $num = 1;
+                        $code_hint = $code_org->code . '_001';
+                    } else {
+                        $num = $num + 1;
+                        $code_hint = $code_org->code . '_00' . $num;
+                    }
+                } else {
                     $num = 1;
                     $code_hint = $code_org->code . '_001';
-                } else {
-                    $num = $num + 1;
-                    $code_hint = $code_org->code . '_00' . $num;
                 }
             }
 
@@ -1191,7 +1198,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = '';
 
         } catch (\Exception $e) {
-            \Log::info($e);
             $response->status = false;
             $response->message = $e->getMessage();
         }
