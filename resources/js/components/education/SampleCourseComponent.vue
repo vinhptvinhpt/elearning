@@ -170,7 +170,7 @@
 
                         <a :title="trans.get('keys.sua_noi_dung')"
                            class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                           :href="'/lms/course/viewedit.php?id='+course.id+'&notifyeditingon=1'">
+                           :href="'/lms/course/view.php?id='+course.id">
                           <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                         </a>
 

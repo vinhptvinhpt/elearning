@@ -184,7 +184,8 @@ class LoginController extends Controller
             JOIN tms_organization ON @id IS NOT NULL) tmp2
             JOIN tms_organization f ON tmp2._id = f.id
             where f.level = 2 or f.level = 1 limit 1)";
-               
+             
+
                 $query_cctc = DB::raw($query_cctc);
 
                 $results = DB::select($query_cctc);
