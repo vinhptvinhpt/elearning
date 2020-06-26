@@ -402,7 +402,7 @@
                                                         <select v-model="actionDoc"
                                                                 class="custom-select custom-select-sm form-control form-control-sm"
                                                                 @click="getLogCourse(module_id, 1, 'search')">
-                                                            <option value="">{{trans.get('keys.Choose a style')}}</option>
+                                                            <option value="">{{trans.get('keys.chon_hanh_dong')}}</option>
                                                             <option value="viewed">viewed</option>
                                                             <option value="created">created</option>
                                                             <option value="updated">updated</option>

@@ -967,7 +967,8 @@
         "thoigian": "Time access",
         "chu_y": "Notice",
         "canh_bao": "Warning",
-        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "If you don't select role in group (Manager/Leader/Executive), user will be auto removed from organization"
+        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "If you don't select role in group (Manager/Leader/Executive), user will be auto removed from organization",
+        "chon_hanh_dong": "Select action"
     },
     "vi.keys": {
         "language": "",
@@ -1929,6 +1930,7 @@
         "thoigian": "Thời gian",
         "chu_y": "Chú ý",
         "canh_bao": "Cảnh báo",
-        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "Nếu không chọn quyền trong nhóm (Manager/Leader/Executive), người dùng sẽ tự động bị loại ra khỏi tổ chức"
+        "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "Nếu không chọn quyền trong nhóm (Manager/Leader/Executive), người dùng sẽ tự động bị loại ra khỏi tổ chức",
+        "chon_hanh_dong": "Chọn hành động"
     }
 }
