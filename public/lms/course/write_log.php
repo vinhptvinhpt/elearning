@@ -14,6 +14,7 @@ if (isset($_POST['data'])) {
             if (encrypt_key(API_KEY_SEC) == $json_data->data->app_key) {
                 $courseid = $json_data->data->courseid;
                 $action = $json_data->data->action;
+				$userid = $json_data->data->userid;
             }
         }
     }
@@ -39,8 +40,10 @@ if (isset($action)) {
                 'other' => array(
                     'shortname' => $course->shortname,
                     'fullname' => $course->fullname
-                )
+                ),
+				'userid' => $userid
             ));
+			break;
         case "edit":
             // Trigger a course created event.
             $event = \core\event\course_updated::create(array(
@@ -49,8 +52,22 @@ if (isset($action)) {
                 'other' => array(
                     'shortname' => $course->shortname,
                     'fullname' => $course->fullname
-                )
+                ),
+				'userid' => $userid
             ));
+			break;
+		case "delete":
+			// Trigger a course created event.
+			$event = \core\event\course_deleted::create(array(
+				'objectid' => $course->id,
+				'context' => context_course::instance($course->id),
+				'other' => array(
+					'shortname' => $course->shortname,
+					'fullname' => $course->fullname
+				),
+				'userid' => $userid
+			));
+			break;
     }
 } else {
     ob_clean();

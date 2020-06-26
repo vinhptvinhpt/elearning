@@ -815,12 +815,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $app_name = Config::get('constants.domain.APP_NAME');
 
             $key_app = encrypt_key($app_name);
-
+            $user_id = Auth::id();
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
                 'action' => 'edit',
                 'description' => json_encode($course),
+                'userid' => $user_id
             );
 
             $dataLog = createJWT($dataLog, 'data');
@@ -830,7 +831,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             );
 
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            $user_id = Auth::id();
             $checkUser = MdlUser::where('id', $user_id)->first();
             $token = '';
             if (isset($checkUser)) {
