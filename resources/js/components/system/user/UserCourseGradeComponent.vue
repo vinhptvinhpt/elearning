@@ -107,8 +107,9 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <div v-if="parseInt(post.status_user) === 1
-                                            && checkGradepass(post.finalgrade, post.gradepass)
+                                            <div v-if="
+                                            //parseInt(post.status_user) === 1 &&
+                                            checkGradepass(post.finalgrade, post.gradepass)
                                             && parseInt(post.user_course_completionstate) === parseInt(post.user_course_learn)
                                             && parseInt(post.user_course_completionstate) > 0">
                                                 <span class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>

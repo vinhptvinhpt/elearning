@@ -1110,7 +1110,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         if ($keyword) {
             $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
-            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
         }
 
         if ($action) {

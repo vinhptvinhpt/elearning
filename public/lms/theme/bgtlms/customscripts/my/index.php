@@ -74,7 +74,13 @@ foreach ($courses as $course){
         push_course($courses_current, $course);
     }
     if ($course->category == 5) {
-        push_course($courses_others, $course);
+        if (
+            !array_key_exists($course->id, $courses_all_required)
+            && !array_key_exists($course->id, $courses_completed)
+            && !array_key_exists($course->id, $courses_current)
+        ) {
+            push_course($courses_others, $course);
+        }
     }
     if ($course->category == 3) {
         push_course($courses_soft_skills, $course);
