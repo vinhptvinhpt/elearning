@@ -42,7 +42,7 @@
                     </div>
                   </div>
                 </div>
-                <div class="card" style="display: none">
+                <div class="card">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"
                        aria-expanded="false"><i class="fal fa-upload mr-3"></i>{{trans.get('keys.tai_len_file_excel')}}</a>
@@ -247,10 +247,11 @@
                         <router-link
                           :title="trans.get('keys.sua')"
                           :to="{ name: 'EditDetailUserById', params: { user_id: user.user_id }, query: {type: type} }"
-                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2">
+                          :class="slug_can('tms-system-user-edit') ? 'btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
                           <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                         </router-link>
                         <button @click.prevent="deletePost('/system/user/delete/'+user.user_id)"
+                                :class="slug_can('tms-system-user-deleted') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                 class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"><span
                           class="btn-icon-wrap"><i class="fal fa-trash"></i></span></button>
                       </td>
@@ -277,7 +278,7 @@
                     <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
                                   :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                   </div>
-                  <div class="text-right">
+                  <div v-if="slug_can('tms-system-user-deleted')" class="text-right">
                     <button :title="trans.get('keys.xoa_tai_khoan_da_chon')" type="button" style="float: right;"
                             class="btn btn-sm btn-danger mt-3" @click="deleteSelectUser()">
                       {{trans.get('keys.xoa')}}
@@ -306,7 +307,8 @@
         default: 'system'
       },
       current_roles: Object,
-      roles_ready: Boolean
+      roles_ready: Boolean,
+      slugs: Array,
     },
     //components: {vPagination},
     components: {SystemUserCreate},
@@ -334,6 +336,9 @@
       }
     },
     methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
       changeStatus(user_id, status) {
         let current_pos = this;
         swal({
@@ -447,6 +452,7 @@
             this.current = response.data.pagination ? response.data.pagination.current_page : 1;
             this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
             this.total_user = response.data.pagination ? response.data.pagination.total_user : 0;
+            //this.setFileInput(); //works
           })
           .catch(error => {
             //console.log(error.response.data);
@@ -565,7 +571,6 @@
             console.log(error);
           });
       },
-
       setFileInput() {
         $('.dropify').dropify();
       }
@@ -578,7 +583,7 @@
       this.getUser();
     },
     updated() {
-      this.setFileInput();
+      // this.setFileInput();
     }
   }
 
