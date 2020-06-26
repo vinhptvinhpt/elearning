@@ -5,6 +5,7 @@
 <base href="../../">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
+<script src="js/popper.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
@@ -68,7 +69,7 @@
         color: black;
     }
 
-    .prev-btn:hover {
+    .prev-btn:hover, #menu-edit:hover {
         cursor: pointer;
     }
 
@@ -778,8 +779,7 @@ if ($edit == 0) {
 }
 
 //Check to show popup congratulation
-$percentProgress = $course->numofmodule/$course->numofmodule;
-
+$percentProgress = $course->numoflearned/$course->numofmodule;
 $displayVal = $course->display;
 //if percent of progress = 1 is complete course => display popup congratulation
 if ($percentProgress == 1) {
