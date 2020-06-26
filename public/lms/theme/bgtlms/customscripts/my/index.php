@@ -64,7 +64,7 @@ $courses_others = array();
 $courses_soft_skills = array();
 
 foreach ($courses as $course){
-    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+    if(($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0) && $course->category != 5){
         push_course($courses_all_required, $course);
     }
     else if($course->numoflearned/$course->numofmodule == 1){
