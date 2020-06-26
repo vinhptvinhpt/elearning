@@ -8238,20 +8238,20 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Thêm vị trí ( Khung năng lực )
-            if ($trainning_id > 0) {
-                TmsTrainningUser::where([
-                    'user_id' => $mdlUser->id
-                ])->delete();
-                TmsTrainningUser::create([
-                    'trainning_id' => $trainning_id,
-                    'user_id' => $mdlUser->id
-                ]);
-                //$category = TmsTrainningCategory::select('category_id')->where('trainning_id', $trainning_id)->first();
-                //enrole cho học viên theo khung năng lực
-                //\DB::beginTransaction();
-                training_enrole($mdlUser->id, $trainning_id);
-                //\DB::commit();
-            }
+//            if ($trainning_id > 0) {
+//                TmsTrainningUser::where([
+//                    'user_id' => $mdlUser->id
+//                ])->delete();
+//                TmsTrainningUser::create([
+//                    'trainning_id' => $trainning_id,
+//                    'user_id' => $mdlUser->id
+//                ]);
+//                //$category = TmsTrainningCategory::select('category_id')->where('trainning_id', $trainning_id)->first();
+//                //enrole cho học viên theo khung năng lực
+//                //\DB::beginTransaction();
+//                training_enrole($mdlUser->id, $trainning_id);
+//                //\DB::commit();
+//            }
 
             //Không phải student thì xóa enrole
             /*if(!$checkStudent){
