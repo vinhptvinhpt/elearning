@@ -83,13 +83,15 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             }
         }
 
-        if (strlen($role) != 0) {
-            if ($role == Role::ROLE_MANAGER) {
-                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
-            } elseif ($role == Role::ROLE_LEADER) {
-                $list = $list->whereNotIn('position', [Role::ROLE_MANAGER, Role::ROLE_LEADER]);
-            }
-        }
+
+        //Hide user há same or higher rank
+//        if (strlen($role) != 0) {
+//            if ($role == Role::ROLE_MANAGER) {
+//                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
+//            } elseif ($role == Role::ROLE_LEADER) {
+//                $list = $list->whereNotIn('position', [Role::ROLE_MANAGER, Role::ROLE_LEADER]);
+//            }
+//        }
 
         if (is_numeric($organization_id) && $organization_id != 0) {
             if ($view_mode == 'recursive') {
@@ -118,6 +120,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 'current_page' => $list->currentPage(),
             ],
             'data' => $list,
+            'role' => $role,
             'total' => $total_all,
         ];
 

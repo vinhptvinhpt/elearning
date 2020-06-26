@@ -86,8 +86,7 @@
                 <div class="row">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link v-if="selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {view_mode: view_mode} : {}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
-                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}, query: view_mode === 'recursive' ? {organization_id: organization_id, view_mode: view_mode} : {organization_id: organization_id}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
+                      <router-link :to="backButton()" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
                       <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
                     </div>
                   </div>
@@ -134,6 +133,20 @@
       }
     },
     methods: {
+      backButton() {
+        let query = {};
+        if (this.organization_id && this.organization_id !== 0) {
+          query.organization_id = this.organization_id;
+        }
+        if (this.view_mode === 'recursive') {
+          query.view_mode = this.view_mode;
+        }
+        return {
+          name: 'IndexEmployee',
+          params: {page: this.source_page},
+          query: query
+        };
+      },
       selectOrganizationItem(id) {
         this.employee.organization_id = id;
       },

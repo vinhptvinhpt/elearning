@@ -7,4 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class TmsRoleCourse extends Model
 {
     protected $table = 'tms_role_course';
+
+    protected $fillable = [
+        'role_id', 'course_id'
+    ];
 }

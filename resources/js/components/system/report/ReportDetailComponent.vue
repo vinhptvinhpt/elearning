@@ -396,6 +396,15 @@
                     };
                     pushObject.column1 = item.col0;
                     if (type === 'organization' || type === 'training' || type === 'courses') {
+
+                        //continue empty training
+                        if ((this.mode_select === 'completed_course' || this.mode_select === 'learning_time')
+                          && type === 'training'
+                          && (item.courses == null || Object.keys(item.courses).length === 0)
+                        ) {
+                            continue;
+                        }
+
                         let col1 = item.col1;
                         let col2 = item.col2;
                         if (this.mode_select === 'completed_course' && (type === 'organization' || type === 'training')) {

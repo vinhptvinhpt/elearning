@@ -59,8 +59,10 @@ else if(strpos(strtolower($organization->code), 'ev') === 0){
 
 $courses_current = array();
 $courses_all_required = array();
-$courses_optional = array();
 $courses_completed = array();
+$courses_others = array();
+$courses_soft_skills = array();
+
 foreach ($courses as $course){
     if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
         push_course($courses_all_required, $course);
@@ -70,6 +72,18 @@ foreach ($courses as $course){
     }
     else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
         push_course($courses_current, $course);
+    }
+    if ($course->category == 5) {
+        if (
+            !array_key_exists($course->id, $courses_all_required)
+            && !array_key_exists($course->id, $courses_completed)
+            && !array_key_exists($course->id, $courses_current)
+        ) {
+            push_course($courses_others, $course);
+        }
+    }
+    if ($course->category == 3) {
+        push_course($courses_soft_skills, $course);
     }
 }
 
@@ -434,13 +448,20 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         border-radius: 50%;
         margin: 0 !important;
         padding-right: 0 !important;
-        height: fit-content;
+        /*height: fit-content;*/
+
+        text-align: right;
+        width: calc(100% - 10px);
+        height: 100%;
     }
 
     .avatar img {
-        margin-top: 15%;
-        margin-bottom: 15%;
+        /*margin-top: 15%;*/
+        /*margin-bottom: 15%;*/
         border-radius: 50%;
+        height: 80%;
+        width: 80%;
+        margin-top: 10%;
     }
 
     .info {
@@ -879,7 +900,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Current <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php?type=1">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -930,7 +951,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>All required <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php?type=2">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -981,7 +1002,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Completed <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php?type=3">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -990,6 +1011,57 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_completed) > 0) {  ?>
                                             <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
+                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
+                                                    <div class="block-items__item">
+                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
+                                                            <img src="images/Badge-examples 2.png" alt="">
+                                                        </div>
+                                                        <div class="block-item__content col-7">
+                                                            <div class="block-item__content_text">
+                                                                <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
+                                                                <div class="info-course">
+                                                                    <a class="teacher" data-toggle="modal" data-target="#exampleModal"
+                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
+                                                                    <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
+                                                                    <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
+                                                                </div>
+                                                            </div>
+                                                            <!--                                                            <div class="block-item__content_btn">-->
+                                                            <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=--><?php //echo $course->id; ?><!--">Learn More</a></button>-->
+                                                            <!--                                                            </div>-->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <?php  $countBlock++; if($countBlock == 5) break; } ?>
+                                        <?php } else { ?>
+                                            <div class="col-12">
+                                                <h3>No course to display</h3>
+                                            </div>
+                                        <?php }  ?>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!--other courses-->
+                            <div class="courses-block">
+                                <!--top-->
+                                <div class="course-block__top">
+                                    <div class="course-block__top-show row">
+                                        <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
+                                        <div class="col-6 btn-show btn-show-all">
+                                            <button class="btn btn-click"><a href="lms/course/index.php?type=5">Show All</a></button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--content-->
+                                <div class="courses-block__content">
+                                    <div class="courses-block__content__item row course-row-mx-5">
+                                        <?php if(count($courses_others) > 0) {  ?>
+                                            <?php $countBlock = 1; foreach ($courses_others as $course) {  ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">

@@ -204,12 +204,13 @@ class CourseController extends Controller
             $app_name = Config::get('constants.domain.APP_NAME');
 
             $key_app = encrypt_key($app_name);
-
+            $user_id = Auth::id();
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
                 'action' => 'create',
                 'description' => json_encode($course),
+                'userid' => $user_id
             );
 
             $dataLog = createJWT($dataLog, 'data');
@@ -219,7 +220,6 @@ class CourseController extends Controller
             );
 
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            $user_id = Auth::id();
             $checkUser = MdlUser::where('id', $user_id)->first();
 
             //Check role teacher and enrol for creator of course
@@ -231,6 +231,7 @@ class CourseController extends Controller
                 add_user_by_role($user_id, $role_teacher->id);
                 enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
             }
+
             //Enrol user to newly created course á teacher
             enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
@@ -238,16 +239,14 @@ class CourseController extends Controller
             if (isset($checkUser)) {
                 $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
             }
+            \DB::commit();
             //call api write log
             callAPI('POST', $url, $data_write, false, $token);
-
-            \DB::commit();
 
             $response->otherData = $course->id;
             $response->status = true;
             $response->message = __('tao_moi_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
-
             \DB::rollBack();
             $response->status = false;
             $response->message = $e->getMessage();

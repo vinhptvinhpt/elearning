@@ -29,6 +29,7 @@
             </div>
             <div id="collapse_1" class="collapse show" data-parent="#accordion_1" role="tabpanel">
               <div class="card-body">
+
                 <div class="row">
                   <div class="col-12 col-lg-12">
                     <form action="">
@@ -195,7 +196,9 @@
                     </form>
                   </div>
                 </div>
+
                 <br/>
+
                 <div class="row">
                   <div class="col-sm">
                     <div class="table-wrap">
@@ -478,14 +481,13 @@
       getRoles() {
         axios.post('/system/user/list_role')
           .then(response => {
-            console.log(this.trainning.role_id);
             this.roles = response.data;
             this.$nextTick(function () {
               $('.selectpicker').selectpicker('refresh');
             });
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           });
       },
       listOrganization() {
@@ -519,6 +521,7 @@
       },
       onPageChange() {
         this.getListSampleCourse();
+        //this.setFileInput(); //Not work
       },
       onPageChangeCurr() {
         this.getListCourseTrainning();
@@ -562,7 +565,7 @@
             });
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           });
       },
       getListSampleCourse(paged) {
@@ -576,9 +579,10 @@
             this.sampleCourses = response.data.data.data;
             this.current = response.data.pagination.current_page;
             this.totalPages = response.data.pagination.total;
+            this.setFileInput(); //Work
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           });
       },
       getListCourseTrainning(paged) {
@@ -594,7 +598,7 @@
             this.totalPages_tn = response.data.pagination.total;
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error);
           });
       },
       editTrainning() {
@@ -622,7 +626,7 @@
         this.formData.append('auto_certificate', this.trainning.auto_certificate);
         this.formData.append('auto_badge', this.trainning.auto_badge);
         this.formData.append('run_cron', this.trainning.run_cron);
-        this.formData.append('description', this.trainning.description);
+        this.formData.append('description', this.trainning.description ? this.trainning.description : '');
         this.formData.append('time_start', this.trainning.time_start);
         this.formData.append('time_end', this.trainning.time_end);
         this.formData.append('role_id', this.trainning.role_id ? this.trainning.role_id : 0);
@@ -697,7 +701,6 @@
           this.$router.push({name: 'TrainningIndex'});
         }
       },
-
       setFileInput() {
         $('.dropify').dropify();
       }
@@ -706,9 +709,10 @@
       this.getDetailTrainning();
       this.listOrganization();
       this.getRoles();
+      //this.setFileInput(); //Not work
     },
     updated() {
-      this.setFileInput();
+      //this.setFileInput(); //Not work
     }
   }
 </script>
