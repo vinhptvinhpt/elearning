@@ -670,7 +670,7 @@ class BussinessRepository implements IBussinessInterface
         $listCategories = DB::table('mdl_course_categories')
             ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
             ->where('mdl_course_categories.id', '!=', 2)
-            ->where('mdl_course_categories.id', '!=', 3)
+            //->where('mdl_course_categories.id', '!=', 3)
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
     }
@@ -784,12 +784,14 @@ class BussinessRepository implements IBussinessInterface
                 $app_name = Config::get('constants.domain.APP_NAME');
 
                 $key_app = encrypt_key($app_name);
+                $user_id = Auth::id();
 
                 $dataLog = array(
                     'app_key' => $key_app,
                     'courseid' => $course->id,
-                    'action' => 'create',
+                    'action' => 'delete',
                     'description' => json_encode($course),
+                    'userid' => $user_id
                 );
 
                 $dataLog = createJWT($dataLog, 'data');
@@ -799,7 +801,6 @@ class BussinessRepository implements IBussinessInterface
                 );
 
                 $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-                $user_id = Auth::id();
                 $checkUser = MdlUser::where('id', $user_id)->first();
                 $token = '';
                 if (isset($checkUser)) {
