@@ -11,7 +11,7 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/survey/list">{{ trans.get('keys.quan_tri_self') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item active">{{ trans.get('tao_moi_self') }}</li>
+                        <li class="breadcrumb-item active">{{trans.get('keys.tao_moi_self')}}</li>
                     </ol>
                 </nav>
             </div>
@@ -119,10 +119,10 @@
                     .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                // this.$router.push({
-                                //     name: 'QuestionCreate',
-                                //     params: {survey_id: response.data.otherData}
-                                // });
+                                this.$router.push({
+                                    name: 'SelfQuestionCreate',
+                                    params: {self_id: response.data.otherData}
+                                });
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

@@ -179,12 +179,12 @@ class LoginController extends Controller
                 //lấy ra mã tổ chức
                 $query_cctc = "(SELECT f.id, f.level, f.code
             FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
-            FROM (SELECT @id := (select toe.organization_id from tms_organization_employee toe join mdl_user mu on mu.id = toe.user_id 
+            FROM (SELECT @id := (select toe.organization_id from tms_organization_employee toe join mdl_user mu on mu.id = toe.user_id
             where mu.username= '" . $username . "')) tmp1
             JOIN tms_organization ON @id IS NOT NULL) tmp2
             JOIN tms_organization f ON tmp2._id = f.id
             where f.level = 2 or f.level = 1 limit 1)";
-             
+
 
                 $query_cctc = DB::raw($query_cctc);
 
