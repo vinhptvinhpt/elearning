@@ -1268,7 +1268,7 @@ class BussinessRepository implements IBussinessInterface
                 });
             } else if ($status_course == 3) { //các khóa đã diễn ra
                 $listCourses = $listCourses->where('mdl_course.enddate', '<=', $unix_now)
-                ->where('mdl_course.enddate', '>', 0);
+                    ->where('mdl_course.enddate', '>', 0);
             }
         }
 
@@ -1492,10 +1492,32 @@ class BussinessRepository implements IBussinessInterface
             $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
         }
 
+//        if (strlen($organization_id) != 0 && $organization_id != 0) {
+//            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+//            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+//        }
+
         if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                            UNION 
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $currentUserEnrol = $currentUserEnrol->join($org_query, 'org_tp.org_uid', '=', 'mdl_user.id');
+
+//            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+//            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
+
         if ($role_id) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_enrol.roleid', '=', $role_id);
         }
@@ -1612,10 +1634,33 @@ class BussinessRepository implements IBussinessInterface
             $userNeedEnrol = $userNeedEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
         }
 
+//        if (strlen($organization_id) != 0 && $organization_id != 0) {
+//            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+//            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+//        }
+
         if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
+                            UNION 
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $userNeedEnrol = $userNeedEnrol->join($org_query, 'org_tp.org_uid', '=', 'mdl_user.id');
+
+//            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+//            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
         }
+
 
         if ($role_id) {
             $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
@@ -3441,8 +3486,7 @@ class BussinessRepository implements IBussinessInterface
             ]);
             $select_array = array_merge($select_array, $addtion_select_for_course);
 
-        }
-        else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
+        } else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
 
             $select_array = array_merge($select_array, [
                 'tms_traninning_programs.id as training_id',
@@ -3635,7 +3679,8 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
-    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select) {
+    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select)
+    {
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
@@ -9913,8 +9958,7 @@ class BussinessRepository implements IBussinessInterface
                 }
                 \DB::commit();
                 return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
-            }
-            else{
+            } else {
                 return response()->json(status_message('error', __('ban_khong_co_quyen_xoa')));
             }
 

@@ -631,6 +631,9 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
 
             $num = 0;
             $limit = 100;
+
+            TmsSelfUser::where('user_id', '=', Auth::user()->id)->delete();
+
             foreach ($question_answers as $qa) {
                 //lay du lieu insert vao bang tms_self_users
                 $data_item_user['type_question'] = $qa['type_ques'];
@@ -656,6 +659,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             }
             TmsSelfUser::insert($arr_self_user);
 
+            TmsSelfStatisticUser::where('user_id', '=', Auth::user()->id)->delete();
             foreach ($group_ques as $gr) {
                 if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::GROUP)
@@ -894,7 +898,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             ->select('tsu.id', 'mu.username', 'tud.fullname', 'tsq.name as ques_name'
                 , 'tss.section_name', 'tsu.total_point', 'tsu.avg_point', 'mu.id as user_id');
 
-        if ($keyword){
+        if ($keyword) {
             $lstData = $lstData->where(function ($query) use ($keyword) {
                 $query->orWhere('mu.username', 'like', "%{$keyword}%")
                     ->orWhere('tsq.name', 'like', "%{$keyword}%")
