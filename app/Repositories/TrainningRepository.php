@@ -147,7 +147,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -271,7 +272,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -304,7 +306,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $response->message = __('xoa_khung_nang_luc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -676,7 +679,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -709,7 +713,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -912,7 +917,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1008,7 +1014,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }

@@ -861,7 +861,7 @@ if ($course->numofmodule == 0) {
                         </div>
                         <div class="col-2 info-course-btn">
                             <a href="<?php echo $start_course_link ?>"
-                               <?php if (strlen($start_course_link) == 0) { ?>onclick="notifyNoContent()" <?php } ?>
+                               <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()"; <?php } ?>
                                class="btn btn-start-course btn-click">start course</a>
                         </div>
                     </div>
@@ -1108,6 +1108,7 @@ $_SESSION["displayPopup"] = 2; ?>
 
     function notifyNoContent() {
         alert("Course has no content, please try again later");
+        return false;
     }
 
     $("#myModal").on('hide.bs.modal', function () {
@@ -1186,9 +1187,6 @@ $_SESSION["displayPopup"] = 2; ?>
         }
         <?php } ?>
     }
-
-    )
-    ;
 </script>
 
 </body>

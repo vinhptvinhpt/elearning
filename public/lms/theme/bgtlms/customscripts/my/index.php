@@ -64,7 +64,7 @@ $courses_others = array();
 $courses_soft_skills = array();
 
 foreach ($courses as $course){
-    if($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0){
+    if(($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0) && $course->category != 5){
         push_course($courses_all_required, $course);
     }
     else if($course->numoflearned/$course->numofmodule == 1){
@@ -460,7 +460,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         /*margin-bottom: 15%;*/
         border-radius: 50%;
         height: 80%;
-        width: 80%;
+        width: 60%;
         margin-top: 10%;
     }
 
@@ -730,6 +730,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             width: 165px !important;
             bottom: 23%;
         }
+        .avatar img{
+            width: 50%;
+        }
     }
     @media screen and (max-width: 1024px) {
         .block-color {
@@ -748,12 +751,18 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             height: 65px !important;
             bottom: 28% !important;
         }
+        .avatar img{
+            width: 100%;
+        }
     }
 
     @media screen and (max-width: 425px) {
         .block-color{
             bottom: 48% !important;
             width: 49px !important;
+        }
+        .avatar img{
+            width: 50%;
         }
     }
 </style>

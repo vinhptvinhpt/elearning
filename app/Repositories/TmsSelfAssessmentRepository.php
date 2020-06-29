@@ -107,7 +107,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('tao_moi_survey_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -141,7 +142,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('xoa_survey');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -194,7 +196,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('sua_survey_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -368,7 +371,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -486,7 +490,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         } catch (\Exception $e) {
             DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -529,7 +534,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('xoa_cau_hoi_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -720,7 +726,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('gui_ket_qua_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -850,7 +857,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $response->message = __('gui_ket_qua_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
