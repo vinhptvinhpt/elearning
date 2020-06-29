@@ -84,7 +84,8 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
             $response->message = __('tao_moi_csvc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -128,7 +129,8 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
             $response->message = __('capnhat_csvc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -153,7 +155,8 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
             $response->message = __('xoa_csvc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }

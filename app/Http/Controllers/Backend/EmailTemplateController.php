@@ -386,7 +386,8 @@ class EmailTemplateController extends Controller
             $response->message = __('sua_thanh_cong_template') . $label;
         } catch (Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -764,7 +765,8 @@ class EmailTemplateController extends Controller
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }

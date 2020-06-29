@@ -25,7 +25,7 @@
           <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
           <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.danh_sach_giang_vien')}}</h5>
           <h5 class="hk-sec-title" v-else>{{trans.get('keys.danh_sach_hoc_vien')}}</h5>
-          <div class="row mb-4">
+          <div class="row mb-4" v-if="slug_can('tms-system-user-add')">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
                 <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);">
