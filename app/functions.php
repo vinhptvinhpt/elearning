@@ -1732,6 +1732,10 @@ function callAPI($method, $url, $data, $hasHeader, $user_token)
             'Authorization: Bearer ' . $user_token,
             'X-App-Token: ' . Config::get('constants.domain.DIVA-TOKEN-SYSTEM')
         ));
+    }else{
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array(
+            'Content-Type: application/x-www-form-urlencoded'
+        ));
     }
     curl_setopt($curl, CURLOPT_HTTPHEADER, array("Expect:  ")); //add them trong TH server chay qua proxy
 
@@ -2506,7 +2510,7 @@ function validate_fails($request, $param)
                 case 'text':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            "regex:/^[a-zA-Z0-9\-\_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\.\,\s\!\%\/\@\&]*$/i",
+                            "regex:/^[a-zA-Z0-9\-\_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\.\,\s\!\%\/\@\&\?\#\(\)]*$/i",
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key))
@@ -2563,6 +2567,7 @@ function validate_fails($request, $param)
                         ];
                     //array_push($check, $key);
                     break;
+
                 case 'longtext':
                     $validator = Validator::make($request->all(), [
                         $key => [
@@ -2620,7 +2625,7 @@ function validate_fails($request, $param)
                             "regex:/^\d+(\.\d{1,2})?$/"
                         ],
                     ]);
-                    if ($validator->fails() && $request->input($key))
+                    if ($validator->fails() && $request->input($key) && strlen($request->input($key)) != 0)
                         return [
                             'key' => $key,
                             //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')

@@ -11,6 +11,7 @@ use App\Role;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleOrganization;
+use App\TmsTrainningGroup;
 use Exception;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
@@ -313,10 +314,11 @@ class TmsOrganizationRepository implements ICommonInterface
                 TmsOrganization::where('parent_id', $id)
                     ->update(['parent_id' => 0]);
                 //Xoa nhan vien connected
-                TmsOrganizationEmployee::where('organization_id', $id)
-                    ->delete();
+                TmsOrganizationEmployee::where('organization_id', $id)->delete();
                 //Xóa role connected
                 self::clearRoleOrganization($id);
+                //Delete connection to competency framework
+                TmsTrainningGroup::where('type', 1)->where('group_id', $id)->delete();
             }
             \DB::commit();
             return response()->json(status_message('success', __('xoa_to_chuc_thanh_cong')));

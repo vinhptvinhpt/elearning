@@ -90,7 +90,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        else {
 
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        if(tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')){
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             //Không thuộc các trường hợp trên
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
@@ -106,16 +106,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.deleted',
                     'mccc.gradepass as pass_score'
                 );
-        }
-        else{
+        } else {
             //Kiểm tra xem có phải role thuộc organization hay không
             $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
             if ($checkRoleOrg === true) {
                 //kiểm tra xem có còn thêm quyền admin nữa không
                 $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["admin"]);
-                if($checkRoleOrg)
+                if ($checkRoleOrg)
                     $ready = false;
-                else{
+                else {
                     $listCourses = DB::table('mdl_course as c')
                         ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
                         ->where(function ($query) {
@@ -151,8 +150,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         );
 //                    $ready = true;
                 }
-            }
-            else {
+            } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
                 if ($checkRole === TRUE) {
@@ -240,9 +238,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $listCourses = $listCourses->where('c.startdate', '>', $unix_now);
             } else if ($status_course == 2) { //các khóa đang diễn ra
                 $listCourses = $listCourses->where('c.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
+                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
+                    $query->where('c.enddate', '>=', $unix_now)
+                        ->orWhere('c.enddate', '=', 0);
+                });
+//                $listCourses = $listCourses->where('c.enddate', '>=', $unix_now);
             } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('c.enddate', '<', $unix_now);
+                $listCourses = $listCourses->where('c.enddate', '<', $unix_now)
+                    ->where('c.enddate', '>', 0);
             }
         }
 
@@ -463,7 +466,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course->access_ip = $access_ip;
 
         $course->save();
-
         //nếu manager hoặc leader tạo khóa
         $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
         if ($checkRole == true) {
@@ -472,38 +474,70 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 if ($organization_employee->organization) {
                     $role_organization = TmsRoleOrganization::query()->where('organization_id', $organization_employee->organization_id)->first();
                     if (isset($role_organization)) { //Map course to that roles
-                        $role_course = new TmsRoleCourse();
-                        $role_course->role_id = $role_organization->role_id;
-                        $role_course->course_id = $course->id;
-                        $role_course->save();
+//                        $role_course = new TmsRoleCourse();
+//                        $role_course->role_id = $role_organization->role_id;
+//                        $role_course->course_id = $course->id;
+//                        $role_course->save();
+                        TmsRoleCourse::firstOrCreate([
+                            'role_id' => $role_organization->role_id,
+                            'course_id' => $course->id
+                        ]);
                     } else { //Enable use organization as role and map course to that role
                         $lastRole = MdlRole::latest()->first();
 
                         //Tạo quyền bên LMS
-                        $mdlRole = new MdlRole;
-                        $mdlRole->shortname = $organization_employee->organization->code;
-                        $mdlRole->description = $organization_employee->organization->name;
-                        $mdlRole->sortorder = $lastRole['sortorder'] + 1;
-                        $mdlRole->archetype = 'user';
-                        $mdlRole->save();
+//                        $mdlRole = new MdlRole;
+//                        $mdlRole->shortname = $organization_employee->organization->code;
+//                        $mdlRole->description = $organization_employee->organization->name;
+//                        $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+//                        $mdlRole->archetype = 'user';
+//                        $mdlRole->save();
 
-                        $role = new Role();
-                        $role->mdl_role_id = $mdlRole->id;
-                        $role->name = $organization_employee->organization->code;
-                        $role->description = $organization_employee->organization->name;
-                        $role->guard_name = 'web';
-                        $role->status = 1;
-                        $role->save();
+                        $mdlRole = MdlRole::firstOrCreate([
+                            'shortname' => $organization_employee->organization->code,
+                            'archetype' => 'user'
+                        ], [
+                            'description' => $organization_employee->organization->name,
+                            'sortorder' => $lastRole['sortorder'] + 1
+                        ]);
 
-                        $role_organization = new TmsRoleOrganization();
-                        $role_organization->organization_id = $organization_employee->organization_id;
-                        $role_organization->role_id = $role->id;
-                        $role_organization->save();
 
-                        $role_course = new TmsRoleCourse();
-                        $role_course->role_id = $role_organization->role_id;
-                        $role_course->course_id = $course->id;
-                        $role_course->save();
+                        $role = Role::firstOrCreate([
+                            'mdl_role_id' => $mdlRole->id,
+                            'name' => $organization_employee->organization->code,
+                            'guard_name' => 'web',
+                            'status' => 1
+                        ], [
+                            'description' => $organization_employee->organization->name
+                        ]);
+
+//                        $role = new Role();
+//                        $role->mdl_role_id = $mdlRole->id;
+//                        $role->name = $organization_employee->organization->code;
+//                        $role->description = $organization_employee->organization->name;
+//                        $role->guard_name = 'web';
+//                        $role->status = 1;
+//                        $role->save();
+
+                        $role_organization = TmsRoleOrganization::firstOrCreate([
+                            'role_id' => $role->id,
+                            'organization_id' => $organization_employee->organization_id
+                        ]);
+
+                        $role_course = TmsRoleCourse::firstOrCreate([
+                            'role_id' => $role_organization->role_id,
+                            'course_id' => $course->id
+                        ]);
+
+//                        $role_organization = new TmsRoleOrganization();
+//                        $role_organization->organization_id = $organization_employee->organization_id;
+//                        $role_organization->role_id = $role->id;
+//                        $role_organization->save();
+//
+//                        $role_course = new TmsRoleCourse();
+//                        $role_course->role_id = $role_organization->role_id;
+//                        $role_course->course_id = $course->id;
+//                        $role_course->save();
                     }
                 }
             }
@@ -646,7 +680,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = 'Định dạng dữ liệu không hợp lệ';
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
                 $response->otherData = $validator;
                 $response->error = $description;
                 return response()->json($response);
@@ -781,12 +815,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $app_name = Config::get('constants.domain.APP_NAME');
 
             $key_app = encrypt_key($app_name);
-
+            $user_id = Auth::id();
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
                 'action' => 'edit',
                 'description' => json_encode($course),
+                'userid' => $user_id
             );
 
             $dataLog = createJWT($dataLog, 'data');
@@ -796,7 +831,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             );
 
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            $user_id = Auth::id();
             $checkUser = MdlUser::where('id', $user_id)->first();
             $token = '';
             if (isset($checkUser)) {
@@ -1076,7 +1110,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         if ($keyword) {
             $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
-            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
         }
 
         if ($action) {
@@ -1124,20 +1158,28 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $num = 0;
 
             if ($code_org) {
-                $course_code = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->where('deleted', 0)->select('shortname')->orderBy('id', 'desc')->first();
-                if ($course_code) {
-                    $arr_code = explode('_', $course_code->shortname);
-                    foreach ($arr_code as $item) {
-                        if (is_numeric($item)) {
-                            $num = $item + 1;
-                            break;
+                $courses = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->select('shortname')->orderBy('id', 'desc')->get();
+                $arr_code = [];
+
+                foreach ($courses as $course) {
+                    $arr_data = explode('_', $course->shortname);
+                    $count_dt = count($arr_data);
+                    if ($count_dt > 0) {
+                        if (is_numeric($arr_data[$count_dt - 1])) {
+                            array_push($arr_code, (int)$arr_data[$count_dt - 1]);
                         }
                     }
-                    $code_hint = $code_org->code . '_0' . $num;
+                }
+
+                $count_code = count($arr_code);
+                if ($count_code > 0) {
+                    $num = max($arr_code);
+
                     if ($num == 0) {
                         $num = 1;
                         $code_hint = $code_org->code . '_001';
-                    } else if ($num < 10) {
+                    } else {
+                        $num = $num + 1;
                         $code_hint = $code_org->code . '_00' . $num;
                     }
                 } else {
@@ -1156,7 +1198,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = '';
 
         } catch (\Exception $e) {
-            \Log::info($e);
             $response->status = false;
             $response->message = $e->getMessage();
         }

@@ -193,7 +193,7 @@ Log::info('157');
 
                 if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
                     $role = Role::ROLE_MANAGER;
-                } elseif (strpos($position_name, Role::ROLE_LEADER) !== false) {
+                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
                     $role = Role::ROLE_LEADER;
                 } else {
                     $role = Role::ROLE_EMPLOYEE;
@@ -465,14 +465,8 @@ Log::info('348');
                     $user_detail->start_time = $working_start_at;
                     $user_detail->save();
 
-                    $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
-                    if ($role) {
-                        //Auto thêm quyền học viên nếu chưa có
-                        self::add_user_by_role($check->id, 5);
-                        //Thêm quyền mới nếu chưa có
-                        self::add_user_by_role($check->id, $role['id']);
-                        //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
-                    }
+                    self::assignRoles($check->id, $role, true);
+
                     $response['id'] = $check->id;
                     if (strlen($response['message']) == 0) {
                         $response['message'] = 'Update successfully';
@@ -582,14 +576,7 @@ Log::info('348');
             $check->active = 1;
             $check->save();
 
-            $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
-            if ($role) {
-                //Auto thêm quyền học viên nếu chưa có
-                self::add_user_by_role($check->id, 5);
-                //Thêm quyền mới nếu chưa có
-                self::add_user_by_role($check->id, $role['id']);
-                //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
-            }
+            self::assignRoles($check->id, $role);
 
             $user_detail = new TmsUserDetail;
             $user_detail->cmtnd = $personal_id;
@@ -611,6 +598,32 @@ Log::info('348');
             return $e->getMessage();
         }
         return $check;
+    }
+
+    /**
+     * @param $user_id
+     * @param $role
+     * @param bool $update
+     */
+    function assignRoles($user_id, $role, $update = false) {
+        $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
+        //Remove old roles when update
+        if ($update) {
+            $this->clearRole($user_id);
+        }
+        //Auto thêm quyền học viên nếu chưa có
+        self::add_user_by_role($user_id, 5);
+        if ($role) {
+            //Thêm quyền mới nếu chưa có
+            self::add_user_by_role($user_id, $role['id']);
+            //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+        }
+    }
+
+    function clearRole($user_id) {
+        ModelHasRole::where('model_id', $user_id)->delete();
+        //remove role of user from table mdl_role_assignments for lms
+        MdlRoleAssignments::where('userid', $user_id)->delete();
     }
 
     function enrole_lms($user_id, $role_id, $confirm)

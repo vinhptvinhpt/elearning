@@ -233,7 +233,7 @@
         this.formData.append('run_cron', this.run_cron);
         this.formData.append('time_start', this.time_start);
         this.formData.append('time_end', this.time_end);
-        this.formData.append('description', this.description);
+        this.formData.append('description', this.description ? this.description : '');
         this.formData.append('role_id', this.role ? this.role : 0);
         this.formData.append('organization_id', this.organization.parent_id ? this.organization.parent_id : 0);
         this.formData.append('file', this.$refs.file.files[0]);

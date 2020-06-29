@@ -27,7 +27,12 @@
     {{{ output.standard_head_html }}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
-    <script src="/template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+    {{#viewCoursePage}}
+    {{/viewCoursePage}}
+    {{^viewCoursePage}}
+        <script src="/template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+    {{/viewCoursePage}}
+
     <script src="/sso/sslssso.js"></script>
     <script src="/lms/theme/bgtlms/js/slimselect.js"></script>
     <script src="/lms/theme/bgtlms/js/bootstrap-datetimepicker.js"></script>

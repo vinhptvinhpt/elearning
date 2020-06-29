@@ -5,7 +5,7 @@
 <base href="../../">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="js/popper.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
@@ -69,7 +69,7 @@
         color: black;
     }
 
-    .prev-btn:hover {
+    .prev-btn:hover, #menu-edit:hover {
         cursor: pointer;
     }
 
@@ -657,13 +657,13 @@
 </style>
 <?php
 require_once("courselib.php");
-
-$edit        = optional_param('edit', -1, PARAM_BOOL);
-$notifyeditingon        = optional_param('notifyeditingon', -1, PARAM_BOOL);
+session_start();
+$edit = optional_param('edit', -1, PARAM_BOOL);
+$notifyeditingon = optional_param('notifyeditingon', -1, PARAM_BOOL);
 $id = optional_param('id', 0, PARAM_INT);
 
 // Set $USER->editing = 0 to switch to normal view in course
-if ($edit == 0){
+if ($edit == 0) {
     $USER->editing = 0;
 }
 
@@ -676,20 +676,20 @@ if ($notifyeditingon == 1) {
 }
 
 // [VinhPT][EAsia] Course IP address restrict
-$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = ".$id))[0]->access_ip;
+$result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
-if($result_ip){
-    $list_access_ip = json_decode($result_ip)->list_access_ip;
-    if ($list_access_ip){
-        //if(!in_array(getremoteaddr(), $list_access_ip)){
-            $url_to_page = new moodle_url($root_url);
-            $message_ip_access = "You do not have permission to access this course";
-            //redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
-        //}
-    }
-}
-$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = '.$USER->id.') AS numoflearned FROM mdl_course mc WHERE mc.id = '.$id;
+//if ($result_ip) {
+//    $list_access_ip = json_decode($result_ip)->list_access_ip;
+//    if ($list_access_ip) {
+//        //if(!in_array(getremoteaddr(), $list_access_ip)){
+//        $url_to_page = new moodle_url($root_url);
+//        $message_ip_access = "You do not have permission to access this course";
+//        //redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
+//        //}
+//    }
+//}
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
 $teachers_sql = 'select @s:=@s+1 stt,
@@ -735,7 +735,7 @@ if (!empty($units)) {
     }
 }
 
-$bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id .'"';
+$bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 
 //Check permission edit course
 $permission_edit = false;
@@ -777,6 +777,32 @@ $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
 if ($edit == 0) {
     $source = $id;
 }
+
+//Check to show popup congratulation
+if ($course->numofmodule == 0) {
+    $_SESSION["displayPopup"] = 0;
+} else {
+    $percentProgress = $course->numoflearned / $course->numofmodule;
+    $displayVal = $course->display;
+//if percent of progress = 1 is complete course => display popup congratulation
+    if ($percentProgress == 1) {
+        if ($displayVal == null) {
+            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
+            $_SESSION["displayPopup"] = 1;
+        } else if ($displayVal == 0) {
+            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
+            $_SESSION["displayPopup"] = 1;
+        } else {
+            $_SESSION["displayPopup"] = 2;
+        }
+    } else {
+        if ($displayVal == null) {
+            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id) VALUES (" . $USER->id . ", " . $course->id . ")");
+            $_SESSION["displayPopup"] = 0;
+        }
+    }
+}
+
 ?>
 <body <?php echo $bodyattributes ?>>
 
@@ -784,46 +810,63 @@ if ($edit == 0) {
     <?php echo $OUTPUT->header(); ?>
     <section class="section section--header"><!-- section -->
         <div class="container">
-<!--                progress info-->
-           <div class="progress-info">
-               <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i class="fa fa-angle-left" aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
-               <div class="progress-info__content">
-                   <div class="row">
-                       <div class="col-4 info-course-detail">
-                           <ul>
-                               <li class="teacher"><i class="fa fa-user" aria-hidden="true"></i> <?php echo $teacher_name ?></li>
-                               <li class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</li>
-                               <li class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</li>
-                           </ul>
-                       </div>
-                       <div class="col-6 row info-course-progress">
-                           <span class="col-3">PROGRESS</span>
+            <!--                progress info-->
+            <div class="progress-info">
+                <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i
+                                class="fa fa-angle-left"
+                                aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
+                <div class="progress-info__content">
+                    <div class="row">
+                        <div class="col-4 info-course-detail">
+                            <ul>
+                                <li class="teacher"><i class="fa fa-user"
+                                                       aria-hidden="true"></i> <?php echo $teacher_name ?></li>
+                                <li class="units"><i class="fa fa-file"
+                                                     aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units
+                                </li>
+                                <li class="units"><i class="fa fa-clock-o"
+                                                     aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
+                                    hours
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-6 row info-course-progress">
+                            <span class="col-3">PROGRESS</span>
 
-                           <div class="col-9">
-                               <?php if($course->id != 506){ ?>
-                                   <hgroup class="speech-bubble">
-                                       <h7><?php echo $course->numoflearned; ?>/<?php echo $course->numofmodule; ?></h7>
-                                   </hgroup>
-                                   <div class="progress">
-                                       <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numoflearned*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                   </div>
-                               <?php }else{?>
-                                   <hgroup class="speech-bubble">
-                                       <h7><?php echo $course->numofmodule; ?>/<?php echo $course->numofmodule; ?></h7>
-                                   </hgroup>
-                                   <div class="progress">
-                                       <div class="progress-bar" role="progressbar" style="width: <?php echo (int)($course->numofmodule*100/$course->numofmodule); ?>%;" aria-valuenow="<?php echo (int)($course->numofmodule*100/$course->numofmodule); ?>" aria-valuemin="0" aria-valuemax="100"></div>
-                                   </div>
+                            <div class="col-9">
+                                <?php if ($course->id != 506) { ?>
+                                    <hgroup class="speech-bubble">
+                                        <h7><?php echo $course->numoflearned; ?>
+                                            /<?php echo $course->numofmodule; ?></h7>
+                                    </hgroup>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"
+                                             style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
+                                             aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                <?php } else { ?>
+                                    <hgroup class="speech-bubble">
+                                        <h7><?php echo $course->numofmodule; ?>/<?php echo $course->numofmodule; ?></h7>
+                                    </hgroup>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"
+                                             style="width: <?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>%;"
+                                             aria-valuenow="<?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
 
-                               <?php } ?>
-                           </div>
-                       </div>
-                       <div class="col-2 info-course-btn">
-                           <a href="<?php echo $start_course_link ?>" <?php if(strlen($start_course_link) == 0) { ?>onclick="notifyNoContent()" <?php } ?> class="btn btn-start-course btn-click">start course</a>
-                       </div>
-                   </div>
-               </div>
-           </div>
+                                <?php } ?>
+                            </div>
+                        </div>
+                        <div class="col-2 info-course-btn">
+                            <a href="<?php echo $start_course_link ?>"
+                               <?php if (strlen($start_course_link) == 0) { ?>onclick="notifyNoContent()" <?php } ?>
+                               class="btn btn-start-course btn-click">start course</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
     </section>
 
 
@@ -833,7 +876,8 @@ if ($edit == 0) {
             <div class="nav-course">
                 <ul class="nav nav-tabs-courses">
                     <li class="nav-item nav-click nav-introduction">
-                        <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
+                        <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
+                            introduction</a>
                     </li>
                     <li class="nav-item nav-click nav-unit">
                         <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
@@ -845,10 +889,19 @@ if ($edit == 0) {
                                 Edit course
                             </a>
                             <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course completion</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                           href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i
+                                            class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                           href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i
+                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course
+                                        completion</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                           href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i
+                                            class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
+                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                           href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i
+                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
                             </ul>
                         </li>
                     <?php } ?>
@@ -857,7 +910,7 @@ if ($edit == 0) {
         </div>
     </section>
 
-<!--    body-->
+    <!--    body-->
     <section class="section section-content section-course-info">
         <div class="container">
             <div class="row col-12 course-content course-main" id="courseintroduction">
@@ -878,13 +931,16 @@ if ($edit == 0) {
             <div class="row col-12 course-content" id="courseunit">
                 <div class="col-5 unit-info">
                     <div class="list-units">
-                        <?php foreach ($units as $no => $unit) {  ?>
+                        <?php foreach ($units as $no => $unit) { ?>
                             <div class="unit" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
                                 <div class="unit__progress">
-                                    <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i></div>
+                                    <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    </div>
                                     <div class="unit__progress-number">
-                                        <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span class="percent-get">__</span>/<span class="percent-total">100</span></p>
+                                        <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span
+                                                class="percent-get">__</span>/<span class="percent-total">100</span>
+                                        </p>
                                     </div>
                                 </div>
                             </div>
@@ -892,46 +948,74 @@ if ($edit == 0) {
                     </div>
                 </div>
 
-                    <div class="col-7 unit-info unit-detail">
-                        <?php foreach ($units as $unit) {  ?>
-                            <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
-                                <div class="detail-title">
-                                    <p><?php echo $unit['name']; ?></p>
-                                </div>
-                                <div class="detail-content">
-                                    <?php if ($unit['modules'] && !empty($unit['modules'])) {
-                                        foreach ($unit['modules'] as $module) {  ?>
+                <div class="col-7 unit-info unit-detail">
+                    <?php foreach ($units as $unit) { ?>
+                        <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
+                            <div class="detail-title">
+                                <p><?php echo $unit['name']; ?></p>
+                            </div>
+                            <div class="detail-content">
+                                <?php if ($unit['modules'] && !empty($unit['modules'])) {
+                                    foreach ($unit['modules'] as $module) { ?>
                                         <ul class="detail-list">
-                                            <li><a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a> </li>
+                                            <li>
+                                                <a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                            </li>
                                         </ul>
-                                        <?php }
-                                    } else { ?>
-                                        Unit has no content.
-                                    <?php } ?>
-                                </div>
-                                <?php if($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
-                                <div class="detail-btn">
-                                    <a href="<?php echo $unit['modules'][0]['url']; ?>" class="btn btn-click btn-start-unit">Start unit</a>
-                                </div>
+                                    <?php }
+                                } else { ?>
+                                    Unit has no content.
                                 <?php } ?>
                             </div>
-                        <?php } ?>
-                    </div>
+                            <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
+                                <div class="detail-btn">
+                                    <a href="<?php echo $unit['modules'][0]['url']; ?>"
+                                       class="btn btn-click btn-start-unit">Start unit</a>
+                                </div>
+                            <?php } ?>
+                        </div>
+                    <?php } ?>
+                </div>
             </div>
         </div>
     </section>
-<!--    --><?php //echo $OUTPUT->footer(); ?>
+    <!--    --><?php //echo $OUTPUT->footer(); ?>
 </div>
 
-
-
+<?php if ($_SESSION["displayPopup"] == 1) { ?>
+    <!-- Modal congratulation -->
+    <!--<div class="modal fade show" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display: block;" aria-modal="true">-->
+    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="exampleModalCenterTitle">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
+                        course <?php echo $course->fullname; ?></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <img src="images/congratulation.gif" alt="">
+                </div>
+                <div class="modal-footer" style="width: 100%">
+                    <div style="margin: 0 auto">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <!--                    <button type="button" class="btn btn-primary">Save changes</button>-->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<?php }
+$_SESSION["displayPopup"] = 2; ?>
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         //get active li to show content
-        $(".nav-click").each(function() {
+        $(".nav-click").each(function () {
             var getClasses = $(this).attr('class');
-            if(getClasses.indexOf('active')>-1){
-                var getId =  $(this).find("a").attr('href');
+            if (getClasses.indexOf('active') > -1) {
+                var getId = $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
             $('.nav-click').not($(this)).each(function () {
@@ -940,12 +1024,12 @@ if ($edit == 0) {
             $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
 
-        $(".nav-click a").click(function() {
+        $(".nav-click a").click(function () {
             //set active for first block
             var getHref = $(this).attr('href');
-            if(getHref.indexOf('unit')>-1){
+            if (getHref.indexOf('unit') > -1) {
                 var getID = $(".unit").first().attr('id');
-                if(getID){
+                if (getID) {
                     var ID = getID.substring(5, getID.length);
                     ClickNav(getID, ID);
                 }
@@ -954,7 +1038,7 @@ if ($edit == 0) {
                 $(this).removeClass('active');
             });
 
-            $('.course-content').not($(getHref)).each(function(){
+            $('.course-content').not($(getHref)).each(function () {
                 $(this).css('display', 'none');
             });
             $(getHref).css('display', 'flex');
@@ -972,26 +1056,25 @@ if ($edit == 0) {
         var getPercent = $('.progress-bar').attr('aria-valuenow');
         var marginLeft = getPercent - 6;
         var getScreenWidth = screen.width;
-        if(getScreenWidth>=1600){
+        if (getScreenWidth >= 1600) {
             marginLeft = getPercent - 3;
-        }else if(getScreenWidth <420){
+        } else if (getScreenWidth < 420) {
             marginLeft = getPercent - 14;
-        }
-        else if(getScreenWidth <768){
+        } else if (getScreenWidth < 768) {
             marginLeft = getPercent - 10;
         }
-        $('.speech-bubble').css('left', marginLeft+'%');
+        $('.speech-bubble').css('left', marginLeft + '%');
 
         //set height and line height
         var getHeight = $('.info-course-btn').innerHeight();
-        $('.info-course-progress .col-3').css('height', getHeight+'px');
-        $('.info-course-progress .col-3').css('line-height', getHeight+'px');
-        $('.info-course-detail').css('height', getHeight+'px');
-        $('.info-course-detail').css('line-height', getHeight+'px');
+        $('.info-course-progress .col-3').css('height', getHeight + 'px');
+        $('.info-course-progress .col-3').css('line-height', getHeight + 'px');
+        $('.info-course-detail').css('height', getHeight + 'px');
+        $('.info-course-detail').css('line-height', getHeight + 'px');
 
 
         //event click unit
-        $('.unit').click(function(){
+        $('.unit').click(function () {
             var getID = $(this).attr('id');
             var ID = getID.substring(5, getID.length);
             ClickNav(getID, ID);
@@ -1003,68 +1086,109 @@ if ($edit == 0) {
         });
 
         //function click
-        function ClickNav(getID, ID){
-            $('.unit').not($('#'+getID)).each(function () {
+        function ClickNav(getID, ID) {
+            $('.unit').not($('#' + getID)).each(function () {
                 $(this).removeClass('unit-click');
             });
-            $('#'+getID).addClass('unit-click');
+            $('#' + getID).addClass('unit-click');
             $('#detail-' + ID).css('display', 'block');
             $('.main-detail').not($('#detail-' + ID)).each(function () {
                 $(this).css('display', 'none');
                 $(this).removeClass('unit-click');
             });
         }
+
         //Click tab unit list and curent unit by url params
         <?php if (strlen($section_no) != 0) { ?>
-            $("#unit-link").trigger("click");
-            $("#unit-link").addClass('active');
-            $("[section-no=<?php echo $section_no ?>]").trigger("click");
+        $("#unit-link").trigger("click");
+        $("#unit-link").addClass('active');
+        $("[section-no=<?php echo $section_no ?>]").trigger("click");
         <?php } ?>
     });
+
     function notifyNoContent() {
         alert("Course has no content, please try again later");
     }
+
+    $("#myModal").on('hide.bs.modal', function () {
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        // Show modal on page load
+        $("#myModal").modal('show');
+    });
 </script>
 
 <script>
     //Notify tiếp tục module đang học dở
-    $(document).ready(function() {
-        <?php if ($id != $source) { ?> //Vào từ màn khóa học khác
-            $('#page').css('margin-right', '0');
-            var x = document.getElementsByTagName("BODY")[0];
-            var classes = x.className.toString().split(/\s+/);
-            let course_id = '0';
+    $(document).ready(function () {
 
-            //screen course detail
-            if (classes.includes("pagelayout-course")) {
-                classes.forEach(function(classItem) {
-                    if (classItem.startsWith('course-')) {
-                        course_id = classItem.substring(7, classItem.length);
+        $.getJSON("https://api.ipify.org?format=json",
+            function (data) {
+                var result_ip =  <?php echo $result_ip;  ?>;
+
+                var count_ip = result_ip.list_access_ip.length;
+
+                if (count_ip > 0) {
+                    if (result_ip.list_access_ip.includes(data.ip)) {
+                        continue_learning();
+                    } else {
+                        var message_access = 'You do not have permission to access this course';
+                        alert(message_access);
+                        var url_next = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
+                        window.location.href = url_next;
+
                     }
-                });
-                $.ajax({
-                    url:'<?php echo $root_url ?>/pusher/resume.php',
-                    data: {
-                        'course_id': course_id
-                    },
-                    type: 'POST',
-                    success: function(data) {
-                        if (data.length !== 0) {
-                            r = confirm("Do you want to continue last activity in course?");
-                            if (r == true) {
-                                window.location.href = data;
-                            } else {
-                                return;
-                            }
-                        }
-                    },
-                    error: function(e){
-                        console.log(e);
-                    }
-                });
-            }
-        <?php } ?>
+                } else {
+                    continue_learning();
+                }
+
+
+            });
     });
+
+
+    function continue_learning() {
+        <?php if ($id != $source) { ?> //Vào từ màn khóa học khác
+        $('#page').css('margin-right', '0');
+        var x = document.getElementsByTagName("BODY")[0];
+        var classes = x.className.toString().split(/\s+/);
+        let course_id = '0';
+
+        //screen course detail
+        if (classes.includes("pagelayout-course")) {
+            classes.forEach(function (classItem) {
+                if (classItem.startsWith('course-')) {
+                    course_id = classItem.substring(7, classItem.length);
+                }
+            });
+            $.ajax({
+                url: '<?php echo $root_url ?>/pusher/resume.php',
+                data: {
+                    'course_id': course_id
+                },
+                type: 'POST',
+                success: function (data) {
+                    if (data.length !== 0) {
+                        r = confirm("Do you want to continue last activity in course?");
+                        if (r == true) {
+                            window.location.href = data;
+                        } else {
+                            return;
+                        }
+                    }
+                },
+                error: function (e) {
+                    console.log(e);
+                }
+            });
+        }
+        <?php } ?>
+    }
+
+    )
+    ;
 </script>
 
 </body>
@@ -1072,5 +1196,5 @@ if ($edit == 0) {
 
 
 <?php
-    die;
+die;
 ?>

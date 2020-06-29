@@ -167,7 +167,7 @@
                     </select>
                 </div>
 
-                <div class="col-md-4 col-sm-6 form-group">
+                <div class="col-md-4 col-sm-6 form-group" v-if="type == 'system'">
                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} </label>
                     <treeselect v-model="last_organization_id"
                                 :multiple="false"

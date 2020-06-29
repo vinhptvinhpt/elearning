@@ -280,7 +280,7 @@
                                 </li>
                             </ul>
                             <div class="text-right">
-                                <router-link :title="trans.get('keys.sua')"
+                                <router-link v-if="slug_can('tms-system-user-edit')" :title="trans.get('keys.sua')"
                                              :to="{ name: 'EditDetailUserById', params: { user_id: user_id },query: {type: type}}"
                                              class="btn btn-primary btn-sm">
                                     {{trans.get('keys.sua')}}
@@ -318,7 +318,7 @@
 
     export default {
         components: {UserSchedule, UserCourseGrade, LearnerHistory},
-        props: ['user_id', 'type'],
+        props: ['user_id', 'type', 'slugs'],
         data() {
             return {
                 users: {
@@ -334,6 +334,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             removeWordPlace(word_place_id) {
                 var user_id = this.user_id;
                 swal({

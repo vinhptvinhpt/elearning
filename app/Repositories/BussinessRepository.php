@@ -344,21 +344,22 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         } else {
             $data = MdlCourse::where('category', '<>', 2)
-                ->where("enddate", ">=", $now)
                 ->where("startdate", "<=", $now)
+                ->where("startdate", "<>", 0)
                 ->where("deleted", "=", 0)
+                ->where(function ($query) use ($now) {
+                    $query->where('enddate', '>=', $now)
+                        ->orWhere('enddate', '=', 0);
+                })
                 ->select(
                     'id',
                     'shortname',
                     'fullname',
                     'startdate as start',
                     'enddate as end',
-                    //                    \DB::raw('FROM_UNIXTIME(startdate) as start'),
-//                    \DB::raw('FROM_UNIXTIME(enddate) as end'),
                     'course_place',
                     'category'
                 );
-
             if ($keyword) {
                 //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
                 // code xử lý remove ký tự đầu tiên của keyword đi
@@ -642,7 +643,7 @@ class BussinessRepository implements IBussinessInterface
         $listCategories = DB::table('mdl_course_categories')
             ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
             ->where('mdl_course_categories.id', '!=', 2)
-            ->where('mdl_course_categories.id', '!=', 3)
+            //->where('mdl_course_categories.id', '!=', 3)
             ->where('mdl_course_categories.id', '!=', 5)
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
@@ -669,7 +670,7 @@ class BussinessRepository implements IBussinessInterface
         $listCategories = DB::table('mdl_course_categories')
             ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
             ->where('mdl_course_categories.id', '!=', 2)
-            ->where('mdl_course_categories.id', '!=', 3)
+            //->where('mdl_course_categories.id', '!=', 3)
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
     }
@@ -783,12 +784,14 @@ class BussinessRepository implements IBussinessInterface
                 $app_name = Config::get('constants.domain.APP_NAME');
 
                 $key_app = encrypt_key($app_name);
+                $user_id = Auth::id();
 
                 $dataLog = array(
                     'app_key' => $key_app,
                     'courseid' => $course->id,
-                    'action' => 'create',
+                    'action' => 'delete',
                     'description' => json_encode($course),
+                    'userid' => $user_id
                 );
 
                 $dataLog = createJWT($dataLog, 'data');
@@ -798,7 +801,6 @@ class BussinessRepository implements IBussinessInterface
                 );
 
                 $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-                $user_id = Auth::id();
                 $checkUser = MdlUser::where('id', $user_id)->first();
                 $token = '';
                 if (isset($checkUser)) {
@@ -904,7 +906,7 @@ class BussinessRepository implements IBussinessInterface
 
 
             //check course info exist
-            $courseInfo = MdlCourse::select('id')->where('shortname', $shortname)->first();
+            $courseInfo = MdlCourse::select('id')->where('shortname', $shortname)->where('deleted', 0)->first();
 
             if ($courseInfo) {
                 $response->status = false;
@@ -1140,7 +1142,7 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        if(tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')){
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
@@ -1154,8 +1156,7 @@ class BussinessRepository implements IBussinessInterface
                     'mdl_course.visible',
                     'mdl_course_completion_criteria.gradepass as pass_score'
                 );
-        }
-        else{
+        } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
             $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
             if ($checkRole === true) {
@@ -1193,8 +1194,7 @@ class BussinessRepository implements IBussinessInterface
                         'mdl_course.deleted',
                         'mccc.gradepass as pass_score'
                     );
-            }
-            else {
+            } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
                 if ($checkRole == true) {
@@ -1259,9 +1259,14 @@ class BussinessRepository implements IBussinessInterface
                 $listCourses = $listCourses->where('mdl_course.startdate', '>', $unix_now);
             } else if ($status_course == 2) { //các khóa đang diễn ra
                 $listCourses = $listCourses->where('mdl_course.startdate', '<=', $unix_now);
-                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+//                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
+                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
+                    $query->where('mdl_course.enddate', '>=', $unix_now)
+                        ->orWhere('mdl_course.enddate', '=', 0);
+                });
             } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('mdl_course.enddate', '<', $unix_now);
+                $listCourses = $listCourses->where('mdl_course.enddate', '<=', $unix_now)
+                ->where('mdl_course.enddate', '>', 0);
             }
         }
 
@@ -1806,7 +1811,7 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
-            $course = MdlCourse::findOrFail($course_id);
+            $course = MdlCourse::find($course_id);
 
             if (empty($course)) {
                 $response->status = false;
@@ -1817,23 +1822,36 @@ class BussinessRepository implements IBussinessInterface
             $insert_data = [];
             $dt = Carbon::now();
 
+            $send = false;
+
+            if (count($lstUserIDs) == 1 && TmsInvitation::where('user_id', '=', $lstUserIDs[0])
+                    ->where('course_id', '=', $course_id)->first()) {
+                $send = true;
+            }
+
             foreach ($lstUserIDs as $user_id) {
-                $insert_data[] = [
-                    'course_id' => $course_id,
-                    'user_id' => $user_id,
-                    'replied' => 0,
-                    'accepted' => 0,
-                    'created_at' => $dt->toDateTimeString()
-                ];
+                $checkInvitation = TmsInvitation::where('user_id', '=', $user_id)
+                    ->where('course_id', '=', $course_id)->first();
+                if (!$checkInvitation) {
+                    $insert_data[] = [
+                        'course_id' => $course_id,
+                        'user_id' => $user_id,
+                        'replied' => 0,
+                        'accepted' => 0,
+                        'created_at' => $dt->toDateTimeString()
+                    ];
+                }
             }
             if (!empty($insert_data)) {
                 TmsInvitation::insert($insert_data);
             }
 
             $response->status = true;
+            $response->send = $send;
             $response->message = __('them_vao_danh_sach_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
+            $response->send = false;
             $response->message = $e->getMessage();
         }
         return json_encode($response);
@@ -3324,7 +3342,11 @@ class BussinessRepository implements IBussinessInterface
     //New report screen
     public function apiListDetail(Request $request)
     {
-        $mode_select = $request->input('mode_select'); //completed_training, completed_course, certificated, learning_time
+        $mode_select = $request->input('mode_select');
+        // certificated,
+        // completed_training,
+        // completed_course,
+        // learning_time
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
         $course_id = $request->input('course_id');
@@ -3333,6 +3355,7 @@ class BussinessRepository implements IBussinessInterface
         $country = $request->input('country');
 
         $show_courses = false;
+
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
 
         $select_array = array(
@@ -3343,7 +3366,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_user_detail.confirm'
         );
 
-        if ($mode_select === 'completed_course' || $mode_select === 'learning_time') {
+        if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
             $show_courses = true;
         }
 
@@ -3353,22 +3376,27 @@ class BussinessRepository implements IBussinessInterface
             ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
 
         //Lấy theo khung năng lực
-        $query->leftJoin('tms_trainning_groups', function ($join) {
-            /* @var $join JoinClause */
-            $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
-            $join->where('tms_trainning_groups.type', '=', 1);
-        })
-            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
+        //Join tổ chức và khung năng lực - commented 2020 06 25
+//        $query->leftJoin('tms_trainning_groups', function ($join) {
+//            /* @var $join JoinClause */
+//            $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
+//            $join->where('tms_trainning_groups.type', '=', 1);
+//        })
+//            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
+
+        //join người dùng vào KNL - added 2020 06 25
+        $query->leftJoin('tms_traninning_users', 'tms_traninning_users.user_id', '=', 'tms_organization_employee.user_id');
+        $query->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_traninning_users.trainning_id');
 
 
-        //hoàn thành khóa học cũ
+        //hoàn thành khóa học cũ - long time ago
 //        $query->leftjoin('course_final', function ($join) {
 //            $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
 //            $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
 //        });
 //        $select_array[] = 'course_final.timecompleted';
 
-        if ($show_courses) { //complete course and learning time
+        if ($show_courses) { //complete course and learning time => cần tính thêm phân quyền dữ liệu
 
             $addtion_select_for_course = [
                 'mdl_course.id as course_id',
@@ -3376,7 +3404,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.fullname as course_name',
             ];
 
-            if ($training_id == 0) {
+            if ($training_id == 0) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
                 /////////////////////////// PHAN QUYEN DU LIEU ///////////////////////
                 //lấy người dùng theo tổ chức
                 $query_per = TmsOrganization::query()->where('tms_organization.enabled', 1)
@@ -3396,7 +3424,8 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //khóa học trong khung năng lục
-            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id');
+            //$query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id'); //Commented 2020 06 25
+            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_traninning_users.trainning_id');
             $query->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
 
             $select_array = array_merge($select_array, [
@@ -3405,12 +3434,21 @@ class BussinessRepository implements IBussinessInterface
             ]);
             $select_array = array_merge($select_array, $addtion_select_for_course);
 
-        } else {
+        }
+        else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
+
             $select_array = array_merge($select_array, [
                 'tms_traninning_programs.id as training_id',
                 'tms_traninning_programs.name as training_name',
             ]);
-            //Hoàn thành khóa học
+
+            //chứng chỉ
+            if ($mode_select == 'certificated') {
+                $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+                $select_array[] = 'student_certificate.code';
+            }
+
+            //Hoàn thành KNL
             if ($mode_select == 'completed_training') {
                 $query->leftjoin('tms_trainning_complete', function ($join) { //Hoàn thành khung năng lực
                     /* @var $join JoinClause */
@@ -3418,12 +3456,6 @@ class BussinessRepository implements IBussinessInterface
                     $join->on('tms_trainning_complete.trainning_id', '=', 'tms_traninning_programs.id');
                 });
                 $select_array[] = 'tms_trainning_complete.id as completed';
-            }
-
-            //chứng chỉ
-            if ($mode_select == 'certificated') {
-                $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
-                $select_array[] = 'student_certificate.code';
             }
         }
 
@@ -3593,11 +3625,23 @@ class BussinessRepository implements IBussinessInterface
 
     function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select) {
         if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $query = $query->where('tms_organization.id', '=', $organization_id);
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $query = $query->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        } else {
+            //$level_1_ids = TmsOrganization::query()->where('level', 1)->pluck('id')->toArray();
         }
 
         if (strlen($training_id) != 0 && $training_id != 0) {
-            $query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+            //$query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+            $query = $query->where('tms_traninning_users.trainning_id', '=', $training_id);
         }
 
         if (strlen($course_id) != 0 && $course_id != 0) {
@@ -3617,10 +3661,10 @@ class BussinessRepository implements IBussinessInterface
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
             }
-            if ($mode_select == 'certificated') { //mode certificated
+            if ($mode_select == 'certificated') {
                 $query = $query->where('student_certificate.timecertificate', '>=', strtotime($start_date));
             }
-            if ($mode_select == 'learning_time') { //mode certificated
+            if ($mode_select == 'learning_time') {
                 $query = $query->where('tms_learning_activity_logs.updated_at', '>=', $start_date);
             }
         }
@@ -3634,11 +3678,11 @@ class BussinessRepository implements IBussinessInterface
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);
             }
-            if ($mode_select == 'certificated') { //mode certificated
+            if ($mode_select == 'certificated') {
                 $query = $query->where('student_certificate.timecertificate', '<=', strtotime($end_date));
             }
-            if ($mode_select == 'learning_time') { //mode certificated
-                $query = $query->where('tms_learning_activity_logs.updated_at', '<>>=', $start_date);
+            if ($mode_select == 'learning_time') {
+                $query = $query->where('tms_learning_activity_logs.updated_at', '<=', $end_date);
             }
         }
     }
@@ -3793,6 +3837,7 @@ class BussinessRepository implements IBussinessInterface
         $training_id = $request->input('training_id');
         return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+            ->where('mdl_course.deleted', 0)
             ->select(
                 'mdl_course.id',
                 'mdl_course.fullname as name',
@@ -4003,7 +4048,7 @@ class BussinessRepository implements IBussinessInterface
             $type = 'role';
             $url = '/roles/edit/' . $role_id;
             $action = 'update';
-            $info = __('cap_nhat_quyen').': ' . $name;
+            $info = __('cap_nhat_quyen') . ': ' . $name;
             devcpt_log_system($type, $url, $action, $info);
             \DB::commit();
             return response()->json(status_message('success', __('cap_nhat_vai_tro_thanh_cong')));
@@ -4039,7 +4084,7 @@ class BussinessRepository implements IBussinessInterface
             $type = 'role';
             $url = '*';
             $action = 'delete';
-            $info = __('xoa_quyen').': ' . $role_name;
+            $info = __('xoa_quyen') . ': ' . $role_name;
             devcpt_log_system($type, $url, $action, $info);
             \DB::commit();
             return response()->json(status_message('success', __('xoa_vai_tro_thanh_cong')));
@@ -4169,7 +4214,7 @@ class BussinessRepository implements IBussinessInterface
                     $type = 'role';
                     $url = '/roles/edit/' . $role_id;
                     $action = 'add';
-                    $info = __('gan_quyen').' ' . $role['name'] . ' '.__('cho_tai_khoan').' ' . $mdlUser['username'];
+                    $info = __('gan_quyen') . ' ' . $role['name'] . ' ' . __('cho_tai_khoan') . ' ' . $mdlUser['username'];
                     devcpt_log_system($type, $url, $action, $info);
 
                     //clear cache LMS roles
@@ -4277,7 +4322,7 @@ class BussinessRepository implements IBussinessInterface
                 $type = 'role';
                 $url = '/roles/edit/' . $role_id;
                 $action = 'remove';
-                $info = __('go_quyen').'  ' . $role['name'] . ' ' .__('cho_tai_khoan').' ' . MdlUser::findOrFail($user_id)['username'];
+                $info = __('go_quyen') . '  ' . $role['name'] . ' ' . __('cho_tai_khoan') . ' ' . MdlUser::findOrFail($user_id)['username'];
                 devcpt_log_system($type, $url, $action, $info);
                 \DB::commit();
                 return response()->json(status_message('success', __('go_nguoi_dung_thanh_cong')));
@@ -5190,7 +5235,8 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
             ->where('tms_user_detail.deleted', 0)
-            ->whereIn('tms_user_detail.user_id', $userArray);
+            ->whereIn('tms_user_detail.user_id', $userArray)
+            ->whereNotIn('mdl_user.username', ['admin']);
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -7209,7 +7255,7 @@ class BussinessRepository implements IBussinessInterface
 
             $username = strtolower($username);
 
-            if($cmtnd){
+            if ($cmtnd) {
                 //Check scmtnd
                 $userByCmtnd = TmsUserDetail::select('id')->where('cmtnd', $cmtnd)->first();
 
@@ -7738,7 +7784,7 @@ class BussinessRepository implements IBussinessInterface
             $mdlUser->lastname = $convert_name['lastname'];
             $mdlUser->email = $email;
             $mdlUser->save();
-            $infoLog = __('tai_khoan').' :' . $mdlUser['username'] . __('cap_nhat_lai_thong_tin');
+            $infoLog = __('tai_khoan') . ' :' . $mdlUser['username'] . __('cap_nhat_lai_thong_tin');
 
             $user = TmsUserDetail::where('user_id', $user_id)->first();
             $user->fullname = $fullname;
@@ -7923,7 +7969,7 @@ class BussinessRepository implements IBussinessInterface
         $days = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24) / (60 * 60 * 24));
         $hours = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24) / (60 * 60));
         $minutes = floor(($diff - $years * 365 * 60 * 60 * 24 - $months * 30 * 60 * 60 * 24 - $days * 60 * 60 * 24 - $hours * 60 * 60) / 60);
-        $diff_time = ($diffs + 30 * 60 * 60 * 24) < 0 ? __('da_het_han') : $days .' '.__('ngay').', ' . $hours . __('gio');
+        $diff_time = ($diffs + 30 * 60 * 60 * 24) < 0 ? __('da_het_han') : $days . ' ' . __('ngay') . ', ' . $hours . __('gio');
         $diff_time_class = ($diffs + 30 * 60 * 60 * 24) < 0 ? 'text-danger' : 'text-warning';
         $users['diff_time'] = $diff_time;
         $users['diff_time_class'] = $diff_time_class;
@@ -8047,7 +8093,7 @@ class BussinessRepository implements IBussinessInterface
             if ($userByEmail)
                 return response()->json(error_message('inputEmail', __('dia_chi_email_da_ton_tai')));*/
             \DB::beginTransaction();
-            $infoLog = __('sua_thong_tin_tai_khoan').' :' . $username;
+            $infoLog = __('sua_thong_tin_tai_khoan') . ' :' . $username;
             $mdlUser = MdlUser::findOrFail($user_id);
             $mdlUser->username = $username;
             $mdlUser->firstname = $convert_name['firstname'];
@@ -8193,20 +8239,20 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Thêm vị trí ( Khung năng lực )
-            if ($trainning_id > 0) {
-                TmsTrainningUser::where([
-                    'user_id' => $mdlUser->id
-                ])->delete();
-                TmsTrainningUser::create([
-                    'trainning_id' => $trainning_id,
-                    'user_id' => $mdlUser->id
-                ]);
-                //$category = TmsTrainningCategory::select('category_id')->where('trainning_id', $trainning_id)->first();
-                //enrole cho học viên theo khung năng lực
-                //\DB::beginTransaction();
-                training_enrole($mdlUser->id, $trainning_id);
-                //\DB::commit();
-            }
+//            if ($trainning_id > 0) {
+//                TmsTrainningUser::where([
+//                    'user_id' => $mdlUser->id
+//                ])->delete();
+//                TmsTrainningUser::create([
+//                    'trainning_id' => $trainning_id,
+//                    'user_id' => $mdlUser->id
+//                ]);
+//                //$category = TmsTrainningCategory::select('category_id')->where('trainning_id', $trainning_id)->first();
+//                //enrole cho học viên theo khung năng lực
+//                //\DB::beginTransaction();
+//                training_enrole($mdlUser->id, $trainning_id);
+//                //\DB::commit();
+//            }
 
             //Không phải student thì xóa enrole
             /*if(!$checkStudent){
@@ -8781,7 +8827,7 @@ class BussinessRepository implements IBussinessInterface
                                 //lấy danh sách đại lý
                                 $checkAgencyTM = true;
                                 $agencies = explode(",", $listAgencies);
-                                $messageAgency = __('ma_dai_ly').': ';
+                                $messageAgency = __('ma_dai_ly') . ': ';
                                 if ($agencies) {
                                     foreach ($agencies as $agency) {
                                         $checkAgency = TmsBranch::where('code', '=', str_replace(' ', '', $agency))->first();
@@ -9451,15 +9497,15 @@ class BussinessRepository implements IBussinessInterface
                             $this->importOutput['rowError']++;
                             $userOuput['username'] = $user['username'];
                             $userOuput['status'] = 'error';
-                            $userOuput['message'] = __('thong_tin').' ';
+                            $userOuput['message'] = __('thong_tin') . ' ';
                             if ($checkUsername) {
-                                $userOuput['message'] .= __('tai_khoan').' , ';
+                                $userOuput['message'] .= __('tai_khoan') . ' , ';
                             }
                             if ($checkEmail) {
-                                $userOuput['message'] .= __('email').' , ';
+                                $userOuput['message'] .= __('email') . ' , ';
                             }
                             if ($checkCmtnd) {
-                                $userOuput['message'] .= __('so_cmtnd').' ';
+                                $userOuput['message'] .= __('so_cmtnd') . ' ';
                             }
                             $userOuput['message'] .= __('da_ton_tai');
                             array_push($this->importOutput['userOuput'], $userOuput);
@@ -9471,15 +9517,15 @@ class BussinessRepository implements IBussinessInterface
                             //                            !is_numeric($user['confirm']) || !is_numeric($user['cmtnd'])
                             $userOuput['username'] = $user['username'] ? $user['username'] : '';
                             $userOuput['status'] = 'error';
-                            $userOuput['message'] = __('thong_tin').' : ';
+                            $userOuput['message'] = __('thong_tin') . ' : ';
                             if (!is_numeric($user['confirm'])) {
                                 $userOuput['message'] .= 'confirm , ';
                             }
                             if (!is_numeric($user['cmtnd'])) {
-                                $userOuput['message'] .= __('so_cmtnd').' , ';
+                                $userOuput['message'] .= __('so_cmtnd') . ' , ';
                             }
                             if (!is_numeric($user['phone'])) {
-                                $userOuput['message'] .= __('so_dien_thoai').' , ';
+                                $userOuput['message'] .= __('so_dien_thoai') . ' , ';
                             }
                             $userOuput['message'] .= __('khong_dung_dinh_dang');
                             array_push($this->importOutput['userOuput'], $userOuput);
@@ -9818,23 +9864,33 @@ class BussinessRepository implements IBussinessInterface
             $user_clear = $request->input('user_clear');
             if (!is_array($user_clear))
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-            \DB::beginTransaction();
-            foreach ($user_clear as $user_id) {
-                if (!is_numeric($user_id))
-                    return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
-                $mdlUser = MdlUser::findOrFail($user_id);
+            //Chỉ có quyền admin trở lên mới được quyền xóa
 
-                //Function clear user khỏi DB
-                TmsUserDetail::clearUser($user_id);
+            if (tvHasRole(Auth::user()->id, 'Root')
+                || tvHasRole(Auth::user()->id, 'root')
+                || tvHasRole(Auth::user()->id, 'admin')) {
+                \DB::beginTransaction();
+                foreach ($user_clear as $user_id) {
+                    if (!is_numeric($user_id))
+                        return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+                    $mdlUser = MdlUser::findOrFail($user_id);
 
-                $type = 'user';
-                $url = '*';
-                $action = 'clear';
-                $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
-                devcpt_log_system($type, $url, $action, $info);
+                    //Function clear user khỏi DB
+                    TmsUserDetail::clearUser($user_id);
+
+                    $type = 'user';
+                    $url = '*';
+                    $action = 'clear';
+                    $info = 'Xóa vĩnh viễn tài khoản ' . $mdlUser['username'];
+                    devcpt_log_system($type, $url, $action, $info);
+                }
+                \DB::commit();
+                return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
             }
-            \DB::commit();
-            return response()->json(status_message('success', __('xoa_vinh_vien_tai_khoan_thanh_cong')));
+            else{
+                return response()->json(status_message('error', __('ban_khong_co_quyen_xoa')));
+            }
+
         } catch (\Exception  $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
@@ -9987,7 +10043,7 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-
+//        dd($user_id, $trainning_id);
         $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
         $category = $category_id['category']['category_id'];
 
@@ -10026,9 +10082,9 @@ class BussinessRepository implements IBussinessInterface
             );
 
         $data = $data->orderBy('c.id', 'desc')->distinct();
-        if ($category) {
-            $data = $data->where('c.category', '=', $category);
-        }
+//        if ($category) {
+//            $data = $data->where('c.category', '=', $category);
+//        }
         if ($this->keyword) {
             $data = $data->where(function ($q) {
                 $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
@@ -13010,7 +13066,7 @@ class BussinessRepository implements IBussinessInterface
                 'tud.email',
                 'tud.phone'
             )
-            ->join('mdl_user as mu','mu.id','=','tud.user_id')
+            ->join('mdl_user as mu', 'mu.id', '=', 'tud.user_id')
             ->where('tud.deleted', '=', 0)
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
@@ -13070,7 +13126,7 @@ class BussinessRepository implements IBussinessInterface
         $data = $data->whereNotIn('tud.user_id', function ($query) {
             $query->select('model_id')
                 ->from('model_has_roles')
-                ->join('roles','roles.id','=','model_has_roles.role_id')
+                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->where('roles.name', 'root')
                 ->orWhere('roles.name', 'Root');
         });

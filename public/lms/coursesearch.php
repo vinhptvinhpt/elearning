@@ -1,6 +1,7 @@
 <?php
     require_once('config.php');
     $category = isset($_POST['category']) ? $_POST['category']:0;
+
     $current = isset($_POST['current']) ? $_POST['current']:1;
 //    $pageCount = isset($_POST['pageCount']) ? $_POST['pageCount']:1;
     $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage']:1;
