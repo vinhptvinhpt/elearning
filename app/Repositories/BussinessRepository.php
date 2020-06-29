@@ -827,7 +827,8 @@ class BussinessRepository implements IBussinessInterface
 
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1095,7 +1096,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('nhan_ban_khoa_hoc');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1449,7 +1451,8 @@ class BussinessRepository implements IBussinessInterface
             }
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1789,7 +1792,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -1852,7 +1856,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             $response->status = false;
             $response->send = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -1892,7 +1897,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('huy_ghi_danh_khoa_hoc');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -1919,7 +1925,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('xoa_khoi_danh_sach_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -4477,7 +4484,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('phan_quyen_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -4506,7 +4514,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('phan_quyen_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -4798,7 +4807,8 @@ class BussinessRepository implements IBussinessInterface
 
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5004,7 +5014,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5165,7 +5176,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5471,7 +5483,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('tao_moi_survey_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5531,7 +5544,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('sua_survey_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5572,7 +5586,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('xoa_survey');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5675,7 +5690,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('khoi_phuc_survey_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5715,7 +5731,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('xoa_survey');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -5967,7 +5984,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('them_moi_cau_hoi_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -6197,7 +6215,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('sua_cau_hoi_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -6241,7 +6260,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('xoa_cau_hoi_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -6340,7 +6360,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('gui_ket_qua_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -6420,7 +6441,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('gui_ket_qua_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14082,7 +14104,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14137,7 +14160,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14167,7 +14191,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('xoa_khung_nang_luc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14247,7 +14272,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14283,7 +14309,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14320,7 +14347,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14355,7 +14383,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14373,7 +14402,8 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -14509,7 +14539,8 @@ class BussinessRepository implements IBussinessInterface
             $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
