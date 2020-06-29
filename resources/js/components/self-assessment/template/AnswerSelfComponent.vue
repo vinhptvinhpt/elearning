@@ -7,12 +7,12 @@
             <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span></button>
         <br/>
         <div class="row">
-            <div class="col-6 col-sm-6">
+            <div class="col-6 col-sm-6"><label style="color: red;">*</label>
                 <input v-model="answer.content" type="text" id="inputText1-1"
                        :placeholder="trans.get('keys.noi_dung')"
                        class="form-control mb-4">
             </div>
-            <div class="col-6 col-sm-6">
+            <div class="col-6 col-sm-6"><label style="color: red;">*</label>
                 <input v-model="answer.point" type="number" min="0" id="inputText1-2"
                        :placeholder="trans.get('keys.trong_so')"
                        class="form-control mb-4">
