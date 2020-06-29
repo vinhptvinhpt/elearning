@@ -551,7 +551,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
-                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Course</li>
+                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Courses</li>
                             <?php foreach ($categories as $category) { ?>
                                 <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
                                     category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
