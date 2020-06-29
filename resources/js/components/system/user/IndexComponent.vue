@@ -25,7 +25,7 @@
           <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
           <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.danh_sach_giang_vien')}}</h5>
           <h5 class="hk-sec-title" v-else>{{trans.get('keys.danh_sach_hoc_vien')}}</h5>
-          <div class="row mb-4">
+          <div class="row mb-4" v-if="slug_can('tms-system-user-add')">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
                 <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);">
@@ -230,11 +230,12 @@
                       <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?
                         trans.get('keys.da_co') : trans.get('keys.chua_co') }}
                       </td>
-                      <td class="mobile_hide">
+                      <td class="mobile_hide" v-if="slug_can('tms-system-user-edit')">
                         <span v-if="user.working_status == 0">
-                         <i class="fa fa-toggle-on text-success" @click="changeStatus(user.user_id,1)"
-                            style="cursor: pointer; font-size: 25px;"
-                            aria-hidden="true"></i>
+                           <i class="fa fa-toggle-on text-success"
+                              @click="changeStatus(user.user_id,1)"
+                              style="cursor: pointer; font-size: 25px;"
+                              aria-hidden="true"></i>
                         </span>
                         <span v-if="user.working_status == 1">
                            <i class="fa fa-toggle-off"
@@ -243,14 +244,19 @@
                               aria-hidden="true"></i>
                         </span>
                       </td>
+                      <td v-else>
+                          <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
+                          <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
+                      </td>
                       <td class="text-center">
                         <router-link
                           :title="trans.get('keys.sua')"
                           :to="{ name: 'EditDetailUserById', params: { user_id: user.user_id }, query: {type: type} }"
-                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2">
+                          :class="slug_can('tms-system-user-edit') ? 'btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
                           <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                         </router-link>
                         <button @click.prevent="deletePost('/system/user/delete/'+user.user_id)"
+                                :class="slug_can('tms-system-user-deleted') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                 class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"><span
                           class="btn-icon-wrap"><i class="fal fa-trash"></i></span></button>
                       </td>
@@ -277,7 +283,7 @@
                     <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
                                   :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                   </div>
-                  <div class="text-right">
+                  <div v-if="slug_can('tms-system-user-deleted')" class="text-right">
                     <button :title="trans.get('keys.xoa_tai_khoan_da_chon')" type="button" style="float: right;"
                             class="btn btn-sm btn-danger mt-3" @click="deleteSelectUser()">
                       {{trans.get('keys.xoa')}}
@@ -306,7 +312,8 @@
         default: 'system'
       },
       current_roles: Object,
-      roles_ready: Boolean
+      roles_ready: Boolean,
+      slugs: Array,
     },
     //components: {vPagination},
     components: {SystemUserCreate},
@@ -334,6 +341,9 @@
       }
     },
     methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
       changeStatus(user_id, status) {
         let current_pos = this;
         swal({
@@ -447,6 +457,7 @@
             this.current = response.data.pagination ? response.data.pagination.current_page : 1;
             this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
             this.total_user = response.data.pagination ? response.data.pagination.total_user : 0;
+            //this.setFileInput(); //works
           })
           .catch(error => {
             //console.log(error.response.data);
@@ -565,7 +576,6 @@
             console.log(error);
           });
       },
-
       setFileInput() {
         $('.dropify').dropify();
       }
@@ -578,7 +588,7 @@
       this.getUser();
     },
     updated() {
-      this.setFileInput();
+      // this.setFileInput();
     }
   }
 

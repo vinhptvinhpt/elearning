@@ -249,7 +249,9 @@ class CourseController extends Controller
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+
         }
 
         return response()->json($response);
@@ -460,7 +462,8 @@ class CourseController extends Controller
             }
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }

@@ -633,7 +633,6 @@
                     }
                 }
 
-
                 let organization_roles_selected = [];
                 for (const [key, item] of Object.entries(this.roles)) {
                     if (this.inputRole.indexOf(item.id) !== -1) {
@@ -647,7 +646,7 @@
                     return;
                 }
                 if (organization_roles_selected.length > 0) {
-                    if (!this.organization_id) {
+                    if (!this.last_organization_id) {
                         toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                         $('.organization_required').show();
                         return;

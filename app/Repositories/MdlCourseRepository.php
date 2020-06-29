@@ -843,7 +843,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('sua_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -896,7 +897,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('phe_duyet_khoa_hoc');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1008,7 +1010,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -1199,7 +1202,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
