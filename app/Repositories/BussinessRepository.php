@@ -3451,7 +3451,12 @@ class BussinessRepository implements IBussinessInterface
 
             //chứng chỉ
             if ($mode_select == 'certificated') {
-                $query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+                //$query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+                //Join theo khun năng lục, vì chứng chỉ hiện tại đã đi theo từng khung năng lực chứ k phải mỗi user chỉ có 1 chứng chỉ như trước nữa
+                $query->leftJoin('student_certificate', function ($join) {
+                    $join->on('tms_user_detail.user_id', '=', 'student_certificate.userid');
+                    $join->on('tms_traninning_users.trainning_id', '=', 'student_certificate.trainning_id');
+                });
                 $select_array[] = 'student_certificate.code';
             }
 
