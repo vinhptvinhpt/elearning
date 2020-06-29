@@ -1186,9 +1186,6 @@ $_SESSION["displayPopup"] = 2; ?>
         }
         <?php } ?>
     }
-
-    )
-    ;
 </script>
 
 </body>
