@@ -436,59 +436,69 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             TmsSelfSection::where('question_id', $tms_self_ques->id)->delete();
 
             if ($type_question == \App\TmsSelfQuestion::GROUP) {
-
                 foreach ($group_sections as $section) {
-                    $tms_section = new TmsSelfSection();
-                    $tms_section->question_id = $tms_self_ques->id;
-                    $tms_section->section_name = $section['sec_name'];
-                    $tms_section->section_des = $section['sec_name'];
-                    $tms_section->save();
+                    if (!empty($section['sec_name'])) {
+                        $tms_section = new TmsSelfSection();
+                        $tms_section->question_id = $tms_self_ques->id;
+                        $tms_section->section_name = $section['sec_name'];
+                        $tms_section->section_des = $section['sec_name'];
+                        $tms_section->save();
 
-                    foreach ($section['lst_child_question'] as $ques) {
-                        $tms_ques_data = new TmsSelfQuestionData();
-                        $tms_ques_data->section_id = $tms_section->id;
-                        $tms_ques_data->content = $ques['content'];
-                        $tms_ques_data->type_question = \App\TmsSelfQuestion::GROUP;
-                        $tms_ques_data->created_by = Auth::user()->id;
-                        $tms_ques_data->save();
+                        foreach ($section['lst_child_question'] as $ques) {
+                            if (!empty($ques['content'])) {
+                                $tms_ques_data = new TmsSelfQuestionData();
+                                $tms_ques_data->section_id = $tms_section->id;
+                                $tms_ques_data->content = $ques['content'];
+                                $tms_ques_data->type_question = \App\TmsSelfQuestion::GROUP;
+                                $tms_ques_data->created_by = Auth::user()->id;
+                                $tms_ques_data->save();
 
-                        foreach ($anwsers as $ans) {
-                            $tms_ans = new TmsSelfQuestionAnswer();
-                            $tms_ans->question_id = $tms_ques_data->id;
-                            $tms_ans->content = $ans['content'];
-                            $tms_ans->point = $ans['point'];
-                            $tms_ans->save();
+                                foreach ($anwsers as $ans) {
+                                    if (!empty($ans['content']) && !empty($ans['point'])) {
+                                        $tms_ans = new TmsSelfQuestionAnswer();
+                                        $tms_ans->question_id = $tms_ques_data->id;
+                                        $tms_ans->content = $ans['content'];
+                                        $tms_ans->point = $ans['point'];
+                                        $tms_ans->save();
+                                    }
+
+                                    usleep(2);
+                                }
+                            }
 
                             usleep(2);
                         }
-                        usleep(2);
                     }
+
                     usleep(2);
                 }
             } else {
                 foreach ($question_childs as $section) {
-                    $tms_section = new TmsSelfSection();
-                    $tms_section->question_id = $tms_self_ques->id;
-                    $tms_section->section_name = $section['content'];
-                    $tms_section->section_des = $section['content'];
-                    $tms_section->save();
+                    if (!empty($section['content'])) {
+                        $tms_section = new TmsSelfSection();
+                        $tms_section->question_id = $tms_self_ques->id;
+                        $tms_section->section_name = $section['content'];
+                        $tms_section->section_des = $section['content'];
+                        $tms_section->save();
 
 
-                    $tms_ques_data = new TmsSelfQuestionData();
-                    $tms_ques_data->section_id = $tms_section->id;
-                    $tms_ques_data->content = $section['content'];
-                    $tms_ques_data->type_question = \App\TmsSelfQuestion::MIN_MAX;
-                    $tms_ques_data->created_by = Auth::user()->id;
-                    $tms_ques_data->save();
+                        $tms_ques_data = new TmsSelfQuestionData();
+                        $tms_ques_data->section_id = $tms_section->id;
+                        $tms_ques_data->content = $section['content'];
+                        $tms_ques_data->type_question = \App\TmsSelfQuestion::MIN_MAX;
+                        $tms_ques_data->created_by = Auth::user()->id;
+                        $tms_ques_data->save();
 
-                    for ($i = $min; $i <= $max; $i++) {
-                        $tms_ans = new TmsSelfQuestionAnswer();
-                        $tms_ans->question_id = $tms_ques_data->id;
-                        $tms_ans->point = $i;
-                        updateAnswerSelfAssessment($tms_ans, $i);
+                        for ($i = $min; $i <= $max; $i++) {
+                            $tms_ans = new TmsSelfQuestionAnswer();
+                            $tms_ans->question_id = $tms_ques_data->id;
+                            $tms_ans->point = $i;
+                            updateAnswerSelfAssessment($tms_ans, $i);
 
-                        usleep(2);
+                            usleep(2);
+                        }
                     }
+
                     usleep(2);
                 }
             }
