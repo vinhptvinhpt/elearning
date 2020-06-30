@@ -317,6 +317,8 @@
                     toastr['error'](current_pos.trans.get('keys.ban_chua_chon_giao_vien'), current_pos.trans.get('keys.loi'));
                     return;
                 }
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 if (this.course_type == 1) {
                     axios.post('/api/course/enrol_user_to_course_concent', {
                         Users: this.userEnrols,
@@ -324,6 +326,7 @@
                         course_id: this.course_id
                     })
                         .then(response => {
+                            loader.fadeOut();
                             if (response.data.status) {
                                 if (response.data.otherData !== '') {
                                     response.data.otherData = response.data.otherData.substring(0, response.data.otherData.length - 2);
@@ -338,6 +341,7 @@
                             }
                         })
                         .catch(error => {
+                            loader.fadeOut();
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 } else {
@@ -347,6 +351,7 @@
                         course_id: this.course_id
                     })
                         .then(response => {
+                            loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                                 current_pos.getCurrentUserEnrol(current_pos.current_page);
@@ -356,6 +361,7 @@
                             }
                         })
                         .catch(error => {
+                            loader.fadeOut();
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 }
@@ -366,12 +372,15 @@
                     toastr['error'](current_pos.trans.get('keys.ban_chua_chon_giao_vien'), current_pos.trans.get('keys.loi'));
                     return;
                 }
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/course/remove_enrol_user_to_course', {
                     Users: this.userRemoveEnrol,
                     role_id: this.role_id,
                     course_id: this.course_id
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                             current_pos.getCurrentUserEnrol(current_pos.current_page);
@@ -381,6 +390,7 @@
                         }
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },

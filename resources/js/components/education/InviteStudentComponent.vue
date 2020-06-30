@@ -367,12 +367,15 @@
           toastr['error'](current_pos.trans.get('keys.ban_chua_chon_nguoi_dung'), current_pos.trans.get('keys.loi'));
           return;
         }
+        let loader = $('.preloader-it');
+        loader.fadeIn();
         axios.post('/api/course/invite_user_to_course', {
           users: this.userEnrols,
           role_id: this.role_id,
           course_id: this.course_id
         })
           .then(response => {
+            loader.fadeOut();
             if(!response.data.send){
               if (response.data.status) {
                 toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
@@ -384,6 +387,7 @@
             }
           })
           .catch(error => {
+            loader.fadeOut();
             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
           });
       },
@@ -393,12 +397,15 @@
           toastr['error'](current_pos.trans.get('keys.ban_chua_chon_nguoi_dung'), current_pos.trans.get('keys.loi'));
           return;
         }
+        let loader = $('.preloader-it');
+        loader.fadeIn();
         axios.post('/api/course/remove_invite_user_to_course', {
           users: this.userRemoveEnrol,
           role_id: this.role_id,
           course_id: this.course_id
         })
           .then(response => {
+            loader.fadeOut();
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
               current_pos.getCurrentUserEnrol(current_pos.current_page);
@@ -408,6 +415,7 @@
             }
           })
           .catch(error => {
+            loader.fadeOut();
             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
           });
       },
