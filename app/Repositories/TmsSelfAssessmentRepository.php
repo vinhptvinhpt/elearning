@@ -685,6 +685,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::GROUP)
                         ->where('self_id', '=', $self_id)
+                        ->where('user_id', '=', Auth::user()->id)
                         ->where('question_parent_id', '=', $gr['ques_parent'])
                         ->where('section_id', '=', $gr['section_id'])->get();
 
@@ -718,6 +719,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 if ($mm['type_ques'] === TmsSelfQuestion::MIN_MAX) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::MIN_MAX)
                         ->where('self_id', '=', $self_id)
+                        ->where('user_id', '=', Auth::user()->id)
                         ->where('question_parent_id', '=', $mm['ques_parent'])
                         ->get();
 
@@ -821,6 +823,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::GROUP)
                         ->where('self_id', '=', $self_id)
+                        ->where('user_id', '=', $user_id)
                         ->where('question_parent_id', '=', $gr['ques_parent'])
                         ->where('section_id', '=', $gr['section_id'])->get();
 
@@ -854,6 +857,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 if ($mm['type_ques'] === TmsSelfQuestion::MIN_MAX) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::MIN_MAX)
                         ->where('self_id', '=', $self_id)
+                        ->where('user_id', '=', $user_id)
                         ->where('question_parent_id', '=', $mm['ques_parent'])
                         ->get();
 
