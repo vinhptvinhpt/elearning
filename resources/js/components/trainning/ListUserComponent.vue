@@ -419,11 +419,14 @@
                     return;
                 }
                 $('button.btn-pdf i').css("display", "inline-block");
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/trainning/addusertotrainning', {
                     Users: this.userTrainning,
                     trainning_id: this.trainning_id
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             current_pos.getUser(current_pos.current);
@@ -435,9 +438,12 @@
                         $('button.btn-pdf i').css("display", "none");
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         $('button.btn-pdf i').css("display", "none");
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
+                //reset selected array
+                this.userTrainning = [];
             },
 
             selectAll: function () {

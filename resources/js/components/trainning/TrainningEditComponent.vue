@@ -654,11 +654,14 @@
           toastr['warning'](this.trans.get('keys.ban_chua_chon_khoa_hoc'), this.trans.get('keys.thong_bao'));
           return;
         }
+        let loader = $('.preloader-it');
+        loader.fadeIn();
         axios.post('/api/trainning/addcoursetotrainning', {
           lst_course: this.userEnrols,
           trainning_id: this.id
         })
           .then(response => {
+            loader.fadeOut();
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
               $('#btnFilter1').trigger('click');
@@ -668,19 +671,24 @@
             }
           })
           .catch(error => {
+            loader.fadeOut();
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
+        this.userEnrols = [];
       },
       removeEnrolUserToCourse() {
         if (this.userRemoveEnrol.length === 0) {
           toastr['warning'](this.trans.get('keys.ban_chua_chon_khoa_hoc'), this.trans.get('keys.thong_bao'));
           return;
         }
+        let loader = $('.preloader-it');
+        loader.fadeIn();
         axios.post('/api/trainning/removecoursetotrainning', {
           lst_course: this.userRemoveEnrol,
           trainning_id: this.id
         })
           .then(response => {
+            loader.fadeOut();
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
               $('#btnFilter1').trigger('click');
@@ -690,9 +698,10 @@
             }
           })
           .catch(error => {
+            loader.fadeOut();
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
-
+        this.userRemoveEnrol = [];
       },
       goBack() {
         if (this.trainning.style === 1) {
