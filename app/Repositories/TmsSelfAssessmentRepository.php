@@ -325,11 +325,11 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                                 $tms_ques_data->save();
 
                                 foreach ($anwsers as $ans) {
-                                    if (!empty($ans['content']) && !empty($ans['point'])) {
+                                    if (!empty($ans['content'])) {
                                         $tms_ans = new TmsSelfQuestionAnswer();
                                         $tms_ans->question_id = $tms_ques_data->id;
                                         $tms_ans->content = $ans['content'];
-                                        $tms_ans->point = $ans['point'];
+                                        $tms_ans->point = empty($ans['point']) ? 0 : $ans['point'];
                                         $tms_ans->save();
                                     }
 
@@ -390,6 +390,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
 
     public function updateQuestionSelfAssessment($id, Request $request)
     {
+        \Log::info($request);
         // TODO: Implement updateQuestionSelfAssessment() method.
         $response = new ResponseModel();
         try {
@@ -454,11 +455,11 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                                 $tms_ques_data->save();
 
                                 foreach ($anwsers as $ans) {
-                                    if (!empty($ans['content']) && !empty($ans['point'])) {
+                                    if (!empty($ans['content'])) {
                                         $tms_ans = new TmsSelfQuestionAnswer();
                                         $tms_ans->question_id = $tms_ques_data->id;
                                         $tms_ans->content = $ans['content'];
-                                        $tms_ans->point = $ans['point'];
+                                        $tms_ans->point = empty($ans['point']) ? 0 : $ans['point'];
                                         $tms_ans->save();
                                     }
 

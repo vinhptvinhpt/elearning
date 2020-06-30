@@ -1,7 +1,7 @@
 <template>
     <div class="col-12 form-group">
         <label style="font-weight: bold;">{{trans.get('keys.section')}}
-            {{section.index}}</label>
+            {{section.index}}<label style="color: red;">*</label></label>
         <button :title="trans.get('keys.xoa')" data-toggle="modal" data-target="#delete-ph-modal" style="float: right;"
                 @click="deleteSection()"
                 class="btn btn-sm btn-icon btn-danger btn-icon-circle btn-icon-style-2">
