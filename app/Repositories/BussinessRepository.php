@@ -690,9 +690,11 @@ class BussinessRepository implements IBussinessInterface
     {
         $id = is_numeric($id) ? $id : 0;
 
-        $course_info = DB::table('mdl_course')
+        $course_info = MdlCourse::query()
+            //->with('lastEdit')
             ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
             ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            //->join('mdl_logstore_standard_log', 'mdl_course_categories.id', '=', 'mdl_course.category')
             ->select(
                 'mdl_course.id as id',
                 'mdl_course.fullname as fullname',
@@ -715,6 +717,43 @@ class BussinessRepository implements IBussinessInterface
             ->where('mdl_course.id', '=', $id)->first();
 
         return response()->json($course_info);
+    }
+
+    public function apiGetCourseLastUpdate($id)
+    {
+        $id = is_numeric($id) ? $id : 0;
+        $last_update = null;
+        if ($id != 0) {
+            $log_latest = MdlLogstoreStandardLog::with('userDetail')
+                //->where('mdl_logstore_standard_log.target', 'course') //course only, comment out for module and section fetch
+                ->select(
+                    DB::raw('"education" as type'),
+                    'mdl_logstore_standard_log.action',
+                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
+                    'mdl_course.shortname as course_name',
+                    'mdl_logstore_standard_log.contextinstanceid as course_id',
+                    'mdl_logstore_standard_log.userid',
+                    'mdl_logstore_standard_log.target'
+                )
+                ->whereHas('userDetail')
+                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
+                //->where('mdl_logstore_standard_log.contextlevel', 50) //course only
+                //->where('mdl_logstore_standard_log.contextinstanceid', $id) //course only
+
+                //new, get all activity for course and its modules, sections etc
+                ->where('courseid', $id)
+                ->where('mdl_logstore_standard_log.action', "<>", 'viewed') //update nên k tính viewed
+                ->orderBy('mdl_logstore_standard_log.timecreated','desc')
+                ->first();
+
+            if (isset($log_latest)) {
+                  $last_update = $log_latest;
+//                $last_update['user_id'] = $log_latest->userid;
+//                $last_update['user_fullname'] = $log_latest->user_detail ? $log_latest->user_detail->fullname : '';
+//                $last_update['updated_at'] = $log_latest->created_at;
+            }
+        }
+        return response()->json(['last' => $last_update]);
     }
 
     //api xóa khóa học
@@ -1505,8 +1544,8 @@ class BussinessRepository implements IBussinessInterface
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $organization_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                            UNION 
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
                             ) as org_tp';
 
@@ -1648,8 +1687,8 @@ class BussinessRepository implements IBussinessInterface
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $organization_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                            UNION 
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
                             ) as org_tp';
 

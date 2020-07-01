@@ -465,7 +465,7 @@
             },
             remove_trainning(id, user_id, tr_id) {
                 let current_pos = this;
-                console.log('trainning_id: ' + tr_id);
+                //console.log('trainning_id: ' + tr_id);
                 swal({
                     title: current_pos.trans.get('keys.thong_bao'),
                     text: current_pos.trans.get('keys.ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay'),
