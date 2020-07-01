@@ -255,15 +255,14 @@
     }
 
     .detail-list li a {
-        background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
-        background-repeat: no-repeat;
-        background-position: left;
-        padding-left: 4%;
         font-family: Roboto-Regular;
         font-size: 14px;
         letter-spacing: 0.99px;
         color: #333;
-        background-size: 20px 16px;
+    }
+
+    .detail-list li.li-module-done a, .detail-list li.li-module-done i{
+        color: #00A426;
     }
 
     .detail-btn {
@@ -935,11 +934,21 @@ if ($course->numofmodule == 0) {
                             <div class="unit" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
                                 <div class="unit__progress">
-                                    <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    <div class="unit__icon">
+                                        <?php $modulCompletion = array_sum(array_map(function($item) {
+                                            return $item['iscompletion'];
+                                        }, $unit['modules']));
+                                        $totalModul = count($unit['modules']);
+                                        if($totalModul > 0 && $modulCompletion == $totalModul) {?>
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        <?php } else { ?>
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        <?php } ?>
                                     </div>
                                     <div class="unit__progress-number">
-                                        <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span
-                                                class="percent-get">__</span>/<span class="percent-total">100</span>
+                                        <!--                                                class="percent-get">--><?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
+                                        <p><i class="fa fa-check" aria-hidden="true"></i> <span
+                                                class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul;?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -958,9 +967,15 @@ if ($course->numofmodule == 0) {
                                 <?php if ($unit['modules'] && !empty($unit['modules'])) {
                                     foreach ($unit['modules'] as $module) { ?>
                                         <ul class="detail-list">
-                                            <li>
-                                                <a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
-                                            </li>
+                                            <?php if($module['iscompletion'] == 1){ ?>
+                                                <li class="li-module-done"> <i class="fa fa-check" aria-hidden="true"></i>
+                                                    <a class="module-done" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                </li>
+                                            <?php } else {?>
+                                                <li>  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                                    <a class="module-notyet" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                </li>
+                                            <?php }?>
                                         </ul>
                                     <?php }
                                 } else { ?>
