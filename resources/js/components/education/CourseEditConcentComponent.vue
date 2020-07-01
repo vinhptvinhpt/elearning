@@ -35,7 +35,17 @@
                         <img :src="course.avatar" class="image"/>
                       </div>
                       <div class="card-body">
-                        <input type="file" ref="file" name="file" class="dropify"/>
+                        <p>
+                          <input type="file" ref="file" name="file" class="dropify"/>
+                        </p>
+                        <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
+                          {{trans.get('keys.cap_nhat_lan_cuoi')}}
+                          <hr>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span>
+                          </p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span
+                            class="last-edited-text">{{last_update.updated_at}}</span></p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -218,7 +228,8 @@
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
           filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
         },
-        course_type: 1
+        course_type: 1,
+        last_update: {}
       }
     },
     methods: {
@@ -226,7 +237,7 @@
         return this.slugs.indexOf(permissionName) !== -1;
       },
       getCategories() {
-        axios.post('/api/courses/get_list_category')
+        axios.post('/api/courses/get_list_category_edit')
           .then(response => {
             this.categories = response.data;
           })
@@ -239,40 +250,17 @@
         axios.get('/api/courses/get_course_detail/' + this.course_id)
           .then(response => {
             this.course = response.data;
-
             if (response.data.access_ip) {
               var js_ip = JSON.parse(response.data.access_ip);
               js_ip['list_access_ip'].forEach(item => this.string_ip += item + ', ');
               this.string_ip = this.string_ip.substr(0, this.string_ip.length - 2);
             }
-
-            var startdate = new Date(response.data.startdate * 1000);
-
-            var ten = function (i) {
-              return (i < 10 ? '0' : '') + i;
-            };
-            var YYYY = startdate.getFullYear();
-            var MM = ten(startdate.getMonth() + 1);
-            var DD = ten(startdate.getDate());
-            var HH = ten(startdate.getHours());
-            var II = ten(startdate.getMinutes());
-
-            this.course.startdate = YYYY + '-' + MM + '-' + DD + 'T' + HH + ':' + II;
-
+            this.course.startdate = this.parseDateFromTimestamp(response.data.startdate);
             if (response.data.enddate) {
-              var endate = new Date(response.data.enddate * 1000);
-
-              var YYYY_end = endate.getFullYear();
-              var MM_end = ten(endate.getMonth() + 1);
-              var DD_end = ten(endate.getDate());
-              var HH_end = ten(endate.getHours());
-              var II_end = ten(endate.getMinutes());
-
-              this.course.enddate = YYYY_end + '-' + MM_end + '-' + DD_end + 'T' + HH_end + ':' + II_end;
+              this.course.enddate = this.parseDateFromTimestamp(response.data.enddate);
             } else {
               this.course.enddate = "";
             }
-
             this.course.pass_score = Math.floor(response.data.pass_score);
 
           })
@@ -281,7 +269,33 @@
           });
 
       },
+      getLastUpdated() {
+        axios.get('/api/courses/get_last_update/' + this.course_id)
+          .then(response => {
+            if (response.data.last) {
+              this.last_update.user_id = response.data.last.userid;
+              this.last_update.user_fullname = response.data.last.user_detail.fullname;
+              this.last_update.updated_at = response.data.last.created_at;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      },
+      parseDateFromTimestamp(timestamp) {
+        let ten = function (i) {
+          return (i < 10 ? '0' : '') + i;
+        };
+        let jstimestamp = new Date(timestamp * 1000);
+        let YYYY = jstimestamp.getFullYear();
+        let MM = ten(jstimestamp.getMonth() + 1);
+        let DD = ten(jstimestamp.getDate());
+        let HH = ten(jstimestamp.getHours());
+        let II = ten(jstimestamp.getMinutes());
+        return YYYY + '-' + MM + '-' + DD + 'T' + HH + ':' + II;
+      },
       editCourse() {
+
         if (!this.course.shortname) {
           $('.shortname_required').show();
           return;
@@ -373,6 +387,7 @@
     mounted() {
       // this.getCategories();
       this.getCourseDetail();
+      this.getLastUpdated();
     },
     updated() {
       this.setFileInput();

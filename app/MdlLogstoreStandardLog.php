@@ -11,4 +11,8 @@ class MdlLogstoreStandardLog extends Model
     public function user(){
         return $this->hasOne('\App\MdlUser', 'id','userid');
     }
+
+    public function userDetail(){
+        return $this->hasOne('\App\TmsUserDetail', 'user_id','userid');
+    }
 }

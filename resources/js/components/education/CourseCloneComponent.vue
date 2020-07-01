@@ -399,12 +399,16 @@
                 this.formData.append('access_ip', this.string_ip);
 
                 let current_pos = this;
+                let loader = $('.preloader-it');
+                loader.fadeIn();
+
                 axios.post('/api/courses/clone', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             //khóa học tập trung
@@ -417,6 +421,7 @@
                         }
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },

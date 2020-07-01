@@ -318,7 +318,7 @@
               return this.slugs.indexOf(permissionName) !== -1;
             },
             checkEditPermission(role, row_role) {
-                if (role === 'admin') {
+                if (role === 'admin' || role === 'root' || this.slug_can('tms-system-administrator-grant')) {
                   return true
                 }
                 if (role === 'manager') {
