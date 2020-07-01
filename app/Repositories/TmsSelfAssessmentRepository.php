@@ -390,7 +390,6 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
 
     public function updateQuestionSelfAssessment($id, Request $request)
     {
-        \Log::info($request);
         // TODO: Implement updateQuestionSelfAssessment() method.
         $response = new ResponseModel();
         try {
