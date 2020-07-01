@@ -81,7 +81,7 @@ class BridgeController extends Controller
         }
 
         if ($view == 'ImportIndex') {
-            $response['file_url'] = asset('files/easia_template.xlsx');
+            $response['file_url'] = asset('files/import_data.xlsx');
         }
 
         if ($view == 'UserMarketIndex') {
