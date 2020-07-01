@@ -331,7 +331,7 @@
                 swal({
                     title: this.trans.get('keys.thong_bao'),
                     text: this.trans.get('keys.press_ok'),
-                    type: "success",
+                    type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: false,
                     showLoaderOnConfirm: true

@@ -444,6 +444,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         background-color: <?=$_SESSION["color"]?>;
         display: flex;
         width: 100%;
+        padding: 3%;
     }
 
     .avatar {
@@ -462,9 +463,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         /*margin-top: 15%;*/
         /*margin-bottom: 15%;*/
         border-radius: 50%;
-        height: 80%;
-        width: 60%;
-        margin-top: 10%;
+        /*height: 80%;*/
+        /*width: 60%;*/
+        width: 50px;
+        height: 50px;
+        /*margin-top: 10%;*/
     }
 
     .info {
@@ -473,8 +476,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .info-user_info {
-        padding: 10% 1% 1% 10% !important;
-        width: 100% !important;
+        /*padding: 10% 1% 1% 10% !important;*/
+        /*width: 100% !important;*/
     }
 
     .info-user_info p {
@@ -733,9 +736,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             width: 165px !important;
             bottom: 23%;
         }
-        .avatar img{
-            width: 50%;
-        }
     }
     @media screen and (max-width: 1024px) {
         .block-color {
@@ -754,18 +754,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             height: 65px !important;
             bottom: 28% !important;
         }
-        .avatar img{
-            width: 100%;
-        }
     }
 
     @media screen and (max-width: 425px) {
         .block-color{
             bottom: 48% !important;
             width: 49px !important;
-        }
-        .avatar img{
-            width: 50%;
         }
     }
 </style>
