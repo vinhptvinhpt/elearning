@@ -83,6 +83,14 @@ class BackgroundController extends Controller
             'chief'
         );
 
+        $base_level_orgs = array(
+            'EA' => 'Easia Travel',
+            'EV' => 'Exotic Voyages',
+            'BG' => 'Begodi',
+            'AV' => 'Avana',
+            'TVE' => 'TVE'
+        );
+
         $countries = TmsUserDetail::country;
 
         $from = $request->input('from');
@@ -110,7 +118,6 @@ class BackgroundController extends Controller
 
         foreach ($files as $file_path) {
 
-
             if ($env == 'background') {
                 //check file is xlsx, xls
                 $extension = pathinfo($file_path, PATHINFO_EXTENSION);
@@ -123,33 +130,51 @@ class BackgroundController extends Controller
                 $file_name = pathinfo($file_path, PATHINFO_FILENAME);
             } else {
                 /* @var $file_path UploadedFile */
-                $file_name = $file_path->getClientOriginalName();
+                $full_file_name = $file_path->getClientOriginalName();
+                $file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
             }
 
-            $base_level_organization = '';
+//            $base_level_organization = '';
+//            if (strpos(strtolower($file_name), 'easia') !== false) {
+//                $base_level_organization  = 'easia';
+//                $base_level_organization_name  = 'Easia';
+//                $base_level_organization_code  = 'EA';
+//            } elseif (strpos(strtolower($file_name), 'begodi') !== false) {
+//                $base_level_organization  = 'begodi';
+//                $base_level_organization_name  = 'Begodi';
+//                $base_level_organization_code  = 'BG';
+//            } elseif (strpos(strtolower($file_name), 'avana') !== false) {
+//                $base_level_organization  = 'avana';
+//                $base_level_organization_name  = 'Avana';
+//                $base_level_organization_code  = 'AV';
+//            } elseif (strpos(strtolower($file_name), 'exotic') !== false) {
+//                $base_level_organization  = 'exotic';
+//                $base_level_organization_name  = 'Exotic Voyages';
+//                $base_level_organization_code  = 'EV';
+//            }  elseif (strpos(strtolower($file_name), 'tve') !== false) {
+//                $base_level_organization  = 'tve';
+//                $base_level_organization_name  = 'TVE';
+//                $base_level_organization_code  = 'TVE';
+//            } else {
+//                if ($env == 'cms') {
+//                    return response()->json(self::status_message('error', 'Organization mismatch'));
+//                }
+//                echo "Organization mismatch $file_name";
+//                continue;
+//            }
 
-            if (strpos(strtolower($file_name), 'easia') !== false) {
-                $base_level_organization  = 'easia';
-            } elseif (strpos(strtolower($file_name), 'begodi') !== false) {
-                $base_level_organization  = 'begodi';
-            } elseif (strpos(strtolower($file_name), 'avana') !== false) {
-                $base_level_organization  = 'avana';
-            } elseif (strpos(strtolower($file_name), 'exotic') !== false) {
-                $base_level_organization  = 'exotic';
-            }
-
-            if (strlen($base_level_organization) != 0) {
-                $base_organization = TmsOrganization::firstOrCreate([
-                    'code' => strtoupper($base_level_organization),
-                    'name' => ucwords($base_level_organization),
-                    'level' => 1
-                    ]);
-            } else {
-                continue;
-            }
+//            if (strlen($base_level_organization) != 0) {
+//                $base_organization = TmsOrganization::firstOrCreate([
+//                    'code' => $base_level_organization_code, //strtoupper($base_level_organization),
+//                    'name' => $base_level_organization_name, //ucwords($base_level_organization),
+//                    'level' => 1
+//                    ]);
+//            } else {
+//                continue;
+//            }
 
 
-            $base_level_id = $base_organization->id;
+//            $base_level_id = $base_organization->id;
             $base_level = 1;
 
             $list_uploaded = (new DataImport())->toArray($file_path, '', '');
@@ -163,6 +188,7 @@ class BackgroundController extends Controller
 
                 $content = array();
                 $status = true;
+                $base_level_id = 0;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -171,9 +197,22 @@ class BackgroundController extends Controller
                     continue;
                 }
 
-                $position_name = $user[6];
-                $city =  $user[7]; //office name
-                $country = $user[8]; //country name
+                $base_level_organization_code = $user[7];
+
+                if (strlen($base_level_organization_code) != 0 && array_key_exists($base_level_organization_code, $base_level_orgs)) {
+                    $base_organization = TmsOrganization::firstOrCreate([
+                        'code' => $base_level_organization_code, //strtoupper($base_level_organization),
+                        'name' => $base_level_orgs[$base_level_organization_code], //ucwords($base_level_organization),
+                        'level' => $base_level
+                    ]);
+                    $base_level_id = $base_organization->id;
+                } else {
+                    $content[] = 'Organization mismatch';
+                }
+
+                $position_name = $user[8];
+                $city =  $user[9]; //office name
+                $country = $user[10]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);
                     $country = $country_code;
@@ -201,20 +240,25 @@ class BackgroundController extends Controller
 
                 //Check / create department
                 $department_name = $user[5];
-                if (strlen($department_name) == 0) {
-                    $content[] = 'Department is missing';
+                $department_code = $user[6];
+
+                if (strlen($department_name) == 0 || strlen($department_code) == 0) {
+                    $content[] = 'Department info is missing';
                 } else {
-                    $organization = TmsOrganization::firstOrCreate([
-                        'code' => strtoupper($base_level_organization . "-" . $department_name),
-                        'name' => ucwords($base_level_organization) . "-" . $department_name,
-                        'parent_id' => $base_level_id,
-                        'level' => $base_level + 1
-                    ]);
+                    if (empty($content) && $base_level_id != 0) {
+                        $organization = TmsOrganization::firstOrCreate([
+                            'code' => strtoupper($base_level_organization_code . "-" . $department_code), //$department_code,//strtoupper($base_level_organization . "-" . $department_name),
+                            'parent_id' => $base_level_id,
+                            'level' => $base_level + 1
+                        ], [
+                            'name' => $department_name,//ucwords($base_level_organization) . "-" . $department_name,
+                        ]);
+                    }
                 }
 
                 //Validate required fields
                 //email
-                $email = trim($user[28]);
+                $email = trim($user[30]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -241,18 +285,18 @@ class BackgroundController extends Controller
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[20];
+                $personal_id = $user[22];
                 if (strlen($personal_id) == 0) {
                     $content[] = 'Personal id is missing';
                 }
 
-                $address = $user[19];
-                $phone = self::preparePhoneNo($user[26]);
-                $phone2 = self::preparePhoneNo($user[27]);
+                $address = $user[21];
+                $phone = self::preparePhoneNo($user[28]);
+                $phone2 = self::preparePhoneNo($user[29]);
 
-                $skype = $user[29];
+                $skype = $user[31];
 
-                $gender = $user[14];
+                $gender = $user[16];
                 if (strtolower($gender) == 'nam') {
                     $gender = 1;
                 } elseif (strtolower($gender) == 'nữ') {
@@ -262,22 +306,22 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                if (strlen($user[10]) == 0 || strlen($user[11]) == 0 || strlen($user[12]) == 0) {
+                if (strlen($user[12]) == 0 || strlen($user[13]) == 0 || strlen($user[14]) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[10], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[11], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[12];
+                    $dob_date = str_pad($user[12], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[13], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[14];
 
                     $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
                     $dob = strtotime($dob_string);
                 }
 
                 $start_time = "";
-                if (strlen($user[16]) == 0 || strlen($user[17]) == 0 || strlen($user[18]) == 0) {
-                    $start_date = str_pad($user[16], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[17], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[18];
+                if (strlen($user[18]) == 0 || strlen($user[19]) == 0 || strlen($user[20]) == 0) {
+                    $start_date = str_pad($user[18], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[19], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[20];
                     $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
                     $start_time = strtotime($start_time_string);
                 }
