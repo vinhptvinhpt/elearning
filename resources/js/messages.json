@@ -970,7 +970,10 @@
     "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "If you don't select role in group (Manager/Leader/Executive), user will be auto removed from organization",
     "chon_hanh_dong": "Select action",
     "nhap_ma_self": "Input self assessment code",
-    "nhap_ten_self": "Input self assessment name"
+    "nhap_ten_self": "Input self assessment name",
+    "giao_dien_trinh_bay_self": "Self Assessment layout",
+    "them_cau_hoi_vao_self": "Add question to Self Assessment",
+    "sua_thong_tin_self": "Edit"
   },
   "vi.keys": {
     "language": "",
@@ -1935,6 +1938,9 @@
     "neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc": "Nếu không chọn quyền trong nhóm (Manager/Leader/Executive), người dùng sẽ tự động bị loại ra khỏi tổ chức",
     "chon_hanh_dong": "Chọn hành động",
     "nhap_ma_self": "Nhập mã",
-    "nhap_ten_self": "Nhập tên"
+    "nhap_ten_self": "Nhập tên",
+    "giao_dien_trinh_bay_self": "Giao diện EQ",
+    "them_cau_hoi_vao_self": "Thêm câu hỏi",
+    "sua_thong_tin_self": "Sửa"
   }
 }
