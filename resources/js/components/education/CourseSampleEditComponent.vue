@@ -1,6 +1,4 @@
 <template>
-
-
   <div class="container-fluid mt-15">
     <div class="row">
       <div class="col">
@@ -10,12 +8,10 @@
               <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
             </li>
             <li class="breadcrumb-item">
-              <router-link to="/tms/education/course/course_sample">{{ trans.get('keys.thu_vien_khoa_hoc')
-                }}
+              <router-link to="/tms/education/course/course_sample">{{ trans.get('keys.thu_vien_khoa_hoc') }}
               </router-link>
             </li>
-            <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_thu_vien_khoa_hoc')
-              }}
+            <li class="breadcrumb-item active">{{ trans.get('keys.chinh_sua_thong_tin_thu_vien_khoa_hoc') }}
             </li>
           </ol>
         </nav>
@@ -38,7 +34,15 @@
                         <img :src="course.avatar" class="image"/>
                       </div>
                       <div class="card-body">
-                        <input type="file" ref="file" name="file" class="dropify"/>
+                        <p>
+                          <input type="file" ref="file" name="file" class="dropify"/>
+                        </p>
+                        <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
+                          {{trans.get('keys.cap_nhat_lan_cuoi')}}
+                          <hr>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span></p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span class="last-edited-text">{{last_update.updated_at}}</span></p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -160,6 +164,7 @@
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
           filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
         },
+        last_update: {}
       }
     },
     methods: {
@@ -167,13 +172,25 @@
         axios.get('/api/courses/get_course_detail/' + this.course_id)
           .then(response => {
             this.course = response.data;
-
             this.course.pass_score = Math.floor(response.data.pass_score);
           })
           .catch(error => {
             console.log(error.response.data);
           });
 
+      },
+      getLastUpdated() {
+        axios.get('/api/courses/get_last_update/' + this.course_id)
+          .then(response => {
+            if (response.data.last) {
+              this.last_update.user_id = response.data.last.userid;
+              this.last_update.user_fullname = response.data.last.user_detail.fullname;
+              this.last_update.updated_at = response.data.last.created_at;
+            }
+          })
+          .catch(error => {
+            console.log(error);
+          });
       },
       editCourse() {
         if (!this.course.shortname) {
@@ -241,6 +258,7 @@
     },
     mounted() {
       this.getCourseDetail();
+      this.getLastUpdated();
     },
     updated() {
       this.setFileInput();

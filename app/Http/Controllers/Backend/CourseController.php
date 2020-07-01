@@ -398,6 +398,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiGetCourseDetail($id);
     }
 
+    public function apiGetCourseLastUpdate($id)
+    {
+        return $this->bussinessRepository->apiGetCourseLastUpdate($id);
+    }
+
     //api lấy danh sách danh mục khóa học
     //hiển hị dưới view create và edit course
     //ThoLD (24/08/2019)
