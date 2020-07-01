@@ -187,19 +187,22 @@
                     })
                     .then(response => {
                         loader.fadeOut();
-                        toastr[response.data.status](response.data.message, this.trans.get('keys.' + response.data.status));
-                        //Download file
-                        let file_name = response.data.data.result_file;
-                        let a = $("<a>")
-                          .prop("href", "/api/excel/download/" + file_name)
-                          .appendTo("body");
-                        a[0].click();
-                        a.remove();
-
-                        $('button.hasLoading').removeClass('loadding');
-                        $('.logUpload').show();
-                        $('#btnFilter').trigger('click');
+                          if (response.data) {
+                            toastr[response.data.status](response.data.message, this.trans.get('keys.' + response.data.status));
+                            //Download file
+                            if (response.data.data.result_file) {
+                              let file_name = response.data.data.result_file;
+                              let a = $("<a>")
+                                .prop("href", "/api/excel/download/" + file_name)
+                                .appendTo("body");
+                              a[0].click();
+                              a.remove();
+                            }
+                            $('button.hasLoading').removeClass('loadding');
+                            $('.logUpload').show();
+                            $('#btnFilter').trigger('click');
                             //roam_message('success','Lỗi hệ thống. Thao tác thất bại');
+                          }
                         })
                     .catch(error => {
                         loader.fadeOut();
