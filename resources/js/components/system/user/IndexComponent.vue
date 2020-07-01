@@ -349,7 +349,7 @@
         swal({
           title: this.trans.get('keys.ban_muon_chuyen_trang_thai_lam_viec'),
           text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-          type: "success",
+          type: "warning",
           showCancelButton: true,
           closeOnConfirm: false,
           showLoaderOnConfirm: true
