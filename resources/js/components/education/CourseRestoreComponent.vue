@@ -217,17 +217,18 @@
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    location.reload();
+                                    current_pos.getCourses();
+                                    //location.reload();
                                 });
                             } else {
                                 swal({
                                     title: response.data.message,
                                     type: "error",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 });
                             }
@@ -262,17 +263,18 @@
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    location.reload();
+                                    current_pos.getCourses();
+                                    //location.reload();
                                 });
                             } else {
                                 swal({
                                     title: response.data.message,
                                     type: "error",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 });
                             }
