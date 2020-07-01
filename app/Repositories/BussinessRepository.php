@@ -1470,6 +1470,8 @@ class BussinessRepository implements IBussinessInterface
 //
 //            //call api write log
 //            $result = callAPI('POST', $url, $data_res, false, '');
+
+
             $course = MdlCourse::findOrFail($id);
             $course->deleted = 0;
             //nếu là thư viện khóa học => Cập nhật cả trong khung năng lực tms_trainning_courses vì
@@ -1482,6 +1484,40 @@ class BussinessRepository implements IBussinessInterface
             $result = 1;
 
             if ($result == 1) {
+                $contextData = MdlContext::query();
+                $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
+                $contextData = $contextData->where('instanceid', '=', $id);
+                $contextData = $contextData->orderBy('id', 'desc')->first();
+
+                if ($contextData) {
+                    //Write log to mdl_logstore_standard_log
+                    $new_event = new MdlLogstoreStandardLog();
+                    $new_event->eventname = '\core\event\course_restored';
+                    $new_event->component = 'core';
+                    $new_event->action = 'restored';
+                    $new_event->target = 'course';
+                    $new_event->objecttable = 'course';
+                    $new_event->objectid = $id;
+                    $new_event->crud = 'c';
+                    $new_event->edulevel = 1;
+                    $new_event->contextid = $contextData->id;
+                    $new_event->contextlevel = \App\MdlUser::CONTEXT_COURSE;
+                    $new_event->contextinstanceid = $id;
+                    $new_event->userid = Auth::id();
+                    $new_event->courseid = $id;
+                    $new_event->other = json_encode([
+                        "type"=>"course",
+                        "target"=> 1,
+                        "mode"=> 20,
+                        "operation" => "restore",
+                        "samesite" => true,
+                        "originalcourseid"=> "596"
+                    ]);
+                    $new_event->timecreated = time();
+                    $new_event->origin = "restore";
+                    $new_event->ip = '192.168.1.1';
+                    $new_event->save();
+                }
                 $response->status = true;
                 $response->message = __('thao_tac_thanh_cong');
             } else {
