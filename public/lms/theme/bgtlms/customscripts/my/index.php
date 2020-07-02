@@ -122,7 +122,7 @@ $_SESSION["totalCourse"] = count($courses);
 $organization_id = 2;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-
+$organizationCode = "BG";
 switch ($organizationCode) {
     case "EA":
         {
@@ -147,7 +147,7 @@ switch ($organizationCode) {
     case "BG":
         {
             $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#FFFFFF';
+            $_SESSION["color"] = '#333';
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
