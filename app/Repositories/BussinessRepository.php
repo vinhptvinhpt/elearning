@@ -829,7 +829,7 @@ class BussinessRepository implements IBussinessInterface
                     'app_key' => $key_app,
                     'courseid' => $course->id,
                     'action' => 'delete',
-                    'description' => json_encode($course),
+                    //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
                     'userid' => $user_id
                 );
 

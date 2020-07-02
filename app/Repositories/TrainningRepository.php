@@ -833,7 +833,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $data = DB::table('mdl_user as mu')
                 ->leftJoin($leftJoin, 'ttpu.user_id', '=', 'mu.id')
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
-                ->where('mu.active', '=', 0)
+                //->where('mu.active', '=', 0)
+                ->where('mu.deleted', '=', 0)
                 ->whereNull('ttpu.trainning_id')
                 ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 

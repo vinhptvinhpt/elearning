@@ -246,7 +246,7 @@ class BackgroundController extends Controller
                     $content[] = 'Department info is missing';
                 } else {
                     if (empty($content) && $base_level_id != 0) {
-                        $organization = TmsOrganization::firstOrCreate([
+                        $organization = TmsOrganization::updateOrCreate([
                             'code' => strtoupper($base_level_organization_code . "-" . $department_code), //$department_code,//strtoupper($base_level_organization . "-" . $department_name),
                             'parent_id' => $base_level_id,
                             'level' => $base_level + 1
@@ -286,9 +286,10 @@ class BackgroundController extends Controller
                 }
                 //cmtnd
                 $personal_id = $user[22];
-                if (strlen($personal_id) == 0) {
-                    $content[] = 'Personal id is missing';
-                }
+                //Skip check missing
+//                if (strlen($personal_id) == 0) {
+//                    $content[] = 'Personal id is missing';
+//                }
 
                 $address = $user[21];
                 $phone = self::preparePhoneNo($user[28]);
@@ -591,12 +592,12 @@ class BackgroundController extends Controller
         try {
 
             //Check cmtnd
-            $user_detail = TmsUserDetail::query()
-                ->where('cmtnd', $personal_id)
-                ->first();
-            if (isset($user_detail)) {
-                return 'Can not create user because Personal ID is used by another user ' . $user_detail->fullname;
-            }
+//            $user_detail = TmsUserDetail::query()
+//                ->where('cmtnd', $personal_id)
+//                ->first();
+//            if (isset($user_detail)) {
+//                return 'Can not create user because Personal ID is used by another user ' . $user_detail->fullname;
+//            }
 
             $check = new MdlUser;
             $check->username = $username;
