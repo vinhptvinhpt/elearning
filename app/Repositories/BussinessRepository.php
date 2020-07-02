@@ -129,7 +129,11 @@ class BussinessRepository implements IBussinessInterface
                 ->where('mdl_logstore_standard_log.contextlevel', 50);
 
             if ($keyword && strlen($keyword) != 0) {
-                $data = $data->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
+                $data = $data->where(function($query) use ($keyword){
+                    $query->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
+                    $query->orWhere('mdl_course.shortname', 'like', "%{$keyword}%");
+                    $query->orWhere('mdl_course.fullname', 'like', "%{$keyword}%");
+                });
             }
             if (strlen($action) != 0) {
                 $data = $data->where('mdl_logstore_standard_log.action', $action . "d");
@@ -138,8 +142,10 @@ class BussinessRepository implements IBussinessInterface
         } else {
             $data = TmsLog::with('user');
             if ($keyword) {
-                $data = $data->orWhere('url', 'like', "%{$keyword}%");
-                $data = $data->orWhere('info', 'like', "%{$keyword}%");
+                $data = $data->where(function($query) use ($keyword){
+                    $query->where('url', 'like', "%{$keyword}%");
+                    $query->orWhere('info', 'like', "%{$keyword}%");
+                });
             }
             if ($type != '') {
                 $data = $data->where('type', $type);
