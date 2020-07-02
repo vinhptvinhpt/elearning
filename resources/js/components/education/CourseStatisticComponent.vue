@@ -362,7 +362,7 @@
                 <div class="row">
                     <div class="col-12">
                         <section class="hk-sec-wrapper">
-                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_tai_lieu_trong_khoa_hoc')}}</h5>
+                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_module_log')}}</h5>
                             <label style="font-size: 12px;">{{trans.get('keys.chon_loai_hoc_lieu_de_hien_thi_danh_sach_tai_lieu_theo_loai_hoc_lieu_duoc_chon')}}</label>
                             <div class="row">
                                 <!--                Danh sách module trong course -->
@@ -393,7 +393,7 @@
                                 </div>
 
                                 <!--                Danh sách tài liệu -->
-                                <div class="col-sm-8 m-auto">
+                                <div class="col-sm-9 m-auto">
                                     <div class="table-wrap">
                                         <div class="row">
                                             <div class="col-3 dataTables_wrapper">
@@ -413,11 +413,11 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="col-3 dataTables_wrapper">
+                                            <div class="col-2 dataTables_wrapper">
                                                 <div class="dataTables_length">
                                                     <label>{{trans.get('keys.hien_thi')}}
                                                         <select v-model="rowDoc"
-                                                                class="custom-select custom-select-sm form-control form-control-sm"
+                                                                class="custom-select custom-select-sm form-control form-control-sm select_show"
                                                                 @click="getLogCourse(module_id, 1, 'search')">
                                                             <option value="5">5</option>
                                                             <option value="10">10</option>
@@ -427,7 +427,7 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                            <div class="col-6">
+                                            <div class="col-7 dataTables_wrapper_search">
                                                 <div class="d-flex flex-row form-group">
                                                     <input v-model="keywordDoc" type="text"
                                                            class="form-control search_text"
@@ -536,8 +536,31 @@
             },
             convertDateTime(value) {
                 if(value){
-                    var time = new Date(value * 1000);
-                    return time.toLocaleDateString();
+                  // Convert timestamp to milliseconds
+                  var date = new Date(value*1000);
+
+                  // Year
+                  var year = date.getFullYear();
+
+                  // Month
+                  var month = date.getMonth()+1;
+
+                  // Day
+                  var day = date.getDate();
+
+                  // Hours
+                  var hours = "0"+date.getHours();
+
+                  // Minutes
+                  var minutes = "0" + date.getMinutes();
+
+                  // Seconds
+                  var seconds = "0" + date.getSeconds();
+
+                  // Display date time in MM-dd-yyyy h:m:s format
+                  var convdataTime = day + '/'+month+'/'+year+' '+hours.substr(-2) + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
+                  return convdataTime;
+
                 }
                 return "";
             }
@@ -701,5 +724,16 @@
 </script>
 
 <style scoped>
-
+.select_show{
+  width: 60px !important;
+}
+  .dataTables_wrapper{
+    padding: 0;
+  }
+.dataTables_wrapper select.custom-select{
+  width: fit-content;
+}
+  .dataTables_wrapper_search{
+    padding-left: 0;
+  }
 </style>
