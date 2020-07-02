@@ -246,7 +246,7 @@ class BackgroundController extends Controller
                     $content[] = 'Department info is missing';
                 } else {
                     if (empty($content) && $base_level_id != 0) {
-                        $organization = TmsOrganization::firstOrCreate([
+                        $organization = TmsOrganization::updateOrCreate([
                             'code' => strtoupper($base_level_organization_code . "-" . $department_code), //$department_code,//strtoupper($base_level_organization . "-" . $department_name),
                             'parent_id' => $base_level_id,
                             'level' => $base_level + 1
