@@ -146,6 +146,8 @@
 
               //  var editor_data = CKEDITOR.instances.article_ckeditor.getData();
                 let current_pos = this;
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/survey/create', {
                     sur_code: this.sur_code,
                     sur_name: this.sur_name,
@@ -154,7 +156,8 @@
                     description: this.description
                 })
                     .then(response => {
-                            if (response.data.status) {
+                        loader.fadeOut();
+                        if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                                 this.$router.push({
                                     name: 'QuestionCreate',
@@ -166,6 +169,7 @@
                         }
                     )
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 
