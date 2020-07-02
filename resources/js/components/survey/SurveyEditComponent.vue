@@ -176,7 +176,8 @@
                     return;
                 }
                 let current_pos = this;
-
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/survey/edit/' + +this.survey_id, {
                     sur_code: this.survey.code,
                     sur_name: this.survey.name,
@@ -184,6 +185,7 @@
                     enddate: this.survey.enddate,
                     description: this.survey.description
                 }).then(response => {
+                    loader.fadeOut();
                     if (response.data.status) {
                         toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                         this.$router.push({name: 'SurveyIndex'});
@@ -192,6 +194,7 @@
                     }
                 })
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
 

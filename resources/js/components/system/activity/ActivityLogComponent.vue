@@ -212,7 +212,7 @@
                         this.totalPages = response.data.pagination ? response.data.pagination.total : 1;
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             onPageChange() {
