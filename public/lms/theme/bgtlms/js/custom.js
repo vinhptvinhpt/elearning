@@ -153,5 +153,24 @@
             });
         }
 
+        //clear choice
+        $('.qtype_multichoice_clearchoice').click(function(){
+          var getID = $(this).attr('id');
+          var numberOfQuestion = getID.substring(
+            getID.lastIndexOf(":") + 1,
+            getID.lastIndexOf("_")
+          );
+          $('#quiznavbutton'+numberOfQuestion).removeClass('answersaved');
+        });
+
+        //click choice
+      $('.answer input').on('click', function() {
+        var getID = $(this).attr('id');
+        var numberOfQuestion = getID.substring(
+          getID.lastIndexOf(":") + 1,
+          getID.lastIndexOf("_")
+        );
+        $('#quiznavbutton'+numberOfQuestion).addClass('answersaved');
+      });
     });
 })(jQuery);
