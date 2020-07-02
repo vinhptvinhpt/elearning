@@ -976,7 +976,8 @@
         "sua_thong_tin_self": "Edit",
         "cap_nhat_lan_cuoi": "Last update",
         "vao_luc": "At",
-        "nguoi_cap_nhat": "Editor"
+        "nguoi_cap_nhat": "Editor",
+        "danh_sach_module_log": "Modules log"
     },
     "vi.keys": {
         "language": "",
@@ -1947,6 +1948,7 @@
         "sua_thong_tin_self": "Sửa",
         "cap_nhat_lan_cuoi": "Cập nhật lần cuối",
         "vao_luc": "Vào lúc",
-        "nguoi_cap_nhat": "Người cập nhật"
+        "nguoi_cap_nhat": "Người cập nhật",
+        "danh_sach_module_log": "Lịch sử modules"
     }
 }
