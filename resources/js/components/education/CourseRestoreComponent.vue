@@ -207,32 +207,37 @@
                     closeOnConfirm: false,
                     showLoaderOnConfirm: true
                 }, function () {
+                    let loader = $('.preloader-it');
+                    loader.fadeIn();
                     axios.post('/api/courses/restore', {course_id: id, instance_id: instance_id, action: 'restore'})
                         .then(response => {
+                            loader.fadeOut();
                             if (response.data.status) {
                                 swal({
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    location.reload();
+                                    current_pos.getCourses();
+                                    //location.reload();
                                 });
                             } else {
                                 swal({
                                     title: response.data.message,
                                     type: "error",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 });
                             }
 
                         })
                         .catch(error => {
+                            loader.fadeOut();
                             swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error")
-                            console.log(error);
+                            //console.log(error);
                         });
                 });
 
@@ -248,32 +253,37 @@
                     closeOnConfirm: false,
                     showLoaderOnConfirm: true
                 }, function () {
+                    let loader = $('.preloader-it');
+                    loader.fadeIn();
                     axios.post('/api/courses/delete_forever', {course_id: id})
                         .then(response => {
+                            loader.fadeOut();
                             if (response.data.status) {
                                 swal({
                                     title: response.data.message,
                                     type: "success",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    location.reload();
+                                    current_pos.getCourses();
+                                    //location.reload();
                                 });
                             } else {
                                 swal({
                                     title: response.data.message,
                                     type: "error",
                                     showCancelButton: false,
-                                    closeOnConfirm: false,
+                                    closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 });
                             }
 
                         })
                         .catch(error => {
+                            loader.fadeOut();
                             swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error")
-                            console.log(error);
+                            //console.log(error);
                         });
                 });
 

@@ -384,32 +384,34 @@
             },
             addOrganizationToTrainning() {
                 let current_pos = this;
-
                 if (this.organization_id === 0) {
                     toastr['warning'](current_pos.trans.get('keys.chua_chon_cctc'), current_pos.trans.get('keys.thong_bao'));
                     return;
                 }
-
                 $('button.btn-pdf i').css("display", "inline-block");
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/trainning/adduserorganizationtotrainning', {
                     org_id: this.organization_id,
                     trainning_id: this.trainning_id
                 })
-                    .then(response => {
-                        if (response.data.status) {
-                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            current_pos.getUser(current_pos.current);
-                            current_pos.getUserOutTrainning(current_pos.current_out);
-                        } else {
-                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
-                        }
-                        $('button.btn-pdf i').css("display", "none");
-                    })
-                    .catch(error => {
-                        $('button.btn-pdf i').css("display", "none");
-                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
-                    });
-
+                .then(response => {
+                    loader.fadeOut();
+                    if (response.data.status) {
+                        toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                        current_pos.getUser(current_pos.current);
+                        current_pos.getUserOutTrainning(current_pos.current_out);
+                    } else {
+                        toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                    }
+                    $('button.btn-pdf i').css("display", "none");
+                })
+                .catch(error => {
+                    loader.fadeOut();
+                    $('button.btn-pdf i').css("display", "none");
+                    toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                });
+                this.organization_id = 0;
             },
             addToTrainning() {
                 let current_pos = this;
@@ -419,11 +421,14 @@
                     return;
                 }
                 $('button.btn-pdf i').css("display", "inline-block");
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/trainning/addusertotrainning', {
                     Users: this.userTrainning,
                     trainning_id: this.trainning_id
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             current_pos.getUser(current_pos.current);
@@ -435,9 +440,12 @@
                         $('button.btn-pdf i').css("display", "none");
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         $('button.btn-pdf i').css("display", "none");
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
+                //reset selected array
+                this.userTrainning = [];
             },
 
             selectAll: function () {
@@ -457,7 +465,7 @@
             },
             remove_trainning(id, user_id, tr_id) {
                 let current_pos = this;
-                console.log('trainning_id: ' + tr_id);
+                //console.log('trainning_id: ' + tr_id);
                 swal({
                     title: current_pos.trans.get('keys.thong_bao'),
                     text: current_pos.trans.get('keys.ban_muon_loai_khung_nang_luc_gan_cho_nguoi_dung_nay'),

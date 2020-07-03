@@ -300,6 +300,8 @@
         this.formData.append('course_budget', this.course_budget);
         this.formData.append('access_ip', this.access_ip);
         let current_pos = this;
+        let loader = $('.preloader-it');
+        loader.fadeIn();
 
         axios.post('/api/courses/create', this.formData, {
           headers: {
@@ -307,6 +309,7 @@
           },
         })
           .then(response => {
+            loader.fadeOut();
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
               this.$router.push({
@@ -318,6 +321,7 @@
             }
           })
           .catch(error => {
+            loader.fadeOut();
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
           });
       },

@@ -3,6 +3,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
+<link rel="shortcut icon" href="images/favicon.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
 <script src="js/popper.min.js"></script>
@@ -255,15 +256,14 @@
     }
 
     .detail-list li a {
-        background-image: url('lms/theme/image.php/bgtlms/page/1588135480/icon');
-        background-repeat: no-repeat;
-        background-position: left;
-        padding-left: 4%;
         font-family: Roboto-Regular;
         font-size: 14px;
         letter-spacing: 0.99px;
         color: #333;
-        background-size: 20px 16px;
+    }
+
+    .detail-list li.li-module-done a, .detail-list li.li-module-done i{
+        color: #00A426;
     }
 
     .detail-btn {
@@ -779,6 +779,7 @@ if ($edit == 0) {
 }
 
 //Check to show popup congratulation
+//-1 chưa xem. 0 chưa có bản ghi trong db, 1 xem, 2 đã xem
 if ($course->numofmodule == 0) {
     $_SESSION["displayPopup"] = 0;
 } else {
@@ -786,18 +787,18 @@ if ($course->numofmodule == 0) {
     $displayVal = $course->display;
 //if percent of progress = 1 is complete course => display popup congratulation
     if ($percentProgress == 1) {
-        if ($displayVal == null) {
+        if ($displayVal == 0) {
             $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
             $_SESSION["displayPopup"] = 1;
-        } else if ($displayVal == 0) {
+        } else if ($displayVal == -1) {
             $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
             $_SESSION["displayPopup"] = 1;
         } else {
             $_SESSION["displayPopup"] = 2;
         }
     } else {
-        if ($displayVal == null) {
-            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id) VALUES (" . $USER->id . ", " . $course->id . ")");
+        if ($displayVal == 0) {
+            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
             $_SESSION["displayPopup"] = 0;
         }
     }
@@ -935,11 +936,21 @@ if ($course->numofmodule == 0) {
                             <div class="unit" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
                                 <div class="unit__progress">
-                                    <div class="unit__icon"><i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                    <div class="unit__icon">
+                                        <?php $modulCompletion = array_sum(array_map(function($item) {
+                                            return $item['iscompletion'];
+                                        }, $unit['modules']));
+                                        $totalModul = count($unit['modules']);
+                                        if($totalModul > 0 && $modulCompletion == $totalModul) {?>
+                                            <i class="fa fa-check" aria-hidden="true"></i>
+                                        <?php } else { ?>
+                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                                        <?php } ?>
                                     </div>
                                     <div class="unit__progress-number">
-                                        <p><i class="fa fa-pencil-square-o" aria-hidden="true"></i> <span
-                                                class="percent-get">__</span>/<span class="percent-total">100</span>
+                                        <!--                                                class="percent-get">--><?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
+                                        <p><i class="fa fa-check" aria-hidden="true"></i> <span
+                                                class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul;?></span>
                                         </p>
                                     </div>
                                 </div>
@@ -958,9 +969,15 @@ if ($course->numofmodule == 0) {
                                 <?php if ($unit['modules'] && !empty($unit['modules'])) {
                                     foreach ($unit['modules'] as $module) { ?>
                                         <ul class="detail-list">
-                                            <li>
-                                                <a href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
-                                            </li>
+                                            <?php if($module['iscompletion'] == 1){ ?>
+                                                <li class="li-module-done"> <i class="fa fa-check" aria-hidden="true"></i>
+                                                    <a class="module-done" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                </li>
+                                            <?php } else {?>
+                                                <li>  <i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                                    <a class="module-notyet" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                </li>
+                                            <?php }?>
                                         </ul>
                                     <?php }
                                 } else { ?>
