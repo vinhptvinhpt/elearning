@@ -310,7 +310,8 @@
                 }
 
                 let current_pos = this;
-
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/api/selfquestion/create', {
                     survey_id: this.survey_id,
                     type_question: this.type_question,
@@ -323,6 +324,7 @@
                     max_value: this.max_value
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             this.$router.push({name: 'SelfQuestionIndex'});
@@ -333,6 +335,7 @@
 
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             }

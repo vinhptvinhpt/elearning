@@ -4,7 +4,7 @@ require_once("$CFG->libdir/externallib.php");
 
 function get_course_contents($courseid)
 {
-    global $CFG, $DB;
+    global $CFG, $DB, $USER;
     require_once($CFG->dirroot . "/course/lib.php");
     require_once($CFG->libdir . '/completionlib.php');
 
@@ -102,7 +102,8 @@ function get_course_contents($courseid)
             if (empty($filters['excludemodules']) and !empty($modinfosections[$section->section])) {
                 foreach ($modinfosections[$section->section] as $cmid) {
                     $cm = $modinfo->cms[$cmid];
-
+                    //get status of completion
+                    $getStatusCompletion = array_values($DB->get_records_sql("Select completionstate from mdl_course_modules_completion where userid = ".$USER->id." and coursemoduleid = ". $cm->id))[0];
                     // Stop here if the module is not visible to the user on the course main page:
                     // The user can't access the module and the user can't view the module on the course page.
                     if (!$cm->uservisible && !$cm->is_visible_on_course_page()) {
@@ -141,6 +142,7 @@ function get_course_contents($courseid)
 
                     //common info (for people being able to see the module or availability dates)
                     $module['id'] = $cm->id;
+                    $module['iscompletion'] = $getStatusCompletion->completionstate;
                     $module['name'] = external_format_string($cm->name, $modcontext->id);
                     $module['instance'] = $cm->instance;
                     $module['modname'] = $cm->modname;
@@ -302,5 +304,6 @@ function get_course_contents($courseid)
             );
         }
     }
+
     return $coursecontents;
 }

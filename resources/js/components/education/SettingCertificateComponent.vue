@@ -144,8 +144,11 @@
           closeOnConfirm: true,
           showLoaderOnConfirm: true
         }, function () {
+          let loader = $('.preloader-it');
+          loader.fadeIn();
           axios.post(url)
             .then(response => {
+              loader.fadeOut();
               if (response.data === 'exists') {
                 toastr['error'](current_pos.trans.get('keys.chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc'), current_pos.trans.get('keys.that_bai'));
               } else {
@@ -154,6 +157,7 @@
               }
             })
             .catch(error => {
+              loader.fadeOut();
               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
               console.log(error);
             });

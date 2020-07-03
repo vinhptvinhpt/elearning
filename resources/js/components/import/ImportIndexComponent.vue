@@ -168,6 +168,8 @@
                     $('.file_required').show();
                     return;
                 }
+                let loader = $('.preloader-it');
+                loader.fadeIn();
 
                 if(!$('button.hasLoading').hasClass('loadding')){
                     $('button.hasLoading').addClass('loadding');
@@ -183,29 +185,33 @@
                             'Content-Type': 'multipart/form-data'
                         }
                     })
-                .then(response => {
-                    toastr[response.data.status](response.data.message, this.trans.get('keys.' + response.data.status));
-
-                    //Download file
-                    let file_name = response.data.data.result_file;
-                    let a = $("<a>")
-                      .prop("href", "/api/excel/download/" + file_name)
-                      .appendTo("body");
-                    a[0].click();
-                    a.remove();
-
-                    $('button.hasLoading').removeClass('loadding');
-                    $('.logUpload').show();
-                    $('#btnFilter').trigger('click');
-                        //roam_message('success','Lỗi hệ thống. Thao tác thất bại');
-                    })
-                        .catch(error => {
+                    .then(response => {
+                        loader.fadeOut();
+                          if (response.data) {
+                            toastr[response.data.status](response.data.message, this.trans.get('keys.' + response.data.status));
+                            //Download file
+                            if (response.data.data.result_file) {
+                              let file_name = response.data.data.result_file;
+                              let a = $("<a>")
+                                .prop("href", "/api/excel/download/" + file_name)
+                                .appendTo("body");
+                              a[0].click();
+                              a.remove();
+                            }
                             $('button.hasLoading').removeClass('loadding');
                             $('.logUpload').show();
                             $('#btnFilter').trigger('click');
-                            console.log(error);
-                            roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                        });
+                            //roam_message('success','Lỗi hệ thống. Thao tác thất bại');
+                          }
+                        })
+                    .catch(error => {
+                        loader.fadeOut();
+                        $('button.hasLoading').removeClass('loadding');
+                        $('.logUpload').show();
+                        $('#btnFilter').trigger('click');
+                        console.log(error);
+                        roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                    });
                 }
             },
             onPageChange() {

@@ -118,6 +118,11 @@ if ($status == quiz_attempt::OVERDUE) {
     $quiz_info = new stdClass();
     $quiz_info->quiz_id = $attemptobj->get_quizobj()->get_quiz()->id;
     $quiz_info->quiz_name = $attemptobj->get_quizobj()->get_quiz()->name;
+    $quiz_info->parent_name = $COURSE->fullname;
+    $quiz_info->object_name = $attemptobj->get_quizobj()->get_quiz()->name;
+    $quiz_info->grade = $attemptobj->get_sum_marks();
+    $quiz_info->end_date = gmdate("Y-m-d H:i:s", $attemptobj->get_submitted_date());
+
     $info = json_encode($quiz_info);
     $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id .',\''.$info.'\')';
     $DB->execute($noti_quiz);

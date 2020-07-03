@@ -86,7 +86,7 @@
                                             </div>
 
                                             <div class="col-sm-6 col-md-4 form-group">
-                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}}
+                                                <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h)
                                                     *</label>
                                                 <input v-model="estimate_duration" id="estimate_duration"
                                                        :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
@@ -122,7 +122,7 @@
                                             </div>
 
                                             <div class="col-md-4 col-sm-6 form-group">
-                                                <label for="course_budget">{{trans.get('keys.chi_phi')}}</label>
+                                                <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
                                                 <input v-model="course_budget" id="course_budget"
                                                        :placeholder="trans.get('keys.nhap_chi_phi')"
                                                        class="form-control mb-4">
@@ -399,12 +399,16 @@
                 this.formData.append('access_ip', this.string_ip);
 
                 let current_pos = this;
+                let loader = $('.preloader-it');
+                loader.fadeIn();
+
                 axios.post('/api/courses/clone', this.formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     },
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             //khóa học tập trung
@@ -417,6 +421,7 @@
                         }
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
             },

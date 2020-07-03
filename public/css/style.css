@@ -1128,6 +1128,22 @@ table table tr td {
     font-size: inherit;
 }
 
+/* Last edited block */
+
+.last-edited {
+    border-radius: 5px;
+    padding: 10px;
+    background: aliceblue;
+    border: 1px solid #dcdcdc;
+}
+
+.last-edited hr {
+    margin: 0.5rem 0;
+}
+
+.last-edited-text {
+    font-style: italic;
+}
 
 
 

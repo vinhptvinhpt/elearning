@@ -27,4 +27,14 @@ class MdlCourse extends Model
         'course_budget',
         'deleted'
     ];
+//    //Connection to logs
+//    public function lastEdit()
+//    {
+//        return $this->hasOne('App\MdlLogstoreStandardLog', 'contextinstanceid', 'id')
+//            ->with('user')
+//            ->where('target', 'course')
+//            ->where('contextlevel', 50)
+//            ->where('action', "<>", 'viewed')
+//            ->orderBy('timecreated','desc');
+//    }
 }

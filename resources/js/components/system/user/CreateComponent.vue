@@ -691,6 +691,8 @@
                 this.formData.append('organization_id', this.last_organization_id);
 
                 let current_pos = this;
+                let loader = $('.preloader-it');
+                loader.fadeIn();
 
                 axios.post('/system/user/create', this.formData, {
                     headers: {
@@ -698,9 +700,9 @@
                     },
                 })
                     .then(response => {
+                        loader.fadeOut();
                         if (response.data.status && response.data.status == 'success') {
                             roam_message(response.data.status, response.data.message);
-
                             this.clearFileInput();
                             this.resetForm();
                             $('span.wrap_password').removeClass('success');
@@ -723,6 +725,7 @@
                         }
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
             },

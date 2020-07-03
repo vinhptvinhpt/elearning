@@ -130,13 +130,15 @@
         this.formData.append('description', this.description);
         this.formData.append('type', this.$parent.type);
         this.formData.append('position', JSON.stringify(this.coordinates));
-
+        let loader = $('.preloader-it');
+        loader.fadeIn();
         axios.post('/certificate/create', this.formData, {
           headers: {
             'Content-Type': 'multipart/form-data'
           },
         })
           .then(response => {
+            loader.fadeOut();
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
               this.clearFileInput();
@@ -152,7 +154,8 @@
             }
           })
           .catch(error => {
-            console.log(error);
+            loader.fadeOut();
+            //console.log(error);
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
       },

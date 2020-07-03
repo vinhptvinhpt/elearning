@@ -15397,7 +15397,8 @@ hr.hr-3 {
 
 /*Loader*/
 .preloader-it {
-    background: #fff;
+    /*background: #ffffff;*/
+    background: rgba(255, 255, 255, 0.5);
     position: fixed;
     z-index: 10001;
     height: 100%;

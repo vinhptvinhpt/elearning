@@ -122,7 +122,7 @@ $_SESSION["totalCourse"] = count($courses);
 $organization_id = 2;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-
+$organizationCode = "BG";
 switch ($organizationCode) {
     case "EA":
         {
@@ -147,7 +147,7 @@ switch ($organizationCode) {
     case "BG":
         {
             $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#FFFFFF';
+            $_SESSION["color"] = '#333';
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
@@ -199,6 +199,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
+<link rel="shortcut icon" href="images/favicon.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
 <script src="js/jquery.min.js"></script>
@@ -444,6 +445,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         background-color: <?=$_SESSION["color"]?>;
         display: flex;
         width: 100%;
+        padding: 3%;
     }
 
     .avatar {
@@ -462,9 +464,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         /*margin-top: 15%;*/
         /*margin-bottom: 15%;*/
         border-radius: 50%;
-        height: 80%;
-        width: 60%;
-        margin-top: 10%;
+        /*height: 80%;*/
+        /*width: 60%;*/
+        width: 50px;
+        height: 50px;
+        /*margin-top: 10%;*/
     }
 
     .info {
@@ -473,8 +477,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .info-user_info {
-        padding: 10% 1% 1% 10% !important;
-        width: 100% !important;
+        /*padding: 10% 1% 1% 10% !important;*/
+        /*width: 100% !important;*/
     }
 
     .info-user_info p {
@@ -733,9 +737,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             width: 165px !important;
             bottom: 23%;
         }
-        .avatar img{
-            width: 50%;
-        }
     }
     @media screen and (max-width: 1024px) {
         .block-color {
@@ -754,18 +755,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             height: 65px !important;
             bottom: 28% !important;
         }
-        .avatar img{
-            width: 100%;
-        }
     }
 
     @media screen and (max-width: 425px) {
         .block-color{
             bottom: 48% !important;
             width: 49px !important;
-        }
-        .avatar img{
-            width: 50%;
         }
     }
 </style>

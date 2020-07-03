@@ -349,7 +349,7 @@
         swal({
           title: this.trans.get('keys.ban_muon_chuyen_trang_thai_lam_viec'),
           text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-          type: "success",
+          type: "warning",
           showCancelButton: true,
           closeOnConfirm: false,
           showLoaderOnConfirm: true
@@ -482,10 +482,13 @@
           closeOnConfirm: false,
           showLoaderOnConfirm: true
         }, function () {
+          let loader = $('.preloader-it');
+          loader.fadeIn();
           axios.post('/system/user/delete_list_user', {
             user_delete: user_delete
           })
             .then(response => {
+              loader.fadeOut();
               swal.close();
               if (response.data === 'success') {
                 toastr['success'](current_pos.trans.get('keys.xoa_tai_khoan_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
@@ -499,6 +502,7 @@
               }
             })
             .catch(error => {
+              loader.fadeOut();
               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
@@ -513,8 +517,11 @@
           closeOnConfirm: true,
           showLoaderOnConfirm: true
         }, function () {
+          let loader = $('.preloader-it');
+          loader.fadeIn();
           axios.post(url)
             .then(response => {
+              loader.fadeOut();
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               $('#btnFilter').trigger('click');
               // var url_split = url.split('/');
@@ -524,6 +531,7 @@
               //       current_pos.posts.splice(index, 1); //delete the post
             })
             .catch(error => {
+              loader.fadeOut();
               toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
               //console.log(error);
             });

@@ -1,7 +1,7 @@
 <template>
     <div class="col-12 form-group">
         <label for="article-ckeditor" style="font-weight: bold;">{{trans.get('keys.cau_hoi')}}
-            {{question.index}}</label>
+            {{question.index}}<label style="color: red;">*</label></label>
         <button :title="trans.get('keys.xoa')" data-toggle="modal" data-target="#delete-ph-modal" style="float: right;"
                 @click="deleteQuestion()"
                 class="btn btn-sm btn-icon btn-danger btn-icon-circle btn-icon-style-2">

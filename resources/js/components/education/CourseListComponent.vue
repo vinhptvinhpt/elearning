@@ -356,8 +356,11 @@
                     closeOnConfirm: true,
                     showLoaderOnConfirm: true
                 }, function () {
+                    let loader = $('.preloader-it');
+                    loader.fadeIn();
                     axios.post('/api/courses/delete', {course_id: id})
                         .then(response => {
+                            loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                                 current_pos.getCourses(this.current);
@@ -367,6 +370,7 @@
                             swal.close();
                         })
                         .catch(error => {
+                            loader.fadeOut();
                             swal.close();
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
