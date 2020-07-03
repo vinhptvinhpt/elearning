@@ -122,7 +122,7 @@ $_SESSION["totalCourse"] = count($courses);
 $organization_id = 2;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-$organizationCode = "BG";
+//$organizationCode = "BG";
 switch ($organizationCode) {
     case "EA":
         {
