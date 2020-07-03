@@ -223,7 +223,10 @@
                         || slug_can('tms-educate-exam-restore-add')
                         || slug_can('tms-educate-uncertificate-view')
                         || slug_can('tms-educate-certificate-view')
-                        || slug_can('tms-trainning-view')">
+                        || slug_can('tms-trainning-view')
+                        || slug_can('tms-report-survey-view')"
+
+                    >
                         <a class="nav-link  has-submenu collapse-level-1" id="quan_ly_dao_tao"
                            @click="toggleMenu('quan_ly_dao_tao','pages_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
@@ -232,13 +235,11 @@
                         </a>
                         <ul id="pages_drp"
                             class="nav flex-column collapse collapse-level-1">
-
                             <li class="nav-item" v-if="slug_can('tms-educate-libraly-view')">
                                 <router-link to="/tms/education/course/course_sample" class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.thu_vien_khoa_hoc') }}</span>
                                 </router-link>
                             </li>
-
 
                             <li class="nav-item" v-if=" slug_can('tms-educate-exam-online-view')
                             || slug_can('tms-educate-exam-offline-view')
@@ -345,11 +346,54 @@
                                     </li>
                                 </ul>
                             </li>
+
+                          <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
+                            <a class="nav-link has-submenu" id="quan_ly_survey"
+                               @click="toggleMenu( 'quan_ly_survey','recover_drp1')"
+                               href="javascript:void(0);" data-toggle="collapse"
+                            >{{ trans.get('keys.quan_ly_survey') }}</a>
+                            <ul id="recover_drp1"
+                                class="nav flex-column collapse collapse-level-2 ">
+                              <li class="nav-item">
+                                <router-link to="/tms/survey/list" class="nav-link">
+                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_survey') }}</span>
+                                </router-link>
+                              </li>
+                              <li class="nav-item">
+                                <router-link to="/tms/question/list" class="nav-link">
+                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi') }}</span>
+                                </router-link>
+                              </li>
+                              <li class="nav-item">
+                                <router-link to="/tms/survey/restore" class="nav-link">
+                                  <span class="nav-link-text"> {{ trans.get('keys.khoi_phuc_survey') }}</span>
+                                </router-link>
+                              </li>
+                            </ul>
+                          </li>
+                          <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
+                            <a class="nav-link has-submenu" id="quan_ly_self"
+                               @click="toggleMenu( 'quan_ly_self','recover_drp_self')"
+                               href="javascript:void(0);" data-toggle="collapse"
+                            >{{ trans.get('keys.quan_tri_self') }}</a>
+                            <ul id="recover_drp_self"
+                                class="nav flex-column collapse collapse-level-2 ">
+                              <li class="nav-item">
+                                <router-link to="/tms/self/list" class="nav-link">
+                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_self') }}</span>
+                                </router-link>
+                              </li>
+                              <li class="nav-item">
+                                <router-link to="/tms/selfquestion/list" class="nav-link">
+                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi_self') }}</span>
+                                </router-link>
+                              </li>
+                            </ul>
+                          </li>
                         </ul>
                     </li>
 
-                    <li class="nav-item" v-if="slug_can('tms-report-survey-view')
-                    || slug_can('tms-report-base-view')
+                    <li class="nav-item" v-if="slug_can('tms-report-base-view')
                     || slug_can('tms-report-report-view')">
                         <a class="nav-link has-submenu collapse-level-1"
                            href="javascript:void(0);" id="bao_cao" @click="toggleMenu( 'bao_cao','bc_drp12')"
@@ -359,49 +403,6 @@
                         </a>
                         <ul id="bc_drp12"
                             class="nav flex-column collapse collapse-level-1 ">
-                            <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
-                                <a class="nav-link has-submenu" id="quan_ly_survey"
-                                   @click="toggleMenu( 'quan_ly_survey','recover_drp1')"
-                                   href="javascript:void(0);" data-toggle="collapse"
-                                >{{ trans.get('keys.quan_ly_survey') }}</a>
-                                <ul id="recover_drp1"
-                                    class="nav flex-column collapse collapse-level-2 ">
-                                    <li class="nav-item">
-                                        <router-link to="/tms/survey/list" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_survey') }}</span>
-                                        </router-link>
-                                    </li>
-                                    <li class="nav-item">
-                                        <router-link to="/tms/question/list" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi') }}</span>
-                                        </router-link>
-                                    </li>
-                                    <li class="nav-item">
-                                        <router-link to="/tms/survey/restore" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.khoi_phuc_survey') }}</span>
-                                        </router-link>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
-                                <a class="nav-link has-submenu" id="quan_ly_self"
-                                   @click="toggleMenu( 'quan_ly_self','recover_drp_self')"
-                                   href="javascript:void(0);" data-toggle="collapse"
-                                >{{ trans.get('keys.quan_tri_self') }}</a>
-                                <ul id="recover_drp_self"
-                                    class="nav flex-column collapse collapse-level-2 ">
-                                    <li class="nav-item">
-                                        <router-link to="/tms/self/list" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_self') }}</span>
-                                        </router-link>
-                                    </li>
-                                    <li class="nav-item">
-                                        <router-link to="/tms/selfquestion/list" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi_self') }}</span>
-                                        </router-link>
-                                    </li>
-                                </ul>
-                            </li>
                             <!--                            <li class="nav-item" v-if="slug_can('tms-report-base-view')">-->
                             <!--                                <router-link to="/tms/report/base" class="nav-link">-->
                             <!--                                    <span class="nav-link-text"> {{ trans.get('keys.thong_ke_so_bo') }}</span>-->
