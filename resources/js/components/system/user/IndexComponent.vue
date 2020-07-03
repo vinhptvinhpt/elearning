@@ -35,7 +35,10 @@
                   </div>
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
-                      <system-user-create v-if="roles_ready === true"
+                      <system-user-create v-if="(slug_can('tms-system-user-add')
+                      || (slug_can('tms-system-teacher-add' && type === 'teacher'))
+                      || (slug_can('tms-system-student-add' && type === 'student')))
+                      && roles_ready === true"
                                           :type="type"
                                           :current_roles="current_roles"
                                           :roles_ready="roles_ready"></system-user-create>
