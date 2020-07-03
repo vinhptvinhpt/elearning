@@ -28,15 +28,18 @@
           <div class="row mb-4" v-if="slug_can('tms-system-user-add')">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
-                <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);">
+                <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);" v-if="(
+										  (slug_can('tms-system-user-add') && type !== 'teacher' && type !== 'student')
+										  || slug_can('tms-system-administrator-grant')
+										  )
+										  && roles_ready === true">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i
                       class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi_thu_cong')}}</a>
                   </div>
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
-                      <system-user-create v-if="roles_ready === true"
-                                          :type="type"
+                      <system-user-create :type="type"
                                           :current_roles="current_roles"
                                           :roles_ready="roles_ready"></system-user-create>
                     </div>
@@ -245,8 +248,8 @@
                         </span>
                       </td>
                       <td v-else>
-                          <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
-                          <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
+                        <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
+                        <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
                       </td>
                       <td class="text-center">
                         <router-link
