@@ -303,10 +303,12 @@
                     });
             },
             toggleRow(id, row_count) {
-                if (row_count > 0) {
+                if (this.mode_select === 'learning_time' || row_count > 0) {
+                  //if (row_count > 0) { //chỉ expand nếu tổng số > 0 => có dữ liệu
                     $('#' + id).toggle("slow", function () {
-                        // Animation complete.
+                      // Animation complete.
                     });
+                  //}
                 }
             },
             expandAll() {

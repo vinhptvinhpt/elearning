@@ -171,7 +171,6 @@ class LoginController extends Controller
                 return response()->json(['status' => 'FAILPASSWORD']);
             }
 
-
             // grab credentials from the request
             $credentials = $request->only('username', 'password');
             if (!$token = JWTAuth::attempt($credentials)) {
@@ -343,9 +342,17 @@ class LoginController extends Controller
                     '',
                     $password
                 ));
+				\Log::info('345');
+				// check for failures
+    if (Mail::failures()) {\Log::info('347');	
+        // return response showing failed emails
+		 return response()->json(['status' => false, 'message' => 'Password reset failed due to a system error, please try again later1']);
+    }
+				\Log::info('351');
                 DB::commit();
 
             } catch (\Exception $e) {
+				\Log::info($e);
                 DB::rollback();
                 return response()->json(['status' => false, 'message' => 'Password reset failed due to a system error, please try again later']);
             }
