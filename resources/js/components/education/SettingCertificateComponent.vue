@@ -18,7 +18,8 @@
       <div class="card">
         <div class="card-body">
           <div class="edit_city_form form-material">
-            <h5 class="mb-20 text-uppercase">{{trans.get('keys.danh_sach_mau_chung_chi')}}</h5>
+            <h5 class="mb-20 text-uppercase" v-if="type == 1">{{trans.get('keys.danh_sach_mau_chung_chi')}}</h5>
+            <h5 class="mb-20 text-uppercase" v-else>{{trans.get('keys.danh_sach_mau_huy_hieu')}}</h5>
             <div class="row mb-4">
               <div class="col-sm">
                 <div class="accordion" id="accordion_1">
