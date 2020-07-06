@@ -8,10 +8,14 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item">
-                            <router-link to="/tms/certificate/setting">{{ trans.get('keys.danh_sach_chung_chi') }}
+                        <li class="breadcrumb-item" v-if="certificate.type == 1">
+                            <router-link to="/tms/certificate/setting?type=1">{{ trans.get('keys.danh_sach_chung_chi') }}
                             </router-link>
                         </li>
+                      <li class="breadcrumb-item" v-if="certificate.type == 2">
+                        <router-link to="/tms/badge/setting?type=2">{{ trans.get('keys.danh_sach_huy_hieu') }}
+                        </router-link>
+                      </li>
                         <li v-if="certificate.type == 1" class="breadcrumb-item active">{{
                             trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
                         </li>
@@ -70,10 +74,9 @@
 
                                 <div class="col-12 form-group">
                                     <h6 v-if="certificate.type == 1" for="inputName">
-                                        {{trans.get('keys.ten_chung_chi')}} </h6>
+                                        {{trans.get('keys.ten_chung_chi')}}</h6>
                                     <h6 v-else for="inputName">{{trans.get('keys.ten_huy_hieu')}} </h6>
                                     <input autocomplete="false" v-model="certificate.name" type="text" id="inputName"
-                                           :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')"
                                            class="form-control mb-4" @input="changeRequired('inputName')">
                                     <label v-if="!certificate.name" class="required text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                 </div>
@@ -81,14 +84,14 @@
                                     <h6 for="inputDescription">{{trans.get('keys.mo_ta')}} </h6>
                                     <input autocomplete="false" v-model="certificate.description" type="text"
                                            id="inputDescription"
-                                           :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')"
                                            class="form-control mb-4" @input="changeRequired('inputDescription')">
                                     <label v-if="!certificate.description"
                                            class="required text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                 </div>
                                 <div class="col-12 form-group">
                                     <h6 class="d-inline-flex">
-                                        {{trans.get('keys.chung_chi_mau')}}
+                                      <span v-if="certificate.type == 1">{{trans.get('keys.chung_chi_mau')}}</span>
+                                      <span v-else>{{trans.get('keys.huy_hieu_mau')}}</span>
                                         <span class="inline-checkbox ml-3">
                                             <span class="custom-control custom-checkbox custom-control-inline">
                                                 <input v-if="certificate.is_active == 1"
@@ -107,9 +110,12 @@
                                 </div>
 
                                 <div class="col-12 form-group">
-                                    <h6>{{trans.get('keys.toa_do_chung_chi')}} </h6>
-                                    <p>
+                                    <h6 v-if="certificate.type == 1">{{trans.get('keys.toa_do_chung_chi')}} </h6>
+                                    <h6 v-else>{{trans.get('keys.toa_do_huy_hieu')}} </h6>
+                                    <p v-if="certificate.type == 1">
                                         {{trans.get('keys.chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi')}}</p>
+                                  <p v-else>
+                                    {{trans.get('keys.chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_huy_hieu')}}</p>
                                 </div>
 
                                 <div class="col-12 d-inline-flex" v-if="certificate.type == 1">
