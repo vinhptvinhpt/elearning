@@ -375,21 +375,18 @@
                     id: this.id
                 })
                     .then(response => {
-                      console.log(response.data);
                         this.certificate = response.data;
                         this.organization_id = response.data.organization_id == null ? 0 : response.data.organization_id;
                         if (response.data.position !== '')
                             this.coordinates = JSON.parse(response.data.position);
-                        this.showCoordinates();
+                        // this.showCoordinates();
                         this.img_width = this.coordinates.image_width;
                         this.img_height = this.coordinates.image_height;
-                        console.log(this.coordinates);
                     })
                     .catch(error => {
                     })
             },
             updateCertificate() {
-
                 if (!this.certificate.name) {
                     $('.name_required').show();
                     return;
@@ -538,7 +535,7 @@
                     this.coordinates.dateY = 0;
                     $('#ip_inputSizeDate').css('display', 'none');
                     if (!this.certificate_img.pos_date) {
-
+                      this.SetShowTextSizeDate();
                         $('#ip_inputSizeDate').css('display', 'block');
                         if ($('#ip_inputSizeDate').val() !== '') {
                             this.coordinates.dateSize = $('#ip_inputSizeDate').val();
@@ -576,7 +573,7 @@
                     }
                 } else if (this.currentChoose == 'inputColor') {
                     $('#ip_inputColor').css('display', 'none');
-                    if (!this.certificate_img.text_color) {
+                    if (this.certificate_img.text_color) {
                         this.SetShowTextColor();
                         this.certificate_img.text_color = true;
                         this.setTextToShowIntoImage(this.currentChoose, this.img_width / 2, this.img_height / 2);
@@ -685,10 +682,13 @@
                 }
                 if (this.coordinates.dateX > 0) {
                     this.certificate_img.pos_date = true;
+                    this.SetShowTextSizeDate();
                     this.setTextToShowIntoImage("inputDate", this.coordinates.dateX, this.coordinates.dateY);
                 }
-                if (this.coordinates.text_color) {
+
+                if (this.coordinates.text_color.length > 0) {
                     this.certificate_img.text_color = true;
+                    this.SetShowTextColor();
                     this.setTextToShowIntoImage("inputColor", this.coordinates.dateX, this.coordinates.dateY);
                 }
                 if (this.coordinates.signX > 0) {
@@ -696,9 +696,9 @@
                     this.sign_text = this.coordinates.sign_text;
                     this.setTextToShowIntoImage("inputSign", this.coordinates.signX, this.coordinates.signY);
                 }
+
             },
             OnchangeTextBox(e) {
-              console.log(1);
               if (e.currentTarget.id.indexOf('Size') > -1) {
                     if (e.currentTarget.id.indexOf('FullName') > -1 && this.certificate_img.pos_name) {
                         if ($('#ip_inputSizeFullName').val() < 0)
@@ -744,7 +744,6 @@
                     }
                 }
                 else {
-
                   if (e.currentTarget.id == 'ip_inputFullName' && this.certificate_img.pos_name) {
                         $('#sp_inputFullName').text(this.fullName);
                         this.currentChoose = "inputFullName";
@@ -766,15 +765,26 @@
                 $('#ip_inputColor').css('display', 'block');
                 if ($('#ip_inputColor').val() !== '') {
                     this.coordinates.textColor = $('#ip_inputColor').val();
-                } else if (typeof (this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined
-                    || this.coordinates.fullnameSize == '') {
-                    this.coordinates.fullnameSize = this.text_color;
                 }
-
-                $('#sp_inputFullName').css('font-size', this.coordinates.fullnameSize + 'px');
-                $('#sp_inputFullName').css('line-height', this.coordinates.fullnameSize + 'px');
-                $('#ip_inputSizeFullName').val(this.coordinates.fullnameSize);
+                // else if (typeof (this.coordinates.text_color) == 'undefined' || this.coordinates.text_color === undefined
+                //     || this.coordinates.text_color == '') {
+                //     this.coordinates.textColor = this.text_color;
+                // }
+                $('#ip_inputColor').val(this.coordinates.text_color);
             },
+          SetShowTextSizeDate() {
+            $('#ip_inputSizeDate').css('display', 'block');
+            if ($('#ip_inputSizeDate').val() !== '') {
+              this.coordinates.dateSize = $('#ip_inputSizeDate').val();
+            } else if (typeof (this.coordinates.dateSize) == 'undefined' || this.coordinates.dateSize === undefined
+              || this.coordinates.dateSize == '') {
+              this.coordinates.dateSize = 15;
+            }
+
+            $('#ip_inputSizeDate').css('font-size', this.coordinates.dateSize + 'px');
+            $('#ip_inputSizeDate').css('line-height', this.coordinates.dateSize + 'px');
+            $('#ip_inputSizeDate').val(this.coordinates.dateSize);
+          },
             SetShowTextFullName() {
                 $('#ip_inputFullName').css('display', 'block');
                 $('#ip_inputSizeFullName').css('display', 'block');
@@ -833,6 +843,7 @@
         },
       updated() {
           this.setFileInput();
+        this.showCoordinates();
       }
     }
 </script>
