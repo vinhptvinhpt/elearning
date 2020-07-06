@@ -30,16 +30,14 @@
         <div class="col-12 form-group">
           <label v-if="this.$parent.type == 1" for="inputName">{{trans.get('keys.ten_chung_chi')}}</label>
           <label v-else for="inputName">{{trans.get('keys.ten_huy_hieu')}}</label>
-          <input autocomplete="false" v-model="name" type="text" id="inputName"
-                 :placeholder="trans.get('keys.nhap_ten_chung_chi')" class="form-control"
+          <input autocomplete="false" v-model="name" type="text" id="inputName" class="form-control"
                  @input="changeRequired('inputName')">
           <label v-if="!name" class="required text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
         </div>
 
         <div class="col-12 form-group">
           <label for="inputDescription">{{trans.get('keys.mo_ta')}} </label>
-          <input autocomplete="false" v-model="description" type="text" id="inputDescription"
-                 :placeholder="trans.get('keys.mo_ta_chung_chi_nay')" class="form-control"
+          <input autocomplete="false" v-model="description" type="text" id="inputDescription" class="form-control"
                  @input="changeRequired('inputDescription')">
           <label v-if="!description" class="required text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
         </div>
