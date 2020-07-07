@@ -258,6 +258,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-decoration: none;
     }
 
+    .navbar .count-container{
+        top: 2px !important;
+    }
     .block-color{
         width: 100px;
         height: 100px;
