@@ -780,45 +780,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active" style="background-image: url('<?php echo $_SESSION["pathBackground"];  ?>')">
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" class="bg-img" style="max-height: 400px">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
                                 <div class="carousel-caption">
-<!--                                    <h1>--><?php //echo $_SESSION["organizationName"]; ?><!-- <span>Academy</span></h1>-->
                                     <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
                                     <div class="block-color"></div>
                                 </div>
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.png" alt="">-->
-<!--                                </div>-->
                             </div>
-<!--                            <div class="carousel-item">-->
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.jpg" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="carousel-item">-->
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.jpg" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
                         </div>
                         <a class="carousel-control-prev" href="#demo" data-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -887,6 +853,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <a class="info-text">
                                         <div class="text-course">Completed courses</div>
                                         <div class="text-number"><?php echo count($courses_completed); ?></div>
+                                    </a>
+                                </div>
+                                <div class="info-statistic__completed-courses">
+                                    <a class="info-text">
+                                        <div class="text-course">Other courses</div>
+                                        <div class="text-number"><?php echo count($courses_others); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__profile">
