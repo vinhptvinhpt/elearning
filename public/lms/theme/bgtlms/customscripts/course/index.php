@@ -62,7 +62,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     body {
-        font-size: 14px !important;
+        /*font-size: 14px !important;*/
         font-family: Roboto-Bold;
         background-color: #F1F1F1;
     }
@@ -92,6 +92,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         outline: none;
     }
 
+    #page{
+        margin-top: 50px !important;
+    }
     #region-main-box, #region-main{
         padding: 0 !important;
     }
