@@ -26,7 +26,7 @@
     }
 
     body {
-        font-size: 14px !important;
+        /*font-size: 14px !important;*/
         font-family: Roboto-Bold;
     }
 
@@ -36,6 +36,10 @@
 
     a {
         text-decoration: none;
+    }
+
+    #page{
+        margin-top: 50px !important;
     }
 
     /*    view*/

@@ -182,6 +182,15 @@
     },
 
     methods: {
+      openMenu(){
+        $('#navbar_toggle_btn').click(function(){
+          if($('.hk-wrapper').hasClass('hk-nav-toggle')){
+            $('.hk-wrapper').removeClass('hk-nav-toggle');
+          }else{
+            $('.hk-wrapper').addClass('hk-nav-toggle');
+          }
+        });
+      },
       getDefaultValue() {
         // this.setLang('en');
         let obj = Ls.get('auth.user');
@@ -242,6 +251,9 @@
     mounted() {
       this.getDefaultValue();
       this.domainWeb = location.hostname;
+    },
+    updated() {
+      this.openMenu();
     }
   }
 </script>
