@@ -531,7 +531,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                         </div>
                         <div class="header-block__search__btn-search">
                             <div class="row col-12 block-search">
-                                <div class="col-5 col-md-2 block-search__select">
+                                <div class="col-5 col-md-4 block-search__select">
                                     <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
                                             v-model="category">
                                         <option value="0">All courses</option>
@@ -541,7 +541,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                         <?php } ?>
                                     </select>
                                 </div>
-                                <div class="col-6 col-md-5 block-search__btn">
+                                <div class="col-6 col-md-8 block-search__btn">
                                     <input type="text" class=" input-search" v-model="txtSearch">
                                     <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
                                 </div>
