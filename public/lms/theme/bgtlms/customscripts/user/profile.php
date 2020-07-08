@@ -94,6 +94,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .li-progress:hover{
         cursor: pointer;
     }
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
+    }
 /*    paging*/
     .pagination{
         margin: 0 auto;

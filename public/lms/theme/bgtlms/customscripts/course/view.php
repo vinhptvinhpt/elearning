@@ -41,7 +41,12 @@
     #page{
         margin-top: 50px !important;
     }
-
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
+    }
     /*    view*/
     .alert-block {
         opacity: 1 !important;

@@ -60,7 +60,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .clear-fix{
         clear: both;
     }
-
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
+    }
     /*css*/
     .btn-click{
         background: #FFFFFF 0% 0% no-repeat padding-box;

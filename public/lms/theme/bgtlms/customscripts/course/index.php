@@ -98,6 +98,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     #region-main-box, #region-main{
         padding: 0 !important;
     }
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
+    }
     /*    view*/
     /*    paging*/
     .pagination {
