@@ -258,6 +258,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-decoration: none;
     }
 
+    #page-wrapper .navbar{
+        /*line-height: 40px !important;*/
+        padding: 7px 1rem 9px .5rem !important;
+    }
     .navbar .count-container{
         top: 2px !important;
     }
@@ -450,7 +454,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         padding: 3%;
     }
 
-    .avatar {
+    .info-user .avatar {
         width: 100%;
         border-radius: 50%;
         margin: 0 !important;
@@ -462,7 +466,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         height: 100%;
     }
 
-    .avatar img {
+    .info-user .avatar img {
         /*margin-top: 15%;*/
         /*margin-bottom: 15%;*/
         border-radius: 50%;
