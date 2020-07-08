@@ -190,7 +190,7 @@ function permission_cat_name()
         'tms-system-user' => __('quan_ly_nguoi_dung'),
         'tms-system-teacher' => __('quan_ly_giang_vien'),
         'tms-system-student' => __('quan_ly_hoc_vien'),
-        'tms-system-market' => __('quan_ly_nhan_vien_giam_sat_thi_truong'),
+//        'tms-system-market' => __('quan_ly_nhan_vien_giam_sat_thi_truong'),
         'tms-system-organize' => __('quan_ly_khung_co_cau_to_chuc'),
         'tms-system-administrator' => __('quyen_quan_tri_he_thong'),
         'tms-system-role' => __('quan_ly_phan_quyen'),
@@ -284,12 +284,12 @@ function permission_slug()
                 'tms-system-employee-decentralization' => __('phan_quyen'),
             ],
 //            tms-system-employee
-            'tms-system-market' => [
-                'tms-system-market-view' => __('xem'),
-                'tms-system-market-add' => __('them'),
-                'tms-system-market-edit' => __('sua'),
-                'tms-system-market-deleted' => __('xoa'),
-            ],
+//            'tms-system-market' => [
+//                'tms-system-market-view' => __('xem'),
+//                'tms-system-market-add' => __('them'),
+//                'tms-system-market-edit' => __('sua'),
+//                'tms-system-market-deleted' => __('xoa'),
+//            ],
             'tms-system-teacher' => [
                 'tms-system-teacher-view' => __('xem'),
                 'tms-system-teacher-add' => __('them'),
