@@ -15,7 +15,7 @@ class ChangeTypeColumnDescriptionTableTmsSurveys extends Migration
     {
         //
         Schema::table('tms_surveys', function (Blueprint $table) {
-            $table->text('content')->change();
+            $table->text('description')->change();
         });
     }
 
