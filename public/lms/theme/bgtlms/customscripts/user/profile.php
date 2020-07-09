@@ -1,4 +1,7 @@
 <?php
+if(!isloggedin()){
+    require_login();
+}
 require_once(__DIR__ . '/../../../../config.php');
 
 $sqlGetCategories = 'select id, name from mdl_course_categories';
@@ -93,6 +96,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
     .li-progress:hover{
         cursor: pointer;
+    }
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
     }
 /*    paging*/
     .pagination{
