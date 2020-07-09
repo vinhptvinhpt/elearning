@@ -1,5 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+//
+if(!isloggedin()){
+    require_login();
+}
 // Start the session
 session_start();
 

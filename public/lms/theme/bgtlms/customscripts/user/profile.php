@@ -1,4 +1,7 @@
 <?php
+if(!isloggedin()){
+    require_login();
+}
 require_once(__DIR__ . '/../../../../config.php');
 
 $sqlGetCategories = 'select id, name from mdl_course_categories';

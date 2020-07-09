@@ -1,4 +1,7 @@
 <?php
+if(!isloggedin()){
+    require_login();
+}
 require_once(__DIR__ . '/../../../../config.php');
 $type = optional_param('type', 0, PARAM_INT);
 $category_params = 0;

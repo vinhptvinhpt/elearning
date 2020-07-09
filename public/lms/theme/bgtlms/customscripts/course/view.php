@@ -1,3 +1,8 @@
+<?php
+if(!isloggedin()){
+    require_login();
+}
+?>
 <html>
 <title>Detail course <?php echo $course->fullname; ?></title>
 <meta charset="utf-8">
