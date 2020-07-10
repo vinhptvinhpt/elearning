@@ -267,7 +267,7 @@
         "danh_sach_mau_chung_chi": "Certificate Template List",
         "mau_chung_chi": "Certificate Template",
         "ten_chung_chi": "Certificate Name",
-        "mau": "Certificate",
+        "mau": "Is Active",
         "khong_chon_quan_ly": "Pick Manager",
         "dia_chi_thuong_chu": "Permanent Address",
         "quan_tri_giang_vien": "Instructors Management",
@@ -802,6 +802,7 @@
         "lam_moi_bang_tai_lieu": "Reset",
         "tim_kiem_theo_ten_du_lieu_hoac_nguoi_tao": "Find by module, document name or username",
         "toa_do_chung_chi": "Certificate Coordinates",
+        "toa_do_huy_hieu": "Badge Coordinates",
         "toa_do_logo": "Logo coordinates",
         "toa_do_ten": "Name coordinates",
         "toa_do_ten_khung_nang_luc": "Name competency framework coordinates",
@@ -815,6 +816,7 @@
         "hay_nhap_co_chu_ten_nguoi_dung": "Please enter username font size",
         "hay_nhap_co_chu_ten_khung_nang_luc": "Please enter the font size of the capacity frame name competency framework",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Choose the coordinates showing information when displaying on a certificate image",
+        "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_huy_hieu": "Choose the coordinates showing information when displaying on a badge image",
         "co_chu": "Font size",
         "cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay": "The addresses are separated by commas, example: 127.0.0.1, 168.5.3.2",
         "dia_chi_ip_cho_phep": "Allow ip address",
@@ -977,7 +979,8 @@
         "cap_nhat_lan_cuoi": "Last update",
         "vao_luc": "At",
         "nguoi_cap_nhat": "Editor",
-        "danh_sach_module_log": "Modules log"
+        "danh_sach_module_log": "Modules log",
+        "danh_sach_mau_huy_hieu": "Badge Template List"
     },
     "vi.keys": {
         "language": "",
@@ -1773,6 +1776,7 @@
         "sua_csvc": "Chỉnh sửa thông tin cơ sở vật chất của khóa học",
         "tu_dong_cap_huy_hieu": "Tự đông cấp huy hiệu",
         "toa_do_chung_chi": "Tọa độ chứng chỉ",
+        "toa_do_huy_hieu": "Tọa độ huy hiệu",
         "toa_do_logo": "Tọa độ logo",
         "toa_do_ten": "Tọa độ tên",
         "toa_do_ten_khung_nang_luc": "Tọa độ tên khung năng lực",
@@ -1786,6 +1790,7 @@
         "hay_nhap_co_chu_ten_nguoi_dung": "Hãy nhập cỡ chữ tên người dùng",
         "hay_nhap_co_chu_ten_khung_nang_luc": "Hãy nhập cỡ chữ tên khung năng lực",
         "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi": "Chọn tọa độ hiển thị thông tin khi hiển thị lên ảnh chứng chỉ",
+        "chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_huy_hieu": "Chọn tọa độ hiển thị thông tin khi hiển thị lên ảnh huy hiệu",
         "co_chu": "Cỡ chữ",
         "cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay": "Các địa chỉ ngăn cách nhau bởi dấu phẩy, ví dụ: 127.0.0.1, 168.5.3.2",
         "dia_chi_ip_cho_phep": "Địa chỉ ip cho phép",
@@ -1949,6 +1954,7 @@
         "cap_nhat_lan_cuoi": "Cập nhật lần cuối",
         "vao_luc": "Vào lúc",
         "nguoi_cap_nhat": "Người cập nhật",
-        "danh_sach_module_log": "Lịch sử modules"
+        "danh_sach_module_log": "Lịch sử modules",
+        "danh_sach_mau_huy_hieu": "Danh sách mẫu huy hiệu"
     }
 }
