@@ -321,7 +321,7 @@
                                     class="nav flex-column collapse collapse-level-2">
                                     <li class="nav-item" v-if="slug_can('tms-educate-uncertificate-view')">
                                         <router-link to="/tms/certificate/student/uncertificate" class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_hoc_vien') }}</span>
+                                            <span class="nav-link-text"> {{ trans.get('keys.cap_giay_chung_nhan') }}</span>
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if="slug_can('tms-educate-certificate-view')">
