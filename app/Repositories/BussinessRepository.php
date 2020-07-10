@@ -5259,7 +5259,7 @@ class BussinessRepository implements IBussinessInterface
 //                ]);
 //            }
 
-
+            $hashAvatar = false;
             if ($avatar) {
                 $name_avatar = time() . '.' . $avatar->getClientOriginalExtension();
                 //                    $destinationPath = public_path('/upload/certificate/');
@@ -5276,6 +5276,7 @@ class BussinessRepository implements IBussinessInterface
 
                 //                    $path_avatar = 'upload/certificate/' . $name_avatar;
                 $cer->path = $path_avatar;
+                $hashAvatar = true;
             }
             $get_active = DB::table('image_certificate')
                 ->where('is_active', 1)->where('type', '=', $type)->first();
@@ -5290,7 +5291,6 @@ class BussinessRepository implements IBussinessInterface
 //                $get_active->is_active = 0;
                 ImageCertificate::where('id', '<>', $id)->where('is_active', '=', '1')->where('type', '=', $type)->update(['is_active' => '0']);
             }
-
             $cer = ImageCertificate::updateOrCreate([
                 'id' => $id
             ], [
@@ -5300,6 +5300,8 @@ class BussinessRepository implements IBussinessInterface
                 'position' => $position,
                 'organization_id' => $organization_id
             ]);
+            if($hashAvatar)
+                $cer->path = $path_avatar;
             $cer->save();
             \DB::commit();
             $response->status = true;
@@ -5307,6 +5309,7 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
             \DB::rollBack();
             $response->status = false;
+            dd($e->getMessage());
             //$response->message = $e->getMessage();
             $response->message = __('loi_he_thong_thao_tac_that_bai');
         }

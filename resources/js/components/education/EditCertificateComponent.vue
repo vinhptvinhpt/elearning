@@ -8,10 +8,14 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item">
-                            <router-link to="/tms/certificate/setting">{{ trans.get('keys.danh_sach_chung_chi') }}
+                        <li class="breadcrumb-item" v-if="certificate.type == 1">
+                            <router-link to="/tms/certificate/setting?type=1">{{ trans.get('keys.danh_sach_chung_chi') }}
                             </router-link>
                         </li>
+                      <li class="breadcrumb-item" v-if="certificate.type == 2">
+                        <router-link to="/tms/badge/setting?type=2">{{ trans.get('keys.danh_sach_huy_hieu') }}
+                        </router-link>
+                      </li>
                         <li v-if="certificate.type == 1" class="breadcrumb-item active">{{
                             trans.get('keys.chinh_sua_thong_tin_chung_chi') }}
                         </li>
@@ -70,10 +74,9 @@
 
                                 <div class="col-12 form-group">
                                     <h6 v-if="certificate.type == 1" for="inputName">
-                                        {{trans.get('keys.ten_chung_chi')}} </h6>
+                                        {{trans.get('keys.ten_chung_chi')}}</h6>
                                     <h6 v-else for="inputName">{{trans.get('keys.ten_huy_hieu')}} </h6>
                                     <input autocomplete="false" v-model="certificate.name" type="text" id="inputName"
-                                           :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')"
                                            class="form-control mb-4" @input="changeRequired('inputName')">
                                     <label v-if="!certificate.name" class="required text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                 </div>
@@ -81,14 +84,14 @@
                                     <h6 for="inputDescription">{{trans.get('keys.mo_ta')}} </h6>
                                     <input autocomplete="false" v-model="certificate.description" type="text"
                                            id="inputDescription"
-                                           :placeholder="trans.get('keys.nhap_id_dung_de_dang_nhap')"
                                            class="form-control mb-4" @input="changeRequired('inputDescription')">
                                     <label v-if="!certificate.description"
                                            class="required text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                 </div>
                                 <div class="col-12 form-group">
                                     <h6 class="d-inline-flex">
-                                        {{trans.get('keys.chung_chi_mau')}}
+                                      <span v-if="certificate.type == 1">{{trans.get('keys.chung_chi_mau')}}</span>
+                                      <span v-else>{{trans.get('keys.huy_hieu_mau')}}</span>
                                         <span class="inline-checkbox ml-3">
                                             <span class="custom-control custom-checkbox custom-control-inline">
                                                 <input v-if="certificate.is_active == 1"
@@ -107,9 +110,12 @@
                                 </div>
 
                                 <div class="col-12 form-group">
-                                    <h6>{{trans.get('keys.toa_do_chung_chi')}} </h6>
-                                    <p>
+                                    <h6 v-if="certificate.type == 1">{{trans.get('keys.toa_do_chung_chi')}} </h6>
+                                    <h6 v-else>{{trans.get('keys.toa_do_huy_hieu')}} </h6>
+                                    <p v-if="certificate.type == 1">
                                         {{trans.get('keys.chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_chung_chi')}}</p>
+                                  <p v-else>
+                                    {{trans.get('keys.chon_toa_do_hien_thi_thong_tin_khi_hien_thi_len_anh_huy_hieu')}}</p>
                                 </div>
 
                                 <div class="col-12 d-inline-flex" v-if="certificate.type == 1">
@@ -375,21 +381,18 @@
                     id: this.id
                 })
                     .then(response => {
-                      console.log(response.data);
                         this.certificate = response.data;
                         this.organization_id = response.data.organization_id == null ? 0 : response.data.organization_id;
                         if (response.data.position !== '')
                             this.coordinates = JSON.parse(response.data.position);
-                        this.showCoordinates();
+                        // this.showCoordinates();
                         this.img_width = this.coordinates.image_width;
                         this.img_height = this.coordinates.image_height;
-                        console.log(this.coordinates);
                     })
                     .catch(error => {
                     })
             },
             updateCertificate() {
-
                 if (!this.certificate.name) {
                     $('.name_required').show();
                     return;
@@ -538,7 +541,7 @@
                     this.coordinates.dateY = 0;
                     $('#ip_inputSizeDate').css('display', 'none');
                     if (!this.certificate_img.pos_date) {
-
+                      this.SetShowTextSizeDate();
                         $('#ip_inputSizeDate').css('display', 'block');
                         if ($('#ip_inputSizeDate').val() !== '') {
                             this.coordinates.dateSize = $('#ip_inputSizeDate').val();
@@ -576,7 +579,7 @@
                     }
                 } else if (this.currentChoose == 'inputColor') {
                     $('#ip_inputColor').css('display', 'none');
-                    if (!this.certificate_img.text_color) {
+                    if (this.certificate_img.text_color) {
                         this.SetShowTextColor();
                         this.certificate_img.text_color = true;
                         this.setTextToShowIntoImage(this.currentChoose, this.img_width / 2, this.img_height / 2);
@@ -685,10 +688,13 @@
                 }
                 if (this.coordinates.dateX > 0) {
                     this.certificate_img.pos_date = true;
+                    this.SetShowTextSizeDate();
                     this.setTextToShowIntoImage("inputDate", this.coordinates.dateX, this.coordinates.dateY);
                 }
-                if (this.coordinates.text_color) {
+
+                if (this.coordinates.text_color.length > 0) {
                     this.certificate_img.text_color = true;
+                    this.SetShowTextColor();
                     this.setTextToShowIntoImage("inputColor", this.coordinates.dateX, this.coordinates.dateY);
                 }
                 if (this.coordinates.signX > 0) {
@@ -696,9 +702,9 @@
                     this.sign_text = this.coordinates.sign_text;
                     this.setTextToShowIntoImage("inputSign", this.coordinates.signX, this.coordinates.signY);
                 }
+
             },
             OnchangeTextBox(e) {
-              console.log(1);
               if (e.currentTarget.id.indexOf('Size') > -1) {
                     if (e.currentTarget.id.indexOf('FullName') > -1 && this.certificate_img.pos_name) {
                         if ($('#ip_inputSizeFullName').val() < 0)
@@ -744,7 +750,6 @@
                     }
                 }
                 else {
-
                   if (e.currentTarget.id == 'ip_inputFullName' && this.certificate_img.pos_name) {
                         $('#sp_inputFullName').text(this.fullName);
                         this.currentChoose = "inputFullName";
@@ -766,15 +771,26 @@
                 $('#ip_inputColor').css('display', 'block');
                 if ($('#ip_inputColor').val() !== '') {
                     this.coordinates.textColor = $('#ip_inputColor').val();
-                } else if (typeof (this.coordinates.fullnameSize) == 'undefined' || this.coordinates.fullnameSize === undefined
-                    || this.coordinates.fullnameSize == '') {
-                    this.coordinates.fullnameSize = this.text_color;
                 }
-
-                $('#sp_inputFullName').css('font-size', this.coordinates.fullnameSize + 'px');
-                $('#sp_inputFullName').css('line-height', this.coordinates.fullnameSize + 'px');
-                $('#ip_inputSizeFullName').val(this.coordinates.fullnameSize);
+                // else if (typeof (this.coordinates.text_color) == 'undefined' || this.coordinates.text_color === undefined
+                //     || this.coordinates.text_color == '') {
+                //     this.coordinates.textColor = this.text_color;
+                // }
+                $('#ip_inputColor').val(this.coordinates.text_color);
             },
+          SetShowTextSizeDate() {
+            $('#ip_inputSizeDate').css('display', 'block');
+            if ($('#ip_inputSizeDate').val() !== '') {
+              this.coordinates.dateSize = $('#ip_inputSizeDate').val();
+            } else if (typeof (this.coordinates.dateSize) == 'undefined' || this.coordinates.dateSize === undefined
+              || this.coordinates.dateSize == '') {
+              this.coordinates.dateSize = 15;
+            }
+
+            $('#ip_inputSizeDate').css('font-size', this.coordinates.dateSize + 'px');
+            $('#ip_inputSizeDate').css('line-height', this.coordinates.dateSize + 'px');
+            $('#ip_inputSizeDate').val(this.coordinates.dateSize);
+          },
             SetShowTextFullName() {
                 $('#ip_inputFullName').css('display', 'block');
                 $('#ip_inputSizeFullName').css('display', 'block');
@@ -833,6 +849,7 @@
         },
       updated() {
           this.setFileInput();
+        this.showCoordinates();
       }
     }
 </script>
