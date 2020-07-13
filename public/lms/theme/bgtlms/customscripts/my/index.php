@@ -1,5 +1,9 @@
 <?php
 require_once(__DIR__ . '/../../../../config.php');
+//
+if(!isloggedin()){
+    require_login();
+}
 // Start the session
 session_start();
 
@@ -89,7 +93,6 @@ foreach ($courses as $course){
         push_course($courses_soft_skills, $course);
     }
 }
-
 function push_course(&$array, $course) {
 //    $teacher = array();
 //    if (strlen($course->teacher_name) != 0) {
@@ -259,6 +262,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-decoration: none;
     }
 
+    #page-wrapper .navbar{
+        padding: 7px 1rem 9px .5rem !important;
+    }
+    .navbar .count-container{
+        top: 2px !important;
+    }
     .block-color{
         width: 100px;
         height: 100px;
@@ -424,8 +433,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .block-item__image img {
-        width: 32%;
-        height: 26%;
+        width: 44%;
+        height: 32%;
         position: absolute;
         top: 3%;
         right: 3%;
@@ -436,8 +445,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-family: Nunito-Sans-Bold;
         color: #FFFFFF;
         position: absolute;
-        top: 10%;
-        right: 10%;
+        top: 12%;
+        right: 12%;
         letter-spacing: 1px;
     }
 
@@ -448,7 +457,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         padding: 3%;
     }
 
-    .avatar {
+    .info-user .avatar {
         width: 100%;
         border-radius: 50%;
         margin: 0 !important;
@@ -460,7 +469,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         height: 100%;
     }
 
-    .avatar img {
+    .info-user .avatar img {
         /*margin-top: 15%;*/
         /*margin-bottom: 15%;*/
         border-radius: 50%;
@@ -781,45 +790,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                         </ul>
                         <div class="carousel-inner">
                             <div class="carousel-item active" style="background-image: url('<?php echo $_SESSION["pathBackground"];  ?>')">
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" class="bg-img" style="max-height: 400px">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
                                 <div class="carousel-caption">
-<!--                                    <h1>--><?php //echo $_SESSION["organizationName"]; ?><!-- <span>Academy</span></h1>-->
                                     <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
                                     <div class="block-color"></div>
                                 </div>
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.png" alt="">-->
-<!--                                </div>-->
                             </div>
-<!--                            <div class="carousel-item">-->
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.jpg" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
-<!--                            <div class="carousel-item">-->
-<!--                                <img src="--><?php //echo $_SESSION["pathBackground"];  ?><!--" alt="Los Angeles" width="1100" height="500" class="bg-img">-->
-<!--                                <div class="slide-logo">-->
-<!--                                    <img src="--><?php //echo $_SESSION["pathLogo"];  ?><!--" alt="">-->
-<!--                                </div>-->
-<!--                                <div class="carousel-caption">-->
-<!--                                    <h3>--><?php //echo $_SESSION["organizationName"]; ?><!--</h3>-->
-<!--                                    <p>ACADEMY</p>-->
-<!--                                </div>-->
-<!--                                <div class="slide-image">-->
-<!--                                    <img src="images/1a-01.jpg" alt="">-->
-<!--                                </div>-->
-<!--                            </div>-->
                         </div>
                         <a class="carousel-control-prev" href="#demo" data-slide="prev">
                             <span class="carousel-control-prev-icon"></span>
@@ -888,6 +863,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <a class="info-text">
                                         <div class="text-course">Completed courses</div>
                                         <div class="text-number"><?php echo count($courses_completed); ?></div>
+                                    </a>
+                                </div>
+                                <div class="info-statistic__completed-courses">
+                                    <a class="info-text">
+                                        <div class="text-course">Other courses</div>
+                                        <div class="text-number"><?php echo count($courses_others); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__profile">
@@ -1017,11 +998,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_completed) > 0) {  ?>
-                                            <?php $countBlock = 1; foreach ($courses_completed as $course) {  ?>
-                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
+                                            <?php $countBlock = 1; foreach ($courses_completed as $course) { ?>
+                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
-                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
-                                                            <img src="images/Badge-examples 2.png" alt="">
+                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                            <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1060,7 +1041,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php?type=5">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1068,11 +1049,13 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if(count($courses_others) > 0) {  ?>
-                                            <?php $countBlock = 1; foreach ($courses_others as $course) {  ?>
-                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3  course-mx-5">
+                                            <?php $countBlock = 1; foreach ($courses_others as $course) { ?>
+                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
-                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase.$course->course_avatar; ?>')">
-                                                            <img src="images/Badge-examples 2.png" alt="">
+                                                        <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                            <div>
+                                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span><?php echo intval($course->numoflearned*100/$course->numofmodule); ?>%</span>
+                                                            </div>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">

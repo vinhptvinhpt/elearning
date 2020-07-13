@@ -190,7 +190,7 @@ function permission_cat_name()
         'tms-system-user' => __('quan_ly_nguoi_dung'),
         'tms-system-teacher' => __('quan_ly_giang_vien'),
         'tms-system-student' => __('quan_ly_hoc_vien'),
-        'tms-system-market' => __('quan_ly_nhan_vien_giam_sat_thi_truong'),
+//        'tms-system-market' => __('quan_ly_nhan_vien_giam_sat_thi_truong'),
         'tms-system-organize' => __('quan_ly_khung_co_cau_to_chuc'),
         'tms-system-administrator' => __('quyen_quan_tri_he_thong'),
         'tms-system-role' => __('quan_ly_phan_quyen'),
@@ -201,14 +201,14 @@ function permission_cat_name()
         'tms-educate-exam-offline' => __('khoa_dao_tao_tap_trung'),
         'tms-educate-exam-clone' => __('tao_moi_khoa_tu_thu_vien'),
         'tms-educate-exam-restore' => __('khoi_phuc_khoa_dao_tao'),
-        'tms-educate-uncertificate' => __('danh_sach_hoc_vien'),
+        'tms-educate-uncertificate' => __('cap_giay_chung_nhan'),
         'tms-educate-certificate' => __('chung_chi_mau'),
         'tms-educate-badge' => __('huy_hieu_mau'),
         'tms-trainning' => __('khung_nang_luc'),
         'tms-educate' => __('chung_chi'),
         'tms-report' => __('bao_cao'),
         'tms-report-survey' => __('quan_ly_survey'),
-        'tms-report-base' => __('thong_ke_so_bo'),
+//        'tms-report-base' => __('thong_ke_so_bo'),
         'tms-report-report' => __('bao_cao_danh_gia'),
         'tms-setting-configuration' => __('cau_hinh_chung'),
         'tms-setting-email-template' => __('email_template'),
@@ -284,12 +284,12 @@ function permission_slug()
                 'tms-system-employee-decentralization' => __('phan_quyen'),
             ],
 //            tms-system-employee
-            'tms-system-market' => [
-                'tms-system-market-view' => __('xem'),
-                'tms-system-market-add' => __('them'),
-                'tms-system-market-edit' => __('sua'),
-                'tms-system-market-deleted' => __('xoa'),
-            ],
+//            'tms-system-market' => [
+//                'tms-system-market-view' => __('xem'),
+//                'tms-system-market-add' => __('them'),
+//                'tms-system-market-edit' => __('sua'),
+//                'tms-system-market-deleted' => __('xoa'),
+//            ],
             'tms-system-teacher' => [
                 'tms-system-teacher-view' => __('xem'),
                 'tms-system-teacher-add' => __('them'),
@@ -401,12 +401,12 @@ function permission_slug()
                 'tms-report-survey-edit' => __('sua'),
                 'tms-report-survey-deleted' => __('xoa'),
             ],
-            'tms-report-base' => [
-                'tms-report-base-view' => __('xem'),
-                /*'tms-report-base-add' => 'Thêm',
-                'tms-report-base-edit' => 'Sửa',
-                'tms-report-base-deleted' => 'Xóa',*/
-            ],
+//            'tms-report-base' => [
+//                'tms-report-base-view' => __('xem'),
+//                /*'tms-report-base-add' => 'Thêm',
+//                'tms-report-base-edit' => 'Sửa',
+//                'tms-report-base-deleted' => 'Xóa',*/
+//            ],
             'tms-report-report' => [
                 'tms-report-report-view' => __('xem'),
                 /*'tms-report-report-add' => 'Thêm',
@@ -460,7 +460,7 @@ function permission_slug()
         ],
         'nav_support' => [
             'tms-support' => [
-                'tms-support-market-view' => __('xem_huong_dan_cho_chuyen_vien_kinh_doanh'),
+                'tms-support-market-view' => __('xem_huong_dan_cho_quan_ly'),
                 'tms-support-admin-view' => __('xem_huong_dan_cho_quan_ly_he_thong'),
             ],
         ],
