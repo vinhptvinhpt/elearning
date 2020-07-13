@@ -181,7 +181,7 @@
                         translated_action = this.trans.get('keys.xem');
                         break;
                     case 'restored':
-                        translated_action = this.trans.get('keys.sua');
+                        translated_action = this.trans.get('keys.khoi_phuc');
                         break;
                     default:
                         translated_action = action;

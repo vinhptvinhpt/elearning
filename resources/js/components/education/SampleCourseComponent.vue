@@ -150,9 +150,10 @@
                       <th>{{trans.get('keys.stt')}}</th>
                       <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
                       <th style="width: 30%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
-                      <th class="text-center mobile_hide" style="width: 15%;">
-                        {{trans.get('keys.diem_qua_mon')}}
-                      </th>
+<!--                      <th class="text-center mobile_hide" style="width: 15%;">-->
+<!--                        {{trans.get('keys.diem_qua_mon')}}-->
+<!--                      </th>-->
+                      <th class="text-center mobile_hide">{{trans.get('keys.cap_nhat_lan_cuoi')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
@@ -161,7 +162,8 @@
                       <td>{{ (current-1)*row+(index+1) }}</td>
                       <td>{{ course.shortname }}</td>
                       <td>{{ course.fullname }}</td>
-                      <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>
+<!--                      <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
+                      <td class="text-center mobile_hide"><a style="cursor: default; color: #007bff" :title="course.last_modify_time">{{ course.username }}</a></td>
                       <td class="text-center">
                         <!--                                                <a :title="trans.get('keys.sua_noi_dung')"-->
                         <!--                                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->

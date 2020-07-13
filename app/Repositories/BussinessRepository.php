@@ -1188,13 +1188,15 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
+
+        $select = [];
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
         if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->where('mdl_course.category', '=', $category_id)
-                ->select(
+                ->where('mdl_course.category', '=', $category_id);
+                $select = [
                     'mdl_course.id',
                     'mdl_course.fullname',
                     'mdl_course.shortname',
@@ -1202,7 +1204,7 @@ class BussinessRepository implements IBussinessInterface
                     'mdl_course.enddate',
                     'mdl_course.visible',
                     'mdl_course_completion_criteria.gradepass as pass_score'
-                );
+                ];
         } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
             $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
@@ -1230,7 +1232,8 @@ class BussinessRepository implements IBussinessInterface
                                     ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
                                     ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
                             });
-                    })->select(
+                    });
+                   $select = [
                         'mdl_course.id',
                         'mdl_course.fullname',
                         'mdl_course.shortname',
@@ -1240,7 +1243,7 @@ class BussinessRepository implements IBussinessInterface
                         'mdl_course.category',
                         'mdl_course.deleted',
                         'mccc.gradepass as pass_score'
-                    );
+                    ];
             } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
@@ -1250,8 +1253,8 @@ class BussinessRepository implements IBussinessInterface
                         ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
                         ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
                         ->where('mdl_course.category', '=', $category_id)
-                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                        ->select(
+                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
+                        $select = [
                             'mdl_course.id',
                             'mdl_course.fullname',
                             'mdl_course.shortname',
@@ -1259,10 +1262,16 @@ class BussinessRepository implements IBussinessInterface
                             'mdl_course.enddate',
                             'mdl_course.visible',
                             'mdl_course_completion_criteria.gradepass as pass_score'
-                        );
+                        ];
                 }
             }
         }
+
+        $listCourses->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id');
+        //$select[] = 'mdl_course.last_modify_user';
+        $select[] = 'mdl_user.username';
+        $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
+        $listCourses->select($select);
 
         //là khóa học mẫu
         //        if ($sample == 1) {
@@ -1317,7 +1326,7 @@ class BussinessRepository implements IBussinessInterface
             }
         }
 
-        $listCourses = $listCourses->orderBy('id', 'desc');
+        $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
