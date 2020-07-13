@@ -89,23 +89,27 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        }
 //        else {
 
+
+        $select = [];
+
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
         if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             //Không thuộc các trường hợp trên
             $listCourses = DB::table('mdl_course as c')
                 ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category')
-                ->select(
-                    'c.id',
-                    'c.fullname',
-                    'c.shortname',
-                    'c.startdate',
-                    'c.enddate',
-                    'c.visible',
-                    'c.category',
-                    'c.deleted',
-                    'mccc.gradepass as pass_score'
-                );
+                ->join('mdl_course_categories as mc', 'mc.id', '=', 'c.category');
+
+            $select = [
+                'c.id',
+                'c.fullname',
+                'c.shortname',
+                'c.startdate',
+                'c.enddate',
+                'c.visible',
+                'c.category',
+                'c.deleted',
+                'mccc.gradepass as pass_score'
+            ];
         } else {
             //Kiểm tra xem có phải role thuộc organization hay không
             $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
@@ -137,17 +141,18 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                                         ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
                                         ->where('mue.userid', '=', \Auth::user()->id);
                                 });
-                        })->select(
-                            'c.id',
-                            'c.fullname',
-                            'c.shortname',
-                            'c.startdate',
-                            'c.enddate',
-                            'c.visible',
-                            'c.category',
-                            'c.deleted',
-                            'mccc.gradepass as pass_score'
-                        );
+                        });
+                    $select = [
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'c.category',
+                        'c.deleted',
+                        'mccc.gradepass as pass_score'
+                    ];
 //                    $ready = true;
                 }
             } else {
@@ -158,22 +163,69 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         ->where('mue.userid', '=', \Auth::user()->id)
                         ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
                         ->join('mdl_course as c', 'e.courseid', '=', 'c.id')
-                        ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                        ->select(
-                            'c.id',
-                            'c.fullname',
-                            'c.shortname',
-                            'c.startdate',
-                            'c.enddate',
-                            'c.visible',
-                            'c.category',
-                            'c.deleted',
-                            'mccc.gradepass as pass_score'
-                        );
+                        ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id');
+                    $select = [
+                        'c.id',
+                        'c.fullname',
+                        'c.shortname',
+                        'c.startdate',
+                        'c.enddate',
+                        'c.visible',
+                        'c.category',
+                        'c.deleted',
+                        'mccc.gradepass as pass_score'
+                    ];
 //                    $ready = true;
                 }
             }
         }
+
+        //Get last modify => Quá chậm so với query thuần, mặc dù đã paginated, do dữ liệu bảnh log quá nhiều => sử dụng trigger mdl_logstore_standard_log để cập nhật bảng mdl_course
+//        $listCourses->leftJoin('mdl_logstore_standard_log', function($q) {
+//            $q->on('c.id', '=', 'mdl_logstore_standard_log.contextinstanceid');
+//            $q->whereIn('mdl_logstore_standard_log.id', function($query) {
+//                $query
+//                    //->max('mdl_logstore_standard_log.id') //Eloquent only
+//                    ->select(DB::raw('MAX(mlsl.id)')) //Query builder normal
+//                    ->from('mdl_logstore_standard_log as mlsl')
+//                    ->join('mdl_course as mc', 'mlsl.contextinstanceid', '=', 'mc.id')
+//                    ->where('mlsl.action', '<>', 'viewed')
+//                    ->groupBy('mc.id');
+//            });
+//        });
+//        $select[] = 'mdl_logstore_standard_log.timecreated';
+//        $select[] = 'mdl_logstore_standard_log.userid';
+        //Get last modify query raw
+/*        select
+        `c`.`id`,
+        `c`.`fullname`,
+        `c`.`shortname`,
+        `c`.`startdate`,
+        `c`.`enddate`,
+        `c`.`visible`,
+        `c`.`category`,
+        `c`.`deleted`,
+        `mccc`.`gradepass` as `pass_score`,
+        `mdl_logstore_standard_log`.`timecreated`,
+        `mdl_logstore_standard_log`.`userid`
+        from `mdl_course` as `c`
+        left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `c`.`id`
+        inner join `mdl_course_categories` as `mc` on `mc`.`id` = `c`.`category`
+        left join `mdl_logstore_standard_log` on `c`.`id` = `mdl_logstore_standard_log`.`contextinstanceid` and `mdl_logstore_standard_log`.`id` in (
+                select MAX(mlsl.id)
+        from `mdl_logstore_standard_log` as `mlsl`
+        inner join `mdl_course` as `mc` on `mlsl`.`contextinstanceid` = `mc`.`id`
+        where `mlsl`.`action` <> 'viewed'
+        group by `mc`.`id`
+        )
+        limit 10*/
+
+        //Get last modification info by trigger
+        $listCourses->leftJoin('mdl_user', 'c.last_modify_user', '=', 'mdl_user.id');
+        //$select[] = 'mdl_course.last_modify_user';
+        $select[] = 'mdl_user.username';
+        $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`c`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
+        $listCourses->select($select);
 
         //}
 //        if (!$ready) {
