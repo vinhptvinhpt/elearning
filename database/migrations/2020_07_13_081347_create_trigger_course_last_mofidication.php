@@ -19,7 +19,7 @@ class CreateTriggerCourseLastMofidication extends Migration
                 IF (NEW.courseid <> 0 AND NEW.action <> 'viewed')
                 THEN
                         UPDATE mdl_course
-                        SET last_modify_user = NEW.userid, last_modify_time = NEW.timecreated, last_modify_action = NEW.action
+                        SET last_modify_user = NEW.userid, last_modify_time = NEW.timecreated, last_modify_action = CONCAT(NEW.action, ' ', NEW.target)
                         WHERE id = NEW.courseid;
                 END IF;
             END
