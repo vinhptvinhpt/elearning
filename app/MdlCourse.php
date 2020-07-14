@@ -25,7 +25,10 @@ class MdlCourse extends Model
         'is_end_quiz',
         'estimate_duration',
         'course_budget',
-        'deleted'
+        'deleted',
+        'last_modify_user',
+        'last_modify_time',
+        'last_modify_action'
     ];
 
 //    //Connection to logs

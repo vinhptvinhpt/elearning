@@ -121,9 +121,6 @@ class CourseController extends Controller
     {
         $response = new ResponseModel();
         try {
-            // [VinhPT][Fix_Bugs] Get wrong date time because of timezone => set default VN timezone
-            date_default_timezone_set('Asia/Ho_Chi_Minh');
-
             $param = [
                 'shortname' => 'code',
                 'fullname' => 'text',
@@ -199,49 +196,51 @@ class CourseController extends Controller
                     ]);
                 }
             }
-
-            //write log to mdl_logstore_standard_log
-            $app_name = Config::get('constants.domain.APP_NAME');
-
-            $key_app = encrypt_key($app_name);
             $user_id = Auth::id();
-            $dataLog = array(
-                'app_key' => $key_app,
-                'courseid' => $course->id,
-                'action' => 'create',
-                'description' => json_encode($course),
-                'userid' => $user_id
-            );
-
-            $dataLog = createJWT($dataLog, 'data');
-
-            $data_write = array(
-                'data' => $dataLog,
-            );
-
-            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            $checkUser = MdlUser::where('id', $user_id)->first();
-
             //Check role teacher and enrol for creator of course
             $current_user_roles_and_slugs = checkRole();
-
             //If user ís not a teacher, assign as teacher
             $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
             if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
                 add_user_by_role($user_id, $role_teacher->id);
                 enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
             }
-
             //Enrol user to newly created course á teacher
             enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
-            $token = '';
-            if (isset($checkUser)) {
-                $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
-            }
+
             \DB::commit();
+
             //call api write log
+            //write log to mdl_logstore_standard_log
+            /* $app_name = Config::get('constants.domain.APP_NAME');
+
+             $key_app = encrypt_key($app_name);
+             $dataLog = array(
+                 'app_key' => $key_app,
+                 'courseid' => $course->id,
+                 'action' => 'create',
+                 'description' => json_encode($course),
+                 'userid' => $user_id
+             );
+
+             $dataLog = createJWT($dataLog, 'data');
+
+             $data_write = array(
+                 'data' => $dataLog,
+             );
+
+             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+             $checkUser = MdlUser::where('id', $user_id)->first();
+
+             $token = '';
+             if (isset($checkUser)) {
+                 $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+             }
             callAPI('POST', $url, $data_write, false, $token);
+            */
+            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
+            updateLastModification('create', $course->id);
 
             $response->otherData = $course->id;
             $response->status = true;

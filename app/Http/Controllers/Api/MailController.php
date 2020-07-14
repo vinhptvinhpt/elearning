@@ -15,7 +15,6 @@ use App\TmsUserDetail;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\URL;
 
 class MailController extends Controller
 {
