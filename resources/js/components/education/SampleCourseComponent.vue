@@ -163,7 +163,8 @@
                       <td>{{ course.shortname }}</td>
                       <td>{{ course.fullname }}</td>
 <!--                      <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                      <td class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                      <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                      <td v-else></td>
                       <td class="text-center">
                         <!--                                                <a :title="trans.get('keys.sua_noi_dung')"-->
                         <!--                                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"-->
@@ -264,7 +265,7 @@
     },
     methods: {
       capitalizeFirstLetter(string) {
-        return string[0].toUpperCase() + string.slice(1);
+        return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
       },
       createCourse() {
         if (!this.shortname) {
