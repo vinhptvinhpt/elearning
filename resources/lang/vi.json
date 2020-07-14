@@ -23,7 +23,7 @@
   "tao_moi_khoa_tu_thu_vien": "Tạo mới khóa từ thư viện",
   "khoi_phuc_khoa_dao_tao": "Khôi phục khóa đào tạo",
   "chung_chi": "Chứng chỉ",
-  "danh_sach_hoc_vien": "Danh sách học viên",
+  "cap_giay_chung_nhan": "Cấp giấy chứng nhận",
   "chung_chi_mau": "Chứng chỉ mẫu",
   "bao_cao": "Báo cáo",
   "quan_ly_survey": "Quản lý khảo sát",
@@ -312,5 +312,6 @@
   "nhap_du_lieu_thanh_cong": "Nhập dữ liệu thành công",
   "ho_ten": "Họ và tên",
   "thoi_gian": "Thời gian",
-    "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa"
+    "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa",
+    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý"
 }

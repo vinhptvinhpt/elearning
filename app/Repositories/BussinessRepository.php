@@ -113,33 +113,34 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        if ($type == 'education') {
-            $data = MdlLogstoreStandardLog::with('user')
-                ->where('mdl_logstore_standard_log.target', 'course')
-                ->select(
-                    DB::raw('"education" as type'),
-                    'mdl_logstore_standard_log.action',
-                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
-                    'mdl_course.shortname as course_name',
-                    'mdl_logstore_standard_log.contextinstanceid as course_id',
-                    'mdl_logstore_standard_log.userid',
-                    'mdl_logstore_standard_log.target'
-                )
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
-                ->where('mdl_logstore_standard_log.contextlevel', 50);
+//        if ($type == 'education') {
+//            $data = MdlLogstoreStandardLog::with('user')
+//                ->where('mdl_logstore_standard_log.target', 'course')
+//                ->select(
+//                    DB::raw('"education" as type'),
+//                    'mdl_logstore_standard_log.action',
+//                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
+//                    'mdl_course.shortname as course_name',
+//                    'mdl_logstore_standard_log.contextinstanceid as course_id',
+//                    'mdl_logstore_standard_log.userid',
+//                    'mdl_logstore_standard_log.target'
+//                )
+//                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
+//                ->where('mdl_logstore_standard_log.contextlevel', 50);
+//
+//            if ($keyword && strlen($keyword) != 0) {
+//                $data = $data->where(function($query) use ($keyword){
+//                    $query->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
+//                    $query->orWhere('mdl_course.shortname', 'like', "%{$keyword}%");
+//                    $query->orWhere('mdl_course.fullname', 'like', "%{$keyword}%");
+//                });
+//            }
+//            if (strlen($action) != 0) {
+//                $data = $data->where('mdl_logstore_standard_log.action', $action . "d");
+//            }
+//            $data = $data->orderBy('mdl_logstore_standard_log.timecreated', 'desc');
+//        } else {
 
-            if ($keyword && strlen($keyword) != 0) {
-                $data = $data->where(function($query) use ($keyword){
-                    $query->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
-                    $query->orWhere('mdl_course.shortname', 'like', "%{$keyword}%");
-                    $query->orWhere('mdl_course.fullname', 'like', "%{$keyword}%");
-                });
-            }
-            if (strlen($action) != 0) {
-                $data = $data->where('mdl_logstore_standard_log.action', $action . "d");
-            }
-            $data = $data->orderBy('mdl_logstore_standard_log.timecreated', 'desc');
-        } else {
             $data = TmsLog::with('user');
             if ($keyword) {
                 $data = $data->where(function($query) use ($keyword){
@@ -154,7 +155,8 @@ class BussinessRepository implements IBussinessInterface
                 $data = $data->where('action', $action);
             }
             $data = $data->orderBy('created_at', 'desc');
-        }
+
+//        }
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -826,11 +828,10 @@ class BussinessRepository implements IBussinessInterface
             if ($result == 1) {
 
                 //write log to mdl_logstore_standard_log
-                $app_name = Config::get('constants.domain.APP_NAME');
+/*                $app_name = Config::get('constants.domain.APP_NAME');
 
                 $key_app = encrypt_key($app_name);
                 $user_id = Auth::id();
-
                 $dataLog = array(
                     'app_key' => $key_app,
                     'courseid' => $course->id,
@@ -838,13 +839,10 @@ class BussinessRepository implements IBussinessInterface
                     //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
                     'userid' => $user_id
                 );
-
                 $dataLog = createJWT($dataLog, 'data');
-
                 $data_write = array(
                     'data' => $dataLog,
                 );
-
                 $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
                 $checkUser = MdlUser::where('id', $user_id)->first();
                 $token = '';
@@ -852,7 +850,10 @@ class BussinessRepository implements IBussinessInterface
                     $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
                 }
                 //call api write log
-                callAPI('POST', $url, $data_write, false, $token);
+                callAPI('POST', $url, $data_write, false, $token);*/
+
+                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'delete', 'Delete course: ' . $course->shortname);
+                updateLastModification('delete', $course->id);
 
 
                 $response->status = true;
@@ -1112,30 +1113,24 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //write log to mdl_logstore_standard_log
-
-            $app_name = Config::get('constants.domain.APP_NAME');
-
+/*            $app_name = Config::get('constants.domain.APP_NAME');
             $key_app = encrypt_key($app_name);
-
-
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
                 'action' => 'create',
                 'description' => json_encode($course),
             );
-
             $dataLog = createJWT($dataLog, 'data');
-
             $data_write = array(
                 'data' => $dataLog,
             );
-
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
             //call api write log
-            callAPI('POST', $url, $data_write, false, '');
+            callAPI('POST', $url, $data_write, false, '');*/
 
+            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
+            updateLastModification('create', $course->id);
 
             $response->status = true;
             $response->message = __('nhan_ban_khoa_hoc');
@@ -1188,13 +1183,15 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
+
+        $select = [];
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
         if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->where('mdl_course.category', '=', $category_id)
-                ->select(
+                ->where('mdl_course.category', '=', $category_id);
+                $select = [
                     'mdl_course.id',
                     'mdl_course.fullname',
                     'mdl_course.shortname',
@@ -1202,7 +1199,7 @@ class BussinessRepository implements IBussinessInterface
                     'mdl_course.enddate',
                     'mdl_course.visible',
                     'mdl_course_completion_criteria.gradepass as pass_score'
-                );
+                ];
         } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
             $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
@@ -1230,7 +1227,8 @@ class BussinessRepository implements IBussinessInterface
                                     ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
                                     ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
                             });
-                    })->select(
+                    });
+                   $select = [
                         'mdl_course.id',
                         'mdl_course.fullname',
                         'mdl_course.shortname',
@@ -1240,7 +1238,7 @@ class BussinessRepository implements IBussinessInterface
                         'mdl_course.category',
                         'mdl_course.deleted',
                         'mccc.gradepass as pass_score'
-                    );
+                    ];
             } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
@@ -1250,8 +1248,8 @@ class BussinessRepository implements IBussinessInterface
                         ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
                         ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
                         ->where('mdl_course.category', '=', $category_id)
-                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                        ->select(
+                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
+                        $select = [
                             'mdl_course.id',
                             'mdl_course.fullname',
                             'mdl_course.shortname',
@@ -1259,10 +1257,17 @@ class BussinessRepository implements IBussinessInterface
                             'mdl_course.enddate',
                             'mdl_course.visible',
                             'mdl_course_completion_criteria.gradepass as pass_score'
-                        );
+                        ];
                 }
             }
         }
+
+        $listCourses->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id');
+        //$select[] = 'mdl_course.last_modify_user';
+        $select[] = 'mdl_user.username';
+        $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
+        $select[] = 'mdl_course.last_modify_action';
+        $listCourses->select($select);
 
         //là khóa học mẫu
         //        if ($sample == 1) {
@@ -1317,7 +1322,7 @@ class BussinessRepository implements IBussinessInterface
             }
         }
 
-        $listCourses = $listCourses->orderBy('id', 'desc');
+        $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
@@ -1490,7 +1495,9 @@ class BussinessRepository implements IBussinessInterface
             $result = 1;
 
             if ($result == 1) {
-                $contextData = MdlContext::query();
+
+
+/*                $contextData = MdlContext::query();
                 $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
                 $contextData = $contextData->where('instanceid', '=', $id);
                 $contextData = $contextData->orderBy('id', 'desc')->first();
@@ -1523,7 +1530,10 @@ class BussinessRepository implements IBussinessInterface
                     $new_event->origin = "restore";
                     $new_event->ip = '192.168.1.1';
                     $new_event->save();
-                }
+                }*/
+                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'restore', 'Restore course: ' . $course->shortname);
+                updateLastModification('restore', $course->id);
+
                 $response->status = true;
                 $response->message = __('thao_tac_thanh_cong');
             } else {

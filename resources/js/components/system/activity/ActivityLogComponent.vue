@@ -38,7 +38,8 @@
                         <select v-model="type" class="custom-select custom-select-sm form-control form-control-sm" @change="getActivity(1)">
                           <option value="user">{{trans.get('keys.nguoi_dung')}}</option>
                           <option value="organize">{{trans.get('keys.co_cau_to_chuc')}}</option>
-                          <option value="education">{{trans.get('keys.khoa_dao_tao')}}</option>
+<!--                          <option value="education">{{trans.get('keys.khoa_dao_tao')}}</option>-->
+                          <option value="course">{{trans.get('keys.khoa_dao_tao')}}</option>
                           <option value="role">{{trans.get('keys.quyen')}}</option>
                           <option value="survey">{{trans.get('keys.khao_sat')}}</option>
                           <option value="system">{{trans.get('keys.he_thong')}}</option>
@@ -92,7 +93,8 @@
                     <tr v-else v-for="(post,index) in posts">
                       <td>{{ (current-1)*row+(index+1) }}</td>
                       <td v-switch="post.type">
-                        <span v-case="'education'">{{trans.get('keys.khoa_dao_tao')}}</span>
+<!--                        <span v-case="'education'">{{trans.get('keys.khoa_dao_tao')}}</span>-->
+                        <span v-case="'course'">{{trans.get('keys.khoa_dao_tao')}}</span>
                         <span v-case="'organize'">{{trans.get('keys.co_cau_to_chuc')}}</span>
                         <span v-case="'user'">{{trans.get('keys.nguoi_dung')}}</span>
                         <span v-case="'role'">{{trans.get('keys.quyen')}}</span>
@@ -110,12 +112,14 @@
                       </td>
 
                       <td  class=" mobile_hide">
-                        <a v-if="type === 'education'" :href="lms_url + post.course_id">{{ 'lms/course/view.php?id=' + post.course_id }}</a>
-                        <a v-else :href="post.url">{{ post.url }}</a>
+<!--                        <a v-if="type === 'education'" :href="lms_url + post.course_id">{{ 'lms/course/view.php?id=' + post.course_id }}</a>-->
+<!--                        <a v-else :href="post.url">{{ post.url }}</a>-->
+                        <a :href="post.url">{{ post.url }}</a>
                       </td>
                       <template class=" mobile_hide">
-                        <td v-if="type === 'education'">{{translateAction(post.action, post.target) + ' ' + post.course_name}}</td>
-                        <td v-else v-html="post.info"></td>
+<!--                        <td v-if="type === 'education'">{{translateAction(post.action, post.target) + ' ' + post.course_name}}</td>-->
+<!--                        <td v-else v-html="post.info"></td>-->
+                        <td v-html="post.info"></td>
                       </template>
                       <td class=" mobile_hide">{{ post.created_at }}</td>
                     </tr>
@@ -158,7 +162,8 @@
                 current: 1,
                 totalPages: 0,
                 row:10,
-                type:'education',
+                // type:'education',
+                type: 'course',
                 action: '',
                 lms_url: ''
             }
@@ -181,7 +186,7 @@
                         translated_action = this.trans.get('keys.xem');
                         break;
                     case 'restored':
-                        translated_action = this.trans.get('keys.sua');
+                        translated_action = this.trans.get('keys.khoi_phuc');
                         break;
                     default:
                         translated_action = action;

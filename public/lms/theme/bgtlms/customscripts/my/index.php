@@ -80,7 +80,7 @@ foreach ($courses as $course){
     else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
         push_course($courses_current, $course);
     }
-    if ($course->category == 5) {
+    if ($course->category == 14) {
         if (
             !array_key_exists($course->id, $courses_all_required)
             && !array_key_exists($course->id, $courses_completed)
