@@ -7,6 +7,17 @@ if(!isloggedin()){
 // Start the session
 session_start();
 
+// [VinhPT] Get firstaccess to redirect
+global $DB, $USER;
+
+$first_login_sql = "SELECT 0, firstaccess, lastaccess from mdl_user where id =". $USER->id;
+$first_login_info = array_values($DB->get_records_sql($first_login_sql))[0];
+if($first_login_info->firstaccess == $first_login_info->lastaccess){
+    $update = "UPDATE mdl_user set firstaccess = ? where id = ?";
+    $DB->execute($update, array($first_login_info->firstaccess + 1, $USER->id));
+    redirect(new moodle_url('guideline.php'));
+}
+
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
