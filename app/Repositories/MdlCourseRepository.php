@@ -693,10 +693,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         $response = new ResponseModel();
         try {
-
-            // [VinhPT][Fix_Bugs] Get wrong date time because of timezone => set default VN timezone
-            date_default_timezone_set('Asia/Ho_Chi_Minh');
-
             $avatar = $request->file('file');
             $fullname = $request->input('fullname');
             $shortname = $request->input('shortname');
@@ -864,7 +860,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
 
             //write log to mdl_logstore_standard_log
-            $app_name = Config::get('constants.domain.APP_NAME');
+/*            $app_name = Config::get('constants.domain.APP_NAME');
 
             $key_app = encrypt_key($app_name);
             $user_id = Auth::id();
@@ -889,7 +885,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
             }
             //call api write log
-            callAPI('POST', $url, $data_write, false, $token);
+            callAPI('POST', $url, $data_write, false, $token);*/
+            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'update', 'Update course: ' . $course->shortname);
+            updateLastModification('update', $course->id);
 
             $response->status = true;
             $response->message = __('sua_khoa_hoc_thanh_cong');

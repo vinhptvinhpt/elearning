@@ -113,33 +113,34 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        if ($type == 'education') {
-            $data = MdlLogstoreStandardLog::with('user')
-                ->where('mdl_logstore_standard_log.target', 'course')
-                ->select(
-                    DB::raw('"education" as type'),
-                    'mdl_logstore_standard_log.action',
-                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
-                    'mdl_course.shortname as course_name',
-                    'mdl_logstore_standard_log.contextinstanceid as course_id',
-                    'mdl_logstore_standard_log.userid',
-                    'mdl_logstore_standard_log.target'
-                )
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
-                ->where('mdl_logstore_standard_log.contextlevel', 50);
+//        if ($type == 'education') {
+//            $data = MdlLogstoreStandardLog::with('user')
+//                ->where('mdl_logstore_standard_log.target', 'course')
+//                ->select(
+//                    DB::raw('"education" as type'),
+//                    'mdl_logstore_standard_log.action',
+//                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
+//                    'mdl_course.shortname as course_name',
+//                    'mdl_logstore_standard_log.contextinstanceid as course_id',
+//                    'mdl_logstore_standard_log.userid',
+//                    'mdl_logstore_standard_log.target'
+//                )
+//                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
+//                ->where('mdl_logstore_standard_log.contextlevel', 50);
+//
+//            if ($keyword && strlen($keyword) != 0) {
+//                $data = $data->where(function($query) use ($keyword){
+//                    $query->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
+//                    $query->orWhere('mdl_course.shortname', 'like', "%{$keyword}%");
+//                    $query->orWhere('mdl_course.fullname', 'like', "%{$keyword}%");
+//                });
+//            }
+//            if (strlen($action) != 0) {
+//                $data = $data->where('mdl_logstore_standard_log.action', $action . "d");
+//            }
+//            $data = $data->orderBy('mdl_logstore_standard_log.timecreated', 'desc');
+//        } else {
 
-            if ($keyword && strlen($keyword) != 0) {
-                $data = $data->where(function($query) use ($keyword){
-                    $query->where('mdl_logstore_standard_log.other', 'like', "%{$keyword}%");
-                    $query->orWhere('mdl_course.shortname', 'like', "%{$keyword}%");
-                    $query->orWhere('mdl_course.fullname', 'like', "%{$keyword}%");
-                });
-            }
-            if (strlen($action) != 0) {
-                $data = $data->where('mdl_logstore_standard_log.action', $action . "d");
-            }
-            $data = $data->orderBy('mdl_logstore_standard_log.timecreated', 'desc');
-        } else {
             $data = TmsLog::with('user');
             if ($keyword) {
                 $data = $data->where(function($query) use ($keyword){
@@ -154,7 +155,8 @@ class BussinessRepository implements IBussinessInterface
                 $data = $data->where('action', $action);
             }
             $data = $data->orderBy('created_at', 'desc');
-        }
+
+//        }
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -826,11 +828,10 @@ class BussinessRepository implements IBussinessInterface
             if ($result == 1) {
 
                 //write log to mdl_logstore_standard_log
-                $app_name = Config::get('constants.domain.APP_NAME');
+/*                $app_name = Config::get('constants.domain.APP_NAME');
 
                 $key_app = encrypt_key($app_name);
                 $user_id = Auth::id();
-
                 $dataLog = array(
                     'app_key' => $key_app,
                     'courseid' => $course->id,
@@ -838,13 +839,10 @@ class BussinessRepository implements IBussinessInterface
                     //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
                     'userid' => $user_id
                 );
-
                 $dataLog = createJWT($dataLog, 'data');
-
                 $data_write = array(
                     'data' => $dataLog,
                 );
-
                 $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
                 $checkUser = MdlUser::where('id', $user_id)->first();
                 $token = '';
@@ -852,7 +850,10 @@ class BussinessRepository implements IBussinessInterface
                     $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
                 }
                 //call api write log
-                callAPI('POST', $url, $data_write, false, $token);
+                callAPI('POST', $url, $data_write, false, $token);*/
+
+                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'delete', 'Delete course: ' . $course->shortname);
+                updateLastModification('delete', $course->id);
 
 
                 $response->status = true;
@@ -1112,30 +1113,24 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //write log to mdl_logstore_standard_log
-
-            $app_name = Config::get('constants.domain.APP_NAME');
-
+/*            $app_name = Config::get('constants.domain.APP_NAME');
             $key_app = encrypt_key($app_name);
-
-
             $dataLog = array(
                 'app_key' => $key_app,
                 'courseid' => $course->id,
                 'action' => 'create',
                 'description' => json_encode($course),
             );
-
             $dataLog = createJWT($dataLog, 'data');
-
             $data_write = array(
                 'data' => $dataLog,
             );
-
             $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
             //call api write log
-            callAPI('POST', $url, $data_write, false, '');
+            callAPI('POST', $url, $data_write, false, '');*/
 
+            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
+            updateLastModification('create', $course->id);
 
             $response->status = true;
             $response->message = __('nhan_ban_khoa_hoc');
@@ -1499,7 +1494,9 @@ class BussinessRepository implements IBussinessInterface
             $result = 1;
 
             if ($result == 1) {
-                $contextData = MdlContext::query();
+
+
+/*                $contextData = MdlContext::query();
                 $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
                 $contextData = $contextData->where('instanceid', '=', $id);
                 $contextData = $contextData->orderBy('id', 'desc')->first();
@@ -1532,7 +1529,10 @@ class BussinessRepository implements IBussinessInterface
                     $new_event->origin = "restore";
                     $new_event->ip = '192.168.1.1';
                     $new_event->save();
-                }
+                }*/
+                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'restore', 'Restore course: ' . $course->shortname);
+                updateLastModification('restore', $course->id);
+
                 $response->status = true;
                 $response->message = __('thao_tac_thanh_cong');
             } else {
