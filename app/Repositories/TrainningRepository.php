@@ -643,29 +643,25 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         ]);
 
                         //write log to mdl_logstore_standard_log
+//                        $app_name = Config::get('constants.domain.APP_NAME');
+//                        $key_app = encrypt_key($app_name);
+//                        $dataLog = array(
+//                            'app_key' => $key_app,
+//                            'courseid' => $course->id,
+//                            'action' => 'create',
+//                            'description' => json_encode($course),
+//                        );
+//                        $dataLog = createJWT($dataLog, 'data');
+//                        $data_write = array(
+//                            'data' => $dataLog,
+//                        );
+//                        $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+//                        //call api write log
+//                        callAPI('POST', $url, $data_write, false, '');
 
-                        $app_name = Config::get('constants.domain.APP_NAME');
+                        devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
+                        updateLastModification('create', $course->id);
 
-                        $key_app = encrypt_key($app_name);
-
-
-                        $dataLog = array(
-                            'app_key' => $key_app,
-                            'courseid' => $course->id,
-                            'action' => 'create',
-                            'description' => json_encode($course),
-                        );
-
-                        $dataLog = createJWT($dataLog, 'data');
-
-                        $data_write = array(
-                            'data' => $dataLog,
-                        );
-
-                        $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-
-                        //call api write log
-                        callAPI('POST', $url, $data_write, false, '');
                         #endregion
                     }
 

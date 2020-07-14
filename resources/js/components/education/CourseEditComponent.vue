@@ -103,7 +103,7 @@
                         <label for="inputText7">{{trans.get('keys.thoi_gian_bat_dau')}}
                           *</label>
                         <input v-model="course.startdate"
-                               type="date"
+                               type="datetime-local"
                                id="inputText7"
                                class="form-control mb-4">
                         <label v-if="!course.startdate"
@@ -113,7 +113,7 @@
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText8">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
                         <input v-model="course.enddate"
-                               type="date"
+                               type="datetime-local"
                                id="inputText8"
                                class="form-control mb-4">
                         <!--                                                <label v-if="!course.enddate"-->

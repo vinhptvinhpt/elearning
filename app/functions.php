@@ -144,6 +144,16 @@ function devcpt_log_system($type, $url, $action, $info)
     ]);
 }
 
+function updateLastModification($action, $course_id) {
+    $course = MdlCourse::query()->where('id', $course_id)->first();
+    if (isset($course)) {
+        $course->last_modify_action = $action;
+        $course->last_modify_time = time();
+        $course->last_modify_user = Auth::id();
+        $course->save();
+    }
+}
+
 function listCitySelect($parent = 0, $space = '')
 {
     //$data = [];
@@ -201,14 +211,14 @@ function permission_cat_name()
         'tms-educate-exam-offline' => __('khoa_dao_tao_tap_trung'),
         'tms-educate-exam-clone' => __('tao_moi_khoa_tu_thu_vien'),
         'tms-educate-exam-restore' => __('khoi_phuc_khoa_dao_tao'),
-        'tms-educate-uncertificate' => __('danh_sach_hoc_vien'),
+        'tms-educate-uncertificate' => __('cap_giay_chung_nhan'),
         'tms-educate-certificate' => __('chung_chi_mau'),
         'tms-educate-badge' => __('huy_hieu_mau'),
         'tms-trainning' => __('khung_nang_luc'),
         'tms-educate' => __('chung_chi'),
         'tms-report' => __('bao_cao'),
         'tms-report-survey' => __('quan_ly_survey'),
-        'tms-report-base' => __('thong_ke_so_bo'),
+//        'tms-report-base' => __('thong_ke_so_bo'),
         'tms-report-report' => __('bao_cao_danh_gia'),
         'tms-setting-configuration' => __('cau_hinh_chung'),
         'tms-setting-email-template' => __('email_template'),
@@ -401,12 +411,12 @@ function permission_slug()
                 'tms-report-survey-edit' => __('sua'),
                 'tms-report-survey-deleted' => __('xoa'),
             ],
-            'tms-report-base' => [
-                'tms-report-base-view' => __('xem'),
-                /*'tms-report-base-add' => 'Thêm',
-                'tms-report-base-edit' => 'Sửa',
-                'tms-report-base-deleted' => 'Xóa',*/
-            ],
+//            'tms-report-base' => [
+//                'tms-report-base-view' => __('xem'),
+//                /*'tms-report-base-add' => 'Thêm',
+//                'tms-report-base-edit' => 'Sửa',
+//                'tms-report-base-deleted' => 'Xóa',*/
+//            ],
             'tms-report-report' => [
                 'tms-report-report-view' => __('xem'),
                 /*'tms-report-report-add' => 'Thêm',
@@ -460,7 +470,7 @@ function permission_slug()
         ],
         'nav_support' => [
             'tms-support' => [
-                'tms-support-market-view' => __('xem_huong_dan_cho_chuyen_vien_kinh_doanh'),
+                'tms-support-market-view' => __('xem_huong_dan_cho_quan_ly'),
                 'tms-support-admin-view' => __('xem_huong_dan_cho_quan_ly_he_thong'),
             ],
         ],
