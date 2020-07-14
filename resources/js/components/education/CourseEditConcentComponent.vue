@@ -41,10 +41,8 @@
                         <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
                           {{trans.get('keys.cap_nhat_lan_cuoi')}}
                           <hr>
-                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span>
-                          </p>
-                          <p>{{trans.get('keys.vao_luc')}}: <span
-                            class="last-edited-text">{{last_update.updated_at}}</span></p>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span></p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span class="last-edited-text">{{last_update.updated_at}}</span></p>
                         </div>
                       </div>
                     </div>
