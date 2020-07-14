@@ -159,7 +159,8 @@
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
 <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible == 1">
                                              <i class="fa fa-toggle-on" @click="approveCourse(course.id,course.visible)"
@@ -287,7 +288,7 @@
         },
         methods: {
             capitalizeFirstLetter(string) {
-              return string[0].toUpperCase() + string.slice(1);
+              return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
