@@ -82,24 +82,28 @@ $courses_others = array();
 $courses_soft_skills = array();
 
 foreach ($courses as $course){
-    if(($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0) && $course->category != 5){
-        push_course($courses_all_required, $course);
-    }
-    else if($course->numoflearned/$course->numofmodule == 1){
-        push_course($courses_completed, $course);
-    }
-    else if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-        push_course($courses_current, $course);
-    }
     if ($course->category == 14) {
-        if (
-            !array_key_exists($course->id, $courses_all_required)
-            && !array_key_exists($course->id, $courses_completed)
-            && !array_key_exists($course->id, $courses_current)
-        ) {
-            push_course($courses_others, $course);
+        push_course($courses_others, $course);
+    } else {
+        if(($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0) && $course->category != 5){
+            push_course($courses_all_required, $course);
+        }
+        if($course->numoflearned/$course->numofmodule == 1){
+            push_course($courses_completed, $course);
+        }
+        if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
+            push_course($courses_current, $course);
         }
     }
+//    if ($course->category == 14) {
+//        if (
+//            !array_key_exists($course->id, $courses_all_required)
+//            && !array_key_exists($course->id, $courses_completed)
+//            && !array_key_exists($course->id, $courses_current)
+//        ) {
+//            push_course($courses_others, $course);
+//        }
+//    }
     if ($course->category == 3) {
         push_course($courses_soft_skills, $course);
     }
