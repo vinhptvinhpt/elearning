@@ -225,6 +225,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         //$select[] = 'mdl_course.last_modify_user';
         $select[] = 'mdl_user.username';
         $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`c`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
+        $select[] = 'c.last_modify_action';
         $listCourses->select($select);
 
         //}

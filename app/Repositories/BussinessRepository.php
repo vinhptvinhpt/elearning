@@ -1266,6 +1266,7 @@ class BussinessRepository implements IBussinessInterface
         //$select[] = 'mdl_course.last_modify_user';
         $select[] = 'mdl_user.username';
         $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
+        $select[] = 'mdl_course.last_modify_action';
         $listCourses->select($select);
 
         //là khóa học mẫu
