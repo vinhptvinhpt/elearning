@@ -102,7 +102,7 @@
             type: "POST",
             url: '/lms/loginfirst.php',
             data: {
-                userIdLogin: data.user_id
+                data: data.data
             },
             success: function (res) {
                 if (data.redirect_type.includes("lms")) {
