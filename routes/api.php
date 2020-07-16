@@ -46,6 +46,7 @@ Route::get('/background/importEmployee', 'Api\BackgroundController@importEmploye
 Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
 Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
 Route::get('/test', 'Api\BackgroundController@test');
+Route::get('/background/resetOrganizationEmployeePassword', 'Api\BackgroundController@resetOrganizationEmployeePassword');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
@@ -72,6 +73,7 @@ Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->
 // update email + active
 Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
 Route::get('/cron/testcron', 'Api\TaskController@testCron');
+
 // admin route
 Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function () {
 //    Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning');
