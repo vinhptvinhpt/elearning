@@ -164,7 +164,7 @@
                             <div class="col-12 form-group">
                               <div class="button-list text-right">
                                 <router-link
-                                  :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: trainning.style } }"
+                                  :to="{ path: '/tms/trainning/list', name: 'TrainningIndex',params:{back_page: '1'}, query: { type: trainning.style } }"
                                   class="btn btn-danger btn-sm"
                                 >
                                   {{ trans.get('keys.huy') }}

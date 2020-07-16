@@ -389,7 +389,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'CourseIndex'});
+        this.$router.push({name: 'CourseIndex',params:{back_page: '1'}});
       },
       setEditor() {
         // var CSRFToken = $('meta[name="csrf-token"]').attr('content');

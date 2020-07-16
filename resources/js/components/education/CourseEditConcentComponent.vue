@@ -377,7 +377,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'CourseConcentrateIndex'});
+        this.$router.push({name: 'CourseConcentrateIndex', params:{back_page: '1'}});
       },
 
       setFileInput() {

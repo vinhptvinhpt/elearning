@@ -344,7 +344,26 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('courseListPage'));
+                  this.row = Number(sessionStorage.getItem('courseListPageSize'));
+                  this.category_id = Number(sessionStorage.getItem('courseListCategory'));
+                  this.status_course = Number(sessionStorage.getItem('courseListCourseStatus'));
+                  this.startdate = sessionStorage.getItem('courseListStartDate');
+                  this.enddate = sessionStorage.getItem('courseListEndDate');
+                  this.keyword = sessionStorage.getItem('courseListKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getCourses();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -455,6 +474,15 @@
             this.getCourses();
             // this.fetch();
             //this.getDataForFilter();
+        },
+        destroyed() {
+          sessionStorage.setItem('courseListPage', this.current);
+          sessionStorage.setItem('courseListPageSize', this.row);
+          sessionStorage.setItem('courseListCategory', this.category_id);
+          sessionStorage.setItem('courseListCourseStatus', this.status_course);
+          sessionStorage.setItem('courseListStartDate', this.startdate);
+          sessionStorage.setItem('courseListEndDate', this.enddate);
+          sessionStorage.setItem('courseListKeyWord', this.keyword);
         }
     }
 

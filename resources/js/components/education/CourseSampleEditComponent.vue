@@ -249,7 +249,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'SampleCourseIndex'});
+        this.$router.push({name: 'SampleCourseIndex',params:{back_page:'1'}});
       },
 
       setFileInput() {
