@@ -467,8 +467,25 @@
           });
       },
       onPageChange() {
+        let back = this.getParamsBackPage();
+        if(back == '1') {
+          this.current = Number(sessionStorage.getItem('userPage'));
+          this.row = Number(sessionStorage.getItem('userPageSize'));
+          this.keyword = sessionStorage.getItem('userKeyWord');
+          this.roles = sessionStorage.getItem('userRole');
+          this.confirm = sessionStorage.getItem('userConfirm');
+
+          sessionStorage.clear();
+          this.$route.params.back_page= null;
+        }
         this.getUser();
 
+      },
+      getParamsBackPage() {
+        return this.$route.params.back_page;
+      },
+      setParamsBackPage(value) {
+        this.$route.params.back_page = value;
       },
       deleteSelectUser() {
         let user_delete = this.user_delete;
@@ -600,7 +617,15 @@
     },
     updated() {
       // this.setFileInput();
+    },
+    destroyed() {
+      sessionStorage.setItem('userPage', this.current);
+      sessionStorage.setItem('userPageSize', this.row);
+      sessionStorage.setItem('userKeyWord', this.keyword);
+      sessionStorage.setItem('userRole', this.roles);
+      sessionStorage.setItem('userConfirm', this.confirm);
     }
+
   }
 
   function convertUtf8(str) {
