@@ -104,10 +104,10 @@
                 <div class="row mt-3">
                   <div class="col-12">
                     <div class="form-group text-right">
-                      <router-link v-if="selected_role === 'root' || selected_role === 'admin' || selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexOrganization', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                      <router-link v-if="selected_role === 'root' || selected_role === 'admin' || selected_role === 'manager' || selected_role === 'leader'" :to="{name: 'IndexOrganization', params: {back_page:'1'}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
-                      <router-link v-else :to="{name: 'IndexEmployee', params: {page: source_page}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
+                      <router-link v-else :to="{name: 'IndexEmployee', params: {back_page:'1'}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
 
