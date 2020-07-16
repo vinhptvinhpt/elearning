@@ -171,6 +171,7 @@ class LoginController extends Controller
                 return response()->json(['status' => 'FAILPASSWORD']);
             }
 
+
             if (strpos($username, 'admin') !== false) {
             } else {
                 //lấy url hiện tại
@@ -427,29 +428,112 @@ class LoginController extends Controller
 
             $checkUser = MdlUser::where('username', $username)->first();
 
-            $token = createJWT($username, 'data');
-            $checkUser->token = $token;
-            $checkUser->save();
-            Auth::login($checkUser);
-            $response['jwt'] = $token;
-            $response['status'] = 'SUCCESS';
-            // [VinhPT]
-            // Get description for user check
-            $response['redirect_type'] = $checkUser->redirect_type;
-            //encrypt for login lms
-            $app_name = Config::get('constants.domain.APP_NAME');
+            if ($checkUser) {
 
-            $key_app = encrypt_key($app_name);
+                //Cuonghq
+                //Check role and update redirect type
+                $sru = DB::table('model_has_roles as mhr')
+                    ->join('roles', 'roles.id', '=', 'mhr.role_id')
+                    ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                    ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                    ->where('mhr.model_id', $checkUser->id)
+                    ->where('mhr.model_type', 'App/MdlUser')
+                    ->get();
 
-            $data_lms = array(
-                'user_id' => $checkUser->id,
-                'app_key' => $key_app
-            );
+                $current_redirect_type = $checkUser->redirect_type;
 
-            $data_lms = createJWT($data_lms, 'data');
+                $redirect_type = 'lms';
+                if (count($sru) != 0) {
+                    foreach ($sru as $role) {
+                        if (!in_array($role->name, [Role::STUDENT, Role::ROLE_EMPLOYEE])) {
+                            $redirect_type = "default";
+                            break;
+                        }
+//                    if (in_array($role->name, [
+//                            Role::ROLE_MANAGER,
+//                            Role::ROLE_LEADER,
+//                            Role::ROOT,
+//                            Role::ADMIN,
+//                            Role::TEACHER
+//                        ])) {
+//                        $redirect_type = "default";
+//                        break;
+//                    }
+                    }
+                }
 
-            $response['data'] = $data_lms;
-            return response()->json($response);
+                $updated = false;
+                //Update redirect type
+                if ($redirect_type != $current_redirect_type) {
+                    $checkUser->redirect_type = $redirect_type;
+                    $updated = true;
+                }
+
+                // [VinhPT]
+                // Get description for user check
+                $response['redirect_type'] = $redirect_type;
+
+                if (empty($checkUser->token)) {
+                    $token = compact('token');
+                    $checkUser->token = $token['token'];
+                    $updated = true;
+                }
+
+                if ($updated) { //Luu thong tin moi
+                    $checkUser->save();
+                }
+
+                $token = $checkUser->token;
+
+
+                Auth::login($checkUser);
+
+                $response['jwt'] = $token;
+                $response['status'] = 'SUCCESS';
+                // [VinhPT]
+                // Get description for user check
+                $response['redirect_type'] = $checkUser->redirect_type;
+                //encrypt for login lms
+                $app_name = Config::get('constants.domain.APP_NAME');
+
+                $key_app = encrypt_key($app_name);
+
+                $data_lms = array(
+                    'user_id' => $checkUser->id,
+                    'app_key' => $key_app
+                );
+
+                $data_lms = createJWT($data_lms, 'data');
+
+                $response['data'] = $data_lms;
+                return response()->json($response);
+
+            }
+
+//            $token = createJWT($username, 'data');
+//            $checkUser->token = $token;
+//            $checkUser->save();
+//
+//            $response['jwt'] = $token;
+//            $response['status'] = 'SUCCESS';
+//            // [VinhPT]
+//            // Get description for user check
+//            $response['redirect_type'] = $checkUser->redirect_type;
+//            //encrypt for login lms
+//            $app_name = Config::get('constants.domain.APP_NAME');
+//
+//            $key_app = encrypt_key($app_name);
+//
+//            $data_lms = array(
+//                'user_id' => $checkUser->id,
+//                'app_key' => $key_app
+//            );
+//
+//            $data_lms = createJWT($data_lms, 'data');
+//
+//            $response['data'] = $data_lms;
+//            return response()->json($response);
+            return response()->json(['status' => 'FAIL']);
 
         } catch (Exception $e) {
             return response()->json(['status' => 'FAIL']);
