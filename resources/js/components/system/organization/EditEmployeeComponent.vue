@@ -77,7 +77,7 @@
                     </div>
                   </div>
 
-                  <div class="col-sm-6">
+                  <div class="col-sm-6 hide">
                     <input v-model="employee.enabled" type="checkbox" id="employee_enabled" style="width:20px; height:20px;">
                     <label for="employee_enabled">{{trans.get('keys.kich_hoat')}}</label>
                   </div>
