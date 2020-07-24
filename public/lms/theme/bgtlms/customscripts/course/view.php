@@ -739,15 +739,29 @@ foreach ($teachers as $teacher) {
 $units = get_course_contents($id);
 
 $start_course_link = '';
+//if (!empty($units)) {
+//    foreach ($units as $unit) {
+//        $modules = $unit['modules'];
+//        foreach ($modules as $module) {
+//            if (isset($module['url'])) {
+//                $start_course_link = $module['url'];
+//                break 2;
+//            }
+//        }
+//    }
+//}
+
 if (!empty($units)) {
-    $first_unit_modules = $units[0]['modules'];
-    if ($units[0]['modules'] && !empty($units[0]['modules'])) {
-        $first_module = $units[0]['modules'][0];
-        if ($first_module) {
-            $start_course_link = $first_module['url'];
+    foreach ($units as $unit) {
+        $modules = $unit['modules'];
+        if ($modules){
+            $start_course_link = $modules[0]['url'];
+            break;
         }
     }
 }
+
+//echo $start_course_link;die;
 
 $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 

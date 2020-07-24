@@ -89,7 +89,7 @@
                     </div>
                   </div>
 
-                  <div class="col-sm-6">
+                  <div class="col-sm-6 hide">
                     <input v-model="organization.enabled" type="checkbox" id="organization_enabled" style="width:20px; height:20px;">
                     <label for="organization_enabled">{{trans.get('keys.kich_hoat')}}</label>
                   </div>
