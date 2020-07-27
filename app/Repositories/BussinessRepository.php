@@ -10210,7 +10210,7 @@ class BussinessRepository implements IBussinessInterface
         }
 //        dd($user_id, $trainning_id);
         $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
-        $category = $category_id['category']['category_id'];
+//        $category = $category_id['category']['category_id'];
 
         $data = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
@@ -10278,7 +10278,8 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $user_id = $request->input('user_id');
-        //$trainning_id = $request->input('trainning_id');
+//        $trainning_id = $request->input('trainning_id');
+
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -10288,7 +10289,7 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-
+//        dd($user_id, $trainning_id);
 //        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
 
@@ -10297,18 +10298,17 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
-            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
-            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->where('ttc.deleted', '=', 0)
+//            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+//            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+//            ->where('ttc.deleted', '=', 0)
             ->where('c.deleted', '=', 0)
             ->where('u.id', '=', $user_id)
-            ->where('ttp.deleted', '=', 2)
             ->select(
                 'c.id as course_id',
                 'c.shortname',
                 'c.fullname',
                 'c.fullname',
-                //'ttp.name as trainning_name',
+//                'ttp.name as trainning_name',
                 'ccc.gradepass as gradepass',
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
@@ -10326,11 +10326,11 @@ class BussinessRepository implements IBussinessInterface
 				on g.itemid = gi.id
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
             );
+
         $data = $data->orderBy('c.id', 'desc')->distinct();
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
-
         if ($this->keyword) {
             $data = $data->where(function ($q) {
                 $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
