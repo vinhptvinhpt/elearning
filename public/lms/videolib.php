@@ -77,7 +77,7 @@ echo $OUTPUT->header();
                         Select File to upload:
                         <input accept="video/*" type="file" name="fileazure" ref="file" name="file" class="form-control" id="fileazure" multiple style="display: inline-block;width: 300px; margin: 10px;height: auto;">
                         <!-- <input type="submit" value="Upload file" name="submit"> -->
-                        <button class="btn btn-success" type="button" id="btnUpload" @click="uploadVideoToAzure"><i class="fa fa-plus"></i> Upload file</button>
+                        <button class="btn btn-success btnUpload" type="button" id="btnUpload" @click="uploadVideoToAzure"><i class="fa fa-plus"></i><i class="fa fa-spinner fa-spin"></i> Upload file</button>
                         <span class="div-progress">{{percent}} %</span>
                         <!-- Progress bar -->
 <!--                        <div class="div-progress">-->
@@ -176,6 +176,7 @@ echo $OUTPUT->header();
                     //show progress
                     $('.div-progress').css('display','inline');
                     $('#btnUpload').attr("disabled", true);
+                    $('#btnUpload').addClass('loadding');
 
                     let formData = new FormData();
                     formData.append('type', 'put');
@@ -194,6 +195,7 @@ echo $OUTPUT->header();
                         .then(response => {
                             _this.percent = 100;
                             $('#btnUpload').removeAttr("disabled");
+                            $('#btnUpload').removeClass('loadding');
                         })
                         .catch(error => {
                             console.log(error);
@@ -239,6 +241,16 @@ echo $OUTPUT->header();
     }
     .div-progress{
         display: none;
+    }
+    .fa-spin{-webkit-animation:fa-spin 2s infinite linear;animation:fa-spin 2s infinite linear}.fa-pulse{-webkit-animation:fa-spin 1s infinite steps(8);animation:fa-spin 1s infinite steps(8)}@-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}@keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}
+    .btnUpload .fa-spin{
+        display: none;
+    }
+    .loadding .fa-spin{
+        display: inline !important;
+    }
+    .loadding .fa-plus{
+        display: none !important;
     }
 </style>
 </body>
