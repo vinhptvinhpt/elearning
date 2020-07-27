@@ -77,13 +77,12 @@ echo $OUTPUT->header();
                         Select File to upload:
                         <input accept="video/*" type="file" name="fileazure" ref="file" name="file" class="form-control" id="fileazure" multiple style="display: inline-block;width: 300px; margin: 10px;height: auto;">
                         <!-- <input type="submit" value="Upload file" name="submit"> -->
-                        <button class="btn btn-success" type="button" @click="uploadVideoToAzure"><i class="fa fa-plus"></i> Upload file</button>
+                        <button class="btn btn-success" type="button" id="btnUpload" @click="uploadVideoToAzure"><i class="fa fa-plus"></i> Upload file</button>
+                        <span class="div-progress">{{percent}} %</span>
                         <!-- Progress bar -->
-                        <div class="div-progress">
-                            <progress :value="percent" max="100" style="width: 90%"> </progress> % {{percent}}
-                            <br>
-                            {{ message }}
-                        </div>
+<!--                        <div class="div-progress">-->
+<!--                            <progress :value="percent" max="95" style="width: 90%"> </progress> % {{percent}}-->
+<!--                        </div>-->
 
                     </form>
                 </div>
@@ -175,7 +174,9 @@ echo $OUTPUT->header();
                 var validate = this.validateFile(selectedFile);
                 if(validate){
                     //show progress
-                    $('.div-progress').css('display','block');
+                    $('.div-progress').css('display','inline');
+                    $('#btnUpload').attr("disabled", true);
+
                     let formData = new FormData();
                     formData.append('type', 'put');
                     formData.append('file', this.$refs.file.files[0]);
@@ -184,12 +185,15 @@ echo $OUTPUT->header();
                                 'Content-Type': 'multipart/form-data'
                             },
                             onUploadProgress: function(progressEvent) {
-                                _this.percent = Math.round((progressEvent.loaded / progressEvent.total)*100);
+                                var percentLoaded = Math.round((progressEvent.loaded / progressEvent.total)*100);
+                                if(percentLoaded<=98){
+                                    _this.percent = percentLoaded;
+                                }
                             }
                         })
                         .then(response => {
-                            console.log(response);
-                            _this.message = response.data.message;
+                            _this.percent = 100;
+                            $('#btnUpload').removeAttr("disabled");
                         })
                         .catch(error => {
                             console.log(error);
