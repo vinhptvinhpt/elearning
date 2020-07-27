@@ -281,6 +281,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/restore_list_user', 'Backend\SystemController@apiUserRestoreList');
     Route::post('/system/user/clear_list_user', 'Backend\SystemController@apiClearUser');
     Route::post('/system/user/grade_course_total', 'Backend\SystemController@apiGradeCourseTotal');
+    Route::post('/system/user/course_total', 'Backend\SystemController@apiCourseTotal');
     Route::post('/system/user/course_list', 'Backend\SystemController@apiCourseList');
     Route::post('/system/user/course_grade_detail', 'Backend\SystemController@apiCourseGradeDetail');
     Route::post('/system/user/get_list_role', 'Backend\SystemController@apiGetListRole');

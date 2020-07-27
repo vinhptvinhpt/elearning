@@ -18,7 +18,7 @@
                 </div>
             </div>
             <div class="col-12 hk-sec-wrapper">
-                <h5 class="hk-sec-title">{{trans.get('keys.diem_khoa_hoc')}}</h5>
+<!--                <h5 class="hk-sec-title">{{trans.get('keys.diem_khoa_hoc')}}</h5>-->
                 <div class="row">
                     <div class="col-sm">
                         <div class="table-wrap">
