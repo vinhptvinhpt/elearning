@@ -25,15 +25,16 @@ class MdlCourse extends Model
         'is_end_quiz',
         'estimate_duration',
         'course_budget',
-        'deleted'
+        'deleted',
+        'last_modify_user',
+        'last_modify_time',
+        'last_modify_action'
     ];
+
 //    //Connection to logs
 //    public function lastEdit()
 //    {
 //        return $this->hasOne('App\MdlLogstoreStandardLog', 'contextinstanceid', 'id')
-//            ->with('user')
-//            ->where('target', 'course')
-//            ->where('contextlevel', 50)
 //            ->where('action', "<>", 'viewed')
 //            ->orderBy('timecreated','desc');
 //    }

@@ -144,6 +144,16 @@ function devcpt_log_system($type, $url, $action, $info)
     ]);
 }
 
+function updateLastModification($action, $course_id) {
+    $course = MdlCourse::query()->where('id', $course_id)->first();
+    if (isset($course)) {
+        $course->last_modify_action = $action;
+        $course->last_modify_time = time();
+        $course->last_modify_user = Auth::id();
+        $course->save();
+    }
+}
+
 function listCitySelect($parent = 0, $space = '')
 {
     //$data = [];

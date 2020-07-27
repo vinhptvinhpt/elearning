@@ -1386,5 +1386,13 @@ class BackgroundController extends Controller
         //updating
     }
 
+    public function resetOrganizationEmployeePassword() {
+        $users = MdlUser::query()->where('username', '<>', 'admin')->get();
+        foreach ($users as $user) {
+            $user->password = bcrypt('123456a@');
+            $user->save();
+        }
+        echo "Successfully!";
+    }
 }
 

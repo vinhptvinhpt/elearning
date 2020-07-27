@@ -261,6 +261,11 @@ class SystemController extends Controller
         return $this->bussinessRepository->apiGradeCourseTotal($request);
     }
 
+    public function apiCourseTotal(Request $request)
+    {
+        return $this->bussinessRepository->apiCourseTotal($request);
+    }
+
     public function apiGetTrainningUser(Request $request)
     {
         return $this->userRepository->getTrainningUser($request);
