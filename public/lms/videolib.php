@@ -198,6 +198,9 @@ echo $OUTPUT->header();
                             $('#btnUpload').removeClass('loadding');
                         })
                         .catch(error => {
+                            _this.percent = 0;
+                            $('#btnUpload').removeAttr("disabled");
+                            $('#btnUpload').removeClass('loadding');
                             console.log(error);
                         });
                 }
