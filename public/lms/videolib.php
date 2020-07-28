@@ -115,7 +115,7 @@ echo $OUTPUT->header();
             additional_param: '?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930&sig=nFSTSk7bpjBou7LVrrqETZdxWOfYXXq4%2Bkyp6mJ53U8%3D&st=2020-03-06T12%3A07%3A20Z&se=2120-03-06T12%3A07%3A20Z',
             current: 1,
             totalPage: 0,
-            recordPerPage: 6,
+            recordPerPage: 12,
             file: '',
             percent: 0,
             message: "",
@@ -247,7 +247,7 @@ echo $OUTPUT->header();
         display: none;
     }
     .loadding .fa-spin{
-        display: inline !important;
+        display: inherit !important;
     }
     .loadding .fa-plus{
         display: none !important;
