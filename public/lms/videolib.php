@@ -16,247 +16,299 @@ echo $OUTPUT->header();
 
 ?>
 
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
-<div class="container" id="app">
-    <div class="view-account">
-        <section class="module">
-            <div class="module-inner">
-                <div class="content-panel">
-                    <div class="content-header-wrapper">
-                        <h2 class="title"><i class="fa fa-video-camera"></i> VIDEOS LIBRARY</h2>
-                    </div>
-                    <div class="content-utilities">
-                        <div class="page-nav">
-                            <span class="indicator">Refresh:</span>
-                            <div class="btn-group" role="group">
-                                <button class="active btn btn-default" data-toggle="tooltip" data-placement="bottom" title="" data-original-title="Grid View" id="refresh_page"  @click="reloadPage('reload', 1)"><i class="fa fa-refresh"></i></button>
+    <div class="container" id="app">
+        <div class="view-account">
+            <section class="module">
+                <div class="module-inner">
+                    <div class="content-panel">
+                        <div class="content-header-wrapper">
+                            <h2 class="title"><i class="fa fa-video-camera"></i> VIDEOS LIBRARY</h2>
+                        </div>
+                        <div class="content-utilities">
+                            <div class="page-nav">
+                                <span class="indicator">Refresh:</span>
+                                <div class="btn-group" role="group">
+                                    <button class="active btn btn-default" data-toggle="tooltip" data-placement="bottom"
+                                            title="" data-original-title="Grid View" id="refresh_page"
+                                            @click="reloadPage('reload', 1)"><i class="fa fa-refresh"></i></button>
+                                </div>
+                            </div>
+                            <div class="actions">
+                                <div class="btn-group">
+                                </div>
                             </div>
                         </div>
-                        <div class="actions">
-                            <div class="btn-group">
-                            </div>
-                        </div>
-                    </div>
-                    <div class="drive-wrapper drive-grid-view">
-                        <div class="col-md-12">
-                            <template v-for="(video,index) in videos">
-                                <div class="grid-items-wrapper">
-                                    <div class="drive-item module text-center">
-                                        <div class="drive-item-inner module-inner">
-                                            <div class="drive-item-title"><a href="#">{{ video.name }}</a></div>
-                                            <div class="drive-item-thumb">
-                                                <a href=""><i class="fa fa-file-video-o text-warning"></i></a>
+                        <div class="drive-wrapper drive-grid-view">
+                            <div class="col-md-12">
+                                <template v-for="(video,index) in videos">
+                                    <div class="grid-items-wrapper">
+                                        <div class="drive-item module text-center">
+                                            <div class="drive-item-inner module-inner">
+                                                <div class="drive-item-title"><a href="#">{{ video.name }}</a></div>
+                                                <div class="drive-item-thumb">
+                                                    <a href=""><i class="fa fa-file-video-o text-warning"></i></a>
+                                                </div>
+                                            </div>
+                                            <div class="drive-item-footer module-footer">
+                                                <ul class="utilities list-inline">
+                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
+                                                           data-original-title="Copy link"
+                                                           @click="copyToClipboard(urlVideo+''+video.url)"><i
+                                                                class="fa fa-external-link"></i></a></li>
+                                                </ul>
                                             </div>
                                         </div>
-                                        <div class="drive-item-footer module-footer">
-                                            <ul class="utilities list-inline">
-                                                <li><a data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" @click="copyToClipboard(urlVideo+''+video.url)"><i class="fa fa-external-link"></i></a></li>
-                                            </ul>
-                                        </div>
                                     </div>
-                                </div>
-                            </template>
-                        </div>
+                                </template>
+                            </div>
 
-                        <div class="col-md-12 d-flex">
-                            <div class="pagination" v-if="totalPage > 1">
-                                <v-pagination
-                                    v-model="current"
-                                    :page-count="totalPage"
-                                    :classes="bootstrapPaginationClasses"
-                                    :labels="customLabels"
-                                    @input="onPageChange"
-                                ></v-pagination>
+                            <div class="col-md-12 d-flex">
+                                <div class="pagination" v-if="totalPage > 1">
+                                    <v-pagination
+                                        v-model="current"
+                                        :page-count="totalPage"
+                                        :classes="bootstrapPaginationClasses"
+                                        :labels="customLabels"
+                                        @input="onPageChange"
+                                    ></v-pagination>
+                                </div>
                             </div>
                         </div>
+                        <form id="form_upload_file" action="videolib.php" method="post" enctype="multipart/form-data">
+                            Select File to upload:
+                            <input accept="video/*" type="file" name="fileazure" ref="file" name="file"
+                                   class="form-control" id="fileazure" multiple
+                                   style="display: inline-block;width: 300px; margin: 10px;height: auto;">
+                            <!-- <input type="submit" value="Upload file" name="submit"> -->
+                            <button class="btn btn-success btnUpload" type="button" id="btnUpload"
+                                    @click="uploadVideoToAzure"><i class="fa fa-plus"></i><i
+                                    class="fa fa-spinner fa-spin"></i> Upload file
+                            </button>
+                            <span class="div-progress">{{percent}} %</span>
+                            <!-- Progress bar -->
+                            <!--                        <div class="div-progress">-->
+                            <!--                            <progress :value="percent" max="95" style="width: 90%"> </progress> % {{percent}}-->
+                            <!--                        </div>-->
+
+                        </form>
                     </div>
-                    <form id="form_upload_file" action="videolib.php" method="post" enctype="multipart/form-data">
-                        Select File to upload:
-                        <input accept="video/*" type="file" name="fileazure" ref="file" name="file" class="form-control" id="fileazure" multiple style="display: inline-block;width: 300px; margin: 10px;height: auto;">
-                        <!-- <input type="submit" value="Upload file" name="submit"> -->
-                        <button class="btn btn-success btnUpload" type="button" id="btnUpload" @click="uploadVideoToAzure"><i class="fa fa-plus"></i><i class="fa fa-spinner fa-spin"></i> Upload file</button>
-                        <span class="div-progress">{{percent}} %</span>
-                        <!-- Progress bar -->
-<!--                        <div class="div-progress">-->
-<!--                            <progress :value="percent" max="95" style="width: 90%"> </progress> % {{percent}}-->
-<!--                        </div>-->
-
-                    </form>
                 </div>
-            </div>
-        </section>
+            </section>
+        </div>
     </div>
-</div>
 
-<!-- <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
-<script type="text/javascript">
-    Vue.component('v-pagination', window['vue-plain-pagination'])
-    var app = new Vue({
-        el: '#app',
-        data: {
-            bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
-                ul: 'pagination',
-                li: 'page-item',
-                liActive: 'active',
-                liDisable: 'disabled',
-                button: 'page-link'
+    <!-- <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script type="text/javascript">
+        Vue.component('v-pagination', window['vue-plain-pagination'])
+        var app = new Vue({
+            el: '#app',
+            data: {
+                bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
+                    ul: 'pagination',
+                    li: 'page-item',
+                    liActive: 'active',
+                    liDisable: 'disabled',
+                    button: 'page-link'
+                },
+                customLabels: {
+                    first: false,
+                    prev: '<',
+                    next: '>',
+                    last: false
+                },
+                url: '<?php echo $CFG->wwwroot; ?>',
+                videos: [],
+                additional_param: '?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930&sig=nFSTSk7bpjBou7LVrrqETZdxWOfYXXq4%2Bkyp6mJ53U8%3D&st=2020-03-06T12%3A07%3A20Z&se=2120-03-06T12%3A07%3A20Z',
+                current: 1,
+                totalPage: 0,
+                recordPerPage: 12,
+                file: '',
+                percent: 0,
+                message: "",
+                urlVideo: 'https://elearningdata.blob.core.windows.net/'
             },
-            customLabels: {
-                first: false,
-                prev: '<',
-                next: '>',
-                last: false
-            },
-            url: '<?php echo $CFG->wwwroot; ?>',
-            videos: [],
-            additional_param: '?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930&sig=nFSTSk7bpjBou7LVrrqETZdxWOfYXXq4%2Bkyp6mJ53U8%3D&st=2020-03-06T12%3A07%3A20Z&se=2120-03-06T12%3A07%3A20Z',
-            current: 1,
-            totalPage: 0,
-            recordPerPage: 12,
-            file: '',
-            percent: 0,
-            message: "",
-            urlVideo: 'https://elearningdata.blob.core.windows.net/'
-        },
-        methods: {
-            onPageChange: function(){
-                this.reloadPage('get', this.current);
-            },
-            reloadPage: function (type, page) {
-                var _this = this;
-                let currentType = type;
-                const params = new URLSearchParams();
-                if(type == 'reload')
-                    type = 'get';
-                params.append('type', type || 'get');
-                params.append('current', page || this.current);
-                params.append('recordPerPage', this.recordPerPage);
-                axios({
-                    method: 'post',
-                    url: this.url + '/videolib_api.php',
-                    data: params,
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    }
-                })
-                    .then(response => {
-                        _this.videos = response.data.videos;
-                        _this.totalPage = response.data.totalPage;
-                        if(currentType == 'reload')
-                            _this.current = 1;
-                        _this.percent = 0;
-                        _this.message = "";
-                        _this.$refs.file.value = '';
-                        //hide progress
-                        $('.div-progress').css('display','none');
+            methods: {
+                onPageChange: function () {
+                    this.reloadPage('get', this.current);
+                },
+                reloadPage: function (type, page) {
+                    var _this = this;
+                    let currentType = type;
+                    const params = new URLSearchParams();
+                    if (type == 'reload')
+                        type = 'get';
+                    params.append('type', type || 'get');
+                    params.append('current', page || this.current);
+                    params.append('recordPerPage', this.recordPerPage);
+                    axios({
+                        method: 'post',
+                        url: this.url + '/videolib_api.php',
+                        data: params,
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        }
                     })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            },
-            copyToClipboard: function(text){
-                var url = text+this.additional_param;
-                var $temp = $("<input>");
-                $("body").append($temp);
-                $temp.val(url).select();
-                document.execCommand("copy");
-                $temp.remove();
-                alert("Copied to clipboard");
-                return false;
-            },
-            uploadVideoToAzure: function(){
-                var _this = this;
-                //get file
-                var selectedFile = this.$refs.file.files[0];
-                var validate = this.validateFile(selectedFile);
-                if(validate){
-                    //show progress
-                    $('.div-progress').css('display','inline');
-                    $('#btnUpload').attr("disabled", true);
-                    $('#btnUpload').addClass('loadding');
+                        .then(response => {
+                            _this.videos = response.data.videos;
+                            _this.totalPage = response.data.totalPage;
+                            if (currentType == 'reload')
+                                _this.current = 1;
+                            _this.percent = 0;
+                            _this.message = "";
+                            _this.$refs.file.value = '';
+                            //hide progress
+                            $('.div-progress').css('display', 'none');
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                },
+                copyToClipboard: function (text) {
+                    var url = text + this.additional_param;
+                    var $temp = $("<input>");
+                    $("body").append($temp);
+                    $temp.val(url).select();
+                    document.execCommand("copy");
+                    $temp.remove();
+                    alert("Copied to clipboard");
+                    return false;
+                },
+                uploadVideoToAzure: function () {
+                    var _this = this;
+                    //get file
+                    var selectedFile = this.$refs.file.files[0];
+                    var validate = this.validateFile(selectedFile);
+                    if (validate) {
+                        //show progress
+                        $('.div-progress').css('display', 'inline');
+                        $('#btnUpload').attr("disabled", true);
+                        $('#btnUpload').addClass('loadding');
 
-                    let formData = new FormData();
-                    formData.append('type', 'put');
-                    formData.append('file', this.$refs.file.files[0]);
-                    axios.post(this.url + '/videolib_api.php', formData,{
+                        let formData = new FormData();
+                        formData.append('type', 'put');
+                        formData.append('file', this.$refs.file.files[0]);
+
+                        // this.sleep(10000);
+
+                        axios.post(_this.url + '/videolib_api.php', formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'
                             },
-                            onUploadProgress: function(progressEvent) {
-                                var percentLoaded = Math.round((progressEvent.loaded / progressEvent.total)*100);
-                                if(percentLoaded<=98){
+                            onUploadProgress: function (progressEvent) {
+                                var percentLoaded = Math.round((progressEvent.loaded / progressEvent.total) * 100);
+                                if (percentLoaded <= 98) {
                                     _this.percent = percentLoaded;
                                 }
                             }
                         })
-                        .then(response => {
-                            _this.percent = 100;
-                            $('#btnUpload').removeAttr("disabled");
-                            $('#btnUpload').removeClass('loadding');
-                        })
-                        .catch(error => {
-                            _this.percent = 0;
-                            $('#btnUpload').removeAttr("disabled");
-                            $('#btnUpload').removeClass('loadding');
-                            console.log(error);
-                        });
+                            .then(response => {
+                                _this.percent = 100;
+                                $('#btnUpload').removeAttr("disabled");
+                                $('#btnUpload').removeClass('loadding');
+                            })
+                            .catch(error => {
+                                _this.percent = 0;
+                                $('#btnUpload').removeAttr("disabled");
+                                $('#btnUpload').removeClass('loadding');
+                                console.log(error);
+                            });
+                    }
+                },
+                sleep: function (ms) {
+                    return new Promise(resolve => setTimeout(resolve, ms));
+                },
+                validateFile: function (file) {
+                    //not selected file
+                    if (!file) {
+                        alert("please choose a video file.");
+                        return false;
+                    }
+                    //get variable
+                    var name = file.name;
+                    var size = file.size;
+                    var ext = name.toLowerCase().split('.');
+                    var fileExt = ext[ext.length - 1];
+                    var extensions = ["webm", "mp4", "ogv"];
+                    //validate
+                    if (extensions.indexOf(fileExt) < 0) {
+                        alert("extension not allowed, please choose a video file.");
+                        return false;
+                    }
+
+                    if (size > 509715200) {
+                        alert('File size must be excately 2 MB');
+                        return false;
+                    }
+                    return true;
                 }
             },
-            validateFile: function(file){
-                //not selected file
-                if(!file) {
-                    alert("please choose a video file.");
-                    return false;
-                }
-                //get variable
-                var name = file.name;
-                var size = file.size;
-                var ext = name.toLowerCase().split('.');
-                var fileExt = ext[ext.length - 1];
-                var extensions = ["webm", "mp4", "ogv"];
-                //validate
-               if (extensions.indexOf(fileExt) < 0) {
-                   alert("extension not allowed, please choose a video file.");
-                   return false;
-               }
-
-               if (size > 509715200) {
-                   alert('File size must be excately 2 MB');
-                   return false;
-               }
-               return true;
+            mounted() {
+                this.reloadPage('get');
             }
-        },
-        mounted() {
-            this.reloadPage('get');
+        });
+    </script>
+    <style scoped>
+        .view-account .content-panel {
+            min-height: auto !important;
         }
-    });
-</script>
-<style scoped>
-    .view-account .content-panel{
-        min-height: auto !important;
-    }
-    .utilities li:hover{
-        cursor: pointer;
-    }
-    .div-progress{
-        display: none;
-    }
-    .fa-spin{-webkit-animation:fa-spin 2s infinite linear;animation:fa-spin 2s infinite linear}.fa-pulse{-webkit-animation:fa-spin 1s infinite steps(8);animation:fa-spin 1s infinite steps(8)}@-webkit-keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}@keyframes fa-spin{0%{-webkit-transform:rotate(0deg);transform:rotate(0deg)}100%{-webkit-transform:rotate(359deg);transform:rotate(359deg)}}
-    .btnUpload .fa-spin{
-        display: none;
-    }
-    .loadding .fa-spin{
-        display: inherit !important;
-    }
-    .loadding .fa-plus{
-        display: none !important;
-    }
-</style>
-</body>
+
+        .utilities li:hover {
+            cursor: pointer;
+        }
+
+        .div-progress {
+            display: none;
+        }
+
+        .fa-spin {
+            -webkit-animation: fa-spin 2s infinite linear;
+            animation: fa-spin 2s infinite linear
+        }
+
+        .fa-pulse {
+            -webkit-animation: fa-spin 1s infinite steps(8);
+            animation: fa-spin 1s infinite steps(8)
+        }
+
+        @-webkit-keyframes fa-spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg)
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg)
+            }
+        }
+
+        @keyframes fa-spin {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg)
+            }
+            100% {
+                -webkit-transform: rotate(359deg);
+                transform: rotate(359deg)
+            }
+        }
+
+        .btnUpload .fa-spin {
+            display: none;
+        }
+
+        .loadding .fa-spin {
+            display: inherit !important;
+        }
+
+        .loadding .fa-plus {
+            display: none !important;
+        }
+    </style>
+    </body>
 
 <?php
 
