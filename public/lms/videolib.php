@@ -245,8 +245,8 @@ function uploadVideoToAzure($filetoUpload)
 
 function getListVideoAzure()
 {
-    $conn = 'BlobEndpoint=https://elearningdata.blob.core.windows.net/;QueueEndpoint=https://elearningdata.queue.core.windows.net/;FileEndpoint=https://elearningdata.file.core.windows.net/;TableEndpoint=https://elearningdata.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2040-04-06T14:56:12Z&st=2020-04-06T06:56:12Z&spr=https&sig=q87j3KR6ZAThNolTZSAOCuVkWoUbwtn%2B47sXkp2OXx8%3D';
-
+    //$conn = 'BlobEndpoint=https://elearningdata.blob.core.windows.net/;QueueEndpoint=https://elearningdata.queue.core.windows.net/;FileEndpoint=https://elearningdata.file.core.windows.net/;TableEndpoint=https://elearningdata.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2040-04-06T14:56:12Z&st=2020-04-06T06:56:12Z&spr=https&sig=q87j3KR6ZAThNolTZSAOCuVkWoUbwtn%2B47sXkp2OXx8%3D';
+	$conn = 'BlobEndpoint=https://elearningdata.blob.core.windows.net/;QueueEndpoint=https://elearningdata.queue.core.windows.net/;FileEndpoint=https://elearningdata.file.core.windows.net/;TableEndpoint=https://elearningdata.table.core.windows.net/;SharedAccessSignature=sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-22T15:47:41Z&st=2020-07-22T07:47:41Z&spr=https&sig=HyWGfnaDYY%2BjOHMvPo0IFFSg2xC02LT%2BcyGsVQwCRmg%3D';
     $blobRes = ServicesBuilder::getInstance()->createBlobService($conn);
     $containerName = 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6';
     //        $containerName = 'elearning';
@@ -256,12 +256,12 @@ function getListVideoAzure()
         $blob_list = $blobRes->listBlobs($containerName);
         $blobs = $blob_list->getBlobs();
         return $blobs;
-        // echo "~~~~~~~~~~~~~~~~Blob list~~~~~~~~~~~~~~~~~~ <br />";
-        // foreach ($blobs as $blob) {
-        //     echo $blob->getName() . ": " . $blob->getUrl() . ": " . json_encode($blob->getProperties()) . ": " . $blob->getSnapshot() . "<br />";
-        //     //                echo $blob->getProperties() . ": " . $blob->getSnapshot();
-        // }
-        // echo "~~~~~~~~~~~~~~~~~~~END~~~~~~~~~~~~~~~~~~~~~ <br />";
+         // echo "~~~~~~~~~~~~~~~~Blob list~~~~~~~~~~~~~~~~~~ <br />";
+         // foreach ($blobs as $blob) {
+             // echo $blob->getName() . ": " . $blob->getUrl() . ": " . json_encode($blob->getProperties()) . ": " . $blob->getSnapshot() . "<br />";
+            //                echo $blob->getProperties() . ": " . $blob->getSnapshot();
+         // }
+         // echo "~~~~~~~~~~~~~~~~~~~END~~~~~~~~~~~~~~~~~~~~~ <br />";
     } catch (ServiceException $e) {
         $code = $e->getCode();
         $error_message = $e->getMessage();
