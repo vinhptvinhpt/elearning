@@ -9,7 +9,7 @@ $PAGE->set_context($context);
 $PAGE->set_url('/videolib.php');
 $PAGE->set_pagelayout('mydashboard');
 $PAGE->set_pagetype('my-index');
-$PAGE->set_title(get_string('videolibrary'));
+$PAGE->set_title("LIST VIDEOS LIBRARY");
 $PAGE->set_heading($header);
 
 echo $OUTPUT->header();
@@ -43,7 +43,7 @@ echo $OUTPUT->header();
                                     <div class="grid-items-wrapper">
                                         <div class="drive-item module text-center">
                                             <div class="drive-item-inner module-inner">
-                                                <div class="drive-item-title"><a href="#">{{ video.name }}</a></div>
+                                                <div class="drive-item-title"><a class="title-video" :title="video.name">{{ video.name }}</a></div>
                                                 <div class="drive-item-thumb">
                                                     <a href=""><i class="fa fa-file-video-o text-warning"></i></a>
                                                 </div>
@@ -54,6 +54,10 @@ echo $OUTPUT->header();
                                                            data-original-title="Copy link"
                                                            @click="copyToClipboard(urlVideo+''+video.url)"><i
                                                                 class="fa fa-external-link"></i></a></li>
+                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
+                                                           data-original-title="Copy link"
+                                                           @click="deleteVideo(video.name)"><i
+                                                                class="fa fa-trash"></i></a></li>
                                                 </ul>
                                             </div>
                                         </div>
@@ -90,13 +94,17 @@ echo $OUTPUT->header();
                             <!--                        </div>-->
 
                         </form>
+                        <div class="notice">
+                            <p style="font-style: italic; color: red">(*) Note: Uploading videos to Azure will take time based on the video size. Please wait ...</p>
+                        </div>
                     </div>
                 </div>
             </section>
         </div>
     </div>
 
-    <script src="/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
+    <!--    <script src="/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>-->
+    <script src="/elearning-easia/public/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
     <script type="text/javascript">
         Vue.component('v-pagination', window['vue-plain-pagination'])
         var app = new Vue({
@@ -232,7 +240,7 @@ echo $OUTPUT->header();
                                 blockSize: 4 * 1024 * 1024, // 4MB block size
                                 parallelism: 20, // 20 concurrency
                                 progress: ev =>  _this.percent = Math.round((ev.loadedBytes/file['size'])*100)
-                        });
+                            });
 
                         result.then(function(result) {
                             let formData = new FormData();
@@ -270,13 +278,38 @@ echo $OUTPUT->header();
                         console.log(error);
                     }
                 },
+                deleteVideo: function(name){
+                    var confirmDelete = confirm("Are you sure you want to delete this video?");
+                    if (confirmDelete == true) {
+                        var _this = this;
+                        let formData = new FormData();
+                        formData.append('type', 'delete');
+                        formData.append('nameFile', name);
+                        axios.post(_this.url + '/videolib_api.php', formData, {
+                            headers: {
+                                'Content-Type': 'multipart/form-data'
+                            }
+                        })
+                            .then(response => {
+                                if(response.data.result == 1){
+                                    toastr['success']("Delete video successfully", "Success");
+                                    _this.reloadPage('get');
+                                }else{
+                                    toastr['error']("An error occurred, please try again later", "Error");
+                                }
+                            })
+                            .catch(error => {
+                                toastr['error']("An error occurred, please try again later", "Error");
+                            });
+                    }
+                },
                 sleep: function (ms) {
                     return new Promise(resolve => setTimeout(resolve, ms));
                 },
                 validateFile: function (file) {
                     //not selected file
                     if (!file) {
-                        alert("please choose a video file.");
+                        alert("Please choose a video file.");
                         return false;
                     }
                     //get variable
@@ -287,12 +320,12 @@ echo $OUTPUT->header();
                     var extensions = ["webm", "mp4", "ogv"];
                     //validate
                     if (extensions.indexOf(fileExt) < 0) {
-                        alert("extension not allowed, please choose a video file.");
+                        alert("Extension not allowed, please choose a video file.");
                         return false;
                     }
 
                     if (size > 1509715200) {
-                        alert('File size must be excately 2 MB');
+                        alert('Maximum file size of 1GB');
                         return false;
                     }
                     return true;
@@ -358,6 +391,16 @@ echo $OUTPUT->header();
 
         .loadding .fa-plus {
             display: none !important;
+        }
+
+        .title-video:hover{
+            cursor: pointer;
+        }
+        .utilities{
+            display: inline-flex;
+        }
+        .utilities li{
+            margin: 0 10px;
         }
     </style>
     </body>
