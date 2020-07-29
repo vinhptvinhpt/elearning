@@ -104,5 +104,7 @@ function uploadVideoToAzure($filetoUpload)
         curl_exec($ch);
         curl_close($ch);
     }catch (Exception $e) {
+        echo $e->getMessage();
+        die;
     }
 }

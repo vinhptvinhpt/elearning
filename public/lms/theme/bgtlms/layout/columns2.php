@@ -58,9 +58,9 @@ $nextsectionno = 0;
 $currentsectionno = 0;
 $modulesidsstring = '';
 $permission_edit = false;
+$permission_editor = false;
 $permission_tms = false;
 $getPathPublic = '';
-
 global $DB;
 $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
 inner join `roles` on `roles`.`id` = `mhr`.`role_id`
@@ -126,6 +126,17 @@ else{
 foreach ($permissions as $permission) {
     if (!in_array($permission->name, ['student', 'employee'])) {
         $permission_tms = true;
+    }
+    if ($permission->permission_slug == 'tms-educate-libraly-edit') {
+        $permission_editor = true;
+        break;
+    }
+    if ($permission->permission_slug == 'tms-educate-exam-offline-edit') {
+        $permission_editor = true;
+        break;
+    }
+    if ($permission->permission_slug == 'tms-educate-exam-online-edit') {
+        $permission_editor = true;
         break;
     }
 }
@@ -164,6 +175,7 @@ $templatecontext = [
     'modulesidsstring' => $modulesidsstring,
     'permission_edit' => $permission_edit,
     'permission_tms' => $permission_tms,
+    'permission_editor' => $permission_editor,
     'pathLogo' => $pathLogo,
     'getPathPublic' => $getPathPublic,
     'wwwroot' => $wwwroot,
