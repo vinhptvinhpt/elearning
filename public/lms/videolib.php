@@ -80,7 +80,7 @@ echo $OUTPUT->header();
                                    style="display: inline-block;width: 300px; margin: 10px;height: auto;">
                             <!-- <input type="submit" value="Upload file" name="submit"> -->
                             <button class="btn btn-success btnUpload" type="button" id="btnUpload"
-                                    @click="uploadVideoToAzure"><i class="fa fa-plus"></i><i
+                                    @click="uploadVideo"><i class="fa fa-plus"></i><i
                                     class="fa fa-spinner fa-spin"></i> Upload file
                             </button>
                             <span class="div-progress">{{percent}} %</span>
@@ -96,7 +96,7 @@ echo $OUTPUT->header();
         </div>
     </div>
 
-    <!-- <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script> -->
+    <script src="/elearning-easia/public/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
     <script type="text/javascript">
         Vue.component('v-pagination', window['vue-plain-pagination'])
         var app = new Vue({
@@ -213,6 +213,63 @@ echo $OUTPUT->header();
                                 $('#btnUpload').removeClass('loadding');
                                 toastr['error']("An error occurred, please try again", "Error");
                             });
+                    }
+                },
+                uploadVideo: function(){
+                    var _this = this;
+                    var file = this.$refs.file.files[0];
+                    var sasToken = '?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-29T11:45:28Z&st=2020-07-29T03:45:28Z&spr=https&sig=GcW9fcjuCWEaql8U6pe%2FX%2FbRuY9T5OcQXBVifmZ4HnI%3D';
+                    var containerURL = 'https://elearningdata.blob.core.windows.net/asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/';
+                    const container = new azblob.ContainerURL(containerURL + sasToken, azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
+                    try {
+                        //show progress
+                        $('.div-progress').css('display', 'inline');
+                        $('#btnUpload').attr("disabled", true);
+                        $('#btnUpload').addClass('loadding');
+                        const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(container, file.name);
+                        var result  = azblob.uploadBrowserDataToBlockBlob(
+                            azblob.Aborter.none, file, blockBlobURL, {
+                                blockSize: 4 * 1024 * 1024, // 4MB block size
+                                parallelism: 20, // 20 concurrency
+                                progress: ev =>  _this.percent = Math.round((ev.loadedBytes/file['size'])*100)
+                        });
+
+                        result.then(function(result) {
+                            let formData = new FormData();
+                            formData.append('type', 'put');
+                            formData.append('nameFile', file.name);
+                            axios.post(_this.url + '/videolib_api.php', formData, {
+                                headers: {
+                                    'Content-Type': 'multipart/form-data'
+                                }
+                            })
+                                .then(response => {
+                                    if(response.data.result == 1){
+                                        _this.percent = 100;
+                                        $('#btnUpload').removeAttr("disabled");
+                                        $('#btnUpload').removeClass('loadding');
+                                        toastr['success']("Uploaded videos successfully", "Success");
+                                        _this.reloadPage('get');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.log(error);
+                                    _this.percent = 0;
+                                    $('#btnUpload').removeAttr("disabled");
+                                    $('#btnUpload').removeClass('loadding');
+                                    toastr['error']("An error occurred, please try again", "Error");
+                                });
+                        }, function(err) {
+                            console.log(err);
+                            _this.percent = 0;
+                            $('#btnUpload').removeAttr("disabled");
+                            $('#btnUpload').removeClass('loadding');
+                            toastr['error']("An error occurred, please try again", "Error");
+                        });
+
+
+                    } catch (error) {
+                        console.log(error);
                     }
                 },
                 sleep: function (ms) {
