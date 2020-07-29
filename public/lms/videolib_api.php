@@ -16,7 +16,7 @@ $page = isset($_POST['current']) ? $_POST['current']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage']:1;
 $nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
 if($type == 'get'){
-    $sqlGetVideos = "select name, url from tms_videolib where deleted = 0";
+    $sqlGetVideos = "select name, url from tms_videolib where deleted = 0 and user_id=".$USER->id;
     $videos = array_values($DB->get_records_sql($sqlGetVideos));
     //paging
     $total = count($videos); //total items in array
