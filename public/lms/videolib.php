@@ -236,7 +236,7 @@ echo $OUTPUT->header();
                         return false;
                     }
 
-                    if (size > 509715200) {
+                    if (size > 1509715200) {
                         alert('File size must be excately 2 MB');
                         return false;
                     }
