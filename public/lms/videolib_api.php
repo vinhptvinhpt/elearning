@@ -46,7 +46,7 @@ else if($type == 'delete'){
 else{
     try {
         if(!empty($nameFile)){
-            $urlVideo = $containerName."/".$nameFile;
+            $urlVideo = "asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/".$nameFile;
             $sql = "INSERT INTO tms_videolib(name, url, user_id, deleted) VALUES('".$nameFile."', '".$urlVideo."', ".$USER->id.", 0)";
             $DB->execute($sql);
             $res['result'] = 1;
@@ -65,21 +65,8 @@ function deleteVideo($name){
     $blobRes = ServicesBuilder::getInstance()->createBlobService($conn);
     $containerName = 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6';
     try {
-//        $blob_list = $blobRes->listBlobs($containerName);
-//        $blobs = $blob_list->getBlobs();
-//        foreach ($blobs as $blob) {
-//             echo $blob->getName() . ": " . $blob->getUrl() . ": " . json_encode($blob->getProperties()) . ": " . $blob->getSnapshot() . "<br />";
-//             //                echo $blob->getProperties() . ": " . $blob->getSnapshot();
-//         }
-
         $blobRes->deleteBlob($containerName, $name);
         return 1;
-        // echo "~~~~~~~~~~~~~~~~Blob list~~~~~~~~~~~~~~~~~~ <br />";
-        // foreach ($blobs as $blob) {
-        //     echo $blob->getName() . ": " . $blob->getUrl() . ": " . json_encode($blob->getProperties()) . ": " . $blob->getSnapshot() . "<br />";
-        //     //                echo $blob->getProperties() . ": " . $blob->getSnapshot();
-        // }
-        // echo "~~~~~~~~~~~~~~~~~~~END~~~~~~~~~~~~~~~~~~~~~ <br />";
     } catch (ServiceException $e) {
         $code = $e->getCode();
         $error_message = $e->getMessage();
