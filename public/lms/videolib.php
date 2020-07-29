@@ -15,11 +15,6 @@ $PAGE->set_heading($header);
 echo $OUTPUT->header();
 
 ?>
-
-    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
-
     <div class="container" id="app">
         <div class="view-account">
             <section class="module">
@@ -192,7 +187,7 @@ echo $OUTPUT->header();
                         formData.append('type', 'put');
                         formData.append('file', this.$refs.file.files[0]);
 
-                        // this.sleep(10000);
+                        this.sleep(10000);
 
                         axios.post(_this.url + '/videolib_api.php', formData, {
                             headers: {
@@ -209,12 +204,14 @@ echo $OUTPUT->header();
                                 _this.percent = 100;
                                 $('#btnUpload').removeAttr("disabled");
                                 $('#btnUpload').removeClass('loadding');
+                                toastr['success']("Uploaded videos successfully", "Success");
+                                _this.reloadPage('get');
                             })
                             .catch(error => {
                                 _this.percent = 0;
                                 $('#btnUpload').removeAttr("disabled");
                                 $('#btnUpload').removeClass('loadding');
-                                console.log(error);
+                                toastr['error']("An error occurred, please try again", "Error");
                             });
                     }
                 },
