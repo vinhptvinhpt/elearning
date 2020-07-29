@@ -9,8 +9,6 @@ require_once('config.php');
 $type = isset($_POST['type']) ? $_POST['type']:'get';
 $page = isset($_POST['current']) ? $_POST['current']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage']:1;
-$file = $_FILES['file'];
-$containerName = 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6';
 $nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
 if($type == 'get'){
     $sqlGetVideos = "select name, url from tms_videolib where deleted = 0";
