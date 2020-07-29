@@ -96,7 +96,7 @@ echo $OUTPUT->header();
         </div>
     </div>
 
-    <script src="/elearning-easia/public/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
+    <script src="/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
     <script type="text/javascript">
         Vue.component('v-pagination', window['vue-plain-pagination'])
         var app = new Vue({
@@ -253,18 +253,16 @@ echo $OUTPUT->header();
                                     }
                                 })
                                 .catch(error => {
-                                    console.log(error);
                                     _this.percent = 0;
                                     $('#btnUpload').removeAttr("disabled");
                                     $('#btnUpload').removeClass('loadding');
-                                    toastr['error']("An error occurred, please try again", "Error");
+                                    toastr['error']("An error occurred, please try again later", "Error");
                                 });
                         }, function(err) {
-                            console.log(err);
                             _this.percent = 0;
                             $('#btnUpload').removeAttr("disabled");
                             $('#btnUpload').removeClass('loadding');
-                            toastr['error']("An error occurred, please try again", "Error");
+                            toastr['error']("An error occurred, please try again later", "Error");
                         });
 
 
