@@ -1,0 +1,11 @@
+{
+    "StringHello": "Xin chào bạn,",
+    "StringContent": "Thông báo từ quản trị viên hệ thống Elearning BGT",
+    "StringFullName": "Chúng tôi xin được gửi email thông báo học viên:",
+    "StringUserName": "Với tài khoản:",
+    "IdFramework": "Mã khóa học:",
+    "NameFrame": "Đã tham gia khóa học đó là:",
+    "NameExam": "Bài kiểm tra:",
+    "ContentExam": "với số điểm là:",
+    "StringThanks": "Xin cảm ơn"
+}

@@ -104,6 +104,9 @@ class EmailTemplateController extends Controller
                     case TmsNotification::ACTIVE_EMAIL:
                         $label = __('xac_nhan_email_nguoi_dung');
                         break;
+                    case TmsNotification::COMPLETED_FRAME:
+                        $label = __('chung_chi_hoan_thanh');
+                        break;
                     default:
                         $label = $config->target;
                         break;
@@ -159,6 +162,9 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::ACTIVE_EMAIL:
                 $label= __('xac_nhan_email_nguoi_dung');
+                break;
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('chung_chi_hoan_thanh');
                 break;
             default:
                 $label = '';
@@ -230,14 +236,15 @@ class EmailTemplateController extends Controller
             case TmsNotification::ACTIVE_EMAIL:
                 $label = __('xac_nhan_email_nguoi_dung');
                 break;
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('chung_chi_hoan_thanh');
+                break;
             default:
                 $label = '';
                 break;
         }
-
         //get content of file with name
         $string = file_get_contents(public_path() . "/files/email/template.json");
-
         return response()->json(['content' => $string, 'name_show' => $label]);
     }
 

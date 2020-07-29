@@ -32,6 +32,7 @@ class TmsNotification extends Model
     const INVITE_STUDENT ='invite_student';
     //declare constant target = active_email
     const ACTIVE_EMAIL = 'active_email';
+    const COMPLETED_FRAME = 'completed_competency_framework';
 
 
     //declare status send mail

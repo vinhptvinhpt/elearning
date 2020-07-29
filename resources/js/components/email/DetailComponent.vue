@@ -145,6 +145,9 @@
                             case 'active_email':
                                 this.content_html = this.json_content.active_email;
                                 break;
+                            case 'completed_competency_framework':
+                                this.content_html = this.json_content.completed_competency_framework;
+                              break;
                             default:
                                 break;
                         }
