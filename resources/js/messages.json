@@ -980,7 +980,15 @@
         "vao_luc": "At",
         "nguoi_cap_nhat": "Editor",
         "danh_sach_module_log": "Modules log",
-        "danh_sach_mau_huy_hieu": "Badge Template List"
+        "danh_sach_mau_huy_hieu": "Badge Template List",
+        "ban_khong_co_quyen_xoa": "You do not have permission to delete",
+        "assigned_course" : "Assigned Course",
+        "assigned_competency" : "Assigned Competency",
+        "suggest_optional_course" : "Suggest Optional Course",
+        "remind_exam" : "Remind Exam",
+        "invitation_offline_course" : "Invitation Offline Course",
+        "forgot_password": "Forgot Password",
+        "remind_expire_required_course": "Remind expired required course"
     },
     "vi.keys": {
         "language": "",
@@ -1955,6 +1963,13 @@
         "vao_luc": "Vào lúc",
         "nguoi_cap_nhat": "Người cập nhật",
         "danh_sach_module_log": "Lịch sử modules",
-        "danh_sach_mau_huy_hieu": "Danh sách mẫu huy hiệu"
+        "danh_sach_mau_huy_hieu": "Danh sách mẫu huy hiệu",
+        "assigned_course" : "Khóa học được ghi danh",
+        "assigned_competency" : "Khung năng lực được ghi danh",
+        "suggest_optional_course" : "Đề xuất khóa học",
+        "remind_exam" : "Nhắc nhở bài kiểm tra",
+        "invitation_offline_course" : "Lời mời tham gia khóa học trực tiếp",
+        "forgot_password": "Quên mật khẩu",
+        "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn"
     }
 }

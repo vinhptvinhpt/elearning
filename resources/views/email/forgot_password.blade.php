@@ -23,7 +23,7 @@
         $text = $data['forgot_password'];
         //replace values
         $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
-        $text = str_replace(CourseSendMail::USERNAME, $username, $text);
+        $text = str_replace(CourseSendMail::EMAIL, $username, $text);
         $text = str_replace(CourseSendMail::CONTENT, $content, $text);
 
         //
