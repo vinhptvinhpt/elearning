@@ -18,18 +18,12 @@ class TmsConfigs extends Model
 
     public static function defaultNotificationConfig() {
         return array(
-            TmsNotification::ENROL => TmsConfigs::ENABLE,
-            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
-            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
+            TmsNotification::ASSIGNED_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::ENABLE,
+            TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
+            TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE
         );
     }
 }
