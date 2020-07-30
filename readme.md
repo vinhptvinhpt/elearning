@@ -6,54 +6,59 @@
 ## Hướng dẫn cài đặt hệ thống Elearning
 
 Cài đặt các phần mềm liên quan
-- Docker (google để biết cách cài đặt, ko có lưu ý cài đặt)
-- Git (google để biết cách cài đặt, ko có lưu ý cài đặt)
-- PIP (cài đặt các thư viện chạy cron gen ảnh chứng chỉ bằng python)
+- **Docker** (google để biết cách cài đặt, ko có lưu ý cài đặt)
+- **Git** (google để biết cách cài đặt, ko có lưu ý cài đặt)
+- **PIP** (cài đặt các thư viện chạy cron gen ảnh chứng chỉ bằng python)
 
 
-## Deploy hệ thống
-## Deploy qua Docker
+# Deploy hệ thống
+### 1. Deploy qua Docker
 - Pull source code từ git về folder chỉ định trên server
 - Cấp quyền cho các folder: public, storage, vendor, node_modules
 - cd /path/to/folder/source
-- Run: sudo docker-compose up -d
-- Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
-- Chỉnh sửa config trong file: /config/constanst.php
-- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: {"flag":"stop"} trong folder: {path}/{to}/{folder}/{source}/storage/app/public/cron
+- Run: **sudo docker-compose up -d**
+- Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
+- Chỉnh sửa config trong file: **/config/constanst.php**
+- Tạo ra các file json bao gồm: **enroll_trainning.json**, **enroll_user.json** với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này
-- Remote vào docker app: sudo docker-compose exec app bash
-- Chạy config cho Laravel: composer install
-                           php artisan key:generate
-                           php artisan config:cache
-                           php artisan storage:link
+- Remote vào docker app: **sudo docker-compose exec app bash**
+- Chạy config cho Laravel: 
 
-## Deploy thường
-- Run: sudo docker-compose up -d
-- Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
-- Chỉnh sửa config trong file: /config/constanst.php
-- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: {"flag":"stop"} trong folder: {path}/{to}/{folder}/{source}/storage/app/public/cron
+         1. composer install
+         2. php artisan key:generate 
+         3. php artisan config:cache
+         4. php artisan storage:link
+
+### 2. Deploy thường
+- Run: **sudo docker-compose up -d**
+- Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
+- Chỉnh sửa config trong file: **/config/constanst.php**
+- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này
 - Remote vào docker app: sudo docker-compose exec app bash
-- Chạy config cho Laravel: composer install
-                           php artisan key:generate
-                           php artisan config:cache
-                           php artisan storage:link
+- Chạy config cho Laravel: 
+
+            1. composer install
+            2. php artisan key:generate 
+            3. php artisan config:cache
+            4. php artisan storage:link
+            
 - Cài đặt NodeJS và NPM
 - Chạy các lệnh: npm install và npm run dev
 - Cấu hình NGINX trỏ đến thư mục source                              
     
 ## Cài đặt PIP
 Chạy tuần tự các lệnh
-- sudo yum install epel-release
-- sudo yum install python-pip
+- **sudo yum install epel-release**
+- **sudo yum install python-pip**
 
 Cài đặt thư viện cho script python gen chứng chỉ
-- sudo pip install mysql-connector-python
-- sudo pip install Pillow
+- **sudo pip install mysql-connector-python**
+- **sudo pip install Pillow**
 
 **Lưu ý**: khi cấu hình connection trong file generate.py, nếu cài database container trên cùng 1 máy thì đặt host='localhost', tương tự cho trường hợp container db nằm trên server khác
 
-## Danh sách các cron của hệ thống
+# Danh sách các cron của hệ thống
 Lưu ý, cần chỉnh sửa path cho các cron trên
 
 # cron moodle - xu ly cac action lien quan den recyclebin khoa hoc
