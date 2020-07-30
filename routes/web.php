@@ -243,7 +243,8 @@ Route::post('/loginsso', 'Auth\LoginController@loginSSO');
 
 //lang
 Route::get('setLocale/{lang}', 'Backend\LanguageController@applicationSetLocale');
-
+Route::get('/api/competencyFramework', 'Api\MailController@sendCompetencyCompleted');
+Route::get('/api/insertCompetencyFramework', 'Api\MailController@insertCompetencyCompleted');
 //Vietnamese and APIs
 Route::middleware(['auth:web', 'clearance'])->group(function () {
 
@@ -792,3 +793,5 @@ Route::get('/api/sendmailactive', 'Api\TaskController@sendMailActiveEmail');
 
 // active
 Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController@apiConfirmEmail');
+
+

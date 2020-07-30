@@ -148,6 +148,12 @@ class CourseSendMail extends Mailable
                     $view = '';
             }
         }
+        elseif($this->activity == TmsNotification::COMPLETED_FRAME){
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] Thông báo xác nhận email';
+            $view = 'email.completed_competency';
+        }
         elseif ($this->activity == TmsNotification::SUGGEST) {
             $subject = '[ELEARNING] Giới thiệu một số khóa học kĩ năng mềm';
             $view = 'email.suggest_course';

@@ -408,7 +408,8 @@ class MailController extends Controller
                         'tms_trainning_complete.trainning_id',
                         'tms_traninning_programs.name',
                         'tms_traninning_programs.time_start',
-                        'tms_traninning_programs.time_end'
+                        'tms_traninning_programs.time_end',
+                        'tms_traninning_programs.code'
                     )
                     ->get();
             if(count($userNeedSend) > 0) {
@@ -432,6 +433,7 @@ class MailController extends Controller
                                     'training_name' => $user_item->name,
                                     'startdate' => $user_item->time_start,
                                     'enddate' => $user_item->time_end,
+                                    'code' => $user_item->code
                                 )
                             );
                             $data[$user_item->username] = $element;
@@ -441,6 +443,7 @@ class MailController extends Controller
                                 'training_name' => $user_item->name,
                                 'startdate' => $user_item->time_start,
                                 'enddate' => $user_item->time_end,
+                                'code' => $user_item->code
                             );
                         }
                     }
@@ -493,7 +496,7 @@ class MailController extends Controller
                         $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
                         $email = $itemNotification->email;
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
-                            Mail::to($email)->send(new CourseSendMail(
+                            Mail::to('trananhtrungksnb1@gmail.com')->send(new CourseSendMail(
                                 TmsNotification::COMPLETED_FRAME,
                                 $itemNotification->username,
                                 $fullname,
