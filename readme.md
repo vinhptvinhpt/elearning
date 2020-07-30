@@ -29,25 +29,28 @@ Cài đặt các phần mềm liên quan
          3. php artisan config:cache
          4. php artisan storage:link
 
-### 2. Deploy thường
-- Run: **sudo docker-compose up -d**
+### 2. Deploy thường (ko qua docker)
 - Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
 - Chỉnh sửa config trong file: **/config/constanst.php**
-- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
+- Tạo ra các file json bao gồm: **enroll_trainning.json**, **enroll_user.json** với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này
-- Remote vào docker app: sudo docker-compose exec app bash
+
 - Chạy config cho Laravel: 
 
             1. composer install
             2. php artisan key:generate 
             3. php artisan config:cache
             4. php artisan storage:link
-            
-- Cài đặt NodeJS và NPM
-- Chạy các lệnh: npm install và npm run dev
-- Cấu hình NGINX trỏ đến thư mục source                              
+         
+### 3.Cài đặt NodeJS và NPM
+- Sau khi cài xong, đi đến folder chứa source và chạy các lệnh: 
+
+    1. npm install
+    2. npm run dev
     
-## Cài đặt PIP
+### 4.Cấu hình NGINX trỏ đến thư mục source                              
+    
+### 5.Cài đặt PIP
 Chạy tuần tự các lệnh
 - **sudo yum install epel-release**
 - **sudo yum install python-pip**
