@@ -102,18 +102,22 @@ if ($pagelayout == 'incourse') {
     foreach ($permissions as $permission) {
         if (!in_array($permission->name, ['student', 'employee'])) {
             $permission_edit = true;
+            $permission_editor = true;
             break;
         }
         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
             $permission_edit = true;
+            $permission_editor = true;
             break;
         }
         if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
             $permission_edit = true;
+            $permission_editor = true;
             break;
         }
         if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
             $permission_edit = true;
+            $permission_editor = true;
             break;
         }
     }
