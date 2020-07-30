@@ -313,5 +313,12 @@
   "ho_ten": "Họ và tên",
   "thoi_gian": "Thời gian",
     "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa",
-    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý"
+    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý",
+    "assigned_course" : "Khóa học được ghi danh",
+    "assigned_competency" : "Khung năng lực được ghi danh",
+    "suggest_optional_course" : "Đề xuất khóa học",
+    "remind_exam" : "Nhắc nhở bài kiểm tra",
+    "invitation_offline_course" : "Lời mời tham gia khóa học trực tiếp",
+    "forgot_password": "Quên mật khẩu",
+    "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn"
 }
