@@ -75,47 +75,32 @@ class SettingController extends Controller
     function getAttrLabel($attr) {
         $label = '';
         switch ($attr) {
-            case TmsNotification::ENROL:
-                $label = __("tham_gia_khoa_hoc");
+            case TmsNotification::ASSIGNED_COURSE:
+                $label = __('assigned_course');
                 break;
-            case TmsNotification::SUGGEST:
-                $label = __("gioi_thieu_khoa_hoc_ki_nang_mem");
+            case TmsNotification::ASSIGNED_COMPETENCY:
+                $label = __('assigned_competency');
                 break;
-            case TmsNotification::QUIZ_START:
-                $label = __("bat_dau_kiem_tra");
+            case TmsNotification::SUGGEST_OPTIONAL_COURSE:
+                $label = __('suggest_optional_course');
                 break;
-            case TmsNotification::QUIZ_END:
-                $label = __('ket_thuc_kiem_tra');
+            case TmsNotification::REMIND_EXAM:
+                $label = __('remind_exam');
                 break;
-            case TmsNotification::QUIZ_COMPLETED:
-                $label = __('ket_qua_kiem_tra');
-                break;
-            case TmsNotification::REMIND_LOGIN:
-                $label = __('nhac_nho_dang_nhap');
+            case TmsNotification::INVITATION_OFFLINE_COURSE:
+                $label = __('invitation_offline_course');
                 break;
             case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
                 $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
                 break;
-            case TmsNotification::REMIND_ACCESS_COURSE:
-                $label = __('nhac_nho_tuong_tac_voi_khoa_hoc');
-                break;
-            case TmsNotification::REMIND_EDUCATION_SCHEDULE:
-                $label = __('nhac_nho_hoan_thanh_lo_trinh_dao_tao');
-                break;
-            case TmsNotification::REMIND_UPCOMING_COURSE:
-                $label = __('thong_bao_khoa_hoc_sap_bat_dau');
+            case TmsNotification::FORGOT_PASSWORD:
+                $label = __('quen_mat_khau');
                 break;
             case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
                 $label = __('firebase_server_key');
                 break;
             case TmsConfigs::TARGET_FIREBASE_TOPIC:
                 $label = __('firebase_topic');
-                break;
-            case TmsNotification::REMIND_CERTIFICATE:
-                $label = __('thong_bao_chung_chi');
-                break;
-            case TmsNotification::INVITE_STUDENT:
-                $label = __('moi_hoc_vien_tham_gia_khoa_học');
                 break;
             default:
                 $label = $attr;
