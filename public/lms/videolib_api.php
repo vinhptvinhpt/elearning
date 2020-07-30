@@ -92,7 +92,7 @@ function deleteVideo($name, $containerName, $accountName){
 }
 
 function generateSASUrl($blob_name, $accountName, $container, $key){
-    $end_date = Carbon::now()->addHour(23)->addMinute(59)->addSecond(59);
+    $end_date = Carbon::now()->addHour(23)->addMinute(58);
 
     $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
