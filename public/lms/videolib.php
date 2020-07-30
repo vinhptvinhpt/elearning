@@ -52,7 +52,7 @@ echo $OUTPUT->header();
                                                 <ul class="utilities list-inline">
                                                     <li><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy link"
-                                                           @click="copyToClipboard(urlVideo+''+video.url)"><i
+                                                           @click="copyToClipboard(video.name)"><i
                                                                 class="fa fa-external-link"></i></a></li>
                                                     <li><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy link"
@@ -95,7 +95,7 @@ echo $OUTPUT->header();
 
                         </form>
                         <div class="notice">
-                            <p style="font-style: italic; color: red">(*) Note: Uploading videos to Azure will take time based on the video size. Please wait ...</p>
+                            <p style="font-style: italic; color: red">(*) Note: Uploading video to Azure will take time-based on the video size. Please wait ...</p>
                         </div>
                     </div>
                 </div>
@@ -170,15 +170,30 @@ echo $OUTPUT->header();
                             console.log(error);
                         });
                 },
-                copyToClipboard: function (text) {
-                    var url = text + this.additional_param;
-                    var $temp = $("<input>");
-                    $("body").append($temp);
-                    $temp.val(url).select();
-                    document.execCommand("copy");
-                    $temp.remove();
-                    alert("Copied to clipboard");
-                    return false;
+                copyToClipboard: function (name) {
+                    var _this = this;
+                    let formData = new FormData();
+                    formData.append('type', 'generate');
+                    formData.append('nameFile', name);
+
+                    axios.post(_this.url + '/videolib_api.php', formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                        .then(response => {
+                            var url = response.data.url;
+                            var $temp = $("<input>");
+                            $("body").append($temp);
+                            $temp.val(url).select();
+                            document.execCommand("copy");
+                            $temp.remove();
+                            alert("Copied to clipboard");
+                            return false;
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
                 },
                 uploadVideoToAzure: function () {
                     var _this = this;
