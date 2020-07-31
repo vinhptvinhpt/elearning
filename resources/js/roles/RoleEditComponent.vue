@@ -191,6 +191,9 @@
                     .then(response => {
                         if(response.data){
                             this.roles              = response.data.roles;
+                            if (response.data.roles.name === 'teacher') {
+                              this.roles.name = 'creator';
+                            }
                             this.permission_slug    = response.data.permission_slug;
                             this.permission_name    = response.data.permission_name;
                             this.permission_select  = response.data.permission_select;
@@ -253,7 +256,7 @@
                     role_id: this.role_id,
                     per_slug_input: this.permission_select,
                     //cap_input: this.cap_select,
-                    name:this.roles.name,
+                    name:this.roles.name === 'creator' ? 'teacher' : this.roles.name,
                     description:this.roles.description,
                     type:this.type,
                     /*organize_type:this.organize_type,
