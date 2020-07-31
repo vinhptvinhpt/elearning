@@ -213,6 +213,7 @@ if ($mform->is_cancelled()) {
         top: 80%;
         right: 2%;
         list-style: none;
+        z-index: 9999;
     }
     .btnscroll{
         border: 1px solid #3333;
