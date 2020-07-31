@@ -65,8 +65,11 @@
                                 <!--                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>-->
                                 <!--                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>-->
                                 <!--                </div>-->
-                                <p v-if="users.employee" style="text-transform: capitalize;">Title/Position: <strong>{{users.employee.description}}/{{users.employee.position}}</strong></p>
-                                <p v-if="users.employee">Department: <strong>{{users.employee.organization.code}}({{users.employee.organization.name}})</strong></p>
+                                <template v-if="users.employee">
+                                  <p style="text-transform: capitalize;">Title/Position: <strong>{{users.employee.description ? users.employee.description : 'N/A'}} / {{users.employee.position}}</strong></p>
+                                  <p>Department: <strong>{{users.employee.organization.code}}({{users.employee.organization.name}})</strong></p>
+                                </template>
+
                             </div>
                         </div>
                     </div>
