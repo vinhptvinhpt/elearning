@@ -341,6 +341,12 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         opacity: 1;
     }
 
+    .info-center{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
     .courses {
         margin-bottom: 70px;
     }
@@ -476,7 +482,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         width: 100%;
         border-radius: 50%;
         margin: 0 !important;
-        padding-right: 0 !important;
+        padding: 0;
+        /*padding-right: 0 !important;*/
         /*height: fit-content;*/
 
         text-align: right;
@@ -490,8 +497,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         border-radius: 50%;
         /*height: 80%;*/
         /*width: 60%;*/
-        width: 50px;
-        height: 50px;
+        width: 85px;
+        height: 85px;
         /*margin-top: 10%;*/
     }
 
@@ -529,10 +536,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     .info-progress {
         display: inline-flex;
         width: 100%;
+        padding: 3%;
+    }
+
+    .circle-progress svg{
+        margin: 0 auto !important;
     }
 
     .info-statistic {
         width: 100%;
+        padding: 0 3%;
     }
 
     .no-padding-col {
@@ -541,7 +554,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .progress-note ul li {
         list-style: none;
-        padding: 5% 0;
+        padding: 3% 0;
         font-size: 14px;
     }
 
@@ -758,7 +771,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             max-width: 33.333333% !important;
         }
         .block-color{
-            width: 165px !important;
+            width: 130px !important;
             bottom: 23%;
         }
     }
@@ -787,6 +800,16 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             width: 49px !important;
         }
     }
+
+    .silde-carousel{
+        background-repeat: no-repeat;
+        background-position: 100% 50%;
+        background-size: cover;
+    }
+    .circular-chart{
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
 </style>
 <body>
 
@@ -797,26 +820,30 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <header><!-- header -->
             <div class="content content-slider">
                 <div class="slider">
-                    <div id="demo" class="carousel slide carousel-fade" data-ride="carousel">
-                        <ul class="carousel-indicators">
-                            <li data-target="#demo" data-slide-to="0" class="active"></li>
-                            <li data-target="#demo" data-slide-to="1"></li>
-                            <li data-target="#demo" data-slide-to="2"></li>
-                        </ul>
-                        <div class="carousel-inner">
-                            <div class="carousel-item active" style="background-image: url('<?php echo $_SESSION["pathBackground"];  ?>')">
-                                <div class="carousel-caption">
-                                    <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
-                                    <div class="block-color"></div>
+                    <div class="">
+                        <div id="demo" class="carousel slide carousel-fade silde-carousel" data-ride="carousel"  style="background-image: url('<?php echo $_SESSION["pathBackground"];  ?>')">
+                            <div class="container">
+                                <ul class="carousel-indicators">
+                                    <li data-target="#demo" data-slide-to="0" class="active"></li>
+                                    <li data-target="#demo" data-slide-to="1"></li>
+                                    <li data-target="#demo" data-slide-to="2"></li>
+                                </ul>
+                                <div class="carousel-inner">
+                                    <div class="carousel-item active">
+                                        <div class="carousel-caption">
+                                            <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
+                                            <div class="block-color"></div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <a class="carousel-control-prev" href="#demo" data-slide="prev">
+                                    <span class="carousel-control-prev-icon"></span>
+                                </a>
+                                <a class="carousel-control-next" href="#demo" data-slide="next">
+                                    <span class="carousel-control-next-icon"></span>
+                                </a>
                             </div>
                         </div>
-                        <a class="carousel-control-prev" href="#demo" data-slide="prev">
-                            <span class="carousel-control-prev-icon"></span>
-                        </a>
-                        <a class="carousel-control-next" href="#demo" data-slide="next">
-                            <span class="carousel-control-next-icon"></span>
-                        </a>
                     </div>
                 </div>
         </header>
@@ -827,10 +854,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <div class="content">
             <div class="container">
                 <div class="row">
-                    <div class="col-md-3 col-sm-4 col-xs-12 mr-xl-3">
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 mr-xl-3">
                         <div class="info row">
-                            <div class="info-user">
-                                <div class="avatar col-4">
+                            <div class="info-user info-center">
+                                <div class="avatar col-4 info-center">
                                     <img src="<?php if(is_null($profile->avatar)) echo 'images/avatar.png';  else echo $profile->avatar; ?>" alt="">
                                 </div>
                                 <div class="info-user_info col-8">
@@ -839,7 +866,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 </div>
                             </div>
                             <div class="info-progress mt-3">
-                                <div class="circle-progress no-padding-col col-5">
+                                <div class="circle-progress no-padding-col col-4">
                                     <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                         <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
@@ -853,7 +880,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                         <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %</text>
                                     </svg>
                                 </div>
-                                <div class="progress-note no-padding-col col-7">
+                                <div class="progress-note no-padding-col col-8">
                                     <ul>
                                         <li class="li-progress completed"><div class="block-note" style="background-color: <?=$_SESSION["color"]?>"></div> Completed</li>
                                         <li class="li-progress studying"><div class="block-note" style="background-color: #FFC400"></div> Studying</li>
@@ -894,7 +921,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-8 col-sm-7 col-xs-12 ml-xl-5">
+                    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 ml-xl-5">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">

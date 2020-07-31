@@ -1180,7 +1180,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     if (result_ip.list_access_ip.includes(data.ip)) {
                         continue_learning();
                     } else {
-                        var message_access = 'You do not have permission to access this course';
+                        var message_access = 'This course cannot be accessed outside of the office';
                         alert(message_access);
                         var url_next = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
                         window.location.href = url_next;
