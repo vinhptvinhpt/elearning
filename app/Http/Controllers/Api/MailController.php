@@ -32,12 +32,30 @@ class MailController extends Controller
             TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE
         );
+        //set old configs (using in bgt)
+        $configsDelete = array(
+            TmsNotification::ENROL => TmsConfigs::ENABLE,
+            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
+            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE
+
+        );
+
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
             $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
             $today = date('Y-m-d H:i:s', time());
             if (count($stored_configs) == 0 || count($stored_configs) != count($configs)) {
                 TmsConfigs::whereIn('target', array_keys($configs))->delete();
+                //delete all old configs (using in bgt)
+                TmsConfigs::whereIn('target', array_keys($configsDelete))->delete();
                 $insert_configs = array();
                 foreach ($configs as $key => $value) {
                     $insert_configs[] = array(

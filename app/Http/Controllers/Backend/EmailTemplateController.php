@@ -128,7 +128,6 @@ class EmailTemplateController extends Controller
         return $label;
     }
 
-
     public function writeToJson(Request $rq)
     {
         $name_file = $rq->input('name_file');
