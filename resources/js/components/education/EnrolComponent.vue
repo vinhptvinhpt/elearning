@@ -561,9 +561,9 @@
             },
             goBack() {
                 if (this.come_from === 'online') {
-                    this.$router.push({name: 'CourseIndex'});
+                    this.$router.push({name: 'CourseIndex', params:{back_page: '1'}});
                 } else {
-                    this.$router.push({name: 'CourseConcentrateIndex'});
+                    this.$router.push({name: 'CourseConcentrateIndex', params:{back_page: '1'}});
                 }
             },
             uncheckEnrolAll() {

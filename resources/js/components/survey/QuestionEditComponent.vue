@@ -170,7 +170,7 @@
                                             <button @click="updateQuestion()" type="button" class="btn btn-primary">
                                                 {{trans.get('keys.sua')}}
                                             </button>
-                                            <router-link to="/tms/question/list" class="btn btn-secondary">
+                                            <router-link :to="{name:'QuestionIndex', params:{back_page:'1'}}" class="btn btn-secondary">
                                                 {{trans.get('keys.huy')}}
                                             </router-link>
                                         </div>

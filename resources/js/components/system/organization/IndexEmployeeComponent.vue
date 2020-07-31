@@ -313,6 +313,12 @@
         },
         mounted() {
         },
+        destroyed() {
+          sessionStorage.setItem('employeePage', this.current);
+          sessionStorage.setItem('employeePageSize', this.row);
+          sessionStorage.setItem('employeeKeyWord', this.keyword);
+          sessionStorage.setItem('employeePosition', this.position);
+        },
         methods: {
             slug_can(permissionName) {
               return this.slugs.indexOf(permissionName) !== -1;
@@ -446,7 +452,16 @@
             //     })
             // },
             onPageChange() {
-                let page = this.getParamsPage();
+                let back = this.getParamsBackPage();
+                if(back == '1') {
+                  this.current = Number(sessionStorage.getItem('employeePage'));
+                  this.row = Number(sessionStorage.getItem('employeePageSize'));
+                  this.keyword = sessionStorage.getItem('employeeKeyWord');
+                  this.position = sessionStorage.getItem('employeePosition');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 let organization_id_string = this.organization_id.toString();
                 if (this.organization_id.length !== 0) {
                     //Có truyền organization_id
@@ -456,17 +471,14 @@
                     //Chuyển trang khi đã có query_organization_id
                     this.fetchOrganizationInfo(this.query_organization_id);
                 } else {
-                  if (page) {
-                    this.current = page;
-                  }
                   this.getDataList();
                 }
             },
-            getParamsPage() {
-                return this.$route.params.page;
+            getParamsBackPage() {
+              return this.$route.params.back_page;
             },
-            setParamsPage(value) {
-                this.$route.params.page = value;
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(url) {
                 let current_pos = this;

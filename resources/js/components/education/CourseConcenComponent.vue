@@ -293,7 +293,26 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('courseConcenPage'));
+                  this.row = Number(sessionStorage.getItem('courseConcenPageSize'));
+                  this.category_id = Number(sessionStorage.getItem('courseConcenCategory'));
+                  this.status_course = Number(sessionStorage.getItem('courseConcenCourseStatus'));
+                  this.startdate = sessionStorage.getItem('courseConcenStartDate');
+                  this.enddate = sessionStorage.getItem('courseConcenEndDate');
+                  this.keyword = sessionStorage.getItem('courseConcenKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getCourses();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -372,6 +391,15 @@
             // this.getCategories();
             this.getCourses();
             // this.fetch();
+        },
+        destroyed() {
+          sessionStorage.setItem('courseConcenPage', this.current);
+          sessionStorage.setItem('courseConcenPageSize', this.row);
+          sessionStorage.setItem('courseConcenCategory', this.category_id);
+          sessionStorage.setItem('courseConcenCourseStatus', this.status_course);
+          sessionStorage.setItem('courseConcenStartDate', this.startdate);
+          sessionStorage.setItem('courseConcenEndDate', this.enddate);
+          sessionStorage.setItem('courseConcenKeyWord', this.keyword);
         }
     }
 </script>
