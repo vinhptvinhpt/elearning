@@ -70,7 +70,7 @@
                   <tbody>
                   <tr v-for="(ro,index) in roles">
                     <td>{{ index+1 }}</td>
-                    <td>{{ ro.name }}</td>
+                    <td>{{ ro.name === 'teacher' ? 'creator' : ro.name }}</td>
                     <td class=" mobile_hide">{{ ro.description }}</td>
                     <td>
 
