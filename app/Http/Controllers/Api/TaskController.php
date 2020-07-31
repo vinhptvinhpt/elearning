@@ -353,6 +353,37 @@ class TaskController extends Controller
     }
     #endregion
 
+    //insert training into tms_nofitications table
+    public function insertCompetencyCompleted($arrayData){
+        $lstNoti = array();
+        foreach ($arrayData as $data){
+            $element = array(
+                'type' => TmsNotification::MAIL,
+                'target' => TmsNotification::COMPLETED_FRAME,
+                'status_send' => 0,
+                'sendto' => $data['user_id'],
+                'createdby' => 0,
+                'course_id' => 0,
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
+            );
+            $training = TmsTrainningProgram::where('id','=',$data['trainning_id'])
+                        ->get()->first();
+            if(!is_null($training)){
+                $element['content'] = array(
+                    array(
+                        'training_id' => $training->id,
+                        'training_name' => $training->name,
+                        'startdate' => $training->time_start,
+                        'enddate' => $training->time_end,
+                        'code' => $training->code
+                    )
+                );
+            }
+
+        }
+    }
+
     #region insert student to course_final from courses certificate
     public function finalizeCourseForRole()
     {
@@ -814,7 +845,7 @@ class TaskController extends Controller
         if ($lstData) {
             foreach ($lstData as $data) {
                 //raw query lay so hoc vien da enrol vao course
-                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue 
+                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue
                             join mdl_enrol me on me.id = mue.enrolid join mdl_course mc on mc.id = me.courseid
                             where mc.id = ' . $data->course_id . ') as ue';
 
@@ -865,7 +896,7 @@ class TaskController extends Controller
         if ($lstData) {
             foreach ($lstData as $data) {
                 //raw query lay so hoc vien da enrol vao course
-                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue 
+                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue
                             join mdl_enrol me on me.id = mue.enrolid join mdl_course mc on mc.id = me.courseid
                             where mc.id = ' . $data->course_id . ') as ue';
 
@@ -1470,8 +1501,8 @@ class TaskController extends Controller
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                            UNION 
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
                             ) as org_tp';
 
@@ -1481,8 +1512,8 @@ class TaskController extends Controller
                 $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
                                 join (
                                 select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
-                                ) as ttgg on ttgg.trainning_id = ttp.id 
-                                join model_has_roles mhr on mhr.role_id = ttgg.group_id 
+                                ) as ttgg on ttgg.trainning_id = ttp.id
+                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
                                 where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
                                 ) ttp_r';
 
@@ -1565,8 +1596,8 @@ class TaskController extends Controller
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $trainning->group_id . ') initialisation
                                     where   find_in_set(ttoe.parent_id, @pv)
-                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                                    UNION 
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                                    UNION
                                     select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $trainning->group_id . ') as org_us';
 
                     $tblQuery = DB::raw($tblQuery);
@@ -1691,8 +1722,8 @@ class TaskController extends Controller
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                            UNION 
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
                             ) as org_tp';
 
@@ -1702,8 +1733,8 @@ class TaskController extends Controller
                 $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
                                 join (
                                 select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
-                                ) as ttgg on ttgg.trainning_id = ttp.id 
-                                join model_has_roles mhr on mhr.role_id = ttgg.group_id 
+                                ) as ttgg on ttgg.trainning_id = ttp.id
+                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
                                 where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
                                 ) ttp_r';
 
@@ -1786,8 +1817,8 @@ class TaskController extends Controller
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $trainning->group_id . ') initialisation
                                     where   find_in_set(ttoe.parent_id, @pv)
-                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-                                    UNION 
+                                    and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                                    UNION
                                     select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $trainning->group_id . ') as org_us';
 
                     $tblQuery = DB::raw($tblQuery);

@@ -373,7 +373,7 @@ class MailController extends Controller
         }
     }
 
-    public function insertCompetencyCompleted() {
+    public function insertCompetencyCompleted($arrayData) {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::COMPLETED_FRAME] == TmsConfigs::ENABLE) {
 
@@ -381,10 +381,10 @@ class MailController extends Controller
                 //Type 1 limit using sub query wit same condition
                 DB::query()->fromSub(function ($query) {
                     $query->from('mdl_user')
-                        ->whereNotIn('id', function ($query) {
-                            //check exist in table tms_nofitications
-                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::COMPLETED_FRAME);
-                        })
+//                        ->whereNotIn('id', function ($query) {
+//                            //check exist in table tms_nofitications
+//                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::COMPLETED_FRAME);
+//                        })
                         ->whereIn('id', function ($query) {
                             $query->select('user_id')
                                 ->from('tms_trainning_complete')
@@ -399,6 +399,23 @@ class MailController extends Controller
                     })
                     ->join('tms_trainning_complete', 'mdl_user.id', '=', 'tms_trainning_complete.user_id')
                     ->join('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_complete.trainning_id')
+                    ->whereNotIn('tms_traninning_programs.id',function ($query) {
+                        $query1 = [];
+                        $contents = TmsNotification::where('target', TmsNotification::COMPLETED_FRAME)
+                            ->pluck('content')->toArray();
+
+                        foreach ($contents as $content){
+                            $a = json_decode($content);
+
+                            foreach ($a as $training){
+                                if ($training->training_id) {
+                                    $query1[] = $training->training_id;
+                                }
+                            }
+                        }
+
+                        return $query1;
+                    })
                     ->select(
                         'mdl_user.id',
                         'mdl_user.username',
