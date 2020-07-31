@@ -65,6 +65,8 @@
                                 <!--                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>-->
                                 <!--                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>-->
                                 <!--                </div>-->
+                                <p v-if="users.employee" style="text-transform: capitalize;">Title/Position: <strong>{{users.employee.description}}/{{users.employee.position}}</strong></p>
+                                <p v-if="users.employee">Department: <strong>{{users.employee.organization.code}}({{users.employee.organization.name}})</strong></p>
                             </div>
                         </div>
                     </div>
@@ -271,7 +273,7 @@
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.quyen_tai_khoan')}}</div>
                                         <div class="col-sm-6 pl-30 pl-sm-15">
-                                            <p v-if="users.roles.length > 0" v-for="roleitem in users.roles">
+                                            <p v-if="users.roles.length > 0" v-for="roleitem in users.roles" style="text-transform: capitalize;">
                                                 {{ roleitem.role.description }}
                                             </p>
                                             <p v-else>{{trans.get('keys.chua_cap_nhat')}}</p>
