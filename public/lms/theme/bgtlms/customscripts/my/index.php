@@ -393,7 +393,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .path-calendar {
         position: inherit;
-        margin-bottom: 2%;
+        /*margin-bottom: 2%;*/
+    }
+    .path-calendar #page-wrapper #page{
+        margin: 0 !important;
+        padding: 3% 3% 2% 3%;
+    }
+
+    .path-calendar #page-wrapper #page #page-content{
+        padding-bottom: 0% !important;
     }
 
     .section-footer {
