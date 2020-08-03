@@ -1,5 +1,5 @@
 <?php
-if(!isloggedin()){
+if (!isloggedin()) {
     require_login();
 }
 require_once(__DIR__ . '/../../../../config.php');
@@ -91,22 +91,30 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 
+    #category, .input-search, .btn-search{
+        background-color: #211f1f7d !important;
+    }
+
     textarea:focus, input:focus {
         outline: none;
     }
 
-    #page{
+    #page {
         margin-top: 50px !important;
     }
-    #region-main-box, #region-main{
+
+    #region-main-box, #region-main {
         padding: 0 !important;
     }
-    #page-wrapper .navbar{
+
+    #page-wrapper .navbar {
         padding: 7px 1rem 9px .5rem !important;
     }
-    .navbar .count-container{
+
+    .navbar .count-container {
         top: 2px !important;
     }
+
     /*    view*/
     /*    paging*/
     .pagination {
@@ -271,54 +279,54 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         background-repeat: no-repeat;
         background-position: 100% 90%;
         background-size: cover;
-        min-height: 400px;
         position: relative;
     }
 
-    .section-header .container{
+    .section-header .container {
         padding-top: calc(100% - 95%);
     }
 
-    .block-color{
-        width: 99px;
-        height: 93px;
+    .block-color {
+        width: 100px;
+        height: 100px;
         background-color: <?=$_SESSION["color"]?>;
         position: absolute;
         z-index: 1;
         left: 0%;
-        }
+        top: -1%;
+    }
 
-        .header-block{
-            position: absolute;
-            z-index: 2;
-            left: 75px;
-        }
+    .header-block {
+        position: absolute;
+        z-index: 2;
+        left: 75px;
+    }
 
-        .header-block__logo img {
-            width: 25%;
-            padding: 4% 0;
-        }
+    .header-block__logo img {
+        width: 25%;
+        padding: 4% 0;
+    }
 
-        .header-block__search__title p {
-            font-family: Roboto-Regular;
-            letter-spacing: 0.45px;
-            color: #ffffff;
-            font-size: 16px;
-        }
+    .header-block__search__title p {
+        font-family: Roboto-Regular;
+        letter-spacing: 0.45px;
+        color: #ffffff;
+        font-size: 16px;
+    }
 
 
-        .header-block__search__title h1{
-            font-family: HelveticaLTStd-Bold;
-            color: #ffffff;
-            font-size: 66px;
-            bottom: 25%;
-            letter-spacing: 3px;
-            margin-bottom: 0;
-        }
+    .header-block__search__title h1 {
+        font-family: HelveticaLTStd-Bold;
+        color: #ffffff;
+        font-size: 66px;
+        bottom: 25%;
+        letter-spacing: 3px;
+        margin-bottom: 0;
+    }
 
-        .header-block__search__title span{
-            font-family: HelveticaLTStd-Light;
-            /*font-size: 45px;*/
+    .header-block__search__title span {
+        font-family: HelveticaLTStd-Light;
+        /*font-size: 45px;*/
     }
 
     .header-block__search__title .title-header {
@@ -343,7 +351,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         font-size: 2rem;
     }
 
-    .header-block__quick-filter__title span{
+    .header-block__quick-filter__title span {
         font-family: HelveticaLTStd-Light;
     }
 
@@ -353,7 +361,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         font-family: Roboto-Regular;
         border: 1px solid #ffff !important;
         border-radius: inherit !important;
-        background-color: transparent !important;
+        /*background-color: transparent !important;*/
         color: #ffffff !important;
     }
 
@@ -470,6 +478,35 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         position: absolute;
     }
 
+    #overlay {
+        position: fixed; /* Sit on top of the page content */
+        display: block; /* Hidden by default */
+        width: 100%; /* Full width (cover the whole page) */
+        height: 100%; /* Full height (cover the whole page) */
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5); /* Black background with opacity */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        z-index: 2; /* Specify a stack order in case you're using a different order for other elements */
+        cursor: pointer; /* Add a pointer on hover */
+    }
+
+    .div-text {
+        position: relative;
+        width: 100%;
+        top: 0;
+        left: 0;
+        min-height: 400px;
+        z-index: 1;
+        /*background-color: rgba(0, 0, 0, 0.3);*/
+    }
+
+    .div-header{
+        background-color: rgba(0, 0, 0, 0.3);
+    }
+
     /*1920*/
     @media screen and (max-width: 1920px) and (min-width: 1369px) {
         .btn-click-course {
@@ -510,11 +547,13 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     @media screen and (max-width: 375px) {
         .header-block {
             left: 52px;
+        }
+
+        .title-course {
+            min-height: 3.25rem;
+        }
     }
 
-    .title-course {
-        min-height: 3.25rem;
-    }
 
 </style>
 <body>
@@ -522,38 +561,45 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     <?php echo $OUTPUT->header(); ?>
     <div id="app">
         <section class="section section-header"><!-- section -->
-            <div class="container">
-                <div class="header-block">
-<!--                    <div class="header-block__logo">-->
-<!--                        <img src="--><?php //echo $_SESSION["pathLogo"]; ?><!--" alt="Logo">-->
-<!--                    </div>-->
-                    <div class="header-block__search">
-                        <div class="header-block__search__title">
-                            <h1>Available <span>Courses</span></h1>
-                            <p>Search your target courses here</p>
-                        </div>
-                        <div class="header-block__search__btn-search">
-                            <div class="row col-12 block-search">
-                                <div class="col-5 col-md-4 block-search__select">
-                                    <select name="category" id="category" class="form-control course-select" @change="searchCourse(category, 1)"
-                                            v-model="category">
-                                        <option value="0">All courses</option>
-                                        <?php foreach ($categories as $category) { ?>
-                                            <option
-                                                value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                        <?php } ?>
-                                    </select>
+            <div class="div-header">
+                <div class="container">
+                    <div class="div-text">
+                        <div class="header-block">
+                            <!--                    <div class="header-block__logo">-->
+                            <!--                        <img src="-->
+                            <?php //echo $_SESSION["pathLogo"]; ?><!--" alt="Logo">-->
+                            <!--                    </div>-->
+                            <div class="header-block__search">
+                                <div class="header-block__search__title">
+                                    <h1>Available <span>Courses</span></h1>
+                                    <p>Search your target courses here</p>
                                 </div>
-                                <div class="col-6 col-md-8 block-search__btn">
-                                    <input type="text" class=" input-search" v-model="txtSearch">
-                                    <div class="btn-search" @click="searchCourse(category, 1)"><i class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
+                                <div class="header-block__search__btn-search">
+                                    <div class="row col-12 block-search">
+                                        <div class="col-5 col-md-4 block-search__select">
+                                            <select name="category" id="category" class="form-control course-select"
+                                                    @change="searchCourse(category, 1)"
+                                                    v-model="category">
+                                                <option value="0">All courses</option>
+                                                <?php foreach ($categories as $category) { ?>
+                                                    <option
+                                                        value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                                <?php } ?>
+                                            </select>
+                                        </div>
+                                        <div class="col-6 col-md-8 block-search__btn">
+                                            <input type="text" class=" input-search" v-model="txtSearch">
+                                            <div class="btn-search" @click="searchCourse(category, 1)"><i
+                                                    class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
+                        </div>
+                        <div class="block-color"></div>
+                    </div>
                 </div>
-                <div class="block-color"></div>
             </div>
         </section>
 
@@ -564,9 +610,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
-                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0" @click="searchCourse(0, 1)">All Courses</li>
+                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0"
+                                @click="searchCourse(0, 1)">All Courses
+                            </li>
                             <?php foreach ($categories as $category) { ?>
-                                <li class="btn btn-click-course"  @click="searchCourse(<?php echo $category->id; ?>, 1)" id="ctgr<?php echo $category->id; ?>"
+                                <li class="btn btn-click-course" @click="searchCourse(<?php echo $category->id; ?>, 1)"
+                                    id="ctgr<?php echo $category->id; ?>"
                                     category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
                             <?php } ?>
                         </ul>
@@ -577,36 +626,44 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                         <div class="col-12 pt-1"><h3>No course to display</h3></div>
                     </template>
                     <template v-else>
-                        <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0" v-for="(course,index) in courses">
+                        <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
+                             v-for="(course,index) in courses">
                             <div class="row course-block">
-                                <div class="col-5 course-block__image" v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
-                                    <template v-if="course.numofmodule == 0"><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
-                                    <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span></template>
+                                <div class="col-5 course-block__image"
+                                     v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
+                                    <template v-if="course.numofmodule == 0"><img
+                                            src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                    <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                    </template>
                                 </div>
                                 <div class="col-7">
                                     <div class="course-info">
                                         <div class="info-text">
                                             <div class="course-info__title">
-                                                <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname"><p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                                <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                    <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                             </div>
                                             <div class="course-info__detail">
                                                 <ul>
                                                     <li class="teacher">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{
+                                                        course.teacher_name }}
                                                     </li>
-                                                    <li class="units"><i class="fa fa-file" aria-hidden="true"></i> {{course.numofmodule}} Units
+                                                    <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                        {{course.numofmodule}} Units
                                                     </li>
                                                     <li class="units">
-                                                        <i class="fa fa-clock-o" aria-hidden="true"></i>  {{course.estimate_duration}} hours
+                                                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                        {{course.estimate_duration}} hours
                                                     </li>
                                                 </ul>
                                             </div>
                                         </div>
-                                      <!--  <div class="btn-show btn-show-all btn-page">
-                                            <button class="btn btn-click"><a
-                                                    :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                            </button>
-                                        </div>-->
+                                        <!--  <div class="btn-show btn-show-all btn-page">
+                                              <button class="btn btn-click"><a
+                                                      :href="'lms/course/view.php?id='+course.id">Learn more</a>
+                                              </button>
+                                          </div>-->
                                     </div>
                                 </div>
                             </div>
@@ -701,7 +758,6 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         });
 
 
-
     });
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -732,12 +788,12 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             }
         },
         methods: {
-            onPageChange: function(){
+            onPageChange: function () {
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
                 this.category = category || this.category;
-                if(page == 1)
+                if (page == 1)
                     this.current = 1;
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
                 let url = '<?php echo $CFG->wwwroot; ?>';
@@ -774,7 +830,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
     function activeCategogy(category_selected) {
         var category = $(this).attr('category');
-        var needtoclick = $("[category=" + category_selected +"]")
+        var needtoclick = $("[category=" + category_selected + "]")
         //add class active
         needtoclick.addClass('btn-click-active');
         $('.btn-click-course').not($('#ctgr' + category_selected)).each(function () {
