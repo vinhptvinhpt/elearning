@@ -9,7 +9,7 @@ if (strlen($type) != 0) {
     $category_params = $type;
 }
 //Hide client course
-$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2';
+$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2 AND id <> 14';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
 
