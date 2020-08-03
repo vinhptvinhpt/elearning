@@ -408,6 +408,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         position: relative;
     }
 
+    .section-footer .container{
+        padding: 3% 0;
+    }
+
     .path-calendar .maincalendar .heightcontainer {
         height: auto !important;
     }
@@ -957,11 +961,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                             <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                             <div class="info-course">
                                                                 <a class="teacher" data-toggle="modal" data-target="#exampleModal"
-                                                                   data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                   data-teacher-name="<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
                                                                    data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                    data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                    data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
+                                                                    <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?></a>
                                                                 <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                 <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                             </div>
@@ -1008,11 +1012,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <a class="teacher" data-toggle="modal" data-target="#exampleModal"
-                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-name="<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
                                                                        data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                        data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                        data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -1059,11 +1063,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <a class="teacher" data-toggle="modal" data-target="#exampleModal"
-                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-name="<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
                                                                        data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                        data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                        data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>
@@ -1112,11 +1116,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                 <a href="lms/course/view.php?id=<?php echo $course->id; ?>" title="<?php echo $course->fullname; ?>"><p class="title-course"><i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <a class="teacher" data-toggle="modal" data-target="#exampleModal"
-                                                                       data-teacher-name="<?php echo $course->teacher_name ?>"
+                                                                       data-teacher-name="<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
                                                                        data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                        data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                        data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php echo $course->teacher_name ?></a>
+                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if(!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?></a>
                                                                     <p class="units"><i class="fa fa-file" aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units</p>
                                                                     <p class="units"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?> hours</p>
                                                                 </div>

@@ -9,7 +9,7 @@ if (strlen($type) != 0) {
     $category_params = $type;
 }
 //Hide client course
-$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2';
+$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2 AND id <> 14';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 ?>
 
@@ -135,8 +135,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .page-item.active .page-link {
-        background: #862055 0% 0% no-repeat padding-box !important;
-        border-color: #862055 !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
+        border-color: <?=$_SESSION["color"]?> !important;
     }
 
     .course-info__detail {
@@ -218,7 +218,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        font-family: Roboto-Bold !important;
+        /*font-family: Roboto-Bold !important;*/
+        font-family: Roboto !important;
     }
 
     .course-info__title {
@@ -409,7 +410,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
         border-radius: 4px;
-        font-family: Nunito-Bold;
+        /*font-family: Nunito-Bold;*/
+        font-family: Roboto;
+        font-weight: 700 !important;
         font-size: 13px !important;
         color: #737373 !important;
         letter-spacing: 0.45px;
@@ -645,9 +648,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                             </div>
                                             <div class="course-info__detail">
                                                 <ul>
-                                                    <li class="teacher">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                        course.teacher_name }}
+                                                    <li class="teacher" v-if="course.teacher_name">
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                    </li>
+                                                    <li class="teacher" v-else>
+                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign
                                                     </li>
                                                     <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
                                                         {{course.numofmodule}} Units

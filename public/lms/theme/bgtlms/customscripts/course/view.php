@@ -214,6 +214,7 @@ if(!isloggedin()){
 
     .course-block {
         margin-bottom: 2em;
+        padding: 2%;
     }
 
     .course-block__title {
@@ -227,7 +228,8 @@ if(!isloggedin()){
     }
 
     .course-block__content, .course-block__content p, .course-block__content ul li {
-        font-family: Roboto-Regular;
+        /*font-family: Roboto-Regular;*/
+        font-family: Roboto;
         font-size: 13px;
         letter-spacing: 0.99px;
         color: #202020;
@@ -320,7 +322,18 @@ if(!isloggedin()){
     }
 
     .unit-click {
-        border: 2px solid<?=$_SESSION["color"]?>;
+        border: 2px solid<?=$_SESSION["color"]?> !important;
+    }
+
+    .unit-done{
+        border: 2px solid #378449;
+    }
+
+    .unit-done .unit__title{
+        background: #378449 0% 0% no-repeat;
+    }
+    .unit-done .unit__title p{
+        color: #ffffff;
     }
 
     .unit-click .unit__title {
@@ -961,19 +974,21 @@ if ($course->numofmodule == 0) {
                 <div class="col-5 unit-info">
                     <div class="list-units">
                         <?php foreach ($units as $no => $unit) { ?>
-                            <div class="unit" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
+                            <?php $modulCompletion = array_sum(array_map(function($item) {
+                                return $item['iscompletion'];
+                            }, $unit['modules']));
+                            $totalModul = count($unit['modules']);
+                            $icon = "pencil-square-o";
+                            $addName = "";
+                            if($totalModul > 0 && $modulCompletion == $totalModul) {
+                                $icon = "check";
+                                $addName = 'unit-done';
+                            }?>
+                            <div class="unit <?php echo $addName; ?>" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
                                 <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
                                 <div class="unit__progress">
                                     <div class="unit__icon">
-                                        <?php $modulCompletion = array_sum(array_map(function($item) {
-                                            return $item['iscompletion'];
-                                        }, $unit['modules']));
-                                        $totalModul = count($unit['modules']);
-                                        if($totalModul > 0 && $modulCompletion == $totalModul) {?>
-                                            <i class="fa fa-check" aria-hidden="true"></i>
-                                        <?php } else { ?>
-                                        <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
-                                        <?php } ?>
+                                        <i class="fa fa-<?php echo $icon; ?>" aria-hidden="true"></i>
                                     </div>
                                     <div class="unit__progress-number">
                                         <!--                                                class="percent-get">--><?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
