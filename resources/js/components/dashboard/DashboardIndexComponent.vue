@@ -90,7 +90,7 @@
                   <form v-on:submit.prevent="tableData(1)">
                     <div class="d-flex flex-row form-group">
                       <input v-model="keyword" type="text" class="form-control txtSearch"
-                             :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                             :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao')+' ...'">
                       <button type="button" id="btnFilter" class="btn btn-primary"
                               style="margin-left: 5px" @click="tableData(1)">
                         {{trans.get('keys.tim')}}

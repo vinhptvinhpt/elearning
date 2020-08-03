@@ -51,7 +51,7 @@
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword" type="text" class="form-control"
-                                                       :placeholder="trans.get('keys.nhap_tu_khoa')">
+                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')">
                                                 <button type="button" id="btnFilter" style="margin-left: 5px"
                                                         class="btn btn-primary" @click="getCourses(1)">
                                                     {{trans.get('keys.tim')}}
