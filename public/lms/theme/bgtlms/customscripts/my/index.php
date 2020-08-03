@@ -408,6 +408,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         position: relative;
     }
 
+    .section-footer .container{
+        padding: 3% 0;
+    }
+
     .path-calendar .maincalendar .heightcontainer {
         height: auto !important;
     }

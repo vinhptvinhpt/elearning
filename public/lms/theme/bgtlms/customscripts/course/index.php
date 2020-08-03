@@ -135,8 +135,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     }
 
     .page-item.active .page-link {
-        background: #862055 0% 0% no-repeat padding-box !important;
-        border-color: #862055 !important;
+        background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
+        border-color: <?=$_SESSION["color"]?> !important;
     }
 
     .course-info__detail {
@@ -218,7 +218,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        font-family: Roboto-Bold !important;
+        /*font-family: Roboto-Bold !important;*/
+        font-family: Roboto !important;
     }
 
     .course-info__title {
@@ -409,7 +410,9 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
         box-shadow: 3px 3px 6px #00000029;
         border: 1px solid #C7C7C7;
         border-radius: 4px;
-        font-family: Nunito-Bold;
+        /*font-family: Nunito-Bold;*/
+        font-family: Roboto;
+        font-weight: 700 !important;
         font-size: 13px !important;
         color: #737373 !important;
         letter-spacing: 0.45px;

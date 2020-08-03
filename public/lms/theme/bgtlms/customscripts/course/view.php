@@ -214,6 +214,7 @@ if(!isloggedin()){
 
     .course-block {
         margin-bottom: 2em;
+        padding: 2%;
     }
 
     .course-block__title {
@@ -227,7 +228,8 @@ if(!isloggedin()){
     }
 
     .course-block__content, .course-block__content p, .course-block__content ul li {
-        font-family: Roboto-Regular;
+        /*font-family: Roboto-Regular;*/
+        font-family: Roboto;
         font-size: 13px;
         letter-spacing: 0.99px;
         color: #202020;
