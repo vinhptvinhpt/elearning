@@ -57,6 +57,14 @@ if(!isloggedin()){
         opacity: 1 !important;
     }
 
+    .modal-body{
+        margin: 0 auto;
+    }
+
+    .modal-body img{
+        max-width: 400px;
+    }
+
     #page {
         margin-right: 4%;
         /*margin-right: */
@@ -706,16 +714,6 @@ if ($notifyeditingon == 1) {
 $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
-//if ($result_ip) {
-//    $list_access_ip = json_decode($result_ip)->list_access_ip;
-//    if ($list_access_ip) {
-//        //if(!in_array(getremoteaddr(), $list_access_ip)){
-//        $url_to_page = new moodle_url($root_url);
-//        $message_ip_access = "You do not have permission to access this course";
-//        //redirect($url_to_page, $message_ip_access, 10, \core\output\notification::NOTIFY_ERROR);
-//        //}
-//    }
-//}
 $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
@@ -752,17 +750,6 @@ foreach ($teachers as $teacher) {
 $units = get_course_contents($id);
 
 $start_course_link = '';
-//if (!empty($units)) {
-//    foreach ($units as $unit) {
-//        $modules = $unit['modules'];
-//        foreach ($modules as $module) {
-//            if (isset($module['url'])) {
-//                $start_course_link = $module['url'];
-//                break 2;
-//            }
-//        }
-//    }
-//}
 
 if (!empty($units)) {
     foreach ($units as $unit) {
@@ -820,6 +807,14 @@ if ($edit == 0) {
 }
 
 //Check to show popup congratulation
+$_SESSION["displayPopup"] = 1;
+//select image badge active
+$sqlGetBadge = 'select path from image_certificate where type = 2 and is_active = 1';
+$getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
+$pathBadge = $getBadge->path;
+$pathBadge = ltrim($pathBadge, $pathBadge[0]);
+if(empty($pathBadge))
+    $pathBadge = 'images/default_badge.png';
 //-1 chưa xem. 0 chưa có bản ghi trong db, 1 xem, 2 đã xem
 if ($course->numofmodule == 0) {
     $_SESSION["displayPopup"] = 0;
@@ -1056,7 +1051,7 @@ if ($course->numofmodule == 0) {
                     </button>
                 </div>
                 <div class="modal-body">
-                    <img src="images/congratulation.gif" alt="">
+                    <img src="<?php echo $pathBadge; ?>" alt="">
                 </div>
                 <div class="modal-footer" style="width: 100%">
                     <div style="margin: 0 auto">
@@ -1103,15 +1098,6 @@ $_SESSION["displayPopup"] = 2; ?>
             });
             $(getHref).css('display', 'flex');
         });
-
-        // $(".nav-click a").click(function(){
-        //     console.log(3);
-        //     var getId =  $(this).attr('href');
-        //     $('.course-content').not($(getId)).each(function(){
-        //         $(this).css('display', 'none');
-        //     });
-        //     $(getId).css('display', 'flex');
-        // });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
         var marginLeft = getPercent - 6;

@@ -71,54 +71,57 @@
 <!--                </div>-->
             </div>
         </div>
-        <!--table course in progress-->
         <div class="col-xl-12">
             <section class="hk-sec-wrapper">
                 <div class="card-body text-center">
                     <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.cac_khoa_hoc_dang_tien_hanh')}}</span>
                 </div>
-                <div class="row">
-                  <div class="col-sm-3">
-                    <div class="dataTables_length">
-                      <date-picker v-model="startdateSearch" :config="options"
-                                   :placeholder="trans.get('keys.ngay_bat_dau')" class="txtSearch"></date-picker>
-                    </div>
-                  </div>
-                  <div class="col-sm-3">
-                    <div class="dataTables_length">
-                      <date-picker v-model="enddatesearch" :config="options"
-                                   :placeholder="trans.get('keys.ngay_ket_thuc')" class="txtSearch"></date-picker>
-                    </div>
-                  </div>
-                  <div class="col-sm-6">
-                    <form v-on:submit.prevent="tableData(1)">
-                      <div class="d-flex flex-row form-group">
-                        <input v-model="keyword" type="text" class="form-control txtSearch"
-                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                        <button type="button" id="btnFilter" class="btn btn-primary"
-                                style="margin-left: 5px" @click="tableData(1)">
-                          {{trans.get('keys.tim')}}
-                        </button>
-                      </div>
-                    </form>
+
+              <div class="row">
+                <div class="col-sm-3">
+                  <div class="dataTables_length">
+                    <date-picker v-model="startdateSearch" :config="options"
+                                 :placeholder="trans.get('keys.ngay_bat_dau')" class="txtSearch"></date-picker>
                   </div>
                 </div>
-                <div class="row">
-                  <div class="col-12">
-                    <div class="dataTables_length" style="display: block;">
-                      <label>{{trans.get('keys.hien_thi')}}
-                        <select v-model="row"
-                                class="custom-select custom-select-sm form-control form-control-sm"
-                                @change="tableData(1)">
-                          <option value="5">5</option>
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="50">50</option>
-                        </select>
-                      </label>
-                    </div>
+                <div class="col-sm-3">
+                  <div class="dataTables_length">
+                    <date-picker v-model="enddatesearch" :config="options"
+                                 :placeholder="trans.get('keys.ngay_ket_thuc')" class="txtSearch"></date-picker>
                   </div>
                 </div>
+                <div class="col-sm-6">
+                  <form v-on:submit.prevent="tableData(1)">
+                    <div class="d-flex flex-row form-group">
+                      <input v-model="keyword" type="text" class="form-control txtSearch"
+                             :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao')+' ...'">
+                      <button type="button" id="btnFilter" class="btn btn-primary"
+                              style="margin-left: 5px" @click="tableData(1)">
+                        {{trans.get('keys.tim')}}
+                      </button>
+                    </div>
+                  </form>
+                </div>
+
+              </div>
+
+              <div class="row">
+                <div class="col-12">
+                  <div class="dataTables_length" style="display: block;">
+                    <label>{{trans.get('keys.hien_thi')}}
+                      <select v-model="row"
+                              class="custom-select custom-select-sm form-control form-control-sm"
+                              @change="tableData(1)">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="50">50</option>
+                      </select>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
                 <div class="row">
                     <div class="col-sm">
                         <div class="table-wrap table-responsive">

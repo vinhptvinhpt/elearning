@@ -46,7 +46,7 @@
                                     <div class="d-flex flex-row form-group">
                                         <input v-model="keyword" type="text"
                                                class="form-control search_text"
-                                               :placeholder="trans.get('keys.tim_kiem_theo_username_or_fullname')+'...'">
+                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_fullname')+'...'">
                                         <button type="button" id="btnFilterDoc"
                                                 class="btn btn-primary btn-sm" style="margin-left: 2px;"
                                                 @click="getLogLogin(1)">
