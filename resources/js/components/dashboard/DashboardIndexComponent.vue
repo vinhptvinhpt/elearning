@@ -2,6 +2,7 @@
     <div class="row">
         <div class="col-xl-12">
             <div class="hk-row">
+                <!--chart 1-->
                 <div class="col-sm-8">
                     <div class="card card-sm" style="height: calc(100% - 15px);">
                         <div class="card-body text-center">
@@ -41,6 +42,7 @@
                         </div>
                     </div>
                 </div>
+                <!--chart 2-->
                 <div class="col-sm-4">
                     <div class="card card-sm" style="height: calc(100% - 15px);">
                         <div class="card-body text-center">
@@ -54,6 +56,7 @@
                         </div>
                     </div>
                 </div>
+                <!--chart 3-->
 <!--                <div class="col-sm-12">-->
 <!--                    <div class="card card-sm">-->
 <!--                        <div class="card-body text-center">-->
@@ -68,56 +71,54 @@
 <!--                </div>-->
             </div>
         </div>
+        <!--table course in progress-->
         <div class="col-xl-12">
             <section class="hk-sec-wrapper">
                 <div class="card-body text-center">
                     <span class="d-block font-18 font-weight-500 text-dark text-uppercase mb-10">{{trans.get('keys.cac_khoa_hoc_dang_tien_hanh')}}</span>
                 </div>
-              <div class="row">
-                <div class="col-sm-3">
-                  <div class="dataTables_length">
-                    <date-picker v-model="startdateSearch" :config="options"
-                                 :placeholder="trans.get('keys.ngay_bat_dau')" class="txtSearch"></date-picker>
-                  </div>
-                </div>
-                <div class="col-sm-3">
-                  <div class="dataTables_length">
-                    <date-picker v-model="enddatesearch" :config="options"
-                                 :placeholder="trans.get('keys.ngay_ket_thuc')" class="txtSearch"></date-picker>
-                  </div>
-                </div>
-                <div class="col-sm-6">
-                  <form v-on:submit.prevent="tableData(1)">
-                    <div class="d-flex flex-row form-group">
-                      <input v-model="keyword" type="text" class="form-control txtSearch"
-                             :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                      <button type="button" id="btnFilter" class="btn btn-primary"
-                              style="margin-left: 5px" @click="tableData(1)">
-                        {{trans.get('keys.tim')}}
-                      </button>
+                <div class="row">
+                  <div class="col-sm-3">
+                    <div class="dataTables_length">
+                      <date-picker v-model="startdateSearch" :config="options"
+                                   :placeholder="trans.get('keys.ngay_bat_dau')" class="txtSearch"></date-picker>
                     </div>
-                  </form>
-                </div>
-
-              </div>
-
-              <div class="row">
-                <div class="col-12">
-                  <div class="dataTables_length" style="display: block;">
-                    <label>{{trans.get('keys.hien_thi')}}
-                      <select v-model="row"
-                              class="custom-select custom-select-sm form-control form-control-sm"
-                              @change="tableData(1)">
-                        <option value="5">5</option>
-                        <option value="10">10</option>
-                        <option value="20">20</option>
-                        <option value="50">50</option>
-                      </select>
-                    </label>
+                  </div>
+                  <div class="col-sm-3">
+                    <div class="dataTables_length">
+                      <date-picker v-model="enddatesearch" :config="options"
+                                   :placeholder="trans.get('keys.ngay_ket_thuc')" class="txtSearch"></date-picker>
+                    </div>
+                  </div>
+                  <div class="col-sm-6">
+                    <form v-on:submit.prevent="tableData(1)">
+                      <div class="d-flex flex-row form-group">
+                        <input v-model="keyword" type="text" class="form-control txtSearch"
+                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                        <button type="button" id="btnFilter" class="btn btn-primary"
+                                style="margin-left: 5px" @click="tableData(1)">
+                          {{trans.get('keys.tim')}}
+                        </button>
+                      </div>
+                    </form>
                   </div>
                 </div>
-              </div>
-
+                <div class="row">
+                  <div class="col-12">
+                    <div class="dataTables_length" style="display: block;">
+                      <label>{{trans.get('keys.hien_thi')}}
+                        <select v-model="row"
+                                class="custom-select custom-select-sm form-control form-control-sm"
+                                @change="tableData(1)">
+                          <option value="5">5</option>
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="50">50</option>
+                        </select>
+                      </label>
+                    </div>
+                  </div>
+                </div>
                 <div class="row">
                     <div class="col-sm">
                         <div class="table-wrap table-responsive">
@@ -143,15 +144,7 @@
                                     <td class="mobile_hide">{{ convertDateTime(course_object.start) }}</td>
                                     <td class="mobile_hide">{{ convertDateTime(course_object.end) }}</td>
                                     <td class="mobile_hide">{{course_object.course_place}}</td>
-                                    <template v-if="course_object.category === 5">
-                                        <td><span class="badge badge-grey">Offline</span></td>
-                                    </template>
-                                    <template v-else-if="course_object.category !== 5 && course_object.category !== 2">
-                                        <td><span class="badge badge-primary">Online</span></td>
-                                    </template>
-                                    <template v-else>
-                                        <td><span class="badge badge-primary"></span></td>
-                                    </template>
+                                    <td class="mobile_hide">{{course_object.category_name}}</td>
                                 </tr>
                                 </tbody>
                                 <tfoot>
@@ -201,8 +194,7 @@
                     //         'total': 0
                     //     }
                     // ],
-                    'online': 0,
-                    'offline': 0,
+                    'pie_data': [],
                     'registered': [
                         {
                             'mthyr': 0,
@@ -326,10 +318,9 @@
                             allowPointSelect: true,
                             cursor: 'pointer',
                             dataLabels: {
-                                enabled: false,
-                              pointFormat: '{series.name}: <b>{point.y} ({point.percentage:.1f}%)</b>'
+                              enabled: true,
                             },
-                            showInLegend: true
+                            //showInLegend: true,
                         }
                     },
                     series: [
@@ -493,13 +484,15 @@
                       .then(response => {
                         let chart_data = response.data;
                         let label_array = [];
+
                         //let completed_array = [];
                         //let enrolled_array = [];
-                        let registered_array = [];
+
+                        //let registered_array = [];
                         let stack_registered_array = [];
                         let confirmed_array = [];
-                        let quit_array = [];
-                        let label_array2 = [];
+                        //let quit_array = [];
+                        //let label_array2 = [];
 
 
                         // chart_data.completed.forEach(val => {
@@ -509,6 +502,7 @@
                         // chart_data.enrolled.forEach(val => {
                         //     enrolled_array.push(val.total);
                         // });
+
                         chart_data.confirmed.forEach(val => {
                           label_array.push('T ' + val.mthyr);
                           confirmed_array.push(val.total);
@@ -517,25 +511,34 @@
                           stack_registered_array.push(val.total);
                         });
 
-                        chart_data.registered.forEach(val => {
-                          label_array2.push('T ' + val.mthyr);
-                          registered_array.push(val.total);
-                        });
-                        chart_data.quit.forEach(val => {
-                          quit_array.push(val.total);
-                        });
+                        // chart_data.registered.forEach(val => {
+                        //   label_array2.push('T ' + val.mthyr);
+                        //   registered_array.push(val.total);
+                        // });
+                        // chart_data.quit.forEach(val => {
+                        //   quit_array.push(val.total);
+                        // });
+
                         this.option1.xAxis.categories = label_array;
                         this.option1.series[0]['data'] = confirmed_array;
                         this.option1.series[1]['data'] = stack_registered_array;
 
-                        this.option2.series[0]['data'][0].y = chart_data.online;
-                        this.option2.series[0]['data'][1].y = chart_data.offline;
-                        this.total1 = chart_data.online + chart_data.offline;
+                        this.total1 = 0;
+                        this.option2.series[0]['data'] = [];
+                        chart_data.pie_data.forEach(val => {
+                          let pie_item = {
+                            y: val.count,
+                            name: val.name
+                          }
+                          this.option2.series[0]['data'].push(pie_item);
+                          this.total1 += 1;
+                        });
+
                         this.option2.subtitle.text = this.trans.get('keys.tong_so') + ': ' + this.total1;
 
-                        this.option3.xAxis.categories = label_array2;
-                        this.option3.series[0]['data'] = registered_array;
-                        this.option3.series[1]['data'] = quit_array;
+                        // this.option3.xAxis.categories = label_array2;
+                        // this.option3.series[0]['data'] = registered_array;
+                        // this.option3.series[1]['data'] = quit_array;
                       })
                       .catch(error => {
                         console.log(error);

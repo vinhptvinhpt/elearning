@@ -265,7 +265,8 @@ class BussinessRepository implements IBussinessInterface
                 );
             }
 
-            $quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+            //quit student
+            /*$quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
             ->where("quit_time", ">=", $start_time)
                 ->where("quit_time", "<=", $end_time)
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
@@ -292,30 +293,40 @@ class BussinessRepository implements IBussinessInterface
                     'mthyr' => $key,
                     'total' => $val
                 );
-            }
+            }*/
 
             //chart 2(count course only), 4 data
             $courses = MdlCourse::where('mdl_course.deleted', 0)
                 ->where('mdl_course.category', "<>", 2)
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.category',
+                    'mdl_course.visible',
+                    'mdl_course_categories.name as category_name'
+                )
                 ->get();
-            $online = 0;
-            $offline = 0;
+            $pie_data = [];
             foreach ($courses as $course) {
-                if ($course->category == 5) { //offline
-                    $offline += 1;
-                } else { //online
-                    $online += 1;
+                if ($course->category != 2) {
+                    if (!array_key_exists($course->category, $pie_data)) {
+                        $pie_data[$course->category] = array(
+                            'name' => $course->category_name,
+                            'count' => 1
+                        );
+                    } else {
+                        $pie_data[$course->category]['count'] += 1;
+                    }
                 }
             }
 
-            $response['online'] = $online;
-            $response['offline'] = $offline;
+            $response['pie_data'] = array_values($pie_data);
 
-            //chart 3
+            //Hoc vien dang ki
             $registered = fillMissingMonthChartData($registered_source, $start_time, $end_time);
             $response['registered'] = $registered;
+
+            //Total employees
             $stack_total = 0;
             foreach ($registered as $key => $val) {
                 $stack_total += $val['total'];
@@ -329,8 +340,8 @@ class BussinessRepository implements IBussinessInterface
             $confirmed = fillMissingMonthChartData($confirm_source, $start_time, $end_time);
             $response['confirmed'] = $confirmed;
 
-            $quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
-            $response['quit'] = $quit;
+            //$quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
+            //$response['quit'] = $quit;
 
             return response()->json($response);
         }
@@ -351,22 +362,25 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             return response()->json([]);
         } else {
-            $data = MdlCourse::where('category', '<>', 2)
-                ->where("startdate", "<=", $now)
-                ->where("startdate", "<>", 0)
-                ->where("deleted", "=", 0)
+            $data = MdlCourse::query()
+                ->leftJoin('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->where('category', '<>', 2)
+                ->where('startdate', '<=', $now)
+                ->where('startdate', '<>', 0)
+                ->where('deleted', '=', 0)
                 ->where(function ($query) use ($now) {
                     $query->where('enddate', '>=', $now)
                         ->orWhere('enddate', '=', 0);
                 })
                 ->select(
-                    'id',
-                    'shortname',
-                    'fullname',
-                    'startdate as start',
-                    'enddate as end',
-                    'course_place',
-                    'category'
+                    'mdl_course.id',
+                    'mdl_course.shortname',
+                    'mdl_course.fullname',
+                    'mdl_course.startdate as start',
+                    'mdl_course.enddate as end',
+                    'mdl_course.course_place',
+                    'mdl_course.category',
+                    'mdl_course_categories.name as category_name'
                 );
             if ($keyword) {
                 //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D

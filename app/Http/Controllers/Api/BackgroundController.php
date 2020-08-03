@@ -601,7 +601,7 @@ class BackgroundController extends Controller
 
             $check = new MdlUser;
             $check->username = $username;
-            $check->password = bcrypt('Easia@2020');
+            $check->password = bcrypt('123456a@');
             $check->redirect_type = 'lms';
             $check->firstname = $first_name;
             $check->middlename = $middle_name;
