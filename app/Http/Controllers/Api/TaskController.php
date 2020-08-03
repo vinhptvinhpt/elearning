@@ -27,6 +27,7 @@ use App\TmsTrainningCourse;
 use App\TmsTrainningGroup;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
+use App\TmsTrainningProgram;
 use App\User;
 use Carbon\Carbon;
 use App\Http\Controllers\Controller;
@@ -264,6 +265,7 @@ class TaskController extends Controller
 
                 if ($num >= $limit) {
                     TmsTrainningComplete::insert($arrData);
+                    insertCompetencyCompleted($arrData);
                     $num = 0;
                     $arrData = [];
                 }
@@ -272,7 +274,7 @@ class TaskController extends Controller
             }
 
             TmsTrainningComplete::insert($arrData);
-
+            insertCompetencyCompleted($arrData);
             sleep(1);
         }
 
@@ -355,21 +357,21 @@ class TaskController extends Controller
 
     //insert training into tms_nofitications table
     public function insertCompetencyCompleted($arrayData){
-        $lstNoti = array();
-        foreach ($arrayData as $data){
-            $element = array(
-                'type' => TmsNotification::MAIL,
-                'target' => TmsNotification::COMPLETED_FRAME,
-                'status_send' => 0,
-                'sendto' => $data['user_id'],
-                'createdby' => 0,
-                'course_id' => 0,
-                'created_at' => date('Y-m-d H:i:s', time()),
-                'updated_at' => date('Y-m-d H:i:s', time()),
-            );
-            $training = TmsTrainningProgram::where('id','=',$data['trainning_id'])
-                        ->get()->first();
-            if(!is_null($training)){
+        $data = array();
+        foreach ($arrayData as $user_item) {
+            if (!array_key_exists($user_item['user_id'], $data)) {
+                $element = array(
+                    'type' => TmsNotification::MAIL,
+                    'target' => TmsNotification::COMPLETED_FRAME,
+                    'status_send' => 0,
+                    'sendto' => $user_item['user_id'],
+                    'createdby' => 0,
+                    'course_id' => 0,
+                    'created_at' => date('Y-m-d H:i:s', time()),
+                    'updated_at' => date('Y-m-d H:i:s', time()),
+                );
+                $training = TmsTrainningProgram::where('id','=',$user_item['trainning_id'])
+                    ->get()->first();
                 $element['content'] = array(
                     array(
                         'training_id' => $training->id,
@@ -379,8 +381,29 @@ class TaskController extends Controller
                         'code' => $training->code
                     )
                 );
+                $data[$user_item['user_id']] = $element;
+            } else { // user exists in array, just update content element
+                $training = TmsTrainningProgram::where('id','=',$user_item['trainning_id'])
+                    ->get()->first();
+                if(!is_null($training)){
+                    $data[$user_item['user_id']]['content'][] = array(
+                        'training_id' => $training->id,
+                        'training_name' => $training->name,
+                        'startdate' => $training->time_start,
+                        'enddate' => $training->time_end,
+                        'code' => $training->code
+                    );
+                }
             }
-
+        }
+        if (!empty($data)) {
+            $convert_to_json = array();
+            foreach ($data as $item) { //auto strip key of element, just use value = necessary data
+                $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
+                $convert_to_json[] = $item;
+            }
+            //batch insert
+            TmsNotification::insert($convert_to_json);
         }
     }
 

@@ -373,112 +373,7 @@ class MailController extends Controller
         }
     }
 
-    public function insertCompetencyCompleted($arrayData) {
-        $configs = self::loadConfiguration();
-        if ($configs[TmsNotification::COMPLETED_FRAME] == TmsConfigs::ENABLE) {
-
-            $userNeedSend =
-                //Type 1 limit using sub query wit same condition
-                DB::query()->fromSub(function ($query) {
-                    $query->from('mdl_user')
-//                        ->whereNotIn('id', function ($query) {
-//                            //check exist in table tms_nofitications
-//                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::COMPLETED_FRAME);
-//                        })
-                        ->whereIn('id', function ($query) {
-                            $query->select('user_id')
-                                ->from('tms_trainning_complete')
-                                ->join('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_complete.trainning_id');
-                        })
-                        ->limit(self::DEFAULT_ITEMS_PER_SESSION);
-                }, 'mdl_user')
-                    //Check không có trong bảng notification
-                    ->whereNotIn('mdl_user.id', function ($query) {
-                        //check exist in table tms_nofitications
-                        $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::COMPLETED_FRAME);
-                    })
-                    ->join('tms_trainning_complete', 'mdl_user.id', '=', 'tms_trainning_complete.user_id')
-                    ->join('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_complete.trainning_id')
-                    ->whereNotIn('tms_traninning_programs.id',function ($query) {
-                        $query1 = [];
-                        $contents = TmsNotification::where('target', TmsNotification::COMPLETED_FRAME)
-                            ->pluck('content')->toArray();
-
-                        foreach ($contents as $content){
-                            $a = json_decode($content);
-
-                            foreach ($a as $training){
-                                if ($training->training_id) {
-                                    $query1[] = $training->training_id;
-                                }
-                            }
-                        }
-
-                        return $query1;
-                    })
-                    ->select(
-                        'mdl_user.id',
-                        'mdl_user.username',
-                        'mdl_user.firstname',
-                        'mdl_user.lastname',
-                        'mdl_user.email',
-                        'tms_trainning_complete.trainning_id',
-                        'tms_traninning_programs.name',
-                        'tms_traninning_programs.time_start',
-                        'tms_traninning_programs.time_end',
-                        'tms_traninning_programs.code'
-                    )
-                    ->get();
-            if(count($userNeedSend) > 0) {
-                $data = array();
-                foreach ($userNeedSend as $user_item) {
-                    if (strlen($user_item->email) != 0) {
-                        if (!array_key_exists($user_item->username, $data)) {
-                            $element = array(
-                                'type' => TmsNotification::MAIL,
-                                'target' => TmsNotification::COMPLETED_FRAME,
-                                'status_send' => 0,
-                                'sendto' => $user_item->id,
-                                'createdby' => 0,
-                                'course_id' => 0,
-                                'created_at' => date('Y-m-d H:i:s', time()),
-                                'updated_at' => date('Y-m-d H:i:s', time()),
-                            );
-                            $element['content'] = array(
-                                array(
-                                    'training_id' => $user_item->trainning_id,
-                                    'training_name' => $user_item->name,
-                                    'startdate' => $user_item->time_start,
-                                    'enddate' => $user_item->time_end,
-                                    'code' => $user_item->code
-                                )
-                            );
-                            $data[$user_item->username] = $element;
-                        } else { // user exists in array, just update content element
-                            $data[$user_item->username]['content'][] = array(
-                                'training_id' => $user_item->trainning_id,
-                                'training_name' => $user_item->name,
-                                'startdate' => $user_item->time_start,
-                                'enddate' => $user_item->time_end,
-                                'code' => $user_item->code
-                            );
-                        }
-                    }
-                }
-
-                if (!empty($data)) {
-                    $convert_to_json = array();
-                    foreach ($data as $item) { //auto strip key of element, just use value = necessary data
-                        $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
-                        $convert_to_json[] = $item;
-                    }
-                    //batch insert
-                    TmsNotification::insert($convert_to_json);
-                }
-            }
-        }
-    }
-
+    //Send email completed competency framework
     public function sendCompetencyCompleted(){
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::COMPLETED_FRAME] == TmsConfigs::ENABLE) {
@@ -513,7 +408,7 @@ class MailController extends Controller
                         $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
                         $email = $itemNotification->email;
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
-                            Mail::to('trananhtrungksnb1@gmail.com')->send(new CourseSendMail(
+                            Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::COMPLETED_FRAME,
                                 $itemNotification->username,
                                 $fullname,
