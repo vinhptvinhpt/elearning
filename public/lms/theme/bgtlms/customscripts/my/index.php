@@ -36,7 +36,9 @@ mc.estimate_duration,
     tor.name as teacher_organization,
     muet.timecreated as teacher_created,
     toe.position as teacher_position,
-    toe.description as teacher_description
+    toe.description as teacher_description,
+    ttp.name as training_name,
+    ttp.deleted as training_deleted
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
@@ -44,8 +46,14 @@ mc.estimate_duration,
   left join mdl_user_enrolments muet on met.id = muet.enrolid
   left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_trainning_courses ttc on mc.id = ttc.course_id
+  left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
-  where me.enrol = \'manual\' and mc.deleted = 0 and mc.visible = 1 and mc.category <> 2 and mue.userid = '.$USER->id;
+  where me.enrol = \'manual\'
+  and mc.deleted = 0
+  and mc.visible = 1
+  and mc.category <> 2
+  and mue.userid = '.$USER->id;
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -82,19 +90,39 @@ $courses_others = array();
 $courses_soft_skills = array();
 
 foreach ($courses as $course){
-    if ($course->category == 14) {
-        push_course($courses_others, $course);
-    } else {
-        if(($course->numofmodule == 0 || $course->numoflearned/$course->numofmodule == 0) && $course->category != 5){
+
+    //current first
+    if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
+        push_course($courses_current, $course);
+    }
+    //then complete
+    elseif ($course->numoflearned/$course->numofmodule == 1){
+        push_course($courses_completed, $course);
+    }
+    //then required
+    elseif ($course->training_name) {
+        if ($course->training_deleted == 0) {
             push_course($courses_all_required, $course);
         }
-        if($course->numoflearned/$course->numofmodule == 1){
-            push_course($courses_completed, $course);
-        }
-        if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-            push_course($courses_current, $course);
-        }
     }
+    //the last is other courses
+    else {
+        push_course($courses_others, $course);
+    }
+
+
+//    if ($course->category == 14) {
+//        push_course($courses_others, $course);
+//    } else {
+//
+//        if($course->numoflearned/$course->numofmodule == 1){
+//            push_course($courses_completed, $course);
+//        }
+//        if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
+//            push_course($courses_current, $course);
+//        }
+//    }
+
 //    if ($course->category == 14) {
 //        if (
 //            !array_key_exists($course->id, $courses_all_required)
@@ -104,6 +132,7 @@ foreach ($courses as $course){
 //            push_course($courses_others, $course);
 //        }
 //    }
+
     if ($course->category == 3) {
         push_course($courses_soft_skills, $course);
     }
