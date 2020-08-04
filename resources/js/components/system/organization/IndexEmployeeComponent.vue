@@ -242,7 +242,7 @@
                                                           :labels=$pagination.labels></v-pagination>
                                         </div>
                                         <router-link v-if="organization_id.length !== 0"
-                                                     :to="{ name: 'IndexOrganization', params: {page: source_page}}"
+                                                     :to="{ name: 'IndexOrganization', params: {page: source_page, back_page:'1'}}"
                                                      class="btn btn-secondary btn-sm">
                                             {{trans.get('keys.quay_lai')}}
                                         </router-link>
