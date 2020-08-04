@@ -78,7 +78,7 @@
                                                 {{trans.get('keys.sua')}}
                                             </button>
 
-                                            <router-link to="/tms/survey/list" class="btn btn-secondary">
+                                            <router-link :to="{name:'SurveyIndex', params:{back_page:'1'}}" class="btn btn-secondary">
                                                 {{trans.get('keys.huy')}}
                                             </router-link>
                                         </div>

@@ -124,6 +124,15 @@
                             case 'forgot_password':
                                 this.content_html = this.json_content.forgot_password;
                                 break;
+                            case 'invite_student':
+                              this.content_html = this.json_content.invite_student;
+                              break;
+                            case 'active_email':
+                              this.content_html = this.json_content.active_email;
+                              break;
+                            case 'completed_competency_framework':
+                                this.content_html = this.json_content.completed_competency_framework;
+                              break;
                             default:
                                 break;
                         }

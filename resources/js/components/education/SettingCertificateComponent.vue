@@ -121,6 +121,19 @@
     methods: {
 
       onPageChange() {
+        let back = this.getParamsBackPage();
+        if(back == '1') {
+          this.current = Number(sessionStorage.getItem('settingPage'));
+
+          sessionStorage.clear();
+          this.$route.params.back_page= null;
+        }
+      },
+      getParamsBackPage() {
+        return this.$route.params.back_page;
+      },
+      setParamsBackPage(value) {
+        this.$route.params.back_page = value;
       },
       getListImages() {
         // axios.get('/certificate/get_images')
@@ -175,6 +188,9 @@
     },
     updated() {
       this.setFileInput();
+    },
+    destroyed() {
+      sessionStorage.setItem('settingPage', this.current);
     }
   }
 </script>

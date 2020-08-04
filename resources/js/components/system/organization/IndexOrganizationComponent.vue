@@ -189,7 +189,7 @@
                             <router-link v-if="slug_can('tms-system-organize-edit')"
                                          :title="trans.get('keys.sua_to_chuc')"
                                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                         :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
+                                         :to="{ name: 'EditOrganization', params: { id: item.id}}">
                               <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                             </router-link>
 
@@ -378,15 +378,24 @@
               })
           },
           onPageChange() {
-            let page = this.getParamsPage();
-            this.getDataList(page);
+            let back = this.getParamsBackPage();
+            if(back == '1') {
+              this.current = Number(sessionStorage.getItem('organizationPage'));
+              this.row = Number(sessionStorage.getItem('organizationPageSize'));
+              this.keyword = sessionStorage.getItem('organizationKeyWord');
+              this.level = Number(sessionStorage.getItem('organizationLevel'));
+
+              sessionStorage.clear();
+              this.$route.params.back_page= null;
+            }
+            this.getDataList();
             this.selectParent();
           },
-          getParamsPage() {
-            return this.$route.params.page;
+          getParamsBackPage() {
+            return this.$route.params.back_page;
           },
-          setParamsPage(value) {
-            this.$route.params.page = value;
+          setParamsBackPage(value) {
+            this.$route.params.back_page = value;
           },
           deletePost(url) {
             let current_pos = this;
@@ -437,7 +446,12 @@
               }
       },
       mounted() {
-        this.setParamsPage(false);
+      },
+      destroyed() {
+        sessionStorage.setItem('organizationPage', this.current);
+        sessionStorage.setItem('organizationPageSize', this.row);
+        sessionStorage.setItem('organizationKeyWord', this.keyword);
+        sessionStorage.setItem('organizationLevel', this.level);
       }
     }
 </script>

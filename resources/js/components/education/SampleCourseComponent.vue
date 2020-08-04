@@ -351,7 +351,22 @@
           });
       },
       onPageChange() {
+        let back = this.getParamsBackPage();
+        if(back == '1') {
+          this.current = Number(sessionStorage.getItem('surveyPage'));
+          this.row = Number(sessionStorage.getItem('surveyPageSize'));
+          this.keyword = sessionStorage.getItem('surveyKeyWord');
+
+          sessionStorage.clear();
+          this.$route.params.back_page= null;
+        }
         this.getCourses();
+      },
+      getParamsBackPage() {
+        return this.$route.params.back_page;
+      },
+      setParamsBackPage(value) {
+        this.$route.params.back_page = value;
       },
       deletePost(id) {
         let current_pos = this;
@@ -404,6 +419,11 @@
     },
     updated() {
       this.setFileInput();
+    },
+    destroyed() {
+      sessionStorage.setItem('surveyPage', this.current);
+      sessionStorage.setItem('surveyPageSize', this.row);
+      sessionStorage.setItem('surveyKeyWord', this.keyword);
     }
   }
 </script>

@@ -523,7 +523,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             if ($count_course > 0) {
                 foreach ($lstCourseId as $course_id) {
                     $course_id = is_numeric($course_id) ? $course_id : 0;
-
                     $course_sample = DB::table('mdl_course')
                         ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                         ->where('mdl_course.id', '=', $course_id)
@@ -555,15 +554,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
                         $course->category = MdlCourseCategory::COURSE_ONLINE[0];
                         $course->shortname = $course_sample->shortname . $course_sample->id . $trainning_id;
-                        $course->fullname = $course_sample->fullname . ' ' . $course_sample->id . $trainning_id;
+                        $course->fullname = $course_sample->fullname; // . ' ' . $course_sample->id . $trainning_id;  //bỏ id sau tên course
                         $course->summary = $course_sample->summary;
                         $course->course_avatar = $course_sample->course_avatar;
 
-                        $course->startdate = $course_sample->startdate;
-                        $course->enddate = $course_sample->enddate;
+//                        $course->startdate = $course_sample->startdate;   //trungta bỏ ngày clone từ course sample 04/08/2020
+//                        $course->enddate = $course_sample->enddate;
 
                         $course->visible = 1; //tao ra 1 khoa hoc moi, mac dinh set khoa hoc do dc active
-
                         $course->save();
 
                         //insert dữ liệu điểm qua môn

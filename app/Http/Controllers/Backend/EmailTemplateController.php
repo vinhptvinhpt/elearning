@@ -121,6 +121,9 @@ class EmailTemplateController extends Controller
             case TmsNotification::FORGOT_PASSWORD:
                 $label = __('quen_mat_khau');
                 break;
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('chung_chi_hoan_thanh');
+                break;
             default:
                 $label = '';
                 break;
