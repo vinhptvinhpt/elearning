@@ -807,7 +807,6 @@ if ($edit == 0) {
 }
 
 //Check to show popup congratulation
-$_SESSION["displayPopup"] = 1;
 //select image badge active
 $sqlGetBadge = 'select path from image_certificate where type = 2 and is_active = 1';
 $getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
