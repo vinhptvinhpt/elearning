@@ -108,7 +108,7 @@
                 if (data.redirect_type.includes("lms")) {
                     window.location.href = '{{Config::get('constants.domain.LMS')}}';
                 } else {
-                    window.location.href = '/tms/dashboard';
+                    window.location.href = '/lms/my';
                 }
             }
         });
