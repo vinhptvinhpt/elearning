@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-    const DEVELOPMENT = 1;
+    const DEVELOPMENT = 0;
 
     /* Load / generate configuration */
     public function loadConfiguration()
@@ -30,7 +30,8 @@ class MailController extends Controller
             TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
             TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE
+            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE
         );
         //set old configs (using in bgt)
         $configsDelete = array(
@@ -43,9 +44,7 @@ class MailController extends Controller
             TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
-            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE
-
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE
         );
 
         $pdo = DB::connection()->getPdo();
@@ -1562,7 +1561,8 @@ class MailController extends Controller
                 'innrhy@gmail.com',
                 'fruity.tester@gmail.com',
                 'linhnt@tinhvan.com',
-                'nguyenlinhcksl@gmail.com'
+                'nguyenlinhcksl@gmail.com',
+                'duongtiendat.it@gmail.com'
             ];
             if (in_array($email, $dev_email)) {
                 return true;
