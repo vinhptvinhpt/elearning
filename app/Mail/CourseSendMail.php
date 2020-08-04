@@ -182,7 +182,11 @@ class CourseSendMail extends Mailable
         elseif ($this->activity == TmsNotification::INVITATION_OFFLINE_COURSE) {
             $subject = '[ELEARNING] '. __('invitation_offline_course');
             $view = 'email.invitation_offline_course';
+        }elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
+            $subject = __('thu_moi_tham_gia_khoa_hoc');
+            $view = 'email.invite_student';
         }
+
 
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)

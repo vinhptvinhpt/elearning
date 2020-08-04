@@ -29,10 +29,9 @@
                                             <!-- view thêm mới course-->
                                             <div class="row">
                                                 <div class="col-sm">
-
                                                     <div class="table-wrap">
                                                         <div class="row">
-                                                            <div class="col-sm-8 dataTables_wrapper">
+                                                            <div class="col-sm-4 dataTables_wrapper">
                                                                 <div class="dataTables_length"
                                                                      style="display: inline-block;">
                                                                     <label>{{trans.get('keys.hien_thi')}}
@@ -46,8 +45,10 @@
                                                                         </select>
                                                                     </label>
                                                                 </div>
-
                                                             </div>
+                                                          <div class="col-4">
+                                                            <treeselect v-model="organization_id_1" :multiple="false" :options="options"/>
+                                                          </div>
                                                             <div class="col-sm-4">
                                                                 <form v-on:submit.prevent="getUserOutTrainning(1)">
                                                                     <div class="d-flex flex-row form-group">
@@ -331,17 +332,14 @@
                 total_user: 0,
                 row: 10,
                 trainning: 0,
-
                 users_out_trainning: [],
                 row_out: 10,
                 total_out: 0,
                 current_out: 1,
                 keyword_out: '',
                 totalPagesOut: 0,
-
                 allSelected: false,
                 userTrainning: [],
-
                 tree_options: [
                     {
                         id: 0,
@@ -349,7 +347,15 @@
                     }
                 ],
                 organization_parent_list: [],
-                organization_id: 0
+                organization_id: 0,
+              //Treeselect options
+              options: [
+                {
+                  id: 0,
+                  label: this.trans.get('keys.chon_to_chuc')
+                }
+              ],
+              organization_id_1: 0
             }
         },
         methods: {
@@ -368,7 +374,7 @@
 
                     })
             },
-            setOptions(list) {
+            setOptionsTreeView(list) {
                 let outPut = [];
                 for (const [key, item] of Object.entries(list)) {
                     let newOption = {
@@ -447,7 +453,6 @@
                 //reset selected array
                 this.userTrainning = [];
             },
-
             selectAll: function () {
                 this.userTrainning = [];
                 this.allSelected = !this.allSelected;
@@ -515,13 +520,13 @@
                 });
 
             },
-
             getUserOutTrainning(page) {
                 axios.post('/api/trainning/getlistuserouttrainning', {
                     page: page || this.current_out,
                     keyword: this.keyword_out,
                     row: this.row_out,
-                    trainning: this.trainning_id
+                    trainning: this.trainning_id,
+                  organization_id: this.organization_id_1
                 })
                     .then(response => {
                         this.users_out_trainning = response.data.data ? response.data.data.data : [];
@@ -533,7 +538,6 @@
                         console.log(error.response.data);
                     });
             },
-
             getUser(paged) {
                 axios.post('/trainning/api_list_user', {
                     page: paged || this.current,
@@ -551,6 +555,43 @@
                         console.log(error.response.data);
                     });
             },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list',{
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.options = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+          setOptions(list, current_id) {
+            let outPut = [];
+            for (const [key, item] of Object.entries(list)) {
+              let newOption = {
+                id: item.id,
+                label: item.name,
+              };
+              if (item.children.length > 0) {
+                for (const [key, child] of Object.entries(item.children)) {
+                  if (child.id === current_id) {
+                    newOption.isDefaultExpanded = true;
+                    break;
+                  }
+                }
+                newOption.children = this.setOptions(item.children, current_id);
+              }
+              outPut.push(newOption);
+            }
+            return outPut;
+          },
             onPageChange() {
                 this.getUser();
                 this.getUserOutTrainning();
@@ -558,6 +599,7 @@
         },
         mounted() {
             this.listOrganization();
+          this.selectOrganization();
         }
     }
 </script>
