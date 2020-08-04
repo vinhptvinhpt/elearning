@@ -809,11 +809,13 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $keyword = $request->input('keyword');
             $row = $request->input('row');
             $trainning = $request->input('trainning');
+            $organization_id = $request->input('organization_id');
 
             $param = [
                 'keyword' => 'text',
                 'row' => 'number',
-                'trainning' => 'number'
+                'trainning' => 'number',
+                'organization_id' => 'number'
             ];
 
             $validator = validate_fails($request, $param);
@@ -833,6 +835,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->where('mu.deleted', '=', 0)
                 ->whereNull('ttpu.trainning_id')
                 ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
+
+            if(!is_null($organization_id) && $organization_id > 0){
+                $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')->where('toe.organization_id', '=', $organization_id);
+            }
 
             if ($keyword) {
                 $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
