@@ -132,7 +132,7 @@
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
 <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
                                             <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible==1">
