@@ -314,5 +314,6 @@
   "ho_ten": "Họ và tên",
   "thoi_gian": "Thời gian",
     "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa",
-    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý"
+    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý",
+    "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!"
 }

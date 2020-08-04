@@ -362,5 +362,6 @@
   "thong_tin_dob_khong_dung_dinh_dang": "Information: date of birth is malformed",
   "ho_ten": "Fullname",
   "thoi_gian": "Time access",
-    "ban_khong_co_quyen_xoa": "You do not have permission to delete"
+    "ban_khong_co_quyen_xoa": "You do not have permission to delete",
+    "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Trainees exist in the competency framework. Can not delete!"
 }

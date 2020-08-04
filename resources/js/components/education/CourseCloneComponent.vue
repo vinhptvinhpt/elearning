@@ -428,7 +428,7 @@
             goBack() {
                 // window.location.href = '/education/course/list';
                 // window.history.back();
-                this.$router.push({name: 'SampleCourseIndex'});
+                this.$router.push({name: 'SampleCourseIndex', params:{back_page: '1'}});
 
             },
 

@@ -56,7 +56,7 @@
                                                 {{trans.get('keys.sua')}}
                                             </button>
 
-                                            <router-link to="/tms/self/list" class="btn btn-secondary btn-sm">
+                                            <router-link :to="{name:'SelfIndex',params:{back_page: '1'}}" class="btn btn-secondary btn-sm">
                                                 {{trans.get('keys.huy')}}
                                             </router-link>
                                         </div>
