@@ -1649,12 +1649,14 @@ class BussinessRepository implements IBussinessInterface
         $keyword = $request->input('keyword');
         $row = $request->input('row');
         $organization_id = $request->input('organization_id');
+        $invite_status = $request->input('invite_status');
 
         $param = [
             'course_id' => 'number',
             'row' => 'number',
             'role_id' => 'number',
-            'keyword' => 'text'
+            'keyword' => 'text',
+            'invite_status' => 'text'
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -1676,6 +1678,14 @@ class BussinessRepository implements IBussinessInterface
             );
         if ($keyword) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if ($invite_status == 'noreply') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 0);
+        } elseif ($invite_status == 'accepted') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 1);
+        } elseif ($invite_status == 'denied') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 0);
         }
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {

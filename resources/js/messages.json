@@ -3,7 +3,7 @@
         "language": "/en",
         "theo_doi_so_nvbh_duoc_dao_tao_theo_thang": "Total number of trained employees per month",
         "so_luong_nhan_vien_hoan_thanh_dao_tao": "Total number of employees finish training",
-        "so_luong": "Employees number",
+        "so_luong": "Quantity",
         "nhan_vien_hoan_thanh_dao_tao": "Employees finish training",
         "tong_so_nhan_vien": "Total employees",
         "thanh_phan_khoa_hoc": "Courses ratio",
@@ -64,7 +64,7 @@
         "ngay_thang_nam_sinh": "Date of Birth",
         "email": "Email",
         "dia_chi_email": "Input Email Address",
-        "so_cmtnd": "ID Number",
+        "so_cmtnd": "Personal ID",
         "nhap_so_cmtnd": "Input ID Number",
         "so_dien_thoai_lien_lac": "Contact Number",
         "nhap_so_dt": "Input Contact Number",
@@ -84,7 +84,7 @@
         "tao_moi": "Add New",
         "huy": "Cancel",
         "theo_quyen": "Role",
-        "nhap_ten_tai_khoan_email_cmtnd": "Input login id, email, id number",
+        "nhap_ten_tai_khoan_email_cmtnd": "Input login id, email",
         "tong_so_nguoi_dung_hien_tai": "Total Users",
         "tai_len_file_excel": "Upload Excel File",
         "tai_ve_bieu_mau": "Download Excel Form",
@@ -992,7 +992,12 @@
         "forgot_password": "Forgot Password",
         "remind_expire_required_course": "Remind expired required course",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Input courses name",
-        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname"
+        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname",
+        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Employee denied to join this course with below reason",
+        "tat_ca": "All",
+        "chua_tra_loi": "Non reply",
+        "dong_y": "Accepted",
+        "id": "ID"
     },
     "vi.keys": {
         "language": "",
@@ -1098,7 +1103,7 @@
         "tao_moi": "Tạo Mới",
         "huy": "Hủy",
         "theo_quyen": "Theo quyền",
-        "nhap_ten_tai_khoan_email_cmtnd": "Nhập tên tài khoản, email, cmtnd",
+        "nhap_ten_tai_khoan_email_cmtnd": "Nhập tên tài khoản, email",
         "tong_so_nguoi_dung_hien_tai": "Tổng số người dùng hiện tại",
         "tai_len_file_excel": "Tải lên file Excel",
         "tai_ve_bieu_mau": "Tải về biểu mẫu",
@@ -1978,7 +1983,11 @@
         "forgot_password": "Quên mật khẩu",
         "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Nhập thông tin tìm kiếm theo tên ",
-        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname"
-
+        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname",
+        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Người dùng từ chối tham gia khóa học với lý do",
+        "tat_ca": "Tất cả",
+        "chua_tra_loi": "Chưa trả lời",
+        "dong_y": "Đồng ý",
+        "id": "ID"
     }
 }

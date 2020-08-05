@@ -321,7 +321,7 @@
                             allowPointSelect: true,
                             cursor: 'pointer',
                             dataLabels: {
-                              enabled: true,
+                              enabled: false,
                             },
                             //showInLegend: true,
                         }

@@ -544,11 +544,14 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         ->where('ttc.sample_id', '=', $course_id)
                         ->where('ttc.deleted', '=', 1)->select('ttc.id', 'ttc.deleted')->first();
 
+                    $current_max = TmsTrainningCourse::query()->where('trainning_id', $trainning_id)->max('order_no');
+                    $next_max = is_integer($current_max) ? $current_max + 1 : 1;
+
+
                     if ($data_trainning) {
-                        DB::table('tms_trainning_courses as ttc')
-                            ->where('ttc.trainning_id', '=', $trainning_id)
-                            ->where('ttc.sample_id', '=', $course_id)
-                            ->where('ttc.deleted', '=', 1)->update(['deleted' => 0]);
+                        DB::table('tms_trainning_courses')
+                            ->where('id', '=', $data_trainning->id)
+                            ->update(['deleted' => 0, 'order_no' => $next_max]);
                     } else if ($course_sample) {
                         #region clone course tu thu vien khoa hoc
                         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
@@ -637,7 +640,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         TmsTrainningCourse::firstOrCreate([
                             'trainning_id' => $trainning_id,
                             'sample_id' => $course_id, // khoa hoc vua tao duoc clone tu khoa hoc mau nao
-                            'course_id' => $course->id
+                            'course_id' => $course->id,
+                            'order_no' => $next_max
                         ]);
 
                         //write log to mdl_logstore_standard_log
