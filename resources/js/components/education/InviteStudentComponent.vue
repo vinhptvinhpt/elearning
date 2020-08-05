@@ -193,7 +193,7 @@
                                     <td class="text-center">
                                       <span v-if="user.replied === 0" class="fas fa-check text-secondary"></span>
                                       <span v-else-if="user.replied === 1 && user.accepted === 1" class="fas fa-check text-success"></span>
-                                      <span v-else class="fas fa-times text-danger" data-toggle="tooltip" data-placement="top" :title="user.reason"></span>
+                                      <a v-else class="fas fa-times text-danger" v-on:click="showReply(user)" :title="trans.get('keys.ly_do') + ': ' + user.reason"></a>
                                     </td>
                                     <td class="text-center">
                                       <input type="checkbox" :value="user.id"
@@ -490,6 +490,16 @@
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
       },
+      showReply(invited) {
+        swal({
+          title: this.trans.get('keys.nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do'),
+          text: invited.reason,
+          type: "info",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          showLoaderOnConfirm: false
+        });
+      }
     },
     mounted() {
       this.selectOrganization();
