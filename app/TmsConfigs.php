@@ -23,7 +23,7 @@ class TmsConfigs extends Model
             TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
             TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE
+            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
