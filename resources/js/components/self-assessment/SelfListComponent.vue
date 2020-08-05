@@ -176,7 +176,22 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('selfListPage'));
+                  this.row = Number(sessionStorage.getItem('selfListPageSize'));
+                  this.keyword = sessionStorage.getItem('selfListKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getSurveys();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -210,6 +225,11 @@
         },
         mounted() {
             // this.getSurveys();
+        },
+        destroyed() {
+          sessionStorage.setItem('selfListPage', this.current);
+          sessionStorage.setItem('selfListPageSize', this.row);
+          sessionStorage.setItem('selfListKeyWord', this.keyword);
         }
     }
 </script>

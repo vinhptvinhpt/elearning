@@ -3,14 +3,29 @@ if (!isloggedin()) {
     require_login();
 }
 require_once(__DIR__ . '/../../../../config.php');
-$type = optional_param('type', 0, PARAM_INT);
+$type = optional_param('type', 0, PARAM_TEXT);
+$progress = optional_param('progress', 0, PARAM_INT);
+
+$home_selection = [
+    'current' => 'Current courses',
+    'required' => 'Required courses',
+    'completed' => 'Completed courses',
+    'other' => 'Other courses',
+];
+
 $category_params = 0;
+
 if (strlen($type) != 0) {
     $category_params = $type;
 }
+
 //Hide client course
-$sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2 AND id <> 14';
-$categories = array_values($DB->get_records_sql($sqlGetCategories));
+
+if ($progress != 1) {
+    $sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2 AND id <> 14';
+    $categories = array_values($DB->get_records_sql($sqlGetCategories));
+}
+
 ?>
 
 <html>
@@ -583,11 +598,17 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                                             <select name="category" id="category" class="form-control course-select"
                                                     @change="searchCourse(category, 1)"
                                                     v-model="category">
+                                                <?php if ($progress == 1) {
+                                                    foreach ($home_selection as $key => $value) {
+                                                    ?>
+                                                    <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                                                <?php }
+                                                    } else { ?>
                                                 <option value="0">All courses</option>
                                                 <?php foreach ($categories as $category) { ?>
-                                                    <option
-                                                        value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                                <?php } ?>
+                                                    <option value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                                 <?php }
+                                                } ?>
                                             </select>
                                         </div>
                                         <div class="col-6 col-md-8 block-search__btn">
@@ -613,14 +634,24 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                     <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
-                            <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0"
-                                @click="searchCourse(0, 1)">All Courses
-                            </li>
-                            <?php foreach ($categories as $category) { ?>
-                                <li class="btn btn-click-course" @click="searchCourse(<?php echo $category->id; ?>, 1)"
-                                    id="ctgr<?php echo $category->id; ?>"
-                                    category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
+
+                            <?php if ($progress == 1) {
+                                   foreach ($home_selection as $key => $value) {
+                                ?>
+                                <li class="btn btn-click-course" @click="searchCourse('<?php echo $key; ?>', 1)"
+                                    id="ctgr<?php echo $key; ?>"
+                                    category="<?php echo $key; ?>"><?php echo $value; ?></li>
+                            <?php } } else { ?>
+                                <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0"
+                                    @click="searchCourse(0, 1)">All Courses
+                                </li>
+                                <?php foreach ($categories as $category) { ?>
+                                    <li class="btn btn-click-course" @click="searchCourse(<?php echo $category->id; ?>, 1)"
+                                        id="ctgr<?php echo $category->id; ?>"
+                                        category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
+                                <?php } ?>
                             <?php } ?>
+
                         </ul>
                     </div>
                 </div>
@@ -769,6 +800,7 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
     var app = new Vue({
         el: '#app',
         data: {
+            progress: '<?php echo $progress ?>',
             category: 0,
             txtSearch: '',
             courses: [],
@@ -797,7 +829,8 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
-                this.category = category || this.category;
+                this.category = category;
+                console.log(this.category);
                 if (page == 1)
                     this.current = 1;
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
@@ -808,10 +841,11 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
                 params.append('current', page || this.current);
                 // params.append('pageCount', this.total);
                 params.append('recordPerPage', this.recordPerPage);
+                params.append('progress', this.progress);
 
                 axios({
                     method: 'post',
-                    url: url + '/coursesearch.php',
+                    url: url + '/pusher/coursesearch.php',
                     data: params,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',
@@ -827,14 +861,14 @@ $categories = array_values($DB->get_records_sql($sqlGetCategories));
             }
         },
         mounted() {
-            this.category = <?php echo $category_params ?>;
+            this.category = '<?php echo $category_params ?>';
             activeCategogy(this.category);
-            this.searchCourse();
+            this.searchCourse(this.category, this.current);
         }
     })
 
     function activeCategogy(category_selected) {
-        var category = $(this).attr('category');
+        //element
         var needtoclick = $("[category=" + category_selected + "]")
         //add class active
         needtoclick.addClass('btn-click-active');

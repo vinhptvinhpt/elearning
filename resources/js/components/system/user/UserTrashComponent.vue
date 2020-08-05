@@ -78,10 +78,11 @@
                                                        class="filled-in chk-col-light-blue" name="select_all" value=""/>
                                                 <label for="branch-select-all"></label>
                                             </th>
-                                            <th class=" mobile_hide">{{trans.get('keys.cmtnd')}}</th>
+<!--                                            <th class="mobile_hide">{{trans.get('keys.cmtnd')}}</th>-->
+                                            <th class="mobile_hide text-center">{{trans.get('keys.id')}}</th>
                                             <th>{{trans.get('keys.tai_khoan')}}</th>
                                             <th>{{trans.get('keys.ho_va_ten')}}</th>
-                                            <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
+                                            <th class="mobile_hide">{{trans.get('keys.email')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -96,7 +97,9 @@
                                                        class="filled-in chk-col-light-blue check_box_branch"><label
                                                     :for="'restore_user'+user.user_id"></label>
                                             </td>
-                                            <td class=" mobile_hide">{{ user.cmtnd }}</td>
+<!--                                            <td class="mobile_hide">{{ user.cmtnd }}</td>-->
+                                            <td class="mobile_hide text-center">{{ user.user_id }}</td>
+
                                             <td>
 
                                                 <router-link
@@ -130,7 +133,8 @@
                                                        class="filled-in chk-col-light-blue" name="select_all" value=""/>
                                                 <label for="branch-select-all2"></label>
                                             </th>
-                                            <th class=" mobile_hide">{{trans.get('keys.cmtnd')}}</th>
+<!--                                            <th class="mobile_hide">{{trans.get('keys.cmtnd')}}</th>-->
+                                            <th class="mobile_hide  text-center">{{trans.get('keys.id')}}</th>
                                             <th>{{trans.get('keys.tai_khoan')}}</th>
                                             <th>{{trans.get('keys.ho_va_ten')}}</th>
                                             <th class=" mobile_hide">{{trans.get('keys.email')}}</th>

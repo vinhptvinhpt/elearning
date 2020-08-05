@@ -55,22 +55,9 @@ class CourseSendMail extends Mailable
     private $course_place;
     private $quiz_date;
     private $content;
-    private $course_list;
+    private $course_list = [];
     private $url_confirm_email;
     private $password;
-
-
-    private $competency_name;
-    private $quiz_start;
-    private $quiz_end;
-    private $course_learning_outcomes;
-    private $language;
-    private $trainer;
-    private $start_time;
-    private $end_time;
-    private $date;
-    private $first;
-    private $deadline;
 
     /**
      * Create a new message instance.
@@ -161,6 +148,12 @@ class CourseSendMail extends Mailable
             $subject = '[ELEARNING] '. __('remind_expire_required_course');
             $view = 'email.remind_expire_required_course';
         }
+        elseif($this->activity == TmsNotification::COMPLETED_FRAME){
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] Thông báo xác nhận email';
+            $view = 'email.completed_competency';
+        }
         elseif ($this->activity == TmsNotification::ASSIGNED_COURSE) {
             $subject = '[ELEARNING] '. __('assigned_course');
             $view = 'email.assigned_course';
@@ -182,7 +175,11 @@ class CourseSendMail extends Mailable
         elseif ($this->activity == TmsNotification::INVITATION_OFFLINE_COURSE) {
             $subject = '[ELEARNING] '. __('invitation_offline_course');
             $view = 'email.invitation_offline_course';
+        }elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
+            $subject = __('thu_moi_tham_gia_khoa_hoc');
+            $view = 'email.invite_student';
         }
+
 
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)

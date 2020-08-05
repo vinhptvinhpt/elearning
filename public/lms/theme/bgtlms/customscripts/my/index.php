@@ -110,7 +110,6 @@ foreach ($courses as $course){
         push_course($courses_others, $course);
     }
 
-
 //    if ($course->category == 14) {
 //        push_course($courses_others, $course);
 //    } else {
@@ -240,6 +239,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 //echo shell_exec('select * from mdl_user limit 1');
 
 ?>
+
 
 <html>
 <title>Home</title>
@@ -454,7 +454,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-align: left;
         letter-spacing: 0.6px;
         font-size: 17px;
-        font-family: Roboto-Bold;
+        font-family: Roboto;
         color: #202020;
         opacity: 1;
         margin-bottom: 20px;
@@ -463,6 +463,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         -webkit-box-orient: vertical;
         overflow: hidden;
         min-height: 3.25rem;
+        font-weight: 700;
     }
 
     .course-block__top {
@@ -852,8 +853,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         max-width: 100% !important;
     }
 </style>
-<body>
-
+<body">
 <div class="wrapper"><!-- wrapper -->
 <!--    --><?php //echo $OUTPUT->header(); ?>
 <!--    --><?php //echo  ?>
@@ -895,7 +895,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <div class="content">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 mr-xl-3">
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                         <div class="info row">
                             <div class="info-user info-center">
                                 <div class="avatar col-4 info-center">
@@ -931,25 +931,25 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                             <div class="info-statistic mb-3">
                                 <div class="info-statistic__current-course">
-                                    <a class="info-text">
+                                    <a class="info-text" href="lms/course/index.php?progress=1&type=current">
                                         <div class="text-course">Current courses</div>
                                         <div class="text-number"><?php echo count($courses_current); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__all-required">
-                                    <a class="info-text">
+                                    <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">All required courses</div>
                                         <div class="text-number"><?php echo count($courses_all_required); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
-                                    <a class="info-text">
+                                    <a class="info-text" href="lms/course/index.php?progress=1&type=completed">
                                         <div class="text-course">Completed courses</div>
                                         <div class="text-number"><?php echo count($courses_completed); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
-                                    <a class="info-text">
+                                    <a class="info-text" href="lms/course/index.php?progress=1&type=other">
                                         <div class="text-course">Other courses</div>
                                         <div class="text-number"><?php echo count($courses_others); ?></div>
                                     </a>
@@ -962,7 +962,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 ml-xl-5">
+                    <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12" style="padding: 0 0 0 5%;">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">
@@ -971,7 +971,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Current <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php?progress=1&type=current">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1022,7 +1022,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>All required <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php?progress=1&type=required">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1073,7 +1073,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Completed <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php?progress=1&type=completed">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>
@@ -1124,7 +1124,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <div class="course-block__top-show row">
                                         <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
-                                            <button class="btn btn-click"><a href="lms/course/index.php">Show All</a></button>
+                                            <button class="btn btn-click"><a href="lms/course/index.php?progress=1&type=other">Show All</a></button>
                                         </div>
                                     </div>
                                 </div>

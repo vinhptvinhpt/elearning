@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-    const DEVELOPMENT = 1;
+    const DEVELOPMENT = 0;
 
     /* Load / generate configuration */
     public function loadConfiguration()
@@ -30,7 +30,10 @@ class MailController extends Controller
             TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
             TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE
+            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
+            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
+            TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE
         );
         //set old configs (using in bgt)
         $configsDelete = array(
@@ -42,12 +45,8 @@ class MailController extends Controller
             TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
             TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
-            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE
-
+            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE
         );
-
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
             $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
@@ -379,6 +378,81 @@ class MailController extends Controller
                     }
                     //sleep(1);
                 }
+                \DB::commit();
+            }
+        }
+    }
+
+    //Send email completed competency framework
+    public function sendCompetencyCompleted(){
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::COMPLETED_FRAME] == TmsConfigs::ENABLE) {
+            $lstCompletedFrameNotifi = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::COMPLETED_FRAME)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+
+                    'mdl_user.email',
+                    'mdl_user.firstname',
+                    'mdl_user.lastname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstCompletedFrameNotifi);
+
+            if($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstCompletedFrameNotifi as $itemNotification) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
+                        $email = $itemNotification->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::COMPLETED_FRAME,
+                                $itemNotification->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification->content
+                            ));
+                            $object_content = array(
+                                'object_id' =>  '',
+                                'object_name' => '',
+                                'object_type' => '',
+                                'parent_id' => '',
+                                'parent_name' => '',
+                                'start_date' => '',
+                                'end_date' => '',
+                                'code' => $itemNotification->content,
+                                'room' => '',
+                                'grade' => '',
+                            );
+                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                $this->sendPushNotification($lstCompletedFrameNotifi);
                 \DB::commit();
             }
         }
@@ -1562,7 +1636,8 @@ class MailController extends Controller
                 'innrhy@gmail.com',
                 'fruity.tester@gmail.com',
                 'linhnt@tinhvan.com',
-                'nguyenlinhcksl@gmail.com'
+                'nguyenlinhcksl@gmail.com',
+                'duongtiendat.it@gmail.com'
             ];
             if (in_array($email, $dev_email)) {
                 return true;

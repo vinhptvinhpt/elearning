@@ -409,7 +409,7 @@
                     }
                 } else {
                     if (callback.includes('{{Config::get('constants.domain.TMS')}}')) {
-                        window.location.href = '/tms/dashboard';
+                        window.location.href = '/lms/my';
                     } else {
                         window.location.href = callback;
                     }

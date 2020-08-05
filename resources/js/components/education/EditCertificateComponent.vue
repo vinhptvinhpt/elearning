@@ -503,9 +503,9 @@
             },
             goBack() {
                 if (this.certificate.type === 1)
-                    this.$router.push({name: 'SettingCertificate', query: {type: this.certificate.type}});
+                    this.$router.push({name: 'SettingCertificate', params:{back_page: '1'}, query: {type: Number(this.certificate.type)}});
                 else
-                    this.$router.push({name: 'SettingBadge', query: {type: this.certificate.type}});
+                    this.$router.push({name: 'SettingBadge', params:{back_page: '1'}, query: {type: Number(this.certificate.type)}});
             },
             onClickImage(e) {
                 var posX_click = `${e.clientX}`;

@@ -171,7 +171,21 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1') {
+                  this.current = Number(sessionStorage.getItem('trainingPage'));
+                  this.row = Number(sessionStorage.getItem('trainingPageSize'));
+                  this.keyword = sessionStorage.getItem('trainingKeyWord');
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getTrainnings();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -200,6 +214,11 @@
             }
         },
         mounted() {
+        },
+        destroyed() {
+          sessionStorage.setItem('trainingPage', this.current);
+          sessionStorage.setItem('trainingPageSize', this.row);
+          sessionStorage.setItem('trainingKeyWord', this.keyword);
         }
     }
 </script>

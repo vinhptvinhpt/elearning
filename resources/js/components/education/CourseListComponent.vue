@@ -159,7 +159,7 @@
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
 <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
                                             <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible == 1">
@@ -350,7 +350,26 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('courseListPage'));
+                  this.row = Number(sessionStorage.getItem('courseListPageSize'));
+                  this.category_id = Number(sessionStorage.getItem('courseListCategory'));
+                  this.status_course = Number(sessionStorage.getItem('courseListCourseStatus'));
+                  this.startdate = sessionStorage.getItem('courseListStartDate');
+                  this.enddate = sessionStorage.getItem('courseListEndDate');
+                  this.keyword = sessionStorage.getItem('courseListKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getCourses();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -461,6 +480,15 @@
             this.getCourses();
             // this.fetch();
             //this.getDataForFilter();
+        },
+        destroyed() {
+          sessionStorage.setItem('courseListPage', this.current);
+          sessionStorage.setItem('courseListPageSize', this.row);
+          sessionStorage.setItem('courseListCategory', this.category_id);
+          sessionStorage.setItem('courseListCourseStatus', this.status_course);
+          sessionStorage.setItem('courseListStartDate', this.startdate);
+          sessionStorage.setItem('courseListEndDate', this.enddate);
+          sessionStorage.setItem('courseListKeyWord', this.keyword);
         }
     }
 

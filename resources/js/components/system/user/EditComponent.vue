@@ -314,37 +314,37 @@
                             <button type="button" class="btn btn-primary btn-sm" @click="updateUser()">{{trans.get('keys.cap_nhat_thong_tin')}}</button>
 
                             <router-link v-if="type === 'view_user_market'"
-                                         to="/tms/system/view_user_market"
+                                         :to="{name:'SystemUserMarketList',params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
                             <router-link v-else-if="type === 'sale_room_user'"
-                                         to="/tms/sale_room_user"
+                                         :to="{name:'SaleRoomUserIndex',params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
                             <router-link v-else-if="type === 'user_market'"
-                                         to="/tms/system/user_market"
+                                         :to="{name:'UserMarketIndex', params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
                             <router-link v-else-if="type === 'teacher'"
-                                         to="/tms/education/user_teacher"
+                                         :to="{name:'TeacherIndex', params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
                             <router-link v-else-if="type === 'student'"
-                                         to="/tms/education/user_student"
+                                         :to="{name:'StudentIndex', params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
 
                             <router-link v-else
-                                         to="/tms/system/user"
+                                         :to="{name:'SystemUserList', params:{back_page:'1'}}"
                                          class="btn btn-secondary btn-sm">
                               {{trans.get('keys.quay_lai')}}
                             </router-link>
