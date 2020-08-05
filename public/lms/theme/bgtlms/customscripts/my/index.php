@@ -240,6 +240,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
 ?>
 
+
 <html>
 <title>Home</title>
 <meta charset="utf-8">
@@ -453,7 +454,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         text-align: left;
         letter-spacing: 0.6px;
         font-size: 17px;
-        font-family: Roboto-Bold;
+        font-family: Roboto;
         color: #202020;
         opacity: 1;
         margin-bottom: 20px;
@@ -462,6 +463,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         -webkit-box-orient: vertical;
         overflow: hidden;
         min-height: 3.25rem;
+        font-weight: 700;
     }
 
     .course-block__top {
@@ -851,8 +853,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         max-width: 100% !important;
     }
 </style>
-<body>
-
+<body">
 <div class="wrapper"><!-- wrapper -->
 <!--    --><?php //echo $OUTPUT->header(); ?>
 <!--    --><?php //echo  ?>
@@ -894,7 +895,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         <div class="content">
             <div class="container">
                 <div class="row">
-                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12 mr-xl-3">
+                    <div class="col-lg-3 col-md-12 col-sm-12 col-xs-12">
                         <div class="info row">
                             <div class="info-user info-center">
                                 <div class="avatar col-4 info-center">
@@ -961,7 +962,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-8 col-md-12 col-sm-12 col-xs-12 ml-xl-5">
+                    <div class="col-lg-9 col-md-12 col-sm-12 col-xs-12" style="padding: 0 0 0 5%;">
                         <div class="courses">
                             <!--current course-->
                             <div class="courses-block">

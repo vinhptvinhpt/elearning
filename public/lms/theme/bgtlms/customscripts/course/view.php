@@ -71,6 +71,10 @@ if(!isloggedin()){
     <?//=$marginPage?> /*;*/
     }
 
+    #page-wrapper #page{
+        margin-right: 0;
+    }
+
     .alert {
         padding: 20px;
         background-color: #f44336;
@@ -151,7 +155,7 @@ if(!isloggedin()){
         background: <?=$_SESSION["color"]?> 0% 0% no-repeat padding-box !important;
         border-radius: 4px;
         text-align: left;
-        font-family: Roboto-Regular;
+        font-family: Roboto;
         letter-spacing: 0.45px;
         color: #FFFFFF !important;
         text-transform: uppercase;
