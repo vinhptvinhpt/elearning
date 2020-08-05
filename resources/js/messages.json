@@ -3,7 +3,7 @@
         "language": "/en",
         "theo_doi_so_nvbh_duoc_dao_tao_theo_thang": "Total number of trained employees per month",
         "so_luong_nhan_vien_hoan_thanh_dao_tao": "Total number of employees finish training",
-        "so_luong": "Employees number",
+        "so_luong": "Quantity",
         "nhan_vien_hoan_thanh_dao_tao": "Employees finish training",
         "tong_so_nhan_vien": "Total employees",
         "thanh_phan_khoa_hoc": "Courses ratio",
@@ -993,7 +993,10 @@
         "remind_expire_required_course": "Remind expired required course",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Input courses name",
         "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname",
-        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Employee denied to join this course with below reason"
+        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Employee denied to join this course with below reason",
+        "tat_ca": "All",
+        "chua_tra_loi": "Non reply",
+        "dong_y": "Accepted"
     },
     "vi.keys": {
         "language": "",
@@ -1980,6 +1983,9 @@
         "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Nhập thông tin tìm kiếm theo tên ",
         "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname",
-        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Người dùng từ chối tham gia khóa học với lý do"
+        "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Người dùng từ chối tham gia khóa học với lý do",
+        "tat_ca": "Tất cả",
+        "chua_tra_loi": "Chưa trả lời",
+        "dong_y": "Đồng ý"
     }
 }

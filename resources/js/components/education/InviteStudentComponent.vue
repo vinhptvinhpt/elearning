@@ -164,6 +164,14 @@
                                           <option value="50">50</option>
                                         </select>
                                       </label>
+                                      <label>{{trans.get('keys.trang_thai')}}
+                                        <select v-model="invite_status" style="min-width: 150px" class="custom-select custom-select-sm form-control form-control-sm" @change="getCurrentUserEnrol(1)">
+                                          <option value="">{{trans.get('keys.tat_ca')}}</option>
+                                          <option value="noreply">{{trans.get('keys.chua_tra_loi')}}</option>
+                                          <option value="accepted">{{trans.get('keys.dong_y')}}</option>
+                                          <option value="denied">{{trans.get('keys.tu_choi')}}</option>
+                                        </select>
+                                      </label>
                                     </div>
                                   </div>
                                   <div class="col-6">
@@ -268,6 +276,7 @@
         current_page: 1,
         totalPages_crr: 0,
         row_crr: 5,
+        invite_status: '',
 
         role_id: 5,
         userEnrols: [],
@@ -313,7 +322,8 @@
           row: this.row_crr,
           role_id: this.role_id,
           course_id: this.course_id,
-          organization_id: this.organization_id_2
+          organization_id: this.organization_id_2,
+          invite_status: this.invite_status
         })
           .then(response => {
             this.currentUserEnrols = response.data.data.data;
