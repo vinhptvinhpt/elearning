@@ -54,7 +54,7 @@
                                       <div class="d-flex flex-row form-group">
                                         <input v-model="keyword" type="text"
                                                class="form-control search_text"
-                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_username')+' ...'">
+                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_fullname')+' ...'">
                                         <button type="button" id="btnFilter"
                                                 class="btn btn-primary btn-sm"
                                                 @click="getUserNeedEnrol(1)">
@@ -138,7 +138,7 @@
                                         <input v-model="keyword_curr"
                                                type="text"
                                                class="form-control search_text"
-                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_username')+' ...'">
+                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_fullname')+' ...'">
                                         <button type="button" id="btnFilter1"
                                                 class="btn btn-primary btn-sm"
                                                 @click="getCurrentUserEnrol(1)">

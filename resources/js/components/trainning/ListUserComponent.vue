@@ -46,8 +46,8 @@
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                          <div class="col-4">
-                                                            <treeselect v-model="organization_id_1" :multiple="false" :options="options"/>
+                                                          <div class="col-sm-4">
+                                                            <treeselect class="form-group" v-model="organization_id_1" :multiple="false" :options="options"/>
                                                           </div>
                                                             <div class="col-sm-4">
                                                                 <form v-on:submit.prevent="getUserOutTrainning(1)">
@@ -231,7 +231,7 @@
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword" type="text"
                                                        class="form-control search_text"
-                                                       :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
+                                                       :placeholder="trans.get('keys.nhap_ten_tai_khoan_email')+ ' ...'">
                                                 <button type="button" id="btnFilter"
                                                         class="btn btn-primary btn-sm btn_fillter"
                                                         @click="getUser(1)">
@@ -605,5 +605,4 @@
 </script>
 
 <style scoped>
-
 </style>
