@@ -200,12 +200,13 @@
                                class="filled-in chk-col-light-blue" name="select_all" value=""/>
                         <label for="branch-select-all"></label>
                       </th>
-                      <th>{{trans.get('keys.so_cmtnd')}}</th>
+<!--                      <th>{{trans.get('keys.so_cmtnd')}}</th>-->
+                      <th class="text-center">{{trans.get('keys.id')}}</th>
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
                       <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
-                      <th>{{trans.get('keys.account_status')}}</th>
+                      <th class="text-center">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
@@ -219,8 +220,8 @@
                                :id="'delete_user'+user.user_id" class="filled-in chk-col-light-blue check_box_branch">
                         <label :for="'delete_user'+user.user_id"></label>
                       </td>
-                      <td>{{ user.cmtnd }}</td>
-
+<!--                      <td>{{ user.cmtnd }}</td>-->
+                      <th class="text-center">{{user.user_id}}</th>
                       <td>
                         <router-link
                           :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }">
@@ -233,7 +234,7 @@
                       <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?
                         trans.get('keys.da_co') : trans.get('keys.chua_co') }}
                       </td>
-                      <td class="mobile_hide" v-if="slug_can('tms-system-user-edit')">
+                      <td class="mobile_hide text-center" v-if="slug_can('tms-system-user-edit')">
                         <span v-if="user.working_status == 0">
                            <i class="fa fa-toggle-on text-success"
                               @click="changeStatus(user.user_id,1)"
@@ -247,7 +248,7 @@
                               aria-hidden="true"></i>
                         </span>
                       </td>
-                      <td v-else>
+                      <td v-else class="text-center">
                         <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
                         <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
                       </td>
@@ -272,12 +273,13 @@
                                type="checkbox" class="filled-in chk-col-light-blue" name="select_all" value=""/>
                         <label for="branch-select-all2"></label>
                       </th>
-                      <th>{{trans.get('keys.so_cmtnd')}}</th>
+<!--                      <th>{{trans.get('keys.so_cmtnd')}}</th>-->
+                      <th class="text-center">{{trans.get('keys.id')}}</th>
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
                       <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
-                      <th>{{trans.get('keys.account_status')}}</th>
+                      <th class="text-center">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </tfoot>
