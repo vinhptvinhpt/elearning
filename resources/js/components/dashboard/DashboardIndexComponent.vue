@@ -534,7 +534,7 @@
                             name: val.name
                           }
                           this.option2.series[0]['data'].push(pie_item);
-                          this.total1 += 1;
+                          this.total1 += val.count;
                         });
 
                         this.option2.subtitle.text = this.trans.get('keys.tong_so') + ': ' + this.total1;
