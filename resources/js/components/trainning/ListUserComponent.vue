@@ -54,7 +54,7 @@
                                                                     <div class="d-flex flex-row form-group">
                                                                         <input v-model="keyword_out" type="text"
                                                                                class="form-control search_text"
-                                                                               :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
+                                                                               :placeholder="trans.get('keys.nhap_ten_tai_khoan_email')+ ' ...'">
                                                                         <button type="button" id="btnFilter1"
                                                                                 class="btn btn-primary btn-sm btn_fillter"
                                                                                 @click="getUserOutTrainning(1)">

@@ -65,7 +65,7 @@
         "email": "Email",
         "dia_chi_email": "Input Email Address",
         "so_cmtnd": "Personal ID",
-        "nhap_so_cmtnd": "Input ID Number",
+        "nhap_so_cmtnd": "Personal ID Number",
         "so_dien_thoai_lien_lac": "Contact Number",
         "nhap_so_dt": "Input Contact Number",
         "dia_chi_thuong_tru": "Permanent Address",
