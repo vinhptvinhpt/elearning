@@ -85,6 +85,7 @@
         "huy": "Cancel",
         "theo_quyen": "Role",
         "nhap_ten_tai_khoan_email_cmtnd": "Input login id, email, id number",
+        "nhap_ten_tai_khoan_email": "Input login id, email",
         "tong_so_nguoi_dung_hien_tai": "Total Users",
         "tai_len_file_excel": "Upload Excel File",
         "tai_ve_bieu_mau": "Download Excel Form",
@@ -992,7 +993,7 @@
         "forgot_password": "Forgot Password",
         "remind_expire_required_course": "Remind expired required course",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Input courses name",
-        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname"
+        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by full name"
     },
     "vi.keys": {
         "language": "",
@@ -1099,6 +1100,7 @@
         "huy": "Hủy",
         "theo_quyen": "Theo quyền",
         "nhap_ten_tai_khoan_email_cmtnd": "Nhập tên tài khoản, email, cmtnd",
+        "nhap_ten_tai_khoan_email_cmtnd": "Nhập tên tài khoản, email",
         "tong_so_nguoi_dung_hien_tai": "Tổng số người dùng hiện tại",
         "tai_len_file_excel": "Tải lên file Excel",
         "tai_ve_bieu_mau": "Tải về biểu mẫu",
@@ -1978,7 +1980,7 @@
         "forgot_password": "Quên mật khẩu",
         "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Nhập thông tin tìm kiếm theo tên ",
-        "nhap_thong_tin_tim_kiem_theo_fullname": "Find by fullname"
+        "nhap_thong_tin_tim_kiem_theo_fullname": "Tìm kiếm theo tên đầy đủ"
 
     }
 }
