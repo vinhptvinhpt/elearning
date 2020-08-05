@@ -587,7 +587,7 @@
       },
       getListCourseTrainning(paged) {
         axios.post('/api/trainning/getlstcoursetrainning', {
-          page: paged || this.current,
+          page: paged || this.current_tn,
           keyword: this.keyword_tn,
           row: this.row_tn,
           trainning_id: this.id
