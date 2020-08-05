@@ -131,7 +131,7 @@
                         <div class="d-flex flex-row">
                           <input v-model="keyword" type="text"
                                  class="form-control search_text"
-                                 :placeholder="trans.get('keys.nhap_ten_tai_khoan_email_cmtnd')+ ' ...'">
+                                 :placeholder="trans.get('keys.nhap_ten_tai_khoan_email')+ ' ...'">
                           <button type="button" id="btnFilter" class="btn btn-primary btn-sm btn_fillter"
                                   @click="getUser(1)">
                             {{trans.get('keys.tim')}}
