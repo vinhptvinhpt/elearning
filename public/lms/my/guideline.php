@@ -28,12 +28,11 @@ echo $OUTPUT->header();
         height: calc(100vh - 100px) !important;
     }
 </style>
+<p></p>
+<iframe src="introduction/user/user_guideline.html"></iframe>
 <p align="right">
     <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px" onclick="window.location.href='/lms'"><?= get_string('learnnow') ?></button>
 </p>
-<p></p>
-<iframe src="introduction/user/user_guideline.html"></iframe>
-
 <?php
 
 

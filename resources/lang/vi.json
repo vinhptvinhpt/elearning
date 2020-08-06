@@ -301,6 +301,7 @@
   "so_buoi_diem_danh": "Số buổi điểm danh",
   "phan_quyen_thanh_cong": "Phân quyền thành công",
   "xac_nhan_email_nguoi_dung": "Xác nhận email người dùng",
+  "chung_chi_hoan_thanh": "Chứng chỉ hoàn thành",
   "ten": "Tên",
   "to_chuc": "Tổ chức",
   "qua_so_luong_submit": "Số người dùng vượt quá hạn mức quy định",
@@ -313,5 +314,16 @@
   "ho_ten": "Họ và tên",
   "thoi_gian": "Thời gian",
     "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa",
-    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý"
+    "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
+    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý",
+    "assigned_course" : "Khóa học được ghi danh",
+    "assigned_competency" : "Khung năng lực được ghi danh",
+    "suggest_optional_course" : "Đề xuất khóa học",
+    "remind_exam" : "Nhắc nhở bài kiểm tra",
+    "invitation_offline_course" : "Lời mời tham gia khóa học trực tiếp",
+    "forgot_password": "Quên mật khẩu",
+    "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
+    "quen_mat_khau": "Quên mật khẩu",
+    "remind_certificate": "Nhắc nhở chứng chỉ",
+    "invite_student": "Mời học viên"
 }

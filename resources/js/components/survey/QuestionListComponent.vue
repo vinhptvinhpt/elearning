@@ -200,7 +200,23 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1') {
+                  this.current = Number(sessionStorage.getItem('questionPage'));
+                  this.row = Number(sessionStorage.getItem('questionPageSize'));
+                  this.keyword = sessionStorage.getItem('questionKeyWord');
+                  this.survey_id = sessionStorage.getItem('questionSurvey');
+                  this.type_question = sessionStorage.getItem('questionSurveyType');
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getQuestions();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -236,6 +252,13 @@
         mounted() {
             this.getSurveys();
             this.getQuestions();
+        },
+        destroyed() {
+          sessionStorage.setItem('questionPage', this.current);
+          sessionStorage.setItem('questionPageSize', this.row);
+          sessionStorage.setItem('questionKeyWord', this.keyword);
+          sessionStorage.setItem('questionSurvey', this.survey_id);
+          sessionStorage.setItem('questionSurveyType', this.type_question);
         }
     }
 </script>

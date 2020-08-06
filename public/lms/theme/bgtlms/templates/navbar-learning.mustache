@@ -65,7 +65,7 @@
                     </div>
                     <li class="nav-item align-items-center cms-link d-none d-sm-flex">
                         <a class="nav-link d-inline-block position-relative" style="max-width: 50px" href="{{ config.wwwroot }}/my/guideline.php" title="Toturial">
-                            <i class="fa fa-question-circle-o"></i>
+                            <i class="fa fa-info-circle"></i>
                         </a>
                     </li>
                     <!--back to cms-->
@@ -76,6 +76,13 @@
                             </a>
                         </li>
                     {{/permission_tms}}
+                    {{#permission_editor}}
+                        <li class="nav-item align-items-center cms-link d-none d-sm-flex">
+                            <a class="nav-link d-inline-block position-relative" style="max-width: 50px" href="{{ config.wwwroot }}/videolib.php" title="Videos lib">
+                                <i class="fa fa-youtube-play" aria-hidden="true"></i>
+                            </a>
+                        </li>
+                    {{/permission_editor}}
                     <!-- navbar_plugin_output -->
                     <li class="nav-item d-flex align-items-center">
                         {{{ output.navbar_plugin_output }}}

@@ -6,54 +6,62 @@
 ## Hướng dẫn cài đặt hệ thống Elearning
 
 Cài đặt các phần mềm liên quan
-- Docker (google để biết cách cài đặt, ko có lưu ý cài đặt)
-- Git (google để biết cách cài đặt, ko có lưu ý cài đặt)
-- PIP (cài đặt các thư viện chạy cron gen ảnh chứng chỉ bằng python)
+- **Docker** (google để biết cách cài đặt, ko có lưu ý cài đặt)
+- **Git** (google để biết cách cài đặt, ko có lưu ý cài đặt)
+- **PIP** (cài đặt các thư viện chạy cron gen ảnh chứng chỉ bằng python)
 
 
-## Deploy hệ thống
-## Deploy qua Docker
+# Deploy hệ thống
+### 1. Deploy qua Docker
 - Pull source code từ git về folder chỉ định trên server
 - Cấp quyền cho các folder: public, storage, vendor, node_modules
 - cd /path/to/folder/source
-- Run: sudo docker-compose up -d
-- Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
-- Chỉnh sửa config trong file: /config/constanst.php
-- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: {"flag":"stop"} trong folder: {path}/{to}/{folder}/{source}/storage/app/public/cron
+- Run: **sudo docker-compose up -d**
+- Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
+- Chỉnh sửa config trong file: **/config/constanst.php**
+- Tạo ra các file json bao gồm: **enroll_trainning.json**, **enroll_user.json** với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này
-- Remote vào docker app: sudo docker-compose exec app bash
-- Chạy config cho Laravel: composer install
-                           php artisan key:generate
-                           php artisan config:cache
-                           php artisan storage:link
+- Remote vào docker app: **sudo docker-compose exec app bash**
+- Chạy config cho Laravel: 
 
-## Deploy thường
-- Run: sudo docker-compose up -d
-- Import database, connect src -> db tại 2 file: .env và /public/lms/config.php, nếu chưa có file .env có thể copy từ file .env.example
-- Chỉnh sửa config trong file: /config/constanst.php
-- Tạo ra các file json bao gồm: enroll_trainning.json, enroll_user.json với nội dung: {"flag":"stop"} trong folder: {path}/{to}/{folder}/{source}/storage/app/public/cron
+         1. composer install
+         2. php artisan key:generate 
+         3. php artisan config:cache
+         4. php artisan storage:link
+
+### 2. Deploy thường (ko qua docker)
+- Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
+- Chỉnh sửa config trong file: **/config/constanst.php**
+- Tạo ra các file json bao gồm: **enroll_trainning.json**, **enroll_user.json** với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này
-- Remote vào docker app: sudo docker-compose exec app bash
-- Chạy config cho Laravel: composer install
-                           php artisan key:generate
-                           php artisan config:cache
-                           php artisan storage:link
-- Cài đặt NodeJS và NPM
-- Chạy các lệnh: npm install và npm run dev
-- Cấu hình NGINX trỏ đến thư mục source                              
+
+- Chạy config cho Laravel: 
+
+            1. composer install
+            2. php artisan key:generate 
+            3. php artisan config:cache
+            4. php artisan storage:link
+         
+### 3.Cài đặt NodeJS và NPM
+- Sau khi cài xong, đi đến folder chứa source và chạy các lệnh: 
+
+    1. npm install
+    2. npm run dev
     
-## Cài đặt PIP
+### 4.Cấu hình NGINX trỏ đến thư mục source                              
+    
+### 5.Cài đặt PIP
 Chạy tuần tự các lệnh
-- sudo yum install epel-release
-- sudo yum install python-pip
+- **sudo yum install epel-release**
+- **sudo yum install python-pip**
 
 Cài đặt thư viện cho script python gen chứng chỉ
-- sudo pip install mysql-connector-python
-- sudo pip install Pillow
+- **sudo pip install mysql-connector-python**
+- **sudo pip install Pillow**
 
 **Lưu ý**: khi cấu hình connection trong file generate.py, nếu cài database container trên cùng 1 máy thì đặt host='localhost', tương tự cho trường hợp container db nằm trên server khác
 
-## Danh sách các cron của hệ thống
+# Danh sách các cron của hệ thống
 Lưu ý, cần chỉnh sửa path cho các cron trên
 
 # cron moodle - xu ly cac action lien quan den recyclebin khoa hoc
@@ -102,10 +110,10 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 # cron insert data to db notification for remind login
 25 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindLogin?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
-# cron ithem du lieu vao bang notification cho mail khoa hoc sap dien ra
+# cron them du lieu vao bang notification cho mail khoa hoc sap dien ra
 30 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindUC?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
-# cron ithem du lieu vao bang notification cho mail nhac nho lau ko tham gia khoa hoc
+# cron them du lieu vao bang notification cho mail nhac nho lau ko tham gia khoa hoc
 35 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindAccess?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
 # cron add hoc vien vao KNL
@@ -119,6 +127,9 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 
 # cron enroll hoc vien vao khoa hoc
 */1 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/autoEnrol?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
+
+# cron add hoc vien trong cac khoa hoc don le vao bang trainning_user
+31 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/addSingleUserToTrainning?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
 # cron add hoc vien da hoan thanh khoa hoc vao bang course_completion
 33 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/completeCourse?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ

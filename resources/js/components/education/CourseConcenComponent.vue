@@ -51,7 +51,7 @@
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword" type="text" class="form-control"
-                                                       :placeholder="trans.get('keys.nhap_tu_khoa')">
+                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')">
                                                 <button type="button" id="btnFilter" style="margin-left: 5px"
                                                         class="btn btn-primary" @click="getCourses(1)">
                                                     {{trans.get('keys.tim')}}
@@ -132,7 +132,7 @@
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
 <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
                                             <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible==1">
@@ -293,7 +293,26 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('courseConcenPage'));
+                  this.row = Number(sessionStorage.getItem('courseConcenPageSize'));
+                  this.category_id = Number(sessionStorage.getItem('courseConcenCategory'));
+                  this.status_course = Number(sessionStorage.getItem('courseConcenCourseStatus'));
+                  this.startdate = sessionStorage.getItem('courseConcenStartDate');
+                  this.enddate = sessionStorage.getItem('courseConcenEndDate');
+                  this.keyword = sessionStorage.getItem('courseConcenKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getCourses();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
             deletePost(id) {
                 let current_pos = this;
@@ -372,6 +391,15 @@
             // this.getCategories();
             this.getCourses();
             // this.fetch();
+        },
+        destroyed() {
+          sessionStorage.setItem('courseConcenPage', this.current);
+          sessionStorage.setItem('courseConcenPageSize', this.row);
+          sessionStorage.setItem('courseConcenCategory', this.category_id);
+          sessionStorage.setItem('courseConcenCourseStatus', this.status_course);
+          sessionStorage.setItem('courseConcenStartDate', this.startdate);
+          sessionStorage.setItem('courseConcenEndDate', this.enddate);
+          sessionStorage.setItem('courseConcenKeyWord', this.keyword);
         }
     }
 </script>

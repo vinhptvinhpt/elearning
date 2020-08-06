@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Mockery\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use App\Http\Controllers\Api\MailController;
 
 set_time_limit(0);
 
@@ -54,60 +55,16 @@ class EmailTemplateController extends Controller
 
     public function apiGetListEmailTemplate()
     {
+        //load
+        $this->deleteOldConfigs();
+        //
         $data = [];
         $configs = TmsConfigs::where('editor', 'checkbox')->get();
         if (count($configs) != 0) {
             foreach ($configs as $config) {
-                switch ($config->target) {
-                    case TmsNotification::ENROL:
-                        $label = __('tham_gia_khoa_hoc');
-                        break;
-                    case TmsNotification::SUGGEST:
-                        $label = __('gioi_thieu_khoa_hoc_ki_nang_mem');
-                        break;
-                    case TmsNotification::QUIZ_START:
-                        $label = __('bat_dau_bai_kiem_tra');
-                        break;
-                    case TmsNotification::QUIZ_END:
-                        $label = __('ket_thuc_bai_kiem_tra');
-                        break;
-                    case TmsNotification::QUIZ_COMPLETED:
-                        $label = __('ket_qua_kiem_tra');
-                        break;
-                    case TmsNotification::REMIND_LOGIN:
-                        $label = __('nhac_nho_dang_nhap');
-                        break;
-                    case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
-                        $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
-                        break;
-                    case TmsNotification::REMIND_ACCESS_COURSE:
-                        $label = __('nhac_nho_tuong_tac_voi_cac_khoa_hoc');
-                        break;
-                    case TmsNotification::REMIND_EDUCATION_SCHEDULE:
-                        $label = __('nhac_nho_hoan_thanh_lo_trinh_dao_tao');
-                        break;
-                    case TmsNotification::REMIND_UPCOMING_COURSE:
-                        $label = __('thong_bao_khoa_hoc_sap_bat_dau');
-                        break;
-                    case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
-                        $label = __('firebase_server_key');
-                        break;
-                    case TmsConfigs::TARGET_FIREBASE_TOPIC:
-                        $label = __('firebase_topic');
-                        break;
-                    case TmsNotification::REMIND_CERTIFICATE:
-                        $label = __('thong_bao_chung_chi');
-                        break;
-                    case TmsNotification::INVITE_STUDENT:
-                        $label = __('moi_hoc_vien_tham_gia_khoa_học');
-                        break;
-                    case TmsNotification::ACTIVE_EMAIL:
-                        $label = __('xac_nhan_email_nguoi_dung');
-                        break;
-                    default:
-                        $label = $config->target;
-                        break;
-                }
+                $label = $this->convertNameFile($config->target);
+                if(empty($label) || $label == '')
+                    $label = $config->target;
                 $config->label = $label;
                 $data[] = $config;
             }
@@ -115,55 +72,31 @@ class EmailTemplateController extends Controller
         return response()->json($data);
     }
 
+    public function deleteOldConfigs(){
+        //set old configs (using in bgt)
+        $configsDelete = array(
+            TmsNotification::ENROL => TmsConfigs::ENABLE,
+            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE
+        );
+        $pdo = DB::connection()->getPdo();
+        if ($pdo) {
+            //delete all old configs (using in bgt)
+            TmsConfigs::whereIn('target', array_keys($configsDelete))->delete();
+        }
+        return true;
+    }
+
     public function viewEmailTemplateDetail($name_file)
     {
-        switch ($name_file) {
-            case TmsNotification::ENROL:
-                $label = __('tham_gia_khoa_hoc');
-                break;
-            case TmsNotification::SUGGEST:
-                $label = __('gioi_thieu_khoa_hoc_ki_nang_mem');
-                break;
-            case TmsNotification::QUIZ_START:
-                $label = __('bat_dau_bai_kiem_tra');
-                break;
-            case TmsNotification::QUIZ_END:
-                $label = __('ket_thuc_bai_kiem_tra');
-                break;
-            case TmsNotification::QUIZ_COMPLETED:
-                $label = __('ket_qua_kiem_tra');
-                break;
-            case TmsNotification::REMIND_LOGIN:
-                $label = __('nhac_nho_dang_nhap');
-                break;
-            case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
-                $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
-                break;
-            case TmsNotification::REMIND_ACCESS_COURSE:
-                $label = __('nhac_nho_tuong_tac_voi_cac_khoa_hoc');
-                break;
-            case TmsNotification::REMIND_EDUCATION_SCHEDULE:
-                $label = __('nhac_nho_hoan_thanh_lo_trinh_dao_tao');
-                break;
-            case TmsNotification::REMIND_UPCOMING_COURSE:
-                $label = __('thong_bao_khoa_hoc_sap_bat_dau');
-                break;
-            case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
-                $label = __('firebase_server_key');
-                break;
-            case TmsConfigs::TARGET_FIREBASE_TOPIC:
-                $label = __('firebase_topic');
-                break;
-            case TmsNotification::REMIND_CERTIFICATE:
-                $label = __('thong_bao_chung_chi');
-                break;
-            case TmsNotification::ACTIVE_EMAIL:
-                $label= __('xac_nhan_email_nguoi_dung');
-                break;
-            default:
-                $label = '';
-                break;
-        }
+        $label = $this->convertNameFile($name_file);
         return view('email.template.detail', ['name_file' => $name_file, 'name_show' => $label]);
     }
 
@@ -184,61 +117,50 @@ class EmailTemplateController extends Controller
 
     public function getContentFile($name_file)
     {
+        $label = $this->convertNameFile($name_file);
+        //get content of file with name
+        $string = file_get_contents(public_path() . "/files/email/template.json");
+
+        return response()->json(['content' => $string, 'name_show' => $label]);
+    }
+
+    public function  convertNameFile($name_file){
         switch ($name_file) {
-            case TmsNotification::ENROL:
-                $label = __('tham_gia_khoa_hoc');
+            case TmsNotification::ASSIGNED_COURSE:
+                $label = __('assigned_course');
                 break;
-            case TmsNotification::SUGGEST:
-                $label = __('gioi_thieu_khoa_hoc_ki_nang_mem');
+            case TmsNotification::ASSIGNED_COMPETENCY:
+                $label = __('assigned_competency');
                 break;
-            case TmsNotification::QUIZ_START:
-                $label = __('bat_dau_bai_kiem_tra');
+            case TmsNotification::SUGGEST_OPTIONAL_COURSE:
+                $label = __('suggest_optional_course');
                 break;
-            case TmsNotification::QUIZ_END:
-                $label = __('ket_thuc_bai_kiem_tra');
+            case TmsNotification::REMIND_EXAM:
+                $label = __('remind_exam');
                 break;
-            case TmsNotification::QUIZ_COMPLETED:
-                $label = __('ket_qua_kiem_tra');
-                break;
-            case TmsNotification::REMIND_LOGIN:
-                $label = __('nhac_nho_dang_nhap');
+            case TmsNotification::INVITATION_OFFLINE_COURSE:
+                $label = __('invitation_offline_course');
                 break;
             case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
                 $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
                 break;
-            case TmsNotification::REMIND_ACCESS_COURSE:
-                $label = __('nhac_nho_tuong_tac_voi_cac_khoa_hoc');
+            case TmsNotification::FORGOT_PASSWORD:
+                $label = __('quen_mat_khau');
                 break;
-            case TmsNotification::REMIND_EDUCATION_SCHEDULE:
-                $label = __('nhac_nho_hoan_thanh_lo_trinh_dao_tao');
-                break;
-            case TmsNotification::REMIND_UPCOMING_COURSE:
-                $label = __('thong_bao_khoa_hoc_sap_bat_dau');
-                break;
-            case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
-                $label = __('firebase_server_key');
-                break;
-            case TmsConfigs::TARGET_FIREBASE_TOPIC:
-                $label = __('firebase_topic');
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('chung_chi_hoan_thanh');
                 break;
             case TmsNotification::INVITE_STUDENT:
-                $label = __('moi_hoc_vien_tham_gia_khoa_học');
+                $label = __('invite_student');
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
-                $label = __('thong_bao_chung_chi');
-                break;
-            case TmsNotification::ACTIVE_EMAIL:
-                $label = __('xac_nhan_email_nguoi_dung');
+                $label = __('remind_certificate');
                 break;
             default:
                 $label = '';
                 break;
         }
-
-        //get content of file with name
-        $string = file_get_contents(public_path() . "/files/email/template.json");
-
-        return response()->json(['content' => $string, 'name_show' => $label]);
+        return $label;
     }
 
     public function writeToJson(Request $rq)
@@ -246,12 +168,10 @@ class EmailTemplateController extends Controller
         $name_file = $rq->input('name_file');
         $response = new ResponseModel();
         try {
-
             //path of file
             $dir = public_path() . "/files/email";
             // //return file or foler in directory above
             $temp_files = scandir($dir);
-
             $type = $rq->input('type');
             if ($type === 'ckeditor') {
                 $path_html = public_path() . "/files/email/template.json";
@@ -263,127 +183,9 @@ class EmailTemplateController extends Controller
                 // // Write File
                 $newJsonHtml = json_encode($data_html, JSON_UNESCAPED_UNICODE);
                 file_put_contents($path_html, $newJsonHtml);
-            } else {
-                $path = public_path() . '/files/email/' . $name_file . ".json";
-
-                //get content of file with name
-                $string = file_get_contents(public_path() . "/files/email/" . $name_file . ".json");
-                //decode content of file above
-                $data = json_decode($string, true);
-                //set values
-                $data['StringHello'] = $rq['StringHello'];
-                $data['StringContent'] = $rq['StringContent'];
-                $data['StringFullName'] = $rq['StringFullName'];
-                $data['StringUserName'] = $rq['StringUserName'];
-                $data['StringThanks'] = $rq['StringThanks'];
-                //check name file and set values continue
-                switch ($name_file) {
-                    case 'remind_upcoming_course':
-                    case 'remind_login':
-                    case 'suggest':
-                    case 'remind_access_course':
-                    case 'remind_expire_required_course':
-                    case 'remind_education_schedule':
-                        {
-                            //set value to json file
-                            $data['StringIntro'] = $rq['StringIntro'];
-                        }
-                        break;
-                    case 'enrol':
-                        {
-                            $data['StringIntro'] = $rq['StringIntro'];
-                            $data['IdCourse'] = $rq['IdCourse'];
-                            $data['NameCourse'] = $rq['NameCourse'];
-                            $data['TimeStart'] = $rq['TimeStart'];
-                            $data['TimeDone'] = $rq['TimeDone'];
-                            $data['Address'] = $rq['Address'];
-                            $data['StringLogin'] = $rq['StringLogin'];
-                        }
-                        break;
-                    case 'quiz_completed':
-                        {
-                            $data['IdCourse'] = $rq['IdCourse'];
-                            $data['NameCourse'] = $rq['NameCourse'];
-                            $data['NameExam'] = $rq['NameExam'];
-                            $data['ContentExam'] = $rq['ContentExam'];
-                        }
-                        break;
-                    case 'quiz_end':
-                        {
-                            $data['IdCourse'] = $rq['IdCourse'];
-                            $data['NameCourse'] = $rq['NameCourse'];
-                            $data['NameExam'] = $rq['NameExam'];
-                            $data['ContentExam'] = $rq['ContentExam'];
-                            $data['StringCheck'] = $rq['StringCheck'];
-                        }
-                        break;
-                    case 'quiz_start':
-                        {
-                            $data['IdCourse'] = $rq['IdCourse'];
-                            $data['NameCourse'] = $rq['NameCourse'];
-                            $data['NameExam'] = $rq['NameExam'];
-                            $data['ContentExam'] = $rq['ContentExam'];
-                            $data['TimeStart'] = $rq['TimeStart'];
-                            $data['StringCheck'] = $rq['StringCheck'];
-                        }
-                        break;
-                    default:
-                        break;
-                }
-
-                // Write File
-                $newJsonString = json_encode($data, JSON_UNESCAPED_UNICODE);
-                file_put_contents($path, $newJsonString);
             }
-
             $response->status = true;
-
-            switch ($name_file) {
-                case TmsNotification::ENROL:
-                    $label = __('tham_gia_khoa_hoc');
-                    break;
-                case TmsNotification::SUGGEST:
-                    $label = __('gioi_thieu_khoa_hoc_ki_nang_mem');
-                    break;
-                case TmsNotification::QUIZ_START:
-                    $label = __('bat_dau_bai_kiem_tra');
-                    break;
-                case TmsNotification::QUIZ_END:
-                    $label = __('ket_thuc_bai_kiem_tra');
-                    break;
-                case TmsNotification::QUIZ_COMPLETED:
-                    $label = __('ket_qua_kiem_tra');
-                    break;
-                case TmsNotification::REMIND_LOGIN:
-                    $label = __('nhac_nho_dang_nhap');
-                    break;
-                case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
-                    $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
-                    break;
-                case TmsNotification::REMIND_ACCESS_COURSE:
-                    $label = __('nhac_nho_tuong_tac_voi_cac_khoa_hoc');
-                    break;
-                case TmsNotification::REMIND_EDUCATION_SCHEDULE:
-                    $label = __('nhac_nho_hoan_thanh_lo_trinh_dao_tao');
-                    break;
-                case TmsNotification::REMIND_UPCOMING_COURSE:
-                    $label = __('thong_bao_khoa_hoc_sap_bat_dau');
-                    break;
-                case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
-                    $label = __('firebase_server_key');
-                    break;
-                case TmsConfigs::TARGET_FIREBASE_TOPIC:
-                    $label = __('firebase_topic');
-                    break;
-                case TmsNotification::REMIND_CERTIFICATE:
-                    $label = __('thong_bao_chung_chi');
-                    break;
-                default:
-                    $label = '';
-                    break;
-            }
-
-            $response->message = __('sua_thanh_cong_template') . $label;
+            $response->message = __('sua_thanh_cong_template') . $this->convertNameFile($name_file);
         } catch (Exception $e) {
             $response->status = false;
             //$response->message = $e->getMessage();
@@ -397,81 +199,6 @@ class EmailTemplateController extends Controller
     {
         $name_action = '';
         switch ($name_file) {
-            case 'remind_upcoming_course':
-                {
-                    $next_3_days = time() + 86400 * 3;
-                    $next_7_days = time() + 86400 * 7;
-                    $courses = MdlCourse::whereIn('category', [3, 4, 5])
-                        ->where('startdate', '>', $next_3_days)
-                        ->where('enddate', '<', $next_7_days)
-                        ->get();
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::REMIND_UPCOMING_COURSE,
-                        "hycuong",
-                        "Hy Quốc Cường",
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        $courses
-                    ));
-                }
-                break;
-            case 'remind_login':
-                {
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::REMIND_LOGIN,
-                        "hycuong2",
-                        "Hy Quốc Cường",
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        ''
-                    ));
-                }
-                break;
-            case 'suggest':
-                {
-                    $courses = MdlCourse::all()->where('category', "=", 4)->random(rand(3, 5));
-                    $countCourse = count($courses);
-                    if ($countCourse > 0) {
-                        Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                            TmsNotification::SUGGEST,
-                            "hycuong3",
-                            "Hy Quốc Cường",
-                            '',
-                            '',
-                            '',
-                            '',
-                            '',
-                            '',
-                            '',
-                            $courses
-                        ));
-                    }
-                }
-                break;
-            case 'remind_access_course':
-                {
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::REMIND_ACCESS_COURSE,
-                        "hycuong",
-                        "Hy Quốc Cường",
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":null},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":null}]'
-                    ));
-                }
-                break;
             case 'remind_expire_required_course':
                 {
                     Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
@@ -484,149 +211,7 @@ class EmailTemplateController extends Controller
                         '',
                         '',
                         '',
-                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":null},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":null}]'
-                    ));
-                }
-                break;
-            case 'remind_education_schedule':
-                {
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::REMIND_EDUCATION_SCHEDULE,
-                        "hycuong",
-                        "Hy Quốc Cường",
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":"YOQLXM44"},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":"OBKQCCRR"},{"course_id":34,"course_code":"BGTMAX4D_1","course_name":"Đào tạo sản phẩm Max 4D chép 1","startdate":1566172800,"enddate":1597708800,"course_place":"IYPAQXX"}]'
-                    ));
-                }
-                break;
-            case 'enrol':
-                {
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::ENROL,
-                        "hycuong",
-                        "Hy Quốc Cường",
-                        'KH0019BAC',
-                        'Khóa học quản trị doanh nghiệp',
-                        '30/11/2019',
-                        '30/11/2020',
-                        '',
-                        '',
-                        ''
-                    ));
-                }
-                break;
-            case 'quiz_completed':
-                {
-                    $content = '{"quiz_id":"23","quiz_name":"Bu00e0i kiu1ec3m su1ea3n phu1ea9m Mega 6/45"}';
-                    if (strlen($content) != 0) {
-                        $content_array = json_decode($content, true);
-                        $quiz_id = isset($content_array['quiz_id']) ? $content_array['quiz_id'] : '';
-                        if (strlen($quiz_id) != 0 && is_numeric($quiz_id)) {
-                            $quiz_data = MdlQuiz::where('mdl_quiz.id', $quiz_id)
-                                ->where('mdl_quiz.attempts', 1)
-                                ->join('mdl_quiz_attempts', 'mdl_quiz.id', '=', 'mdl_quiz_attempts.quiz')
-                                ->select(
-                                    'mdl_quiz.name',
-                                    'mdl_quiz.sumgrades',
-                                    'mdl_quiz_attempts.sumgrades as attempt_sumgrades'
-                                )
-                                ->first();
-                            if (isset($quiz_data)) {
-                                Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                                    TmsNotification::QUIZ_COMPLETED,
-                                    "hycuong",
-                                    "Hy Quốc Cường",
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    '',
-                                    $quiz_data
-                                ));
-                            }
-                        }
-                    }
-                }
-                break;
-            case 'quiz_end':
-                {
-                    $content = '{"quiz_id":"23","quiz_name":"Bu00e0i kiu1ec3m su1ea3n phu1ea9m Mega 6/45"}';
-                    if (strlen($content) != 0) {
-                        $content_array = json_decode($content, true);
-                        $quiz_id = isset($content_array['quiz_id']) ? $content_array['quiz_id'] : '';
-                        if (strlen($quiz_id) != 0 && is_numeric($quiz_id)) {
-                            $quiz_data = MdlQuiz::where('id', $quiz_id)
-                                ->select(
-                                    'mdl_quiz.name'
-                                )
-                                ->first();
-                            if (isset($quiz_data)) {
-                                Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                                    TmsNotification::QUIZ_END,
-                                    "hycuong",
-                                    "Hy Quốc Cường",
-                                    'KHKM0192AC',
-                                    'Khóa học kỹ năng mềm',
-                                    '',
-                                    '',
-                                    '',
-                                    '30/11/2019',
-                                    $quiz_data
-                                ));
-                            }
-                        }
-                    }
-                }
-                break;
-            case 'quiz_start':
-                {
-                    $content = '{"quiz_id":"23","quiz_name":"Bu00e0i kiu1ec3m su1ea3n phu1ea9m Mega 6/45"}';
-                    if (strlen($content) != 0) {
-                        $content_array = json_decode($content, true);
-                        $quiz_id = isset($content_array['quiz_id']) ? $content_array['quiz_id'] : '';
-                        if (strlen($quiz_id) != 0 && is_numeric($quiz_id)) {
-                            $quiz_data = MdlQuiz::where('id', $quiz_id)
-                                ->select(
-                                    'mdl_quiz.name'
-                                )
-                                ->first();
-                            if (isset($quiz_data)) {
-                                Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                                    TmsNotification::QUIZ_START,
-                                    "hycuong",
-                                    "Hy Quốc Cường",
-                                    'KHKM0192AC',
-                                    'Khóa học kỹ năng mềm',
-                                    '',
-                                    '',
-                                    '',
-                                    '30/11/2019',
-                                    $quiz_data
-                                ));
-                            }
-                        }
-                    }
-                }
-                break;
-            case 'remind_certificate':
-                {
-                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
-                        TmsNotification::REMIND_CERTIFICATE,
-                        "hycuong",
-                        "Hy Quốc Cường",
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '',
-                        '1234567'
+                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":"Hà Nội"},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":"Hồ Chí Minh"}]'
                     ));
                 }
                 break;
@@ -643,6 +228,106 @@ class EmailTemplateController extends Controller
                         '',
                         '',
                         '1234567'
+                    ));
+                }
+                break;
+            case 'assigned_course':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::ASSIGNED_COURSE,
+                        "",
+                        "Hy Quốc Cường",
+                        '',
+                        'How to love?',
+                        '27/07/2020',
+                        '02/09/2020'
+                    ));
+                }
+                break;
+            case 'assigned_competency':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::ASSIGNED_COMPETENCY,
+                        "",
+                        "Hy Quốc Cường",
+                        '',
+                        '',
+                        '27/07/2020',
+                        '02/09/2020',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        'TOEIC Certificate'
+                    ));
+                }
+                break;
+            case 'suggest_optional_course':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::SUGGEST_OPTIONAL_COURSE,
+                        "",
+                        "Hy Quốc Cường",
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":"Hà Nội"},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":"Hồ Chí Minh"}]',
+                        '[{"course_id":14,"course_code":"BGT655","course_name":"Đào tạo sản phẩm Power 6\/55","startdate":1566147600,"enddate":1597683600,"course_place":"Hà Nội"},{"course_id":15,"course_code":"BGTMAX3D","course_name":"Đào tạo sản phẩm Max 3D","startdate":1566147600,"enddate":1597683600,"course_place":"Hồ Chí Minh"}]'
+                    ));
+                }
+                break;
+            case 'remind_exam':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::REMIND_EXAM,
+                        "",
+                        "Hy Quốc Cường",
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '02/09/2020',
+                        '27/07/2020'
+                    ));
+                }
+                break;
+            case 'invitation_offline_course':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::INVITATION_OFFLINE_COURSE,
+                        "",
+                        "Hy Quốc Cường",
+                        '',
+                        'How to love?',
+                        '',
+                        '',
+                        'Hà Nội',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        'LOVE',
+                        'English',
+                        'DatDT',
+                        '8h',
+                        '17h',
+                        '22/11/2020',
+                        '3',
+                        '02/09/2020'
                     ));
                 }
                 break;

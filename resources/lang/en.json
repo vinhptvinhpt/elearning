@@ -301,6 +301,7 @@
   "so_buoi_diem_danh": "Attendance Total",
   "phan_quyen_thanh_cong": "Assign successfully",
   "xac_nhan_email_nguoi_dung": "Confirm email",
+  "chung_chi_hoan_thanh": "Complete competency framework",
   "ten": "Name",
   "to_chuc": "Organization",
   "qua_so_luong_submit": "The number of users exceeds the specified limit",
@@ -361,5 +362,17 @@
   "thong_tin_dob_khong_dung_dinh_dang": "Information: date of birth is malformed",
   "ho_ten": "Fullname",
   "thoi_gian": "Time access",
-    "ban_khong_co_quyen_xoa": "You do not have permission to delete"
+    "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Trainees exist in the competency framework. Can not delete!",
+    "ban_khong_co_quyen_xoa": "You do not have permission to delete",
+    "assigned_course" : "Assigned Course",
+    "assigned_competency" : "Assigned Competency",
+    "suggest_optional_course" : "Suggest Optional Course",
+    "remind_exam" : "Remind Exam",
+    "invitation_offline_course" : "Invitation Offline Course",
+    "forgot_password": "Forgot Password",
+    "remind_expire_required_course": "Remind expired required course",
+    "quen_mat_khau": "Forgot password",
+    "remind_certificate": "Remind Certificate",
+    "invite_student": "Invite Student",
+    "completed_competency": "Completed Competency"
 }

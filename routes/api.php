@@ -34,6 +34,7 @@ Route::get('/cron/task/autoEnrolCron', 'Api\TaskController@autoEnrolTrainningCro
 Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autogenerateSASAzure', 'Api\TaskController@apiGenerateSASUrlAzure')->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/addSingleUserToTrainning', 'Api\TaskController@addSingleUserToTrainningUser')->middleware(['App\Http\Middleware\CheckToken']);
 
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
