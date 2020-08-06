@@ -839,7 +839,16 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if(!is_null($organization_id) && $organization_id > 0){
-                $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')->where('toe.organization_id', '=', $organization_id);
+                $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id');
+                $data = $data->whereIn('toe.user_id', function ($q2) use ($organization_id) {
+                    $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                            from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
+//                $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')->where('toe.organization_id', '=', $organization_id);
             }
 
             if ($keyword) {
