@@ -362,7 +362,6 @@
   "thong_tin_dob_khong_dung_dinh_dang": "Information: date of birth is malformed",
   "ho_ten": "Fullname",
   "thoi_gian": "Time access",
-    "ban_khong_co_quyen_xoa": "You do not have permission to delete",
     "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Trainees exist in the competency framework. Can not delete!",
     "ban_khong_co_quyen_xoa": "You do not have permission to delete",
     "assigned_course" : "Assigned Course",
@@ -371,5 +370,9 @@
     "remind_exam" : "Remind Exam",
     "invitation_offline_course" : "Invitation Offline Course",
     "forgot_password": "Forgot Password",
-    "remind_expire_required_course": "Remind expired required course"
+    "remind_expire_required_course": "Remind expired required course",
+    "quen_mat_khau": "Forgot password",
+    "remind_certificate": "Remind Certificate",
+    "invite_student": "Invite Student",
+    "completed_competency": "Completed Competency"
 }
