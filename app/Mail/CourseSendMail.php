@@ -178,6 +178,9 @@ class CourseSendMail extends Mailable
         }elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
             $subject = __('thu_moi_tham_gia_khoa_hoc');
             $view = 'email.invite_student';
+        }elseif($this->activity == TmsNotification::ENROL){
+            $subject = '[ELEARNING] '. __('thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc');
+            $view = 'email.enrol_course';
         }
 
 

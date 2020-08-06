@@ -63,7 +63,7 @@ class EmailTemplateController extends Controller
         if (count($configs) != 0) {
             foreach ($configs as $config) {
                 $label = $this->convertNameFile($config->target);
-                if(empty($label) || $label == '')
+                if (empty($label) || $label == '')
                     $label = $config->target;
                 $config->label = $label;
                 $data[] = $config;
@@ -72,10 +72,10 @@ class EmailTemplateController extends Controller
         return response()->json($data);
     }
 
-    public function deleteOldConfigs(){
+    public function deleteOldConfigs()
+    {
         //set old configs (using in bgt)
         $configsDelete = array(
-            TmsNotification::ENROL => TmsConfigs::ENABLE,
             TmsNotification::SUGGEST => TmsConfigs::ENABLE,
             TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
             TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
@@ -86,12 +86,45 @@ class EmailTemplateController extends Controller
             TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE
         );
+
+        $configs = array(
+            TmsNotification::ASSIGNED_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::ENABLE,
+            TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
+            TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
+            TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
+            TmsNotification::ENROL => TmsConfigs::ENABLE
+        );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
-            //delete all old configs (using in bgt)
+            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
+            $today = date('Y-m-d H:i:s', time());
+            ////delete all old configs (using in bgt)
             TmsConfigs::whereIn('target', array_keys($configsDelete))->delete();
+            //
+            if (count($stored_configs) == 0 || count($stored_configs) != count($configs)) {
+                TmsConfigs::whereIn('target', array_keys($configs))->delete();
+                $insert_configs = array();
+                foreach ($configs as $key => $value) {
+                    $insert_configs[] = array(
+                        'target' => $key,
+                        'content' => $value,
+                        'editor' => TmsConfigs::EDITOR_CHECKBOX,
+                        'created_at' => $today
+                    );
+                }
+                TmsConfigs::insert($insert_configs);
+            } else {
+                $configs = array();
+                foreach ($stored_configs as $item) {
+                    $configs[$item->target] = $item->content;
+                }
+            }
         }
-        return true;
+        return $configs;
     }
 
     public function viewEmailTemplateDetail($name_file)
@@ -124,7 +157,8 @@ class EmailTemplateController extends Controller
         return response()->json(['content' => $string, 'name_show' => $label]);
     }
 
-    public function  convertNameFile($name_file){
+    public function convertNameFile($name_file)
+    {
         switch ($name_file) {
             case TmsNotification::ASSIGNED_COURSE:
                 $label = __('assigned_course');
@@ -155,6 +189,9 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('remind_certificate');
+                break;
+            case TmsNotification::ENROL:
+                $label = __('tham_gia_khoa_hoc');
                 break;
             default:
                 $label = '';
@@ -331,6 +368,23 @@ class EmailTemplateController extends Controller
                     ));
                 }
                 break;
+            case 'enrol':
+                {
+                    Mail::to("duongtiendat.it@gmail.com")->send(new CourseSendMail(
+                        TmsNotification::ENROL,
+                        "hycuong",
+                        "Hy Quốc Cường",
+                        'KH0019BAC',
+                        'Khóa học quản trị doanh nghiệp',
+                        '30/11/2019',
+                        '30/11/2020',
+                        '',
+                        '',
+                        ''
+                    ));
+                }
+                break;
+
             default:
                 break;
         }
