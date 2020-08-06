@@ -110,10 +110,10 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 # cron insert data to db notification for remind login
 25 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindLogin?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
-# cron ithem du lieu vao bang notification cho mail khoa hoc sap dien ra
+# cron them du lieu vao bang notification cho mail khoa hoc sap dien ra
 30 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindUC?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
-# cron ithem du lieu vao bang notification cho mail nhac nho lau ko tham gia khoa hoc
+# cron them du lieu vao bang notification cho mail nhac nho lau ko tham gia khoa hoc
 35 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/mail/insertRemindAccess?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
 # cron add hoc vien vao KNL
@@ -127,6 +127,9 @@ Lưu ý, cần chỉnh sửa path cho các cron trên
 
 # cron enroll hoc vien vao khoa hoc
 */1 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/autoEnrol?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
+
+# cron add hoc vien trong cac khoa hoc don le vao bang trainning_user
+31 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/addSingleUserToTrainning?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
 
 # cron add hoc vien da hoan thanh khoa hoc vao bang course_completion
 33 * * * * root cd /home/easia/elearning-easia && /usr/local/bin/docker-compose exec -T app php artisan route:call /api/cron/task/completeCourse?token=AAAAYhOtjQY:APA91bGdGxnRsUf21tbZ4KHguRfVPybbw5urjpXEOTrnpMkiUiWGmCy_QDduYwc1uk-40GcZFmUhyDSxErOY1OiXiIlSbBqLfHlKcrXnrrty6DSWBjhRwsVLZjWt0EAUJ0BjPj7IHhNQ
