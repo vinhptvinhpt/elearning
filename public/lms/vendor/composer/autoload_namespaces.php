@@ -8,11 +8,10 @@ $baseDir = dirname($vendorDir);
 return array(
     'org\\bovigo\\vfs\\' => array($vendorDir . '/mikey179/vfsstream/src/main/php'),
     'WebDriver' => array($vendorDir . '/instaclick/php-webdriver/lib'),
-    'Prophecy\\' => array($vendorDir . '/phpspec/prophecy/src'),
+    'UpdateHelper\\' => array($vendorDir . '/kylekatarnls/update-helper/src'),
     'Moodle\\BehatExtension' => array($vendorDir . '/moodlehq/behat-extension/src'),
     'Mail' => array($vendorDir . '/pear/mail_mime'),
     'Console' => array($vendorDir . '/pear/console_getopt'),
-    'Behat\\Transliterator' => array($vendorDir . '/behat/transliterator/src'),
     'Behat\\Testwork' => array($vendorDir . '/behat/behat/src'),
     'Behat\\MinkExtension' => array($vendorDir . '/behat/mink-extension/src'),
     'Behat\\Gherkin' => array($vendorDir . '/behat/gherkin/src'),

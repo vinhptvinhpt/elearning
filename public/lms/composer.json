@@ -11,6 +11,7 @@
         "mikey179/vfsstream": "^1.6"
     },
 	"require": {
-        "microsoft/windowsazure": "^0.5"
+        "microsoft/windowsazure": "^0.5",
+        "nesbot/carbon": "1.26.*"
     }
 }
