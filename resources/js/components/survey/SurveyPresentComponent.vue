@@ -7,7 +7,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="button-list">
-                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"
+                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id, back_page:'1'}}"
                                              class="btn-sm btn-danger">
                                     {{trans.get('keys.quay_lai')}}
                                 </router-link>
@@ -53,7 +53,7 @@
                                 <button @click="submitAnswer()" type="button" class="btn btn-primary">
                                     {{trans.get('keys.gui')}}
                                 </button>
-                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"
+                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id, back_page:'1'}}"
                                              class="btn btn-secondary">
                                     {{trans.get('keys.huy')}}
                                 </router-link>

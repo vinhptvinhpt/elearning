@@ -6,7 +6,7 @@
                     <div class="row">
                         <div class="col-sm">
                             <div class="button-list">
-                                <router-link :to="{name: 'SelfIndex',params: {self_id: self_id}}"
+                                <router-link :to="{name: 'SelfIndex',params: {back_page: '1',self_id: self_id}}"
                                              class="btn-sm btn-danger">
                                     {{trans.get('keys.quay_lai')}}
                                 </router-link>
@@ -43,7 +43,7 @@
                                 <button @click="submitAnswer()" type="button" class="btn btn-primary">
                                     {{trans.get('keys.gui')}}
                                 </button>
-                                <router-link :to="{name: 'SelfIndex',params: {self_id: self_id}}"
+                                <router-link :to="{name: 'SelfIndex',params: {back_page: '1',  self_id: self_id}}"
                                              class="btn btn-secondary">
                                     {{trans.get('keys.huy')}}
                                 </router-link>

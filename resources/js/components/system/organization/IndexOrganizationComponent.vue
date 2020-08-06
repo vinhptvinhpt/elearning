@@ -150,7 +150,7 @@
                         <th>{{trans.get('keys.ma_to_chuc')}}</th>
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.ten_to_chuc')}}</th>
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
-                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
+<!--                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>-->
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
                         <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </thead>
@@ -166,12 +166,12 @@
                             item.parent.name }}
                           </td>
                           <td class="d-none d-sm-table-cell" v-else></td>
-                          <td class="text-center d-none d-sm-table-cell" v-if="slug_can('tms-system-employee-view')">
-                            <router-link :title="trans.get('keys.xem_nhan_vien')"
-                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">
-                              {{ item.employees.length }}
-                            </router-link>
-                          </td>
+<!--                          <td class="text-center d-none d-sm-table-cell" v-if="slug_can('tms-system-employee-view')">-->
+<!--                            <router-link :title="trans.get('keys.xem_nhan_vien')"-->
+<!--                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">-->
+<!--                              {{ item.employees.length }}-->
+<!--                            </router-link>-->
+<!--                          </td>-->
                           <td class="text-center" v-if="slug_can('tms-system-employee-view')">
                             <router-link :title="trans.get('keys.xem_nhan_vien')"
                                          :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current}}">
@@ -189,7 +189,7 @@
                             <router-link v-if="slug_can('tms-system-organize-edit')"
                                          :title="trans.get('keys.sua_to_chuc')"
                                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                         :to="{ name: 'EditOrganization', params: { id: item.id,  source_page: current}}">
+                                         :to="{ name: 'EditOrganization', params: { id: item.id}}">
                               <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                             </router-link>
 
@@ -208,7 +208,7 @@
                         <th>{{trans.get('keys.ma_to_chuc')}}</th>
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.ten_to_chuc')}}</th>
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
-                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>
+<!--                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>-->
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
                         <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </tfoot>
@@ -378,15 +378,24 @@
               })
           },
           onPageChange() {
-            let page = this.getParamsPage();
-            this.getDataList(page);
+            let back = this.getParamsBackPage();
+            if(back == '1') {
+              this.current = Number(sessionStorage.getItem('organizationPage'));
+              this.row = Number(sessionStorage.getItem('organizationPageSize'));
+              this.keyword = sessionStorage.getItem('organizationKeyWord');
+              this.level = Number(sessionStorage.getItem('organizationLevel'));
+
+              sessionStorage.clear();
+              this.$route.params.back_page= null;
+            }
+            this.getDataList();
             this.selectParent();
           },
-          getParamsPage() {
-            return this.$route.params.page;
+          getParamsBackPage() {
+            return this.$route.params.back_page;
           },
-          setParamsPage(value) {
-            this.$route.params.page = value;
+          setParamsBackPage(value) {
+            this.$route.params.back_page = value;
           },
           deletePost(url) {
             let current_pos = this;
@@ -437,7 +446,12 @@
               }
       },
       mounted() {
-        this.setParamsPage(false);
+      },
+      destroyed() {
+        sessionStorage.setItem('organizationPage', this.current);
+        sessionStorage.setItem('organizationPageSize', this.row);
+        sessionStorage.setItem('organizationKeyWord', this.keyword);
+        sessionStorage.setItem('organizationLevel', this.level);
       }
     }
 </script>

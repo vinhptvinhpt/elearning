@@ -230,7 +230,8 @@ p.lead {
     font-weight: 400;
     color: #6f7a7f;
     line-height: 27px;
-    margin-bottom: 0;
+    /*margin-bottom: 0;*/
+    margin-bottom: 1em;
 }
 
 .force-UTF-8 {

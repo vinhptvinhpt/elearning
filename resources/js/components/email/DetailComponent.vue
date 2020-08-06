@@ -103,48 +103,36 @@
                         this.json_content = JSON.parse(response.data.content);
                         this.name_show = response.data.name_show;
                         switch (this.name_file) {
-                            case 'enrol':
-                                this.content_html = this.json_content.enrol;
+                            case 'assigned_course':
+                                this.content_html = this.json_content.assigned_course;
                                 break;
-                            case 'quiz_completed':
-                                this.content_html = this.json_content.quiz_completed;
+                            case 'assigned_competency':
+                                this.content_html = this.json_content.assigned_competency;
                                 break;
-                            case 'quiz_end':
-                                this.content_html = this.json_content.quiz_end;
+                            case 'suggest_optional_course':
+                                this.content_html = this.json_content.suggest_optional_course;
                                 break;
-                            case 'quiz_start':
-                                this.content_html = this.json_content.quiz_start;
+                            case 'remind_exam':
+                                this.content_html = this.json_content.remind_exam;
                                 break;
-                            case 'remind_access_course':
-                                this.content_html = this.json_content.remind_access_course;
-                                break;
-                            case 'remind_education_schedule':
-                                this.content_html = this.json_content.remind_education_schedule;
+                            case 'invitation_offline_course':
+                                this.content_html = this.json_content.invitation_offline_course;
                                 break;
                             case 'remind_expire_required_course':
                                 this.content_html = this.json_content.remind_expire_required_course;
-                                break;
-                            case 'remind_login':
-                                this.content_html = this.json_content.remind_login;
-                                break;
-                            case 'remind_upcoming_course':
-                                this.content_html = this.json_content.remind_upcoming_course;
-                                break;
-                            case 'suggest':
-                                this.content_html = this.json_content.suggest;
-                                break;
-                            case 'remind_certificate':
-                                this.content_html = this.json_content.remind_certificate;
                                 break;
                             case 'forgot_password':
                                 this.content_html = this.json_content.forgot_password;
                                 break;
                             case 'invite_student':
-                                this.content_html = this.json_content.invite_student;
-                                break;
+                              this.content_html = this.json_content.invite_student;
+                              break;
                             case 'active_email':
-                                this.content_html = this.json_content.active_email;
-                                break;
+                              this.content_html = this.json_content.active_email;
+                              break;
+                            case 'completed_competency_framework':
+                                this.content_html = this.json_content.completed_competency_framework;
+                              break;
                             default:
                                 break;
                         }
@@ -155,7 +143,6 @@
             },
             editEmailTemplate() {
 
-
                 this.formData = new FormData();
 
                 this.formData.append("name_file", this.name_file);
@@ -164,138 +151,8 @@
 
                 this.formData.append("type", "ckeditor");
 
-
-                this.formData.append("StringHello", this.email_teplate.StringHello);
-                this.formData.append(
-                    "StringContent",
-                    this.email_teplate.StringContent
-                );
-                this.formData.append(
-                    "StringFullName",
-                    this.email_teplate.StringFullName
-                );
-                this.formData.append(
-                    "StringUserName",
-                    this.email_teplate.StringUserName
-                );
-                this.formData.append(
-                    "StringThanks",
-                    this.email_teplate.StringThanks
-                );
-
-                switch (this.name_file) {
-                    case 'remind_upcoming_course':
-                    case 'remind_education_schedule':
-                    case 'remind_login':
-                    case 'suggest':
-                    case 'remind_access_course':
-                    case 'remind_expire_required_course': {
-                        this.formData.append("StringIntro", this.email_teplate.StringIntro);
-                    }
-                        break;
-                    case 'enrol': {
-                        this.formData.append("StringIntro", this.email_teplate.StringIntro);
-                        this.formData.append(
-                            "IdCourse",
-                            this.email_teplate.IdCourse
-                        );
-                        this.formData.append(
-                            "NameCourse",
-                            this.email_teplate.NameCourse
-                        );
-                        this.formData.append(
-                            "TimeStart",
-                            this.email_teplate.TimeStart
-                        );
-                        this.formData.append(
-                            "TimeDone",
-                            this.email_teplate.TimeDone
-                        );
-                        this.formData.append(
-                            "Address",
-                            this.email_teplate.Address
-                        );
-                        this.formData.append(
-                            "StringLogin",
-                            this.email_teplate.StringLogin
-                        );
-                    }
-                        break;
-                    case 'quiz_completed': {
-                        this.formData.append(
-                            "IdCourse",
-                            this.email_teplate.IdCourse
-                        );
-                        this.formData.append(
-                            "NameCourse",
-                            this.email_teplate.NameCourse
-                        );
-                        this.formData.append(
-                            "NameExam",
-                            this.email_teplate.NameExam
-                        );
-                        this.formData.append(
-                            "ContentExam",
-                            this.email_teplate.ContentExam
-                        );
-                    }
-                        break;
-                    case 'quiz_end': {
-                        this.formData.append(
-                            "IdCourse",
-                            this.email_teplate.IdCourse
-                        );
-                        this.formData.append(
-                            "NameCourse",
-                            this.email_teplate.NameCourse
-                        );
-                        this.formData.append(
-                            "NameExam",
-                            this.email_teplate.NameExam
-                        );
-                        this.formData.append(
-                            "ContentExam",
-                            this.email_teplate.ContentExam
-                        );
-                        this.formData.append(
-                            "StringCheck",
-                            this.email_teplate.StringCheck
-                        );
-                    }
-                        break;
-                    case 'quiz_start': {
-                        this.formData.append(
-                            "IdCourse",
-                            this.email_teplate.IdCourse
-                        );
-                        this.formData.append(
-                            "NameCourse",
-                            this.email_teplate.NameCourse
-                        );
-                        this.formData.append(
-                            "NameExam",
-                            this.email_teplate.NameExam
-                        );
-                        this.formData.append(
-                            "ContentExam",
-                            this.email_teplate.ContentExam
-                        );
-                        this.formData.append(
-                            "TimeStart",
-                            this.email_teplate.TimeStart
-                        );
-                        this.formData.append(
-                            "StringCheck",
-                            this.email_teplate.StringCheck
-                        );
-                    }
-                        break;
-                    default:
-                        break;
-                }
-                axios
-                    .post(
-                        "/email_template/detail/update/",
+                axios.post(
+                        "/email_template/detail/update",
                         this.formData,
                         {
                             headers: {

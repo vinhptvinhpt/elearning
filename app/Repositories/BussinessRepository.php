@@ -265,7 +265,8 @@ class BussinessRepository implements IBussinessInterface
                 );
             }
 
-            $quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
+            //quit student
+            /*$quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
             ->where("quit_time", ">=", $start_time)
                 ->where("quit_time", "<=", $end_time)
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
@@ -292,30 +293,40 @@ class BussinessRepository implements IBussinessInterface
                     'mthyr' => $key,
                     'total' => $val
                 );
-            }
+            }*/
 
             //chart 2(count course only), 4 data
             $courses = MdlCourse::where('mdl_course.deleted', 0)
                 ->where('mdl_course.category', "<>", 2)
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->select('mdl_course.id', 'mdl_course.category', 'mdl_course.visible')
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.category',
+                    'mdl_course.visible',
+                    'mdl_course_categories.name as category_name'
+                )
                 ->get();
-            $online = 0;
-            $offline = 0;
+            $pie_data = [];
             foreach ($courses as $course) {
-                if ($course->category == 5) { //offline
-                    $offline += 1;
-                } else { //online
-                    $online += 1;
+                if ($course->category != 2) {
+                    if (!array_key_exists($course->category, $pie_data)) {
+                        $pie_data[$course->category] = array(
+                            'name' => $course->category_name,
+                            'count' => 1
+                        );
+                    } else {
+                        $pie_data[$course->category]['count'] += 1;
+                    }
                 }
             }
 
-            $response['online'] = $online;
-            $response['offline'] = $offline;
+            $response['pie_data'] = array_values($pie_data);
 
-            //chart 3
+            //Hoc vien dang ki
             $registered = fillMissingMonthChartData($registered_source, $start_time, $end_time);
             $response['registered'] = $registered;
+
+            //Total employees
             $stack_total = 0;
             foreach ($registered as $key => $val) {
                 $stack_total += $val['total'];
@@ -329,8 +340,8 @@ class BussinessRepository implements IBussinessInterface
             $confirmed = fillMissingMonthChartData($confirm_source, $start_time, $end_time);
             $response['confirmed'] = $confirmed;
 
-            $quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
-            $response['quit'] = $quit;
+            //$quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
+            //$response['quit'] = $quit;
 
             return response()->json($response);
         }
@@ -351,22 +362,25 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             return response()->json([]);
         } else {
-            $data = MdlCourse::where('category', '<>', 2)
-                ->where("startdate", "<=", $now)
-                ->where("startdate", "<>", 0)
-                ->where("deleted", "=", 0)
+            $data = MdlCourse::query()
+                ->leftJoin('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->where('category', '<>', 2)
+                ->where('startdate', '<=', $now)
+                ->where('startdate', '<>', 0)
+                ->where('deleted', '=', 0)
                 ->where(function ($query) use ($now) {
                     $query->where('enddate', '>=', $now)
                         ->orWhere('enddate', '=', 0);
                 })
                 ->select(
-                    'id',
-                    'shortname',
-                    'fullname',
-                    'startdate as start',
-                    'enddate as end',
-                    'course_place',
-                    'category'
+                    'mdl_course.id',
+                    'mdl_course.shortname',
+                    'mdl_course.fullname',
+                    'mdl_course.startdate as start',
+                    'mdl_course.enddate as end',
+                    'mdl_course.course_place',
+                    'mdl_course.category',
+                    'mdl_course_categories.name as category_name'
                 );
             if ($keyword) {
                 //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -1635,12 +1649,14 @@ class BussinessRepository implements IBussinessInterface
         $keyword = $request->input('keyword');
         $row = $request->input('row');
         $organization_id = $request->input('organization_id');
+        $invite_status = $request->input('invite_status');
 
         $param = [
             'course_id' => 'number',
             'row' => 'number',
             'role_id' => 'number',
-            'keyword' => 'text'
+            'keyword' => 'text',
+            'invite_status' => 'text'
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
@@ -1662,6 +1678,14 @@ class BussinessRepository implements IBussinessInterface
             );
         if ($keyword) {
             $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+        }
+
+        if ($invite_status == 'noreply') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 0);
+        } elseif ($invite_status == 'accepted') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 1);
+        } elseif ($invite_status == 'denied') {
+            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 0);
         }
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {
@@ -2119,6 +2143,7 @@ class BussinessRepository implements IBussinessInterface
 
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
             ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
@@ -2131,6 +2156,7 @@ class BussinessRepository implements IBussinessInterface
                 'u.username',
                 'u.firstname',
                 'u.lastname',
+                'tud.fullname',
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
@@ -2143,7 +2169,7 @@ class BussinessRepository implements IBussinessInterface
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
             );
         if ($keyword) {
-            $lstUserCourse = $lstUserCourse->where('u.username', 'like', '%' . $keyword . '%');
+            $lstUserCourse = $lstUserCourse->whereRaw('( u.username like "%' . $keyword . '%" OR tud.fullname like "%' . $keyword . '%" )');
         }
 
         $lstUserCourse = $lstUserCourse->orderBy('u.id', 'desc')->groupBy('u.id');

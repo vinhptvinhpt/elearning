@@ -8,9 +8,7 @@
               <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
             </li>
             <li class="breadcrumb-item active">
-              <router-link to="/tms/education/course/course_sample">{{
-                trans.get('keys.quan_tri_thu_vien_khoa_hoc') }}
-              </router-link>
+              <router-link to="/tms/education/course/course_sample">{{ trans.get('keys.quan_tri_thu_vien_khoa_hoc') }}</router-link>
             </li>
           </ol>
         </nav>
@@ -163,7 +161,7 @@
                       <td>{{ course.shortname }}</td>
                       <td>{{ course.fullname }}</td>
 <!--                      <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                      <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff; text-transform:capitalize;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                      <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
                       <td v-else></td>
                       <td class="text-center">
                         <!--                                                <a :title="trans.get('keys.sua_noi_dung')"-->
@@ -353,7 +351,22 @@
           });
       },
       onPageChange() {
+        let back = this.getParamsBackPage();
+        if(back == '1') {
+          this.current = Number(sessionStorage.getItem('surveyPage'));
+          this.row = Number(sessionStorage.getItem('surveyPageSize'));
+          this.keyword = sessionStorage.getItem('surveyKeyWord');
+
+          sessionStorage.clear();
+          this.$route.params.back_page= null;
+        }
         this.getCourses();
+      },
+      getParamsBackPage() {
+        return this.$route.params.back_page;
+      },
+      setParamsBackPage(value) {
+        this.$route.params.back_page = value;
       },
       deletePost(id) {
         let current_pos = this;
@@ -406,6 +419,11 @@
     },
     updated() {
       this.setFileInput();
+    },
+    destroyed() {
+      sessionStorage.setItem('surveyPage', this.current);
+      sessionStorage.setItem('surveyPageSize', this.row);
+      sessionStorage.setItem('surveyKeyWord', this.keyword);
     }
   }
 </script>

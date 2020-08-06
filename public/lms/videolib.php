@@ -195,102 +195,60 @@ echo $OUTPUT->header();
                             console.log(error);
                         });
                 },
-                uploadVideoToAzure: function () {
-                    var _this = this;
-                    //get file
-                    var selectedFile = this.$refs.file.files[0];
-                    var validate = this.validateFile(selectedFile);
-                    if (validate) {
-                        //show progress
-                        $('.div-progress').css('display', 'inline');
-                        $('#btnUpload').attr("disabled", true);
-                        $('#btnUpload').addClass('loadding');
-
-                        let formData = new FormData();
-                        formData.append('type', 'put');
-                        formData.append('file', this.$refs.file.files[0]);
-
-                        this.sleep(10000);
-
-                        axios.post(_this.url + '/videolib_api.php', formData, {
-                            headers: {
-                                'Content-Type': 'multipart/form-data'
-                            },
-                            onUploadProgress: function (progressEvent) {
-                                var percentLoaded = Math.round((progressEvent.loaded / progressEvent.total) * 100);
-                                if (percentLoaded <= 98) {
-                                    _this.percent = percentLoaded;
-                                }
-                            }
-                        })
-                            .then(response => {
-                                _this.percent = 100;
-                                $('#btnUpload').removeAttr("disabled");
-                                $('#btnUpload').removeClass('loadding');
-                                toastr['success']("Uploaded videos successfully", "Success");
-                                _this.reloadPage('get');
-                            })
-                            .catch(error => {
-                                _this.percent = 0;
-                                $('#btnUpload').removeAttr("disabled");
-                                $('#btnUpload').removeClass('loadding');
-                                toastr['error']("An error occurred, please try again", "Error");
-                            });
-                    }
-                },
                 uploadVideo: function () {
                     var _this = this;
                     var file = this.$refs.file.files[0];
-                    var sasToken = '?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-29T11:45:28Z&st=2020-07-29T03:45:28Z&spr=https&sig=GcW9fcjuCWEaql8U6pe%2FX%2FbRuY9T5OcQXBVifmZ4HnI%3D';
-                    var containerURL = 'https://elearningdata.blob.core.windows.net/asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/';
-                    const container = new azblob.ContainerURL(containerURL + sasToken, azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
-                    try {
-                        //show progress
-                        $('.div-progress').css('display', 'inline');
-                        $('#btnUpload').attr("disabled", true);
-                        $('#btnUpload').addClass('loadding');
-                        const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(container, file.name);
-                        var result = azblob.uploadBrowserDataToBlockBlob(
-                            azblob.Aborter.none, file, blockBlobURL, {
-                                blockSize: 4 * 1024 * 1024, // 4MB block size
-                                parallelism: 20, // 20 concurrency
-                                progress: ev => _this.percent = Math.round((ev.loadedBytes / file['size']) * 100)
-                            });
+                    var validate = this.validateFile(file);
+                    if(validate){
+                        var sasToken = '?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-29T11:45:28Z&st=2020-07-29T03:45:28Z&spr=https&sig=GcW9fcjuCWEaql8U6pe%2FX%2FbRuY9T5OcQXBVifmZ4HnI%3D';
+                        var containerURL = 'https://elearningdata.blob.core.windows.net/asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/';
+                        const container = new azblob.ContainerURL(containerURL + sasToken, azblob.StorageURL.newPipeline(new azblob.AnonymousCredential));
+                        try {
+                            //show progress
+                            $('.div-progress').css('display', 'inline');
+                            $('#btnUpload').attr("disabled", true);
+                            $('#btnUpload').addClass('loadding');
+                            const blockBlobURL = azblob.BlockBlobURL.fromContainerURL(container, file.name);
+                            var result = azblob.uploadBrowserDataToBlockBlob(
+                                azblob.Aborter.none, file, blockBlobURL, {
+                                    blockSize: 4 * 1024 * 1024, // 4MB block size
+                                    parallelism: 20, // 20 concurrency
+                                    progress: ev => _this.percent = Math.round((ev.loadedBytes / file['size']) * 100)
+                                });
 
-                        result.then(function (result) {
-                            let formData = new FormData();
-                            formData.append('type', 'put');
-                            formData.append('nameFile', file.name);
-                            axios.post(_this.url + '/videolib_api.php', formData, {
-                                headers: {
-                                    'Content-Type': 'multipart/form-data'
-                                }
-                            })
-                                .then(response => {
-                                    if (response.data.result == 1) {
-                                        _this.percent = 100;
-                                        $('#btnUpload').removeAttr("disabled");
-                                        $('#btnUpload').removeClass('loadding');
-                                        toastr['success']("Uploaded videos successfully", "Success");
-                                        _this.reloadPage('get');
+                            result.then(function (result) {
+                                let formData = new FormData();
+                                formData.append('type', 'put');
+                                formData.append('nameFile', file.name);
+                                axios.post(_this.url + '/videolib_api.php', formData, {
+                                    headers: {
+                                        'Content-Type': 'multipart/form-data'
                                     }
                                 })
-                                .catch(error => {
-                                    _this.percent = 0;
-                                    $('#btnUpload').removeAttr("disabled");
-                                    $('#btnUpload').removeClass('loadding');
-                                    toastr['error']("An error occurred, please try again later", "Error");
-                                });
-                        }, function (err) {
-                            _this.percent = 0;
-                            $('#btnUpload').removeAttr("disabled");
-                            $('#btnUpload').removeClass('loadding');
-                            toastr['error']("An error occurred, please try again later", "Error");
-                        });
-
-
-                    } catch (error) {
-                        console.log(error);
+                                    .then(response => {
+                                        if (response.data.result == 1) {
+                                            _this.percent = 100;
+                                            $('#btnUpload').removeAttr("disabled");
+                                            $('#btnUpload').removeClass('loadding');
+                                            toastr['success']("Uploaded videos successfully", "Success");
+                                            _this.reloadPage('get');
+                                        }
+                                    })
+                                    .catch(error => {
+                                        _this.percent = 0;
+                                        $('#btnUpload').removeAttr("disabled");
+                                        $('#btnUpload').removeClass('loadding');
+                                        toastr['error']("An error occurred, please try again later", "Error");
+                                    });
+                            }, function (err) {
+                                _this.percent = 0;
+                                $('#btnUpload').removeAttr("disabled");
+                                $('#btnUpload').removeClass('loadding');
+                                toastr['error']("An error occurred, please try again later", "Error");
+                            });
+                        } catch (error) {
+                            console.log(error);
+                        }
                     }
                 },
                 deleteVideo: function (name) {
@@ -336,11 +294,14 @@ echo $OUTPUT->header();
                     //validate
                     if (extensions.indexOf(fileExt) < 0) {
                         alert("Extension not allowed, please choose a video file.");
+                        const input = this.$refs.file;
+                        input.type = 'file';
+                        this.$refs.file.value = '';
                         return false;
                     }
 
-                    if (size > 1509715200) {
-                        alert('Maximum file size of 1GB');
+                    if (size > 1536715200) {
+                        alert('Maximum file size of 1.5GB');
                         return false;
                     }
                     return true;
@@ -423,143 +384,3 @@ echo $OUTPUT->header();
 <?php
 
 echo $OUTPUT->footer();
-
-if (isset($_FILES['fileazure'])) {
-    $errors = array();
-    $file_name = $_FILES['fileazure']['name'];
-    $file_size = $_FILES['fileazure']['size'];
-    $file_tmp = $_FILES['fileazure']['tmp_name'];
-    $file_type = $_FILES['fileazure']['type'];
-    $file_ext = strtolower(end(explode('.', $_FILES['fileazure']['name'])));
-
-    $extensions = array("webm", "mp4", "ogv");
-
-    if (in_array($file_ext, $extensions) === false) {
-        $errors[] = "extension not allowed, please choose a video file.";
-    }
-
-    if ($file_size > 509715200) {
-        $errors[] = 'File size must be excately 2 MB';
-    }
-
-    if (empty($errors) == true) {
-        uploadVideoToAzure($_FILES['fileazure']);
-    } else {
-        echo "error";
-    }
-}
-
-function uploadVideoToAzure($filetoUpload)
-{
-    $accesskey = "GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==";
-    $storageAccount = 'elearningdata';
-    //        $filetoUpload = realpath('./bg_login.png');
-    //        $filetoUpload = public_path() . '/images/bg_login.png';
-    // $filetoUpload = public_path() . '/eldata.mp4';
-    // echo ('path<br/>');
-    // echo ($filetoUpload . '<br/>');
-    $containerName = 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6';
-    // $containerName = 'elearning';
-    $blobName = $filetoUpload['name'];
-    // $blobName = "sample.mp4";
-
-    $destinationURL = "https://$storageAccount.blob.core.windows.net/$containerName/$blobName";
-
-
-    $currentDate = gmdate("D, d M Y H:i:s T", time());
-    $handle = fopen($filetoUpload['tmp_name'], "r");
-    // $handle = fopen("C:\xampp_new\htdocs\lms\sample.mp4", "r");
-    // $fileLen = filesize($blobName);
-    $fileLen = $filetoUpload['size'];
-
-    $headerResource = "x-ms-blob-cache-control:max-age=3600\nx-ms-blob-type:BlockBlob\nx-ms-date:$currentDate\nx-ms-version:2015-12-11";
-    $urlResource = "/$storageAccount/$containerName/$blobName";
-
-    $arraysign = array();
-    $arraysign[] = 'PUT';               /*HTTP Verb*/
-    $arraysign[] = '';                  /*Content-Encoding*/
-    $arraysign[] = '';                  /*Content-Language*/
-    $arraysign[] = $fileLen;            /*Content-Length (include value when zero)*/
-    $arraysign[] = '';                  /*Content-MD5*/
-    //        $arraysign[] = 'image/png';         /*Content-Type*/
-    $arraysign[] = 'video/mp4';         /*Content-Type*/
-    $arraysign[] = '';                  /*Date*/
-    $arraysign[] = '';                  /*If-Modified-Since */
-    $arraysign[] = '';                  /*If-Match*/
-    $arraysign[] = '';                  /*If-None-Match*/
-    $arraysign[] = '';                  /*If-Unmodified-Since*/
-    $arraysign[] = '';                  /*Range*/
-    $arraysign[] = $headerResource;     /*CanonicalizedHeaders*/
-    $arraysign[] = $urlResource;        /*CanonicalizedResource*/
-
-    $str2sign = implode("\n", $arraysign);
-
-    $sig = base64_encode(hash_hmac('sha256', urldecode(utf8_encode($str2sign)), base64_decode($accesskey), true));
-    $authHeader = "SharedKey $storageAccount:$sig";
-
-    $headers = [
-        'Authorization: ' . $authHeader,
-        'x-ms-blob-cache-control: max-age=3600',
-        'x-ms-blob-type: BlockBlob',
-        'x-ms-date: ' . $currentDate,
-        'x-ms-version: 2015-12-11',
-        'Content-Type: video/mp4',
-        'Content-Length: ' . $fileLen
-    ];
-
-    $ch = curl_init($destinationURL);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($ch, CURLOPT_POSTFIELDS, "PUT");
-    //
-    // curl_setopt(
-    //     $ch,
-    //     CURLOPT_POSTFIELDS,
-    //     array(
-    //       'file' =>
-    //           '@'            . $filetoUpload['tmp_name']
-    //           . ';filename=' . $filetoUpload['file']['name']
-    //           . ';type='     . $filetoUpload['file']['type']
-    //     ));
-    curl_setopt($ch, CURLOPT_INFILE, $handle);
-    curl_setopt($ch, CURLOPT_INFILESIZE, $fileLen);
-    curl_setopt($ch, CURLOPT_UPLOAD, true);
-    $result = curl_exec($ch);
-
-    // echo('Result<br/>');
-    // echo($result . '<br/>');
-
-    // echo('Error<br/>');
-    echo(curl_error($ch));
-
-    curl_close($ch);
-}
-
-function getListVideoAzure()
-{
-    //$conn = 'BlobEndpoint=https://elearningdata.blob.core.windows.net/;QueueEndpoint=https://elearningdata.queue.core.windows.net/;FileEndpoint=https://elearningdata.file.core.windows.net/;TableEndpoint=https://elearningdata.table.core.windows.net/;SharedAccessSignature=sv=2019-02-02&ss=bfqt&srt=sco&sp=rwdlacup&se=2040-04-06T14:56:12Z&st=2020-04-06T06:56:12Z&spr=https&sig=q87j3KR6ZAThNolTZSAOCuVkWoUbwtn%2B47sXkp2OXx8%3D';
-    $conn = 'BlobEndpoint=https://elearningdata.blob.core.windows.net/;QueueEndpoint=https://elearningdata.queue.core.windows.net/;FileEndpoint=https://elearningdata.file.core.windows.net/;TableEndpoint=https://elearningdata.table.core.windows.net/;SharedAccessSignature=sv=2019-10-10&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-22T15:47:41Z&st=2020-07-22T07:47:41Z&spr=https&sig=HyWGfnaDYY%2BjOHMvPo0IFFSg2xC02LT%2BcyGsVQwCRmg%3D';
-    $blobRes = ServicesBuilder::getInstance()->createBlobService($conn);
-    $containerName = 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6';
-    //        $containerName = 'elearning';
-
-    try {
-        // List blobs.
-        $blob_list = $blobRes->listBlobs($containerName);
-        $blobs = $blob_list->getBlobs();
-        return $blobs;
-        // echo "~~~~~~~~~~~~~~~~Blob list~~~~~~~~~~~~~~~~~~ <br />";
-        // foreach ($blobs as $blob) {
-        // echo $blob->getName() . ": " . $blob->getUrl() . ": " . json_encode($blob->getProperties()) . ": " . $blob->getSnapshot() . "<br />";
-        //                echo $blob->getProperties() . ": " . $blob->getSnapshot();
-        // }
-        // echo "~~~~~~~~~~~~~~~~~~~END~~~~~~~~~~~~~~~~~~~~~ <br />";
-    } catch (ServiceException $e) {
-        $code = $e->getCode();
-        $error_message = $e->getMessage();
-        echo $code . ": " . $error_message . "<br />";
-    }
-}

@@ -18,13 +18,13 @@
                 <div>
                     <div class="row mx-0">
                         <div class="col-12 hk-sec-wrapper">
-                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_email_template')}}</h5>
+                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_email_template')}} : {{ source_data.length + 1 }}</h5>
                             <div class="col-sm">
                                 <div class="table-wrap">
                                     <div class="row">
                                         <div class="col-6 dataTables_wrapper">
                                             <div class="dataTables_length">
-                                                <span style="color:#3a55b1; font-size: 20px; font-weight: 600;">{{trans.get('keys.tong_so_thu_vien_email_template_hien_tai')}}: {{ source_data.length + 1 }}</span>
+<!--                                                <span style="color:#3a55b1; font-size: 20px; font-weight: 600;">{{trans.get('keys.tong_so_thu_vien_email_template_hien_tai')}}: {{ source_data.length + 1 }}</span>-->
                                             </div>
                                         </div>
                                     </div>
@@ -39,9 +39,9 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-if="source_data.length == 0">
-                                                <td colspan="3">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
-                                            </tr>
+<!--                                            <tr v-if="source_data.length == 0">-->
+<!--                                                <td colspan="3">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>-->
+<!--                                            </tr>-->
                                             <tr v-for="(template,index) in source_data">
                                                 <td>{{ index+1 }}</td>
                                                 <td>

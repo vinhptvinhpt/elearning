@@ -32,6 +32,19 @@ class CourseSendMail extends Mailable
     const URL_CONFIRM_EMAIL = "[URL_CONFIRM_EMAIL]";
     const PASSWORD = "[PASSWORD]";
 
+    //
+    const EMAIL = "[EMAIL]";
+    const COMPETENCYNAME = "[COMPETENCYNAME]";
+    const COURSELEARNINGOUTCOMES = "[COURSELEARNINGOUTCOMES]";
+    const LANGUAGE = "[LANGUAGE]";
+    const TRAINER = "[TRAINER]";
+    const STARTTIME = "[STARTTIME]";
+    const ENDTIME = "[ENDTIME]";
+    const DATE = "[DATE]";
+    const FIRST = "[FIRST]";
+    const DEADLINE = "[DEADLINE]";
+
+
     private $activity;
     private $fullname;
     private $username;
@@ -59,7 +72,7 @@ class CourseSendMail extends Mailable
      * @param string $course_place
      * @param string $quiz_date
      * @param string $content
-     * @param array $course_list
+     * @param string $course_list
      *
      */
     public function __construct(
@@ -73,9 +86,20 @@ class CourseSendMail extends Mailable
         $course_place = '',
         $quiz_date = '',
         $content = '',
-        $course_list = array(),
+        $course_list = '',
         $url_confirm_email = '',
-        $password = ''
+        $competency_name = '',
+        $quiz_end = '',
+        $quiz_start = '',
+        $password = '',
+        $course_learning_outcomes = '',
+        $language = '',
+        $trainer = '',
+        $start_time = '',
+        $end_time = '',
+        $date = '',
+        $first = '',
+        $deadline = ''
     )
     {
         $this->activity = $activity;
@@ -91,6 +115,18 @@ class CourseSendMail extends Mailable
         $this->course_list = $course_list;
         $this->url_confirm_email = $url_confirm_email;
         $this->password = $password;
+        //
+        $this->competency_name = $competency_name;
+        $this->quiz_start = $quiz_start;
+        $this->quiz_end = $quiz_end;
+        $this->course_learning_outcomes = $course_learning_outcomes;
+        $this->language = $language;
+        $this->trainer = $trainer;
+        $this->start_time = $start_time;
+        $this->end_time = $end_time;
+        $this->date = $date;
+        $this->first = $first;
+        $this->deadline = $deadline;
     }
 
     /**
@@ -102,77 +138,49 @@ class CourseSendMail extends Mailable
     {
         $subject = '';
         $view = '';
-        if ($this->activity == TmsNotification::INVITE_STUDENT) {
+        if ($this->activity == TmsNotification::FORGOT_PASSWORD) {
+            $subject = '[ELEARNING] '. __('forgot_password');
+            $view = 'email.forgot_password';
+        }
+        elseif ($this->activity == TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE) {
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] '. __('remind_expire_required_course');
+            $view = 'email.remind_expire_required_course';
+        }
+        elseif($this->activity == TmsNotification::COMPLETED_FRAME){
+            $course_array = json_decode($this->content);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] Thông báo xác nhận email';
+            $view = 'email.completed_competency';
+        }
+        elseif ($this->activity == TmsNotification::ASSIGNED_COURSE) {
+            $subject = '[ELEARNING] '. __('assigned_course');
+            $view = 'email.assigned_course';
+        }
+        elseif ($this->activity == TmsNotification::ASSIGNED_COMPETENCY) {
+            $subject = '[ELEARNING] '. __('assigned_competency');
+            $view = 'email.assigned_competency';
+        }
+        elseif ($this->activity == TmsNotification::SUGGEST_OPTIONAL_COURSE) {
+            $course_array = json_decode($this->course_list);
+            $this->course_list = $course_array;
+            $subject = '[ELEARNING] '. __('suggest_optional_course');
+            $view = 'email.suggest_optional_course';
+        }
+        elseif ($this->activity == TmsNotification::REMIND_EXAM) {
+            $subject = '[ELEARNING] '. __('remind_exam');
+            $view = 'email.remind_exam';
+        }
+        elseif ($this->activity == TmsNotification::INVITATION_OFFLINE_COURSE) {
+            $subject = '[ELEARNING] '. __('invitation_offline_course');
+            $view = 'email.invitation_offline_course';
+        }elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
             $subject = __('thu_moi_tham_gia_khoa_hoc');
             $view = 'email.invite_student';
         }
-        else if ($this->activity == TmsNotification::ENROL
-            || $this->activity == TmsNotification::QUIZ_START
-            || $this->activity == TmsNotification::QUIZ_END
-            || $this->activity == TmsNotification::QUIZ_COMPLETED
-            || $this->activity == TmsNotification::REMIND_CERTIFICATE
-            || $this->activity == TmsNotification::ACTIVE_EMAIL
-            || $this->activity == TmsNotification::FORGOT_PASSWORD
-        ) {
-            switch ($this->activity) {
-                case TmsNotification::ENROL:
-                    $subject = '[ELEARNING] Thông báo học viên được ghi danh vào khóa học';
-                    $view = 'email.enrol_course';
-                    break;
-                case TmsNotification::QUIZ_START:
-                    $subject = '[ELEARNING] Thông báo bài kiểm tra mới';
-                    $view = 'email.quiz_start';
-                    break;
-                case TmsNotification::QUIZ_END:
-                    $subject = '[ELEARNING] Thông báo bài kiểm tra sắp hết hạn';
-                    $view = 'email.quiz_end';
-                    break;
-                case TmsNotification::QUIZ_COMPLETED:
-                    $subject = '[ELEARNING] Thông báo kết quả kiểm tra';
-                    $view = 'email.quiz_completed';
-                    break;
-                case TmsNotification::REMIND_CERTIFICATE:
-                    $subject = '[ELEARNING] Thông báo về việc cấp chứng chỉ';
-                    $view = 'email.remind_certificate';
-                    break;
-                case TmsNotification::FORGOT_PASSWORD:
-                    $subject = '[ELEARNING] Thông báo lấy lại mật khẩu';
-                    $view = 'email.forgot_password';
-                    break;
-                case TmsNotification::ACTIVE_EMAIL:
-                    $subject = '[ELEARNING] Thông báo xác nhận email';
-                    $view = 'email.active_email';
-                    break;
-                default:
-                    $subject = '';
-                    $view = '';
-            }
-        }
-        elseif ($this->activity == TmsNotification::SUGGEST) {
-            $subject = '[ELEARNING] Giới thiệu một số khóa học kĩ năng mềm';
-            $view = 'email.suggest_course';
-        } elseif ($this->activity == TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE) {
-            $course_array = json_decode($this->content);
-            $this->course_list = $course_array;
-            $subject = '[ELEARNING] Khóa học bắt buộc sắp hết hạn';
-            $view = 'email.remind_expire_required_course';
-        } elseif ($this->activity == TmsNotification::REMIND_EDUCATION_SCHEDULE) {
-            $course_array = json_decode($this->content);
-            $this->course_list = $course_array;
-            $subject = '[ELEARNING] Bạn có một số khóa học trong lộ trình chưa hoàn thành';
-            $view = 'email.remind_education_schedule';
-        } elseif ($this->activity == TmsNotification::REMIND_LOGIN) {
-            $subject = '[ELEARNING] Bạn đã lâu không đăng nhập vào hệ thống';
-            $view = 'email.remind_login';
-        } elseif ($this->activity == TmsNotification::REMIND_UPCOMING_COURSE) {
-            $subject = '[ELEARNING] Giới thiệu một số khóa học sắp bắt đầu';
-            $view = 'email.upcoming_course';
-        } elseif ($this->activity == TmsNotification::REMIND_ACCESS_COURSE) {
-            $course_array = json_decode($this->content);
-            $this->course_list = $course_array;
-            $subject = '[ELEARNING] Bạn đã lâu không tương tác với khóa học chưa hoàn thành';
-            $view = 'email.remind_access_course';
-        }
+
+
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)
                 ->with('fullname', $this->fullname)
@@ -187,6 +195,17 @@ class CourseSendMail extends Mailable
                 ->with('course_list', $this->course_list)
                 ->with('url_confirm_email', $this->url_confirm_email)
                 ->with('password', $this->password)
+                ->with('competency_name', $this->competency_name)
+                ->with('quiz_start', $this->quiz_start)
+                ->with('quiz_end', $this->quiz_end)
+                ->with('course_learning_outcomes', $this->course_learning_outcomes)
+                ->with('language', $this->language)
+                ->with('trainer', $this->trainer)
+                ->with('start_time', $this->start_time)
+                ->with('end_time', $this->end_time)
+                ->with('date', $this->date)
+                ->with('first', $this->first)
+                ->with('deadline', $this->deadline)
                 ->view($view);
         }
         return $this;
