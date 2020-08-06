@@ -109,32 +109,34 @@ class TaskController extends Controller
             $limit = 300;
 
             foreach ($lstUserCourse as $course) {
-                if ($course->is_certificate == 0) { //khóa học cấp chứng chỉ không có bài thi, không cần set điểm pass
-                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
-                        $data_item['userid'] = $course->user_id;
-                        $data_item['courseid'] = $course->course_id;
-                        $data_item['finalgrade'] = $course->finalgrade;
-                        $data_item['timecompleted'] = strtotime(Carbon::now());
-                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+//                if ($course->is_certificate == 0) { //khóa học cấp chứng chỉ không có bài thi, không cần set điểm pass
+                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
+                    $data_item['userid'] = $course->user_id;
+                    $data_item['courseid'] = $course->course_id;
+                    $data_item['finalgrade'] = $course->finalgrade;
+                    $data_item['timecompleted'] = strtotime(Carbon::now());
+                    $data_item['timeenrolled'] = strtotime(Carbon::now());
+                    $data_item['created_at'] = Carbon::now();
+                    $data_item['updated_at'] = Carbon::now();
 
-                        array_push($arrData, $data_item);
-                        $num++;
-                    }
-                } else {
-                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
-                        && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
-
-                        $data_item['userid'] = $course->user_id;
-                        $data_item['courseid'] = $course->course_id;
-                        $data_item['finalgrade'] = $course->finalgrade;
-                        $data_item['timecompleted'] = strtotime(Carbon::now());
-                        $data_item['timeenrolled'] = strtotime(Carbon::now());
-
-                        array_push($arrData, $data_item);
-                        $num++;
-
-                    }
+                    array_push($arrData, $data_item);
+                    $num++;
                 }
+//                } else {
+//                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
+//                        && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+//
+//                        $data_item['userid'] = $course->user_id;
+//                        $data_item['courseid'] = $course->course_id;
+//                        $data_item['finalgrade'] = $course->finalgrade;
+//                        $data_item['timecompleted'] = strtotime(Carbon::now());
+//                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+//
+//                        array_push($arrData, $data_item);
+//                        $num++;
+//
+//                    }
+//                }
 
                 if ($num >= $limit) {
                     CourseCompletion::insert($arrData);
@@ -148,6 +150,7 @@ class TaskController extends Controller
 
         }
     }
+
 
     public function completeCourseForStudent()
     {
@@ -187,29 +190,31 @@ class TaskController extends Controller
             foreach ($lstUserCourse as $course) {
 
                 if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
-                    if (!empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
-                        $data_item['userid'] = $course->user_id;
-                        $data_item['courseid'] = $course->course_id;
-                        $data_item['finalgrade'] = $course->finalgrade;
-                        $data_item['timecompleted'] = strtotime(Carbon::now());
-                        $data_item['timeenrolled'] = strtotime(Carbon::now());
-                        $data_item['training_id'] = $data->trainning_id;
+//                    if (!empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
+                    $data_item['userid'] = $course->user_id;
+                    $data_item['courseid'] = $course->course_id;
+                    $data_item['finalgrade'] = $course->finalgrade;
+                    $data_item['timecompleted'] = strtotime(Carbon::now());
+                    $data_item['timeenrolled'] = strtotime(Carbon::now());
+                    $data_item['training_id'] = $data->trainning_id;
+                    $data_item['created_at'] = Carbon::now();
+                    $data_item['updated_at'] = Carbon::now();
 
-                        array_push($arrData, $data_item);
-                        $num++;
+                    array_push($arrData, $data_item);
+                    $num++;
 
-                    } else {
-                        $data_item['userid'] = $course->user_id;
-                        $data_item['courseid'] = $course->course_id;
-                        $data_item['finalgrade'] = $course->finalgrade;
-                        $data_item['timecompleted'] = strtotime(Carbon::now());
-                        $data_item['timeenrolled'] = strtotime(Carbon::now());
-                        $data_item['training_id'] = $data->trainning_id;
-
-                        array_push($arrData, $data_item);
-                        $num++;
-
-                    }
+//                    } else {
+//                        $data_item['userid'] = $course->user_id;
+//                        $data_item['courseid'] = $course->course_id;
+//                        $data_item['finalgrade'] = $course->finalgrade;
+//                        $data_item['timecompleted'] = strtotime(Carbon::now());
+//                        $data_item['timeenrolled'] = strtotime(Carbon::now());
+//                        $data_item['training_id'] = $data->trainning_id;
+//
+//                        array_push($arrData, $data_item);
+//                        $num++;
+//
+//                    }
                 }
 
                 if ($num >= $limit) {
@@ -227,6 +232,64 @@ class TaskController extends Controller
         }
     }
 
+    //region them user duoc enrol vao cac course ko nam trong KNL vao bang trainning_user
+    // phat sinh do yeu cau cua KH muon khoa hoc don le cung duoc cap chung chi
+    // he thong dang tao case moi khoa hoc don le duoc tao ra măc dinh sinh them 1 KNL nhung ko hien thi trong he thong
+
+
+    public function addSingleUserToTrainningUser()
+    {
+        $lstTrainning = DB::table('tms_trainning_courses as ttc')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.deleted', '=', 2)//cac khoa don le, ko hien thi
+            ->where('ttc.deleted', '=', 0)
+            ->select('ttc.trainning_id', 'ttc.course_id')->get();
+
+//        Log::info(json_encode($lstTrainning));
+
+        foreach ($lstTrainning as $data) {
+
+            //query lay tat ca nguoi dung duoc ghi danh vao khoa hoc khong nam trong bang trainning_user
+            $query_sql = '(select mu.id from mdl_user_enrolments as mue 
+                            inner join mdl_user as mu on mu.id = mue.userid 
+                            inner join mdl_enrol as me on me.id = mue.enrolid 
+                            inner join mdl_course as mc on mc.id = me.courseid 
+                            left join tms_traninning_users as ttu on ttu.user_id = mu.id and ttu.trainning_id = ' . $data->trainning_id . ' 
+                            where mc.id = ' . $data->course_id . ' and ttu.trainning_id is null)';
+
+            $query_sql = DB::raw($query_sql);
+            $lstUser = DB::select($query_sql);
+
+            $queryArray = [];
+            $num = 0;
+            $limit = 300;
+
+            foreach ($lstUser as $user) {
+                $queryItem = [];
+                $queryItem['trainning_id'] = $data->trainning_id;
+                $queryItem['user_id'] = $user->id;
+                $queryItem['created_at'] = Carbon::now();
+                $queryItem['updated_at'] = Carbon::now();
+
+                array_push($queryArray, $queryItem);
+
+                $num++;
+                if ($num >= $limit) {
+                    TmsTrainningUser::insert($queryArray);
+                    $num = 0;
+                    $queryArray = [];
+                }
+            }
+
+            TmsTrainningUser::insert($queryArray);
+            $num = 0;
+            $queryArray = [];
+
+            usleep(200);
+        }
+    }
+    //endregion
+
     //danh sach hoc vien da hoan thanh KNL
     public function userCompleteTrainning()
     {
@@ -235,7 +298,7 @@ class TaskController extends Controller
             ->select('ttc.trainning_id', DB::raw('count(ttc.course_id) as total_course'))
             ->groupBy('ttc.trainning_id')->get();
 
-        foreach ($lstTrainning as $data) {
+        foreach ($lstTrainning as $key => $data) {
 
             $lstData = DB::table('course_completion as cc')
                 ->leftJoin('tms_trainning_complete as ttc', function ($join) {
@@ -248,16 +311,18 @@ class TaskController extends Controller
                 ->groupBy('cc.training_id', 'cc.userid')->get();
 
 
-            $arrData = [];
-            $data_item = [];
 
+            $arrData = [];
             $num = 0;
             $limit = 200;
 
             foreach ($lstData as $course) {
                 if ($course->total_course_cp == $data->total_course) {
+                    $data_item = [];
                     $data_item['trainning_id'] = $data->trainning_id;
                     $data_item['user_id'] = $course->userid;
+                    $data_item['created_at'] = Carbon::now();
+                    $data_item['updated_at'] = Carbon::now();
 
                     array_push($arrData, $data_item);
                     $num++;
@@ -265,7 +330,7 @@ class TaskController extends Controller
 
                 if ($num >= $limit) {
                     TmsTrainningComplete::insert($arrData);
-                    insertCompetencyCompleted($arrData);
+                    $this->insertCompetencyCompleted($arrData);
                     $num = 0;
                     $arrData = [];
                 }
@@ -274,7 +339,7 @@ class TaskController extends Controller
             }
 
             TmsTrainningComplete::insert($arrData);
-            insertCompetencyCompleted($arrData);
+            $this->insertCompetencyCompleted($arrData);
             sleep(1);
         }
 
@@ -309,6 +374,8 @@ class TaskController extends Controller
             $data_item['code'] = $certificatecode;
             $data_item['status'] = 1;
             $data_item['timecertificate'] = time();
+            $data_item['created_at'] = Carbon::now();
+            $data_item['updated_at'] = Carbon::now();
 
             array_push($arrDataST, $data_item);
             $num++;
@@ -341,6 +408,8 @@ class TaskController extends Controller
                 $data_item_his['course_id'] = $his->course_id;
                 $data_item_his['course_code'] = $his->course_code;
                 $data_item_his['course_name'] = $his->course_name;
+                $data_item_his['created_at'] = Carbon::now();
+                $data_item_his['updated_at'] = Carbon::now();
 
                 array_push($arr_data_his, $data_item_his);
             }
@@ -356,7 +425,8 @@ class TaskController extends Controller
     #endregion
 
     //insert training into tms_nofitications table
-    public function insertCompetencyCompleted($arrayData){
+    public function insertCompetencyCompleted($arrayData)
+    {
         $data = array();
         foreach ($arrayData as $user_item) {
             if (!array_key_exists($user_item['user_id'], $data)) {
@@ -370,7 +440,7 @@ class TaskController extends Controller
                     'created_at' => date('Y-m-d H:i:s', time()),
                     'updated_at' => date('Y-m-d H:i:s', time()),
                 );
-                $training = TmsTrainningProgram::where('id','=',$user_item['trainning_id'])
+                $training = TmsTrainningProgram::where('id', '=', $user_item['trainning_id'])
                     ->get()->first();
                 $element['content'] = array(
                     array(
@@ -383,9 +453,9 @@ class TaskController extends Controller
                 );
                 $data[$user_item['user_id']] = $element;
             } else { // user exists in array, just update content element
-                $training = TmsTrainningProgram::where('id','=',$user_item['trainning_id'])
+                $training = TmsTrainningProgram::where('id', '=', $user_item['trainning_id'])
                     ->get()->first();
-                if(!is_null($training)){
+                if (!is_null($training)) {
                     $data[$user_item['user_id']]['content'][] = array(
                         'training_id' => $training->id,
                         'training_name' => $training->name,
@@ -1480,6 +1550,10 @@ class TaskController extends Controller
                         $queryItem = [];
                         $queryItem['trainning_id'] = $trainning;
                         $queryItem['user_id'] = $user;
+                        $queryItem['created_at'] = Carbon::now();
+                        $queryItem['updated_at'] = Carbon::now();
+
+
                         array_push($queryArray, $queryItem);
                         $num++;
                         if ($num >= $limit) {
@@ -1558,6 +1632,10 @@ class TaskController extends Controller
 
                         $queryItem['trainning_id'] = $trainning->trainning_id;
                         $queryItem['user_id'] = $user;
+                        $queryItem['created_at'] = Carbon::now();
+                        $queryItem['updated_at'] = Carbon::now();
+
+
                         array_push($queryArray, $queryItem);
                         $num++;
 
@@ -1595,6 +1673,9 @@ class TaskController extends Controller
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
                             $queryItem['user_id'] = $user;
+                            $queryItem['created_at'] = Carbon::now();
+                            $queryItem['updated_at'] = Carbon::now();
+
                             array_push($queryArray, $queryItem);
                             $num++;
 
@@ -1638,6 +1719,9 @@ class TaskController extends Controller
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
                             $queryItem['user_id'] = $user;
+                            $queryItem['created_at'] = Carbon::now();
+                            $queryItem['updated_at'] = Carbon::now();
+
                             array_push($queryArray, $queryItem);
                             $num++;
 
@@ -1701,6 +1785,9 @@ class TaskController extends Controller
                         $queryItem = [];
                         $queryItem['trainning_id'] = $trainning;
                         $queryItem['user_id'] = $user;
+                        $queryItem['created_at'] = Carbon::now();
+                        $queryItem['updated_at'] = Carbon::now();
+
                         array_push($queryArray, $queryItem);
                         $num++;
                         if ($num >= $limit) {
@@ -1779,6 +1866,9 @@ class TaskController extends Controller
 
                         $queryItem['trainning_id'] = $trainning->trainning_id;
                         $queryItem['user_id'] = $user;
+                        $queryItem['created_at'] = Carbon::now();
+                        $queryItem['updated_at'] = Carbon::now();
+
                         array_push($queryArray, $queryItem);
                         $num++;
 
@@ -1816,6 +1906,9 @@ class TaskController extends Controller
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
                             $queryItem['user_id'] = $user;
+                            $queryItem['created_at'] = Carbon::now();
+                            $queryItem['updated_at'] = Carbon::now();
+
                             array_push($queryArray, $queryItem);
                             $num++;
 
@@ -1859,6 +1952,9 @@ class TaskController extends Controller
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
                             $queryItem['user_id'] = $user;
+                            $queryItem['created_at'] = Carbon::now();
+                            $queryItem['updated_at'] = Carbon::now();
+
                             array_push($queryArray, $queryItem);
                             $num++;
 
@@ -1928,6 +2024,8 @@ class TaskController extends Controller
                         $data_item['code'] = $certificatecode;
                         $data_item['status'] = 1;
                         $data_item['timecertificate'] = time();
+                        $data_item['created_at'] = Carbon::now();
+                        $data_item['updated_at'] = Carbon::now();
 
                         array_push($arr_data, $data_item);
                         $num++;
