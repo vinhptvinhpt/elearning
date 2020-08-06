@@ -56,7 +56,7 @@ class EmailTemplateController extends Controller
     public function apiGetListEmailTemplate()
     {
         //load
-        MailController::loadConfiguration();
+        $this->deleteOldConfigs();
         //
         $data = [];
         $configs = TmsConfigs::where('editor', 'checkbox')->get();
@@ -70,6 +70,28 @@ class EmailTemplateController extends Controller
             }
         }
         return response()->json($data);
+    }
+
+    public function deleteOldConfigs(){
+        //set old configs (using in bgt)
+        $configsDelete = array(
+            TmsNotification::ENROL => TmsConfigs::ENABLE,
+            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
+            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE
+        );
+        $pdo = DB::connection()->getPdo();
+        if ($pdo) {
+            //delete all old configs (using in bgt)
+            TmsConfigs::whereIn('target', array_keys($configsDelete))->delete();
+        }
+        return true;
     }
 
     public function viewEmailTemplateDetail($name_file)
