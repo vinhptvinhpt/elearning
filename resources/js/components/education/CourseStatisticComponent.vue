@@ -205,15 +205,14 @@
                                                     <td>{{ (current-1)*row+(index+1) }}</td>
                                                     <td>
                                                         {{ cu.username }}
-                                                    <td class=" mobile_hide">{{ cu.lastname }} {{cu.firstname}}</td>
+                                                    <td class=" mobile_hide">{{ cu.fullname }}</td>
                                                     <td class="text-center">
                                                         <div v-if="total_course>0">
                                                             <div v-if="cu.user_course_learn==0">
                                                                 0
                                                             </div>
                                                             <div v-else>
-                                                                {{
-                                                                ((cu.user_course_learn*100)/total_course).toFixed(2)}}
+                                                                {{ ((cu.user_course_learn*100)/total_course).toFixed(2)}}
                                                             </div>
 
                                                         </div>
@@ -462,8 +461,7 @@
                                                     <td>{{ index+1 }}</td>
                                                     <td>{{ JSON.parse(att.other).modulename }}</td>
                                                     <!--                          <td>{{ isset(JSON.parse(att.other).name) ? JSON.parse(att.other).name : att.name }}</td>-->
-                                                    <td v-if="JSON.parse(att.other) !== undefined">{{
-                                                        JSON.parse(att.other).name }}
+                                                    <td v-if="JSON.parse(att.other) !== undefined">{{ JSON.parse(att.other).name }}
                                                     </td>
                                                     <td v-else>{{ att.name }}</td>
                                                     <td>{{ att.action }}</td>
