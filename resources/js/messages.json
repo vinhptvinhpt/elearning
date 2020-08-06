@@ -999,7 +999,9 @@
         "tat_ca": "All",
         "chua_tra_loi": "Non reply",
         "dong_y": "Accepted",
-        "id": "ID"
+        "id": "ID",
+        "remind_certificate": "Remind Certificate",
+        "invite_student": "Invite Student"
     },
     "vi.keys": {
         "language": "",
@@ -1992,6 +1994,8 @@
         "tat_ca": "Tất cả",
         "chua_tra_loi": "Chưa trả lời",
         "dong_y": "Đồng ý",
-        "id": "ID"
+        "id": "ID",
+        "remind_certificate": "Nhắc nhở chứng chỉ",
+        "invite_student": "Mời học viên"
     }
 }

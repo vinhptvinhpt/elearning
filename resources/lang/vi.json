@@ -314,7 +314,6 @@
   "ho_ten": "Họ và tên",
   "thoi_gian": "Thời gian",
     "ban_khong_co_quyen_xoa": "Bạn không có quyền xóa",
-    "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý",
     "ton_tai_hoc_vien_trong_khung_nang_luc_khong_the_xoa": "Tồn tại học viên trong khung năng lực. Không thể xóa!",
     "xem_huong_dan_cho_quan_ly": "Xem hướng dẫn cho quản lý",
     "assigned_course" : "Khóa học được ghi danh",
@@ -323,5 +322,8 @@
     "remind_exam" : "Nhắc nhở bài kiểm tra",
     "invitation_offline_course" : "Lời mời tham gia khóa học trực tiếp",
     "forgot_password": "Quên mật khẩu",
-    "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn"
+    "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
+    "quen_mat_khau": "Quên mật khẩu",
+    "remind_certificate": "Nhắc nhở chứng chỉ",
+    "invite_student": "Mời học viên"
 }

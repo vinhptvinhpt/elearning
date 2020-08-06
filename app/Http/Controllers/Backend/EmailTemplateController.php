@@ -41,6 +41,7 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Mockery\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use App\Http\Controllers\Api\MailController;
 
 set_time_limit(0);
 
@@ -54,6 +55,9 @@ class EmailTemplateController extends Controller
 
     public function apiGetListEmailTemplate()
     {
+        //load
+        MailController::loadConfiguration();
+        //
         $data = [];
         $configs = TmsConfigs::where('editor', 'checkbox')->get();
         if (count($configs) != 0) {
@@ -123,6 +127,12 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::COMPLETED_FRAME:
                 $label = __('chung_chi_hoan_thanh');
+                break;
+            case TmsNotification::INVITE_STUDENT:
+                $label = __('invite_student');
+                break;
+            case TmsNotification::REMIND_CERTIFICATE:
+                $label = __('remind_certificate');
                 break;
             default:
                 $label = '';

@@ -39,9 +39,9 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-if="source_data.length == 0">
-                                                <td colspan="3">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
-                                            </tr>
+<!--                                            <tr v-if="source_data.length == 0">-->
+<!--                                                <td colspan="3">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>-->
+<!--                                            </tr>-->
                                             <tr v-for="(template,index) in source_data">
                                                 <td>{{ index+1 }}</td>
                                                 <td>
