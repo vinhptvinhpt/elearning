@@ -2143,6 +2143,7 @@ class BussinessRepository implements IBussinessInterface
 
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
             ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
@@ -2155,6 +2156,7 @@ class BussinessRepository implements IBussinessInterface
                 'u.username',
                 'u.firstname',
                 'u.lastname',
+                DB::raw("CONCAT(u.lastname,' ',u.firstname) AS fullname"),
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
@@ -2167,7 +2169,7 @@ class BussinessRepository implements IBussinessInterface
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
             );
         if ($keyword) {
-            $lstUserCourse = $lstUserCourse->where('u.username', 'like', '%' . $keyword . '%');
+            $lstUserCourse = $lstUserCourse->whereRaw('( u.username like "%' . $keyword . '%" OR tud.fullname like "%' . $keyword . '%" )');
         }
 
         $lstUserCourse = $lstUserCourse->orderBy('u.id', 'desc')->groupBy('u.id');
