@@ -38,7 +38,8 @@ mc.estimate_duration,
     toe.position as teacher_position,
     toe.description as teacher_description,
     ttp.name as training_name,
-    ttp.deleted as training_deleted
+    ttp.deleted as training_deleted,
+    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
@@ -52,8 +53,9 @@ mc.estimate_duration,
   where me.enrol = \'manual\'
   and mc.deleted = 0
   and mc.visible = 1
-  and mc.category <> 2
+  and mc.category NOT IN (2,7)
   and mue.userid = '.$USER->id;
+$sql .= ' group by mc.id'; //cần để tạo tên giáo viên
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -84,7 +86,7 @@ else if(strpos(strtolower($organization->code), 'av') === 0){
 }
 
 $courses_current = array();
-$courses_all_required = array();
+$courses_required = array();
 $courses_completed = array();
 $courses_others = array();
 $courses_soft_skills = array();
@@ -99,11 +101,9 @@ foreach ($courses as $course){
     elseif ($course->numoflearned/$course->numofmodule == 1){
         push_course($courses_completed, $course);
     }
-    //then required
-    elseif ($course->training_name) {
-        if ($course->training_deleted == 0) {
-            push_course($courses_all_required, $course);
-        }
+    //then required = khoa hoc trong khung nang luc
+    elseif ($course->training_name &&  $course->training_deleted == 0) {
+        push_course($courses_required, $course);
     }
     //the last is other courses
     else {
@@ -124,17 +124,13 @@ foreach ($courses as $course){
 
 //    if ($course->category == 14) {
 //        if (
-//            !array_key_exists($course->id, $courses_all_required)
+//            !array_key_exists($course->id, $courses_required)
 //            && !array_key_exists($course->id, $courses_completed)
 //            && !array_key_exists($course->id, $courses_current)
 //        ) {
 //            push_course($courses_others, $course);
 //        }
 //    }
-
-    if ($course->category == 3) {
-        push_course($courses_soft_skills, $course);
-    }
 }
 function push_course(&$array, $course) {
 //    $teacher = array();
@@ -160,7 +156,7 @@ function push_course(&$array, $course) {
 
 // Set session variables
 $_SESSION["courses_current"] = $courses_current;
-$_SESSION["courses_all_required"] = $courses_all_required;
+$_SESSION["courses_required"] = $courses_required;
 $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
@@ -239,7 +235,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 //echo shell_exec('select * from mdl_user limit 1');
 
 ?>
-
 
 <html>
 <title>Home</title>
@@ -853,7 +848,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         max-width: 100% !important;
     }
 </style>
-<body">
+<body>
 <div class="wrapper"><!-- wrapper -->
 <!--    --><?php //echo $OUTPUT->header(); ?>
 <!--    --><?php //echo  ?>
@@ -939,7 +934,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">All required courses</div>
-                                        <div class="text-number"><?php echo count($courses_all_required); ?></div>
+                                        <div class="text-number"><?php echo count($courses_required); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
@@ -1029,8 +1024,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                 <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
-                                        <?php if(count($courses_all_required) > 0) {  ?>
-                                            <?php $countBlock = 1; foreach ($courses_all_required as $course) {  ?>
+                                        <?php if(count($courses_required) > 0) {  ?>
+                                            <?php $countBlock = 1; foreach ($courses_required as $course) {  ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5" style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">

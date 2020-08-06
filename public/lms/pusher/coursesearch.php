@@ -38,7 +38,8 @@ mc.estimate_duration,
     toe.position as teacher_position,
     toe.description as teacher_description,
     ttp.name as training_name,
-    ttp.deleted as training_deleted
+    ttp.deleted as training_deleted,
+    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
@@ -52,7 +53,7 @@ mc.estimate_duration,
   where me.enrol = \'manual\'
   and mc.deleted = 0
   and mc.visible = 1
-  and mc.category <> 2
+  and mc.category NOT IN (2,7)
   and mue.userid = '.$USER->id;
 
         if ($category > 0) {
@@ -62,7 +63,10 @@ mc.estimate_duration,
             $sql .= ' and mc.fullname like N\'%'.$txtSearch.'%\'';
         }
 
+        $sql .= ' group by mc.id'; //cần để tạo tên giáo viên
+
         $courses = array_values($DB->get_records_sql($sql));
+
 
         foreach ($courses as $course){
             //current first
@@ -73,11 +77,9 @@ mc.estimate_duration,
             elseif ($course->numoflearned/$course->numofmodule == 1){
                 push_course($courses_completed, $course);
             }
-            //then required
-            elseif ($course->training_name) {
-                if ($course->training_deleted == 0) {
-                    push_course($courses_required, $course);
-                }
+            //then required = khoa hoc trong khung nang luc
+            elseif ($course->training_name && $course->training_deleted == 0) {
+                push_course($courses_required, $course);
             }
             //the last is other courses
             else {
@@ -115,7 +117,7 @@ inner join mdl_user_enrolments mue on me.id = mue.enrolid
 where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
-and mc.category <> 2
+and mc.category NOT IN (2,7)
 and mue.userid = '. $USER->id;
     if ($category > 0) {
         $sqlCountCoures .= ' and category = '.$category;
@@ -149,7 +151,7 @@ left join tms_organization tor on tor.id = toe.organization_id
 where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
-and mc.category <> 2
+and mc.category NOT IN (2,7)
 and mue.userid = ' . $USER->id;
 
 

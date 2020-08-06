@@ -19,10 +19,9 @@ if (strlen($type) != 0) {
     $category_params = $type;
 }
 
-//Hide client course
-
+//Hide course library, client course
 if ($progress != 1) {
-    $sqlGetCategories = 'select id, name from mdl_course_categories where id <> 7 AND id <> 2 AND id <> 14';
+    $sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 2)';
     $categories = array_values($DB->get_records_sql($sqlGetCategories));
 }
 
