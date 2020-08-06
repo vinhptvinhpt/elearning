@@ -2156,7 +2156,7 @@ class BussinessRepository implements IBussinessInterface
                 'u.username',
                 'u.firstname',
                 'u.lastname',
-                DB::raw("CONCAT(u.lastname,' ',u.firstname) AS fullname"),
+                'tud.fullname',
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
