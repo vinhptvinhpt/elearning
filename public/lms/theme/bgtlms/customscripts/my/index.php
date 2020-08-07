@@ -408,15 +408,24 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         width: 100%;
     }
 
-    .block-data .disable{
+    .block-data .disable {
         pointer-events: none;
     }
 
-    .div-info-progress-disable img{
-        /*height: 42% !important;*/
+    .div-info-progress-disable img {
+        /*height: 24% !important;*/
     }
 
-    .number-order{
+    .div-info-progress-disable span {
+        /*top: 10%;*/
+        /*right: 14%;*/
+    }
+
+    .div-info-progress-enable span{
+        top: 11% !important;
+    }
+
+    .number-order {
         width: 20px;
         height: 20px;
         border-radius: 50%;
@@ -431,7 +440,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         margin-left: 80%;
     }
 
-    .div-disable{
+    .div-disable {
         background-color: #fdf2f285;
         position: absolute;
         top: 0;
@@ -538,8 +547,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .block-item__image img {
-        width: 44%;
-        height: 32%;
+        width: 60px;
+        height: 60px;
         position: absolute;
         top: 3%;
         right: 3%;
@@ -550,7 +559,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-family: Nunito-Sans-Bold;
         color: #FFFFFF;
         position: absolute;
-        top: 12%;
+        top: 13%;
         right: 12%;
         letter-spacing: 1px;
     }
@@ -1121,54 +1130,59 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                 //get first training id of list course
                                                 $training_id = array_values($courses_traning)[0]->training_id;
                                                 //if exists in list competency => it learning => disable to learn
-                                                if(in_array($training_id, $competency_exists)){
+                                                if (in_array($training_id, $competency_exists)) {
                                                     $enable = 'disable';
                                                 }
-                                                foreach ($courses_traning as $course) {?>
-                                                <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
-                                                    <div class="block-data">
-                                                        <div class="block-items__item <?php echo $enable; ?>">
-                                                            <div class="block-item__image col-5"
-                                                                 style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-                                                                <div class="div-info-progress-<?php echo $enable; ?>">
-                                                                    <img src="<?php echo $_SESSION['component'] ?>"
-                                                                         alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
-                                                                </div>
-                                                                <div class="div-<?php echo $enable; ?>"></div>
-                                                            </div>
-                                                            <div class="block-item__content col-7">
-                                                                <div class="block-item__content_text">
-                                                                    <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
-                                                                       title="<?php echo $course->fullname; ?>"><p
-                                                                            class="title-course">
-                                                                            <i></i><?php echo $course->fullname; ?></p></a>
-                                                                    <div class="info-course">
-                                                                        <a class="teacher" data-toggle="modal"
-                                                                           data-target="#exampleModal"
-                                                                           data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
-                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
-                                                                           data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                            <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
-                                                                        </a>
-                                                                        <p class="units"><i class="fa fa-file"
-                                                                                            aria-hidden="true"></i> <?php echo $course->training_name; ?>
-                                                                        </p>
-                                                                        <p class="units"><i class="fa fa-clock-o"
-                                                                                            aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                            hours</p>
+                                                foreach ($courses_traning as $course) { ?>
+                                                    <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
+                                                        <div class="block-data">
+                                                            <div class="block-items__item <?php echo $enable; ?>">
+                                                                <div class="block-item__image col-5"
+                                                                     style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                                    <div
+                                                                        class="div-info-progress-<?php echo $enable; ?>">
+                                                                        <img src="<?php echo $_SESSION['component'] ?>"
+                                                                             alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
                                                                     </div>
+                                                                    <div class="div-<?php echo $enable; ?>"></div>
                                                                 </div>
-                                                                <p class="number-order"><?php echo $stt; ?></p>
-                                                                <!--                                                            <div class="block-item__content_btn">-->
-                                                                <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
-                                                                <?php //echo $course->id; ?><!--">Learn More</a></button>-->
-                                                                <!--                                                            </div>-->
+                                                                <div class="block-item__content col-7">
+                                                                    <div class="block-item__content_text">
+                                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
+                                                                           title="<?php echo $course->fullname; ?>"><p
+                                                                                class="title-course">
+                                                                                <i></i><?php echo $course->fullname; ?>
+                                                                            </p></a>
+                                                                        <div class="info-course">
+                                                                            <a class="teacher" data-toggle="modal"
+                                                                               data-target="#exampleModal"
+                                                                               data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
+                                                                               data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                               data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                               data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                                <i class="fa fa-user"
+                                                                                   aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                            </a>
+                                                                            <p class="units"><i class="fa fa-file"
+                                                                                                aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                            </p>
+                                                                            <p class="units"><i class="fa fa-clock-o"
+                                                                                                aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
+                                                                                hours</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="number-order"><?php echo $stt; ?></p>
+                                                                    <!--                                                            <div class="block-item__content_btn">-->
+                                                                    <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
+                                                                    <?php //echo $course->id; ?><!--">Learn More</a></button>-->
+                                                                    <!--                                                            </div>-->
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <?php $countBlock++; $enable = 'disable'; $stt++;
+                                                    <?php $countBlock++;
+                                                    $enable = 'disable';
+                                                    $stt++;
                                                     if ($countBlock == 5) break;
                                                 }
                                                 if ($countBlock == 5) break;
