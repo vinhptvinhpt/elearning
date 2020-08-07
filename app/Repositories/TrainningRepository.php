@@ -12,6 +12,8 @@ use App\MdlEnrol;
 use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\Role;
+use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\TmsTrainningCategory;
 use App\TmsTrainningCourse;
 use App\TmsTrainningGroup;
@@ -22,6 +24,7 @@ use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -683,6 +686,35 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                             'course_id' => $course->id,
                             'order_no' => $next_max
                         ]);
+
+
+                        $user_id = Auth::id();
+                        //Check role teacher and enrol for creator of course
+                        $current_user_roles_and_slugs = checkRole();
+                        //If user ís not a teacher, assign as teacher
+                        $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
+                        if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
+                            add_user_by_role($user_id, $role_teacher->id);
+                            enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+                        }
+                        //Enrol user to newly created course as teacher
+                        enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
+
+                        //Add newly course to phân quyền dữ liệu
+                        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+                            //admin do nothing
+                        } else {
+                            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+                            if ($checkRoleOrg != 0) {
+                                $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                                if (isset($org_role)) {
+                                    $new_relation = new TmsRoleCourse();
+                                    $new_relation->role_id = $org_role->role_id;
+                                    $new_relation->course_id = $course->id;
+                                    $new_relation->save();
+                                }
+                            }
+                        }
 
                         //write log to mdl_logstore_standard_log
 //                        $app_name = Config::get('constants.domain.APP_NAME');

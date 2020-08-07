@@ -72,9 +72,9 @@
                                         <select v-model="row"
                                                 class="custom-select custom-select-sm form-control form-control-sm"
                                                 @change="getUserNeedEnrol(1)">
-                                          <option value="5">5</option>
                                           <option value="10">10</option>
                                           <option value="50">50</option>
+                                          <option value="100">100</option>
                                         </select>
                                       </label>
                                     </div>
@@ -88,7 +88,7 @@
                                   <tr>
                                     <th>{{trans.get('keys.stt')}}</th>
                                     <th>{{trans.get('keys.username')}}</th>
-                                    <th class=" mobile_hide" style="width: 30%;">
+                                    <th class=" mobile_hide">
                                       {{trans.get('keys.ho_ten')}}
                                     </th>
                                     <th class="text-center"><input type="checkbox" v-model="allSelected" @click="selectAllEnrol()"></th>
@@ -159,9 +159,9 @@
                                         <select v-model="row_crr"
                                                 class="custom-select custom-select-sm form-control form-control-sm"
                                                 @change="getCurrentUserEnrol(1)">
-                                          <option value="5">5</option>
                                           <option value="10">10</option>
                                           <option value="50">50</option>
+                                          <option value="100">100</option>
                                         </select>
                                       </label>
                                       <label>{{trans.get('keys.trang_thai')}}
@@ -184,7 +184,7 @@
                                   <tr>
                                     <th>{{trans.get('keys.stt')}}</th>
                                     <th>{{trans.get('keys.username')}}</th>
-                                    <th class=" mobile_hide" style="width: 30%;">
+                                    <th class=" mobile_hide">
                                       {{trans.get('keys.ho_ten')}}
                                     </th>
                                     <th class="text-center">{{trans.get('keys.trang_thai')}}</th>
@@ -269,13 +269,13 @@
         keyword: '',
         current: 1,
         totalPages: 0,
-        row: 5,
+        row: 10,
 
         currentUserEnrols: [],
         keyword_curr: '',
         current_page: 1,
         totalPages_crr: 0,
-        row_crr: 5,
+        row_crr: 10,
         invite_status: '',
 
         role_id: 5,
