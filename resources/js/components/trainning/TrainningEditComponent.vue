@@ -204,7 +204,7 @@
                     <div class="table-wrap">
 
                       <div class="row">
-                        <div class="col-lg-5 col-sm-10 mb-3">
+                        <div class="col-lg-5 col-md-5 col-sm-12 mb-3">
                           <label>
                             <h6 class="hk-sec-title">
                               {{trans.get('keys.danh_sach_khoa_hoc_mau')}}</h6>
@@ -283,7 +283,7 @@
                           </div>
 
                         </div>
-                        <div class="col-sm-2" style="text-align: center;">
+                        <div class="col-lg-1 col-md-2 col-sm-12" style="text-align: center;">
                           <button :title="trans.get('keys.dua_vao_knl')"
                                   data-toggle="modal"
                                   style="margin-top: 30px;"
@@ -303,92 +303,123 @@
                                                         <span class="btn-icon-wrap"><i
                                                           class="fal fa-arrow-alt-left"></i></span>
                           </button>
-
                         </div>
-                        <div class="col-lg-5">
+                        <div class="col-lg-6 col-md-5 col-sm-12">
                           <label>
                             <h6 class="hk-sec-title">
                               {{trans.get('keys.danh_sach_khoa_hoc_trong_knl')}}</h6>
                           </label>
-                          <div class="row">
-                            <div class="col-12">
-                              <form v-on:submit.prevent="getListCourseTrainning(1)">
-                                <div class="d-flex flex-row form-group">
-                                  <input v-model="keyword_tn" type="text"
-                                         class="form-control search_text"
-                                         :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                                  <button type="button" id="btnFilter1"
-                                          class="btn btn-primary btn-sm"
-                                          @click="getListCourseTrainning(1)">
-                                    {{trans.get('keys.tim')}}
-                                  </button>
+                          <b-card>
+                            <b-tabs card>
+                              <b-tab :title="trans.get('keys.danh_sach')" active>
+                                <br/>
+                                <div class="row">
+                                  <div class="col-12">
+                                    <form v-on:submit.prevent="getListCourseTrainning(1)">
+                                      <div class="d-flex flex-row form-group">
+                                        <input v-model="keyword_tn" type="text"
+                                               class="form-control search_text"
+                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                                        <button type="button" id="btnFilter1"
+                                                class="btn btn-primary btn-sm"
+                                                @click="getListCourseTrainning(1)">
+                                          {{trans.get('keys.tim')}}
+                                        </button>
+                                      </div>
+                                    </form>
+                                  </div>
                                 </div>
-                              </form>
-                            </div>
-                          </div>
+                                <div class="row">
+                                  <div class="col-6 dataTables_wrapper">
+                                    <div class="dataTables_length">
+                                      <label>{{trans.get('keys.hien_thi')}}
+                                        <select v-model="row_tn"
+                                                class="custom-select custom-select-sm form-control form-control-sm"
+                                                @change="getListCourseTrainning(1)">
+                                          <option value="5">5</option>
+                                          <option value="10">10</option>
+                                          <option value="50">50</option>
+                                        </select>
+                                      </label>
+                                    </div>
+                                  </div>
+                                </div>
+                                <br/>
+                                <div class="table-responsive table-sm">
+                                  <table id="datable_2" class="table_res">
+                                    <thead>
+                                    <tr>
+                                      <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                      <th style="width: 40%;"> {{trans.get('keys.ma_khoa_hoc')}}</th>
+                                      <th>
+                                        {{trans.get('keys.ten_khoa_hoc')}}
+                                      </th>
+                                      <th style="width: 10%;">{{trans.get('keys.hanh_dong')}}</th>
+                                      <th class="text-center"><input type="checkbox"
+                                                                     v-model="allSelectedRemove"
+                                                                     @click="selectAllRemoveEnrol()"
+                                      ></th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="(user,index) in trainningCourses">
+                                      <td>{{ (current_tn-1)*row_tn+(index+1) }}</td>
+                                      <td>{{ user.shortname }}</td>
+                                      <td>{{ user.fullname }}</td>
+                                      <td>
+                                        <a :title="trans.get('keys.clone_noi_dung')"
+                                           class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                           :href="lms_url + user.id+'&importid='+user.sample_id"
+                                        ><span class="btn-icon-wrap"><i
+                                          class="fal fa-book-open"></i></span></a>
+                                      </td>
+                                      <td class="text-center">
+                                        <input type="checkbox" :value="user.id"
+                                               v-model="userRemoveEnrol"
+                                               @change="onCheckboxRemoveEnrol()"/>
 
-                          <div class="row">
-                            <div class="col-6 dataTables_wrapper">
-                              <div class="dataTables_length">
-                                <label>{{trans.get('keys.hien_thi')}}
-                                  <select v-model="row_tn"
-                                          class="custom-select custom-select-sm form-control form-control-sm"
-                                          @change="getListCourseTrainning(1)">
-                                    <option value="5">5</option>
-                                    <option value="10">10</option>
-                                    <option value="50">50</option>
-                                  </select>
-                                </label>
-                              </div>
-                            </div>
-                          </div>
-                          <br/>
+                                      </td>
+                                    </tr>
+                                    </tbody>
+                                    <tfoot>
 
-                          <div class="table-responsive table-sm">
-                            <table id="datable_2" class="table_res">
-                              <thead>
-                              <tr>
-                                <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
-                                <th style="width: 40%;"> {{trans.get('keys.ma_khoa_hoc')}}</th>
-                                <th>
-                                  {{trans.get('keys.ten_khoa_hoc')}}
-                                </th>
-                                <th style="width: 10%;">{{trans.get('keys.hanh_dong')}}</th>
-                                <th class="text-center"><input type="checkbox"
-                                                               v-model="allSelectedRemove"
-                                                               @click="selectAllRemoveEnrol()"
-                                ></th>
-                              </tr>
-                              </thead>
-                              <tbody>
-                              <tr v-for="(user,index) in trainningCourses">
-                                <td>{{ (current_tn-1)*row_tn+(index+1) }}</td>
-                                <td>{{ user.shortname }}</td>
-                                <td>{{ user.fullname }}</td>
-                                <td>
-                                  <a :title="trans.get('keys.clone_noi_dung')"
-                                     class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                     :href="lms_url + user.id+'&importid='+user.sample_id"
-                                  ><span class="btn-icon-wrap"><i
-                                    class="fal fa-book-open"></i></span></a>
-                                </td>
-                                <td class="text-center">
-                                  <input type="checkbox" :value="user.id"
-                                         v-model="userRemoveEnrol"
-                                         @change="onCheckboxRemoveEnrol()"/>
+                                    </tfoot>
+                                  </table>
 
-                                </td>
-                              </tr>
-                              </tbody>
-                              <tfoot>
+                                  <v-pagination v-model="current_tn" @input="onPageChangeCurr"
+                                                :page-count="totalPages_tn"
+                                                :classes=$pagination.classes></v-pagination>
+                                </div>
+                              </b-tab>
+                              <b-tab :title="trans.get('keys.thu_tu')">
+                                <div class="row text-center action-order">
+                                    <a @click="sort" title="Reset Order" class="btn btn-sm btn-icon btn-danger btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-refresh"></i></span></a>
+                                    <a @click="saveOrder" title="Save Order" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-check"></i></span></a>
+                                </div>
+                                <div class="row">
+                                  <draggable
+                                    class="list-group"
+                                    tag="ul"
+                                    v-model="list"
+                                    v-bind="dragOptions"
+                                    @start="drag = true"
+                                    @end="drag = false">
 
-                              </tfoot>
-                            </table>
+                                    <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+                                      <li class="list-group-item" v-for="(element, index)  in list" :key="element.order_no">
+                                        #{{index + 1}} | <b>{{ element.shortname }}</b> | {{element.fullname}}
+                                      </li>
+                                    </transition-group>
 
-                            <v-pagination v-model="current_tn" @input="onPageChangeCurr"
-                                          :page-count="totalPages_tn"
-                                          :classes=$pagination.classes></v-pagination>
-                          </div>
+                                  </draggable>
+                                </div>
+                                <div class="row text-center action-order">
+                                  <a @click="sort" title="Reset Order" class="btn btn-sm btn-icon btn-danger btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-refresh"></i></span></a>
+                                  <a @click="saveOrder" title="Save Order" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-check"></i></span></a>
+                                </div>
+                              </b-tab>
+                            </b-tabs>
+                          </b-card>
 
                         </div>
                       </div>
@@ -409,11 +440,24 @@
 
 <script>
   import datePicker from 'vue-bootstrap-datetimepicker'
+  import draggable from 'vuedraggable'
+
+  // const message = [
+  //   "vue.draggable",
+  //   "draggable",
+  //   "component",
+  //   "for",
+  //   "vue.js 2.0",
+  //   "based",
+  //   "on",
+  //   "Sortablejs"
+  // ];
 
   export default {
     props: ['id'],
     components: {
       datePicker,
+      draggable
     },
     data() {
       return {
@@ -474,10 +518,37 @@
         organization_parent_list: [],
 
         language: this.trans.get('keys.language'),
-        lms_url: '/lms/backup/import.php?id='
+        lms_url: '/lms/backup/import.php?id=',
+        list: [],
+
+        // list: message.map((name, index) => {
+        //   return { name, order: index + 1 };
+        // }),
+        drag: false
       }
     },
     methods: {
+      sort() {
+        //this.list = this.list.sort((a, b) => a.order - b.order);
+        this.list.sort(sortArray);
+      },
+      saveOrder() {
+        axios.post('/api/trainning/saveorder', {
+          training_id: this.id,
+          list: this.list
+        })
+          .then(response => {
+            if (response.data.status) {
+              toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+            } else {
+              toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
+            }
+          })
+          .catch(error => {
+            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+          });
+        this.getListCourseTrainning();
+      },
       getRoles() {
         axios.post('/system/user/list_role')
           .then(response => {
@@ -594,6 +665,7 @@
         })
           .then(response => {
             this.trainningCourses = response.data.data.data;
+            this.list = response.data.allData;
             this.current_tn = response.data.pagination.current_page;
             this.totalPages_tn = response.data.pagination.total;
           })
@@ -722,10 +794,54 @@
     },
     updated() {
       //this.setFileInput(); //Not work
+    },
+    computed: {
+      dragOptions() {
+        return {
+          animation: 200,
+          group: "description",
+          disabled: false,
+          ghostClass: "ghost"
+        };
+      }
     }
   }
+
+  function sortArray(a, b) {
+    if (a.order_no === b.order_no) {
+      return 0;
+    }
+    else {
+      return (a.order_no < b.order_no) ? -1 : 1;
+    }
+  }
+
 </script>
 
 <style scoped>
-
+  .flip-list-move {
+    transition: transform 0.5s;
+  }
+  .no-move {
+    transition: transform 0s;
+  }
+  .ghost {
+    opacity: 0.5;
+    background: #c8ebfb;
+  }
+  .list-group {
+    width: 100%;
+    min-height: 20px;
+  }
+  .list-group-item {
+    cursor: move;
+    border-top-width: 1px;
+  }
+  .list-group-item i {
+    cursor: pointer;
+  }
+  .action-order {
+    display: block;
+    margin: 20px 0;
+  }
 </style>
