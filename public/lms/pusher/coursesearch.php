@@ -68,11 +68,12 @@ mc.estimate_duration,
 
     $courses = array_values($DB->get_records_sql($sql));
 
+    $competency_exists = array();
 
-    $stt_count = 1;
     foreach ($courses as $course) {
         //current first
         if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            array_push($competency_exists, $course->training_id);
             push_course($courses_current, $course);
         } //then complete
         elseif ($course->numoflearned / $course->numofmodule == 1) {
@@ -107,7 +108,7 @@ mc.estimate_duration,
 
     $total = count($all_courses);
 
-    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total]);
+    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 
 } else {
     //course available

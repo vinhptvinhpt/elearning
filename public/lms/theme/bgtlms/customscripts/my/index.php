@@ -1154,10 +1154,70 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                     <?php $countBlock++;
                                                     $enable = 'disable';
                                                     $stt++;
+                                                    break;
                                                     if ($countBlock == 5) break;
                                                 }
                                                 if ($countBlock == 5) break;
-                                            } ?>
+                                            };
+                                            foreach ($courses_required as $courses_traning) {
+                                                $stt = 2;
+                                                array_shift($courses_traning);
+                                                foreach ($courses_traning as $course) { ?>
+                                                    <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
+                                                        <div class="block-data">
+                                                            <div class="block-items__item disable">
+                                                                <div class="block-item__image col-5"
+                                                                     style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                                    <div
+                                                                        class="div-info-progress-disable">
+                                                                        <img src="<?php echo $_SESSION['component'] ?>"
+                                                                             alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                    </div>
+                                                                    <div class="div-disable"></div>
+                                                                </div>
+                                                                <div class="block-item__content col-7">
+                                                                    <div class="block-item__content_text">
+                                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
+                                                                           title="<?php echo $course->fullname; ?>"><p
+                                                                                class="title-course">
+                                                                                <i></i><?php echo $course->fullname; ?>
+                                                                            </p></a>
+                                                                        <div class="info-course">
+                                                                            <?php if (!empty($course->teacher_name)) { ?>
+                                                                                <a class="teacher" data-toggle="modal"
+                                                                                   data-target="#exampleModal"
+                                                                                   data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                                   data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                                   data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                                   data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                                    <i class="fa fa-user"
+                                                                                       aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                                </a>
+                                                                            <?php } ?>
+                                                                            <?php if(!empty($course->training_name)){?>
+                                                                                <p class="units"><i class="fa fa-file"
+                                                                                                    aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                                </p>
+                                                                            <?php } ?>
+                                                                            <p class="units"><i class="fa fa-clock-o"
+                                                                                                aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
+                                                                                hours</p>
+                                                                        </div>
+                                                                    </div>
+                                                                    <p class="number-order"><?php echo $stt; ?></p>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <?php $countBlock++;
+                                                    $enable = 'disable';
+                                                    $stt++;
+                                                    break;
+                                                    if ($countBlock == 5) break;
+                                                }
+                                                if ($countBlock == 5) break;
+                                            }
+                                            ?>
                                         <?php } else { ?>
                                             <div class="col-12">
                                                 <h3>No course to display</h3>

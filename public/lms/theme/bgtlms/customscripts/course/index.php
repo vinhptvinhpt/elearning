@@ -697,7 +697,7 @@ if ($progress != 1) {
                         <template v-for="(courses_category,index) in courses">
                             <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                                  v-for="(course,index) in courses_category">
-                                <div v-if="index > 0">
+                                <div v-if="index > 0 || competency_exists.includes(course.training_id) ">
                                     <div class="row course-block course-block-disable">
                                         <div class="col-5 course-block__image"
                                              v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
@@ -946,6 +946,7 @@ if ($progress != 1) {
             urlImage: '<?php echo $CFG->wwwtmsbase; ?>',
             typeCourse: '',
             clctgr: true,
+            competency_exists: [],
             current: 1,
             totalPage: 0,
             recordPerPage: 9,
@@ -969,6 +970,7 @@ if ($progress != 1) {
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
+                var _this = this;
                 this.category = category;
                 if (page == 1)
                     this.current = 1;
@@ -991,10 +993,12 @@ if ($progress != 1) {
                     }
                 })
                     .then(response => {
-                        console.log(response.data.courses);
                         this.courses = response.data.courses;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
+                        if(_this.category == 'required'){
+                            _this.competency_exists = response.data.competency_exists;
+                        }
                     })
                     .catch(error => {
                     });
