@@ -433,7 +433,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
             ->where('mc.deleted', '=', 0)
-            ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id');
+            ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id', 'ttc.order_no');
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -441,9 +441,9 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     ->orWhere('mc.shortname', 'like', "%{$this->keyword}%");
             });
         }
+        $lstData = $lstData->orderBy('ttc.order_no', 'asc');
 
-        $lstData = $lstData->orderBy('mc.id', 'desc');
-
+        $lstAllData = $lstData->get();
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);
         $response = [
@@ -451,10 +451,50 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'total' => $total,
                 'current_page' => $lstData->currentPage(),
             ],
-            'data' => $lstData
+            'data' => $lstData,
+            'allData' => $lstAllData
         ];
 
 
+        return response()->json($response);
+    }
+
+
+    public function apiSaveOrder(Request $request)
+    {
+        $list = $request->input('list');
+        $training_id = $request->input('training_id');
+        $param = [
+            'trainning_id' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator) || !is_array($list)) {
+            return response()->json([]);
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($list as $key => $item) {
+                $order_no = $key + 1;
+                TmsTrainningCourse::query()
+                    ->where('trainning_id', $training_id)
+                    ->where('course_id', $item['id'])
+                    ->update([
+                        'order_no' => $order_no,
+                    ]);
+            }
+            DB::commit();
+            $response = array(
+                'status' => true,
+                'message' => __('thanh_cong')
+            );
+        } catch (\Exception $e) {
+            DB::rollBack();
+            $response = array(
+                'status' => false,
+                'message' => __('loi_he_thong_thao_tac_that_bai')
+            );
+        }
         return response()->json($response);
     }
 

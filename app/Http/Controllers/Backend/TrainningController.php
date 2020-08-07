@@ -60,6 +60,11 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiGetCourseSampleTrainning($request);
     }
 
+    public function apiSaveOrder(Request $request)
+    {
+        return $this->trainningRepository->apiSaveOrder($request);
+    }
+
     public function apiGetListTrainning(Request $request)
     {
         return $this->trainningRepository->apiGetListTrainning($request);
@@ -193,8 +198,8 @@ class TrainningController extends Controller
          order by tor.parent_id, toe.id) ttoe,
         (select @pv := 2) initialisation
         where   find_in_set(ttoe.parent_id, @pv)
-        and     length(@pv := concat(@pv, \',\', ttoe.organization_id))   
-        UNION 
+        and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+        UNION
         select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = 2
         ) as org_us';
 
