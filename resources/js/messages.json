@@ -1001,7 +1001,9 @@
         "dong_y": "Accepted",
         "id": "ID",
         "remind_certificate": "Remind Certificate",
-        "invite_student": "Invite Student"
+        "invite_student": "Invite Student",
+        "danh_sach": "List",
+        "thu_tu": "Order"
     },
     "vi.keys": {
         "language": "",
@@ -1996,6 +1998,8 @@
         "dong_y": "Đồng ý",
         "id": "ID",
         "remind_certificate": "Nhắc nhở chứng chỉ",
-        "invite_student": "Mời học viên"
+        "invite_student": "Mời học viên",
+        "danh_sach": "Danh sách",
+        "thu_tu": "Thứ tự"
     }
 }
