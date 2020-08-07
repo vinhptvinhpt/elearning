@@ -490,7 +490,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li>Company: Easia Travel</li>
                     </ul>
                 </div>
-                <div><a href="lms/user/edit.php" style="font-size: 14px; font-style: italic; color: #006FFF">Edit profile</a></div>
+                <div><a href="lms/user/edit.php" style="font-size: 14px; font-style: italic; color: <?=$_SESSION["color"]?>">Edit profile</a></div>
             </div>
             <div class="info-learn">
                 <div class="container">
@@ -728,7 +728,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
                 axios({
                     method: 'post',
-                    url: this.url + '/coursesearch.php',
+                    url: this.url + '/pusher/coursesearch.php',
                     data: params,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

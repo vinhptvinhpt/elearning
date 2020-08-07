@@ -178,6 +178,7 @@ and mue.userid = ' . $USER->id;
     $stt_count =1;
     $stt_count_temp =1;
     $competency_exists = array();
+    $temp_competency_exists = array();
 
     //
     $tempCourse = [];
@@ -206,9 +207,9 @@ and mue.userid = ' . $USER->id;
         }
         elseif (($course->training_name && $course->training_deleted == 0) &&(($course->numoflearned == 0) || ($course->numofmodule == 0))) {
             $course->category_type = 'required';
-            array_push($competency_exists, $course->training_id);
+            array_push($temp_competency_exists, $course->training_id);
             //
-            if(in_array($course->training_id, $competency_exists)){
+            if(in_array($course->training_id, $temp_competency_exists)){
                 $stt_count = $tempCourse[$course->training_id]['stt'];
                 $stt_count++;
             }else{
@@ -222,7 +223,7 @@ and mue.userid = ' . $USER->id;
 
 //    var_dump($tempCourse);
 //    die;
-    $response = json_encode(['courses' => $courses, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total]);
+    $response = json_encode(['courses' => $courses, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 }
 
 function push_course(&$array, $course)
