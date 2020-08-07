@@ -97,68 +97,26 @@ foreach ($courses as $course) {
     if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
         array_push($competency_exists, $course->training_id);
         push_course($courses_current, $course);
-//        $courses_current[$course->training_id][$course->order_no] = $course;
     } //then complete
     elseif ($course->numoflearned / $course->numofmodule == 1) {
         push_course($courses_completed, $course);
     } //then required = khoa hoc trong khung nang luc
     elseif ($course->training_name && $course->training_deleted == 0) {
         $courses_required[$course->training_id][$course->order_no] = $course;
-//        $course_required_training = [];
-//        $course_required_training[$course->training_id]['id_course']=$course->id;
-//        $course_required_training[$course->training_id]['order_no']=$course->order_no;
-//        $course_required_training[$course->training_id]['enable']=false;
-//        $courses_required_training[] = $course_required_training;
-//        push_course($courses_required, $course);
     } //the last is other courses
     else {
         push_course($courses_others, $course);
     }
-
-//    if ($course->category == 14) {
-//        push_course($courses_others, $course);
-//    } else {
-//
-//        if($course->numoflearned/$course->numofmodule == 1){
-//            push_course($courses_completed, $course);
-//        }
-//        if($course->numoflearned/$course->numofmodule > 0 && $course->numoflearned/$course->numofmodule < 1){
-//            push_course($courses_current, $course);
-//        }
-//    }
-
-//    if ($course->category == 14) {
-//        if (
-//            !array_key_exists($course->id, $courses_required)
-//            && !array_key_exists($course->id, $courses_completed)
-//            && !array_key_exists($course->id, $courses_current)
-//        ) {
-//            push_course($courses_others, $course);
-//        }
-//    }
 }
 function push_course(&$array, $course)
 {
-
-
-//    $teacher = array();
-//    if (strlen($course->teacher_name) != 0) {
-//        $teacher = array(
-//          'id' => $course->teacher_id,
-//          'teacher_name'   => $course->teacher_name,
-//          'organization_name'   => $course->organization_name,
-//          'teacher_created' => $course->teacher_created
-//        );
-//    }
     if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
         $old_created = $array[$course->id]->teacher_created;
         if ($course->teacher_created > intval($old_created)) {
             $array[$course->id] = $course;
         }
-        //$array[$course->id]->teachers[] = $teacher;
     } else {//mới
         $array[$course->id] = $course;
-        //$array[$course->id]->teachers = array($teacher);
     }
 }
 
@@ -225,22 +183,10 @@ switch ($organizationCode) {
         }
         break;
 }
-//#0e311a
-//if($organization_id == 1){
-//    $_SESSION["organizationName"] = 'Easia';
-//    $_SESSION["color"] = '#862055';
-//    $_SESSION["pathLogo"] = 'images/logo-black-1.png';
-//}
-//else if($organization_id == 2){
-//    $_SESSION["organizationName"] = 'Begodi';
-//    $_SESSION["color"] = '#CAB143';
-//    $_SESSION["pathLogo"] = 'images/Begodi.jpg';
-//}
 
 $countBlock = 1;
 $percentCompleted = intval(count($courses_completed) * 100 / count($courses));
 $percentStudying = intval(count($courses_current) * 100 / count($courses));
-//echo shell_exec('select * from mdl_user limit 1');
 
 ?>
 
@@ -1095,26 +1041,26 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         class="title-course">
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
+                                                                    <?php if (!empty($course->teacher_name)) {?>
                                                                     <a class="teacher" data-toggle="modal"
                                                                        data-target="#exampleModal"
-                                                                       data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
+                                                                       data-teacher-name="<?php echo $course->teacher_name;?>"
                                                                        data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                        data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                        data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                         <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                     </a>
-                                                                    <p class="units"><i class="fa fa-file"
-                                                                                        aria-hidden="true"></i> <?php echo $course->training_name; ?>
-                                                                    </p>
+                                                                    <?php } ?>
+                                                                    <?php if(!empty($course->training_name)){?>
+                                                                        <p class="units"><i class="fa fa-file"
+                                                                                            aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                        </p>
+                                                                    <?php } ?>
                                                                     <p class="units"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <!--                                                            <div class="block-item__content_btn">-->
-                                                            <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
-                                                            <?php //echo $course->id; ?><!--">Learn More</a></button>-->
-                                                            <!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1179,28 +1125,28 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                                 <i></i><?php echo $course->fullname; ?>
                                                                             </p></a>
                                                                         <div class="info-course">
+                                                                            <?php if (!empty($course->teacher_name)) { ?>
                                                                             <a class="teacher" data-toggle="modal"
                                                                                data-target="#exampleModal"
-                                                                               data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
+                                                                               data-teacher-name="<?php echo $course->teacher_name; ?>"
                                                                                data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                                data-teacher-organization="<?php echo $course->teacher_organization ?>"
                                                                                data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                                 <i class="fa fa-user"
                                                                                    aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                             </a>
-                                                                            <p class="units"><i class="fa fa-file"
-                                                                                                aria-hidden="true"></i> <?php echo $course->training_name; ?>
-                                                                            </p>
+                                                                            <?php } ?>
+                                                                            <?php if(!empty($course->training_name)){?>
+                                                                                <p class="units"><i class="fa fa-file"
+                                                                                                    aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                                </p>
+                                                                            <?php } ?>
                                                                             <p class="units"><i class="fa fa-clock-o"
                                                                                                 aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                                 hours</p>
                                                                         </div>
                                                                     </div>
                                                                     <p class="number-order"><?php echo $stt; ?></p>
-                                                                    <!--                                                            <div class="block-item__content_btn">-->
-                                                                    <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
-                                                                    <?php //echo $course->id; ?><!--">Learn More</a></button>-->
-                                                                    <!--                                                            </div>-->
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1270,10 +1216,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <!--                                                            <div class="block-item__content_btn">-->
-                                                            <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
-                                                            <?php //echo $course->id; ?><!--">Learn More</a></button>-->
-                                                            <!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1334,10 +1276,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <!--                                                            <div class="block-item__content_btn">-->
-                                                            <!--                                                                <button class="btn btn-click"><a href="lms/course/view.php?id=-->
-                                                            <?php //echo $course->id; ?><!--">Learn More</a></button>-->
-                                                            <!--                                                            </div>-->
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1498,19 +1436,6 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         $("span.teacher-organization").html(teacher_organization);
         $("span.teacher-description").html(teacher_description);
     })
-    // $('#exampleModal').on('show.bs.modal', function (event) {
-    //     var button = $(event.relatedTarget) // Button that triggered the modal
-    //     var teacher_name = button.data('teacher-name');// Extract info from data-* attributes
-    //     var teacher_position = button.data('teacher-position');
-    //     var teacher_organization = button.data('teacher-organization');
-    //     // If necessary, you could initiate an AJAX request here (and then do the updating in a callback).
-    //     // Update the modal's content. We'll use jQuery here, but you could use a data binding library or other methods instead.
-    //     var modal = $(this)
-    //     //modal.find('.modal-title').text('Instructor info: ' + teacher_name)
-    //     modal.find('.teacher-name').val(teacher_name);
-    //     modal.find('.teacher-position').val(teacher_position);
-    //     modal.find('.teacher-organization').val(teacher_organization);
-    // })
 </script>
 
 <!-- Modal -->
