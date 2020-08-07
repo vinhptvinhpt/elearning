@@ -175,11 +175,19 @@ and mue.userid = ' . $USER->id;
     $sqlGetCoures .= ' limit ' . $recordPerPage . ' offset ' . $start_index;
     $courses = array_values($DB->get_records_sql($sqlGetCoures));
 
+    $stt_count =1;
+    $stt_count_temp =1;
+    $competency_exists = array();
+
+    //
+    $tempCourse = [];
     foreach ($courses as &$course) {
         $teachers = $course->teachers;
         $teacher_name = '';
         $teacher_created = 0;
-
+        //
+        $course->enable = 'enable';
+        $course->category_type = '';
         if (strlen($teachers) != 0) {
             $teachers_and_created = explode(',', $teachers);
             foreach ($teachers_and_created as $teacher_and_created) {
@@ -192,9 +200,28 @@ and mue.userid = ' . $USER->id;
         }
         $course->teacher_name = $teacher_name;
         //$course->teacher_created = $teacher_created;
+        //
+        if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            array_push($competency_exists, $course->training_id);
+        }
+        elseif (($course->training_name && $course->training_deleted == 0) &&(($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+            $course->category_type = 'required';
+            array_push($competency_exists, $course->training_id);
+            //
+            if(in_array($course->training_id, $competency_exists)){
+                $stt_count = $tempCourse[$course->training_id]['stt'];
+                $stt_count++;
+            }else{
+                $stt_count = 1;
+            }
+            $tempCourse[$course->training_id]['stt'] = $stt_count;
+            $course->stt_count = $tempCourse[$course->training_id]['stt'];
 
+        }
     }
 
+//    var_dump($tempCourse);
+//    die;
     $response = json_encode(['courses' => $courses, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total]);
 }
 
