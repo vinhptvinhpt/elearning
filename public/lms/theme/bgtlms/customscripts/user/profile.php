@@ -614,7 +614,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3">
                                             <div class="item-image">
-                                                <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
+                                                <img src="/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
                                             </div>
                                             <div class="item-content">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
@@ -631,7 +631,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <?php foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3">
                                                 <div class="item-image">
-                                                    <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
+                                                    <img src="/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
                                                 </div>
                                                 <div class="item-content">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
