@@ -153,6 +153,30 @@ if ($progress != 1) {
         border-color: <?=$_SESSION["color"]?> !important;
     }
 
+    .number-order {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: <?=$_SESSION["color"]?>;
+        text-align: center;
+        vertical-align: middle;
+        /*position: absolute;*/
+        /*bottom: 0%;*/
+        /*right: 12%;*/
+        color: #ffff !important;
+        font-size: 13px;
+        margin-left: 80%;
+    }
+
+    .div-image-disable{
+        background-color: #fdf2f285;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
+
     .course-info__detail {
         padding: 5% 0;
     }
@@ -259,6 +283,10 @@ if ($progress != 1) {
         box-shadow: 3px 3px 6px #00000029;
         margin: 0 !important;
         height: 100%;
+    }
+
+    .course-block-disable{
+        pointer-events: none;
     }
 
     .course-block__image {
@@ -452,7 +480,7 @@ if ($progress != 1) {
         background: #202020 0% 0% no-repeat padding-box;
         border: 1px solid #707070;
         opacity: 1;
-        padding: 1%;
+        padding: 4% 0;
     }
 
     .footer-ul {
@@ -520,8 +548,15 @@ if ($progress != 1) {
         /*background-color: rgba(0, 0, 0, 0.3);*/
     }
 
+
     .div-header{
         background-color: rgba(0, 0, 0, 0.3);
+    }
+
+    .title-course{
+        margin: 0;
+        min-height: 50px;
+        font-weight: 700;
     }
 
     /*1920*/
@@ -658,12 +693,116 @@ if ($progress != 1) {
                     <template v-if="courses.length == 0">
                         <div class="col-12 pt-1"><h3>No course to display</h3></div>
                     </template>
+                    <template v-else-if="category == 'required'">
+                        <template v-for="(courses_category,index) in courses">
+                            <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
+                                 v-for="(course,index) in courses_category">
+                                <div v-if="index > 0 || competency_exists.includes(course.training_id) ">
+                                    <div class="row course-block course-block-disable">
+                                        <div class="col-5 course-block__image"
+                                             v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                            <div class="div-image">
+                                                <template v-if="course.numofmodule == 0">
+                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
+                                                </template>
+                                                <template v-else>
+                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                </template>
+                                            </div>
+                                            <div class="div-image-disable"></div>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="course-info">
+                                                <div class="info-text">
+                                                    <div class="course-info__title">
+                                                        <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                            <p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                                    </div>
+                                                    <div class="course-info__detail">
+                                                        <ul>
+                                                            <li class="teacher" v-if="course.teacher_name">
+                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                            </li>
+                                                            <li class="teacher" v-else>
+                                                                <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
+                                                            </li>
+                                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                                {{course.training_name}}
+                                                            </li>
+                                                            <li class="units">
+                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                                {{course.estimate_duration}} hours
+                                                            </li>
+                                                            <li class="number-order">
+                                                                {{ index+1 }}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <!--  <div class="btn-show btn-show-all btn-page">
+                                                      <button class="btn btn-click"><a
+                                                              :href="'lms/course/view.php?id='+course.id">Learn more</a>
+                                                      </button>
+                                                  </div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div v-else>
+                                    <div class="row course-block">
+                                        <div class="col-5 course-block__image"
+                                             v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                            <template v-if="course.numofmodule == 0"><img
+                                                    src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
+                                            <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                            </template>
+                                        </div>
+                                        <div class="col-7">
+                                            <div class="course-info">
+                                                <div class="info-text">
+                                                    <div class="course-info__title">
+                                                        <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                            <p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                                    </div>
+                                                    <div class="course-info__detail">
+                                                        <ul>
+                                                            <li class="teacher" v-if="course.teacher_name">
+                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                            </li>
+                                                            <li class="teacher" v-else>
+                                                                <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
+                                                            </li>
+                                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                                {{course.training_name}}
+                                                            </li>
+                                                            <li class="units">
+                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                                {{course.estimate_duration}} hours
+                                                            </li>
+                                                            <li class="number-order">
+                                                                {{ index+1 }}
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <!--  <div class="btn-show btn-show-all btn-page">
+                                                      <button class="btn btn-click"><a
+                                                              :href="'lms/course/view.php?id='+course.id">Learn more</a>
+                                                      </button>
+                                                  </div>-->
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </template>
                     <template v-else>
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
                             <div class="row course-block">
                                 <div class="col-5 course-block__image"
-                                     v-bind:style="{ backgroundImage: 'url('+(course.course_avatar)+')' }">
+                                     v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
                                     <template v-if="course.numofmodule == 0"><img
                                             src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
                                     <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
@@ -682,10 +821,10 @@ if ($progress != 1) {
                                                         <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
                                                     <li class="teacher" v-else>
-                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign
+<!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
                                                     </li>
                                                     <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
-                                                        {{course.numofmodule}} Units
+                                                        {{course.training_name}}
                                                     </li>
                                                     <li class="units">
                                                         <i class="fa fa-clock-o" aria-hidden="true"></i>
@@ -804,7 +943,10 @@ if ($progress != 1) {
             txtSearch: '',
             courses: [],
             urlTms: '',
+            urlImage: '<?php echo $CFG->wwwtmsbase; ?>',
+            typeCourse: '',
             clctgr: true,
+            competency_exists: [],
             current: 1,
             totalPage: 0,
             recordPerPage: 9,
@@ -821,15 +963,15 @@ if ($progress != 1) {
                 prev: '<',
                 next: '>',
                 last: false
-            }
+            },
         },
         methods: {
             onPageChange: function () {
                 this.searchCourse(this.category, this.current);
             },
             searchCourse: function (category, page) {
+                var _this = this;
                 this.category = category;
-                console.log(this.category);
                 if (page == 1)
                     this.current = 1;
                 this.urlTms = 'http://localhost:8888/elearning-easia/public';
@@ -854,6 +996,9 @@ if ($progress != 1) {
                         this.courses = response.data.courses;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
+                        if(_this.category == 'required'){
+                            _this.competency_exists = response.data.competency_exists;
+                        }
                     })
                     .catch(error => {
                     });
