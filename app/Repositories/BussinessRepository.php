@@ -10,6 +10,7 @@ use App\TmsLearnerHistory;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
@@ -1132,6 +1133,36 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
+
+            $user_id = Auth::id();
+            //Check role teacher and enrol for creator of course
+            $current_user_roles_and_slugs = checkRole();
+            //If user ís not a teacher, assign as teacher
+            $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
+            if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
+                add_user_by_role($user_id, $role_teacher->id);
+                enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+            }
+            //Enrol user to newly created course as teacher
+            enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
+
+
+            //Add newly course to phân quyền dữ liệu
+            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+                //admin do nothing
+            } else {
+                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+                if ($checkRoleOrg != 0) {
+                    $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                    if (isset($org_role)) {
+                        $new_relation = new TmsRoleCourse();
+                        $new_relation->role_id = $org_role->role_id;
+                        $new_relation->course_id = $course->id;
+                        $new_relation->save();
+                    }
+                }
+            }
+
             //write log to mdl_logstore_standard_log
 /*            $app_name = Config::get('constants.domain.APP_NAME');
             $key_app = encrypt_key($app_name);
@@ -1206,7 +1237,8 @@ class BussinessRepository implements IBussinessInterface
 
         $select = [];
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+        //if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+        if (true) { //hack show all courses offline
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
@@ -1222,8 +1254,10 @@ class BussinessRepository implements IBussinessInterface
                 ];
         } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
-            $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            if ($checkRole === true) {
+            //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+            //if ($checkRole === true) {
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            if ($checkRoleOrg != 0) {
                 $listCourses = DB::table('mdl_course')
                     ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
                     ->where('mdl_course.category', '=', $category_id)
@@ -1295,7 +1329,6 @@ class BussinessRepository implements IBussinessInterface
         //        } else {
         //            $listCourses = $listCourses->where('mdl_course.category', '!=', 2);
         //        }
-
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
