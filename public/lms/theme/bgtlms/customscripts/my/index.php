@@ -463,7 +463,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
-        /*min-height: 3.25rem;*/
+        min-height: 50px;
         font-weight: 700;
     }
 
