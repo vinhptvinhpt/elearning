@@ -212,7 +212,7 @@
         "nhan_vien_da_hoan_thanh_khoa_hoc": "Employee finished courses",
         "nhan_vien_da_co_giay_chung_nhan": "Employee certificated",
         "khong_tim_thay_du_lieu": "Cannot find data",
-        "cmtnd": "ID number",
+        "cmtnd": "Personal ID",
         "khoi_phuc_tai_khoan": "Restoring Account",
         "xoa_vinh_vien": "Permanent Delete",
         "ma_so_nhan_vien_ban_hang": "Employee Code",
@@ -1003,7 +1003,13 @@
         "remind_certificate": "Remind Certificate",
         "invite_student": "Invite Student",
         "danh_sach": "List",
-        "thu_tu": "Order"
+        "thu_tu": "Order",
+        "nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname": "Find by ID Login, full name",
+        "nhap_ten_dang_nhap_fullname_email" : " Input Login ID, full name, email",
+        "nhap_hanh_dong_user_info_url": "Input Action, user, Url or Info",
+        "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number, Email or Certificate Code",
+        "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number or Email",
+        "nhap_cmtnd_username_fullname_email": "Input Personal ID, Login ID, Full Name or Email"
     },
     "vi.keys": {
         "language": "",
@@ -1991,7 +1997,7 @@
         "forgot_password": "Quên mật khẩu",
         "remind_expire_required_course": "Nhắc nhở khóa học bắt buộc đã hết hạn",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Nhập thông tin tìm kiếm theo tên ",
-        "nhap_thong_tin_tim_kiem_theo_fullname": "Tìm kiếm theo tên đầy đủ",
+        "nhap_thong_tin_tim_kiem_theo_fullname": "Tìm kiếm theo tên đăng nhập, tên đầy đủ",
         "nguoi_dung_tu_choi_tham_gia_khoa_hoc_voi_ly_do": "Người dùng từ chối tham gia khóa học với lý do",
         "tat_ca": "Tất cả",
         "chua_tra_loi": "Chưa trả lời",
@@ -2000,6 +2006,12 @@
         "remind_certificate": "Nhắc nhở chứng chỉ",
         "invite_student": "Mời học viên",
         "danh_sach": "Danh sách",
-        "thu_tu": "Thứ tự"
+        "thu_tu": "Thứ tự",
+        "nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ",
+        "nhap_ten_dang_nhap_fullname_email" : "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
+        "nhap_hanh_dong_user_info_url": "Nhập thông tin tìm kiếm theo hành động, người tạo, thông tin hoặc link url",
+        "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại, email hoặc mã chứng chỉ",
+        "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại hoặc email",
+        "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email"
     }
 }
