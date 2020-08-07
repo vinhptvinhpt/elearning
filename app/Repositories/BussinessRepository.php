@@ -147,8 +147,14 @@ class BussinessRepository implements IBussinessInterface
                 $data = $data->where(function($query) use ($keyword){
                     $query->where('url', 'like', "%{$keyword}%");
                     $query->orWhere('info', 'like', "%{$keyword}%");
+                    $query->orWhere('action', 'like', "%{$keyword}%");
+                    $query->orWhere('type', 'like', "%{$keyword}%");
+                    $query->orWhereHas('user', function($q) use($keyword){
+                        $q->where('username', 'like', "%{$keyword}%");
+                    });
                 });
             }
+
             if ($type != '') {
                 $data = $data->where('type', $type);
             }
@@ -4869,6 +4875,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone->where(function ($query) use ($keyword) {
                 $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
+                    ->orWhere('ttp.name', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
                     ->orWhere('mu.username', 'like', "%{$keyword}%");
@@ -5069,6 +5076,8 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
+                    ->orWhere('tms_traninning_programs.name', 'like', "%{$keyword}%")
+                    ->orWhere('sc.code', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
         }
@@ -14695,7 +14704,7 @@ class BussinessRepository implements IBussinessInterface
     // UserExamController
     public function getListUser(Request $request)
     {
-        $this->keyword = $request->input('keyword');
+        $keyword = $request->input('keyword');
         $row = $request->input('row');
         $param = [
             'keyword' => 'text',
@@ -14717,6 +14726,15 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user as u', 'data1.userid', '=', 'u.id')
             ->where('data1.attempt_time', '>=', '2')
             ->select('u.username', 'tud.cmtnd', 'tud.fullname', 'tud.email', 'data1.userid as user_id', 'data1.attempt_time', 'data2.finalgrade');
+
+        if ($keyword) {
+            $data = $data->where(function($query) use ($keyword){
+                $query->where('u.username', 'like', "%{$keyword}%");
+                $query->orWhere('tud.cmtnd', 'like', "%{$keyword}%");
+                $query->orWhere('tud.fullname', 'like', "%{$keyword}%");
+                $query->orWhere('tud.email', 'like', "%{$keyword}%");
+            });
+        }
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);

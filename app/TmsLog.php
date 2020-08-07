@@ -22,6 +22,6 @@ class TmsLog extends Model
 
     public function user()
     {
-        return $this->hasOne('\App\MdlUser', 'id', 'user');
+        return $this->hasOne('App\MdlUser', 'id', 'user');
     }
 }
