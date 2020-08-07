@@ -318,8 +318,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .block-color {
-        width: 100px;
-        height: 100px;
+        width: 90px;
+        height: 90px;
         background-color: <?=$_SESSION["color"]?>;
         position: absolute;
         bottom: 25%;
@@ -417,11 +417,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     }
 
     .div-info-progress-disable span {
-        /*top: 10%;*/
+        /*top: 11%;*/
         /*right: 14%;*/
     }
 
-    .div-info-progress-enable span{
+    .div-info-progress-disable span, .div-info-progress-enable span{
         top: 11% !important;
     }
 
@@ -477,9 +477,13 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .path-calendar #page-wrapper #page {
         margin: 0 !important;
-        padding: 3% 3% 2% 3%;
+        padding: 3% 3% 2.5% 3%;
     }
 
+    .path-calendar #page-wrapper #page #page-content #region-main{
+        padding: 0;
+        margin: 0 !important;
+    }
     .path-calendar #page-wrapper #page #page-content {
         padding-bottom: 0% !important;
     }
@@ -559,8 +563,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         font-family: Nunito-Sans-Bold;
         color: #FFFFFF;
         position: absolute;
-        top: 13%;
-        right: 12%;
+        top: 14%;
+        right: 11%;
         letter-spacing: 1px;
     }
 
@@ -568,7 +572,8 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         background-color: <?=$_SESSION["color"]?>;
         display: flex;
         width: 100%;
-        padding: 3%;
+        padding: 3% 6%;
+        margin-bottom: 3%;
     }
 
     .info-user .avatar {
@@ -576,23 +581,15 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         border-radius: 50%;
         margin: 0 !important;
         padding: 0;
-        /*padding-right: 0 !important;*/
-        /*height: fit-content;*/
-
         text-align: right;
         width: calc(100% - 10px);
         height: 100%;
     }
 
     .info-user .avatar img {
-        /*margin-top: 15%;*/
-        /*margin-bottom: 15%;*/
         border-radius: 50%;
-        /*height: 80%;*/
-        /*width: 60%;*/
-        width: 85px;
-        height: 85px;
-        /*margin-top: 10%;*/
+        /*width: 85px;*/
+        /*height: 85px;*/
     }
 
     .info {
@@ -629,7 +626,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
     .info-progress {
         display: inline-flex;
         width: 100%;
-        padding: 3%;
+        padding: 3% 6%;
     }
 
     .circle-progress svg {
@@ -638,22 +635,30 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
     .info-statistic {
         width: 100%;
-        padding: 0 3%;
+        padding: 3% 6%;
     }
 
     .no-padding-col {
         padding: 0 !important;
     }
 
+    .progress-note{
+        margin: auto;
+    }
+
+    .progress-note ul {
+        margin: 0;
+    }
+
     .progress-note ul li {
         list-style: none;
-        padding: 3% 0;
+        padding: 5px 0;
         font-size: 14px;
     }
 
     .info-text {
         color: #202020;
-        padding: 10px;
+        padding: 5px;
     }
 
     .text-course {
@@ -868,6 +873,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             width: 130px !important;
             bottom: 23%;
         }
+
+        .info-user .avatar img {
+             width: 150px;
+             height: 150px;
+        }
     }
 
     @media screen and (max-width: 1024px) {
@@ -888,12 +898,27 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
             height: 65px !important;
             bottom: 28% !important;
         }
+        .info-user .avatar img {
+            width: 150px !important;
+            height: 150px !important;
+        }
     }
 
     @media screen and (max-width: 425px) {
         .block-color {
             bottom: 48% !important;
             width: 49px !important;
+        }
+        .info-user .avatar img {
+            width: 130px !important;
+            height: 130px !important;
+        }
+    }
+
+    @media screen and (max-width: 375px) {
+        .info-user .avatar img {
+            width: 100px !important;
+            height: 100px !important;
         }
     }
 
@@ -919,7 +944,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                     <div class="">
                         <div id="demo" class="carousel slide carousel-fade silde-carousel" data-ride="carousel"
                              style="background-image: url('<?php echo $_SESSION["pathBackground"]; ?>')">
-                            <div class="container" style="padding-left: 0">
+                            <div class="container" style="padding: 0">
                                 <ul class="carousel-indicators">
                                     <li data-target="#demo" data-slide-to="0" class="active"></li>
                                     <li data-target="#demo" data-slide-to="1"></li>
@@ -964,7 +989,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     <p class="userposition"><?php if (is_null($profile->exactlypostion)) echo $profile->position; else echo $profile->exactlypostion; ?></p>
                                 </div>
                             </div>
-                            <div class="info-progress mt-3">
+                            <div class="info-progress">
                                 <div class="circle-progress no-padding-col col-4">
                                     <svg viewBox="0 0 36 36" width="150" class="circular-chart">
                                         <path class="that-circle" stroke="#C7C7C7" stroke-dasharray="100,100" d="M18 2.0845
@@ -1001,7 +1026,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                     </ul>
                                 </div>
                             </div>
-                            <div class="info-statistic mb-3">
+                            <div class="info-statistic pb-2">
                                 <div class="info-statistic__current-course">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=current">
                                         <div class="text-course">Current courses</div>
