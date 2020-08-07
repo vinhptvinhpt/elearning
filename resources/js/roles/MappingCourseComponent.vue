@@ -45,9 +45,18 @@
                                       <select v-model="row"
                                               class="custom-select custom-select-sm form-control form-control-sm"
                                               @change="getUserNeedEnrol(1)">
-                                        <option value="5">5</option>
                                         <option value="10">10</option>
                                         <option value="50">50</option>
+                                        <option value="100">100</option>
+                                      </select>
+                                    </label>
+                                    <label>
+                                      <select v-model="sample"
+                                              style="min-width: 150px"
+                                              class="custom-select custom-select-sm form-control form-control-sm"
+                                              @change="changeFilter(1)">
+                                        <option value="0">{{trans.get('keys.khoa_hoc')}}</option>
+                                        <option value="1">{{trans.get('keys.thu_vien_khoa_hoc')}}</option>
                                       </select>
                                     </label>
                                   </div>
@@ -59,7 +68,7 @@
                                 <tr>
                                   <th>{{trans.get('keys.stt')}}</th>
                                   <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
-                                  <th class=" mobile_hide" style="width: 30%;">
+                                  <th class=" mobile_hide">
                                     {{trans.get('keys.ten_khoa_hoc')}}
                                   </th>
                                   <th class="text-center">
@@ -72,7 +81,7 @@
                                 <tr v-for="(course,index) in userNeedEnrols">
                                   <td>{{ (current-1)*row+(index+1) }}</td>
                                   <td>{{ course.shortname }}</td>
-                                  <td class=" mobile_hide">{{ course.fullname }}</td>
+                                  <td class="mobile_hide">{{ course.fullname }}</td>
                                   <td class="text-center">
                                     <input class="selection-child" type="checkbox" :value="course.id" v-model="userEnrols"
                                            @change="onCheckboxEnrol()"/>
@@ -130,9 +139,18 @@
                                       <select v-model="row_crr"
                                               class="custom-select custom-select-sm form-control form-control-sm"
                                               @change="getCurrentUserEnrol(1)">
-                                        <option value="5">5</option>
                                         <option value="10">10</option>
                                         <option value="50">50</option>
+                                        <option value="100">100</option>
+                                      </select>
+                                    </label>
+                                    <label>
+                                      <select v-model="sample"
+                                              style="min-width: 150px"
+                                              class="custom-select custom-select-sm form-control form-control-sm"
+                                              @change="changeFilter(1)">
+                                        <option value="0">{{trans.get('keys.khoa_hoc')}}</option>
+                                        <option value="1">{{trans.get('keys.thu_vien_khoa_hoc')}}</option>
                                       </select>
                                     </label>
                                   </div>
@@ -144,7 +162,7 @@
                                 <tr>
                                   <th>{{trans.get('keys.stt')}}</th>
                                   <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
-                                  <th class=" mobile_hide" style="width: 30%;">
+                                  <th class=" mobile_hide">
                                     {{trans.get('keys.ten_khoa_hoc')}}
                                   </th>
                                   <th class="text-center">
@@ -194,15 +212,16 @@
         keyword: '',
         current: 1,
         totalPages: 0,
-        row: 5,
+        row: 10,
         category_id: 0,
+        sample: 0,
 
 
         currentUserEnrols: [],
         keyword_curr: '',
         current_page: 1,
         totalPages_crr: 0,
-        row_crr: 5,
+        row_crr: 10,
         category_id_crr: 0,
 
         userEnrols: [],
@@ -212,6 +231,10 @@
       }
     },
     methods: {
+      changeFilter() {
+        this.getUserNeedEnrol();
+        this.getCurrentUserEnrol();
+      },
       getUserNeedEnrol(paged) {
         axios.post('/api/courses/list_permissiondata', {
           page: paged || this.current,
@@ -219,7 +242,8 @@
           row: this.row,
           role_id: this.role_id,
           category_id: this.category_id,
-          is_excluded: 1
+          is_excluded: 1,
+          sample: this.sample
         })
           .then(response => {
             this.userNeedEnrols = response.data.data.data;
@@ -238,7 +262,8 @@
           row: this.row_crr,
           role_id: this.role_id,
           category_id: this.category_id_crr,
-          is_excluded: 0
+          is_excluded: 0,
+          sample: this.sample
         })
           .then(response => {
             this.currentUserEnrols = response.data.data.data;
