@@ -7,7 +7,12 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                        <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung') }}</li>
+                      <li class="breadcrumb-item">
+                        <router-link :to="{ name: 'TrainningIndex' }">
+                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                        </router-link>
+                      </li>
+                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung') }}</li>
                     </ol>
                 </nav>
             </div>
@@ -16,7 +21,7 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
 
-                    <div class="row mb-4">
+                    <div class="row mb-4" v-if="slug_can('tms-system-administrator-grant')">
                         <div class="col-sm">
                             <div class="accordion" id="accordion_1">
                                 <div class="card" style="border-bottom: 1px solid rgba(0,0,0,.125);">
@@ -280,10 +285,13 @@
                                                 <td class=" mobile_hide">{{ user.email }}</td>
 
                                                 <td class="text-center">
-                                                    <button @click="remove_trainning(user.id,user.user_id,trainning_id)"
+                                                    <button v-if="slug_can('tms-system-administrator-grant')" @click="remove_trainning(user.id,user.user_id,trainning_id)"
                                                             class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select"
                                                             type="button">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                                                    </button>
+                                                    <button v-else class="btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2" type="button">
+                                                      <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -321,7 +329,7 @@
     import EditIndexComponent from '../system/user/EditIndexComponent'
 
     export default {
-        props: ['trainning_id'],
+        props: ['trainning_id', 'slugs'],
         components: {EditIndexComponent},
         data() {
             return {
@@ -359,6 +367,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             listOrganization() {
                 axios.post('/organization/list', {
                     keyword: this.parent_keyword,

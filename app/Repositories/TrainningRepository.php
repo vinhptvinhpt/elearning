@@ -23,6 +23,7 @@ use App\TmsUserDetail;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Horde\Socket\Client\Exception;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
@@ -330,11 +331,33 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json([]);
         }
 
-        $lstData = DB::table('tms_traninning_programs as ttp')
-            ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
-            ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
-            ->where('ttp.deleted', '=', 0)
-            ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+            //Admin thì lấy hết
+            $lstData = DB::table('tms_traninning_programs as ttp')
+                ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
+                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
+                ->where('ttp.deleted', '=', 0);
+                //->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
+        } else {
+
+            $organization_id = 0;
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            if ($checkRoleOrg != 0) {
+                $organization_id =  $checkRoleOrg;
+            }
+            //lấy các khung năng lực được gán cho tổ chức
+            $lstData = DB::table('tms_traninning_programs as ttp')
+                ->join('tms_trainning_groups', function($q) use ($organization_id) {
+                    $q->on('tms_trainning_groups.trainning_id', '=', 'ttp.id');
+                    $q->where('tms_trainning_groups.group_id', $organization_id);
+                    $q->where('tms_trainning_groups.type', 1); //Training to organization relation
+                })
+                ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
+                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
+                ->where('ttp.deleted', '=', 0);
+                //->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
+
+        }
 
         if ($this->keyword) {
             $lstData = $lstData->where(function ($query) {
@@ -373,7 +396,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
-            ->where('deleted', '!=', 2)//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung
+            //->where('deleted', '!=', 2)//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung
             ->orderBy('id', 'desc')->get();
         return response()->json($response);
     }
@@ -525,9 +548,27 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('c.deleted', '=', 0)
             ->select('c.id')->groupBy('ttc.sample_id')->pluck('c.id');
 
-        $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
-            ->where('deleted', '=', 0)
-            ->whereNotIn('id', $lstCourseTrainning);
+
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+            $lstData = MdlCourse::select('id', 'shortname', 'fullname')->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
+                ->where('deleted', '=', 0)
+                ->whereNotIn('id', $lstCourseTrainning);
+        } else {
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            $lstData = MdlCourse::select('id', 'shortname', 'fullname')
+                ->where('category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
+                ->whereIn('id', function ($q) { //organization
+                    /* @var $q Builder */
+                    $q->select('mdl_course.id')
+                        ->from('tms_organization_employee')
+                        ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                        ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                        ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                        ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                })
+                ->where('deleted', '=', 0)
+                ->whereNotIn('id', $lstCourseTrainning);
+        }
 
 
         if ($this->keyword) {
