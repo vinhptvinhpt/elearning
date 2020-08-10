@@ -8,6 +8,8 @@ use App\MdlCourse;
 use App\MdlUser;
 use App\Repositories\MdlCourseRepository;
 use App\Role;
+use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
@@ -205,9 +207,24 @@ class CourseController extends Controller
                 add_user_by_role($user_id, $role_teacher->id);
                 enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
             }
-            //Enrol user to newly created course á teacher
+            //Enrol user to newly created course as teacher
             enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
+            //Add newly course to phân quyền dữ liệu
+            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+                //admin do nothing
+            } else {
+                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+                if ($checkRoleOrg != 0) {
+                    $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                    if (isset($org_role)) {
+                        $new_relation = new TmsRoleCourse();
+                        $new_relation->role_id = $org_role->role_id;
+                        $new_relation->course_id = $course->id;
+                        $new_relation->save();
+                    }
+                }
+            }
 
             \DB::commit();
 

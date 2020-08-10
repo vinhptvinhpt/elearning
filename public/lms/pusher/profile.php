@@ -28,7 +28,7 @@ if (isset($profile->organization_id)) {
 
 session_start();
 $currentcourses = $_SESSION["courses_current"];
-$requiredcourses = $_SESSION["courses_all_required"];
+$requiredcourses = $_SESSION["courses_required"];
 $totalCourse = $_SESSION["totalCourse"];
 
 echo json_encode([

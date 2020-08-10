@@ -338,14 +338,18 @@ if(!isloggedin()){
     }
 
     .unit-done{
-        border: 2px solid #378449;
+        /*border: 2px solid #378449;*/
     }
 
     .unit-done .unit__title{
-        background: #378449 0% 0% no-repeat;
+        /*background: #378449 0% 0% no-repeat;*/
     }
     .unit-done .unit__title p{
-        color: #ffffff;
+        /*color: #ffffff;*/
+    }
+
+    .unit-done .unit__icon i{
+        color: #378449;
     }
 
     .unit-click .unit__title {

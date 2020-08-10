@@ -45,8 +45,10 @@
 }
 
 .logo {
-    max-width: 13%;
+    max-width: 100px;
+    width: 100px;
     margin-right: 10px;
+    margin-left: 4px;
 }
 
 .clear-picker {

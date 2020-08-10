@@ -30,13 +30,16 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
 
         $lstData = TmsCourseInfrastructure::where('course_id', $course_id);
 
-        $totalData = count($lstData->get());
 
         if ($keyword) {
-            $lstData = $lstData->where('infra_name', 'like', '%' . $keyword . '%');
+            $lstData = $lstData->where(function($query) use ($keyword){
+                $query->where('infra_name', 'like', '%' . $keyword . '%');
+                $query->orWhere('infra_number', $keyword);
+            });
         }
 
         $lstData = $lstData->orderBy('id', 'desc');
+        $totalData = count($lstData->get());
 
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);

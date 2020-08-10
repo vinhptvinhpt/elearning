@@ -7,10 +7,10 @@ require_once(__DIR__ . '/../../../../config.php');
 $sqlGetCategories = 'select id, name from mdl_course_categories';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
-$sqlGetCertificates = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and tms_traninning_programs.auto_certificate = 1 and student_certificate.userid = '.$USER->id;
+$sqlGetCertificates = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 2 and tms_traninning_programs.auto_certificate = 1 and student_certificate.userid = '.$USER->id;
 $certificates = array_values($DB->get_records_sql($sqlGetCertificates));
 
-$sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and tms_traninning_programs.auto_badge = 1 and student_certificate.userid = '.$USER->id;
+$sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 2 and tms_traninning_programs.auto_badge = 1 and student_certificate.userid = '.$USER->id;
 $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
 session_start();
@@ -490,7 +490,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li>Company: Easia Travel</li>
                     </ul>
                 </div>
-                <div><a href="lms/user/edit.php" style="font-size: 14px; font-style: italic; color: #006FFF">Edit profile</a></div>
+                <div><a href="lms/user/edit.php" style="font-size: 14px; font-style: italic; color: <?=$_SESSION["color"]?>">Edit profile</a></div>
             </div>
             <div class="info-learn">
                 <div class="container">
@@ -614,7 +614,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3">
                                             <div class="item-image">
-                                                <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
+                                                <img src="/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" alt="">
                                             </div>
                                             <div class="item-content">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
@@ -631,7 +631,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <?php foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3">
                                                 <div class="item-image">
-                                                    <img src="/elearning-easia/public/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
+                                                    <img src="/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" alt="">
                                                 </div>
                                                 <div class="item-content">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
@@ -728,7 +728,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
                 axios({
                     method: 'post',
-                    url: this.url + '/coursesearch.php',
+                    url: this.url + '/pusher/coursesearch.php',
                     data: params,
                     headers: {
                         'Content-Type': 'application/x-www-form-urlencoded',

@@ -10,6 +10,7 @@ use App\TmsLearnerHistory;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
+use App\TmsRoleOrganization;
 use App\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
@@ -146,8 +147,14 @@ class BussinessRepository implements IBussinessInterface
                 $data = $data->where(function($query) use ($keyword){
                     $query->where('url', 'like', "%{$keyword}%");
                     $query->orWhere('info', 'like', "%{$keyword}%");
+                    $query->orWhere('action', 'like', "%{$keyword}%");
+                    $query->orWhere('type', 'like', "%{$keyword}%");
+                    $query->orWhereHas('user', function($q) use($keyword){
+                        $q->where('username', 'like', "%{$keyword}%");
+                    });
                 });
             }
+
             if ($type != '') {
                 $data = $data->where('type', $type);
             }
@@ -1126,6 +1133,36 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
+
+            $user_id = Auth::id();
+            //Check role teacher and enrol for creator of course
+            $current_user_roles_and_slugs = checkRole();
+            //If user ís not a teacher, assign as teacher
+            $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
+            if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
+                add_user_by_role($user_id, $role_teacher->id);
+                enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+            }
+            //Enrol user to newly created course as teacher
+            enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
+
+
+            //Add newly course to phân quyền dữ liệu
+            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+                //admin do nothing
+            } else {
+                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+                if ($checkRoleOrg != 0) {
+                    $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                    if (isset($org_role)) {
+                        $new_relation = new TmsRoleCourse();
+                        $new_relation->role_id = $org_role->role_id;
+                        $new_relation->course_id = $course->id;
+                        $new_relation->save();
+                    }
+                }
+            }
+
             //write log to mdl_logstore_standard_log
 /*            $app_name = Config::get('constants.domain.APP_NAME');
             $key_app = encrypt_key($app_name);
@@ -1200,7 +1237,8 @@ class BussinessRepository implements IBussinessInterface
 
         $select = [];
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+        //if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+        if (true) { //hack show all courses offline
             $listCourses = DB::table('mdl_course')
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
@@ -1216,8 +1254,10 @@ class BussinessRepository implements IBussinessInterface
                 ];
         } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
-            $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            if ($checkRole === true) {
+            //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+            //if ($checkRole === true) {
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            if ($checkRoleOrg != 0) {
                 $listCourses = DB::table('mdl_course')
                     ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
                     ->where('mdl_course.category', '=', $category_id)
@@ -1289,7 +1329,6 @@ class BussinessRepository implements IBussinessInterface
         //        } else {
         //            $listCourses = $listCourses->where('mdl_course.category', '!=', 2);
         //        }
-
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -2156,7 +2195,7 @@ class BussinessRepository implements IBussinessInterface
                 'u.username',
                 'u.firstname',
                 'u.lastname',
-                DB::raw("CONCAT(u.lastname,' ',u.firstname) AS fullname"),
+                'tud.fullname',
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
@@ -4836,6 +4875,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone->where(function ($query) use ($keyword) {
                 $query->orWhere('tud.fullname', 'like', "%{$keyword}%")
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
+                    ->orWhere('ttp.name', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
                     ->orWhere('mu.username', 'like', "%{$keyword}%");
@@ -5036,6 +5076,8 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
+                    ->orWhere('tms_traninning_programs.name', 'like', "%{$keyword}%")
+                    ->orWhere('sc.code', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
         }
@@ -14662,7 +14704,7 @@ class BussinessRepository implements IBussinessInterface
     // UserExamController
     public function getListUser(Request $request)
     {
-        $this->keyword = $request->input('keyword');
+        $keyword = $request->input('keyword');
         $row = $request->input('row');
         $param = [
             'keyword' => 'text',
@@ -14684,6 +14726,15 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_user as u', 'data1.userid', '=', 'u.id')
             ->where('data1.attempt_time', '>=', '2')
             ->select('u.username', 'tud.cmtnd', 'tud.fullname', 'tud.email', 'data1.userid as user_id', 'data1.attempt_time', 'data2.finalgrade');
+
+        if ($keyword) {
+            $data = $data->where(function($query) use ($keyword){
+                $query->where('u.username', 'like', "%{$keyword}%");
+                $query->orWhere('tud.cmtnd', 'like', "%{$keyword}%");
+                $query->orWhere('tud.fullname', 'like', "%{$keyword}%");
+                $query->orWhere('tud.email', 'like', "%{$keyword}%");
+            });
+        }
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
