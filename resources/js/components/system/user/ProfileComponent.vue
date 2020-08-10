@@ -24,11 +24,15 @@
                 </h6>
                 <p>ID: <strong>{{users.username}}</strong></p>
                 <p v-if="users.student_role > 0">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat') }}</strong></p>
-                <div v-if="users.confirm == 0 && users.student_role > 0">
-                  <hr>
-                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>
-                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>
-                </div>
+<!--                <div v-if="users.confirm == 0 && users.student_role > 0">-->
+<!--                  <hr>-->
+<!--                  <p>{{trans.get('keys.thoi_gian_het_han')}}</p>-->
+<!--                  <p><strong :class="users.diff_time_class">{{users.diff_time}}</strong></p>-->
+<!--                </div>-->
+                <template v-if="users.employee">
+                  <p style="text-transform: capitalize;">Title/Position: <strong>{{users.employee.description ? users.employee.description : 'N/A'}} / {{users.employee.position}}</strong></p>
+                  <p>Department: <strong>{{users.employee.organization.code}}({{users.employee.organization.name}})</strong></p>
+                </template>
               </div>
             </div>
           </div>
@@ -80,13 +84,22 @@
                     <div class="col-sm-6">{{trans.get('keys.ngay_bat_dau_lam_viec')}}</div>
                     <div class="col-sm-6 pl-40 pl-sm-15">{{ users.start_time ? users.start_time : trans.get('keys.chua_cap_nhat') }}</div>
                   </div>
-                  <div class="row" v-if="users.student_role > 0">
-                    <div class="col-sm-6">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm) ?  trans.get('keys.da_cap') :  trans.get('keys.chua_cap') }}</div>
-                  </div>
-                  <div class="row" v-if="users.student_role > 0">
-                    <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>
-                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.confirm_address_detail.name : trans.get('keys.chua_cap_nhat') }}</div>
+<!--                  <div class="row" v-if="users.student_role > 0">-->
+<!--                    <div class="col-sm-6">{{trans.get('keys.tinh_trang_cap_giay_chung_nhan')}}</div>-->
+<!--                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm) ?  trans.get('keys.da_cap') :  trans.get('keys.chua_cap') }}</div>-->
+<!--                  </div>-->
+<!--                  <div class="row" v-if="users.student_role > 0">-->
+<!--                    <div class="col-sm-6">{{trans.get('keys.noi_cap_giay_chung_nhan')}}</div>-->
+<!--                    <div class="col-sm-6 pl-40 pl-sm-15">{{ (users.confirm_address) ? users.confirm_address_detail.name : trans.get('keys.chua_cap_nhat') }}</div>-->
+<!--                  </div>-->
+                  <div class="row">
+                    <div class="col-sm-6">{{trans.get('keys.quyen_tai_khoan')}}</div>
+                    <div class="col-sm-6 pl-30 pl-sm-15">
+                      <p v-if="users.roles.length > 0" v-for="roleitem in users.roles" style="text-transform: capitalize;">
+                        {{ roleitem.role.description }}
+                      </p>
+                      <p v-else>{{trans.get('keys.chua_cap_nhat')}}</p>
+                    </div>
                   </div>
                 </li>
               </ul>
