@@ -290,9 +290,11 @@ class LoginController extends Controller
 
             Auth::login($checkUser, $remember);
 
+            $response['id'] = $checkUser->id;
             $response['username'] = $checkUser->username;
             $response['avatar'] = Auth::user()->detail['avatar'];
             $response['fullname'] = Auth::user()->detail['fullname'];
+            $response['domain'] = Config::get('constants.domain.TMS');
             $response['jwt'] = $token;
             $response['status'] = 'SUCCESS';
 
