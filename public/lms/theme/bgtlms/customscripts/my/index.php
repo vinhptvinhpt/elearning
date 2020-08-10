@@ -188,6 +188,10 @@ $countBlock = 1;
 $percentCompleted = intval(count($courses_completed) * 100 / count($courses));
 $percentStudying = intval(count($courses_current) * 100 / count($courses));
 
+
+//get image badge
+$sqlGetBadge = "select path from image_certificate where type =2 and is_active";
+$pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 ?>
 
 <html>
@@ -1263,8 +1267,9 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-                                                            <img src="<?php echo $_SESSION['component'] ?>"
-                                                                 alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+<!--                                                            <img src="--><?php //echo $_SESSION['component'] ?><!--"-->
+<!--                                                                 alt=""><span>--><?php //echo intval($course->numoflearned * 100 / $course->numofmodule); ?><!--%</span>-->
+                                                            <img src="<?php echo $pathBadge; ?>" alt="">
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
