@@ -779,8 +779,10 @@ if ($progress != 1) {
                                                                 <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                 {{course.estimate_duration}} hours
                                                             </li>
-                                                            <li class="number-order">
+                                                            <li v-if="course.training_deleted == 0" class="number-order">
                                                                 {{ index+1 }}
+                                                            </li>
+                                                            <li v-else>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -941,8 +943,11 @@ if ($progress != 1) {
                                                                 <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                 {{course.estimate_duration}} hours
                                                             </li>
-                                                            <li class="number-order">
+                                                            <li v-if="course.training_deleted == 0" class="number-order">
                                                                 {{ course.stt_count }}
+                                                            </li>
+                                                            <li v-else>
+                                                                1111
                                                             </li>
                                                         </ul>
                                                     </div>

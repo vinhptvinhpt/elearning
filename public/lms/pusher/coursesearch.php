@@ -79,7 +79,7 @@ mc.estimate_duration,
         elseif ($course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
         } //then required = khoa hoc trong khung nang luc
-        elseif ($course->training_name && $course->training_deleted == 0) {
+        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
             $courses_required[$course->training_id][$course->order_no] = $course;
             $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
 //            push_course($courses_required, $course);

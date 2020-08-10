@@ -311,7 +311,6 @@ class TaskController extends Controller
                 ->groupBy('cc.training_id', 'cc.userid')->get();
 
 
-
             $arrData = [];
             $num = 0;
             $limit = 200;
@@ -2128,7 +2127,7 @@ class TaskController extends Controller
     public function apiGenerateSASUrlAzure()
     {
         $arrMainId = [33, 140];
-        $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->select('id', 'main_library_id', 'json_content', 'filtered')->get();
+        $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->select('id', 'main_library_id', 'json_content')->get();
 
         foreach ($lstData as $data) {
             $jsonData = json_decode($data->json_content, true);
@@ -2174,7 +2173,8 @@ class TaskController extends Controller
                 $hvp->json_content = json_encode($jsonData);
                 $hvp->filtered = json_encode($jsonData);
                 $hvp->save();
-                sleep(3);
+                sleep(1);
+
             }
 
         }
@@ -2183,13 +2183,16 @@ class TaskController extends Controller
     public function processInteractive140($jsonData, $id)
     {
         if (isset($jsonData['content'])) {
-            foreach ($jsonData['content'] as $data_content) {
+
+            foreach ($jsonData['content'] as $key => $data_content) {
+
                 if (isset($data_content['content']) && isset($data_content['content']['params'])
-                    && isset($data_content['content']['params']['interactiveVideo'])
-                    && isset($data_content['content']['params']['interactiveVideo']['files']) && isset($data_content['content']['params']['interactiveVideo']['files'][0])
-                    && isset($data_content['content']['params']['interactiveVideo']['files'][0]['path'])
+                    && isset($data_content['content']['params']['interactiveVideo']) && isset($data_content['content']['params']['interactiveVideo']['video'])
+                    && isset($data_content['content']['params']['interactiveVideo']['video']['files']) && isset($data_content['content']['params']['interactiveVideo']['video']['files'][0])
+                    && isset($data_content['content']['params']['interactiveVideo']['video']['files'][0]['path'])
                 ) {
-                    $path = $jsonData['interactiveVideo']['video']['files'][0]['path'];
+                    $path = $data_content['content']['params']['interactiveVideo']['video']['files'][0]['path'];
+
                     if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
                         $file_name = basename($path);
 
@@ -2197,24 +2200,29 @@ class TaskController extends Controller
                         $arr_name = explode('?', $file_name_rp);
 
                         $blob_name = $arr_name[0];
-                        $end_date = Carbon::now()->addHour(23)->addMinute(58);
+                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
                         $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
                         $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
 
-                        $jsonData['interactiveVideo']['video']['files'][0]['path'] = $_blobUrl;
+                        $data_content['content']['params']['interactiveVideo']['video']['files'][0]['path'] = $_blobUrl;
 
-                        $hvp = MdlHvp::findOrFail($id);
-                        $hvp->json_content = json_encode($jsonData);
-                        $hvp->filtered = json_encode($jsonData);
-                        $hvp->save();
-                        sleep(3);
+
+                        $jsonData['content'][$key] = $data_content;
+                        usleep(100);
+
                     }
 
                 }
             }
+
+            $hvp = MdlHvp::findOrFail($id);
+            $hvp->json_content = json_encode($jsonData);
+            $hvp->filtered = json_encode($jsonData);
+            $hvp->save();
+            sleep(1);
         }
     }
 
