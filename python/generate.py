@@ -283,7 +283,7 @@ if __name__ == '__main__':
                             
                             name_utf8_training = training_name + " training" 
                             #name_utf8_training = "Leading with emotional intelligence"
-                            name_utf8_training = name_utf8_training.upper()
+                            #name_utf8_training = name_utf8_training.upper()
                             
                             # open image
                             img = Image.open(path_image)
@@ -413,7 +413,7 @@ if __name__ == '__main__':
                             #region in anh huy hieu
                             name_utf8_training = training_name
                             
-                            text = name_utf8_training.upper()
+                            text = name_utf8_training
                             
                             max_width = image_new_width_bg
                             
@@ -431,7 +431,7 @@ if __name__ == '__main__':
                                 for wd in words:
                                     lines.append(wd)                                  
                             else:
-                                if font.getsize(text)[0] <= max_width:
+                                if font.getsize(text)[0] <= max_width-250:
                                     lines.append(text) 
                                 else:
                                     # split the line by spaces to get words                                   
