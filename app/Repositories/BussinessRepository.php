@@ -102,14 +102,13 @@ class BussinessRepository implements IBussinessInterface
         $action = $request->input('action');
 
         $param = [
-            'keyword' => 'text',
+            'keyword' => 'longtext',
             'row' => 'number',
             'type' => 'text',
             'action' => 'text',
         ];
 
         $validator = validate_fails($request, $param);
-
         if (!empty($validator)) {
             return response()->json([]);
         }
@@ -4464,17 +4463,18 @@ class BussinessRepository implements IBussinessInterface
     public function apiListUserByRole(Request $request)
     {
         $role_id = $request->input('id');
+        $this->keyword = $request->input('keyword');
+        $row = $request->input('row');
         $param = [
             'id' => 'number',
-            'keyword' => 'text',
+            'keyword' => 'longtext',
             'row' => 'number'
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
         }
-        $this->keyword = $request->input('keyword');
-        $row = $request->input('row');
+
 
         $data = DB::table('tms_user_detail as tud')
             ->select('tud.user_id', 'tud.fullname', 'tud.cmtnd', 'tud.email', 'tud.phone', 'mu.username')
@@ -13367,11 +13367,11 @@ class BussinessRepository implements IBussinessInterface
         $role_id = $request->input('role_id');
 
         //
-        $typeKeyword = 'text';
-        if(strpos($this->keyword, '+') !== false)
-            $typeKeyword = 'phone';
+//        $typeKeyword = 'text';
+//        if(strpos($this->keyword, '+') !== false)
+//            $typeKeyword = 'phone';
         $param = [
-            'keyword' => $typeKeyword,
+            'keyword' => 'longtext',
             'row' => 'number',
             'sale_room_id' => 'number',
         ];
