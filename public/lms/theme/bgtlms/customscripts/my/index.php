@@ -94,14 +94,17 @@ $competency_exists = array();
 foreach ($courses as $course) {
 
     //current first
-    if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+    if($course->id == 398){
+        push_course($courses_completed, $course);
+    }
+    elseif ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
         array_push($competency_exists, $course->training_id);
         push_course($courses_current, $course);
     } //then complete
     elseif ($course->numoflearned / $course->numofmodule == 1) {
         push_course($courses_completed, $course);
     } //then required = khoa hoc trong khung nang luc
-    elseif ($course->training_name && $course->training_deleted == 0) {
+    elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
         $courses_required[$course->training_id][$course->order_no] = $course;
     } //the last is other courses
     else {
@@ -1103,13 +1106,13 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                 //defined enable
                                                 $enable = 'enable';
                                                 $stt = 1;
-                                                //get first training id of list course
+                                                //get first training id of liest course
                                                 $training_id = array_values($courses_traning)[0]->training_id;
                                                 //if exists in list competency => it learning => disable to learn
                                                 if (in_array($training_id, $competency_exists)) {
                                                     $enable = 'disable';
                                                 }
-                                                foreach ($courses_traning as $course) { ?>
+                                                foreach ($courses_traning as $course) { if($course->training_deleted == 2) continue; ?>
                                                     <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                         <div class="block-data">
                                                             <div class="block-items__item <?php echo $enable; ?>">
@@ -1127,7 +1130,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
                                                                            title="<?php echo $course->fullname; ?>"><p
                                                                                 class="title-course">
-                                                                                <i></i><?php echo $course->fullname; ?>
+                                                                                <i></i><?php echo $course->fullname . ' '. $course->training_deleted; ?>
                                                                             </p></a>
                                                                         <div class="info-course">
                                                                             <?php if (!empty($course->teacher_name)) { ?>
@@ -1166,19 +1169,23 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                             };
                                             foreach ($courses_required as $courses_traning) {
                                                 $stt = 2;
-                                                array_shift($courses_traning);
+                                                $enable = 'enable';
+                                                if(array_values($courses_traning)[0]->training_deleted == 0){
+                                                    array_shift($courses_traning);
+                                                    $enable = 'disable';
+                                                }
                                                 foreach ($courses_traning as $course) { ?>
                                                     <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                         <div class="block-data">
-                                                            <div class="block-items__item disable">
+                                                            <div class="block-items__item <?php echo $enable; ?>">
                                                                 <div class="block-item__image col-5"
                                                                      style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                                     <div
-                                                                        class="div-info-progress-disable">
+                                                                        class="div-info-progress-<?php echo $enable; ?>">
                                                                         <img src="<?php echo $_SESSION['component'] ?>"
                                                                              alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
                                                                     </div>
-                                                                    <div class="div-disable"></div>
+                                                                    <div class="div-<?php echo $enable; ?>"></div>
                                                                 </div>
                                                                 <div class="block-item__content col-7">
                                                                     <div class="block-item__content_text">
@@ -1209,7 +1216,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                                 hours</p>
                                                                         </div>
                                                                     </div>
-                                                                    <p class="number-order"><?php echo $stt; ?></p>
+                                                                    <?php if($course->training_deleted == 0){?>
+                                                                        <p class="number-order"><?php echo $stt; ?></p>
+                                                                    <?php } else { ?>
+                                                                        <p class="number-order number-order-hide"></p>
+                                                                    <?php } ?>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1276,9 +1287,11 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <p class="units"><i class="fa fa-file"
-                                                                                        aria-hidden="true"></i> <?php echo $course->training_name; ?>
-                                                                    </p>
+                                                                    <?php if(!empty($course->training_name)){?>
+                                                                        <p class="units"><i class="fa fa-file"
+                                                                                            aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                        </p>
+                                                                    <?php } ?>
                                                                     <p class="units"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
