@@ -38,7 +38,7 @@
                       <div class="d-flex flex-row form-group">
                         <input v-model="keyword" type="text"
                                class="form-control search_text"
-                               :placeholder="trans.get('keys.nhap_tu_khoa') + ' ...'">
+                               :placeholder="trans.get('keys.nhap_cmtnd_username_fullname_email') + ' ...'">
                         <button type="button" id="btnFilter"
                                 class="btn btn-primary btn-sm btn_fillter"
                                 @click="getUser(1)">

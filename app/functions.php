@@ -559,6 +559,23 @@ function tvHasRoles($user_id, $roleName)
     return false;
 }
 
+/**
+ * @param $user_id
+ * @return int
+ */
+function tvHasOrganization($user_id)
+{
+    $orgCheck = DB::table('tms_organization_employee as toe')
+        ->where('toe.user_id', '=', $user_id)
+        ->first();
+    if ($orgCheck && is_numeric($orgCheck->organization_id)) {
+        return $orgCheck->organization_id;
+    } else {
+        return 0;
+    }
+
+}
+
 function slug_can($slug)
 {
     $check = false;

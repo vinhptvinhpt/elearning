@@ -900,12 +900,11 @@ const routes = [
                 })
             },
             {
-                path: 'self/present/:self_id/:user_id',
+                path: 'self/present/:self_id',
                 component: SelfLMS,
                 name: 'SelfLMS',
                 props: (route) => ({
-                    self_id: route.params.self_id,
-                    user_id: route.params.user_id
+                    self_id: route.params.self_id
                 })
             },
 

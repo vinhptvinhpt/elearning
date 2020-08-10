@@ -32,7 +32,8 @@ class MailController extends Controller
             TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
-            TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE
+            TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
+            TmsNotification::ENROL => TmsConfigs::ENABLE
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
@@ -1624,6 +1625,7 @@ class MailController extends Controller
                 'fruity.tester@gmail.com',
                 'linhnt@tinhvan.com',
                 'nguyenlinhcksl@gmail.com',
+                'leduytho93@gmail.com',
                 'duongtiendat.it@gmail.com'
             ];
             if (in_array($email, $dev_email)) {

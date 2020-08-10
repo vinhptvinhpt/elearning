@@ -100,7 +100,7 @@
                                                                             <div class="d-flex flex-row form-group">
                                                                                 <input v-model="keyword" type="text"
                                                                                        class="form-control search_text"
-                                                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_fullname')+' ...'">
+                                                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
                                                                                 <button type="button" id="btnFilter"
                                                                                         class="btn btn-primary btn-sm"
                                                                                         @click="getUserNeedEnrol(1)">
@@ -149,8 +149,7 @@
                                                                     <tr v-for="(user,index) in userNeedEnrols">
                                                                         <td>{{ (current-1)*row+(index+1) }}</td>
                                                                         <td>{{ user.username }}</td>
-                                                                        <td class=" mobile_hide">{{ user.lastname }} {{
-                                                                            user.firstname }}
+                                                                        <td class=" mobile_hide">{{ user.fullname }}
                                                                         </td>
                                                                         <td class="text-center">
                                                                             <input type="checkbox" :value="user.id"
@@ -198,7 +197,7 @@
                                                                                 <input v-model="keyword_curr"
                                                                                        type="text"
                                                                                        class="form-control search_text"
-                                                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_fullname')+' ...'">
+                                                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
                                                                                 <button type="button" id="btnFilter1"
                                                                                         class="btn btn-primary btn-sm"
                                                                                         @click="getCurrentUserEnrol(1)">
@@ -250,8 +249,7 @@
                                                                         <td>{{ (current_page-1)*row_crr+(index+1) }}
                                                                         </td>
                                                                         <td>{{ user.username }}</td>
-                                                                        <td class=" mobile_hide">{{ user.lastname }} {{
-                                                                            user.firstname }}
+                                                                        <td class=" mobile_hide">{{ user.fullname }}
                                                                         </td>
                                                                         <td class="text-center">
                                                                             <input type="checkbox" :value="user.id"

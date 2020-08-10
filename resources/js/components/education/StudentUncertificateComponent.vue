@@ -50,7 +50,7 @@
                                     <div class="d-flex flex-row form-group">
                                         <input v-model="keyword" type="text"
                                                class="form-control search_text"
-                                               :placeholder="trans.get('keys.nhap_tu_khoa')+'...'">
+                                               :placeholder="trans.get('keys.nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email')+'...'">
                                         <button type="button" class="btn btn-primary btn-sm"
                                                 @click="getListStudentsUncertificate(1)">
                                             {{trans.get('keys.tim')}}
@@ -169,7 +169,7 @@
                                     <div class="d-flex flex-row form-group">
                                         <input v-model="keywordCt" type="text"
                                                class="form-control search_text"
-                                               :placeholder="trans.get('keys.nhap_tu_khoa')+'...'">
+                                               :placeholder="trans.get('keys.nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc')+'...'">
                                         <button type="button" class="btn btn-primary btn-sm"
                                                 @click="getListStudentsCertificate(1)">
                                             {{trans.get('keys.tim')}}

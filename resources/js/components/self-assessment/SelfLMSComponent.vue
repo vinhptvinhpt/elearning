@@ -46,13 +46,14 @@
 </template>
 
 <script>
-
+    import Ls from './../../services/ls'
     import GroupQuestion from "./template/present/GroupQuestionComponent";
     import MinMaxQuestion from "./template/present/MinMaxComponent"
 
     export default {
-        props: ['self_id', 'user_id'],
+        props: ['self_id'],
         components: {
+            Ls,
             GroupQuestion,
             MinMaxQuestion
         },
@@ -82,9 +83,21 @@
             },
             submitAnswer() {
                 let current_pos = this;
+                let obj = Ls.get('auth.user');
+                let user_id = '';
+                if (obj && obj !== 'undefined') {
+                    var user_info = JSON.parse(obj);
+                    user_id = user_info.id;
+                }
+
+                if (user_id === '') {
+                    toastr['error'](current_pos.trans.get('keys.expired_session'), current_pos.trans.get('keys.that_bai'));
+                    return;
+                }
+                
 
                 axios.post('/api/self/submit_resultlms/' + this.self_id, {
-                    user_id: this.user_id,
+                    user_id: user_id,
                     question_answers: this.question_answers,
                     group_ques: this.group_ques,
                     minmax_gr: this.minmax_gr
