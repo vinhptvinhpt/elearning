@@ -81,6 +81,9 @@ if(!isloggedin()){
         color: white;
     }
 
+    .sp-name-course{
+        font-size: 32px;
+    }
     .closebtn {
         margin-left: 15px;
         color: white;
@@ -338,14 +341,18 @@ if(!isloggedin()){
     }
 
     .unit-done{
-        border: 2px solid #378449;
+        /*border: 2px solid #378449;*/
     }
 
     .unit-done .unit__title{
-        background: #378449 0% 0% no-repeat;
+        /*background: #378449 0% 0% no-repeat;*/
     }
     .unit-done .unit__title p{
-        color: #ffffff;
+        /*color: #ffffff;*/
+    }
+
+    .unit-done .unit__icon i{
+        color: #378449;
     }
 
     .unit-click .unit__title {
@@ -818,30 +825,31 @@ $pathBadge = $getBadge->path;
 $pathBadge = ltrim($pathBadge, $pathBadge[0]);
 if(empty($pathBadge))
     $pathBadge = 'images/default_badge.png';
+$_SESSION["displayPopup"] = 1;
 //-1 chưa xem. 0 chưa có bản ghi trong db, 1 xem, 2 đã xem
-if ($course->numofmodule == 0) {
-    $_SESSION["displayPopup"] = 0;
-} else {
-    $percentProgress = $course->numoflearned / $course->numofmodule;
-    $displayVal = $course->display;
-//if percent of progress = 1 is complete course => display popup congratulation
-    if ($percentProgress == 1) {
-        if ($displayVal == 0) {
-            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
-            $_SESSION["displayPopup"] = 1;
-        } else if ($displayVal == -1) {
-            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
-            $_SESSION["displayPopup"] = 1;
-        } else {
-            $_SESSION["displayPopup"] = 2;
-        }
-    } else {
-        if ($displayVal == 0) {
-            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
-            $_SESSION["displayPopup"] = 0;
-        }
-    }
-}
+//if ($course->numofmodule == 0) {
+//    $_SESSION["displayPopup"] = 0;
+//} else {
+//    $percentProgress = $course->numoflearned / $course->numofmodule;
+//    $displayVal = $course->display;
+////if percent of progress = 1 is complete course => display popup congratulation
+//    if ($percentProgress == 1) {
+//        if ($displayVal == 0) {
+//            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
+//            $_SESSION["displayPopup"] = 1;
+//        } else if ($displayVal == -1) {
+//            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
+//            $_SESSION["displayPopup"] = 1;
+//        } else {
+//            $_SESSION["displayPopup"] = 2;
+//        }
+//    } else {
+//        if ($displayVal == 0) {
+//            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
+//            $_SESSION["displayPopup"] = 0;
+//        }
+//    }
+//}
 
 ?>
 <body <?php echo $bodyattributes ?>>
@@ -1055,6 +1063,7 @@ if ($course->numofmodule == 0) {
                 </div>
                 <div class="modal-body">
                     <img src="<?php echo $pathBadge; ?>" alt="">
+                    <span class="sp-name-course"><?php echo $course->fullname; ?></span>
                 </div>
                 <div class="modal-footer" style="width: 100%">
                     <div style="margin: 0 auto">

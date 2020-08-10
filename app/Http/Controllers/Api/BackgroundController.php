@@ -134,47 +134,6 @@ Log::info('107');
                 $file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
             }
 
-//            $base_level_organization = '';
-//            if (strpos(strtolower($file_name), 'easia') !== false) {
-//                $base_level_organization  = 'easia';
-//                $base_level_organization_name  = 'Easia';
-//                $base_level_organization_code  = 'EA';
-//            } elseif (strpos(strtolower($file_name), 'begodi') !== false) {
-//                $base_level_organization  = 'begodi';
-//                $base_level_organization_name  = 'Begodi';
-//                $base_level_organization_code  = 'BG';
-//            } elseif (strpos(strtolower($file_name), 'avana') !== false) {
-//                $base_level_organization  = 'avana';
-//                $base_level_organization_name  = 'Avana';
-//                $base_level_organization_code  = 'AV';
-//            } elseif (strpos(strtolower($file_name), 'exotic') !== false) {
-//                $base_level_organization  = 'exotic';
-//                $base_level_organization_name  = 'Exotic Voyages';
-//                $base_level_organization_code  = 'EV';
-//            }  elseif (strpos(strtolower($file_name), 'tve') !== false) {
-//                $base_level_organization  = 'tve';
-//                $base_level_organization_name  = 'TVE';
-//                $base_level_organization_code  = 'TVE';
-//            } else {
-//                if ($env == 'cms') {
-//                    return response()->json(self::status_message('error', 'Organization mismatch'));
-//                }
-//                echo "Organization mismatch $file_name";
-//                continue;
-//            }
-
-//            if (strlen($base_level_organization) != 0) {
-//                $base_organization = TmsOrganization::firstOrCreate([
-//                    'code' => $base_level_organization_code, //strtoupper($base_level_organization),
-//                    'name' => $base_level_organization_name, //ucwords($base_level_organization),
-//                    'level' => 1
-//                    ]);
-//            } else {
-//                continue;
-//            }
-
-
-//            $base_level_id = $base_organization->id;
             $base_level = 1;
 
             $list_uploaded = (new DataImport())->toArray($file_path, '', '');
@@ -201,10 +160,11 @@ Log::info('157');
 
                 if (strlen($base_level_organization_code) != 0 && array_key_exists($base_level_organization_code, $base_level_orgs)) {
                     $base_organization = TmsOrganization::firstOrCreate([
-                        'code' => $base_level_organization_code, //strtoupper($base_level_organization),
-                        'name' => $base_level_orgs[$base_level_organization_code], //ucwords($base_level_organization),
+                        'code' => $base_level_organization_code,
+                        'name' => $base_level_orgs[$base_level_organization_code],
                         'level' => $base_level
                     ]);
+                    self::createPQDL($base_organization);
                     $base_level_id = $base_organization->id;
                 } else {
                     $content[] = 'Organization mismatch';
@@ -253,6 +213,7 @@ Log::info('157');
                         ], [
                             'name' => $department_name,//ucwords($base_level_organization) . "-" . $department_name,
                         ]);
+                        self::createPQDL($organization);
                     }
                 }
 
@@ -397,6 +358,44 @@ Log::info('337');
 Log::info('348');
             if ($env == 'cms') {
                 return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+            }
+        }
+    }
+
+    function createPQDL($organization) {
+        if (!$organization->roleOrganization) { //Tạo role nếu chưa có
+            $lastRole = MdlRole::latest()->first();
+            $checkRole = Role::where('name', $organization->name)->first();
+            if ($checkRole) {
+                return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+            }
+
+            //Tạo quyền bên LMS
+            $mdlRole = new MdlRole;
+            $mdlRole->shortname = $organization->code;
+            $mdlRole->description = $organization->name;
+            $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+            $mdlRole->archetype = 'user';
+            $mdlRole->save();
+
+            $role = new Role();
+            $role->mdl_role_id = $mdlRole->id;
+            $role->name = $organization->code;
+            $role->description = $organization->name;
+            $role->guard_name = 'web';
+            $role->status = 1;
+            $role->save();
+
+            $new_role_organization = new TmsRoleOrganization();
+            $new_role_organization->organization_id = $organization->id;
+            $new_role_organization->role_id = $role->id;
+            $new_role_organization->save();
+        } else {
+            $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
+            if ($check->role) { //Cập nhật role
+                $check->role->name = $organization->code;
+                $check->role->description = $organization->name;
+                $check->role->save();
             }
         }
     }

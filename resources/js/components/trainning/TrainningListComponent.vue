@@ -17,7 +17,7 @@
                 <section class="hk-sec-wrapper">
                     <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_theo_thoi_gian')}}</h5>
                     <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc')}}</h5>
-                    <div class="row mb-4">
+                    <div class="row mb-4" v-if="slug_can('tms-system-administrator-grant')">
                         <div class="col-sm">
                             <div class="accordion" id="accordion_1">
                                 <div class="card" style="border-bottom:1px solid rgba(0,0,0,.125) !important;">
@@ -111,7 +111,7 @@
                                 class="fal fa-pencil"></i></span>
                                             </router-link>
 
-                                            <button :title="trans.get('keys.xoa')" data-toggle="modal"
+                                            <button v-if="slug_can('tms-system-administrator-grant')" :title="trans.get('keys.xoa')" data-toggle="modal"
                                                     data-target="#delete-ph-modal"
                                                     @click="deletePost(sur.id)"
                                                     class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
@@ -141,7 +141,7 @@
     import TrainningCreate from './TrainningCreateComponent'
 
     export default {
-        props: ['type'],
+        props: ['type', 'slugs'],
         //components: {vPagination},
         components: {TrainningCreate},
         data() {
@@ -154,6 +154,9 @@
             }
         },
         methods: {
+            slug_can(permissionName) {
+              return this.slugs.indexOf(permissionName) !== -1;
+            },
             getTrainnings(paged) {
                 axios.post('/api/trainning/list', {
                     page: paged || this.current,

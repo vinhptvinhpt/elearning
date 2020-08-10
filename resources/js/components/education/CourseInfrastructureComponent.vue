@@ -66,7 +66,7 @@
                                         <label>{{trans.get('keys.hien_thi')}}
                                             <select v-model="row"
                                                     class="custom-select custom-select-sm form-control form-control-sm"
-                                                    @click="getCourses(1)">
+                                                    @click="getInfras(1)">
                                                 <option value="10">10</option>
                                                 <option value="25">25</option>
                                                 <option value="50">50</option>
@@ -76,13 +76,13 @@
                                     </div>
                                 </div>
                                 <div class="col-md-6 col-sm-7">
-                                    <form v-on:submit.prevent="getCourses(1)">
+                                    <form v-on:submit.prevent="getInfras(1)">
                                         <div class="d-flex flex-row form-group">
                                             <input v-model="keyword" type="text"
                                                    class="form-control search_text"
                                                    :placeholder="trans.get('keys.tim_kiem_theo_ten_csvc')+' ...'">
                                             <button type="button" id="btnFilter" class="btn btn-primary btn-sm"
-                                                    @click="getCourses(1)">
+                                                    @click="getInfras(1)">
                                                 {{trans.get('keys.tim')}}
                                             </button>
                                         </div>

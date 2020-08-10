@@ -63,7 +63,7 @@
                                         <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.khung_nang_luc')}}</th>
                                         <th class="text-center">{{trans.get('keys.tien_do')}}</th>
-                                        <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>
+<!--                                        <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
                                         <th>{{trans.get('keys.trang_thai')}}</th>
                                     </tr>
                                     </thead>
@@ -98,14 +98,14 @@
                                                  </li>
                                              </ul>-->
                                         </td>
-                                        <td class=" mobile_hide">
-                                            <div v-if="post.finalgrade!=undefined">
-                                                {{parseFloat(post.finalgrade).toFixed(2)}}
-                                            </div>
-                                            <div v-else>
-                                                0
-                                            </div>
-                                        </td>
+<!--                                        <td class=" mobile_hide">-->
+<!--                                            <div v-if="post.finalgrade!=undefined">-->
+<!--                                                {{parseFloat(post.finalgrade).toFixed(2)}}-->
+<!--                                            </div>-->
+<!--                                            <div v-else>-->
+<!--                                                0-->
+<!--                                            </div>-->
+<!--                                        </td>-->
                                         <td>
                                             <div v-if="
                                             //parseInt(post.status_user) === 1 &&
@@ -130,7 +130,7 @@
                                         <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.khung_nang_luc')}}</th>
                                         <th class="text-center">{{trans.get('keys.tien_do')}}</th>
-                                        <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>
+<!--                                        <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
                                         <th>{{trans.get('keys.trang_thai')}}</th>
                                     </tr>
                                     </tfoot>

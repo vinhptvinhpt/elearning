@@ -112,50 +112,46 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ];
         } else {
             //Kiểm tra xem có phải role thuộc organization hay không
-            $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            if ($checkRoleOrg === true) {
-                //kiểm tra xem có còn thêm quyền admin nữa không
-                $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["admin"]);
-                if ($checkRoleOrg)
-                    $ready = false;
-                else {
-                    $listCourses = DB::table('mdl_course as c')
-                        ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
-                        ->where(function ($query) {
-                            /* @var $query Builder */
-                            $query
-                                ->whereIn('c.id', function ($q2) { //organization
-                                    /* @var $q2 Builder */
-                                    $q2->select('mdl_course.id')
-                                        ->from('tms_organization_employee')
-                                        ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                                        ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                                        ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-                                        ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-                                })
-                                ->orwhereIn('c.id', function ($q1) { //được enrol
-                                    /* @var $q1 Builder */
-                                    $q1->select('mdl_course.id')
-                                        ->from('mdl_user_enrolments as mue')
-                                        ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                        ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-                                        ->where('mue.userid', '=', \Auth::user()->id);
-                                });
-                        });
-                    $select = [
-                        'c.id',
-                        'c.fullname',
-                        'c.shortname',
-                        'c.startdate',
-                        'c.enddate',
-                        'c.visible',
-                        'c.category',
-                        'c.deleted',
-                        'mccc.gradepass as pass_score'
-                    ];
-//                    $ready = true;
-                }
-            } else {
+//            $checkRoleOrg = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+//            if ($checkRoleOrg === true) {
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            if ($checkRoleOrg != 0) {
+                $listCourses = DB::table('mdl_course as c')
+                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'c.id')
+                    ->where(function ($query) {
+                        /* @var $query Builder */
+                        $query
+                            ->whereIn('c.id', function ($q2) { //organization
+                                /* @var $q2 Builder */
+                                $q2->select('mdl_course.id')
+                                    ->from('tms_organization_employee')
+                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                            })
+                            ->orwhereIn('c.id', function ($q1) { //được enrol
+                                /* @var $q1 Builder */
+                                $q1->select('mdl_course.id')
+                                    ->from('mdl_user_enrolments as mue')
+                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+                                    ->where('mue.userid', '=', \Auth::user()->id);
+                            });
+                    });
+                $select = [
+                    'c.id',
+                    'c.fullname',
+                    'c.shortname',
+                    'c.startdate',
+                    'c.enddate',
+                    'c.visible',
+                    'c.category',
+                    'c.deleted',
+                    'mccc.gradepass as pass_score'
+                ];
+            }
+            else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
                 if ($checkRole === TRUE) {
@@ -176,8 +172,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         'mccc.gradepass as pass_score'
                     ];
 //                    $ready = true;
-                }
             }
+        }
         }
 
         //Get last modify => Quá chậm so với query thuần, mặc dù đã paginated, do dữ liệu bảnh log quá nhiều => sử dụng trigger mdl_logstore_standard_log để cập nhật bảng mdl_course
@@ -1163,8 +1159,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
 
         if ($keyword) {
-            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
-            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            //lsl.other is a json => encode string input
+            $encodeKeyword = json_encode($keyword);
+            //replace " to remove " in string
+            $encodeKeyword = str_replace('"','', $encodeKeyword);
+            //string input take the form 'v\u1ecb' so replace \ -> \\\\ will search in mysql right
+            $encodeKeyword = str_replace('\\','\\\\\\\\', $encodeKeyword);
+            //
+            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR lsl.other like "%' . $encodeKeyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" OR lsl.action like "%' . $keyword . '%" )');
+            //
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR lsl.other like "%' . $encodeKeyword . '%" OR u.username like "%' . $keyword . '%" OR lsl.action like "%' . $keyword . '%" )');
         }
 
         if ($action) {
@@ -1231,17 +1235,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
                     if ($num == 0) {
                         $num = 1;
-                        $code_hint = $code_org->code . '_001';
                     } else {
                         $num = $num + 1;
-                        $code_hint = $code_org->code . '_00' . $num;
                     }
                 } else {
                     $num = 1;
-                    $code_hint = $code_org->code . '_001';
                 }
             }
-
+            $code_hint = $code_org->code . '_' . self::composeAppend($num);
             if ($num > 0) {
                 $response->status = true;
                 $response->otherData = $code_hint;
@@ -1257,5 +1258,18 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
+    }
+
+    /**
+     * @param $num
+     * @return string
+     */
+    public function composeAppend($num) {
+        $length = 3;
+        if (strlen($num) >= $length) {
+            return $num;
+        } else {
+            return str_repeat('0', $length - strlen($num)) . $num;
+        }
     }
 }

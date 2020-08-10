@@ -374,5 +374,6 @@
     "quen_mat_khau": "Forgot password",
     "remind_certificate": "Remind Certificate",
     "invite_student": "Invite Student",
-    "completed_competency": "Completed Competency"
+    "completed_competency": "Completed Competency",
+    "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Notice student is enrolled in the course"
 }
