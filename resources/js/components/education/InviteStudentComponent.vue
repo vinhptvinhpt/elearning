@@ -98,7 +98,7 @@
                                   <tr v-for="(user,index) in userNeedEnrols">
                                     <td>{{ (current-1)*row+(index+1) }}</td>
                                     <td>{{ user.username }}</td>
-                                    <td class=" mobile_hide">{{ user.lastname }} {{ user.firstname }}
+                                    <td class=" mobile_hide">{{ user.fullname }}
                                     </td>
                                     <td class="text-center">
                                       <input type="checkbox" :value="user.id" v-model="userEnrols" @change="onCheckboxEnrol()"/>
@@ -196,7 +196,7 @@
                                     <td>{{ (current_page-1)*row_crr+(index+1) }}
                                     </td>
                                     <td>{{ user.username }}</td>
-                                    <td class=" mobile_hide">{{ user.lastname }} {{ user.firstname }}
+                                    <td class=" mobile_hide">{{ user.fullname }}
                                     </td>
                                     <td class="text-center">
                                       <span v-if="user.replied === 0" class="fas fa-check text-secondary"></span>

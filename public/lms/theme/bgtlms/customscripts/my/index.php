@@ -517,7 +517,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-family: Nunito-Sans-Bold;
         color: #FFFFFF;
         position: absolute;
-        top: 14%;
+        top: 12%;
         right: 11%;
         letter-spacing: 1px;
     }
@@ -1267,9 +1267,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-<!--                                                            <img src="--><?php //echo $_SESSION['component'] ?><!--"-->
-<!--                                                                 alt=""><span>--><?php //echo intval($course->numoflearned * 100 / $course->numofmodule); ?><!--%</span>-->
-                                                            <img src="<?php echo $pathBadge; ?>" alt="">
+                                                            <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
+                                                                 alt=""><span><?php echo $course->fullname; ?></span>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">

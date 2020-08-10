@@ -1628,12 +1628,16 @@ class BussinessRepository implements IBussinessInterface
         //lấy danh sách học viên/giáo viên đang được enrol vào khóa học hiện tại
         $currentUserEnrol = DB::table('mdl_user_enrolments')
             ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
             ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
             ->where('mdl_course.id', '=', $course_id)
-            ->select('mdl_user.id', 'mdl_user.username', 'mdl_user.firstname', 'mdl_user.lastname', 'mdl_enrol.id as enrol_id');
+            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'mdl_enrol.id as enrol_id');
         if ($keyword) {
-            $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+            $currentUserEnrol = $currentUserEnrol->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
         }
 
 //        if (strlen($organization_id) != 0 && $organization_id != 0) {
@@ -1705,18 +1709,23 @@ class BussinessRepository implements IBussinessInterface
         //lấy danh sách học viên đang được enrol vào khóa học hiện tại
         $currentUserEnrol = DB::table('tms_invitation')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_invitation.user_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->where('tms_invitation.course_id', '=', $course_id)
             ->select(
                 'mdl_user.id',
                 'mdl_user.username',
                 'mdl_user.firstname',
                 'mdl_user.lastname',
+                'tms_user_detail.fullname',
                 'tms_invitation.replied',
                 'tms_invitation.accepted',
                 'tms_invitation.reason'
             );
         if ($keyword) {
-            $currentUserEnrol = $currentUserEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+            $currentUserEnrol = $currentUserEnrol->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
         }
 
         if ($invite_status == 'noreply') {
@@ -1772,9 +1781,10 @@ class BussinessRepository implements IBussinessInterface
         //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
         $userNeedEnrol = DB::table('model_has_roles')
             ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('mdl_user.deleted', '=', 0)
-            ->select('mdl_user.id', 'mdl_user.username', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
+            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('mdl_user_enrolments')
@@ -1785,7 +1795,10 @@ class BussinessRepository implements IBussinessInterface
             });
 
         if ($keyword) {
-            $userNeedEnrol = $userNeedEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
         }
 
 //        if (strlen($organization_id) != 0 && $organization_id != 0) {
@@ -1897,9 +1910,10 @@ class BussinessRepository implements IBussinessInterface
         //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
         $userNeedEnrol = DB::table('model_has_roles')
             ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('mdl_user.deleted', '=', 0)
-            ->select('mdl_user.id', 'mdl_user.username', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
+            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
             ->whereNotExists(function ($query) {
                 $query->select(DB::raw(1))
                     ->from('mdl_user_enrolments')
@@ -1915,7 +1929,10 @@ class BussinessRepository implements IBussinessInterface
             });
 
         if ($keyword) {
-            $userNeedEnrol = $userNeedEnrol->where('mdl_user.username', 'like', '%' . $keyword . '%');
+            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
         }
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {
@@ -4469,6 +4486,7 @@ class BussinessRepository implements IBussinessInterface
                     ->where('mhr.role_id', $role_id)
                     ->whereRaw('mhr.model_id = tud.user_id');
             });
+
         if ($this->keyword) {
             $data = $data->where(function ($query) {
                 $query->orWhere('tud.fullname', 'like', "%{$this->keyword}%")
@@ -13348,16 +13366,20 @@ class BussinessRepository implements IBussinessInterface
         $this->city_id = 0;
         $role_id = $request->input('role_id');
 
+        //
+        $typeKeyword = 'text';
+        if(strpos($this->keyword, '+') !== false)
+            $typeKeyword = 'phone';
         $param = [
-            'keyword' => 'text',
+            'keyword' => $typeKeyword,
             'row' => 'number',
             'sale_room_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
+
         if (!empty($validator)) {
             return response()->json([]);
         }
-
 
         if (strlen($this->saleroom_id) != 0) {
             $city = DB::table('tms_city_branch as tcb')
