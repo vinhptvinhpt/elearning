@@ -94,10 +94,7 @@ $competency_exists = array();
 foreach ($courses as $course) {
 
     //current first
-    if($course->id == 398){
-        push_course($courses_completed, $course);
-    }
-    elseif ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+    if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
         array_push($competency_exists, $course->training_id);
         push_course($courses_current, $course);
     } //then complete
