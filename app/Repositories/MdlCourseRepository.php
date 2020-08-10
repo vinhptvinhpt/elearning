@@ -1159,8 +1159,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
 
         if ($keyword) {
-            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
-            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" )');
+            //lsl.other is a json => encode string input
+            $encodeKeyword = json_encode($keyword);
+            //replace " to remove " in string
+            $encodeKeyword = str_replace('"','', $encodeKeyword);
+            //string input take the form 'v\u1ecb' so replace \ -> \\\\ will search in mysql right
+            $encodeKeyword = str_replace('\\','\\\\\\\\', $encodeKeyword);
+            //
+            $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR lsl.other like "%' . $encodeKeyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" OR lsl.action like "%' . $keyword . '%" )');
+            //
+            $docDifDel = $docDifDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR lsl.other like "%' . $encodeKeyword . '%" OR u.username like "%' . $keyword . '%" OR lsl.action like "%' . $keyword . '%" )');
         }
 
         if ($action) {

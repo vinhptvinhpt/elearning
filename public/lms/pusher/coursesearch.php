@@ -20,6 +20,7 @@ if ($progress == 1) { //List from home
     $courses_required = array();
     $courses_completed = array();
     $courses_others = array();
+    $courses_others_id = '(0';
 
     $sql = 'select @s:=@s+1 stt,
 mc.id,
@@ -82,12 +83,40 @@ mc.estimate_duration,
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
             $courses_required[$course->training_id][$course->order_no] = $course;
             $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
+            if($course->training_deleted == 2){
+                $courses_others_id .= ', '.$course->id;
+            }
 //            push_course($courses_required, $course);
         } //the last is other courses
         else {
             push_course($courses_others, $course);
+            $courses_others_id .= $course->id.', ';
         }
     }
+    $courses_others_id .= ')';
+
+    //get course can not enrol
+    $sqlCourseNotEnrol = 'select mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
+muet.userid as teacher_id,
+tud.fullname as teacher_name,
+toe.position as teacher_position,
+tor.name as teacher_organization,
+ttp.id as training_id,
+muet.timecreated as teacher_created
+from mdl_course mc
+inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_organization tor on tor.id = toe.organization_id
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in '.$courses_others_id;
+    $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
+    //
 
     $course_list = array();
 
@@ -98,8 +127,9 @@ mc.estimate_duration,
     } elseif ($category == 'completed') {
         $all_courses = $courses_completed;
     } else {
-        $all_courses = $courses_others;
+        $all_courses = $coursesSuggest;
     }
+
 
     $start_index = $current * $recordPerPage - $recordPerPage;
 
@@ -108,7 +138,7 @@ mc.estimate_duration,
 
     $total = count($all_courses);
 
-    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
+    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
 } else {
     //course available
