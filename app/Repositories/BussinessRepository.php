@@ -102,14 +102,13 @@ class BussinessRepository implements IBussinessInterface
         $action = $request->input('action');
 
         $param = [
-            'keyword' => 'text',
+            'keyword' => 'longtext',
             'row' => 'number',
             'type' => 'text',
             'action' => 'text',
         ];
 
         $validator = validate_fails($request, $param);
-
         if (!empty($validator)) {
             return response()->json([]);
         }
