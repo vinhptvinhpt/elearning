@@ -19,7 +19,7 @@
             <div class="col-sm">
               <div class="table-wrap">
                 <div class="row">
-                  <div class="col-sm-8 dataTables_wrapper">
+                  <div class="col-sm-6 dataTables_wrapper">
                     <div class="dataTables_length" style="display: inline-block;">
                       <label>{{trans.get('keys.hien_thi')}}
                         <select v-model="row"
@@ -33,7 +33,7 @@
                       </label>
                     </div>
                   </div>
-                  <div class="col-sm-4">
+                  <div class="col-sm-6">
                     <form v-on:submit.prevent="getUser(1)">
                       <div class="d-flex flex-row form-group">
                         <input v-model="keyword" type="text"
