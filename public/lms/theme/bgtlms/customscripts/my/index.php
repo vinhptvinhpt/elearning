@@ -386,6 +386,10 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
         margin-left: 80%;
     }
 
+    .number-order-hide{
+        opacity: 0 !important;
+    }
+
     .div-disable {
         background-color: #fdf2f285;
         position: absolute;
@@ -1061,6 +1065,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         hours</p>
                                                                 </div>
                                                             </div>
+                                                            <p class="number-order number-order-hide"></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1260,14 +1265,17 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         class="title-course">
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <a class="teacher" data-toggle="modal"
-                                                                       data-target="#exampleModal"
-                                                                       data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
-                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
-                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
-                                                                    </a>
+                                                                    <?php if (!empty($course->teacher_name)) { ?>
+                                                                        <a class="teacher" data-toggle="modal"
+                                                                           data-target="#exampleModal"
+                                                                           data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                           data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                            <i class="fa fa-user"
+                                                                               aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                        </a>
+                                                                    <?php } ?>
                                                                     <p class="units"><i class="fa fa-file"
                                                                                         aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                     </p>
@@ -1276,6 +1284,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         hours</p>
                                                                 </div>
                                                             </div>
+                                                            <p class="number-order number-order-hide"></p>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1336,6 +1345,7 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
                                                                         hours</p>
                                                                 </div>
                                                             </div>
+                                                            <p class="number-order number-order-hide"></p>
                                                         </div>
                                                     </div>
                                                 </div>
