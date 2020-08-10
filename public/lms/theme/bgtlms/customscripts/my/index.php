@@ -88,11 +88,11 @@ $courses_current = array();
 $courses_required = array();
 $courses_completed = array();
 $courses_others = array();
+$courses_others_id = '(0';
 $courses_soft_skills = array();
 $competency_exists = array();
 
 foreach ($courses as $course) {
-
     //current first
     if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
         array_push($competency_exists, $course->training_id);
@@ -103,11 +103,17 @@ foreach ($courses as $course) {
     } //then required = khoa hoc trong khung nang luc
     elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
         $courses_required[$course->training_id][$course->order_no] = $course;
+        if($course->training_deleted == 2){
+            $courses_others_id .= ', '.$course->id;
+        }
     } //the last is other courses
     else {
         push_course($courses_others, $course);
+        $courses_others_id .= $course->id.', ';
     }
 }
+$courses_others_id .= ')';
+
 function push_course(&$array, $course)
 {
     if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
@@ -119,6 +125,27 @@ function push_course(&$array, $course)
         $array[$course->id] = $course;
     }
 }
+
+//get course can not enrol
+$sqlCourseNotEnrol = 'select mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
+muet.userid as teacher_id,
+tud.fullname as teacher_name,
+toe.position as teacher_position,
+tor.name as teacher_organization,
+muet.timecreated as teacher_created
+from mdl_course mc
+inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_organization tor on tor.id = toe.organization_id
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in '.$courses_others_id;
+$coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 // Set session variables
 $_SESSION["courses_current"] = $courses_current;
@@ -512,6 +539,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         right: 3%;
     }
 
+    .block-item__image_complete img{
+        width: 40px !important;
+        height: 40px !important;
+    }
+
     .block-item__image span {
         font-size: 14px;
         font-family: Nunito-Sans-Bold;
@@ -760,6 +792,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .info-course {
         color: rgba(115, 115, 115, 1);
+        min-height: 90px;
     }
 
     .circular-chart {
@@ -989,7 +1022,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 </div>
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
-                                        <div class="text-course">All required courses</div>
+                                        <div class="text-course">Required courses</div>
                                         <div class="text-number"><?php echo count($courses_required); ?></div>
                                     </a>
                                 </div>
@@ -1265,10 +1298,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             foreach ($courses_completed as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
-                                                        <div class="block-item__image col-5"
+                                                        <div class="block-item__image block-item__image_complete col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
-                                                                 alt=""><span><?php echo $course->fullname; ?></span>
+                                                                 alt="">
+<!--                                                            <span>--><?php //echo $course->fullname; ?><!--</span>-->
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1330,14 +1364,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
-                                        <?php if (count($courses_others) > 0) { ?>
+                                        <?php if (count($coursesSuggest) > 0) { ?>
                                             <?php $countBlock = 1;
-                                            foreach ($courses_others as $course) { ?>
+                                            foreach ($coursesSuggest as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1346,14 +1379,17 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                         class="title-course">
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <a class="teacher" data-toggle="modal"
-                                                                       data-target="#exampleModal"
-                                                                       data-teacher-name="<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>"
-                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
-                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
-                                                                    </a>
+                                                                    <?php if (!empty($course->teacher_name)) { ?>
+                                                                        <a class="teacher" data-toggle="modal"
+                                                                           data-target="#exampleModal"
+                                                                           data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                           data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                            <i class="fa fa-user"
+                                                                               aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                        </a>
+                                                                    <?php } ?>
                                                                     <p class="units"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>

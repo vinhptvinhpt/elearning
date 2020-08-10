@@ -1625,6 +1625,7 @@ class MailController extends Controller
                 'fruity.tester@gmail.com',
                 'linhnt@tinhvan.com',
                 'nguyenlinhcksl@gmail.com',
+                'leduytho93@gmail.com',
                 'duongtiendat.it@gmail.com'
             ];
             if (in_array($email, $dev_email)) {
