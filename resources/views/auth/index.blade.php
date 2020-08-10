@@ -120,7 +120,9 @@
                     <div class="alert alert-success" id="forgetSuccess"
                          style="margin-top: 1rem;display: none">
                         <strong>Successfully!</strong>&nbsp;<span id="forgetSuccessText">Please check your email for the next steps</span>
-                        <button type="button" class="close" data-dismiss="alert" style="position: absolute;top: 2px;right: 5px;">&times;</button>
+                        <button type="button" class="close" data-dismiss="alert"
+                                style="position: absolute;top: 2px;right: 5px;">&times;
+                        </button>
                     </div>
 
                     <div class="wrap-forgot100" id="div-login">
@@ -208,8 +210,8 @@
         return false;
     });
 
-    function recoverPassword(){
-        if(!$('#btn-reset').hasClass('loadding')){
+    function recoverPassword() {
+        if (!$('#btn-reset').hasClass('loadding')) {
             $('#btn-reset').addClass('loadding');
 
             var username = $('#iprs-user').val();
@@ -327,9 +329,11 @@
                     }
 
                     var userinfo = {
+                        id: data.id,
                         username: data.username,
                         avatar: data.avatar,
-                        fullname: data.fullname
+                        fullname: data.fullname,
+                        domain: data.domain
                     };
                     localStorage.setItem(logoutCookie, 'login');
                     localStorage.setItem('auth.token', data.jwt);

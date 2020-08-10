@@ -389,7 +389,7 @@
         "refresh_trang_de_xem_du_lieu_vua_import": "Refresh the page to see the data just imported",
         "thong_tin_ghi_danh": "Enrollment information",
         "huy_ghi_danh": "Unenroll",
-        "ten_nguoi_dung_so_cmtnd_email_so_dien_thoai": "Input Personal ID, Login ID, Full name, contact number or Email",
+        "ten_nguoi_dung_so_cmtnd_email_so_dien_thoai": "Username, personal ID, contact number",
         "tinh_trang_viec_lam": "Employment status",
         "ten_ma_dai_ly": "Agency code name",
         "thong_tin_giang_vien": "Content creator information",
@@ -1009,7 +1009,9 @@
         "nhap_hanh_dong_user_info_url": "Input Action, user, Url or Info",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number, Email or Certificate Code",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number or Email",
-        "nhap_cmtnd_username_fullname_email": "Input Personal ID,Login ID,Full Name or Email"
+        "nhap_cmtnd_username_fullname_email": "Input Personal ID, Login ID, Full Name or Email",
+        "expired_session": "Session expired",
+        "copy_link": "Get link self-assessment"
     },
     "vi.keys": {
         "language": "",
@@ -2012,6 +2014,8 @@
         "nhap_hanh_dong_user_info_url": "Nhập thông tin tìm kiếm theo hành động, người tạo, thông tin hoặc link url",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại, email hoặc mã chứng chỉ",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại hoặc email",
-        "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email"
+        "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
+        "expired_session": "Session expired",
+        "copy_link": "Get link self-assessment"
     }
 }

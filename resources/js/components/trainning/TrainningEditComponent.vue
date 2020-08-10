@@ -30,7 +30,7 @@
             <div id="collapse_1" class="collapse show" data-parent="#accordion_1" role="tabpanel">
               <div class="card-body">
 
-                <div class="row">
+                <div v-if="slug_can('tms-system-administrator-grant')" class="row">
                   <div class="col-12 col-lg-12">
                     <form action="">
                       <div class="row">
@@ -196,10 +196,9 @@
                     </form>
                   </div>
                 </div>
-
                 <br/>
 
-                <div class="row">
+                <div class="row" >
                   <div class="col-sm">
                     <div class="table-wrap">
 
@@ -392,31 +391,39 @@
                                 </div>
                               </b-tab>
                               <b-tab :title="trans.get('keys.thu_tu')">
-                                <div class="row text-center action-order">
+
+                                <template v-if="list.length !== 0">
+                                  <div class="row text-center action-order">
                                     <a @click="sort" title="Reset Order" class="btn btn-sm btn-icon btn-danger btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-refresh"></i></span></a>
                                     <a @click="saveOrder" title="Save Order" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-check"></i></span></a>
-                                </div>
-                                <div class="row">
-                                  <draggable
-                                    class="list-group"
-                                    tag="ul"
-                                    v-model="list"
-                                    v-bind="dragOptions"
-                                    @start="drag = true"
-                                    @end="drag = false">
+                                  </div>
+                                  <div class="row">
+                                    <draggable
+                                      class="list-group"
+                                      tag="ul"
+                                      v-model="list"
+                                      v-bind="dragOptions"
+                                      @start="drag = true"
+                                      @end="drag = false">
 
-                                    <transition-group type="transition" :name="!drag ? 'flip-list' : null">
-                                      <li class="list-group-item" v-for="(element, index)  in list" :key="element.order_no">
-                                        #{{index + 1}} | <b>{{ element.shortname }}</b> | {{element.fullname}}
-                                      </li>
-                                    </transition-group>
+                                      <transition-group type="transition" :name="!drag ? 'flip-list' : null">
+                                        <li class="list-group-item" v-for="(element, index)  in list" :key="element.order_no">
+                                          #{{index + 1}} | <b>{{ element.shortname }}</b> | {{element.fullname}}
+                                        </li>
+                                      </transition-group>
 
-                                  </draggable>
-                                </div>
-                                <div class="row text-center action-order">
-                                  <a @click="sort" title="Reset Order" class="btn btn-sm btn-icon btn-danger btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-refresh"></i></span></a>
-                                  <a @click="saveOrder" title="Save Order" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-check"></i></span></a>
-                                </div>
+                                    </draggable>
+                                  </div>
+                                  <div class="row text-center action-order">
+                                    <a @click="sort" title="Reset Order" class="btn btn-sm btn-icon btn-danger btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-refresh"></i></span></a>
+                                    <a @click="saveOrder" title="Save Order" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" style="color: rgb(255, 255, 255);"><span class="btn-icon-wrap"><i class="fal fa-check"></i></span></a>
+                                  </div>
+                                </template>
+                                <template v-else>
+                                  <br/>
+                                  <p>No courses in competency framework</p>
+                                </template>
+
                               </b-tab>
                             </b-tabs>
                           </b-card>
@@ -454,7 +461,7 @@
   // ];
 
   export default {
-    props: ['id'],
+    props: ['id', 'slugs'],
     components: {
       datePicker,
       draggable
@@ -528,6 +535,9 @@
       }
     },
     methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
       sort() {
         //this.list = this.list.sort((a, b) => a.order - b.order);
         this.list.sort(sortArray);

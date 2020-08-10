@@ -89,12 +89,13 @@
                     </div>
                   </div>
 
-                  <div class="col-sm-6 hide">
-                    <input v-model="organization.enabled" type="checkbox" id="organization_enabled" style="width:20px; height:20px;">
-                    <label for="organization_enabled">{{trans.get('keys.kich_hoat')}}</label>
-                  </div>
+<!--                  <div class="col-sm-6 hide">-->
+<!--                    <input v-model="organization.enabled" type="checkbox" id="organization_enabled" style="width:20px; height:20px;">-->
+<!--                    <label for="organization_enabled">{{trans.get('keys.kich_hoat')}}</label>-->
+<!--                  </div>-->
+
                   <div class="col-sm-6">
-                    <input v-model="organization.is_role" type="checkbox" id="organization_is_role" style="width:20px; height:20px;">
+                    <input v-model="organization.is_role" type="checkbox" id="organization_is_role" :disabled="organization.is_role" style="width:20px; height:20px;">
                     <label for="organization_is_role">{{trans.get('keys.su_dung_phan_quyen')}}</label>
                     <br>
                     <em>{{ trans.get('keys.cho_phep_phan_quyen_quan_ly_du_lieu_khoa_hoc_trong_giao_dien_chinh_sua_quyen') }}</em>
@@ -110,8 +111,6 @@
                       <router-link v-else :to="{name: 'IndexEmployee', params: {back_page:'1'}}" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">
                         {{trans.get('keys.quay_lai')}}
                       </router-link>
-
-
                       <button v-if="slug_can('tms-system-organize-edit')" type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
                     </div>
                   </div>

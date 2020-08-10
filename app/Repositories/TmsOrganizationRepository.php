@@ -192,7 +192,37 @@ class TmsOrganizationRepository implements ICommonInterface
             $course->name = $name;
             $course->code = $code;
             $course->description = $description;
-            $course->save();
+            if ($course->save()) {
+
+                //Create phân quyền dữ liệu
+
+                $lastRole = MdlRole::latest()->first();
+                $checkRole = Role::where('name', $name)->first();
+                if ($checkRole) {
+                    return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+                }
+
+                //Tạo quyền bên LMS
+                $mdlRole = new MdlRole;
+                $mdlRole->shortname = $code;
+                $mdlRole->description = $name;
+                $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+                $mdlRole->archetype = 'user';
+                $mdlRole->save();
+
+                $role = new Role();
+                $role->mdl_role_id = $mdlRole->id;
+                $role->name = $code;
+                $role->description = $name;
+                $role->guard_name = 'web';
+                $role->status = 1;
+                $role->save();
+
+                $new_role_organization = new TmsRoleOrganization();
+                $new_role_organization->organization_id = $course->id;
+                $new_role_organization->role_id = $role->id;
+                $new_role_organization->save();
+            }
 
             return response()->json(status_message('success', __('them_moi_to_chuc_thanh_cong')));
         } catch (\Exception $e) {
