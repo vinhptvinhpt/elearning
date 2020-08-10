@@ -828,7 +828,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             <div class="row course-block">
                                 <div class="col-5 course-block__image"
                                      v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
-                                    <img src="<?php echo $_SESSION['component'] ?>" alt="">
                                 </div>
                                 <div class="block-item__content col-7">
                                     <div class="course-info">
