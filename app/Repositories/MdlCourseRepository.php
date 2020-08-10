@@ -1227,17 +1227,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
                     if ($num == 0) {
                         $num = 1;
-                        $code_hint = $code_org->code . '_001';
                     } else {
                         $num = $num + 1;
-                        $code_hint = $code_org->code . '_00' . $num;
                     }
                 } else {
                     $num = 1;
-                    $code_hint = $code_org->code . '_001';
                 }
             }
-
+            $code_hint = $code_org->code . '_' . self::composeAppend($num);
             if ($num > 0) {
                 $response->status = true;
                 $response->otherData = $code_hint;
@@ -1253,5 +1250,18 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
+    }
+
+    /**
+     * @param $num
+     * @return string
+     */
+    public function composeAppend($num) {
+        $length = 3;
+        if (strlen($num) >= $length) {
+            return $num;
+        } else {
+            return str_repeat('0', $length - strlen($num)) . $num;
+        }
     }
 }
