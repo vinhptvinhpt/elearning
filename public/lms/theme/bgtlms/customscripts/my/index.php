@@ -169,7 +169,27 @@ switch ($organizationCode) {
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
+    case "EASIA":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
     case "EV":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "EXOTIC":
         {
             $_SESSION["organizationName"] = 'Exotic voyages';
             $_SESSION["color"] = '#CAB143';
@@ -189,7 +209,27 @@ switch ($organizationCode) {
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
+    case "BEGODI":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#333';
+            $_SESSION["pathLogo"] = 'images/begodi.png';
+            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
     case "AV":
+        {
+            $_SESSION["organizationName"] = 'Avana';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "AVANA":
         {
             $_SESSION["organizationName"] = 'Avana';
             $_SESSION["color"] = '#202020';
@@ -574,8 +614,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .info-user .avatar img {
         border-radius: 50%;
-        /*width: 85px;*/
-        /*height: 85px;*/
+        width: 85px;
+        height: 85px;
     }
 
     .info {
