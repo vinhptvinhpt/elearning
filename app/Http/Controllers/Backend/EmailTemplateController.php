@@ -234,7 +234,8 @@ class EmailTemplateController extends Controller
     ///email_template/sendDemo/{name_file}
     public function demoSendMail($name_file)
     {
-        $name_action = '';
+        $name_action = 'notice_spam_email';
+        $countTotal = 0;
         switch ($name_file) {
             case 'remind_expire_required_course':
                 {
@@ -384,9 +385,53 @@ class EmailTemplateController extends Controller
                     ));
                 }
                 break;
+            case 'notice_spam_email':
+                {
+                    $lstData = DB::table('tms_nofitications')
+                        ->where('updated_at', '<', '2020-08-10 23:59:59')
+                        ->select('sendto')->groupBy('sendto')->pluck('sendto');
 
+                    //get all emails in db
+                    $users = DB::table('tms_user_detail')
+                        ->whereIn('user_id', $lstData)
+                        ->select(
+                            'email',
+                            'fullname',
+                            'user_id'
+                        )->get();
+                    $sent = 0;
+                    $fail = 0;
+                    $countTotal = count($users);
+                    try {
+                        foreach ($users as $user) {
+                            //send mail can not continue if has fake email
+                            if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+                                Mail::to($user->email)->send(new CourseSendMail(
+                                    TmsNotification::NOTICE_SPAM_EMAIL,
+                                    '',
+                                    $user->fullname
+                                ));
+
+                                usleep(100);
+                                $sent += 1;
+                            } else {
+                                $fail += 1;
+                            }
+                        }
+                        \Log::info('success: '.$user->user_id. ', email: ' . $user->email);
+                        $sent += 1;
+
+                    } catch (Exception $e) {
+                        $fail += 1;
+                        \Log::info('error: '.$user->user_id. ', email: ' . $user->email);
+                    }
+                }
+                break;
             default:
                 break;
+        }
+        if ($name_action == 'notice_spam_email') {
+            return 'Total: '.$countTotal.'; Sent: ' . $sent . ', Fail: ' . $fail;
         }
 
     }
@@ -679,4 +724,5 @@ class EmailTemplateController extends Controller
         }
 
     }
+
 }
