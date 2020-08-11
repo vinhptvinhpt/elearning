@@ -84,10 +84,14 @@ if(!isloggedin()){
     .sp-name-course{
         font-size: 32px;
         position: absolute;
-        top: 35%;
-        left: 0;
-        width: 100%;
+        width: 80%;
         text-align: center;
+        margin-left: 0;
+        margin-right: 0;
+        right: 0;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
     .closebtn {
         margin-left: 15px;
