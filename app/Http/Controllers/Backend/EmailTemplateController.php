@@ -59,7 +59,7 @@ class EmailTemplateController extends Controller
         $this->deleteOldConfigs();
         //
         $data = [];
-        $configs = TmsConfigs::where('editor', 'checkbox')->get();
+        $configs = TmsConfigs::where('editor', 'checkbox')->where('target', '<>', 'development')->get();
         if (count($configs) != 0) {
             foreach ($configs as $config) {
                 $label = $this->convertNameFile($config->target);

@@ -17,6 +17,9 @@ class SettingController extends Controller
 
     public function apiListSetting()
     {
+        //check and insert development in db tms_configs
+        $this->insertDevelopeMode();
+        //
         $data = [];
         $configs = TmsConfigs::orderByRaw('FIELD(editor, "checkbox") DESC')->get();
         if (count($configs) != 0) {
@@ -27,6 +30,27 @@ class SettingController extends Controller
             }
         }
         return response()->json($data);
+    }
+
+    public function insertDevelopeMode()
+    {
+        $configs = array(
+            TmsNotification::DEVELOPMENT => TmsConfigs::ENABLE
+        );
+        $pdo = DB::connection()->getPdo();
+        if ($pdo) {
+            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
+            $today = date('Y-m-d H:i:s', time());
+            if (count($stored_configs) == 0) {
+                $insert_configs = array(
+                    'target' => TmsNotification::DEVELOPMENT,
+                    'content' => TmsConfigs::ENABLE,
+                    'editor' => TmsConfigs::EDITOR_CHECKBOX,
+                    'created_at' => $today
+                );
+                TmsConfigs::insert($insert_configs);
+            }
+        }
     }
 
     public function apiUpdateSetting(Request $request)
@@ -72,7 +96,8 @@ class SettingController extends Controller
         }
     }
 
-    function getAttrLabel($attr) {
+    function getAttrLabel($attr)
+    {
         $label = '';
         switch ($attr) {
             case TmsNotification::ASSIGNED_COURSE:
@@ -101,6 +126,15 @@ class SettingController extends Controller
                 break;
             case TmsConfigs::TARGET_FIREBASE_TOPIC:
                 $label = __('firebase_topic');
+                break;
+            case TmsNotification::INVITE_STUDENT:
+                $label = __('invite_student');
+                break;
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('completed_competency_framework');
+                break;
+            case TmsNotification::DEVELOPMENT:
+                $label = __('development');
                 break;
             default:
                 $label = $attr;

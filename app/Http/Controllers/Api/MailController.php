@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-    const DEVELOPMENT = 0;
+//    const DEVELOPMENT = 0;
 
     /* Load / generate configuration */
     public function loadConfiguration()
@@ -1701,7 +1701,13 @@ class MailController extends Controller
 
     function filterMail($email)
     {
-        if (self::DEVELOPMENT == 1) {
+        $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
+        //Nếu không có thì đang trong chế độ nhà phát triển
+        if(empty($getDevelopment))
+            $getDevelopment='enable';
+        else
+            $development = $getDevelopment->content;
+        if ($development == 'enable') {
             $dev_email = [
                 'immrhy@gmail.com',
                 'innrhy@gmail.com',

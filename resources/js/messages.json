@@ -1011,7 +1011,9 @@
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number or Email",
         "nhap_cmtnd_username_fullname_email": "Input Personal ID, Login ID, Full Name or Email",
         "expired_session": "Session expired",
-        "copy_link": "Get link self-assessment"
+        "copy_link": "Get link self-assessment",
+        "completed_competency_framework": "Completed Competency framework",
+        "development": "Development"
     },
     "vi.keys": {
         "language": "",
@@ -2016,6 +2018,8 @@
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại hoặc email",
         "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
         "expired_session": "Session expired",
-        "copy_link": "Get link self-assessment"
+        "copy_link": "Get link self-assessment",
+        "completed_competency_framework": "Khung năng lực đã hoàn thành",
+        "development": "Chế độ Develope"
     }
 }

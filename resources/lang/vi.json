@@ -326,5 +326,7 @@
     "quen_mat_khau": "Quên mật khẩu",
     "remind_certificate": "Nhắc nhở chứng chỉ",
     "invite_student": "Mời học viên",
-    "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Thông báo học viên được ghi danh vào khóa học"
+    "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Thông báo học viên được ghi danh vào khóa học",
+    "completed_competency_framework": "Khung năng lực đã hoàn thành",
+    "development": "Chế độ Develope"
 }
