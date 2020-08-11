@@ -3619,7 +3619,10 @@ class BussinessRepository implements IBussinessInterface
             'tms_organization.name as organization_name',
             'tms_user_detail.user_id',
             'tms_user_detail.fullname',
-            'tms_user_detail.confirm'
+            'tms_user_detail.confirm',
+            'tms_user_detail.email',
+            'tms_user_detail.city',
+            'tms_user_detail.country'
         );
 
         if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
@@ -3796,6 +3799,9 @@ class BussinessRepository implements IBussinessInterface
                     $user = [
                         'user_id' => $item['user_id'],
                         'fullname' => $item['fullname'],
+                        'email' => $item['email'],
+                        'country' => $item['country'],
+                        'city' => $item['city'],
                     ];
                     if ($mode_select == 'learning_time') {
                         $user['duration'] = $item['duration'];
