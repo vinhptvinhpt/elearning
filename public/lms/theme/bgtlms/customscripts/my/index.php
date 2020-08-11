@@ -363,6 +363,20 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-family: HelveticaLTStd-Light;
     }
 
+    .sp-name-course{
+        font-size: 32px;
+        position: absolute;
+        width: 80%;
+        text-align: center;
+        margin-left: 0;
+        margin-right: 0;
+        right: 0;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        color: #000000 !important;
+    }
+
     .carousel-inner .carousel-item {
         background-repeat: no-repeat;
         background-position: 100% 50%;
@@ -1342,7 +1356,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
                                                                  alt="">
-<!--                                                            <span>--><?php //echo $course->fullname; ?><!--</span>-->
+<!--                                                            <span class="sp-name-course">--><?php //echo $course->fullname; ?><!--</span>-->
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
