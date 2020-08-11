@@ -59,7 +59,7 @@ Route::get('/cron/mail/sendRemindES', 'Api\MailController@sendRemindEducationSch
 Route::get('/cron/mail/sendRemindLogin', 'Api\MailController@sendRemindLogin')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendRemindUC', 'Api\MailController@sendRemindUpcomingCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendRemindAccess', 'Api\MailController@sendRemindAccess')->middleware(['App\Http\Middleware\CheckToken']); //every minute
-
+Route::get('/cron/mail/demoSendMail', 'Api\MailController@demoSendMail');
 //Insert mail
 Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
