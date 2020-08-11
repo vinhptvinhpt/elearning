@@ -39,6 +39,19 @@
                         </div>
                         <div class="col-12 col-lg-9">
                           <form action="" class="form-row">
+
+                            <div v-if="slug_can('tms-system-administrator-grant')" class="col-sm-4 form-group">
+                              <label>{{trans.get('keys.thu_vien_nguon')}}</label>
+                              <v-select
+                                @input="setShortName"
+                                :options="librarySelectOptions"
+                                :reduce="librarySelectOption => librarySelectOption.id"
+                                :placeholder="this.trans.get('keys.chon_thu_vien_nguon')"
+                                :filter-by="myFilterBy"
+                                v-model="library">
+                              </v-select>
+                            </div>
+
                             <div class="col-sm-4 form-group">
                               <label for="inputText1-1">{{trans.get('keys.ma_thu_vien')}}
                                 *</label>
@@ -48,6 +61,7 @@
                               <label v-if="!shortname"
                                      class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
+
                             <div class="col-sm-4 form-group">
                               <label for="inputText6">{{trans.get('keys.ten_thu_vien')}}
                                 *</label>
@@ -67,6 +81,7 @@
                               <label v-if="!pass_score"
                                      class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
+
                             <div class="col-12 form-group">
                               <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                               <!--                                                            <textarea v-model="description" class="form-control"-->
@@ -222,9 +237,9 @@
   import CKEditor from 'ckeditor4-vue';
 
   export default {
-    props: ['file_url', 'type'],
+    props: ['file_url', 'type', 'slugs'],
     //components: {vPagination},
-    // components: {CourseSampleCreate},
+    //components: {CourseSampleCreate},
     components: {
       CKEditor
     },
@@ -252,7 +267,10 @@
         total_course: 0,
         row: 10,
         urlGetListUser: '/api/courses/list',
-        lms_url: ''
+        lms_url: '',
+        librarySelectOptions: [],
+        library: '',
+        libraryCodes: []
       }
     },
     filters: {
@@ -262,6 +280,70 @@
       }
     },
     methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
+      myFilterBy: (option, label, search) => {
+        if (!label) {
+          label = '';
+        }
+        let new_search = convertUtf8(search);
+        let new_label = convertUtf8(label);
+        //return this.filterBy(option, new_label, new_search); //can not call components function here
+        return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+      },
+      getLibrary(){
+        this.librarySelectOptions = [];
+        this.libraryCodes = [];
+        axios.post('/api/courses/get_library', {})
+          .then(response => {
+            let additionalCities = [];
+            let codes = [];
+
+            response.data.forEach(function(cityItem) {
+              let newCity = {
+                label: cityItem.shortname, // +  ' - ' + cityItem.fullname,
+                id: cityItem.shortname
+              };
+              additionalCities.push(newCity);
+              codes.push(cityItem.shortname);
+            });
+            this.librarySelectOptions = additionalCities;
+            this.libraryCodes = codes;
+
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      },
+      setShortName() {
+        let codes = this.libraryCodes;
+        let library = this.library;
+        let lastNumber = this.getLastNumber(library);
+        let prefix = library.substring(0, library.length - lastNumber.length);
+        let biggest = 0;
+        let curPos = this;
+        codes.forEach(function(item) {
+          if (item.indexOf(prefix) !== -1) {
+            let lastNumberCode = parseInt(curPos.getLastNumber(item));
+            if (lastNumberCode > biggest) {
+              biggest = lastNumberCode;
+            }
+          }
+        });
+        let nextNumber = biggest + 1;
+        let append = this.composeAppend(nextNumber);
+        this.shortname = prefix + append;
+      },
+      getLastNumber(str) {
+        let arr = str.split('_');
+        let reverse = arr.reverse();
+        if (isNaN(reverse[0])) {
+          return '0';
+        } else {
+          return reverse[0];
+        }
+      },
       capitalizeFirstLetter(string) {
         return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
       },
@@ -274,13 +356,10 @@
           $('.fullname_required').show();
           return;
         }
-
         if (!this.pass_score) {
           $('.pass_score_required').show();
           return;
         }
-
-
         // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
         this.formData = new FormData();
         this.formData.append('file', this.$refs.file.files[0]);
@@ -350,6 +429,23 @@
             console.log(error.response.data);
           });
       },
+      composeAppend(num) {
+
+        // $length = 3;
+        // if (strlen($num) >= $length) {
+        //   return $num;
+        // } else {
+        //   return str_repeat('0', $length - strlen($num)) . $num;
+        // }
+        let str = num.toString();
+        let length = 3;
+        if (str.length >= length) {
+          return num;
+        } else {
+          let filler = '0';
+          return filler.repeat(length - str.length) + str;
+        }
+      },
       onPageChange() {
         let back = this.getParamsBackPage();
         if(back == '1') {
@@ -416,6 +512,7 @@
       // this.getCourses();
       this.hintCode();
       // this.fetch();
+      this.getLibrary();
     },
     updated() {
       this.setFileInput();
@@ -425,6 +522,21 @@
       sessionStorage.setItem('surveyPageSize', this.row);
       sessionStorage.setItem('surveyKeyWord', this.keyword);
     }
+  }
+
+  function convertUtf8(str) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g,"a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g,"e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g,"i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g,"o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g,"u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g,"y");
+    str = str.replace(/đ/g,"d");
+    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g," ");
+    str = str.replace(/ + /g," ");
+    str = str.trim();
+    return str;
   }
 </script>
 

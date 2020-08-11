@@ -1260,6 +1260,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    public function apiGetListLibrary()
+    {
+        $districts = MdlCourse::query()->where('category', 2)->where('deleted', 0)->get()->toArray();
+        return response()->json($districts);
+    }
+
+
+
     /**
      * @param $num
      * @return string
