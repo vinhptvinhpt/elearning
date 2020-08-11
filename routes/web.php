@@ -511,6 +511,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/courses/hint_code', 'Backend\CourseController@apiHintCourseCode');
     Route::post('/api/courses/get_list_document_course', 'Backend\CourseController@apiGetListDocument');
     Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
+    Route::post('/api/courses/get_library', 'Backend\CourseController@apiGetListLibrary');
 
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
@@ -729,6 +730,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::post('/exportReportDetail', 'Backend\ExcelController@exportReportDetail');
+    Route::post('/exportReportDetailRaw', 'Backend\ExcelController@exportReportDetailRaw');
     Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
     Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
     Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
