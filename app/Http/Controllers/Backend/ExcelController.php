@@ -6,6 +6,7 @@ use App\Exports\AttendanceSheet;
 use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
 use App\Exports\LoginSheet;
+use App\Exports\ReportDetailRawSheet;
 use App\Exports\ReportDetailSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
@@ -292,15 +293,157 @@ class ExcelController extends Controller
         return response()->json(storage_path($filename));
     }
 
-    public function exportReportDetail(Request $request)
+    public function exportReportDetailRaw(Request $request)
     {
 
         $data = $request->input('data');
         $type = $request->input('type');
 
         $export_data = array();
-        foreach ($data as $item) {
 
+        //Export export_data
+        $stt = 0;
+        if ($type == 'certificated' || $type == 'completed_training') {
+
+            foreach ($data as $organization_id => $organization) { //organization
+                $organization_name = $organization['col0'];
+                $training_list = isset($organization['training']) ? $organization['training'] : [];
+                if (!empty($training_list)) { //Certificated
+                    foreach ($training_list as $training_id => $training) {
+
+                        $training_name = $training['col0'];
+                        $certificated_array = $training['col1'];
+                        if (is_array($certificated_array) && !empty($certificated_array)) {
+                            foreach ($certificated_array as $certificated) {
+                                $stt++;
+                                $export_data[] = array(
+                                    $stt,
+                                    $certificated['fullname'],
+                                    $certificated['email'],
+                                    $organization_name,
+                                    $certificated['country'],
+                                    $certificated['city'],
+                                    $training_name,
+                                    'Yes'
+                                );
+                            }
+                        }
+
+                        $missing_array = $training['col2'];
+                        if (is_array($missing_array) && !empty($missing_array)) {
+                            foreach ($missing_array as $missing) {
+                                $stt++;
+                                $export_data[] = array(
+                                    $stt,
+                                    $missing['fullname'],
+                                    $missing['email'],
+                                    $organization_name,
+                                    $missing['country'],
+                                    $missing['city'],
+                                    $training_name,
+                                    'No'
+                                );
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
+        if ($type == 'completed_course' || $type == 'learning_time') {
+
+            foreach ($data as $organization_id => $organization) { //organization
+                $organization_name = $organization['col0'];
+                $training_list = isset($organization['training']) ? $organization['training'] : [];
+                if (!empty($training_list)) { //Certificated
+                    foreach ($training_list as $training_id => $training) {
+                        $training_name = $training['col0'];
+                        $course_list = isset($training['courses']) ? $training['courses'] : [];
+                        if (!empty($course_list)) {
+                            foreach ($course_list as $course) {
+                                $course_name = $course['col0'];
+
+                                //Col1 for both
+                                $certificated_array = $course['col1'];
+                                if (is_array($certificated_array) && !empty($certificated_array)) {
+                                    foreach ($certificated_array as $certificated) {
+                                        $stt++;
+                                        if ($type == 'completed_course') {
+                                            $export_data[] = array(
+                                                $stt,
+                                                $certificated['fullname'],
+                                                $certificated['email'],
+                                                $organization_name,
+                                                $certificated['country'],
+                                                $certificated['city'],
+                                                $training_name,
+                                                $course_name,
+                                                'Yes'
+                                            );
+                                        } else {
+                                            $export_data[] = array(
+                                                $stt,
+                                                $certificated['fullname'],
+                                                $certificated['email'],
+                                                $organization_name,
+                                                $certificated['country'],
+                                                $certificated['city'],
+                                                $training_name,
+                                                $course_name,
+                                                $certificated['duration'],
+                                                $certificated['estimate_duration'],
+                                            );
+                                        }
+                                    }
+                                }
+
+                                //Col2 for complete course only
+                                if ($type == 'completed_course') {
+                                    $missing_array = $course['col2'];
+                                    if (is_array($missing_array) && !empty($missing_array)) {
+                                        foreach ($missing_array as $missing) {
+                                            $stt++;
+                                            $export_data[] = array(
+                                                $stt,
+                                                $missing['fullname'],
+                                                $missing['email'],
+                                                $organization_name,
+                                                $missing['country'],
+                                                $missing['city'],
+                                                $training_name,
+                                                $course_name,
+                                                'No'
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+
+        $exportExcel = new ReportDetailRawSheet('Report Detail', $export_data, $type);
+
+        $filename = "report_detail.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json(storage_path($filename));
+    }
+
+    public function exportReportDetail(Request $request)
+    {
+        $data = $request->input('data');
+        $type = $request->input('type');
+
+        $export_data = array();
+
+        //Export report_data
+        foreach ($data as $item) {
             if ($item['type'] == 'users') {
                 //In PHP, '\n' (in single quotes) is a literal \ character followed by a literal n character. "\n" (in double quotes) is a newline character
                 $column2 = str_replace('<br/>', "\n", $item['column2']);
@@ -311,7 +454,6 @@ class ExcelController extends Controller
                 $column3 = $item['column3'];
                 $column4 = $item['column4'];
             }
-
             $export_data[] = array(
                 $item['column1'],
                 $column2,

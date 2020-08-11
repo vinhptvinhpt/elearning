@@ -730,6 +730,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
     Route::post('/exportReportDetail', 'Backend\ExcelController@exportReportDetail');
+    Route::post('/exportReportDetailRaw', 'Backend\ExcelController@exportReportDetailRaw');
     Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
     Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
     Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
