@@ -394,31 +394,34 @@ class EmailTemplateController extends Controller
                     //get all emails in db
                     $users = DB::table('tms_user_detail')
                         ->whereIn('user_id', $lstData)
+						->where('email','not like','%test%')
                         ->select(
                             'email',
                             'fullname',
                             'user_id'
-                        )->get();
+                        )->where('user_id','<',23692)->orderBy('user_id', 'desc')->get();
                     $sent = 0;
                     $fail = 0;
                     $countTotal = count($users);
+//echo $countTotal; die;
                     try {
                         foreach ($users as $user) {
                             //send mail can not continue if has fake email
                             if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
+								\Log::info('success1: '.$user->user_id. ', email: ' . $user->email);
                                 Mail::to($user->email)->send(new CourseSendMail(
                                     TmsNotification::NOTICE_SPAM_EMAIL,
                                     '',
                                     $user->fullname
                                 ));
-
+\Log::info('success: '.$user->user_id. ', email: ' . $user->email);
                                 usleep(100);
                                 $sent += 1;
                             } else {
                                 $fail += 1;
                             }
                         }
-                        \Log::info('success: '.$user->user_id. ', email: ' . $user->email);
+                        
                         $sent += 1;
 
                     } catch (Exception $e) {

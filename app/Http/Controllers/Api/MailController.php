@@ -73,6 +73,7 @@ class MailController extends Controller
         //get all emails in db
         $users = DB::table('tms_user_detail')
             ->whereIn('user_id', $lstData)
+			
             ->select(
                 'email',
                 'fullname',
@@ -85,19 +86,34 @@ class MailController extends Controller
             foreach ($users as $user) {
                 //send mail can not continue if has fake email
                 if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    Mail::to($user->email)->send(new CourseSendMail(
-                        TmsNotification::NOTICE_SPAM_EMAIL,
-                        '',
-                        $user->fullname
-                    ));
-
-                    usleep(100);
+                    // Mail::to($user->email)->send(new CourseSendMail(
+                        // TmsNotification::NOTICE_SPAM_EMAIL,
+                        // '',
+                        // $user->fullname
+                    // ));
+					
+					// Mail::to($user->email)->send(new CourseSendMail(
+                    // TmsNotification::NOTICE_SPAM_EMAIL,
+                    // $user->email,
+                    // $user->fullname,
+                    // '',
+                    // '',
+                    // '',
+                    // '',
+                    // '',
+                    // '',
+                    // ''
+                // ));
+				
+		
+ \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
+                    sleep(100);
                     $sent += 1;
                 } else {
                     $fail += 1;
                 }
             }
-            \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
+            // \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
             $sent += 1;
 
         } catch (\Mockery\Exception $e) {
