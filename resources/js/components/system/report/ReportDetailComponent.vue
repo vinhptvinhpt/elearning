@@ -113,8 +113,16 @@
                                 <!--<a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
                                   <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
                                 </a>-->
+
+<!--                                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2"-->
+<!--                                   v-on:click="exportExcel(report_data)"-->
+<!--                                   :title="trans.get('keys.xuat_excel')">-->
+<!--                                    <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>-->
+<!--                                </a>-->
+
                                 <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2"
-                                   v-on:click="exportExcel(report_data)" :title="trans.get('keys.xuat_excel')">
+                                   v-on:click="exportExcelRaw(export_data)"
+                                   :title="trans.get('keys.xuat_excel')">
                                     <span class="btn-icon-wrap"><i class="fal fa-file-excel-o"></i></span>
                                 </a>
                             </div>
@@ -208,7 +216,8 @@
                 startdate: '',
                 enddate: '',
                 country: '',
-                countries: []
+                countries: [],
+                export_data: [],
             }
         },
         methods: {
@@ -293,9 +302,9 @@
                     course_id: this.course_id
                 })
                     .then(response => {
-                        let list = response.data;
+                        this.export_data = response.data;
                         this.report_data = [];
-                        this.setData(list, 'organization', '');
+                        this.setData(this.export_data, 'organization', '');
                         //Reset report_data array
                     })
                     .catch(error => {
@@ -335,6 +344,23 @@
                         toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
                     });
             },
+            exportExcelRaw(data) {
+            axios.post('/exportReportDetailRaw', {
+              data: data,
+              type: this.mode_select
+            })
+              .then(response => {
+                var a = $("<a>")
+                  .prop("href", "/api/downloadExport/" + 'report_detail.xlsx')
+                  .appendTo("body");
+                a[0].click();
+                a.remove();
+                toastr['success'](this.trans.get('keys.xuat_du_lieu_thanh_cong'), this.trans.get('keys.thanh_cong'));
+              })
+              .catch(error => {
+                toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+              });
+          },
             myFilterBy: (option, label, search) => {
                 if (!label) {
                     label = '';

@@ -904,22 +904,54 @@ class BussinessRepository implements IBussinessInterface
     //ThoLD (05/09/2019)
     public function apiGetListCourseSample()
     {
-        $listCourses = DB::table('mdl_course')
-            ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-            ->select(
-                'mdl_course.id',
-                'mdl_course.fullname',
-                'mdl_course.shortname',
-                'mdl_course.summary as description',
-                'mdl_course.course_avatar as avatar',
-                'mdl_course.allow_register',
-                'mdl_course.total_date_course',
-                'mdl_course.is_end_quiz',
-                'mdl_course_completion_criteria.gradepass as pass_score'
-            );
 
-        $listCourses = $listCourses->where('mdl_course.category', '=', 2)->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
+        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+            $listCourses = DB::table('mdl_course')
+                ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.fullname',
+                    'mdl_course.shortname',
+                    'mdl_course.summary as description',
+                    'mdl_course.course_avatar as avatar',
+                    'mdl_course.allow_register',
+                    'mdl_course.total_date_course',
+                    'mdl_course.is_end_quiz',
+                    'mdl_course_completion_criteria.gradepass as pass_score'
+                );
+
+        } else {
+            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            $listCourses = DB::table('mdl_course')
+                ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+                ->whereIn('mdl_course.id', function ($q) { //organization
+                    /* @var $q Builder */
+                    $q->select('mdl_course.id')
+                        ->from('tms_organization_employee')
+                        ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                        ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                        ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+                        ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+                })
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.fullname',
+                    'mdl_course.shortname',
+                    'mdl_course.summary as description',
+                    'mdl_course.course_avatar as avatar',
+                    'mdl_course.allow_register',
+                    'mdl_course.total_date_course',
+                    'mdl_course.is_end_quiz',
+                    'mdl_course_completion_criteria.gradepass as pass_score'
+                );
+        }
+
+
+        $listCourses = $listCourses
+            ->where('mdl_course.category', '=', 2)
+            ->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
 
         $listCourses = $listCourses->orderBy('id', 'desc')->get();
 
@@ -3587,7 +3619,10 @@ class BussinessRepository implements IBussinessInterface
             'tms_organization.name as organization_name',
             'tms_user_detail.user_id',
             'tms_user_detail.fullname',
-            'tms_user_detail.confirm'
+            'tms_user_detail.confirm',
+            'tms_user_detail.email',
+            'tms_user_detail.city',
+            'tms_user_detail.country'
         );
 
         if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
@@ -3764,6 +3799,9 @@ class BussinessRepository implements IBussinessInterface
                     $user = [
                         'user_id' => $item['user_id'],
                         'fullname' => $item['fullname'],
+                        'email' => $item['email'],
+                        'country' => $item['country'],
+                        'city' => $item['city'],
                     ];
                     if ($mode_select == 'learning_time') {
                         $user['duration'] = $item['duration'];
