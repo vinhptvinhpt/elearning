@@ -160,6 +160,9 @@ class EmailTemplateController extends Controller
     public function convertNameFile($name_file)
     {
         switch ($name_file) {
+            case TmsNotification::ENROL:
+                $label = __("tham_gia_khoa_hoc");
+                break;
             case TmsNotification::ASSIGNED_COURSE:
                 $label = __('assigned_course');
                 break;
@@ -189,9 +192,6 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('remind_certificate');
-                break;
-            case TmsNotification::ENROL:
-                $label = __('tham_gia_khoa_hoc');
                 break;
             default:
                 $label = '';

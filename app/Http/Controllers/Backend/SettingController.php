@@ -100,6 +100,9 @@ class SettingController extends Controller
     {
         $label = '';
         switch ($attr) {
+            case TmsNotification::ENROL:
+                $label = __("tham_gia_khoa_hoc");
+                break;
             case TmsNotification::ASSIGNED_COURSE:
                 $label = __('assigned_course');
                 break;
