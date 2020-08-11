@@ -41,6 +41,8 @@ class TmsNotification extends Model
     const FORGOT_PASSWORD ='forgot_password';
     const REMIND_EXPIRE_REQUIRED_COURSE = 'remind_expire_required_course';
 
+    //
+    const NOTICE_SPAM_EMAIL ='notice_spam_email';
 
     //declare status send mail
     const UN_SENT = 0; //chưa gửi

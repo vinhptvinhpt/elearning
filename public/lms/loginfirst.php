@@ -41,16 +41,23 @@ function cus_login($idorusername)
             where f.level = 2 or f.level = 1 limit 1';
             $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
             $organizationCodeGet = "";
-            if(strpos(strtolower($organization->code), 'bg') === 0){
+            if(strpos(strtolower($organization->code), 'bg') === 0 || strpos(strtolower($organization->code), 'begodi') === 0){
                 $organizationCodeGet = "BG";
+                $_SESSION["pathLogo"] = 'images/begodi.png';
             }
-            else if(strpos(strtolower($organization->code),'ea') === 0){
+            else if(strpos(strtolower($organization->code),'ea') === 0 || strpos(strtolower($organization->code),'easia') === 0){
                 $organizationCodeGet = "EA";
+                $_SESSION["pathLogo"] = 'images/logo-black.png';
             }
-            else if(strpos(strtolower($organization->code), 'ev') === 0){
+            else if(strpos(strtolower($organization->code), 'ev') === 0 || strpos(strtolower($organization->code), 'exotic') === 0){
                 $organizationCodeGet = "EV";
+                $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            }else if(strpos(strtolower($organization->code), 'AV') === 0 || strpos(strtolower($organization->code), 'avana') === 0){
+                $organizationCodeGet = "AV";
+                $_SESSION["pathLogo"] = 'images/avana.png';
             }else{
                 $organizationCodeGet = "PH";
+                $_SESSION["pathLogo"] = 'images/phh.png';
             }
             $_SESSION["organizationCode"] = $organizationCodeGet;
             return 1;

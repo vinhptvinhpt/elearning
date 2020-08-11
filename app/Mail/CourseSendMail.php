@@ -182,6 +182,10 @@ class CourseSendMail extends Mailable
             $subject = '[ELEARNING] '. __('thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc');
             $view = 'email.enrol_course';
         }
+        elseif($this->activity == TmsNotification::NOTICE_SPAM_EMAIL){
+            $subject = '[ELEARNING] Testing email from Elearning';
+            $view = 'email.notice_spam_email';
+        }
 
 
         if (strlen($subject) != 0 AND strlen($view) != 0) {
