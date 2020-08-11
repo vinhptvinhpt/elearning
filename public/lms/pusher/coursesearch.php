@@ -90,7 +90,7 @@ mc.estimate_duration,
         } //the last is other courses
         else {
             push_course($courses_others, $course);
-            $courses_others_id .= $course->id.', ';
+            $courses_others_id .= ', '.$course->id;
         }
     }
     $courses_others_id .= ')';
