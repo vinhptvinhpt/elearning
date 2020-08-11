@@ -514,4 +514,9 @@ class CourseController extends Controller
     {
         return $this->mdlCourseRepository->apiHintCourseCode();
     }
+
+    public function apiGetListLibrary()
+    {
+        return $this->mdlCourseRepository->apiGetListLibrary();
+    }
 }
