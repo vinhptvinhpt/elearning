@@ -574,8 +574,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .info-user .avatar img {
         border-radius: 50%;
-        /*width: 85px;*/
-        /*height: 85px;*/
+        width: 85px;
+        height: 85px;
     }
 
     .info {
