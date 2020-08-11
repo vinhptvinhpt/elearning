@@ -19,7 +19,7 @@ use Illuminate\Support\Facades\Mail;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-    const DEVELOPMENT = 0;
+    const DEVELOPMENT = 1;
 
     /* Load / generate configuration */
     public function loadConfiguration()
