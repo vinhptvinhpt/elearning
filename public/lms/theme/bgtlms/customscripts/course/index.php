@@ -421,7 +421,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .input-search {
-        /*padding: 2%;*/
+        padding: .375rem .75rem;
         border-right: 0 !important;
         width: 85%;
     }
@@ -1208,7 +1208,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                 })
                     .then(response => {
                         this.courses = response.data.courses;
-                        console.log(this.courses);
                         this.coursesSuggest = response.data.coursesSuggest;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
