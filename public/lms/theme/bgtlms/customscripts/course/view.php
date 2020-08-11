@@ -83,6 +83,15 @@ if(!isloggedin()){
 
     .sp-name-course{
         font-size: 32px;
+        position: absolute;
+        width: 80%;
+        text-align: center;
+        margin-left: 0;
+        margin-right: 0;
+        right: 0;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
     .closebtn {
         margin-left: 15px;
@@ -825,31 +834,31 @@ $pathBadge = $getBadge->path;
 $pathBadge = ltrim($pathBadge, $pathBadge[0]);
 if(empty($pathBadge))
     $pathBadge = 'images/default_badge.png';
-$_SESSION["displayPopup"] = 1;
+//$_SESSION["displayPopup"] = 1;
 //-1 chưa xem. 0 chưa có bản ghi trong db, 1 xem, 2 đã xem
-//if ($course->numofmodule == 0) {
-//    $_SESSION["displayPopup"] = 0;
-//} else {
-//    $percentProgress = $course->numoflearned / $course->numofmodule;
-//    $displayVal = $course->display;
-////if percent of progress = 1 is complete course => display popup congratulation
-//    if ($percentProgress == 1) {
-//        if ($displayVal == 0) {
-//            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
-//            $_SESSION["displayPopup"] = 1;
-//        } else if ($displayVal == -1) {
-//            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
-//            $_SESSION["displayPopup"] = 1;
-//        } else {
-//            $_SESSION["displayPopup"] = 2;
-//        }
-//    } else {
-//        if ($displayVal == 0) {
-//            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
-//            $_SESSION["displayPopup"] = 0;
-//        }
-//    }
-//}
+if ($course->numofmodule == 0) {
+    $_SESSION["displayPopup"] = 0;
+} else {
+    $percentProgress = $course->numoflearned / $course->numofmodule;
+    $displayVal = $course->display;
+//if percent of progress = 1 is complete course => display popup congratulation
+    if ($percentProgress == 1) {
+        if ($displayVal == 0) {
+            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
+            $_SESSION["displayPopup"] = 1;
+        } else if ($displayVal == -1) {
+            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
+            $_SESSION["displayPopup"] = 1;
+        } else {
+            $_SESSION["displayPopup"] = 2;
+        }
+    } else {
+        if ($displayVal == 0) {
+            $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
+            $_SESSION["displayPopup"] = 0;
+        }
+    }
+}
 
 ?>
 <body <?php echo $bodyattributes ?>>
