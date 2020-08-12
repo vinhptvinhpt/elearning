@@ -188,7 +188,7 @@
                                                     class="btn btn-primary btn-sm">
                                                 {{trans.get('keys.sua')}}
                                             </button>
-                                            <router-link to="/tms/selfquestion/list" class="btn btn-secondary btn-sm">
+                                            <router-link :to="{name:'SelfQuestionIndex',params:{back_page: '1'}}" class="btn btn-secondary btn-sm">
                                                 {{trans.get('keys.quay_lai')}}
                                             </router-link>
                                         </div>
@@ -422,7 +422,7 @@
                         loader.fadeOut();
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            this.$router.push({name: 'SelfQuestionIndex'});
+                            this.$router.push({name: 'SelfQuestionIndex',params:{back_page: '1'}});
 
                         } else {
                             toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));

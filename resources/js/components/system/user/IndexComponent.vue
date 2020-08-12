@@ -530,6 +530,11 @@
         });
       },
       deletePost(url) {
+        sessionStorage.setItem('userPage', this.current);
+        sessionStorage.setItem('userPageSize', this.row);
+        sessionStorage.setItem('userKeyWord', this.keyword);
+        sessionStorage.setItem('userRole', this.roles);
+        sessionStorage.setItem('userConfirm', this.confirm);
         let current_pos = this;
         swal({
           title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -551,6 +556,10 @@
               //   const index = current_pos.posts.findIndex(post => post.user_id == user_id);
               //   if (~index) // if the post exists in array
               //       current_pos.posts.splice(index, 1); //delete the post
+              if(current_pos.posts.length == 1){
+                current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+              }
+              current_pos.onPageChange();
             })
             .catch(error => {
               loader.fadeOut();
