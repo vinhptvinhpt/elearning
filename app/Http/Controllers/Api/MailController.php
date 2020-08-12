@@ -109,8 +109,7 @@ class MailController extends Controller
     }
 
 
-    public
-    function welcome()
+    public function welcome()
     {
         Mail::to("innrhy@gmail.com")->send(new CourseSendMail(
             TmsNotification::WELCOME,
@@ -127,8 +126,7 @@ class MailController extends Controller
     }
 
 //Send email invite student in tms_invitation table
-    public
-    function sendInvitation()
+    public function sendInvitation()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::INVITE_STUDENT] == TmsConfigs::ENABLE) {
@@ -202,8 +200,7 @@ class MailController extends Controller
 //Notification record created by VinhPT, Tho
 //Checked ok 2020 March 24
 //Type one time(just send unsent notification)
-    public
-    function sendEnrolQuizStartQuizEndQuizCompleted()
+    public function sendEnrolQuizStartQuizEndQuizCompleted()
     {
         $configs = self::loadConfiguration();
         $turn_on = 0;
@@ -423,8 +420,7 @@ class MailController extends Controller
     }
 
 //Send email completed competency framework
-    public
-    function sendCompetencyCompleted()
+    public function sendCompetencyCompleted()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::COMPLETED_FRAME] == TmsConfigs::ENABLE) {
@@ -504,8 +500,7 @@ class MailController extends Controller
 //Checked ok 2020 March 24
 //Type one time
 //Add limit 23/4
-    public
-    function sendRemindCertificate()
+    public function sendRemindCertificate()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_CERTIFICATE] == TmsConfigs::ENABLE) {
@@ -587,8 +582,7 @@ class MailController extends Controller
 //Insert notification records to db for suggest soft skill courses
 //Checked March 25, 2020
 //Limit
-    public
-    function insertSuggestSoftSkillCourses()
+    public function insertSuggestSoftSkillCourses()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
@@ -653,8 +647,7 @@ class MailController extends Controller
 //Remove suggest soft skill courses notification for enrolled student
 //Xóa notify cho học viên đã tham gia rồi
 //Checked March 26, 2020
-    public
-    function removeSuggestSoftSkillCourses()
+    public function removeSuggestSoftSkillCourses()
     {
         TmsNotification::whereIn('sendto', function ($query) {
             $query->select('mdl_user_enrolments.userid')
@@ -675,8 +668,7 @@ class MailController extends Controller
 //Chưa gửi hoặc đã gửi lần cuối cách đây > x ngày
 //Checked March 27, 2020
 //Type repeat
-    public
-    function sendSuggestSoftSkillCourses()
+    public function sendSuggestSoftSkillCourses()
     {
         $configs = self::loadConfiguration();
         $schedule = 3; //send again after x days
@@ -764,8 +756,7 @@ class MailController extends Controller
 
 //Remove reminds notification type repeat
 //Every weeks
-    public
-    function removeAllRemind()
+    public function removeAllRemind()
     {
         TmsNotification::where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE)->delete();
         TmsNotification::where('target', '=', TmsNotification::REMIND_EDUCATION_SCHEDULE)->delete();
@@ -780,8 +771,7 @@ class MailController extends Controller
 //Checked March 25, 2020
 //Limit
 //Type repeat
-    public
-    function insertRemindExpireRequiredCourses()
+    public function insertRemindExpireRequiredCourses()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE] == TmsConfigs::ENABLE) {
@@ -904,8 +894,7 @@ class MailController extends Controller
 
 //Send email remind user about expire course
 //Every minute
-    public
-    function sendRemindExpireRequiredCourses()
+    public function sendRemindExpireRequiredCourses()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE] == TmsConfigs::ENABLE) {
@@ -987,8 +976,7 @@ class MailController extends Controller
 //Check courses required category = 3
 //Check user completions for those course
 //last check March 31, 2020
-    public
-    function insertRemindEducationSchedule()
+    public function insertRemindEducationSchedule()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EDUCATION_SCHEDULE] == TmsConfigs::ENABLE) {
@@ -1096,8 +1084,7 @@ class MailController extends Controller
 //Send email remind user about education schedule - lộ trình đào tạo
 //Every minute
 //Last check March 31, 2020: add limit
-    public
-    function sendRemindEducationSchedule()
+    public function sendRemindEducationSchedule()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EDUCATION_SCHEDULE] == TmsConfigs::ENABLE) {
@@ -1180,8 +1167,7 @@ class MailController extends Controller
 //Add limit
 //Type repeat
 //last check April 1, 2020
-    public
-    function insertRemindLogin()
+    public function insertRemindLogin()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_LOGIN] == TmsConfigs::ENABLE) {
@@ -1245,8 +1231,7 @@ class MailController extends Controller
 //Send email remind login
 //Add limit, check exist
 //last check April 1, 2020
-    public
-    function sendRemindLogin()
+    public function sendRemindLogin()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_LOGIN] == TmsConfigs::ENABLE) {
@@ -1307,8 +1292,7 @@ class MailController extends Controller
 //mdl_user: all student / role = 5
 //Add limit, check exist
 //last check April 1, 2020
-    public
-    function insertRemindUpcomingCourses()
+    public function insertRemindUpcomingCourses()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
@@ -1355,8 +1339,7 @@ class MailController extends Controller
 //Send email remind upcoming courses
 //Add status unsent
 //Add limit
-    public
-    function sendRemindUpcomingCourses()
+    public function sendRemindUpcomingCourses()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
@@ -1450,8 +1433,7 @@ class MailController extends Controller
 //check course completion of user => get info and remind about those course
 //last check April 1, 2020
 //Add limit by mdl_user left table
-    public
-    function insertRemindAccess()
+    public function insertRemindAccess()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {
@@ -1558,8 +1540,7 @@ class MailController extends Controller
 
 //Send email remind user to access course
 //Add limit
-    public
-    function sendRemindAccess()
+    public function sendRemindAccess()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_ACCESS_COURSE] == TmsConfigs::ENABLE) {
@@ -1703,8 +1684,8 @@ class MailController extends Controller
     {
         $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
         //Nếu không có thì đang trong chế độ nhà phát triển
-        if(empty($getDevelopment))
-            $getDevelopment='enable';
+        if (empty($getDevelopment))
+            $getDevelopment = 'enable';
         else
             $development = $getDevelopment->content;
         if ($development == 'enable') {

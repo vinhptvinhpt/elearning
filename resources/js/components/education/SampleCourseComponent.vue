@@ -54,9 +54,10 @@
                             </div>
 
                             <div class="col-sm-6 form-group">
-                              <label for="inputText1-1">{{trans.get('keys.ma_thu_vien')}}
+                              <label for="inputText1-1">{{trans.get('keys.ma_khoa_hoc')}}
                                 *</label>
                               <input v-model="shortname" type="text" id="inputText1-1"
+                                     :disabled="library.length > 0"
                                      :placeholder="trans.get('keys.nhap_ma_thu_vien')"
                                      class="form-control mb-4">
                               <label v-if="!shortname"
@@ -64,7 +65,7 @@
                             </div>
 
                             <div class="col-sm-6 form-group">
-                              <label for="inputText6">{{trans.get('keys.ten_thu_vien')}}
+                              <label for="inputText6">{{trans.get('keys.ten_khoa_hoc')}}
                                 *</label>
                               <input v-model="fullname" type="text" id="inputText6"
                                      :placeholder="trans.get('keys.nhap_ten_thu_vien')"
@@ -294,47 +295,60 @@
         return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
       },
       getLibrary(){
-        this.librarySelectOptions = [];
         this.libraryCodes = [];
         axios.post('/api/courses/get_library', {})
           .then(response => {
-            let additionalCities = [];
             let codes = [];
-
             response.data.forEach(function(cityItem) {
-              let newCity = {
-                label: cityItem.shortname, // +  ' - ' + cityItem.fullname,
-                id: cityItem.shortname
-              };
-              additionalCities.push(newCity);
               codes.push(cityItem.shortname);
             });
-            this.librarySelectOptions = additionalCities;
             this.libraryCodes = codes;
-
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      },
+      getLibraryCodes(){
+        this.librarySelectOptions = [];
+        this.libraryCodes = [];
+        axios.post('/api/courses/get_library_codes', {})
+          .then(response => {
+            let additionalCities = [];
+            response.data.forEach(function(cityItem) {
+              let code = cityItem.code.replace("-", "_");
+              let newCity = {
+                label: code,
+                id: code
+              };
+              additionalCities.push(newCity);
+            });
+            this.librarySelectOptions = additionalCities;
           })
           .catch(error => {
             console.log(error);
           });
       },
       setShortName() {
-        let codes = this.libraryCodes;
-        let library = this.library;
-        let lastNumber = this.getLastNumber(library);
-        let prefix = library.substring(0, library.length - lastNumber.length);
-        let biggest = 0;
-        let curPos = this;
-        codes.forEach(function(item) {
-          if (item.indexOf(prefix) !== -1) {
-            let lastNumberCode = parseInt(curPos.getLastNumber(item));
-            if (lastNumberCode > biggest) {
-              biggest = lastNumberCode;
+        if (this.library) {
+          let codes = this.libraryCodes;
+          let prefix = this.library;
+          let biggest = 0;
+          let curPos = this;
+          codes.forEach(function(item) {
+            if (item.indexOf(prefix) !== -1) {
+              let lastNumberCode = parseInt(curPos.getLastNumber(item));
+              if (lastNumberCode > biggest) {
+                biggest = lastNumberCode;
+              }
             }
-          }
-        });
-        let nextNumber = biggest + 1;
-        let append = this.composeAppend(nextNumber);
-        this.shortname = prefix + append;
+          });
+          let nextNumber = biggest + 1;
+          let append = this.composeAppend(nextNumber);
+          this.shortname = prefix + '_' + append;
+        } else {
+          this.shortname = '';
+          this.library = '';
+        }
       },
       getLastNumber(str) {
         let arr = str.split('_');
@@ -376,6 +390,7 @@
         this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
         this.formData.append('category_id', 2); //gắn cứng giá trị quy định đây là id danh mục mãu
         this.formData.append('sample', 1);// truyền giá trị để nhận biết đây là khóa học mẫu
+        this.formData.append('selected_org', this.library.replace("_", "-"));// truyền giá trị để nhận biết thư viện được tạo cho một tổ chức cụ thể
         let current_pos = this;
         axios.post('/api/courses/create', this.formData, {
           headers: {
@@ -391,7 +406,9 @@
               this.pass_score = '';
               this.description = '';
               this.avatar = '';
+              this.library = '';
               this.hintCode();
+              this.getLibrary();
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
             }
@@ -458,6 +475,8 @@
           this.$route.params.back_page= null;
         }
         this.getCourses();
+        this.getLibrary();
+        this.getLibraryCodes();
       },
       getParamsBackPage() {
         return this.$route.params.back_page;
@@ -514,6 +533,7 @@
       this.hintCode();
       // this.fetch();
       this.getLibrary();
+      this.getLibraryCodes();
     },
     updated() {
       this.setFileInput();
