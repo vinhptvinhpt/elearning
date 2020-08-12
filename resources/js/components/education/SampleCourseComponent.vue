@@ -40,8 +40,8 @@
                         <div class="col-12 col-lg-9">
                           <form action="" class="form-row">
 
-                            <div v-if="slug_can('tms-system-administrator-grant')" class="col-sm-4 form-group">
-                              <label>{{trans.get('keys.thu_vien_nguon')}}</label>
+                            <div v-if="slug_can('tms-system-administrator-grant')" class="col-sm-6 form-group">
+                              <label>{{trans.get('keys.thu_vien_nguon_cho_to_chuc')}}</label>
                               <v-select
                                 @input="setShortName"
                                 :options="librarySelectOptions"
@@ -50,9 +50,10 @@
                                 :filter-by="myFilterBy"
                                 v-model="library">
                               </v-select>
+                              <em>{{ trans.get('keys.chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day') }}</em>
                             </div>
 
-                            <div class="col-sm-4 form-group">
+                            <div class="col-sm-6 form-group">
                               <label for="inputText1-1">{{trans.get('keys.ma_thu_vien')}}
                                 *</label>
                               <input v-model="shortname" type="text" id="inputText1-1"
@@ -62,7 +63,7 @@
                                      class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
 
-                            <div class="col-sm-4 form-group">
+                            <div class="col-sm-6 form-group">
                               <label for="inputText6">{{trans.get('keys.ten_thu_vien')}}
                                 *</label>
                               <input v-model="fullname" type="text" id="inputText6"
@@ -72,7 +73,7 @@
                                      class="required text-danger fullname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
 
-                            <div class="col-sm-4 form-group">
+                            <div class="col-sm-6 form-group">
                               <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}
                                 *</label>
                               <input v-model="pass_score" type="number" id="inputText1-2"
