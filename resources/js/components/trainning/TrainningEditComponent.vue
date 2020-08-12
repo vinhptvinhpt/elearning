@@ -248,7 +248,7 @@
                             <table id="datable_1" class="table_res">
                               <thead>
                               <tr>
-                                <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                <th style="width: 7%;">{{trans.get('keys.stt')}}</th>
                                 <th style="width: 40%;">{{trans.get('keys.ma_khoa_hoc')}}</th>
                                 <th>
                                   {{trans.get('keys.ten_khoa_hoc')}}
@@ -348,12 +348,12 @@
                                   <table id="datable_2" class="table_res">
                                     <thead>
                                     <tr>
-                                      <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                      <th style="width: 7%;">{{trans.get('keys.stt')}}</th>
                                       <th style="width: 40%;"> {{trans.get('keys.ma_khoa_hoc')}}</th>
                                       <th>
                                         {{trans.get('keys.ten_khoa_hoc')}}
                                       </th>
-                                      <th style="width: 10%;">{{trans.get('keys.hanh_dong')}}</th>
+                                      <th style="width: 12%;">{{trans.get('keys.hanh_dong')}}</th>
                                       <th class="text-center"><input type="checkbox"
                                                                      v-model="allSelectedRemove"
                                                                      @click="selectAllRemoveEnrol()"
