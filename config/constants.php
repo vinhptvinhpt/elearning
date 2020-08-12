@@ -41,6 +41,8 @@ return [
 
         'CONTAINER_NAME'=>'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6',
 
-        'ACCOUNT_KEY'=>'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw=='
+        'ACCOUNT_KEY'=>'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==',
+
+        'TMS_NAME' => 'Easia Academy',
     ],
 ];
