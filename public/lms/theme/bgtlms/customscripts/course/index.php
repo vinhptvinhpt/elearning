@@ -491,7 +491,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     /*footer*/
     .section-footer {
-        background: #202020 0% 0% no-repeat padding-box;
+        background: #000000 0% 0% no-repeat padding-box;
         border: 1px solid #707070;
         opacity: 1;
         padding: 4% 0;
@@ -629,6 +629,56 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         .title-course {
             min-height: 3.25rem;
         }
+    }
+
+    .footer-block__address .nav-tabs {
+        border: none;
+    }
+
+    .footer-block__address .nav-tabs li {
+        /*padding: 1% 2%;*/
+        display: block;
+    }
+
+    .footer-block__address .nav-tabs li.active, .tab-content .active {
+        background-color: #222126;
+        color: #ffffff;
+    }
+
+    .footer-block__address .nav-tabs li a {
+        color: #ffffff;
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+    }
+
+    .tab-content > .tab-pane {
+        padding: 2%;
+    }
+
+    .cls::after, .cls::before, .clearfix::after, .clearfix::before {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .regions {
+        color: #fff;
+        margin-bottom: 20px;
+        list-style: none;
+        font-size: 13px;
+        display: inline-grid;
+        /*width: 32%;*/
+    }
+
+    .regions .name {
+        padding-bottom: 4px;
+        border-bottom: 1px solid #3a3a3a;
+        font-size: 16px;
+    }
+
+    .regions .address, .regions .name {
+        letter-spacing: 1px;
     }
 
 
@@ -1054,59 +1104,68 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             <footer>
                 <div class="container">
                     <div class="row">
-                        <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo Light" class="footer-logo mt-1">
+                        <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                     </div>
                     <div class="row mb-3">
-                        <!--Helps-->
-                        <div class="footer-block col-sm-3 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
+                        <!--Home-->
+                        <div class="footer-block col-sm-2 col-xs-6">
+                            <div class="footer-block__title"><p class="footer-title">Home</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
+                                    <li><a href="lms/course/index.php">Courses</a></li>
+                                    <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
+                                    <li><a href="/tms/dashboard">CMS</a></li>
                                 </ul>
                             </div>
                         </div>
                         <!--FAQs-->
-                        <div class="footer-block col-sm-3 col-xs-6">
+                        <div class="footer-block col-sm-2 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="footer-block col-sm-3 col-xs-6">
+                        <!--Contact-->
+                        <div class="footer-block col-sm-8 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Contact</p></div>
-                            <div class="footer-block__ul">
-                                <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
+                            <div class="footer-block__ul footer-block__address">
+                                <ul class="nav nav-tabs">
+                                    <?php $count = 1; $active = 'active';
+                                    foreach ($_SESSION["footerAddressesTab"] as $footerAddressTab) { ?>
+                                        <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
+                                                                                         href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                        </li>
+                                        <?php $count++; $active=''; }  ?>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="footer-block col-sm-3 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
-                            <div class="footer-block__ul">
-                                <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                </ul>
+                                <div class="tab-content">
+                                    <?php $count = 1;
+                                    $active = 'active';
+                                    foreach ($_SESSION["footerAddresses"] as $footerAddress) { ?>
+                                        <div id="menu<?php echo $count; ?>" class="tab-pane in <?php echo $active; ?>">
+                                            <div class="content-address cls">
+                                                <?php foreach ($footerAddress as $footer) { ?>
+                                                    <ul class="regions">
+                                                        <li class="name"><?php echo $footer->name; ?></li>
+                                                        <li class="address"><i class="fa fa-map-marker"
+                                                                               aria-hidden="true"></i>
+                                                            <?php echo $footer->address; ?>
+                                                        </li>
+                                                    </ul>
+                                                <?php }
+                                                $count++;
+                                                $active = ''; ?>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </footer>
         </section>
+
     </div>
     <?php echo $OUTPUT->footer(); ?>
 </div>
@@ -1122,6 +1181,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             $('.btn-click-course').not($('#ctgr' + category)).each(function () {
                 $(this).removeClass(' btn-click-active');
             });
+        });
+
+        $('.nav-tabs li').click(function () {
+            $('.li-address').removeClass('active');
+            $(this).addClass('active');
         });
 
 
