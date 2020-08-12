@@ -49,8 +49,11 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
 
     public function _getRowBy($row) //overwrite row data if necessary
     {
-        //array_pop($row);
-        return $row; // remove column type when return
+        if ($this->type == 'learning_time') { //Convert seconds to hours
+            $row[8] = round($row[8]/3600, 2);
+        }
+        //array_pop($row); // remove column type when return
+        return $row;
     }
 
     public function headings(): array

@@ -4134,16 +4134,23 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json($validator);
             }
 
-            $lastRole = MdlRole::latest()->first();
+            $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
             $checkRole = Role::where('name', $name)->first();
             if ($checkRole) {
                 return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
             }
+
+            if (isset($lastRole)) {
+                $sortorder = $lastRole['sortorder'] + 1;
+            } else {
+                $sortorder = 1;
+            }
+
             //Tạo quyền bên LMS
             $mdlRole = new MdlRole;
             $mdlRole->shortname = $name;
             $mdlRole->description = $description;
-            $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+            $mdlRole->sortorder = $sortorder;
             $mdlRole->archetype = 'user';
             $mdlRole->save();
 
