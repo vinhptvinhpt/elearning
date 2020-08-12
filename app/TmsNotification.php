@@ -43,6 +43,7 @@ class TmsNotification extends Model
 
     //
     const NOTICE_SPAM_EMAIL ='notice_spam_email';
+    const DEVELOPMENT = 'development';
 
     //declare status send mail
     const UN_SENT = 0; //chưa gửi

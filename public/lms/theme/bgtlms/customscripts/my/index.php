@@ -91,7 +91,7 @@ $courses_others = array();
 $courses_others_id = '(0';
 $courses_soft_skills = array();
 $competency_exists = array();
-
+$countRequiredCourses = 0;
 foreach ($courses as $course) {
     //current first
     if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
@@ -103,17 +103,18 @@ foreach ($courses as $course) {
     } //then required = khoa hoc trong khung nang luc
     elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
         $courses_required[$course->training_id][$course->order_no] = $course;
-        if($course->training_deleted == 2){
-            $courses_others_id .= ', '.$course->id;
+        if ($course->training_deleted == 2) {
+            $courses_others_id .= ', ' . $course->id;
         }
+        $countRequiredCourses++;
     } //the last is other courses
-    else {
-        push_course($courses_others, $course);
-        $courses_others_id .= $course->id;
-    }
+//    else {
+//        push_course($courses_others, $course);
+////        $courses_others_id .= ', '.$course->id;
+//    }
+
 }
 $courses_others_id .= ')';
-
 function push_course(&$array, $course)
 {
     if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
@@ -144,7 +145,7 @@ inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in '.$courses_others_id;
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 // Set session variables
@@ -363,7 +364,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-family: HelveticaLTStd-Light;
     }
 
-    .sp-name-course{
+    .sp-name-course {
         font-size: 32px;
         position: absolute;
         width: 80%;
@@ -452,7 +453,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         /*right: 14%;*/
     }
 
-    .div-info-progress-disable span, .div-info-progress-enable span{
+    .div-info-progress-disable span, .div-info-progress-enable span {
         top: 11% !important;
     }
 
@@ -471,7 +472,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         margin-left: 80%;
     }
 
-    .number-order-hide{
+    .number-order-hide {
         opacity: 0 !important;
     }
 
@@ -515,10 +516,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         padding: 3% 3% 2.5% 3%;
     }
 
-    .path-calendar #page-wrapper #page #page-content #region-main{
+    .path-calendar #page-wrapper #page #page-content #region-main {
         padding: 0;
         margin: 0 !important;
     }
+
     .path-calendar #page-wrapper #page #page-content {
         padding-bottom: 0% !important;
     }
@@ -593,7 +595,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         right: 3%;
     }
 
-    .block-item__image_complete img{
+    .block-item__image_complete img {
         width: 40px !important;
         height: 40px !important;
     }
@@ -682,7 +684,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         padding: 0 !important;
     }
 
-    .progress-note{
+    .progress-note {
         margin: auto;
     }
 
@@ -916,8 +918,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         }
 
         .info-user .avatar img {
-             width: 150px;
-             height: 150px;
+            width: 150px;
+            height: 150px;
         }
     }
 
@@ -939,6 +941,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             height: 65px !important;
             bottom: 28% !important;
         }
+
         .info-user .avatar img {
             width: 150px !important;
             height: 150px !important;
@@ -950,6 +953,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             bottom: 48% !important;
             width: 49px !important;
         }
+
         .info-user .avatar img {
             width: 130px !important;
             height: 130px !important;
@@ -1077,7 +1081,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo count($courses_required); ?></div>
+                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
@@ -1089,7 +1093,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="info-statistic__completed-courses">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=other">
                                         <div class="text-course">Other courses</div>
-                                        <div class="text-number"><?php echo count($courses_others); ?></div>
+                                        <div class="text-number"><?php echo count($coursesSuggest); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__profile">
@@ -1136,17 +1140,18 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                         class="title-course">
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
-                                                                    <?php if (!empty($course->teacher_name)) {?>
-                                                                    <a class="teacher" data-toggle="modal"
-                                                                       data-target="#exampleModal"
-                                                                       data-teacher-name="<?php echo $course->teacher_name;?>"
-                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
-                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                        <i class="fa fa-user" aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
-                                                                    </a>
+                                                                    <?php if (!empty($course->teacher_name)) { ?>
+                                                                        <a class="teacher" data-toggle="modal"
+                                                                           data-target="#exampleModal"
+                                                                           data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                           data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                            <i class="fa fa-user"
+                                                                               aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                        </a>
                                                                     <?php } ?>
-                                                                    <?php if(!empty($course->training_name)){?>
+                                                                    <?php if (!empty($course->training_name)) { ?>
                                                                         <p class="units"><i class="fa fa-file"
                                                                                             aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
@@ -1200,69 +1205,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 if (in_array($training_id, $competency_exists)) {
                                                     $enable = 'disable';
                                                 }
-                                                foreach ($courses_traning as $course) { if($course->training_deleted == 2) continue; ?>
-                                                    <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
-                                                        <div class="block-data">
-                                                            <div class="block-items__item <?php echo $enable; ?>">
-                                                                <div class="block-item__image col-5"
-                                                                     style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-                                                                    <div
-                                                                        class="div-info-progress-<?php echo $enable; ?>">
-                                                                        <img src="<?php echo $_SESSION['component'] ?>"
-                                                                             alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
-                                                                    </div>
-                                                                    <div class="div-<?php echo $enable; ?>"></div>
-                                                                </div>
-                                                                <div class="block-item__content col-7">
-                                                                    <div class="block-item__content_text">
-                                                                        <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
-                                                                           title="<?php echo $course->fullname; ?>"><p
-                                                                                class="title-course">
-                                                                                <i></i><?php echo $course->fullname . ' '. $course->training_deleted; ?>
-                                                                            </p></a>
-                                                                        <div class="info-course">
-                                                                            <?php if (!empty($course->teacher_name)) { ?>
-                                                                            <a class="teacher" data-toggle="modal"
-                                                                               data-target="#exampleModal"
-                                                                               data-teacher-name="<?php echo $course->teacher_name; ?>"
-                                                                               data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
-                                                                               data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                               data-teacher-description="<?php echo $course->teacher_description ?>">
-                                                                                <i class="fa fa-user"
-                                                                                   aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
-                                                                            </a>
-                                                                            <?php } ?>
-                                                                            <?php if(!empty($course->training_name)){?>
-                                                                                <p class="units"><i class="fa fa-file"
-                                                                                                    aria-hidden="true"></i> <?php echo $course->training_name; ?>
-                                                                                </p>
-                                                                            <?php } ?>
-                                                                            <p class="units"><i class="fa fa-clock-o"
-                                                                                                aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                                hours</p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <p class="number-order"><?php echo $stt; ?></p>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <?php $countBlock++;
-                                                    $enable = 'disable';
-                                                    $stt++;
-                                                    break;
-                                                    if ($countBlock == 5) break;
-                                                }
-                                                if ($countBlock == 5) break;
-                                            };
-                                            foreach ($courses_required as $courses_traning) {
-                                                $stt = 2;
-                                                $enable = 'enable';
-                                                if(array_values($courses_traning)[0]->training_deleted == 0){
-                                                    array_shift($courses_traning);
-                                                    $enable = 'disable';
-                                                }
-                                                foreach ($courses_traning as $course) { ?>
+                                                foreach ($courses_traning as $course) {
+                                                    if ($course->training_deleted == 2) continue; ?>
                                                     <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                         <div class="block-data">
                                                             <div class="block-items__item <?php echo $enable; ?>">
@@ -1294,7 +1238,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                                        aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                                 </a>
                                                                             <?php } ?>
-                                                                            <?php if(!empty($course->training_name)){?>
+                                                                            <?php if (!empty($course->training_name)) { ?>
                                                                                 <p class="units"><i class="fa fa-file"
                                                                                                     aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                                 </p>
@@ -1304,11 +1248,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                                 hours</p>
                                                                         </div>
                                                                     </div>
-                                                                    <?php if($course->training_deleted == 0){?>
-                                                                        <p class="number-order"><?php echo $stt; ?></p>
-                                                                    <?php } else { ?>
-                                                                        <p class="number-order number-order-hide"></p>
-                                                                    <?php } ?>
+                                                                    <p class="number-order"><?php echo $stt; ?></p>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1320,6 +1260,81 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     if ($countBlock == 5) break;
                                                 }
                                                 if ($countBlock == 5) break;
+                                            }
+                                        ;
+                                            if ($countBlock < 5) {
+                                                foreach ($courses_required as $courses_traning) {
+                                                    $stt = 2;
+                                                    $enable = 'enable';
+                                                    if (array_values($courses_traning)[0]->training_deleted == 0) {
+                                                        array_shift($courses_traning);
+                                                        $enable = 'disable';
+                                                    }
+                                                    foreach ($courses_traning as $course) { ?>
+                                                        <div
+                                                            class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
+                                                            <div class="block-data">
+                                                                <div class="block-items__item <?php echo $enable; ?>">
+                                                                    <div class="block-item__image col-5"
+                                                                         style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                                        <div
+                                                                            class="div-info-progress-<?php echo $enable; ?>">
+                                                                            <img
+                                                                                src="<?php echo $_SESSION['component'] ?>"
+                                                                                alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                        </div>
+                                                                        <div class="div-<?php echo $enable; ?>"></div>
+                                                                    </div>
+                                                                    <div class="block-item__content col-7">
+                                                                        <div class="block-item__content_text">
+                                                                            <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
+                                                                               title="<?php echo $course->fullname; ?>">
+                                                                                <p
+                                                                                    class="title-course">
+                                                                                    <i></i><?php echo $course->fullname; ?>
+                                                                                </p></a>
+                                                                            <div class="info-course">
+                                                                                <?php if (!empty($course->teacher_name)) { ?>
+                                                                                    <a class="teacher"
+                                                                                       data-toggle="modal"
+                                                                                       data-target="#exampleModal"
+                                                                                       data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                                       data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
+                                                                                       data-teacher-organization="<?php echo $course->teacher_organization ?>"
+                                                                                       data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                                        <i class="fa fa-user"
+                                                                                           aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
+                                                                                    </a>
+                                                                                <?php } ?>
+                                                                                <?php if (!empty($course->training_name)) { ?>
+                                                                                    <p class="units"><i
+                                                                                            class="fa fa-file"
+                                                                                            aria-hidden="true"></i> <?php echo $course->training_name; ?>
+                                                                                    </p>
+                                                                                <?php } ?>
+                                                                                <p class="units"><i
+                                                                                        class="fa fa-clock-o"
+                                                                                        aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
+                                                                                    hours</p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <?php if ($course->training_deleted == 0) { ?>
+                                                                            <p class="number-order"><?php echo $stt; ?></p>
+                                                                        <?php } else { ?>
+                                                                            <p class="number-order number-order-hide"></p>
+                                                                        <?php } ?>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <?php $countBlock++;
+                                                        $enable = 'disable';
+                                                        $stt++;
+                                                        break;
+                                                        if ($countBlock == 5) break;
+                                                    }
+                                                    if ($countBlock == 5) break;
+                                                }
                                             }
                                             ?>
                                         <?php } else { ?>
@@ -1354,9 +1369,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     <div class="block-items__item">
                                                         <div class="block-item__image block-item__image_complete col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
-                                                            <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
+                                                            <img src="<?php echo $CFG->wwwtmsbase . $pathBadge; ?>"
                                                                  alt="">
-<!--                                                            <span class="sp-name-course">--><?php //echo $course->fullname; ?><!--</span>-->
+                                                            <!--                                                            <span class="sp-name-course">-->
+                                                            <?php //echo $course->fullname; ?><!--</span>-->
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1376,7 +1392,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <?php if(!empty($course->training_name)){?>
+                                                                    <?php if (!empty($course->training_name)) { ?>
                                                                         <p class="units"><i class="fa fa-file"
                                                                                             aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>

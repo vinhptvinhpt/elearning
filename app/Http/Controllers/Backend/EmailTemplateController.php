@@ -42,6 +42,7 @@ use Maatwebsite\Excel\Excel;
 use Mockery\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 use App\Http\Controllers\Api\MailController;
+use Tintnaingwin\EmailChecker\Facades\EmailChecker;
 
 set_time_limit(0);
 
@@ -59,7 +60,7 @@ class EmailTemplateController extends Controller
         $this->deleteOldConfigs();
         //
         $data = [];
-        $configs = TmsConfigs::where('editor', 'checkbox')->get();
+        $configs = TmsConfigs::where('editor', 'checkbox')->where('target', '<>', 'development')->get();
         if (count($configs) != 0) {
             foreach ($configs as $config) {
                 $label = $this->convertNameFile($config->target);
@@ -160,6 +161,9 @@ class EmailTemplateController extends Controller
     public function convertNameFile($name_file)
     {
         switch ($name_file) {
+            case TmsNotification::ENROL:
+                $label = __("tham_gia_khoa_hoc");
+                break;
             case TmsNotification::ASSIGNED_COURSE:
                 $label = __('assigned_course');
                 break;
@@ -189,9 +193,6 @@ class EmailTemplateController extends Controller
                 break;
             case TmsNotification::REMIND_CERTIFICATE:
                 $label = __('remind_certificate');
-                break;
-            case TmsNotification::ENROL:
-                $label = __('tham_gia_khoa_hoc');
                 break;
             default:
                 $label = '';
@@ -407,23 +408,24 @@ class EmailTemplateController extends Controller
                     try {
                         foreach ($users as $user) {
                             //send mail can not continue if has fake email
-                            if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-								\Log::info('success1: '.$user->user_id. ', email: ' . $user->email);
+                            if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL) && EmailChecker::check($user->email)) {
                                 Mail::to($user->email)->send(new CourseSendMail(
                                     TmsNotification::NOTICE_SPAM_EMAIL,
                                     '',
                                     $user->fullname
                                 ));
+
 \Log::info('success: '.$user->user_id. ', email: ' . $user->email);
                                 usleep(100);
                                 $sent += 1;
-                            } else {
+                                usleep(100);
+                            }
+                            else {
+                                \Log::info('fail: '.$user->user_id. ', email: ' . $user->email);
                                 $fail += 1;
                             }
                         }
-                        
                         $sent += 1;
-
                     } catch (Exception $e) {
                         $fail += 1;
                         \Log::info('error: '.$user->user_id. ', email: ' . $user->email);
