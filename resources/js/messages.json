@@ -1016,7 +1016,7 @@
         "thu_vien_nguon_cho_to_chuc": "Source organization code",
         "completed_competency_framework": "Completed Competency framework",
         "development": "Development mode",
-        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Select a library, system will detect latest code in its series and generate next code"
+        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Select a code, system will detect latest code in its series and generate next code"
     },
     "vi.keys": {
         "language": "",
