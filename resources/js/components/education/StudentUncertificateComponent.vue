@@ -82,7 +82,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-if="uncertificate.length == 0">
-                                            <td colspan="7">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
+                                            <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
                                         </tr>
                                         <tr v-else v-for="(user,index) in uncertificate">
                                             <td>
@@ -195,7 +195,7 @@
                                         </thead>
                                         <tbody>
                                         <tr v-if="posts.length == 0">
-                                            <td colspan="7">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
+                                            <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
                                         </tr>
                                         <tr v-else v-for="(user,index) in posts">
                                             <td>{{ (currentCt-1)*rowCt+(index+1) }}</td>
