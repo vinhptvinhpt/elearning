@@ -57,7 +57,7 @@ mc.estimate_duration,
   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and mue.userid = ' . $USER->id;
-$sql .= ' group by mc.id'; //cần để tạo tên giáo viên
+$sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -1080,7 +1080,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
+                                        <div class="text-number"><?php echo $countRequiredCourses-1; ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
