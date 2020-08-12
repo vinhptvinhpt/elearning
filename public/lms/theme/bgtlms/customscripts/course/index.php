@@ -725,8 +725,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <template v-else-if="category == 'required'">
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
-                            <div
-                                v-if="index > 0 || ( course.training_id != null && competency_exists.includes(course.training_id)) ">
+                            <div v-if="course.stt > 1 || (competency_exists.includes(course.training_id))">
                                 <div class="row course-block course-block-disable">
                                     <div class="col-5 course-block__image"
                                          v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
@@ -790,8 +789,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <div class="course-info__detail">
                                                     <ul>
                                                         <li class="teacher" v-if="course.teacher_name">
-                                                            <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                            course.teacher_name }}
+                                                            <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                         </li>
                                                         <li class="teacher" v-else>
                                                             <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
@@ -803,18 +801,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hours
                                                         </li>
-<!--                                                        <li v-if="course.training_deleted == 0" class="number-order">-->
-<!--                                                            {{ course.stt }}-->
-<!--                                                        </li>-->
                                                     </ul>
                                                 </div>
                                                 <p v-if="course.training_deleted == 0" class="number-order">{{ course.stt }}</p>
                                             </div>
-                                            <!--  <div class="btn-show btn-show-all btn-page">
-                                                  <button class="btn btn-click"><a
-                                                          :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                  </button>
-                                              </div>-->
                                         </div>
                                     </div>
                                 </div>
@@ -975,8 +965,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <div class="course-info__detail">
                                                     <ul>
                                                         <li class="teacher" v-if="course.teacher_name">
-                                                            <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                            course.teacher_name }}
+                                                            <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                         </li>
                                                         <li class="teacher" v-else>
                                                             <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
@@ -1021,8 +1010,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             <div class="course-info__detail">
                                                 <ul>
                                                     <li class="teacher" v-if="course.teacher_name">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                        course.teacher_name }}
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
                                                     <li class="teacher" v-else>
                                                         <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
