@@ -249,7 +249,8 @@
             convertDateTime(value) {
                 if (value) {
                     var time = new Date(value * 1000);
-                    return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
+                    // return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
+                  return time.toLocaleDateString();
                 }
                 return "";
             }
