@@ -290,8 +290,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .item-image{
         box-shadow: 3px 3px 6px #0000004D;
         border-radius: 10px;
-        max-height: 300px;
-        max-width: 185px;
+        /*max-height: 300px;*/
+        max-width: 70%;
+        margin: auto;
     }
 
     .item-image img{
