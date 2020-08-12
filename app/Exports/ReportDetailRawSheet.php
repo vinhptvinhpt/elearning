@@ -92,7 +92,6 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
                 'Country',
                 'Office',
                 'Competency framework',
-                'Course',
                 'Certificated',
             ];
 
