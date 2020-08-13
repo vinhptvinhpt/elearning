@@ -1867,6 +1867,9 @@ class BussinessRepository implements IBussinessInterface
 
         $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
 
+        echo $userNeedEnrol->toSql();
+        die;
+
         $userNeedEnrol = $userNeedEnrol->paginate($row);
         $total = ceil($userNeedEnrol->total() / $row);
         $response = [
