@@ -513,6 +513,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
     Route::post('/api/courses/get_library', 'Backend\CourseController@apiGetListLibrary');
     Route::post('/api/courses/get_library_codes', 'Backend\CourseController@apiGetListLibraryCodes');
+    Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
 
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
