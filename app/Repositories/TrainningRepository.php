@@ -815,6 +815,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         ->where('ttc.course_id', '=', $course_id)
                         ->where('ttc.deleted', '=', 0)->update(['deleted' => 1]);
 
+                    //Disable khoa hoc luon?
                     sleep(0.01);
                 }
             }
