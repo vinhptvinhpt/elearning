@@ -384,8 +384,6 @@ class BackgroundController extends Controller
     public function fillTrainingForStandaloneCourses() {
 
         $courses = DB::table('mdl_course as mc')
-            ->leftJoin('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'mc.id')
-            ->leftJoin('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->whereNotIn('mc.id', function ($q) {
                 $q->select('course_id')->from('tms_trainning_courses');
             })
