@@ -8,6 +8,7 @@ use App\Exports\ImportResultSheet;
 use App\Exports\ListMismatchData;
 use App\Http\Controllers\Controller;
 use App\Imports\DataImport;
+use App\MdlCourse;
 use App\MdlEnrol;
 use App\MdlGradeGrade;
 use App\MdlGradeItem;
@@ -39,6 +40,8 @@ use App\TmsSaleRoomUser;
 use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use App\TmsTrainningCategory;
+use App\TmsTrainningCourse;
+use App\TmsTrainningProgram;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
 use App\TmsUserSaleDetail;
@@ -378,6 +381,31 @@ class BackgroundController extends Controller
         }
     }
 
+    public function fillTrainingForStandaloneCourses() {
+
+        $courses = DB::table('mdl_course as mc')
+            ->leftJoin('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'mc.id')
+            ->leftJoin('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->whereNotIn('mc.id', function ($q) {
+                $q->select('course_id')->from('tms_trainning_courses');
+            })
+            ->select('mc.*')
+            ->where('mc.category', '<>', 2)
+            ->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($courses as $course) {
+                self::createStandaloneTraining($course);
+            }
+            DB::commit();
+            return "Success";
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $e->getMessage();
+        }
+    }
+
     function createPQDL($organization) {
         if (!$organization->roleOrganization) { //Tạo role nếu chưa có
 
@@ -455,6 +483,28 @@ class BackgroundController extends Controller
                 $check->role->description = $organization->name;
                 $check->role->save();
             }
+        }
+    }
+
+    function createStandaloneTraining($course) {
+        $tms_trainning = TmsTrainningProgram::firstOrCreate([
+            'code' => $course->shortname . $course->id,
+            'name' => $course->fullname,
+            'style' => 1,
+            'run_cron' => 1,
+            'time_start' => 0,
+            'time_end' => 0,
+            'auto_certificate' => 1,
+            'auto_badge' => 1,
+            'deleted' => 2 //KNL ko hien thi tren he thong
+        ]);
+
+        if ($tms_trainning) {
+            TmsTrainningCourse::firstOrCreate([
+                'trainning_id' => $tms_trainning->id,
+                'sample_id' => $course->id,
+                'course_id' => $course->id
+            ]);
         }
     }
 
