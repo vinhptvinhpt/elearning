@@ -1260,6 +1260,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         if (_this.category == 'required') {
                             _this.competency_exists = response.data.competency_exists;
                         }
+                        activeCategogy(_this.category);
                     })
                     .catch(error => {
                     });
