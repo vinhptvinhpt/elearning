@@ -288,7 +288,6 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
 $getPermissions = $DB->get_records_sql($sqlCheckPermission);
 
 $allowCms = false;
-
 $permissions = array_values($getPermissions);
 foreach ($permissions as $permission) {
     if (!in_array($permission->name, ['student', 'employee'])) {
@@ -296,6 +295,7 @@ foreach ($permissions as $permission) {
         break;
     }
 }
+$_SESSION["allowCms"] = $allowCms;
 ?>
 
 <html>
