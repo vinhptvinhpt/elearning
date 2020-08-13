@@ -53,6 +53,7 @@ mc.estimate_duration,
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
   where me.enrol = \'manual\'
+  and ttc.deleted <> 1
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)

@@ -56,6 +56,7 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
+  and ttc.deleted <> 1
   and mue.userid = ' . $USER->id;
 
     if ($category > 0) {
@@ -114,7 +115,9 @@ inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in '.$courses_others_id;
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+  and ttp.deleted = 2 and
+  mc.id not in '.$courses_others_id;
 
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
     //
@@ -160,10 +163,12 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
+inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
+and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
     if ($category > 0) {
         $sqlCountCoures .= ' and category = ' . $category;
@@ -203,6 +208,7 @@ where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
+and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
 
 
