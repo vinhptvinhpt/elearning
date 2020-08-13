@@ -416,7 +416,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-size: 13px !important;
         letter-spacing: 0.45px !important;
         font-family: Roboto-Regular;
-        border: 1px solid #ffff !important;
+        border: 1px solid #ffffffad !important;
         border-radius: inherit !important;
         /*background-color: transparent !important;*/
         color: #ffffff !important;
@@ -439,7 +439,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .btn-search {
-        border: 1px solid #ffffff;
+        border: 1px solid #ffffffad;
         border-left: 0;
     }
 
@@ -464,7 +464,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .btn-click-course {
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 3px 3px 6px #00000029;
-        border: 1px solid #C7C7C7;
+        border: 1px solid #c7c7c7bf !important;
         border-radius: 4px;
         /*font-family: Nunito-Bold;*/
         font-family: Roboto;
@@ -479,6 +479,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .btn-click-active {
         background: transparent linear-gradient(97deg, <?=$_SESSION["color"]?> 0%, <?=$_SESSION["color"]?> 100%) 0% 0% no-repeat padding-box;
         color: #FFFFFF !important;
+        border: 1px solid <?=$_SESSION["color"]?> !important;
     }
 
     .block-search, .header-block__quick-filter__main ul {
@@ -499,6 +500,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .footer-ul {
         padding: 0;
+        padding-left: 5%;
     }
 
     .footer-ul li {
@@ -516,7 +518,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .footer-ul li a {
         color: #FFFFFF;
-        font-size: 13px;
+        /*font-size: 13px;*/
     }
 
     .footer-title {
@@ -618,6 +620,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         .col-xxl-3 {
             flex: 0 0 25% !important;
             max-width: 25% !important;
+        }
+    }
+
+    @media screen and (max-width: 425px) {
+        .section-footer .container{
+            padding: 3% 3%;
         }
     }
 
@@ -741,8 +749,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
-                <div class="header-block__quick-filter">
-                    <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
+                <div class="header-block__quick-filter mt-5">
+                    <div class="header-block__quick-filter__title mb-4"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
 
@@ -754,11 +762,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         category="<?php echo $key; ?>"><?php echo $value; ?></li>
                                 <?php }
                             } else { ?>
-                                <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0"
+                                <li class="btn btn-click-course btn-click-active mb-2" id="ctgr0" category="0"
                                     @click="searchCourse(0, 1)">All Courses
                                 </li>
                                 <?php foreach ($categories as $category) { ?>
-                                    <li class="btn btn-click-course"
+                                    <li class="btn btn-click-course mb-2"
                                         @click="searchCourse(<?php echo $category->id; ?>, 1)"
                                         id="ctgr<?php echo $category->id; ?>"
                                         category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
@@ -1108,7 +1116,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     </div>
                     <div class="row mb-3">
                         <!--Home-->
-                        <div class="footer-block col-sm-2 col-xs-6">
+                        <div class="footer-block col-12 col-sm-2 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Home</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
@@ -1121,7 +1129,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             </div>
                         </div>
                         <!--FAQs-->
-                        <div class="footer-block col-sm-2 col-xs-6">
+                        <div class="footer-block col-12 col-sm-2 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
@@ -1129,7 +1137,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             </div>
                         </div>
                         <!--Contact-->
-                        <div class="footer-block col-sm-8 col-xs-6">
+                        <div class="footer-block col-12 col-sm-8 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Contact</p></div>
                             <div class="footer-block__ul footer-block__address">
                                 <ul class="nav nav-tabs">

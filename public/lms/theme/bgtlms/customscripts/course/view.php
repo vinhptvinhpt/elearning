@@ -869,7 +869,7 @@ if ($course->numofmodule == 0) {
         <div class="container">
             <!--                progress info-->
             <div class="progress-info">
-                <div class="progress-info__title"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i
+                <div class="progress-info__title mt-2 mb-3"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i
                                 class="fa fa-angle-left"
                                 aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
                 <div class="progress-info__content">
