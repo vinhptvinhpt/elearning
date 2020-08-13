@@ -37,6 +37,8 @@ class UsersTableSeeder extends Seeder
 
 
         //seeds tms_organization_addresses
+        TmsOrganizationAddresses::query()->delete();
+
         #region PHH
         TmsOrganizationAddresses::create([
             'organization_id' => '0',
@@ -215,8 +217,8 @@ class UsersTableSeeder extends Seeder
         ]);
         TmsOrganizationAddresses::create([
             'organization_id' => $organizationEX,
-            'country' => 'VIETNAM',
-            'name' => 'THAILAND',
+            'country' => 'THAILAND',
+            'name' => '',
             'address' => 'No. 11/1 AIA Sathorn Tower, 10th Floor, Room No. S10001 South Sathorn Road, Yannawa, Sathorn, Bangkok 10120',
             'tel' => '',
             'fax' => ''
