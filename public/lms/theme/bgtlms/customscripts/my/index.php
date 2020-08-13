@@ -276,6 +276,26 @@ foreach ($getFooterAddresses as $footerAddress) {
 $_SESSION["OrganizationID"] = $organization_id;
 $_SESSION["footerAddressesTab"] = $footerAddressesTab;
 $_SESSION["footerAddresses"] = $footerAddresses;
+
+
+//get permission
+$sqlCheckPermission = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$getPermissions = $DB->get_records_sql($sqlCheckPermission);
+
+$allowCms = false;
+$permissions = array_values($getPermissions);
+foreach ($permissions as $permission) {
+    if (!in_array($permission->name, ['student', 'employee'])) {
+        $allowCms = true;
+        break;
+    }
+}
+$_SESSION["allowCms"] = $allowCms;
 ?>
 
 <html>
@@ -1616,7 +1636,9 @@ $_SESSION["footerAddresses"] = $footerAddresses;
                             <ul class="footer-ul">
                                 <li><a href="lms/course/index.php">Courses</a></li>
                                 <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
-                                <li><a href="/tms/dashboard">CMS</a></li>
+                                <?php if($allowCms){ ?>
+                                    <li><a href="/tms/dashboard">CMS</a></li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>

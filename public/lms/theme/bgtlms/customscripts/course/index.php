@@ -1114,7 +1114,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <ul class="footer-ul">
                                     <li><a href="lms/course/index.php">Courses</a></li>
                                     <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
-                                    <li><a href="/tms/dashboard">CMS</a></li>
+                                    <?php if($_SESSION["allowCms"]){ ?>
+                                        <li><a href="/tms/dashboard">CMS</a></li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </div>
@@ -1258,6 +1260,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         if (_this.category == 'required') {
                             _this.competency_exists = response.data.competency_exists;
                         }
+                        activeCategogy(_this.category);
                     })
                     .catch(error => {
                     });
