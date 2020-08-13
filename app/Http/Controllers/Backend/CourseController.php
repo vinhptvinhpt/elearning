@@ -532,4 +532,9 @@ class CourseController extends Controller
     {
         return $this->mdlCourseRepository->apiGetListLibraryCodes();
     }
+
+    public function apiGetExistedCodes()
+    {
+        return $this->mdlCourseRepository->apiGetExistedCodes();
+    }
 }

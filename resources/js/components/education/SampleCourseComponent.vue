@@ -448,13 +448,6 @@
           });
       },
       composeAppend(num) {
-
-        // $length = 3;
-        // if (strlen($num) >= $length) {
-        //   return $num;
-        // } else {
-        //   return str_repeat('0', $length - strlen($num)) . $num;
-        // }
         let str = num.toString();
         let length = 3;
         if (str.length >= length) {

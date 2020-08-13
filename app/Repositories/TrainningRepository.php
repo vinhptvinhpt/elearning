@@ -605,6 +605,25 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             \DB::beginTransaction();
             $count_course = count($lstCourseId);
             if ($count_course > 0) {
+
+                $existed_codes = MdlCourse::query()
+                    ->select('id', 'shortname')
+                    ->get();
+
+                $index_existed = array();
+                foreach ($existed_codes as $code) {
+                    $extract = self::extractCode($code);
+                    if (!empty($extract)) {
+                        if (isset($index_existed[$extract['lib_code']])) {
+                            if (intval($extract['number']) > intval($index_existed[$extract['lib_code']]))  {
+                                $index_existed[$extract['lib_code']] = $extract['number'];
+                            }
+                        } else {
+                            $index_existed[$extract['lib_code']] = $extract['number'];
+                        }
+                    }
+                }
+
                 foreach ($lstCourseId as $course_id) {
                     $course_id = is_numeric($course_id) ? $course_id : 0;
                     $course_sample = DB::table('mdl_course')
@@ -640,7 +659,21 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         #region clone course tu thu vien khoa hoc
                         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
                         $course->category = MdlCourseCategory::COURSE_ONLINE[0];
-                        $course->shortname = $course_sample->shortname . $course_sample->id . $trainning_id;
+
+
+                        $number = 0;
+                        if (isset($index_existed[$course_sample->shortname])) {
+                            $number = intval($index_existed[$course_sample->shortname]);
+                        }
+                        $next_number = $number + 1;
+                        $append = self::composeAppend($next_number);
+                        $prefix = '_ONL';
+                        $course->shortname = $course_sample->shortname . $prefix . $append;
+
+
+                        //$course->shortname = $course_sample->shortname . $course_sample->id . $trainning_id;
+
+
                         $course->fullname = $course_sample->fullname; // . ' ' . $course_sample->id . $trainning_id;  //bỏ id sau tên course
                         $course->summary = $course_sample->summary;
                         $course->course_avatar = $course_sample->course_avatar;
@@ -650,6 +683,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
                         $course->visible = 1; //tao ra 1 khoa hoc moi, mac dinh set khoa hoc do dc active
                         $course->save();
+
+                        $index_existed[$course_sample->shortname] = $append;
 
                         //insert dữ liệu điểm qua môn
                         MdlCourseCompletionCriteria::firstOrCreate(array(
@@ -795,6 +830,45 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
+
+    /**
+     * @param $num
+     * @return string
+     */
+    public function composeAppend($num) {
+        $length = 3;
+        if (strlen($num) >= $length) {
+            return $num;
+        } else {
+            return str_repeat('0', $length - strlen($num)) . $num;
+        }
+    }
+
+    /**
+     * @param $code
+     * @return string
+     */
+    public function extractCode($code) {
+        $response = [];
+        $prefix = '_ONL';
+//        let arr = str.split('_ONL');
+//              let reverse = arr.reverse();
+//              if (isNaN(reverse[0])) {
+//                  return '0';
+//              } else {
+//                  return reverse[0];
+//              }
+        if (strpos($code, $prefix) !== false) {
+            $explode = explode($prefix, $code);
+            $response = array(
+                'lib_code' => $explode[0],
+                'number' => $explode[1]
+            );
+        }
+        return $response;
+    }
+
 
     //xoa khoa hoc khoi khung nang luc
     public function apiRemoveCourseTrainning(Request $request)

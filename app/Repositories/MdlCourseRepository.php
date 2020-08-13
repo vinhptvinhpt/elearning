@@ -1261,6 +1261,14 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($codes);
     }
 
+    public function apiGetExistedCodes()
+    {
+        $codes = MdlCourse::query()
+            ->select('id', 'shortname')
+            ->get();
+        return response()->json($codes);
+    }
+
     /**
      * @param $num
      * @return string
