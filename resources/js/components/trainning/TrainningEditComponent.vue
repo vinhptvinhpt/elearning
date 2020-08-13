@@ -543,6 +543,7 @@
         this.list.sort(sortArray);
       },
       saveOrder() {
+        let cc = this;
         axios.post('/api/trainning/saveorder', {
           training_id: this.id,
           list: this.list
@@ -553,11 +554,15 @@
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
+            //Reload new order, cho vao trong de chay sau khi api goi xong
+            cc.getListCourseTrainning();
           })
           .catch(error => {
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+            //Reload new order
+            cc.getListCourseTrainning();
           });
-        this.getListCourseTrainning();
+
       },
       getRoles() {
         axios.post('/system/user/list_role')
