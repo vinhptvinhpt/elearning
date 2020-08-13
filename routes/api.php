@@ -49,6 +49,7 @@ Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLef
 Route::get('/test', 'Api\BackgroundController@test');
 Route::get('/background/resetOrganizationEmployeePassword', 'Api\BackgroundController@resetOrganizationEmployeePassword');
 Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingPQDL');
+Route::get('/background/fillTrainingForStandaloneCourses', 'Api\BackgroundController@fillTrainingForStandaloneCourses');
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
