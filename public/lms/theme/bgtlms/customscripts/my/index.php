@@ -836,6 +836,7 @@ $_SESSION["allowCms"] = $allowCms;
 
     .footer-ul {
         padding: 0;
+        padding-left: 5%;
     }
 
     .footer-ul li {
@@ -991,6 +992,10 @@ $_SESSION["allowCms"] = $allowCms;
         .info-user .avatar img {
             width: 130px !important;
             height: 130px !important;
+        }
+
+        .section-footer .container{
+            padding: 3% 3%;
         }
     }
 
@@ -1630,7 +1635,7 @@ $_SESSION["allowCms"] = $allowCms;
                 </div>
                 <div class="row mb-3">
                     <!--Home-->
-                    <div class="footer-block col-sm-2 col-xs-6">
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">Home</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
@@ -1643,7 +1648,7 @@ $_SESSION["allowCms"] = $allowCms;
                         </div>
                     </div>
                     <!--FAQs-->
-                    <div class="footer-block col-sm-2 col-xs-6">
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
@@ -1651,7 +1656,7 @@ $_SESSION["allowCms"] = $allowCms;
                         </div>
                     </div>
                     <!--Contact-->
-                    <div class="footer-block col-sm-8 col-xs-6">
+                    <div class="footer-block col-12 col-sm-8 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">Contact</p></div>
                         <div class="footer-block__ul footer-block__address">
                             <ul class="nav nav-tabs">
