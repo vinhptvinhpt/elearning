@@ -121,6 +121,7 @@ import SelfPresent from "./components/self-assessment/SelfPresentComponent";
 import SelfStatistic from "./components/self-assessment/SelfStatisticComponent";
 import SelfLMS from "./components/self-assessment/SelfLMSComponent";
 import ReportLogin from "./components/system/report/ReportLoginComponent";
+import UserCourseException from "./components/education/UserCourseException";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -639,6 +640,16 @@ const routes = [
                 component: CourseEditComponent,
                 name: 'CourseDetail',
                 props: (route) => ({course_id: route.params.id})
+            },
+            {
+              path: 'education/user_course_exception/detail/:id',
+              component: UserCourseException,
+              name: 'UserCourseExceptionEdit',
+              props: (route) => ({
+                  course_id: route.params.id,
+                  come_from: route.params.come_from,
+                  course_name: route.params.course_name
+              })
             },
             {
                 path: 'education/course/detail_concentrate/:id',
