@@ -238,7 +238,7 @@
           .then(response => {
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
-              this.$router.push({name: 'SampleCourseIndex'});
+              this.$router.push({name: 'SampleCourseIndex',params: {back_page:'1'}});
 
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));

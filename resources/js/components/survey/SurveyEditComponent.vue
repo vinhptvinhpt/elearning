@@ -188,7 +188,7 @@
                     loader.fadeOut();
                     if (response.data.status) {
                         toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                        this.$router.push({name: 'SurveyIndex'});
+                        this.$router.push({name: 'SurveyIndex', params:{back_page:'1'}});
                     } else {
                         toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                     }
