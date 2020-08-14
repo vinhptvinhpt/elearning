@@ -97,7 +97,7 @@ $competency_exists = array();
 $countRequiredCourses = 0;
 foreach ($courses as $course) {
     //current first
-    if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+    if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
         array_push($competency_exists, $course->training_id);
         push_course($courses_current, $course);
     } //then complete
@@ -1177,7 +1177,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo $countRequiredCourses - 1; ?></div>
+                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
