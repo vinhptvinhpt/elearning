@@ -2,7 +2,7 @@
 <head></head>
 <body>
 <div>
-    <?php 
+    <?php
         //using class
         use App\Mail\CourseSendMail;
 
@@ -18,19 +18,18 @@
         //replace values
         $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
         $text = str_replace(CourseSendMail::USERNAME, $username, $text);
-        $text = str_replace(CourseSendMail::COURSECODE, $course_code, $text);
         $text = str_replace(CourseSendMail::COURSENAME, $course_name, $text);
         $text = str_replace(CourseSendMail::STARTDATE, $start_date, $text);
         $text = str_replace(CourseSendMail::ENDDATE, $end_date, $text);
 
         if(strlen($course_place) != 0)
         {
-            $course_place_string = 'Địa điểm học: <p style="color: blue;">'.$course_place;
+            $course_place_string = 'Places to study: <p style="color: blue;">'.$course_place;
             $text = str_replace(CourseSendMail::COURSEPLACE, $course_place_string, $text);
         }else{
             $text = str_replace(CourseSendMail::COURSEPLACE, '', $text);
         }
-        
+
         //
         echo $text;
     ?>
