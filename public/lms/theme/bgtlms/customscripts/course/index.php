@@ -21,7 +21,7 @@ if (strlen($type) != 0) {
 
 //Hide course library, client course
 if ($progress != 1) {
-    $sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 2)';
+    $sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 5, 2)';
     $categories = array_values($DB->get_records_sql($sqlGetCategories));
 }
 
@@ -730,7 +730,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             </select>
                                         </div>
                                         <div class="col-6 col-md-8 block-search__btn">
-                                            <input type="text" class=" input-search" v-model="txtSearch">
+                                            <input type="text" class=" input-search" v-model="txtSearch" placeholder="Search ny name course">
                                             <div class="btn-search" @click="searchCourse(category, 1)"><i
                                                     class="fa fa-search" aria-hidden="true"></i><input type="button">
                                             </div>
@@ -941,8 +941,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
                             <div v-if="course.category_type == 'required'">
-                                <div
-                                    v-if="course.training_id != null && !competency_exists.includes(course.training_id) && course.stt_count == 1">
+                                <div v-if="!competency_exists.includes(course.training_id) && course.stt_count == 1">
                                     <div class="row course-block">
                                         <div class="col-5 course-block__image"
                                              v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
@@ -967,8 +966,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     <div class="course-info__detail">
                                                         <ul>
                                                             <li class="teacher" v-if="course.teacher_name">
-                                                                <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                                course.teacher_name }}
+                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                             </li>
                                                             <li class="teacher" v-else>
                                                                 <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
@@ -1054,8 +1052,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="col-5 course-block__image"
                                      v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
                                     <template v-if="course.numofmodule == 0"><img
-                                            src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
-                                    <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                            src="<?php echo $_SESSION['component']; ?>" alt=""><span>0%</span></template>
+                                    <template v-else-if="course.numoflearned/course.numofmodule == 1">
+                                        <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
+                                             alt="">
+                                    </template>
+                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
                                     </template>
                                 </div>
                                 <div class="col-7">
@@ -1265,7 +1267,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         this.coursesSuggest = response.data.coursesSuggest;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
-                        if (_this.category == 'required') {
+                        if (_this.category == 'required' || this.category == 0) {
                             _this.competency_exists = response.data.competency_exists;
                         }
                         activeCategogy(_this.category);
