@@ -53,11 +53,12 @@ mc.estimate_duration,
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
   where me.enrol = \'manual\'
+  and ttc.deleted <> 1
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and mue.userid = ' . $USER->id;
-$sql .= ' group by mc.id'; //cần để tạo tên giáo viên
+$sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -69,8 +70,10 @@ $sqlGetOrganization = 'SELECT f.id, f.level, f.code
             FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . ')) tmp1
             JOIN tms_organization ON @id IS NOT NULL) tmp2
             JOIN tms_organization f ON tmp2._id = f.id
-            where f.level = 2 or f.level = 1 limit 1';
+            where f.level = 1 limit 1';
 $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+$organization_id = $organization->id;
+
 $organizationCodeGet = "";
 if (strpos(strtolower($organization->code), 'begodi') === 0) {
     $organizationCodeGet = "BG";
@@ -154,7 +157,7 @@ $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
 
 //set for full page
-$organization_id = 2;
+$organization_id = is_null($organization) ? 0 : $organization->id;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
 //$organizationCode = "BG";
@@ -259,6 +262,41 @@ $percentStudying = intval(count($courses_current) * 100 / count($courses));
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
+
+//$organization_id = 0;
+//get footer address
+$sqlGetFooterAddresses = "select id, organization_id, country, name, address, tel, fax from tms_organization_addresses where organization_id = " . $organization_id . " group by id";
+$getFooterAddresses = array_values($DB->get_records_sql($sqlGetFooterAddresses));
+$footerAddresses = [];
+$footerAddressesTab = [];
+foreach ($getFooterAddresses as $footerAddress) {
+    $footerAddresses[$footerAddress->country][] = $footerAddress;
+    $footerAddressesTab[$footerAddress->country] = $footerAddress->country;
+}
+
+$_SESSION["OrganizationID"] = $organization_id;
+$_SESSION["footerAddressesTab"] = $footerAddressesTab;
+$_SESSION["footerAddresses"] = $footerAddresses;
+
+
+//get permission
+$sqlCheckPermission = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$getPermissions = $DB->get_records_sql($sqlCheckPermission);
+
+$allowCms = false;
+$permissions = array_values($getPermissions);
+foreach ($permissions as $permission) {
+    if (!in_array($permission->name, ['student', 'employee'])) {
+        $allowCms = true;
+        break;
+    }
+}
+$_SESSION["allowCms"] = $allowCms;
 ?>
 
 <html>
@@ -526,6 +564,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .section-footer {
         position: relative;
+        background: #000000 0% 0% no-repeat padding-box;
+        border: 1px solid #707070;
+        opacity: 1;
     }
 
     .section-footer .container {
@@ -534,6 +575,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .path-calendar .maincalendar .heightcontainer {
         height: auto !important;
+        padding: 3%;
     }
 
     .block-item__content_btn {
@@ -793,14 +835,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         top: 28%;
     }
 
-    .section-footer {
-        background: #202020 0% 0% no-repeat padding-box;
-        border: 1px solid #707070;
-        opacity: 1;
-    }
-
     .footer-ul {
         padding: 0;
+        padding-left: 5%;
     }
 
     .footer-ul li {
@@ -957,6 +994,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             width: 130px !important;
             height: 130px !important;
         }
+
+        .section-footer .container{
+            padding: 3% 3%;
+        }
     }
 
     @media screen and (max-width: 375px) {
@@ -970,12 +1011,68 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         background-repeat: no-repeat;
         background-position: 100% 50%;
         background-size: cover;
+        background-size: cover;
     }
 
     .circular-chart {
         margin: 0 !important;
         max-width: 100% !important;
     }
+
+    .footer-block__address {
+
+    }
+
+    .footer-block__address .nav-tabs {
+        border: none;
+    }
+
+    .footer-block__address .nav-tabs li {
+        /*padding: 1% 2%;*/
+        display: block;
+    }
+
+    .footer-block__address .nav-tabs li.active, .tab-content .active {
+        background-color: #222126;
+        color: #ffffff;
+    }
+
+    .footer-block__address .nav-tabs li a {
+        color: #ffffff;
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+    }
+
+    .tab-content > .tab-pane {
+        padding: 2%;
+    }
+
+    .cls::after, .cls::before, .clearfix::after, .clearfix::before {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .regions {
+        color: #fff;
+        margin-bottom: 20px;
+        list-style: none;
+        font-size: 13px;
+        display: inline-grid;
+        /*width: 32%;*/
+    }
+
+    .regions .name {
+        padding-bottom: 4px;
+        border-bottom: 1px solid #3a3a3a;
+        font-size: 16px;
+    }
+
+    .regions .address, .regions .name {
+        letter-spacing: 1px;
+    }
+
 </style>
 <body>
 <div class="wrapper"><!-- wrapper -->
@@ -1080,7 +1177,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
+                                        <div class="text-number"><?php echo $countRequiredCourses - 1; ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
@@ -1538,50 +1635,60 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                 </div>
                 <div class="row mb-3">
-                    <!--Helps-->
-                    <div class="footer-block col-sm-3 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
+                    <!--Home-->
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
+                        <div class="footer-block__title"><p class="footer-title">Home</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
+                                <li><a href="lms/course/index.php">Courses</a></li>
+                                <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
+                                <?php if($allowCms){ ?>
+                                    <li><a href="/tms/dashboard">CMS</a></li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>
                     <!--FAQs-->
-                    <div class="footer-block col-sm-3 col-xs-6">
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="footer-block col-sm-3 col-xs-6">
+                    <!--Contact-->
+                    <div class="footer-block col-12 col-sm-8 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">Contact</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
+                        <div class="footer-block__ul footer-block__address">
+                            <ul class="nav nav-tabs">
+                                <?php $count = 1; $active = 'active';
+                                foreach ($footerAddressesTab as $footerAddressTab) { ?>
+                                        <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
+                                                                         href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                        </li>
+                                    <?php $count++; $active=''; }  ?>
                             </ul>
-                        </div>
-                    </div>
-                    <div class="footer-block col-sm-3 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
-                            </ul>
+                            <div class="tab-content">
+                                <?php $count = 1;
+                                $active = 'active';
+                                foreach ($footerAddresses as $footerAddress) { ?>
+                                    <div id="menu<?php echo $count; ?>" class="tab-pane in <?php echo $active; ?>">
+                                        <div class="content-address cls">
+                                            <?php foreach ($footerAddress as $footer) { ?>
+                                                <ul class="regions">
+                                                    <li class="name"><?php echo $footer->name; ?></li>
+                                                    <li class="address"><i class="fa fa-map-marker"
+                                                                           aria-hidden="true"></i>
+                                                        <?php echo $footer->address; ?>
+                                                    </li>
+                                                </ul>
+                                            <?php }
+                                            $count++;
+                                            $active = ''; ?>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1609,6 +1716,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                 $('.percentage').text(<?php echo $percentCompleted; ?> +' %');
                 $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
             }
+        });
+
+        $('.nav-tabs li').click(function () {
+            $('.li-address').removeClass('active');
+            $(this).addClass('active');
         });
 
     });

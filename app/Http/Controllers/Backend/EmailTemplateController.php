@@ -97,7 +97,8 @@ class EmailTemplateController extends Controller
             TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
-            TmsNotification::ENROL => TmsConfigs::ENABLE
+            TmsNotification::ENROL => TmsConfigs::ENABLE,
+            TmsNotification::DEVELOPMENT => TmsConfigs::ENABLE
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {

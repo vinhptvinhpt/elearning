@@ -228,7 +228,8 @@
                     filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
                     filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
                     filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
-                }
+                },
+                existCodes: [],
             }
         },
         methods: {
@@ -244,7 +245,8 @@
                 this.pass_score = Math.floor(this.sample.pass_score);
                 this.is_end_quiz = this.sample.is_end_quiz;
 
-               this.shortname = this.convertToShortName(this.fullname);
+                 //this.shortname = this.convertToShortName(this.fullname);
+                 this.setShortName();
             },
             convertToShortName(words){
                 var text = '';
@@ -431,15 +433,64 @@
                 this.$router.push({name: 'SampleCourseIndex', params:{back_page: '1'}});
 
             },
-
-          setFileInput() {
-            $('.dropify').dropify();
-          }
+            getExistedCodes(){
+              axios.post('/api/courses/get_existed_codes', {})
+                .then(response => {
+                  let codes = [];
+                  response.data.forEach(function(cityItem) {
+                    codes.push(cityItem.shortname);
+                  });
+                  this.existCodes = codes;
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            },
+            setShortName() {
+                let codes = this.existCodes;
+                let prefix = this.libraryid;
+                let biggest = 0;
+                let curPos = this;
+                codes.forEach(function(item) {
+                  if (item.indexOf(prefix) !== -1) {
+                    let lastNumberCode = parseInt(curPos.getLastNumber(item));
+                    if (lastNumberCode > biggest) {
+                      biggest = lastNumberCode;
+                    }
+                  }
+                });
+                let nextNumber = biggest + 1;
+                let append = this.composeAppend(nextNumber);
+                this.shortname = prefix + '_ONL' + append;
+            },
+            getLastNumber(str) {
+              let arr = str.split('_ONL');
+              let reverse = arr.reverse();
+              if (isNaN(reverse[0])) {
+                return '0';
+              } else {
+                return reverse[0];
+              }
+            },
+            composeAppend(num) {
+              let str = num.toString();
+              let length = 3;
+              if (str.length >= length) {
+                return num;
+              } else {
+                let filler = '0';
+                return filler.repeat(length - str.length) + str;
+              }
+            },
+            setFileInput() {
+              $('.dropify').dropify();
+            }
         },
         mounted() {
             this.getCourseSamples();
             this.getCategories();
             this.getCourseDetail();
+            this.getExistedCodes();
         },
       updated() {
           this.setFileInput();

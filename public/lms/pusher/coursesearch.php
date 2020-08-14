@@ -56,6 +56,7 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
+  and ttc.deleted <> 1
   and mue.userid = ' . $USER->id;
 
     if ($category > 0) {
@@ -65,7 +66,7 @@ mc.estimate_duration,
         $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
     }
 
-    $sql .= ' group by mc.id'; //cần để tạo tên giáo viên
+    $sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
     $courses = array_values($DB->get_records_sql($sql));
 
@@ -114,16 +115,32 @@ inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in '.$courses_others_id;
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+  and ttp.deleted = 2 and
+  mc.id not in '.$courses_others_id;
+
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
     //
 
     $course_list = array();
+    //
+    $courses_required_sort = [];
 
     if ($category == 'current') {
         $all_courses = $courses_current;
     } elseif ($category == 'required') {
-        $all_courses = array_values($courses_required);
+        foreach ($courses_required as $training_courses){
+            $sttNew = 1;
+            foreach ($training_courses as $course){
+                $newCourse = $course;
+                $newCourse->stt = $sttNew;
+                $courses_required_sort[] = $newCourse;
+                $sttNew++;
+            }
+        }
+        usort($courses_required_sort, 'cmp_stt');
+        usort($courses_required_sort, 'cmp');
+        $all_courses = array_values($courses_required_sort);
     } elseif ($category == 'completed') {
         $all_courses = $courses_completed;
     } else {
@@ -134,7 +151,6 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     $start_index = $current * $recordPerPage - $recordPerPage;
 
     $course_list = array_slice($all_courses, $start_index, $recordPerPage);
-
 
     $total = count($all_courses);
 
@@ -147,10 +163,12 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
+inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
+and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
     if ($category > 0) {
         $sqlCountCoures .= ' and category = ' . $category;
@@ -190,6 +208,7 @@ where me.enrol = \'manual\'
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
+and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
 
 
@@ -266,6 +285,13 @@ function push_course(&$array, $course)
     } else {//mới
         $array[$course->id] = $course;
     }
+}
+
+function cmp($a, $b) {
+    return strcmp($a->training_deleted, $b->training_deleted);
+}
+function cmp_stt($a, $b) {
+    return strcmp($a->stt, $b->stt);
 }
 
 echo $response;

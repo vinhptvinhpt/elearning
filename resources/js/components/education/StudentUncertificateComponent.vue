@@ -63,7 +63,7 @@
                             <div class="col-12">
                                 <div class="table-responsive">
                                     <table class="table_res">
-                                        <thead>
+                                        <thead style="text-align: center">
                                         <th>
                                             <input v-model="allSelected" @click="selectAllCheckbox()"
                                                    id="branch-select-all"
@@ -74,7 +74,7 @@
                                         </th>
                                         <th>{{trans.get('keys.stt')}}</th>
                                         <th>{{trans.get('keys.ten_hoc_vien')}}</th>
-                                        <th>{{trans.get('keys.ten_knl')}}</th>
+                                        <th style="width: 19%">{{trans.get('keys.ten_knl')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.so_cmtnd')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.dien_thoai')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
@@ -182,10 +182,10 @@
                             <div class="col-12">
                                 <div class="table-responsive">
                                     <table class="">
-                                        <thead>
+                                        <thead style="text-align: center">
                                         <th>{{trans.get('keys.stt')}}</th>
                                         <th>{{trans.get('keys.ten_hoc_vien')}}</th>
-                                        <th>{{trans.get('keys.ten_knl')}}</th>
+                                        <th style="width: 19%">{{trans.get('keys.ten_knl')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.so_cmtnd')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.dien_thoai')}}</th>
                                         <th class=" mobile_hide">{{trans.get('keys.email')}}</th>

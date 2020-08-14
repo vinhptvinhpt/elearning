@@ -444,12 +444,11 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.cau_hinh_template_email') }}</span>
                                 </router-link>
                             </li>
-                            <li class="nav-item" v-if="slug_can('tms-setting-notification-view')">
-                                <router-link to="/tms/notification" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.gui_notification') }}</span>
-                                </router-link>
-                            </li>
-
+<!--                            <li class="nav-item" v-if="slug_can('tms-setting-notification-view')">-->
+<!--                                <router-link to="/tms/notification" class="nav-link">-->
+<!--                                    <span class="nav-link-text"> {{ trans.get('keys.gui_notification') }}</span>-->
+<!--                                </router-link>-->
+<!--                            </li>-->
                         </ul>
                     </li>
 

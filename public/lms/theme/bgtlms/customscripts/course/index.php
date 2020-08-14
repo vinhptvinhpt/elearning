@@ -109,7 +109,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
     }
 
-    #category, .input-search, .btn-search{
+    #category, .input-search, .btn-search {
         background-color: #211f1f7d !important;
     }
 
@@ -172,7 +172,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         margin-left: 80%;
     }
 
-    .div-image-disable{
+    .div-image-disable {
         background-color: #fdf2f285;
         position: absolute;
         top: 0;
@@ -183,21 +183,23 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .course-info__detail {
         padding: 5% 0;
-        min-height: 90px;
+        min-height: 130px;
     }
 
     .course-info__detail ul {
         padding: 0;
         width: 100%;
+        margin: 0;
     }
 
-    .block-item__content{
+    .block-item__content {
         padding: 4% 3%;
     }
 
-    .course-info{
+    .course-info {
         height: 80%;
     }
+
     .course-info__detail ul li {
         margin-right: 8%;
         font-family: Roboto-Regular;
@@ -297,7 +299,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         height: 100%;
     }
 
-    .course-block-disable{
+    .course-block-disable {
         pointer-events: none;
     }
 
@@ -414,7 +416,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-size: 13px !important;
         letter-spacing: 0.45px !important;
         font-family: Roboto-Regular;
-        border: 1px solid #ffff !important;
+        border: 1px solid #ffffffad !important;
         border-radius: inherit !important;
         /*background-color: transparent !important;*/
         color: #ffffff !important;
@@ -437,7 +439,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .btn-search {
-        border: 1px solid #ffffff;
+        border: 1px solid #ffffffad;
         border-left: 0;
     }
 
@@ -462,7 +464,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .btn-click-course {
         background: #FFFFFF 0% 0% no-repeat padding-box;
         box-shadow: 3px 3px 6px #00000029;
-        border: 1px solid #C7C7C7;
+        border: 1px solid #c7c7c7bf !important;
         border-radius: 4px;
         /*font-family: Nunito-Bold;*/
         font-family: Roboto;
@@ -477,6 +479,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .btn-click-active {
         background: transparent linear-gradient(97deg, <?=$_SESSION["color"]?> 0%, <?=$_SESSION["color"]?> 100%) 0% 0% no-repeat padding-box;
         color: #FFFFFF !important;
+        border: 1px solid <?=$_SESSION["color"]?> !important;
     }
 
     .block-search, .header-block__quick-filter__main ul {
@@ -489,7 +492,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     /*footer*/
     .section-footer {
-        background: #202020 0% 0% no-repeat padding-box;
+        background: #000000 0% 0% no-repeat padding-box;
         border: 1px solid #707070;
         opacity: 1;
         padding: 4% 0;
@@ -497,6 +500,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .footer-ul {
         padding: 0;
+        padding-left: 5%;
     }
 
     .footer-ul li {
@@ -514,7 +518,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .footer-ul li a {
         color: #FFFFFF;
-        font-size: 13px;
+        /*font-size: 13px;*/
     }
 
     .footer-title {
@@ -561,11 +565,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
 
-    .div-header{
+    .div-header {
         background-color: rgba(0, 0, 0, 0.3);
     }
 
-    .title-course{
+    .title-course {
         /*margin: 0;*/
         text-align: left;
         letter-spacing: 0.6px;
@@ -619,6 +623,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         }
     }
 
+    @media screen and (max-width: 425px) {
+        .section-footer .container{
+            padding: 3% 3%;
+        }
+    }
+
     @media screen and (max-width: 375px) {
         .header-block {
             left: 52px;
@@ -627,6 +637,56 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         .title-course {
             min-height: 3.25rem;
         }
+    }
+
+    .footer-block__address .nav-tabs {
+        border: none;
+    }
+
+    .footer-block__address .nav-tabs li {
+        /*padding: 1% 2%;*/
+        display: block;
+    }
+
+    .footer-block__address .nav-tabs li.active, .tab-content .active {
+        background-color: #222126;
+        color: #ffffff;
+    }
+
+    .footer-block__address .nav-tabs li a {
+        color: #ffffff;
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+    }
+
+    .tab-content > .tab-pane {
+        padding: 2%;
+    }
+
+    .cls::after, .cls::before, .clearfix::after, .clearfix::before {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .regions {
+        color: #fff;
+        margin-bottom: 20px;
+        list-style: none;
+        font-size: 13px;
+        display: inline-grid;
+        /*width: 32%;*/
+    }
+
+    .regions .name {
+        padding-bottom: 4px;
+        border-bottom: 1px solid #3a3a3a;
+        font-size: 16px;
+    }
+
+    .regions .address, .regions .name {
+        letter-spacing: 1px;
     }
 
 
@@ -657,21 +717,23 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     v-model="category">
                                                 <?php if ($progress == 1) {
                                                     foreach ($home_selection as $key => $value) {
-                                                    ?>
-                                                    <option value="<?php echo $key ?>"><?php echo $value ?></option>
-                                                <?php }
-                                                    } else { ?>
-                                                <option value="0">All courses</option>
-                                                <?php foreach ($categories as $category) { ?>
-                                                    <option value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
-                                                 <?php }
+                                                        ?>
+                                                        <option value="<?php echo $key ?>"><?php echo $value ?></option>
+                                                    <?php }
+                                                } else { ?>
+                                                    <option value="0">All courses</option>
+                                                    <?php foreach ($categories as $category) { ?>
+                                                        <option
+                                                            value="<?php echo $category->id; ?>"><?php echo $category->name; ?></option>
+                                                    <?php }
                                                 } ?>
                                             </select>
                                         </div>
                                         <div class="col-6 col-md-8 block-search__btn">
                                             <input type="text" class=" input-search" v-model="txtSearch">
                                             <div class="btn-search" @click="searchCourse(category, 1)"><i
-                                                    class="fa fa-search" aria-hidden="true"></i><input type="button"></div>
+                                                    class="fa fa-search" aria-hidden="true"></i><input type="button">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -687,23 +749,25 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
-                <div class="header-block__quick-filter">
-                    <div class="header-block__quick-filter__title"><h2>Quick <span>Filter</span></h2></div>
+                <div class="header-block__quick-filter mt-5">
+                    <div class="header-block__quick-filter__title mb-4"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
 
                             <?php if ($progress == 1) {
-                                   foreach ($home_selection as $key => $value) {
-                                ?>
-                                <li class="btn btn-click-course" @click="searchCourse('<?php echo $key; ?>', 1)"
-                                    id="ctgr<?php echo $key; ?>"
-                                    category="<?php echo $key; ?>"><?php echo $value; ?></li>
-                            <?php } } else { ?>
-                                <li class="btn btn-click-course btn-click-active" id="ctgr0" category="0"
+                                foreach ($home_selection as $key => $value) {
+                                    ?>
+                                    <li class="btn btn-click-course" @click="searchCourse('<?php echo $key; ?>', 1)"
+                                        id="ctgr<?php echo $key; ?>"
+                                        category="<?php echo $key; ?>"><?php echo $value; ?></li>
+                                <?php }
+                            } else { ?>
+                                <li class="btn btn-click-course btn-click-active mb-2" id="ctgr0" category="0"
                                     @click="searchCourse(0, 1)">All Courses
                                 </li>
                                 <?php foreach ($categories as $category) { ?>
-                                    <li class="btn btn-click-course" @click="searchCourse(<?php echo $category->id; ?>, 1)"
+                                    <li class="btn btn-click-course mb-2"
+                                        @click="searchCourse(<?php echo $category->id; ?>, 1)"
                                         id="ctgr<?php echo $category->id; ?>"
                                         category="<?php echo $category->id; ?>"><?php echo $category->name; ?></li>
                                 <?php } ?>
@@ -717,110 +781,93 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         <div class="col-12 pt-1"><h3>No course to display</h3></div>
                     </template>
                     <template v-else-if="category == 'required'">
-                        <template v-for="(courses_category,index) in courses">
-                            <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
-                                 v-for="(course,index) in courses_category">
-                                <div v-if="index > 0 || ( course.training_id != null && competency_exists.includes(course.training_id)) ">
-                                    <div class="row course-block course-block-disable">
-                                        <div class="col-5 course-block__image"
-                                             v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
-                                            <div class="div-image">
-                                                <template v-if="course.numofmodule == 0">
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
-                                                </template>
-                                                <template v-else>
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
-                                                </template>
-                                            </div>
-                                            <div class="div-image-disable"></div>
-                                        </div>
-                                        <div class="col-7">
-                                            <div class="course-info">
-                                                <div class="info-text">
-                                                    <div class="course-info__title">
-                                                        <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
-                                                            <p class="title-course"><i></i>{{course.fullname}}</p></a>
-                                                    </div>
-                                                    <div class="course-info__detail">
-                                                        <ul>
-                                                            <li class="teacher" v-if="course.teacher_name">
-                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
-                                                            </li>
-                                                            <li class="teacher" v-else>
-                                                                <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                            </li>
-                                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
-                                                                {{course.training_name}}
-                                                            </li>
-                                                            <li class="units">
-                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                                {{course.estimate_duration}} hours
-                                                            </li>
-                                                            <li class="number-order">
-                                                                {{ index+1 }}
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                <!--  <div class="btn-show btn-show-all btn-page">
-                                                      <button class="btn btn-click"><a
-                                                              :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                      </button>
-                                                  </div>-->
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div v-else>
-                                    <div class="row course-block">
-                                        <div class="col-5 course-block__image"
-                                             v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
-                                            <template v-if="course.numofmodule == 0"><img
-                                                    src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
-                                            <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                        <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
+                             v-for="(course,index) in courses">
+                            <div v-if="course.stt > 1 || (competency_exists.includes(course.training_id))">
+                                <div class="row course-block course-block-disable">
+                                    <div class="col-5 course-block__image"
+                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                        <div class="div-image">
+                                            <template v-if="course.numofmodule == 0">
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
+                                            </template>
+                                            <template v-else>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
-                                        <div class="col-7">
-                                            <div class="course-info">
-                                                <div class="info-text">
-                                                    <div class="course-info__title">
-                                                        <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
-                                                            <p class="title-course"><i></i>{{course.fullname}}</p></a>
-                                                    </div>
-                                                    <div class="course-info__detail">
-                                                        <ul>
-                                                            <li class="teacher" v-if="course.teacher_name">
-                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
-                                                            </li>
-                                                            <li class="teacher" v-else>
-                                                                <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                            </li>
-                                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
-                                                                {{course.training_name}}
-                                                            </li>
-                                                            <li class="units">
-                                                                <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                                {{course.estimate_duration}} hours
-                                                            </li>
-                                                            <li v-if="course.training_deleted == 0" class="number-order">
-                                                                {{ index+1 }}
-                                                            </li>
-                                                            <li v-else>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
+                                        <div class="div-image-disable"></div>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="course-info">
+                                            <div class="info-text">
+                                                <div class="course-info__title">
+                                                    <a :href="'lms/course/view.php?id='+course.id"
+                                                       :title="course.fullname">
+                                                        <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                                 </div>
-                                                <!--  <div class="btn-show btn-show-all btn-page">
-                                                      <button class="btn btn-click"><a
-                                                              :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                      </button>
-                                                  </div>-->
+                                                <div class="course-info__detail">
+                                                    <ul>
+                                                        <li class="teacher" v-if="course.teacher_name">
+                                                            <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                        </li>
+
+                                                        <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                            {{course.training_name}}
+                                                        </li>
+                                                        <li class="units" v-if="course.estimate_duration">
+                                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                            {{course.estimate_duration}} hours
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.stt }}</p>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </template>
+                            <div v-else>
+                                <div class="row course-block">
+                                    <div class="col-5 course-block__image"
+                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                        <template v-if="course.numofmodule == 0"><img
+                                                src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
+                                        </template>
+                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                        </template>
+                                    </div>
+                                    <div class="col-7">
+                                        <div class="course-info">
+                                            <div class="info-text">
+                                                <div class="course-info__title">
+                                                    <a :href="'lms/course/view.php?id='+course.id"
+                                                       :title="course.fullname">
+                                                        <p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                                </div>
+                                                <div class="course-info__detail">
+                                                    <ul>
+                                                        <li class="teacher" v-if="course.teacher_name">
+                                                            <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                        </li>
+                                                        <li class="teacher" v-else>
+                                                            <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
+                                                        </li>
+                                                        <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                            {{course.training_name}}
+                                                        </li>
+                                                        <li class="units" v-if="course.estimate_duration">
+                                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                            {{course.estimate_duration}} hours
+                                                        </li>
+                                                    </ul>
+                                                </div>
+                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.stt }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </template>
                     <template v-else-if="category == 'other'">
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
@@ -837,7 +884,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             <div class="course-info__detail">
                                                 <ul>
                                                     <li class="teacher" v-if="course.teacher_name">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{
+                                                        course.teacher_name }}
                                                     </li>
                                                     <li class="teacher" v-else>
                                                         <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
@@ -849,75 +897,59 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </ul>
                                             </div>
                                         </div>
-                                        <!--  <div class="btn-show btn-show-all btn-page">
-                                              <button class="btn btn-click"><a
-                                                      :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                              </button>
-                                          </div>-->
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </template>
-                    <template v-else-if="progress == 1">
-                        <template v-for="(course,index) in courses">
-                            <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0">
-                                <div class="row course-block">
-                                    <div class="col-5 course-block__image"
-                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
-                                        <template v-if="course.numofmodule == 0"><img
-                                                src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span></template>
-                                        <template v-else-if="course.numoflearned == course.numofmodule"><img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>" alt=""></template>
-                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
-                                        </template>
+                    <template v-else-if="category == 'completed'">
+                        <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
+                             v-for="(course,index) in courses">
+                            <div class="row course-block">
+                                <div class="col-5 course-block__image"
+                                     v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                    <div class="div-image">
+                                            <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>" alt="">
                                     </div>
-                                    <div class="col-7">
-                                        <div class="course-info">
-                                            <div class="info-text">
-                                                <div class="course-info__title">
-                                                    <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
-                                                        <p class="title-course"><i></i>{{course.fullname}}</p></a>
-                                                </div>
-                                                <div class="course-info__detail">
-                                                    <ul>
-                                                        <li class="teacher" v-if="course.teacher_name">
-                                                            <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
-                                                        </li>
-                                                        <li class="teacher" v-else>
-                                                            <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                        </li>
-                                                        <li class="units" v-if="course.training_name"><i class="fa fa-file" aria-hidden="true"></i>
-                                                            {{course.training_name}}
-                                                        </li>
-                                                        <li class="units">
-                                                            <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                            {{course.estimate_duration}} hours
-                                                        </li>
-                                                    </ul>
-                                                </div>
+                                </div>
+                                <div class="block-item__content col-7">
+                                    <div class="course-info">
+                                        <div class="info-text">
+                                            <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                <p class="title-course"><i></i>{{course.fullname}}</p></a>
+                                            <div class="course-info__detail">
+                                                <ul>
+                                                    <li class="teacher" v-if="course.teacher_name">
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                    </li>
+                                                    <li class="units" v-if="course.training_name"><i class="fa fa-file" aria-hidden="true"></i>
+                                                        {{course.training_name}}
+                                                    </li>
+                                                    <li class="units">
+                                                        <i class="fa fa-clock-o" aria-hidden="true"></i>
+                                                        {{course.estimate_duration}} hours
+                                                    </li>
+                                                </ul>
                                             </div>
-                                            <!--  <div class="btn-show btn-show-all btn-page">
-                                                  <button class="btn btn-click"><a
-                                                          :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                  </button>
-                                              </div>-->
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </template>
+                        </div>
                     </template>
                     <template v-else>
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
                             <div v-if="course.category_type == 'required'">
-                                <div v-if="course.training_id != null && !competency_exists.includes(course.training_id) && course.stt_count == 1">
+                                <div
+                                    v-if="course.training_id != null && !competency_exists.includes(course.training_id) && course.stt_count == 1">
                                     <div class="row course-block">
                                         <div class="col-5 course-block__image"
                                              v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
                                             <div class="div-image">
                                                 <template v-if="course.numofmodule == 0">
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
+                                                    <img src="<?php echo $_SESSION['component'] ?>"
+                                                         alt=""><span>0%</span>
                                                 </template>
                                                 <template v-else>
                                                     <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
@@ -928,25 +960,29 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             <div class="course-info">
                                                 <div class="info-text">
                                                     <div class="course-info__title">
-                                                        <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                        <a :href="'lms/course/view.php?id='+course.id"
+                                                           :title="course.fullname">
                                                             <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                                     </div>
                                                     <div class="course-info__detail">
                                                         <ul>
                                                             <li class="teacher" v-if="course.teacher_name">
-                                                                <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
+                                                                <i class="fa fa-user" aria-hidden="true"></i> {{
+                                                                course.teacher_name }}
                                                             </li>
                                                             <li class="teacher" v-else>
                                                                 <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
                                                             </li>
-                                                            <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                            <li class="units"><i class="fa fa-file"
+                                                                                 aria-hidden="true"></i>
                                                                 {{course.training_name}}
                                                             </li>
                                                             <li class="units">
                                                                 <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                 {{course.estimate_duration}} hours
                                                             </li>
-                                                            <li v-if="course.training_deleted == 0" class="number-order">
+                                                            <li v-if="course.training_deleted == 0"
+                                                                class="number-order">
                                                                 {{ course.stt_count }}
                                                             </li>
                                                             <li v-else>
@@ -980,7 +1016,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <div class="course-info">
                                             <div class="info-text">
                                                 <div class="course-info__title">
-                                                    <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                                    <a :href="'lms/course/view.php?id='+course.id"
+                                                       :title="course.fullname">
                                                         <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                                 </div>
                                                 <div class="course-info__detail">
@@ -1034,9 +1071,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                         <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
                                                     <li class="teacher" v-else>
-<!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
+                                                        <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
                                                     </li>
-                                                    <li class="units" v-if="course.training_name"><i class="fa fa-file" aria-hidden="true"></i>
+                                                    <li class="units" v-if="course.training_name"><i class="fa fa-file"
+                                                                                                     aria-hidden="true"></i>
                                                         {{course.training_name}}
                                                     </li>
                                                     <li class="units">
@@ -1074,59 +1112,70 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             <footer>
                 <div class="container">
                     <div class="row">
-                        <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo Light" class="footer-logo mt-1">
+                        <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                     </div>
                     <div class="row mb-3">
-                        <!--Helps-->
-                        <div class="footer-block col-sm-3 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
+                        <!--Home-->
+                        <div class="footer-block col-12 col-sm-2 col-xs-6">
+                            <div class="footer-block__title"><p class="footer-title">Home</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
+                                    <li><a href="lms/course/index.php">Courses</a></li>
+                                    <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
+                                    <?php if($_SESSION["allowCms"]){ ?>
+                                        <li><a href="/tms/dashboard">CMS</a></li>
+                                    <?php } ?>
                                 </ul>
                             </div>
                         </div>
                         <!--FAQs-->
-                        <div class="footer-block col-sm-3 col-xs-6">
+                        <div class="footer-block col-12 col-sm-2 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
                                 </ul>
                             </div>
                         </div>
-                        <div class="footer-block col-sm-3 col-xs-6">
+                        <!--Contact-->
+                        <div class="footer-block col-12 col-sm-8 col-xs-6">
                             <div class="footer-block__title"><p class="footer-title">Contact</p></div>
-                            <div class="footer-block__ul">
-                                <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
+                            <div class="footer-block__ul footer-block__address">
+                                <ul class="nav nav-tabs">
+                                    <?php $count = 1; $active = 'active';
+                                    foreach ($_SESSION["footerAddressesTab"] as $footerAddressTab) { ?>
+                                        <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
+                                                                                         href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                        </li>
+                                        <?php $count++; $active=''; }  ?>
                                 </ul>
-                            </div>
-                        </div>
-                        <div class="footer-block col-sm-3 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
-                            <div class="footer-block__ul">
-                                <ul class="footer-ul">
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/">Courses</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                    <li><a href="/">Profile</a></li>
-                                </ul>
+                                <div class="tab-content">
+                                    <?php $count = 1;
+                                    $active = 'active';
+                                    foreach ($_SESSION["footerAddresses"] as $footerAddress) { ?>
+                                        <div id="menu<?php echo $count; ?>" class="tab-pane in <?php echo $active; ?>">
+                                            <div class="content-address cls">
+                                                <?php foreach ($footerAddress as $footer) { ?>
+                                                    <ul class="regions">
+                                                        <li class="name"><?php echo $footer->name; ?></li>
+                                                        <li class="address"><i class="fa fa-map-marker"
+                                                                               aria-hidden="true"></i>
+                                                            <?php echo $footer->address; ?>
+                                                        </li>
+                                                    </ul>
+                                                <?php }
+                                                $count++;
+                                                $active = ''; ?>
+                                            </div>
+                                        </div>
+                                    <?php } ?>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </footer>
         </section>
+
     </div>
     <?php echo $OUTPUT->footer(); ?>
 </div>
@@ -1142,6 +1191,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             $('.btn-click-course').not($('#ctgr' + category)).each(function () {
                 $(this).removeClass(' btn-click-active');
             });
+        });
+
+        $('.nav-tabs li').click(function () {
+            $('.li-address').removeClass('active');
+            $(this).addClass('active');
         });
 
 
@@ -1211,9 +1265,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         this.coursesSuggest = response.data.coursesSuggest;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
-                        if(_this.category == 'required'){
+                        if (_this.category == 'required') {
                             _this.competency_exists = response.data.competency_exists;
                         }
+                        activeCategogy(_this.category);
                     })
                     .catch(error => {
                     });

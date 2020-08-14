@@ -1,6 +1,9 @@
 <?php
+
+use App\TmsOrganization;
 use Illuminate\Database\Seeder;
 use App\User;
+use App\TmsOrganizationAddresses;
 
 class UsersTableSeeder extends Seeder
 {
