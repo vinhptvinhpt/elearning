@@ -986,11 +986,11 @@
         "danh_sach_module_log": "Modules log",
         "danh_sach_mau_huy_hieu": "Badge Template List",
         "ban_khong_co_quyen_xoa": "You do not have permission to delete",
-        "assigned_course" : "Assigned Course",
-        "assigned_competency" : "Assigned Competency",
-        "suggest_optional_course" : "Suggest Optional Course",
-        "remind_exam" : "Remind Exam",
-        "invitation_offline_course" : "Invitation Offline Course",
+        "assigned_course": "Assigned Course",
+        "assigned_competency": "Assigned Competency",
+        "suggest_optional_course": "Suggest Optional Course",
+        "remind_exam": "Remind Exam",
+        "invitation_offline_course": "Invitation Offline Course",
         "forgot_password": "Forgot Password",
         "remind_expire_required_course": "Remind expired required course",
         "nhap_thong_tin_tim_kiem_theo_ten_khoa_dao_tao": "Input courses name",
@@ -1011,7 +1011,12 @@
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Input Trainees' Name, Competency Framework Name, Personal ID, Phone Number or Email",
         "nhap_cmtnd_username_fullname_email": "Input Personal ID, Login ID, Full Name or Email",
         "expired_session": "Session expired",
-        "copy_link": "Get link self-assessment"
+        "copy_link": "Get link self-assessment",
+        "chon_thu_vien_nguon": "Select source library",
+        "thu_vien_nguon": "Source library",
+        "copy_link": "Get link self-assessment",
+        "completed_competency_framework": "Completed Competency framework",
+        "development": "Development"
     },
     "vi.keys": {
         "language": "",
@@ -2010,12 +2015,17 @@
         "danh_sach": "Danh sách",
         "thu_tu": "Thứ tự",
         "nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ",
-        "nhap_ten_dang_nhap_fullname_email" : "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
+        "nhap_ten_dang_nhap_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
         "nhap_hanh_dong_user_info_url": "Nhập thông tin tìm kiếm theo hành động, người tạo, thông tin hoặc link url",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email_ma_cc": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại, email hoặc mã chứng chỉ",
         "nhap_ten_hoc_vien_ten_knl_cmtnd_phone_email": "Nhập thông tin tìm kiếm theo tên học viên, tên khung năng lực, chứng minh thư nhân dân, số điện thoại hoặc email",
         "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
         "expired_session": "Session expired",
-        "copy_link": "Get link self-assessment"
+        "copy_link": "Get link self-assessment",
+        "chon_thu_vien_nguon": "Chọn thư viện nguồn",
+        "thu_vien_nguon": "Thư viện nguồn",
+        "copy_link": "Get link self-assessment",
+        "completed_competency_framework": "Khung năng lực đã hoàn thành",
+        "development": "Chế độ Develope"
     }
 }

@@ -291,7 +291,6 @@
             getQuestionDetail() {
                 axios.get('/api/selfquestion/getbyid/' + this.question_id)
                     .then(response => {
-                        console.log('294');
                         this.question = response.data;
 
                         if (this.question.type_question === 'minmax') {

@@ -135,7 +135,7 @@
                                         <tr>
                                             <th>{{trans.get('keys.stt')}}</th>
                                             <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
-                                            <th style="width: 20%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
+                                            <th style="width: 19%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.bat_dau')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
 <!--                                            <th class="text-center mobile_hide">{{trans.get('keys.diem_qua_mon')}}</th>-->

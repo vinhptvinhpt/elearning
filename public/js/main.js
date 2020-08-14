@@ -1,20 +1,21 @@
 (function($) {
     $(document).ready(function() {
 
-        $('ul.navbar-nav .nav-item .nav-link.has-submenu').click(function(){
-        	//var level = $(this).attr('data-level');
-    		/*$('ul.navbar-nav .nav-item ul.nav.'+level).removeClass('show');
-    		$('ul.navbar-nav .nav-item ul.nav.'+level).slideUp();*/
-        	if(!$(this).hasClass('active')){
-        		//$('ul.navbar-nav .nav-item .nav-link.has-submenu.'+level).removeClass('active');
-        		$(this).addClass('active');
-        		$('+ ul.nav',$(this)).slideDown();
-        	}else{
-        		//$('ul.navbar-nav .nav-item .nav-link.has-submenu.'+level).removeClass('active');
-                $(this).removeClass('active');
-                $('+ ul.nav',$(this)).slideUp();
-        	}
-        });
+        // $('ul.navbar-nav .nav-item .nav-link.has-submenu').click(function(){
+        //   console.log(11111);
+        // 	//var level = $(this).attr('data-level');
+    		// /*$('ul.navbar-nav .nav-item ul.nav.'+level).removeClass('show');
+    		// $('ul.navbar-nav .nav-item ul.nav.'+level).slideUp();*/
+        // 	if(!$(this).hasClass('active')){
+        // 		//$('ul.navbar-nav .nav-item .nav-link.has-submenu.'+level).removeClass('active');
+        // 		$(this).addClass('active');
+        // 		$('+ ul.nav',$(this)).slideDown();
+        // 	}else{
+        // 		//$('ul.navbar-nav .nav-item .nav-link.has-submenu.'+level).removeClass('active');
+        //         $(this).removeClass('active');
+        //         $('+ ul.nav',$(this)).slideUp();
+        // 	}
+        // });
 
         //search box
         $('body').on('click','.btn_search_box',function(){
