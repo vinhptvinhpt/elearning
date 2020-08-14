@@ -219,6 +219,11 @@
               this.$route.params.back_page = value;
             },
             deletePost(id) {
+                sessionStorage.setItem('questionPage', this.current);
+                sessionStorage.setItem('questionPageSize', this.row);
+                sessionStorage.setItem('questionKeyWord', this.keyword);
+                sessionStorage.setItem('questionSurvey', this.survey_id);
+                sessionStorage.setItem('questionSurveyType', this.type_question);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -232,7 +237,10 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getQuestions(this.current);
+                                if(current_pos.questions.length == 1){
+                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                }
+                                current_pos.onPageChange();
 
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));

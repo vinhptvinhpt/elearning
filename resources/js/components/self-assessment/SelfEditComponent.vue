@@ -128,7 +128,7 @@
                 }).then(response => {
                     if (response.data.status) {
                         toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                        this.$router.push({name: 'SelfIndex'});
+                        this.$router.push({name: 'SelfIndex',params:{back_page: '1'}});
                     } else {
                         toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                     }

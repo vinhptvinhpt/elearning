@@ -316,6 +316,13 @@
               this.$route.params.back_page = value;
             },
             deletePost(id) {
+                sessionStorage.setItem('courseConcenPage', this.current);
+                sessionStorage.setItem('courseConcenPageSize', this.row);
+                sessionStorage.setItem('courseConcenCategory', this.category_id);
+                sessionStorage.setItem('courseConcenCourseStatus', this.status_course);
+                sessionStorage.setItem('courseConcenStartDate', this.startdate);
+                sessionStorage.setItem('courseConcenEndDate', this.enddate);
+                sessionStorage.setItem('courseConcenKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -332,7 +339,10 @@
                             loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getCourses(this.current);
+                                if(current_pos.courses.length == 1){
+                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                }
+                                current_pos.onPageChange();
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

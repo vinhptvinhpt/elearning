@@ -375,7 +375,7 @@
             var language = this.language;
             if (response.data.status) {
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-              this.$router.push({name: 'CourseIndex'});
+              this.$router.push({name: 'CourseIndex',params:{back_page: '1'}});
             } else {
               if (response.data.otherData) {
                 toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));

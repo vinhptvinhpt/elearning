@@ -398,6 +398,11 @@
             this.$route.params.back_page = value;
           },
           deletePost(url) {
+            sessionStorage.setItem('organizationPage', this.current);
+            sessionStorage.setItem('organizationPageSize', this.row);
+            sessionStorage.setItem('organizationKeyWord', this.keyword);
+            sessionStorage.setItem('organizationLevel', this.level);
+            this.$route.params.back_page = "1";
             let current_pos = this;
             swal({
               title: this.trans.get('keys.thong_bao'),
@@ -410,6 +415,10 @@
               axios.post(url)
                 .then(response => {
                   roam_message(response.data.status, response.data.message);
+                  if(current_pos.posts.length == 1){
+                    current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                  }
+                  current_pos.onPageChange();
                 })
                 .catch(error => {
                   roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
