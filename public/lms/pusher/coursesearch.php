@@ -74,7 +74,7 @@ mc.estimate_duration,
 
     foreach ($courses as $course) {
         //current first
-        if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             array_push($competency_exists, $course->training_id);
             push_course($courses_current, $course);
         } //then complete
@@ -147,7 +147,6 @@ left join tms_user_detail tud on tud.user_id = muet.userid
         $all_courses = $coursesSuggest;
     }
 
-
     $start_index = $current * $recordPerPage - $recordPerPage;
 
     $course_list = array_slice($all_courses, $start_index, $recordPerPage);
@@ -219,7 +218,7 @@ and mue.userid = ' . $USER->id;
         $sqlGetCoures .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
     }
 
-    $sqlGetCoures .= ' group by mc.id'; //cần để tạo tên giáo viên
+    $sqlGetCoures .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
     $start_index = $current * $recordPerPage - $recordPerPage;
     $sqlGetCoures .= ' limit ' . $recordPerPage . ' offset ' . $start_index;
     $courses = array_values($DB->get_records_sql($sqlGetCoures));
@@ -269,9 +268,6 @@ and mue.userid = ' . $USER->id;
 
         }
     }
-
-//    var_dump($tempCourse);
-//    die;
     $response = json_encode(['courses' => $courses, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 }
 
