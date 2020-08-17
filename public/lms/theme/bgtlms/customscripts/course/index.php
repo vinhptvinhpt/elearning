@@ -133,6 +133,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         top: 2px !important;
     }
 
+    .img-completed{
+        width: 40px !important;
+        height: 40px !important;
+    }
     /*    view*/
     /*    paging*/
     .pagination {
@@ -205,6 +209,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-family: Roboto-Regular;
         letter-spacing: 0.5px;
         color: #737373;
+        font-size: 14px;
+        width: 100%;
     }
 
     .course-info__list-lessons ul {
@@ -820,7 +826,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.stt }}</p>
+                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -861,7 +867,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                         </li>
                                                     </ul>
                                                 </div>
-                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.stt }}</p>
+                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -931,6 +937,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     </li>
                                                 </ul>
                                             </div>
+                                            <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -979,20 +986,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                 <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                 {{course.estimate_duration}} hours
                                                             </li>
-                                                            <li v-if="course.training_deleted == 0"
-                                                                class="number-order">
-                                                                {{ course.stt_count }}
-                                                            </li>
-                                                            <li v-else>
-                                                            </li>
                                                         </ul>
                                                     </div>
+                                                    <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                                 </div>
-                                                <!--  <div class="btn-show btn-show-all btn-page">
-                                                      <button class="btn btn-click"><a
-                                                              :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                      </button>
-                                                  </div>-->
                                             </div>
                                         </div>
                                     </div>
@@ -1033,17 +1030,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hours
                                                         </li>
-                                                        <li class="number-order">
-                                                            {{ course.stt_count }}
-                                                        </li>
                                                     </ul>
                                                 </div>
+                                                <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                             </div>
-                                            <!--  <div class="btn-show btn-show-all btn-page">
-                                                  <button class="btn btn-click"><a
-                                                          :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                                  </button>
-                                              </div>-->
                                         </div>
                                     </div>
                                 </div>
@@ -1055,7 +1045,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             src="<?php echo $_SESSION['component']; ?>" alt=""><span>0%</span></template>
                                     <template v-else-if="course.numoflearned/course.numofmodule == 1">
                                         <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
-                                             alt="">
+                                             alt="" class="img-completed">
                                     </template>
                                     <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
                                     </template>
@@ -1085,12 +1075,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     </li>
                                                 </ul>
                                             </div>
+                                            <p v-if="course.training_deleted == 0" class="number-order">{{ course.sttShow }}</p>
                                         </div>
-                                        <!--  <div class="btn-show btn-show-all btn-page">
-                                              <button class="btn btn-click"><a
-                                                      :href="'lms/course/view.php?id='+course.id">Learn more</a>
-                                              </button>
-                                          </div>-->
                                     </div>
                                 </div>
                             </div>

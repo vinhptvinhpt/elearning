@@ -71,29 +71,41 @@ mc.estimate_duration,
     $courses = array_values($DB->get_records_sql($sql));
 
     $competency_exists = array();
+    $courses_training = array();
 
-    foreach ($courses as $course) {
-        //current first
-        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-            array_push($competency_exists, $course->training_id);
-            push_course($courses_current, $course);
-        } //then complete
-        elseif ($course->numoflearned / $course->numofmodule == 1) {
-            push_course($courses_completed, $course);
-        } //then required = khoa hoc trong khung nang luc
-        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-            $courses_required[$course->training_id][$course->order_no] = $course;
-            $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-            if($course->training_deleted == 2){
-                $courses_others_id .= ', '.$course->id;
-            }
+    foreach ($courses as $course){
+        $courses_training[$course->training_id][$course->order_no] = $course;
+    }
+
+    foreach ($courses_training as $courses){
+        $stt = 1;
+        foreach ($courses as &$course) {
+            $course->sttShow = $stt;
+            //current first
+            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                array_push($competency_exists, $course->training_id);
+                push_course($courses_current, $course);
+            } //then complete
+            elseif ($course->numoflearned / $course->numofmodule == 1) {
+                push_course($courses_completed, $course);
+            } //then required = khoa hoc trong khung nang luc
+            elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
+                $courses_required[$course->training_id][$course->order_no] = $course;
+                $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
+                if($course->training_deleted == 2){
+                    $courses_others_id .= ', '.$course->id;
+                }
 //            push_course($courses_required, $course);
-        } //the last is other courses
+            }
+            $stt++;
+            //the last is other courses
 //        else {
 //            push_course($courses_others, $course);
 ////            $courses_others_id .= ', '.$course->id;
 //        }
+        }
     }
+
     $courses_others_id .= ')';
 
     //get course can not enrol
@@ -224,51 +236,64 @@ and mue.userid = ' . $USER->id;
     $courses = array_values($DB->get_records_sql($sqlGetCoures));
 
     $stt_count =1;
-    $stt_count_temp =1;
     $competency_exists = array();
     $temp_competency_exists = array();
 
     //
     $tempCourse = [];
-    foreach ($courses as &$course) {
-        $teachers = $course->teachers;
-        $teacher_name = '';
-        $teacher_created = 0;
-        //
-        $course->enable = 'enable';
-        $course->category_type = '';
-        if (strlen($teachers) != 0) {
-            $teachers_and_created = explode(',', $teachers);
-            foreach ($teachers_and_created as $teacher_and_created) {
-                $fetch = explode(' created_at ', $teacher_and_created);
-                if (intval($fetch[1]) > $teacher_created) {
-                    $teacher_created = intval($fetch[1]);
-                    $teacher_name = $fetch[0];
+    //
+    $courses_training = array();
+
+    foreach ($courses as $course){
+        $courses_training[$course->training_id][$course->order_no] = $course;
+    }
+
+    $coures_result = array();
+    foreach ($courses_training as $courses) {
+        $stt = 1;
+        foreach ($courses as &$course) {
+            $course->sttShow = $stt;
+            $teachers = $course->teachers;
+            $teacher_name = '';
+            $teacher_created = 0;
+            //
+            $course->enable = 'enable';
+            $course->category_type = '';
+            if (strlen($teachers) != 0) {
+                $teachers_and_created = explode(',', $teachers);
+                foreach ($teachers_and_created as $teacher_and_created) {
+                    $fetch = explode(' created_at ', $teacher_and_created);
+                    if (intval($fetch[1]) > $teacher_created) {
+                        $teacher_created = intval($fetch[1]);
+                        $teacher_name = $fetch[0];
+                    }
                 }
             }
-        }
-        $course->teacher_name = $teacher_name;
-        //$course->teacher_created = $teacher_created;
-        //
-        if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-            array_push($competency_exists, $course->training_id);
-        }
-        elseif (($course->training_name && $course->training_deleted == 0) &&(($course->numoflearned == 0) || ($course->numofmodule == 0))) {
-            $course->category_type = 'required';
-            array_push($temp_competency_exists, $course->training_id);
+            $course->teacher_name = $teacher_name;
+            //$course->teacher_created = $teacher_created;
             //
-            if(in_array($course->training_id, $temp_competency_exists)){
-                $stt_count = $tempCourse[$course->training_id]['stt'];
-                $stt_count++;
-            }else{
-                $stt_count = 1;
+            if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                array_push($competency_exists, $course->training_id);
+            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+                $course->category_type = 'required';
+                array_push($temp_competency_exists, $course->training_id);
+                //
+                if (in_array($course->training_id, $temp_competency_exists)) {
+                    $stt_count = $tempCourse[$course->training_id]['stt'];
+                    $stt_count++;
+                } else {
+                    $stt_count = 1;
+                }
+                $tempCourse[$course->training_id]['stt'] = $stt_count;
+                $course->stt_count = $tempCourse[$course->training_id]['stt'];
             }
-            $tempCourse[$course->training_id]['stt'] = $stt_count;
-            $course->stt_count = $tempCourse[$course->training_id]['stt'];
-
+            $stt++;
+            $coures_result[] = $course;
         }
     }
-    $response = json_encode(['courses' => $courses, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
+
+
+    $response = json_encode(['courses' => $coures_result, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 }
 
 function push_course(&$array, $course)
