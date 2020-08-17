@@ -847,8 +847,18 @@ if ($course->numofmodule == 0) {
             $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
             $_SESSION["displayPopup"] = 1;
         } else if ($displayVal == -1) {
-            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
-            $_SESSION["displayPopup"] = 1;
+            //get course congratulation
+            $sqlGetCourseNotification = 'select count(*) as total from tms_course_congratulations WHERE user_id = ' . $USER->id . ' and course_id = ' . $course->id;
+            $getCourseNotification = array_values($DB->get_records_sql($sqlGetCourseNotification))[0];
+            $courseNotification = $getCourseNotification->total;
+            if($courseNotification == 0){
+                $test = $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
+                $_SESSION["displayPopup"] = 1;
+            }else{
+                $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
+                $_SESSION["displayPopup"] = 1;
+            }
+
         } else {
             $_SESSION["displayPopup"] = 2;
         }
@@ -859,7 +869,6 @@ if ($course->numofmodule == 0) {
         }
     }
 }
-
 ?>
 <body <?php echo $bodyattributes ?>>
 

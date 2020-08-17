@@ -75,17 +75,78 @@ $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
 $organization_id = $organization->id;
 
 $organizationCodeGet = "";
-if (strpos(strtolower($organization->code), 'begodi') === 0) {
+$organizationLower = strtolower($organization->code);
+if(strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0){
     $organizationCodeGet = "BG";
-} else if (strpos(strtolower($organization->code), 'easia') === 0) {
+} else if(strpos($organizationLower,'ea') === 0 || strpos($organizationLower,'easia') === 0){
     $organizationCodeGet = "EA";
-} else if (strpos(strtolower($organization->code), 'exotic') === 0) {
+} else if(strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0){
     $organizationCodeGet = "EV";
-} else if (strpos(strtolower($organization->code), 'av') === 0) {
+}else if(strpos($organizationLower, 'AV') === 0 || strpos($organizationLower, 'avana') === 0){
     $organizationCodeGet = "AV";
-} else {
+}else{
     $organizationCodeGet = "PH";
 }
+
+
+//set for full page
+$organization_id = is_null($organization) ? 0 : $organization->id;
+//$organizationCodeGet
+$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
+//$organizationCode = "BG";
+switch ($organizationCode) {
+    case "EA":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "EV":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "BG":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#333';
+            $_SESSION["pathLogo"] = 'images/begodi.png';
+            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "AV":
+        {
+            $_SESSION["organizationName"] = 'Avana';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    default:
+        {
+            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+}
+
 
 $courses_current = array();
 $courses_required = array();
@@ -93,29 +154,41 @@ $courses_completed = array();
 $courses_others = array();
 $courses_others_id = '(0';
 $courses_soft_skills = array();
+//
+$courses_training = array();
+//
 $competency_exists = array();
+$competency_completed = array();
 $countRequiredCourses = 0;
 foreach ($courses as $course) {
-    //current first
-    if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-        array_push($competency_exists, $course->training_id);
-        push_course($courses_current, $course);
-    } //then complete
-    elseif ($course->numoflearned / $course->numofmodule == 1) {
-        push_course($courses_completed, $course);
-    } //then required = khoa hoc trong khung nang luc
-    elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-        $courses_required[$course->training_id][$course->order_no] = $course;
-        if ($course->training_deleted == 2) {
-            $courses_others_id .= ', ' . $course->id;
-        }
-        $countRequiredCourses++;
-    } //the last is other courses
-//    else {
-//        push_course($courses_others, $course);
-////        $courses_others_id .= ', '.$course->id;
-//    }
+    $courses_training[$course->training_id][$course->order_no] = $course;
 }
+
+foreach ($courses_training as $courses){
+    $stt = 1;
+    foreach ($courses as &$course) {
+        $course->sttShow = $stt;
+        //current first
+        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            array_push($competency_exists, $course->training_id);
+            push_course($courses_current, $course);
+        } //then complete
+        elseif ($course->numoflearned / $course->numofmodule == 1) {
+            array_push($competency_completed, $course->training_id);
+            push_course($courses_completed, $course);
+        } //then required = khoa hoc trong khung nang luc
+        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
+            $courses_required[$course->training_id][$course->order_no] = $course;
+            if ($course->training_deleted == 2) {
+                $courses_others_id .= ', ' . $course->id;
+            }
+            $countRequiredCourses++;
+        }
+        $stt++;
+    }
+}
+//var_dump($courses_completed);
+//die;
 $courses_others_id .= ')';
 function push_course(&$array, $course)
 {
@@ -155,104 +228,6 @@ $_SESSION["courses_current"] = $courses_current;
 $_SESSION["courses_required"] = $courses_required;
 $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
-
-//set for full page
-$organization_id = is_null($organization) ? 0 : $organization->id;
-//$organizationCodeGet
-$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-//$organizationCode = "BG";
-switch ($organizationCode) {
-    case "EA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EASIA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EV":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EXOTIC":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BG":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BEGODI":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AV":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AVANA":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    default:
-        {
-            $_SESSION["organizationName"] = 'PHH';
-            $_SESSION["color"] = '#0080EF';
-            $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-}
 
 $countBlock = 1;
 $percentCompleted = intval(count($courses_completed) * 100 / count($courses));
@@ -1221,6 +1196,13 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_current) > 0) { ?>
                                             <?php $countBlock = 1;
+                                            $stt = 1;
+                                            //get first training id of liest course
+                                            $training_id = array_values($courses_current)[0]->training_id;
+                                            //if exists in list competency => it learning => disable to learn
+                                            if (in_array($training_id, $competency_completed)) {
+                                                $stt = 2;
+                                            }
                                             foreach ($courses_current as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
@@ -1257,7 +1239,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <p class="number-order number-order-hide"></p>
+                                                            <?php if ($course->training_deleted == 0) { ?>
+                                                                <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                            <?php } else { ?>
+                                                                <p class="number-order number-order-hide"></p>
+                                                            <?php } ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1295,14 +1281,16 @@ $_SESSION["allowCms"] = $allowCms;
                                                 //defined enable
                                                 $enable = 'enable';
                                                 $stt = 1;
+                                                $allow = true;
                                                 //get first training id of liest course
                                                 $training_id = array_values($courses_traning)[0]->training_id;
                                                 //if exists in list competency => it learning => disable to learn
-                                                if (in_array($training_id, $competency_exists)) {
+                                                if (in_array($training_id, $competency_exists) || in_array($training_id, $competency_completed)) {
                                                     $enable = 'disable';
+                                                    $allow = false;
                                                 }
                                                 foreach ($courses_traning as $course) {
-                                                    if ($course->training_deleted == 2) continue; ?>
+                                                    if ($course->training_deleted == 2 || !$allow) continue; ?>
                                                     <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                         <div class="block-data">
                                                             <div class="block-items__item <?php echo $enable; ?>">
@@ -1344,7 +1332,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                 hours</p>
                                                                         </div>
                                                                     </div>
-                                                                    <p class="number-order"><?php echo $stt; ?></p>
+                                                                    <?php if ($course->training_deleted == 0) { ?>
+                                                                        <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                                    <?php } else { ?>
+                                                                        <p class="number-order number-order-hide"></p>
+                                                                    <?php } ?>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1362,7 +1354,14 @@ $_SESSION["allowCms"] = $allowCms;
                                                 foreach ($courses_required as $courses_traning) {
                                                     $stt = 2;
                                                     $enable = 'enable';
-                                                    if (array_values($courses_traning)[0]->training_deleted == 0) {
+                                                    $course_traning = array_values($courses_traning)[0];
+                                                    //get first training id of liest course
+                                                    $training_id = array_values($courses_traning)[0]->training_id;
+                                                    if (in_array($training_id, $competency_exists)){
+                                                        $enable = 'disable';
+                                                        //do nothing
+                                                    }
+                                                    elseif($course_traning->training_deleted == 0){
                                                         array_shift($courses_traning);
                                                         $enable = 'disable';
                                                     }
@@ -1415,7 +1414,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                             </div>
                                                                         </div>
                                                                         <?php if ($course->training_deleted == 0) { ?>
-                                                                            <p class="number-order"><?php echo $stt; ?></p>
+                                                                            <p class="number-order"><?php echo $course->sttShow; ?></p>
                                                                         <?php } else { ?>
                                                                             <p class="number-order number-order-hide"></p>
                                                                         <?php } ?>
@@ -1460,6 +1459,7 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_completed) > 0) { ?>
                                             <?php $countBlock = 1;
+                                            $stt = 1;
                                             foreach ($courses_completed as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
@@ -1498,7 +1498,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <p class="number-order number-order-hide"></p>
+                                                            <?php if ($course->training_deleted == 0) { ?>
+                                                                <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                            <?php } else { ?>
+                                                                <p class="number-order number-order-hide"></p>
+                                                            <?php } ?>
                                                         </div>
                                                     </div>
                                                 </div>
