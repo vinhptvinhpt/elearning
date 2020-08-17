@@ -126,6 +126,13 @@ class H5peditorFile {
           return FALSE;
         }
 
+        // Resize the image if size is bigger than 5mb
+        $image_size = $_FILES['file']['size'];
+        if ($image_size > 5000000){
+          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $image[0] / 2, $image[1] / 2);
+          $image = @getimagesize($_FILES['file']['tmp_name']);
+        }
+        
         $this->result->width = $image[0];
         $this->result->height = $image[1];
         $this->result->mime = $this->type;
@@ -222,5 +229,39 @@ class H5peditorFile {
     header('Content-Type: text/plain; charset=utf-8');
 
     print $this->getResult();
+  }
+
+  /**
+   * [Easia-Elearning][Modified] Resize the big size image.
+   *
+   */
+  public function resize_image($file, $w, $h, $crop = FALSE)
+  {
+    list($width, $height) = getimagesize($file);
+    $r = $width / $height;
+    if ($crop) {
+      if ($width > $height) {
+        $width = ceil($width - ($width * abs($r - $w / $h)));
+      } else {
+        $height = ceil($height - ($height * abs($r - $w / $h)));
+      }
+      $newwidth = $w;
+      $newheight = $h;
+    } else {
+      if ($w / $h > $r) {
+        $newwidth = $h * $r;
+        $newheight = $h;
+      } else {
+        $newheight = $w / $r;
+        $newwidth = $w;
+      }
+    }
+    $src = imagecreatefromjpeg($file);
+    $dst = imagecreatetruecolor($newwidth, $newheight);
+    imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
+    imagedestroy($src);
+    $new_file = imagepng($dst, $file); // adjust format as needed
+    imagedestroy($dst);
+    return $new_file;
   }
 }
