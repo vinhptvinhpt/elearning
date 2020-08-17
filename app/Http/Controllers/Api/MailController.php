@@ -13,6 +13,7 @@ use App\TmsInvitation;
 use App\TmsNotification;
 use App\TmsUserDetail;
 use Exception;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
@@ -467,18 +468,28 @@ class MailController extends Controller
                                 '',
                                 $itemNotification->content
                             ));
-                            $object_content = array(
-                                'object_id' => '',
-                                'object_name' => '',
-                                'object_type' => '',
-                                'parent_id' => '',
-                                'parent_name' => '',
-                                'start_date' => '',
-                                'end_date' => '',
-                                'code' => $itemNotification->content,
-                                'room' => '',
-                                'grade' => '',
-                            );
+
+                            $object_content = [];
+
+                            $completed_fws = json_decode($itemNotification->content);
+
+                            if (is_array($completed_fws) && !empty($completed_fws)) {
+                                foreach ($completed_fws as $completed_fw) {
+                                    //[{"training_id":57,"training_name":"Khoa_offline","startdate":0,"enddate":0,"code":"Khoa_offline585"}]
+                                    $object_content[] = array(
+                                        'object_id' => $completed_fw->training_id,
+                                        'object_name' => $completed_fw->training_name,
+                                        'object_type' => 'training',
+                                        'parent_id' => '',
+                                        'parent_name' => '',
+                                        'start_date' => $completed_fw->startdate,
+                                        'end_date' => $completed_fw->enddate,
+                                        'code' => $completed_fw->code,
+                                        'room' => '',
+                                        'grade' => '',
+                                    );
+                                }
+                            }
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
@@ -494,6 +505,180 @@ class MailController extends Controller
             }
         }
     }
+
+//Send email enrol competency framework
+//Send 1 time only, then change status of notification
+    public function sendEnrolCompetency()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::ASSIGNED_COMPETENCY] == TmsConfigs::ENABLE) {
+            $lstCompletedFrameNotifi = MdlUser::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user.id')
+                ->join('tms_nofitications', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::ASSIGNED_COMPETENCY)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+                    'mdl_user.email',
+                    'tms_user_detail.fullname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstCompletedFrameNotifi);
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstCompletedFrameNotifi as $itemNotification) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $fullname = $itemNotification->fullname;
+                        $email = $itemNotification->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::ASSIGNED_COMPETENCY,
+                                $itemNotification->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification->content
+                            ));
+                            $object_content = [];
+                            $training = json_decode($itemNotification->content);
+                            if (isset($training)) {
+                                $object_content = array(
+                                    'object_id' => $training->training_id,
+                                    'object_name' => $training->training_name,
+                                    'object_type' => '',
+                                    'parent_id' => '',
+                                    'parent_name' => '',
+                                    'start_date' => $training->time_start,
+                                    'end_date' => $training->time_end,
+                                    'code' => '',
+                                    'room' => '',
+                                    'grade' => '',
+                                );
+                            }
+                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                $this->sendPushNotification($lstCompletedFrameNotifi);
+                \DB::commit();
+            }
+        }
+    }
+
+//Insert notification for enrol competency framework
+//50 each
+//Aug 14th 2020 by cuonghq
+    public function insertEnrolCompetency()
+    {
+
+        $limit = 50; //self::DEFAULT_ITEMS_PER_SESSION;
+
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::ASSIGNED_COMPETENCY] == TmsConfigs::ENABLE) {
+            $userNeedRemind =
+                //Type 1 limit table left record using sub query wit same condition
+                DB::query()->fromSub(function ($query) use ($limit) {
+                    $query->from('mdl_user')
+                        ->whereNotIn('id', function ($query) {
+                            //check exist in table tms_nofitications
+                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::ASSIGNED_COMPETENCY);
+                        })
+                        ->whereIn('id', function ($query) { //users assigned to training
+                            $query->select('tms_traninning_users.user_id')
+                                ->from('tms_traninning_users')
+                                ->join('tms_traninning_programs', 'tms_traninning_users.trainning_id', '=', 'tms_traninning_programs.id');
+                        })
+                        ->limit($limit);
+                }, 'mdl_user')//Set alias for sub table
+                    ->whereNotIn('mdl_user.id', function ($query) {
+                        //check exist in table tms_nofitications
+                        $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::ASSIGNED_COMPETENCY);
+                    })
+                    ->join('tms_traninning_users', 'mdl_user.id', '=', 'tms_traninning_users.user_id')
+                    ->join('tms_traninning_programs', 'tms_traninning_users.trainning_id', '=', 'tms_traninning_programs.id')
+                    ->select(
+                        'mdl_user.id',
+                        'mdl_user.username',
+                        'mdl_user.firstname',
+                        'mdl_user.lastname',
+                        'mdl_user.email',
+                        'tms_traninning_programs.id as training_id',
+                        'tms_traninning_programs.name as training_name',
+                        'tms_traninning_programs.time_start',
+                        'tms_traninning_programs.time_end'
+                    )
+                    ->groupBy(
+                        'mdl_user.id',
+                        'mdl_user.username',
+                        'mdl_user.firstname',
+                        'mdl_user.lastname',
+                        'mdl_user.email',
+                        'tms_traninning_programs.name',
+                        'tms_traninning_programs.time_start',
+                        'tms_traninning_programs.time_end'
+                    )
+                    ->get();
+
+            if (count($userNeedRemind) > 0) {
+                $data = array();
+                foreach ($userNeedRemind as $user_item) {
+                    if (strlen($user_item->email) != 0) {
+                        $element = array(
+                            'type' => TmsNotification::MAIL,
+                            'target' => TmsNotification::ASSIGNED_COMPETENCY,
+                            'status_send' => 0,
+                            'sendto' => $user_item->id,
+                            'createdby' => 0,
+                            'course_id' => 0,
+                            'created_at' => date('Y-m-d H:i:s', time()),
+                            'updated_at' => date('Y-m-d H:i:s', time()),
+                        );
+                        $element['content'] = array(
+                            'training_id' => $user_item->training_id,
+                            'training_name' => $user_item->training_name,
+                            'time_start' => $user_item->time_start,
+                            'time_end' => $user_item->time_end,
+                        );
+
+                        $data[] = $element;
+                    }
+                }
+
+                if (!empty($data)) {
+                    $convert_to_json = array();
+                    foreach ($data as $item) { //auto strip key of element, just use value = necessary data
+                        $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
+                        $convert_to_json[] = $item;
+                    }
+                    //batch insert
+                    TmsNotification::insert($convert_to_json);
+                }
+            }
+        }
+    }
+
 
 //Send email remind certificate
 //Notification record created by Tho
@@ -1682,13 +1867,27 @@ class MailController extends Controller
 
     function filterMail($email)
     {
-        $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
+        //Cache::flush();
+        $mail_development_mode = true; //Default true to avoid spam mail
+        //Check development_flag
+        if (Cache::has('mail_development_mode')) {
+            $flag = Cache::get('mail_development_mode');
+            $mail_development_mode = $flag;
+        } else {
+            $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
+            //Set development_flag
+            if (isset($getDevelopment)) {
+                if ($getDevelopment->content = 'enable') {
+                    $mail_development_mode = true;
+                    Cache::put('mail_development_mode', true, 1440);
+                } else {//Only this case development mode is turn off
+                    $mail_development_mode = false;
+                }
+            }
+        }
+
         //Nếu không có thì đang trong chế độ nhà phát triển
-        if (empty($getDevelopment))
-            $getDevelopment = 'enable';
-        else
-            $development = $getDevelopment->content;
-        if ($development == 'enable') {
+        if ($mail_development_mode) {
             $dev_email = [
                 'immrhy@gmail.com',
                 'innrhy@gmail.com',
