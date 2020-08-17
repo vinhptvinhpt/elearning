@@ -75,17 +75,78 @@ $organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
 $organization_id = $organization->id;
 
 $organizationCodeGet = "";
-if (strpos(strtolower($organization->code), 'begodi') === 0) {
+$organizationLower = strtolower($organization->code);
+if(strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0){
     $organizationCodeGet = "BG";
-} else if (strpos(strtolower($organization->code), 'easia') === 0) {
+} else if(strpos($organizationLower,'ea') === 0 || strpos($organizationLower,'easia') === 0){
     $organizationCodeGet = "EA";
-} else if (strpos(strtolower($organization->code), 'exotic') === 0) {
+} else if(strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0){
     $organizationCodeGet = "EV";
-} else if (strpos(strtolower($organization->code), 'av') === 0) {
+}else if(strpos($organizationLower, 'AV') === 0 || strpos($organizationLower, 'avana') === 0){
     $organizationCodeGet = "AV";
-} else {
+}else{
     $organizationCodeGet = "PH";
 }
+
+
+//set for full page
+$organization_id = is_null($organization) ? 0 : $organization->id;
+//$organizationCodeGet
+$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
+//$organizationCode = "BG";
+switch ($organizationCode) {
+    case "EA":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "EV":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "BG":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#333';
+            $_SESSION["pathLogo"] = 'images/begodi.png';
+            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "AV":
+        {
+            $_SESSION["organizationName"] = 'Avana';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    default:
+        {
+            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+}
+
 
 $courses_current = array();
 $courses_required = array();
@@ -167,104 +228,6 @@ $_SESSION["courses_current"] = $courses_current;
 $_SESSION["courses_required"] = $courses_required;
 $_SESSION["courses_completed"] = $courses_completed;
 $_SESSION["totalCourse"] = count($courses);
-
-//set for full page
-$organization_id = is_null($organization) ? 0 : $organization->id;
-//$organizationCodeGet
-$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-//$organizationCode = "BG";
-switch ($organizationCode) {
-    case "EA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EASIA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EV":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EXOTIC":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BG":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BEGODI":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AV":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AVANA":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    default:
-        {
-            $_SESSION["organizationName"] = 'PHH';
-            $_SESSION["color"] = '#0080EF';
-            $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-}
 
 $countBlock = 1;
 $percentCompleted = intval(count($courses_completed) * 100 / count($courses));
