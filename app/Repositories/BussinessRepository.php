@@ -11,6 +11,7 @@ use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
+use App\TmsUserCourseException;
 use App\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
@@ -1785,6 +1786,64 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
+    //api lấy danh sách người dùng ngoại lệ được vào khóa học
+    public function apiUserCourseException(Request $request)
+    {
+        $course_id = $request->input('course_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $organization_id = $request->input('organization_id');
+//        $invite_status = $request->input('invite_status');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'role_id' => 'number',
+            'keyword' => 'text',
+//            'invite_status' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        $currentUserCourseException = DB::table('tms_user_course_exception')
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_course_exception.user_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->where('tms_user_course_exception.course_id', '=', $course_id)
+            ->select(
+                'mdl_user.id',
+                'mdl_user.username',
+                'mdl_user.firstname',
+                'mdl_user.lastname',
+                'tms_user_detail.fullname'
+            );
+        if ($keyword) {
+            $currentUserCourseException = $currentUserCourseException->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $currentUserCourseException = $currentUserCourseException->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $currentUserCourseException = $currentUserCourseException->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        $currentUserCourseException = $currentUserCourseException->paginate($row);
+        $total = ceil($currentUserCourseException->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $currentUserCourseException->currentPage(),
+            ],
+            'data' => $currentUserCourseException
+        ];
+
+        return response()->json($response);
+    }
+
     //api lấy danh sách người dùng cần ghi danh
     //ThoLD 14/09/2019
     public $courseCurrent_id;
@@ -1863,12 +1922,8 @@ class BussinessRepository implements IBussinessInterface
         if ($role_id) {
             $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
         }
-
-
+        
         $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
-
-        echo $userNeedEnrol->toSql();
-        die;
 
         $userNeedEnrol = $userNeedEnrol->paginate($row);
         $total = ceil($userNeedEnrol->total() / $row);
@@ -2170,6 +2225,95 @@ class BussinessRepository implements IBussinessInterface
             }
 
             TmsInvitation::whereIn('user_id', $lstUserIDs)->where('course_id', $course_id)->delete();
+
+            $response->status = true;
+            $response->message = __('xoa_khoi_danh_sach_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return json_encode($response);
+    }
+
+    public function apiEnrolUserException(Request $request){
+        self::apiInviteUser($request);
+        $response = new ResponseModel();
+        try {
+            $course_id = $request->input('course_id');
+            $lstUserIDs = $request->input('users');
+
+            $param = [
+                'course_id' => 'number',
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            $course = MdlCourse::find($course_id);
+
+            if (empty($course)) {
+                $response->status = false;
+                $response->message = __('khong_tim_thay_khoa_hoc');
+                return json_encode($response);
+            }
+
+            $insert_data = [];
+            $dt = Carbon::now();
+
+            $send = false;
+
+            if (count($lstUserIDs) == 1 && TmsUserCourseException::where('user_id', '=', $lstUserIDs[0])
+                    ->where('course_id', '=', $course_id)->first()) {
+                $send = true;
+            }
+
+            foreach ($lstUserIDs as $user_id) {
+                $checkInvitation = TmsUserCourseException::where('user_id', '=', $user_id)
+                    ->where('course_id', '=', $course_id)->first();
+                if (!$checkInvitation) {
+                    $insert_data[] = [
+                        'course_id' => $course_id,
+                        'user_id' => $user_id,
+                        'created_at' => $dt->toDateTimeString()
+                    ];
+                }
+            }
+            if (!empty($insert_data)) {
+                TmsUserCourseException::insert($insert_data);
+            }
+
+            $response->status = true;
+            $response->send = $send;
+            $response->message = __('them_vao_danh_sach_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->send = false;
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return json_encode($response);
+    }
+
+    public function  apiRemoveUserException(Request $request){
+        self::apiRemoveInviteUser($request);
+        $response = new ResponseModel();
+        try {
+            $course_id = $request->input('course_id');
+            $lstUserIDs = $request->input('users');
+            $param = [
+                'course_id' => 'number',
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            TmsUserCourseException::whereIn('user_id', $lstUserIDs)->where('course_id', $course_id)->delete();
 
             $response->status = true;
             $response->message = __('xoa_khoi_danh_sach_thanh_cong');

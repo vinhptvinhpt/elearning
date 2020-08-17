@@ -15,6 +15,7 @@ class TmsConfigs extends Model
 
     const TARGET_NOTIFICATION_SERVER_KEY = 'notification_server_key';
     const TARGET_FIREBASE_TOPIC = 'topic_title';
+    const DEVELOPMENT = 'development';
 
     public static function defaultNotificationConfig() {
         return array(
@@ -27,6 +28,7 @@ class TmsConfigs extends Model
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
+            TmsConfigs::DEVELOPMENT => TmsConfigs::ENABLE,
         );
     }
 }

@@ -337,6 +337,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserCurrentInvite($request);
     }
 
+    public function apiUserCourseException(Request $request)
+    {
+        return $this->bussinessRepository->apiUserCourseException($request);
+    }
+
     public function apiUserNeedEnrol(Request $request)
     {
         return $this->bussinessRepository->apiUserNeedEnrol($request);
@@ -362,6 +367,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiInviteUser($request);
     }
 
+    public function apiEnrolUserException(Request $request)
+    {
+        return $this->bussinessRepository->apiEnrolUserException($request);
+    }
+
     public function apiInvitationDetail($id)
     {
         return $this->bussinessRepository->apiInvitationDetail($id);
@@ -380,6 +390,11 @@ class CourseController extends Controller
     public function apiRemoveInviteUser(Request $request)
     {
         return $this->bussinessRepository->apiRemoveInviteUser($request);
+    }
+
+    public function apiRemoveUserException(Request $request)
+    {
+        return $this->bussinessRepository->apiRemoveUserException($request);
     }
 
     public function apiImportExcelEnrol(Request $request)

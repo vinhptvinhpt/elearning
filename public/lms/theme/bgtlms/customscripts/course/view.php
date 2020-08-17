@@ -734,6 +734,9 @@ if ($notifyeditingon == 1) {
 $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
+$sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = '. $USER->id;
+$userCheck = array_values($DB->get_records_sql($sqlUserCheck)) ;
+
 $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
@@ -1206,9 +1209,9 @@ $_SESSION["displayPopup"] = 2; ?>
                 var result_ip =  <?php echo $result_ip;  ?>;
 
                 var count_ip = result_ip.list_access_ip.length;
-
+                let check = <?php echo json_encode($userCheck); ?>;
                 if (count_ip > 0) {
-                    if (result_ip.list_access_ip.includes(data.ip)) {
+                    if (result_ip.list_access_ip.includes(data.ip) || check.length > 0) {
                         continue_learning();
                     } else {
                         var message_access = 'This course cannot be accessed outside of the office';

@@ -62,6 +62,9 @@ Route::get('/cron/mail/sendRemindLogin', 'Api\MailController@sendRemindLogin')->
 Route::get('/cron/mail/sendRemindUC', 'Api\MailController@sendRemindUpcomingCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendRemindAccess', 'Api\MailController@sendRemindAccess')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/demoSendMail', 'Api\MailController@demoSendMail');
+//08142020
+Route::get('/cron/mail/sendEnrolCompetency', 'Api\MailController@sendEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+
 //Insert mail
 Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
@@ -70,7 +73,12 @@ Route::get('/cron/mail/insertRemindES', 'Api\MailController@insertRemindEducatio
 Route::get('/cron/mail/insertRemindLogin', 'Api\MailController@insertRemindLogin')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindUC', 'Api\MailController@insertRemindUpcomingCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindAccess', 'Api\MailController@insertRemindAccess')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+//08142020
+Route::get('/cron/mail/insertEnrolCompetency', 'Api\MailController@insertEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+
+//Clear mail
 Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->middleware(['App\Http\Middleware\CheckToken']); //every week
+
 
 
 // update email + active

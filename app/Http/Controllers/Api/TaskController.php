@@ -250,11 +250,11 @@ class TaskController extends Controller
         foreach ($lstTrainning as $data) {
 
             //query lay tat ca nguoi dung duoc ghi danh vao khoa hoc khong nam trong bang trainning_user
-            $query_sql = '(select mu.id from mdl_user_enrolments as mue 
-                            inner join mdl_user as mu on mu.id = mue.userid 
-                            inner join mdl_enrol as me on me.id = mue.enrolid 
-                            inner join mdl_course as mc on mc.id = me.courseid 
-                            left join tms_traninning_users as ttu on ttu.user_id = mu.id and ttu.trainning_id = ' . $data->trainning_id . ' 
+            $query_sql = '(select mu.id from mdl_user_enrolments as mue
+                            inner join mdl_user as mu on mu.id = mue.userid
+                            inner join mdl_enrol as me on me.id = mue.enrolid
+                            inner join mdl_course as mc on mc.id = me.courseid
+                            left join tms_traninning_users as ttu on ttu.user_id = mu.id and ttu.trainning_id = ' . $data->trainning_id . '
                             where mc.id = ' . $data->course_id . ' and ttu.trainning_id is null)';
 
             $query_sql = DB::raw($query_sql);
@@ -849,7 +849,7 @@ class TaskController extends Controller
 
     #endregion
 
-    public function autoEnrolTrainning1()
+    public function autoEnrolTrainningOld() //Don't use
     {
         //ThoLd 31/12/2019
         //optimize query
