@@ -66,7 +66,7 @@ mc.estimate_duration,
         $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
     }
 
-    $sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
+    $sql .= ' group by mc.id ORDER BY ttp.deleted, ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
     $courses = array_values($DB->get_records_sql($sql));
 
@@ -145,13 +145,16 @@ left join tms_user_detail tud on tud.user_id = muet.userid
             $sttNew = 1;
             foreach ($training_courses as $course) {
                 $newCourse = $course;
-                $newCourse->stt = $sttNew;
+                if($course->training_deleted == 2)
+                    $newCourse->sttShow = 99999;
+                else
+                    $newCourse->sttShow = $sttNew;
                 $courses_required_sort[] = $newCourse;
                 $sttNew++;
             }
         }
         usort($courses_required_sort, 'cmp_stt');
-        usort($courses_required_sort, 'cmp');
+
         $all_courses = array_values($courses_required_sort);
     } elseif ($category == 'completed') {
         $all_courses = $courses_completed;
@@ -167,7 +170,8 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
-} else {
+}
+else {
     //course available
     //count total
     $sqlCountCoures = 'select mc.id
@@ -315,12 +319,20 @@ function push_course(&$array, $course)
 
 function cmp($a, $b)
 {
-    return strcmp($a->training_deleted, $b->training_deleted);
+    if ($a->training_deleted == $b->training_deleted) return 0;
+    return ($a->training_deleted < $b->training_deleted) ? -1 : 1;
+//    return strcmp($a->training_deleted, $b->training_deleted);
+}
+
+function cmp_training_id($a, $b)
+{
+    return strcmp($a->training_id, $b->training_id);
 }
 
 function cmp_stt($a, $b)
 {
-    return strcmp($a->stt, $b->stt);
+    if ($a->sttShow == $b->sttShow) return 0;
+    return ($a->sttShow < $b->sttShow) ? -1 : 1;
 }
 
 echo $response;

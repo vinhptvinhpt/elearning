@@ -12,7 +12,7 @@
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
-                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung') }}</li>
+                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung_knl') }}</li>
                     </ol>
                 </nav>
             </div>
@@ -211,7 +211,7 @@
                         </div>
                     </div>
 
-                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
+                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung_knl')}}</h5>
                     <div class="row">
                         <div class="col-sm">
                             <div class="table-wrap">
