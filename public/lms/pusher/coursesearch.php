@@ -150,8 +150,10 @@ left join tms_user_detail tud on tud.user_id = muet.userid
                 $sttNew++;
             }
         }
-        usort($courses_required_sort, 'cmp_stt');
         usort($courses_required_sort, 'cmp');
+        //        usort($courses_required_sort, 'cmp_training_id');
+        usort($courses_required_sort, 'cmp_stt');
+
         $all_courses = array_values($courses_required_sort);
     } elseif ($category == 'completed') {
         $all_courses = $courses_completed;
@@ -318,9 +320,15 @@ function cmp($a, $b)
     return strcmp($a->training_deleted, $b->training_deleted);
 }
 
+function cmp_training_id($a, $b)
+{
+    return strcmp($a->training_id, $b->training_id);
+}
+
 function cmp_stt($a, $b)
 {
-    return strcmp($a->stt, $b->stt);
+    if ($a->stt == $b->stt) return 0;
+    return ($a->stt < $b->stt) ? -1 : 1;
 }
 
 echo $response;
