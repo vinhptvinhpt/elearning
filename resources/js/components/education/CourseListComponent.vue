@@ -57,14 +57,12 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="startdate" :config="options"
-                                                         :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                                            <date-picker v-model="startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="enddate" :config="options"
-                                                         :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                                            <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                                         </div>
                                     </div>
                                     <!--                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">-->

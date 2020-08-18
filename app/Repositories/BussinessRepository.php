@@ -1922,7 +1922,7 @@ class BussinessRepository implements IBussinessInterface
         if ($role_id) {
             $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
         }
-        
+
         $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
 
         $userNeedEnrol = $userNeedEnrol->paginate($row);
@@ -2835,8 +2835,9 @@ class BussinessRepository implements IBussinessInterface
         $accepted = $request->input('accepted');
         $reason = $request->input('reason');
 
+        DB::beginTransaction();
         try {
-            $invitation = TmsInvitation::where('id', $id)->first();
+            $invitation = TmsInvitation::query()->where('id', $id)->first();
             if (isset($invitation)) {
                 $invitation->replied = 1;
                 $invitation->accepted = $accepted;
@@ -2847,11 +2848,17 @@ class BussinessRepository implements IBussinessInterface
                     $invitation->accepted = 1;
                 }
                 $invitation->save();
+                if ($accepted == 1) {
+                    //Enrol user vào khóa
+                    enrole_user_to_course_multiple([$invitation->user_id], Role::ROLE_STUDENT, $invitation->course_id, true);
+                }
             }
+            DB::commit();
             $data['status'] = 'success';
             $data['message'] = __('xac_nhan_thanh_cong');
         } catch (\Exception $e) {
-            dd($e);
+            //dd($e);
+            DB::rollBack();
             $data['status'] = 'error';
             $data['message'] = __('xac_nhan_that_bai');
         }
