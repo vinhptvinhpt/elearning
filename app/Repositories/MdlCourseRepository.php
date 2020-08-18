@@ -757,12 +757,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
 
             if ($offline == 1) {
-                $startdate = new Carbon($startdate);
-                $startdate = $startdate->subHour(7);
+                $startdate = Carbon::createFromFormat('d-m-Y h:i A', $startdate);
+                $startdate = $startdate->format('Y-m-d H:i:s');
+                //$startdate = new Carbon($startdate);
+                //$startdate = $startdate->subHour(7);
 
                 if (!is_null($enddate)) {
-                    $enddate = new Carbon($enddate);
-                    $enddate = $enddate->subHour(7);
+                    $enddate = Carbon::createFromFormat('d-m-Y h:i A', $enddate);
+                    $enddate = $enddate->format('Y-m-d H:i:s');
+                    //$enddate = new Carbon($enddate);
+                    //$enddate = $enddate->subHour(7);
                 }
             }
 
@@ -871,8 +875,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('sua_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
+            $response->message = $e->getMessage();
+            //$response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }

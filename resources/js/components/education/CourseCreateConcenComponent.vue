@@ -40,22 +40,16 @@
                     <form action="" class="form-row">
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText1-1">{{trans.get('keys.ma_khoa_hoc')}} *</label>
-                        <input v-model="shortname" type="text" id="inputText1-1"
-                               :placeholder="trans.get('keys.nhap_ma')"
-                               class="form-control mb-4">
-                        <label v-if="!shortname"
-                               class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <input v-model="shortname" type="text" id="inputText1-1" :placeholder="trans.get('keys.nhap_ma')" class="form-control mb-4">
+                        <label v-if="!shortname" class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.ten_khoa_hoc')}} *</label>
-                        <input v-model="fullname" type="text" id="inputText6"
-                               :placeholder="trans.get('keys.nhap_ten_khoa_hoc')"
-                               class="form-control mb-4">
-                        <label v-if="!fullname"
-                               class="required text-danger fullname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label for="inputText1-2">{{trans.get('keys.ten_khoa_hoc')}} *</label>
+                        <input v-model="fullname" type="text" id="inputText1-2" :placeholder="trans.get('keys.nhap_ten_khoa_hoc')" class="form-control mb-4">
+                        <label v-if="!fullname" class="required text-danger fullname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <!--                                        <div class="col-4 form-group">-->
-                      <!--                                            <label for="inputText1-1">Danh mục khóa học *</label>-->
+                      <!--                                            <label for="inputText1-3">Danh mục khóa học *</label>-->
                       <!--                                            <select v-model="category_id" class="form-control" id="category_id">-->
                       <!--                                                <option value="">Chọn danh mục khóa học</option>-->
                       <!--                                                <option v-for="cate in categories" :value="cate.id">-->
@@ -64,66 +58,46 @@
                       <!--                                            </select>-->
                       <!--                                        </div>-->
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
-                        <input v-model="pass_score" type="number" id="inputText1-2"
-                               :placeholder="trans.get('keys.vi_du')+': 50'"
-                               class="form-control mb-4">
+                        <label for="inputText1-4">{{trans.get('keys.diem_qua_mon')}}</label>
+                        <input v-model="pass_score" type="number" id="inputText1-4" :placeholder="trans.get('keys.vi_du')+': 50'" class="form-control mb-4">
                         <!--                                                <label v-if="!pass_score"-->
                         <!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h)
-                          *</label>
-                        <input v-model="estimate_duration" id="estimate_duration" type="number"
-                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')"
-                               class="form-control mb-4">
-                        <label v-if="!estimate_duration"
-                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} (h) *</label>
+                        <input v-model="estimate_duration" id="estimate_duration" type="number" :placeholder="trans.get('keys.nhap_so_gio_can_thiet')" class="form-control mb-4">
+                        <label v-if="!estimate_duration" class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.thoi_gian_bat_dau')}}
-                          *</label>
-                        <input v-model="startdate" type="datetime-local"
-                               id="inputText7"
-                               class="form-control mb-4">
-                        <label v-if="!startdate"
-                               class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label>{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
+<!--                        <input v-model="startdate" type="datetime-local" class="form-control mb-4">-->
+                        <date-picker v-model="startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                        <label v-if="!startdate" class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
-                        <input v-model="enddate" type="datetime-local"
-                               id="inputText8"
-                               class="form-control mb-4">
-                        <!--                                                <label v-if="!enddate"-->
-                        <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                        <label>{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
+<!--                        <input v-model="enddate" type="datetime-local" class="form-control mb-4">-->
+                        <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+<!--                        <label v-if="!enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.phong_hoc')}} *</label>
-                        <input v-model="course_place" type="text" id="inputText9"
-                               :placeholder="trans.get('keys.nhap_phong_hoc')"
-                               class="form-control mb-4">
-                        <label v-if="!course_place"
-                               class="required text-danger course_place_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label for="inputText8">{{trans.get('keys.phong_hoc')}} *</label>
+                        <input v-model="course_place" type="text" id="inputText8" :placeholder="trans.get('keys.nhap_phong_hoc')" class="form-control mb-4">
+                        <label v-if="!course_place" class="required text-danger course_place_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText6">{{trans.get('keys.so_buoi_hoc_trong_khoa')}}
-                          *</label>
-                        <input v-model="total_date_course" type="number" id="inputText101"
-                               :placeholder="trans.get('keys.so_buoi_hoc_trong_khoa')"
-                               class="form-control mb-4">
-                        <label v-if="!total_date_course"
-                               class="required text-danger total_date_course_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label for="inputText101">{{trans.get('keys.so_buoi_hoc_trong_khoa')}} *</label>
+                        <input v-model="total_date_course" type="number" id="inputText101" :placeholder="trans.get('keys.so_buoi_hoc_trong_khoa')" class="form-control mb-4">
+                        <label v-if="!total_date_course" class="required text-danger total_date_course_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
-                        <input v-model="course_budget" id="course_budget" type="number"
-                               step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')"
-                               class="form-control mb-4">
+                        <input v-model="course_budget" id="course_budget" type="number" step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')" class="form-control mb-4">
                       </div>
 
                       <!--<div class="col-md-4 col-sm-6 form-group">
@@ -135,19 +109,14 @@
                       </div>-->
 
                       <div class="col-12 form-group">
-                        <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}}
-                          (<label
-                            for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
-                        <input v-model="access_ip"
-                               :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
-                               class="form-control mb-4">
+                        <label for="inputText102">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText102">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
+                        <input v-model="access_ip" id="inputText102" :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text" class="form-control mb-4">
                       </div>
 
 
                       <div class="col-12 form-group">
-                        <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
+                        <label>{{trans.get('keys.mo_ta')}}</label>
                         <ckeditor v-model="description" :config="editorConfig"></ckeditor>
-
                         <!--                        <textarea v-model="description" class="form-control" rows="10"-->
                         <!--                                  id="article_ckeditor"-->
                         <!--                                  :placeholder="trans.get('keys.noi_dung')"></textarea>-->
@@ -182,11 +151,13 @@
 
 <script>
   import CKEditor from 'ckeditor4-vue';
+  import datePicker from 'vue-bootstrap-datetimepicker'
 
   export default {
     props: ['slugs'],
     components: {
-      CKEditor
+      CKEditor,
+      datePicker
     },
     data() {
       return {
@@ -213,7 +184,14 @@
           filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content'),
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
           filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
-        }
+        },
+        options: {
+          //http://eonasdan.github.io/bootstrap-datetimepicker/Options/
+          format: 'DD-MM-YYYY hh:mm A',
+          useCurrent: false,
+          showClear: true,
+          showClose: true,
+        },
       }
     },
     methods: {
@@ -304,19 +282,20 @@
             var language = this.language;
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
+              loader.fadeOut();
               this.$router.push({
                 name: 'CourseEnrol',
                 params: {id: response.data.otherData, come_from: 'offline'}
               });
             } else {
+              loader.fadeOut();
               toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
           })
           .catch(error => {
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+            loader.fadeOut();
           });
-
-
       },
       goBack() {
         this.$router.push({name: 'CourseConcentrateIndex'});
