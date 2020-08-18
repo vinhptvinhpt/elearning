@@ -73,11 +73,11 @@ mc.estimate_duration,
     $competency_exists = array();
     $courses_training = array();
 
-    foreach ($courses as $course){
+    foreach ($courses as $course) {
         $courses_training[$course->training_id][$course->order_no] = $course;
     }
 
-    foreach ($courses_training as $courses){
+    foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
@@ -92,8 +92,8 @@ mc.estimate_duration,
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
                 $courses_required[$course->training_id][$course->order_no] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                if($course->training_deleted == 2){
-                    $courses_others_id .= ', '.$course->id;
+                if ($course->training_deleted == 2) {
+                    $courses_others_id .= ', ' . $course->id;
                 }
 //            push_course($courses_required, $course);
             }
@@ -129,7 +129,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   and ttp.deleted = 2 and
-  mc.id not in '.$courses_others_id;
+  mc.id not in ' . $courses_others_id;
 
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
     //
@@ -141,9 +141,9 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     if ($category == 'current') {
         $all_courses = $courses_current;
     } elseif ($category == 'required') {
-        foreach ($courses_required as $training_courses){
+        foreach ($courses_required as $training_courses) {
             $sttNew = 1;
-            foreach ($training_courses as $course){
+            foreach ($training_courses as $course) {
                 $newCourse = $course;
                 $newCourse->stt = $sttNew;
                 $courses_required_sort[] = $newCourse;
@@ -231,11 +231,11 @@ and mue.userid = ' . $USER->id;
     }
 
     $sqlGetCoures .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
-    $start_index = $current * $recordPerPage - $recordPerPage;
-    $sqlGetCoures .= ' limit ' . $recordPerPage . ' offset ' . $start_index;
+//    $start_index = $current * $recordPerPage - $recordPerPage;
+//    $sqlGetCoures .= ' limit ' . $recordPerPage . ' offset ' . $start_index;
     $courses = array_values($DB->get_records_sql($sqlGetCoures));
 
-    $stt_count =1;
+    $stt_count = 1;
     $competency_exists = array();
     $temp_competency_exists = array();
 
@@ -244,7 +244,7 @@ and mue.userid = ' . $USER->id;
     //
     $courses_training = array();
 
-    foreach ($courses as $course){
+    foreach ($courses as $course) {
         $courses_training[$course->training_id][$course->order_no] = $course;
     }
 
@@ -292,8 +292,13 @@ and mue.userid = ' . $USER->id;
         }
     }
 
+    $start_index = $current * $recordPerPage - $recordPerPage;
 
-    $response = json_encode(['courses' => $coures_result, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
+    $course_list = array_slice($coures_result, $start_index, $recordPerPage);
+
+    $total = count($coures_result);
+
+    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 }
 
 function push_course(&$array, $course)
@@ -308,10 +313,13 @@ function push_course(&$array, $course)
     }
 }
 
-function cmp($a, $b) {
+function cmp($a, $b)
+{
     return strcmp($a->training_deleted, $b->training_deleted);
 }
-function cmp_stt($a, $b) {
+
+function cmp_stt($a, $b)
+{
     return strcmp($a->stt, $b->stt);
 }
 
