@@ -319,8 +319,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .course-block__image img {
-        width: 32%;
-        height: 26%;
+        /*width: 32%;*/
+        /*height: 26%;*/
+        /*position: absolute;*/
+        /*top: 3%;*/
+        /*right: 3%;*/
+        width: 60px;
+        height: 60px;
         position: absolute;
         top: 3%;
         right: 3%;
@@ -331,8 +336,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-family: Nunito-Bold;
         color: #FFFFFF;
         position: absolute;
-        top: 11%;
-        right: 8%;
+        top: 12%;
+        right: 12%;
         letter-spacing: 1px;
     }
 
@@ -432,6 +437,18 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         padding: .375rem .75rem;
         border-right: 0 !important;
         width: 85%;
+    }
+    ::placeholder {
+        color: rgba(255, 255, 255, 0.75);
+        opacity: 1; /* Firefox */
+    }
+
+    :-ms-input-placeholder { /* Internet Explorer 10-11 */
+        color: rgba(255, 255, 255, 0.75);
+    }
+
+    ::-ms-input-placeholder { /* Microsoft Edge */
+        color: rgba(255, 255, 255, 0.75);
     }
 
     .block-search__select {

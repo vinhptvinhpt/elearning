@@ -22,45 +22,6 @@ $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'te
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
 
-$sql = 'select @s:=@s+1 stt,
-mc.id,
-mc.fullname,
-mc.category,
-mc.course_avatar,
-mc.estimate_duration,
-( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
- ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
-  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
-    muet.userid as teacher_id,
-    tud.fullname as teacher_name,
-    tor.name as teacher_organization,
-    muet.timecreated as teacher_created,
-    toe.position as teacher_position,
-    toe.description as teacher_description,
-    ttp.id as training_id,
-    ttp.name as training_name,
-    ttp.deleted as training_deleted,
-    ttc.order_no,
-    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
-  from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid
-  inner join mdl_user_enrolments mue on me.id = mue.enrolid
-  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-  left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
-  left join tms_trainning_courses ttc on mc.id = ttc.course_id
-  left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
-  where me.enrol = \'manual\'
-  and ttc.deleted <> 1
-  and mc.deleted = 0
-  and mc.visible = 1
-  and mc.category NOT IN (2,7)
-  and mue.userid = ' . $USER->id;
-$sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
-
-$courses = array_values($DB->get_records_sql($sql));
 
 $sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = ' . $USER->id;
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
@@ -147,6 +108,46 @@ switch ($organizationCode) {
         break;
 }
 
+//get course list
+$sql = 'select @s:=@s+1 stt,
+mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
+( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
+ ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+    muet.userid as teacher_id,
+    tud.fullname as teacher_name,
+    tor.name as teacher_organization,
+    muet.timecreated as teacher_created,
+    toe.position as teacher_position,
+    toe.description as teacher_description,
+    ttp.id as training_id,
+    ttp.name as training_name,
+    ttp.deleted as training_deleted,
+    ttc.order_no,
+    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
+  from mdl_course mc
+  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_user_enrolments mue on me.id = mue.enrolid
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+  left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_trainning_courses ttc on mc.id = ttc.course_id
+  left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+  left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
+  where me.enrol = \'manual\'
+  and ttc.deleted <> 1
+  and mc.deleted = 0
+  and mc.visible = 1
+  and mc.category NOT IN (2,7)
+  and mue.userid = ' . $USER->id;
+$sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
+
+$courses = array_values($DB->get_records_sql($sql));
 
 $courses_current = array();
 $courses_required = array();
@@ -157,9 +158,12 @@ $courses_soft_skills = array();
 //
 $courses_training = array();
 //
+$courses_required_list = array();
+//
 $competency_exists = array();
 $competency_completed = array();
 $countRequiredCourses = 0;
+$sttTotalCourse = 0;
 foreach ($courses as $course) {
     $courses_training[$course->training_id][$course->order_no] = $course;
 }
@@ -183,12 +187,13 @@ foreach ($courses_training as $courses){
                 $courses_others_id .= ', ' . $course->id;
             }
             $countRequiredCourses++;
+            $courses_required_list[] = $course;
         }
         $stt++;
+        $sttTotalCourse++;
     }
 }
-//var_dump($courses_completed);
-//die;
+
 $courses_others_id .= ')';
 function push_course(&$array, $course)
 {
@@ -201,6 +206,18 @@ function push_course(&$array, $course)
         $array[$course->id] = $course;
     }
 }
+
+
+// Set session variables
+$_SESSION["courses_current"] = $courses_current;
+$_SESSION["courses_required"] = $courses_required_list;
+$_SESSION["courses_completed"] = $courses_completed;
+$_SESSION["totalCourse"] = $sttTotalCourse;
+
+$countBlock = 1;
+$percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
+$percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
+
 
 //get course can not enrol
 $sqlCourseNotEnrol = 'select mc.id,
@@ -222,17 +239,6 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
-
-// Set session variables
-$_SESSION["courses_current"] = $courses_current;
-$_SESSION["courses_required"] = $courses_required;
-$_SESSION["courses_completed"] = $courses_completed;
-$_SESSION["totalCourse"] = count($courses);
-
-$countBlock = 1;
-$percentCompleted = intval(count($courses_completed) * 100 / count($courses));
-$percentStudying = intval(count($courses_current) * 100 / count($courses));
-
 
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
@@ -1120,7 +1126,7 @@ $_SESSION["allowCms"] = $allowCms;
                                               stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
                             a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?>%
+                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %
                                         </text>
                                     </svg>
                                 </div>
