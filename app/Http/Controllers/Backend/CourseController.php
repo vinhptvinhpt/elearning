@@ -357,6 +357,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserNeedInvite($request);
     }
 
+    public function apiUserNeedInviteToException(Request $request)
+    {
+        return $this->bussinessRepository->apiUserNeedInviteToException($request);
+    }
+
     public function apiEnrolUser(Request $request)
     {
         return $this->bussinessRepository->apiEnrolUser($request);

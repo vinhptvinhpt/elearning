@@ -287,7 +287,7 @@
     },
     methods: {
       getUserNeedEnrol(paged) {
-        axios.post('/api/course/user_need_invite', {
+        axios.post('/api/course/user_need_invite_to_exception', {
           page: paged || this.current,
           keyword: this.keyword,
           row: this.row,

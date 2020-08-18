@@ -516,6 +516,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
 
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
+    Route::post('/api/course/user_need_invite_to_exception', 'Backend\CourseController@apiUserNeedInviteToException');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
     Route::post('/api/course/user_course_exception', 'Backend\CourseController@apiUserCourseException');
     Route::post('/api/course/invite_user_to_course', 'Backend\CourseController@apiInviteUser');
