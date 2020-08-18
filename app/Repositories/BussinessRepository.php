@@ -1922,7 +1922,7 @@ class BussinessRepository implements IBussinessInterface
         if ($role_id) {
             $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
         }
-        
+
         $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
 
         $userNeedEnrol = $userNeedEnrol->paginate($row);
@@ -2017,6 +2017,69 @@ class BussinessRepository implements IBussinessInterface
                     ->whereRaw('tms_invitation.user_id = mdl_user.id');
             });
 
+        if ($keyword) {
+            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        if ($role_id) {
+            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
+        }
+
+        $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
+
+        $userNeedEnrol = $userNeedEnrol->paginate($row);
+        $total = ceil($userNeedEnrol->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $userNeedEnrol->currentPage(),
+            ],
+            'data' => $userNeedEnrol
+        ];
+
+        return response()->json($response);
+    }
+
+    public function apiUserNeedInviteToException(Request $request)
+    {
+        $this->courseCurrent_id = $request->input('course_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $role_id = $request->input('role_id');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'role_id' => 'number',
+            'keyword' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
+        $userNeedEnrol = DB::table('model_has_roles')
+            ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->where('mdl_user.deleted', '=', 0)
+            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
+            ->whereNotExists(function ($query) {
+                $query->select(DB::raw(1))
+                    ->from('tms_user_course_exception')
+                    ->where('course_id', '=', $this->courseCurrent_id)
+                    ->whereRaw('tms_user_course_exception.user_id = mdl_user.id');
+            });
         if ($keyword) {
             $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
                 $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
