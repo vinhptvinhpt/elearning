@@ -12,7 +12,7 @@
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
-                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung') }}</li>
+                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung_knl') }}</li>
                     </ol>
                 </nav>
             </div>
