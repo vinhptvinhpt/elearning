@@ -22,7 +22,7 @@ class SettingController extends Controller
         $this->deleteOldConfigs();
         //
         $data = [];
-        $configs = TmsConfigs::orderByRaw('FIELD(editor, "checkbox") DESC')->get();
+        $configs = TmsConfigs::whereNotIn('target', ['guideline'])->orderByRaw('FIELD(editor, "checkbox") DESC')->get();
         if (count($configs) != 0) {
             foreach ($configs as $config) {
                 $label = $this->getAttrLabel($config->target);
@@ -75,7 +75,8 @@ class SettingController extends Controller
                         'target' => $key,
                         'content' => $value,
                         'editor' => TmsConfigs::EDITOR_CHECKBOX,
-                        'created_at' => $today
+                        'created_at' => $today,
+                        'updated_at' => $today
                     );
                 }
                 TmsConfigs::insert($insert_configs);
@@ -84,6 +85,18 @@ class SettingController extends Controller
                 foreach ($stored_configs as $item) {
                     $configs[$item->target] = $item->content;
                 }
+            }
+            //check for create target guideline
+            $guide_line = TmsConfigs::where('target', '=', 'guideline')->get()->first();
+            if (is_null($guide_line)) {
+                $guide_line_insert = array(
+                    'target' => 'guideline',
+                    'content' => '',
+                    'editor' => TmsConfigs::EDITOR_TEXTAREA,
+                    'created_at' => $today,
+                    'updated_at' => $today
+                );
+                TmsConfigs::insert($guide_line_insert);
             }
         }
         return $configs;
