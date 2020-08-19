@@ -6,7 +6,7 @@
  * [VinhPT]
  */
 
-require_once(__DIR__ . '/../../../../config.php');
+require_once(__DIR__ . '/../config.php');
 require_once($CFG->dirroot . '/my/lib.php');
 
 require_login();
@@ -57,14 +57,13 @@ echo $OUTPUT->header();
         border-color: initial;
         border-image: initial;
         background-color: #fff;
-        overflow: scroll;
     }
 </style>
 <p></p>
 <?php if ($allowCms) { ?>
     <p align="right">
         <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px"
-                onclick="window.location.href='/elearning-easia/public/lms/my/edit_guideline.php'">Edit
+                onclick="window.location.href='elearning-easia/public/lms/my/edit_guideline.php'">Edit
         </button>
     </p>
 <?php } ?>
