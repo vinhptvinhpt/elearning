@@ -121,6 +121,8 @@ import SelfPresent from "./components/self-assessment/SelfPresentComponent";
 import SelfStatistic from "./components/self-assessment/SelfStatisticComponent";
 import SelfLMS from "./components/self-assessment/SelfLMSComponent";
 import ReportLogin from "./components/system/report/ReportLoginComponent";
+import SurveyResult from "./components/survey/SurveyResultComponent";
+import SurveyResultUser from "./components/survey/SurveyResultUserComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -891,12 +893,11 @@ const routes = [
         meta: {requiresAuth: false},
         children: [
             {
-                path: 'present/:survey_id/:user_id',
+                path: 'present/:survey_id',
                 component: SurveyLMS,
                 name: 'SurveyLMS',
                 props: (route) => ({
-                    survey_id: route.params.survey_id,
-                    user_id: route.params.user_id
+                    survey_id: route.params.survey_id
                 })
             },
             {
@@ -907,7 +908,23 @@ const routes = [
                     self_id: route.params.self_id
                 })
             },
-
+            {
+                path: 'viewresult/:survey_id',
+                component: SurveyResult,
+                name: 'SurveyResult',
+                props: (route) => ({
+                    survey_id: route.params.survey_id
+                })
+            },
+            {
+                path: 'result/:survey_id/:user_id',
+                component: SurveyResultUser,
+                name: 'SurveyResultUser',
+                props: (route) => ({
+                    survey_id: route.params.survey_id,
+                    user_id: route.params.user_id
+                })
+            },
         ]
     },
 

@@ -558,6 +558,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/survey/getlstsalerooms/{branch_id}', 'Backend\SurveyController@apiGetSaleRooms');
     Route::post('/api/survey/export_file', 'Backend\SurveyController@apiExportFile');
     Route::get('/downloadexcelsurvey/{type_file}', 'Backend\SurveyController@downloadExportSurvey');
+    Route::post('/api/survey/view_result', 'Backend\SurveyController@apiViewResultSurvey');
+    Route::post('/api/survey/list_user_result', 'Backend\SurveyController@apiGetListUserSurvey');
+
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
     Route::post('/education/user/list_teacher', 'Backend\EducationController@apiListUserTeacher');
@@ -779,7 +782,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
-
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020
