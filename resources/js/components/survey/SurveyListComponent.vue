@@ -140,6 +140,13 @@
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
 
+                                                <button :title="trans.get('keys.copy_link')" data-toggle="modal"
+                                                        data-target="#delete-ph-modal1"
+                                                        @click="getLink(sur.id)"
+                                                        class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2">
+                                                    <span class="btn-icon-wrap"><i class="fal fa-copy"></i></span>
+                                                </button>
+
                                                 <button :title="trans.get('keys.xoa')" data-toggle="modal"
                                                         data-target="#delete-ph-modal"
                                                         @click="deletePost(sur.id)"
@@ -169,12 +176,12 @@
 </template>
 
 <script>
-    //import vPagination from 'vue-plain-pagination'
+    import Ls from './../../services/ls'
     import datePicker from 'vue-bootstrap-datetimepicker'
 
     export default {
         components: {
-            //vPagination,
+            Ls,
             datePicker
         },
         data() {
@@ -219,21 +226,38 @@
             },
             onPageChange() {
                 let back = this.getParamsBackPage();
-                if(back == '1') {
-                  this.current = Number(sessionStorage.getItem('surveyPage'));
-                  this.row = Number(sessionStorage.getItem('surveyPageSize'));
-                  this.keyword = sessionStorage.getItem('surveyKeyWord');
+                if (back == '1') {
+                    this.current = Number(sessionStorage.getItem('surveyPage'));
+                    this.row = Number(sessionStorage.getItem('surveyPageSize'));
+                    this.keyword = sessionStorage.getItem('surveyKeyWord');
 
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                    sessionStorage.clear();
+                    this.$route.params.back_page = null;
                 }
                 this.getSurveys();
             },
+            getLink(id) {
+                let current_pos = this;
+                let obj = Ls.get('auth.user');
+                if (obj && obj !== 'undefined') {
+                    var user_info = JSON.parse(obj);
+                    this.domain = user_info.domain;
+                }
+
+                var $temp = $("<input>");
+
+                var url = this.domain + 'survey/present/' + id;
+                $("body").append($temp);
+                $temp.val(url).select();
+                document.execCommand("copy");
+                $temp.remove();
+                alert("Copied to clipboard");
+            },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+                return this.$route.params.back_page;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+                this.$route.params.back_page = value;
             },
             deletePost(id) {
                 sessionStorage.setItem('surveyPage', this.current);
@@ -252,8 +276,8 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                if(current_pos.surveys.length == 1){
-                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                if (current_pos.surveys.length == 1) {
+                                    current_pos.current = current_pos.current > 1 ? current_pos.current - 1 : 1;
                                 }
                                 current_pos.onPageChange();
 
@@ -275,9 +299,9 @@
             // this.getSurveys();
         },
         destroyed() {
-          sessionStorage.setItem('surveyPage', this.current);
-          sessionStorage.setItem('surveyPageSize', this.row);
-          sessionStorage.setItem('surveyKeyWord', this.keyword);
+            sessionStorage.setItem('surveyPage', this.current);
+            sessionStorage.setItem('surveyPageSize', this.row);
+            sessionStorage.setItem('surveyKeyWord', this.keyword);
         }
     }
 </script>

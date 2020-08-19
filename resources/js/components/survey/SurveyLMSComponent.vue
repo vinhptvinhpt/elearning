@@ -4,18 +4,6 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
 
-                    <!--                    <div class="row">-->
-                    <!--                        <div class="col-sm">-->
-                    <!--                            <div class="button-list">-->
-                    <!--                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
-                    <!--                                             class="btn-sm btn-danger">-->
-                    <!--                                    {{trans.get('keys.quay_lai')}}-->
-                    <!--                                </router-link>-->
-                    <!--                            </div>-->
-                    <!--                        </div>-->
-                    <!--                    </div>-->
-                    <!--                    <br/>-->
-
                     <h4 class="hk-sec-title">{{trans.get('keys.survey')}}: {{survey.code}} - {{survey.name}}</h4>
                     <div class="hk-sec-title" v-html="survey.description">
                     </div>
@@ -24,23 +12,23 @@
                         <div class="col-sm">
                             <div class="table-wrap">
                                 <div v-for="(question,index) in survey.questions">
-                                    <div v-if="question.type_question=='multiplechoice'">
+                                    <div v-if="question.type_question==='multiplechoice'">
                                         <multiple-choice :question="question" :index_question="index"
                                                          :question_answers="question_answers"></multiple-choice>
                                     </div>
-                                    <div v-else-if="question.type_question=='ddtotext'">
+                                    <div v-else-if="question.type_question==='ddtotext'">
                                         <d-d-to-text :question="question" :index_question="index"
                                                      :question_answers="question_answers"></d-d-to-text>
                                     </div>
-                                    <div v-else-if="question.type_question=='group'">
+                                    <div v-else-if="question.type_question==='group'">
                                         <group-question :question="question" :index_question="index"
                                                         :question_answers="question_answers"></group-question>
                                     </div>
-                                    <div v-else-if="question.type_question=='minmax'">
+                                    <div v-else-if="question.type_question==='minmax'">
                                         <min-max-question :question="question" :index_question="index"
                                                           :question_answers="question_answers"></min-max-question>
                                     </div>
-                                    <div v-else-if="question.type_question=='checkbox'">
+                                    <div v-else-if="question.type_question==='checkbox'">
                                         <checkbox-question :question="question" :index_question="index"
                                                            :question_answers="question_answers"></checkbox-question>
                                     </div>
@@ -50,10 +38,6 @@
                                 <button @click="submitAnswer()" type="button" class="btn btn-primary">
                                     {{trans.get('keys.gui')}}
                                 </button>
-                                <!--                                <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
-                                <!--                                             class="btn btn-secondary">-->
-                                <!--                                    {{trans.get('keys.huy')}}-->
-                                <!--                                </router-link>-->
                             </div>
                         </div>
                     </div>
@@ -64,7 +48,7 @@
 </template>
 
 <script>
-
+    import Ls from './../../services/ls'
     import MultipleChoice from "./template/MultipleChoiceComponent";
     import DDToText from "./template/DDToTextComponent";
     import GroupQuestion from "./template/GroupQuestionComponent";
@@ -72,8 +56,9 @@
     import CheckboxQuestion from "./template/CheckboxQuestionComponent"
 
     export default {
-        props: ['survey_id', 'user_id'],
+        props: ['survey_id'],
         components: {
+            Ls,
             MultipleChoice,
             DDToText,
             GroupQuestion,
@@ -104,11 +89,23 @@
             },
             submitAnswer() {
                 let current_pos = this;
+                let obj = Ls.get('auth.user');
+                let user_id = '';
+                if (obj && obj !== 'undefined') {
+                    var user_info = JSON.parse(obj);
+                    user_id = user_info.id;
+                }
+
+                if (user_id === '') {
+                    toastr['error'](current_pos.trans.get('keys.expired_session'), current_pos.trans.get('keys.that_bai'));
+                    return;
+                }
+
 
                 axios.post('/api/survey/submit_resultlms/' + this.survey_id, {
                     question_answers: this.question_answers,
                     ddtotext: this.survey,
-                    user_id: this.user_id
+                    user_id: user_id
                 })
                     .then(response => {
                         if (response.data.status) {
