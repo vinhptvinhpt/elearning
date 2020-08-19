@@ -24,6 +24,7 @@ $guide_line = array_values($DB->get_records_sql($sql))[0]->content;
 
 echo $OUTPUT->header();
 ?>
+
 <style>
     iframe, .content {
         width: 100%;
@@ -44,9 +45,7 @@ echo $OUTPUT->header();
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="/elearning-easia/node_modules/ckeditor4-vue/ckeditor.js"></script>
-<script src="/elearning-easia/node_modules/ckeditor4-vue/dist/ckeditor.js"></script>
-
+<script src="../../js/ckeditor.js"></script>
 <p></p>
 <div id="app">
     <div class="content mb-2">
@@ -58,16 +57,15 @@ echo $OUTPUT->header();
     </p>
 </div>
 
-<?php //echo $CFG->dirroot.'/../../'; ?>
 <script>
 
     Vue.use( CKEditor );
 
     var app = new Vue({
         el: '#app',
+        name: "Ckeditor",
         data: {
             editorConfig: {
-                // The configuration of the editor.
             },
             content: '',
             type: 'get',
@@ -118,6 +116,26 @@ echo $OUTPUT->header();
             this.getGuideLineContent();
         }
     });
+
+    CKEDITOR.editorConfig = function( config ) {
+        config.toolbarGroups = [
+            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
+            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
+            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
+            { name: 'forms', groups: [ 'forms' ] },
+            '/',
+            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
+            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
+            { name: 'links', groups: [ 'links' ] },
+            { name: 'insert', groups: [ 'insert' ] },
+            '/',
+            { name: 'styles', groups: [ 'styles' ] },
+            { name: 'colors', groups: [ 'colors' ] },
+            { name: 'tools', groups: [ 'tools' ] },
+            { name: 'others', groups: [ 'others' ] },
+            { name: 'about', groups: [ 'about' ] }
+        ];
+    };
 </script>
 
 
