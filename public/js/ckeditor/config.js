@@ -7,6 +7,9 @@ CKEDITOR.editorConfig = function( config ) {
   // Define changes to default configuration here. For example:
   config.language = 'en';
   // config.uiColor = '#AADC6E';
-  config.contentsCss = '../../../public/js/ckeditor/fonts.css';
+  //local
+  // config.contentsCss = '../../../public/js/ckeditor/fonts.css';
+  //server
+  config.contentsCss = '../../../js/ckeditor/fonts.css';
   config.font_names = 'Roboto;' + config.font_names;
 };
