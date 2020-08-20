@@ -1020,7 +1020,10 @@
         "thu_vien_nguon_cho_to_chuc": "Source organization code",
         "completed_competency_framework": "Completed Competency framework",
         "development": "Development mode",
-        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Select a code, system will detect latest code in its series and generate next code"
+        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Select a code, system will detect latest code in its series and generate next code",
+        "completed": "Completed",
+        "in_progressing": "In progressing",
+        "fail_course": "Fail"
     },
     "vi.keys": {
         "language": "",
@@ -2034,6 +2037,9 @@
         "thu_vien_nguon_cho_to_chuc": "Thư viện nguồn cho tổ chức cụ thể",
         "completed_competency_framework": "Khung năng lực đã hoàn thành",
         "development": "Chế độ Development",
-        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Chọn một thư viện trong dãy, hệ thống sẽ sinh mã tiếp theo mã cuối cùng của dãy đó"
+        "chon_mot_thu_vien_trong_day_he_thong_se_sinh_ma_tiep_theo_ma_cuoi_cung_cua_day": "Chọn một thư viện trong dãy, hệ thống sẽ sinh mã tiếp theo mã cuối cùng của dãy đó",
+        "completed": "Hoàn thành",
+        "in_progressing": "Đang học",
+        "fail_course": "Không hoàn thành"
     }
 }
