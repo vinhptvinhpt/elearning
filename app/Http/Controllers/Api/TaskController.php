@@ -2173,7 +2173,7 @@ class TaskController extends Controller
                 $hvp->json_content = json_encode($jsonData);
                 $hvp->filtered = json_encode($jsonData);
                 $hvp->save();
-                sleep(1);
+                usleep(200);
 
             }
 
@@ -2213,6 +2213,11 @@ class TaskController extends Controller
                         $jsonData['content'][$key] = $data_content;
                         usleep(100);
 
+                        $hvp = MdlHvp::findOrFail($id);
+                        $hvp->json_content = json_encode($jsonData);
+                        $hvp->filtered = json_encode($jsonData);
+                        $hvp->save();
+
                     }
                 } else if (isset($data_content['content']) && isset($data_content['content']['params'])
                     && isset($data_content['content']['params']['sources']) && isset($data_content['content']['params']['sources'][0])
@@ -2240,15 +2245,16 @@ class TaskController extends Controller
                         $jsonData['content'][$key] = $data_content;
                         usleep(100);
 
+                        $hvp = MdlHvp::findOrFail($id);
+                        $hvp->json_content = json_encode($jsonData);
+                        $hvp->filtered = json_encode($jsonData);
+                        $hvp->save();
+
                     }
                 }
             }
 
-            $hvp = MdlHvp::findOrFail($id);
-            $hvp->json_content = json_encode($jsonData);
-            $hvp->filtered = json_encode($jsonData);
-            $hvp->save();
-            sleep(1);
+            usleep(200);
         }
     }
 
