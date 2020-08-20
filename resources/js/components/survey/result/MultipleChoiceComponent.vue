@@ -9,19 +9,18 @@
             <div v-for="(ans_rs,index_rs) in question_answers" style="padding-left:30px;">
                 <div v-if="ans_rs.type_ques ==='multiplechoice'">
                     <div v-for="(ans,index) in question.question_data[0].answers">
-                        <div class="custom-control custom-radio custom-control-inline mb-2 radio-primary"
+                        <div style="display: inline-block; margin-bottom: 5px;"
                              v-if="ans_rs.ques_pr === question.id">
-                            <input type="radio" :id="'customRadio-'+ans.id"
+                            <input type="radio" :id="'customRadio-'+ans.id" style="display: inline-block;"
                                    :name="'customRadio-'+question.id+index_question"
                                    :value="ans.id" checked
-                                   v-if="question.question_data[0].id === ans_rs.ques_id && ans.id ===ans_rs.ans_id"
-                                   class="custom-control-input">
+                                   v-if="question.question_data[0].id === ans_rs.ques_id && ans.id ===ans_rs.ans_id">
 
                             <input type="radio" :id="'customRadio-'+ans.id"
+                                   style="display: inline-block;"
                                    :name="'customRadio-'+question.id+index_question"
-                                   :value="ans.id" v-else
-                                   class="custom-control-input">
-                            <label class="custom-control-label" :for="'customRadio-'+ans.id">{{ans.content}}</label>
+                                   :value="ans.id" v-else>
+                            <div style="display: inline-block; font-size: 16px; margin-left: 5px;">{{ans.content}}</div>
                         </div>
                     </div>
                 </div>
