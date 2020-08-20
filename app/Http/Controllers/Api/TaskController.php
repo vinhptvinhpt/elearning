@@ -2214,7 +2214,33 @@ class TaskController extends Controller
                         usleep(100);
 
                     }
+                } else if (isset($data_content['content']) && isset($data_content['content']['params'])
+                    && isset($data_content['content']['params']['sources']) && isset($data_content['content']['params']['sources'][0])
+                    && isset($data_content['content']['params']['sources'][0]['path'])
+                ) {
+                    $path = $data_content['content']['params']['sources'][0]['path'];
 
+                    if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                        $file_name = basename($path);
+
+                        $file_name_rp = str_replace('#', '?', $file_name);
+                        $arr_name = explode('?', $file_name_rp);
+
+                        $blob_name = $arr_name[0];
+                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+
+                        $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                        $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                        $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+                        $data_content['content']['params']['sources'][0]['path'] = $_blobUrl;
+
+
+                        $jsonData['content'][$key] = $data_content;
+                        usleep(100);
+
+                    }
                 }
             }
 
