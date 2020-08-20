@@ -5250,7 +5250,6 @@ class BussinessRepository implements IBussinessInterface
             $user_id = $request->input('user_id');
             $trainning_id = $request->input('trainning_id');
 
-
             $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
 
             StudentCertificate::create([
@@ -5260,11 +5259,16 @@ class BussinessRepository implements IBussinessInterface
                 'status' => 1,
                 'timecertificate' => time()
             ]);
-            $get_user = $listCourses = DB::table('tms_user_detail')
+
+            $training_program = TmsTrainningProgram::where('id', $trainning_id)->first();
+            $training_name =  isset($training_program) ? $training_program->name : '';
+
+            $get_user = DB::table('tms_user_detail')
                 ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
                 ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
                 ->where('mdl_user.id', '=', $user_id)->first();
-            $this->sendMail($get_user, $certificatecode);
+
+            $this->sendMail($get_user, $certificatecode, $training_name);
 
             usleep(10); //sleep tranh tinh trang query db lien tiep
             //insert du lieu lich su hoc tap
@@ -5385,9 +5389,15 @@ class BussinessRepository implements IBussinessInterface
 
 
     //thêm vào table TmsNotification để tự động cron và gửi
-    public function sendMail($user, $certificatecode)
+    public function sendMail($user, $certificate_code = '', $framework = '')
     {
         $data = array();
+
+        $content = array(
+            'certificate_code' => $certificate_code,
+            'competency_framework' => $framework,
+        );
+
         $data[] = array(
             'type' => TmsNotification::MAIL,
             'target' => TmsNotification::REMIND_CERTIFICATE,
@@ -5397,8 +5407,9 @@ class BussinessRepository implements IBussinessInterface
             'course_id' => 0,
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time()),
-            'content' => $certificatecode
+            'content' => json_encode($content, JSON_UNESCAPED_UNICODE)
         );
+
         $mail = TmsNotification::where([
             ['type', '=', TmsNotification::MAIL],
             ['target', '=', TmsNotification::REMIND_CERTIFICATE],
@@ -5407,7 +5418,7 @@ class BussinessRepository implements IBussinessInterface
         ])->first();
         try {
             if ($mail) {
-                $mail->content = $certificatecode;
+                $mail->content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 $mail->save();
             } else {
                 TmsNotification::insert($data);

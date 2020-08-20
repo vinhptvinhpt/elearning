@@ -1507,8 +1507,9 @@ function insert_single_notification($type, $sendto, $target, $course_id)
         'type' => $type,
         'sendto' => $sendto,
         'target' => $target,
-        'status_send' => Auth::user()->id ? Auth::user()->id : 0,
-        'course_id' => $course_id
+        'status_send' => TmsNotification::UN_SENT,
+        'course_id' => $course_id,
+        'createdby' => Auth::user()->id
     ]);
 
     insert_single_notification_log($tms_notif, TmsNotificationLog::CREATE_NOTIF);
