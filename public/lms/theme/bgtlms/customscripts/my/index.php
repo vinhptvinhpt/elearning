@@ -1169,7 +1169,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 </div>
                                 <div class="info-statistic__completed-courses">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=other">
-                                        <div class="text-course">Other courses</div>
+                                        <div class="text-course">Optional courses</div>
                                         <div class="text-number"><?php echo count($coursesSuggest); ?></div>
                                     </a>
                                 </div>
@@ -1529,7 +1529,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
+                                        <div class="col-6 title"><h2>Optional <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a
                                                     href="lms/course/index.php?progress=1&type=other">Show All</a>

@@ -12,7 +12,7 @@
     <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
     <meta name="ssls.validate" content="false"/>
 
-    <title>Đào tạo trực tuyến nhân viên bán hàng</title>
+    <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
     <!-- Bootstrap core CSS -->
     <link href="/design/css/bootstrap.min.css" rel="stylesheet">
     <link href="/assets/dist/css/font-awesome.all.min.css" rel="stylesheet">

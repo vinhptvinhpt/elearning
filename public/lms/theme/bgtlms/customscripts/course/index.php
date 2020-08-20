@@ -806,7 +806,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <template v-else-if="category == 'required'">
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
-                            <div v-if="course.stt > 1 || (competency_exists.includes(course.training_id))">
+                            <div v-if="course.sttShow > 1 || (competency_exists.includes(course.training_id))">
                                 <div class="row course-block course-block-disable">
                                     <div class="col-5 course-block__image"
                                          v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
