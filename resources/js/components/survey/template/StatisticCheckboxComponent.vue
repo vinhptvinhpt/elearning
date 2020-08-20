@@ -52,7 +52,6 @@
         },
         methods: {
             getDataChartQuestion() {
-                console.log(JSON.stringify(this.question));
                 var count_ans = this.question.lstAnswers.length;
                 var data_ans = [];
                 if (count_ans > 0) {

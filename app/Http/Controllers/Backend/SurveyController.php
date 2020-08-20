@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\SurveyRepository;
+use App\TmsQuestionData;
+use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,10 +18,12 @@ use App\Repositories\BussinessRepository;
 class SurveyController extends Controller
 {
     private $bussinessRepository;
+    private $surveyRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository)
+    public function __construct(BussinessRepository $bussinessRepository, SurveyRepository $surveyRepository)
     {
         $this->bussinessRepository = $bussinessRepository;
+        $this->surveyRepository = $surveyRepository;
     }
 
     #region survey
@@ -243,4 +248,22 @@ class SurveyController extends Controller
 
         return Storage::download($filename);
     }
+
+    public function apiViewResultSurvey(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        $survey_id = $request->input('survey_id');
+        return $this->surveyRepository->resultSurvey($survey_id, $user_id);
+    }
+
+    public function apiGetListUserSurvey(Request $request)
+    {
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $survey_id = $request->input('survey_id');
+        $org_id = $request->input('org_id');
+
+        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id);
+    }
+
 }
