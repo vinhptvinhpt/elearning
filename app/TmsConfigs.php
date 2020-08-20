@@ -16,6 +16,7 @@ class TmsConfigs extends Model
     const TARGET_NOTIFICATION_SERVER_KEY = 'notification_server_key';
     const TARGET_FIREBASE_TOPIC = 'topic_title';
     const DEVELOPMENT = 'development';
+    const GUIDELINE = 'guideline';
 
     public static function defaultNotificationConfig() {
         return array(

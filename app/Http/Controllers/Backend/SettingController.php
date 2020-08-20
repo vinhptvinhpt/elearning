@@ -58,7 +58,8 @@ class SettingController extends Controller
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
             TmsNotification::ENROL => TmsConfigs::ENABLE,
-            TmsNotification::DEVELOPMENT => TmsConfigs::ENABLE
+            TmsNotification::DEVELOPMENT => TmsConfigs::ENABLE,
+            TmsConfigs::GUIDELINE => TmsConfigs::ENABLE
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
