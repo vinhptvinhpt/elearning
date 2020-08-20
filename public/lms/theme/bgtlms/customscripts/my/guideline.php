@@ -58,6 +58,8 @@ echo $OUTPUT->header();
         border-image: initial;
         background-color: #fff;
         overflow: scroll;
+        padding: 2%;
+        overflow-wrap: break-word;
     }
 </style>
 <p></p>

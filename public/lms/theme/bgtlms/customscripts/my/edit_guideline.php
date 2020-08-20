@@ -45,11 +45,11 @@ echo $OUTPUT->header();
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="../../js/ckeditor.js"></script>
+<script src="../../js/ckeditor/ckeditor.js"></script>
 <p></p>
 <div id="app">
     <div class="content mb-2">
-        <ckeditor v-model="content" :config="editorConfig"></ckeditor>
+        <ckeditor v-model="content" :config="editorConfig" :editor-url="editorUrl"></ckeditor>
     </div>
     <p align="right">
         <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px"
@@ -65,6 +65,7 @@ echo $OUTPUT->header();
         el: '#app',
         name: "Ckeditor",
         data: {
+            editorUrl: "<?php echo $CFG->wwwtmsbase; ?>js/ckeditor/ckeditor-full.js",
             editorConfig: {
             },
             content: '',
@@ -117,25 +118,6 @@ echo $OUTPUT->header();
         }
     });
 
-    CKEDITOR.editorConfig = function( config ) {
-        config.toolbarGroups = [
-            { name: 'document', groups: [ 'mode', 'document', 'doctools' ] },
-            { name: 'clipboard', groups: [ 'clipboard', 'undo' ] },
-            { name: 'editing', groups: [ 'find', 'selection', 'spellchecker', 'editing' ] },
-            { name: 'forms', groups: [ 'forms' ] },
-            '/',
-            { name: 'basicstyles', groups: [ 'basicstyles', 'cleanup' ] },
-            { name: 'paragraph', groups: [ 'list', 'indent', 'blocks', 'align', 'bidi', 'paragraph' ] },
-            { name: 'links', groups: [ 'links' ] },
-            { name: 'insert', groups: [ 'insert' ] },
-            '/',
-            { name: 'styles', groups: [ 'styles' ] },
-            { name: 'colors', groups: [ 'colors' ] },
-            { name: 'tools', groups: [ 'tools' ] },
-            { name: 'others', groups: [ 'others' ] },
-            { name: 'about', groups: [ 'about' ] }
-        ];
-    };
 </script>
 
 
