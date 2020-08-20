@@ -940,6 +940,14 @@ $_SESSION["allowCms"] = $allowCms;
         }
     }
 
+    @media screen and (max-width: 1920px) {
+        .info-user .avatar img {
+            width: 105px !important;
+            height: 105px !important;
+            bottom: 26% !important;
+        }
+    }
+
     @media screen and (max-width: 1024px) {
         .block-color {
             width: 80px !important;
