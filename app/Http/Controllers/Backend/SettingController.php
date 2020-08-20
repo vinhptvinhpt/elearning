@@ -86,18 +86,6 @@ class SettingController extends Controller
                     $configs[$item->target] = $item->content;
                 }
             }
-            //check for create target guideline
-            $guide_line = TmsConfigs::where('target', '=', 'guideline')->get()->first();
-            if (is_null($guide_line)) {
-                $guide_line_insert = array(
-                    'target' => 'guideline',
-                    'content' => '',
-                    'editor' => TmsConfigs::EDITOR_TEXTAREA,
-                    'created_at' => $today,
-                    'updated_at' => $today
-                );
-                TmsConfigs::insert($guide_line_insert);
-            }
         }
         return $configs;
     }
