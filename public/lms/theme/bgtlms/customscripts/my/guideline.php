@@ -37,7 +37,7 @@ $getPermissions = $DB->get_records_sql($sqlCheckPermission);
 $allowCms = false;
 $permissions = array_values($getPermissions);
 foreach ($permissions as $permission) {
-    if (!in_array($permission->name, ['student', 'employee'])) {
+    if (in_array($permission->name, ['admin', 'root'])) {
         $allowCms = true;
         break;
     }
