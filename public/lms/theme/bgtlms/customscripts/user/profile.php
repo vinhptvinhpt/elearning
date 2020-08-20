@@ -483,11 +483,14 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="info-detail">
                     <ul>
-                        <li>Position: {{ user.position }}</li>
-                        <li>Department: {{ user.departmentname }}</li>
+                        <li v-if="user.position">Position: {{ user.position }}</li>
+                        <li v-else>Position: Not yet update</li>
+                        <li v-if="user.departmentname">Department: {{ user.departmentname }}</li>
+                        <li v-else>Department: Not yet update</li>
                         <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
                         <li v-else>Experience: Under 1 year</li>
-                        <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
+                        <li v-if="linemanagers.length > 0">Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
+                        <li v-else>Line Manager: Not yet update</li>
                         <li>Company: Easia Travel</li>
                     </ul>
                 </div>
