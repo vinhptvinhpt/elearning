@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\CourseCompletion;
 use App\CourseFinal;
-use App\Http\Requests\Request;
+use App\Http\Controllers\Controller;
 use App\Mail\CourseSendMail;
 use App\MdlCourse;
 use App\MdlCourseCompletions;
@@ -25,12 +25,10 @@ use App\TmsSaleRoomUser;
 use App\TmsTrainningComplete;
 use App\TmsTrainningCourse;
 use App\TmsTrainningGroup;
+use App\TmsTrainningProgram;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
-use App\TmsTrainningProgram;
-use App\User;
 use Carbon\Carbon;
-use App\Http\Controllers\Controller;
 use Horde\Socket\Client\Exception;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
@@ -1605,13 +1603,15 @@ class TaskController extends Controller
                 $org_query = DB::raw($org_query);
 
                 //raw query lay so user nam trong role
-                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
-                                join (
-                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
-                                ) as ttgg on ttgg.trainning_id = ttp.id
-                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
-                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
-                                ) ttp_r';
+//                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
+//                                join (
+//                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
+//                                ) as ttgg on ttgg.trainning_id = ttp.id
+//                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
+//                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
+//                                ) ttp_r';
+                $role_query = '(SELECT u.id as user_id from mdl_user u 
+                                join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = '.$role_id.') ttp_r';
 
                 $role_query = DB::raw($role_query);
 
@@ -1634,7 +1634,6 @@ class TaskController extends Controller
                         $queryItem['created_at'] = Carbon::now();
                         $queryItem['updated_at'] = Carbon::now();
 
-
                         array_push($queryArray, $queryItem);
                         $num++;
 
@@ -1651,20 +1650,19 @@ class TaskController extends Controller
                 //endregion
             } else {
                 if ($trainning->type == 0) {
+
+                    $this->trainning_id = $trainning->trainning_id;
                     //region Nhóm quyền
-                    $users = DB::table('tms_traninning_programs as ttp')
-                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
-                        })
-                        ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+                    //lay danh sach nguoi dung thuoc nhom quyen ko nam trong KNL
+                    $users = DB::table('mdl_user as u')
+                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
                         ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                            $join->on('ttu.trainning_id', '=', 'ttp.id');
+                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
                             $join->on('ttu.user_id', '=', 'mhr.model_id');
                         })
-                        ->where('ttp.deleted', '=', 0)
-                        ->whereNotNull('ttg.group_id')
-                        ->whereNull('ttu.id')->groupBy('mhr.model_id')
-                        ->pluck('mhr.model_id as user_id');
+                        ->whereNull('ttu.id')
+                        ->where('mhr.role_id', '=', $trainning->group_id)
+                        ->pluck('u.id');
 
                     if (count($users) > 0) {
                         foreach ($users as $user) {
@@ -1688,6 +1686,7 @@ class TaskController extends Controller
                         $num = 0;
                         $queryArray = [];
                     }
+
 
                     //endregion
                 } else {
@@ -1753,56 +1752,58 @@ class TaskController extends Controller
     }
 
     //them user vao KNL trong TH user duoc tao moi, cron chay theo thoi gian
+    public $trainning_id;
+
     function autoAddTrainningUserCron()
     {
         $queryArray = [];
         $num = 0;
         $limit = 300;
         //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
-        $trainningArray = DB::table('tms_traninning_programs as ttp')
-            ->select('ttp.id', 'ttg.id as ttg_id')
-            ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
-            ->where('ttp.deleted', '=', 0)
-            ->whereNull('ttg.id')
-            ->pluck('ttp.id');
-
-
-        if (!empty($trainningArray)) {
-            foreach ($trainningArray as $trainning) {
-                $leftjoin = '(SELECT ttu.trainning_id,ttu.user_id
-                    FROM tms_traninning_users ttu
-                     where ttu.trainning_id =' . $trainning . ') as ttpp';
-                $leftjoin = DB::raw($leftjoin);
-                $users = DB::table('tms_user_detail as tud')
-                    ->select('ttpp.trainning_id', 'tud.user_id')
-                    ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
-                    ->where('tud.deleted', '0', 0)
-                    ->whereNull('ttpp.trainning_id')
-                    ->pluck('tud.user_id');
-                if (!empty($users)) {
-                    foreach ($users as $user) {
-                        $queryItem = [];
-                        $queryItem['trainning_id'] = $trainning;
-                        $queryItem['user_id'] = $user;
-                        $queryItem['created_at'] = Carbon::now();
-                        $queryItem['updated_at'] = Carbon::now();
-
-                        array_push($queryArray, $queryItem);
-                        $num++;
-                        if ($num >= $limit) {
-                            TmsTrainningUser::insert($queryArray);
-                            $num = 0;
-                            $queryArray = [];
-                        }
-                    }
-                }
-            }
-            TmsTrainningUser::insert($queryArray);
-            $num = 0;
-            $queryArray = [];
-        }
-
-        sleep(1);
+//        $trainningArray = DB::table('tms_traninning_programs as ttp')
+//            ->select('ttp.id', 'ttg.id as ttg_id')
+//            ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
+//            ->where('ttp.deleted', '=', 0)
+//            ->whereNull('ttg.id')
+//            ->pluck('ttp.id');
+//
+//
+//        if (!empty($trainningArray)) {
+//            foreach ($trainningArray as $trainning) {
+//                $leftjoin = '(SELECT ttu.trainning_id,ttu.user_id
+//                    FROM tms_traninning_users ttu
+//                     where ttu.trainning_id =' . $trainning . ') as ttpp';
+//                $leftjoin = DB::raw($leftjoin);
+//                $users = DB::table('tms_user_detail as tud')
+//                    ->select('ttpp.trainning_id', 'tud.user_id')
+//                    ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
+//                    ->where('tud.deleted', '0', 0)
+//                    ->whereNull('ttpp.trainning_id')
+//                    ->pluck('tud.user_id');
+//                if (!empty($users)) {
+//                    foreach ($users as $user) {
+//                        $queryItem = [];
+//                        $queryItem['trainning_id'] = $trainning;
+//                        $queryItem['user_id'] = $user;
+//                        $queryItem['created_at'] = Carbon::now();
+//                        $queryItem['updated_at'] = Carbon::now();
+//
+//                        array_push($queryArray, $queryItem);
+//                        $num++;
+//                        if ($num >= $limit) {
+//                            TmsTrainningUser::insert($queryArray);
+//                            $num = 0;
+//                            $queryArray = [];
+//                        }
+//                    }
+//                }
+//            }
+//            TmsTrainningUser::insert($queryArray);
+//            $num = 0;
+//            $queryArray = [];
+//        }
+//
+//        sleep(1);
         //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
         //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
         $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
@@ -1839,13 +1840,15 @@ class TaskController extends Controller
                 $org_query = DB::raw($org_query);
 
                 //raw query lay so user nam trong role
-                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
-                                join (
-                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
-                                ) as ttgg on ttgg.trainning_id = ttp.id
-                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
-                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
-                                ) ttp_r';
+//                $role_query = '(SELECT ttp.id as trainning_id, mhr.model_id as user_id FROM tms_traninning_programs ttp
+//                                join (
+//                                select ttg.trainning_id, ttg.group_id from tms_trainning_groups ttg where  ttg.type = 0
+//                                ) as ttgg on ttgg.trainning_id = ttp.id
+//                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
+//                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
+//                                ) ttp_r';
+                $role_query = '(SELECT u.id as user_id from mdl_user u 
+                                join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = '.$role_id.') ttp_r';
 
                 $role_query = DB::raw($role_query);
 
@@ -1884,20 +1887,19 @@ class TaskController extends Controller
                 //endregion
             } else {
                 if ($trainning->type == 0) {
+
+                    $this->trainning_id = $trainning->trainning_id;
                     //region Nhóm quyền
-                    $users = DB::table('tms_traninning_programs as ttp')
-                        ->leftJoin('tms_trainning_groups as ttg', function ($join) {
-                            $join->on('ttg.trainning_id', '=', 'ttp.id')->where('ttg.type', '=', 0);
-                        })
-                        ->leftJoin('model_has_roles as mhr', 'mhr.role_id', '=', 'ttg.group_id')
+                    //lay danh sach nguoi dung thuoc nhom quyen ko nam trong KNL
+                    $users = DB::table('mdl_user as u')
+                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
                         ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                            $join->on('ttu.trainning_id', '=', 'ttp.id');
+                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
                             $join->on('ttu.user_id', '=', 'mhr.model_id');
                         })
-                        ->where('ttp.deleted', '=', 0)
-                        ->whereNotNull('ttg.group_id')
-                        ->whereNull('ttu.id')->groupBy('mhr.model_id')
-                        ->pluck('mhr.model_id as user_id');
+                        ->whereNull('ttu.id')
+                        ->where('mhr.role_id', '=', $trainning->group_id)
+                        ->pluck('u.id');
 
                     if (count($users) > 0) {
                         foreach ($users as $user) {
@@ -1921,6 +1923,7 @@ class TaskController extends Controller
                         $num = 0;
                         $queryArray = [];
                     }
+
 
                     //endregion
                 } else {
