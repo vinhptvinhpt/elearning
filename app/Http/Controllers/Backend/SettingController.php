@@ -83,4 +83,54 @@ class SettingController extends Controller
             return 'success';
         }
     }
+
+    function getAttrLabel($attr)
+    {
+        $label = '';
+        switch ($attr) {
+            case TmsNotification::ENROL:
+                $label = __("tham_gia_khoa_hoc");
+                break;
+            case TmsNotification::ASSIGNED_COURSE:
+                $label = __('assigned_course');
+                break;
+            case TmsNotification::ASSIGNED_COMPETENCY:
+                $label = __('assigned_competency');
+                break;
+            case TmsNotification::SUGGEST_OPTIONAL_COURSE:
+                $label = __('suggest_optional_course');
+                break;
+            case TmsNotification::REMIND_EXAM:
+                $label = __('remind_exam');
+                break;
+            case TmsNotification::INVITATION_OFFLINE_COURSE:
+                $label = __('invitation_offline_course');
+                break;
+            case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
+                $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
+                break;
+            case TmsNotification::FORGOT_PASSWORD:
+                $label = __('quen_mat_khau');
+                break;
+            case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
+                $label = __('firebase_server_key');
+                break;
+            case TmsConfigs::TARGET_FIREBASE_TOPIC:
+                $label = __('firebase_topic');
+                break;
+            case TmsNotification::INVITE_STUDENT:
+                $label = __('invite_student');
+                break;
+            case TmsNotification::COMPLETED_FRAME:
+                $label = __('completed_competency_framework');
+                break;
+            case TmsNotification::DEVELOPMENT:
+                $label = __('development');
+                break;
+            default:
+                $label = $attr;
+                break;
+        }
+        return $label;
+    }
 }

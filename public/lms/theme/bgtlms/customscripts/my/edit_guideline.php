@@ -15,7 +15,7 @@ global $DB, $USER;
 $params = array();
 $PAGE->set_context($context);
 $PAGE->set_heading($header);
-$PAGE->set_title(get_string('guideline'));
+$PAGE->set_title(get_string('edit_guideline'));
 //echo $CFG->dirroot.'/../../';
 //die;
 //
@@ -33,14 +33,6 @@ echo $OUTPUT->header();
     .cke_contents{
         height: calc(100vh - 100px) !important;
     }
-
-    /*.content {*/
-    /*    border-width: 2px;*/
-    /*    border-style: inset;*/
-    /*    border-color: initial;*/
-    /*    border-image: initial;*/
-    /*    background-color: #fff;*/
-    /*}*/
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

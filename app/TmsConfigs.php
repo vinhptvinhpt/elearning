@@ -17,6 +17,7 @@ class TmsConfigs extends Model
     const TARGET_NOTIFICATION_SERVER_KEY = 'notification_server_key';
     const TARGET_FIREBASE_TOPIC = 'topic_title';
     const DEVELOPMENT = 'development';
+    const GUIDELINE = 'guideline';
 
     const TYPE_NOTIFICATION = 'notification';
     const TYPE_SYSTEM = 'system';
@@ -40,6 +41,7 @@ class TmsConfigs extends Model
             TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY => TmsConfigs::EDITOR_TEXTAREA,
             TmsConfigs::TARGET_FIREBASE_TOPIC => TmsConfigs::EDITOR_TEXT,
             TmsConfigs::DEVELOPMENT => TmsConfigs::EDITOR_CHECKBOX,
+            TmsConfigs::GUIDELINE => TmsConfigs::EDITOR_TEXTAREA
         );
     }
 
@@ -65,6 +67,7 @@ class TmsConfigs extends Model
             TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY => '',
             TmsConfigs::TARGET_FIREBASE_TOPIC => '',
             TmsConfigs::DEVELOPMENT => TmsConfigs::ENABLE,
+            TmsConfigs::GUIDELINE => ''
         );
     }
 
@@ -150,7 +153,10 @@ class TmsConfigs extends Model
 
             foreach ($stored_configs as $item) {
                 //Hide firebase server key and firebase topic
-                if ($item->target == TmsConfigs::TARGET_FIREBASE_TOPIC || $item->target == TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY) {
+                if ($item->target == TmsConfigs::TARGET_FIREBASE_TOPIC
+                    || $item->target == TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY
+                    || $item->target == TmsConfigs::GUIDELINE
+                ) {
                     continue;
                 }
                 $return_configs[] = $item;
@@ -176,7 +182,6 @@ class TmsConfigs extends Model
             case TmsNotification::FORGOT_PASSWORD:
                 $label = __('quen_mat_khau');
                 break;
-
             case TmsNotification::INVITE_STUDENT:
                 $label = __('invitation_offline_course');
                 break;
@@ -186,8 +191,6 @@ class TmsConfigs extends Model
             case TmsNotification::REMIND_EXAM:
                 $label = __('remind_exam');
                 break;
-
-
             case TmsNotification::COMPLETED_FRAME:
                 $label = __('chung_chi_hoan_thanh');
                 break;
@@ -197,7 +200,6 @@ class TmsConfigs extends Model
             case TmsNotification::REQUEST_MORE_ATTEMPT:
                 $label = __('request_more_attempt');
                 break;
-
             //System settings
             case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
                 $label = __('firebase_server_key');
@@ -208,7 +210,6 @@ class TmsConfigs extends Model
             case TmsConfigs::DEVELOPMENT:
                 $label = __('development');
                 break;
-
             default:
                 $label = $attr;
                 break;
