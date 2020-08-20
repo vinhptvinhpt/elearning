@@ -377,5 +377,6 @@
     "completed_competency": "Completed Competency",
     "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Notice student is enrolled in the course",
     "completed_competency_framework": "Completed Competency framework",
-    "development": "Development"
+    "development": "Development",
+    "request_more_attempt": "Request more attempt"
 }

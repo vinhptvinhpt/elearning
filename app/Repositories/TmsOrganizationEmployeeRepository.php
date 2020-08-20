@@ -49,6 +49,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $list = $list->whereHas('user', function($q) use($keyword) {
                 // Query the name field in status table
                 $q->where('fullname', 'like', '%' . $keyword . '%');
+                $q->orWhere('email', 'like', '%' . $keyword . '%');
             });
         }
 

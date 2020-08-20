@@ -75,6 +75,9 @@ Route::get('/cron/mail/insertRemindUC', 'Api\MailController@insertRemindUpcoming
 Route::get('/cron/mail/insertRemindAccess', 'Api\MailController@insertRemindAccess')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 //08142020
 Route::get('/cron/mail/insertEnrolCompetency', 'Api\MailController@insertEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+//08192020
+Route::get('/cron/mail/insertRequestMoreAttempt', 'Api\MailController@insertRequestMoreAttempt');
+
 
 //Clear mail
 Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->middleware(['App\Http\Middleware\CheckToken']); //every week

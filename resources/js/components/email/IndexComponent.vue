@@ -58,22 +58,6 @@
                                                     </router-link>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td>{{ source_data.length + 1 }}</td>
-                                                <td>
-                                                    <router-link
-                                                            :to="{ name: 'EmailTemplateDetail', params: { name_file: 'forgot_password' }}">
-                                                        {{trans.get('keys.quen_mat_khau')}}
-                                                    </router-link>
-                                                </td>
-                                                <td class="text-center">
-                                                    <router-link :title="trans.get('keys.sua')"
-                                                                 class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                                 :to="{ name: 'EmailTemplateDetail', params: { name_file: 'forgot_password' }}">
-                                                        <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
-                                                    </router-link>
-                                                </td>
-                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>
