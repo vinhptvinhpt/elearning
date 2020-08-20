@@ -19,13 +19,12 @@ class SettingController extends Controller
     public function apiListSetting()
     {
         //check and insert development in db tms_configs
-        $this->deleteOldConfigs();
-        //
         $data = [];
-        $configs = TmsConfigs::whereNotIn('target', ['guideline'])->orderByRaw('FIELD(editor, "checkbox") DESC')->get();
+        TmsConfigs::initConfigs(TmsConfigs::TYPE_SYSTEM);
+        $configs = TmsConfigs::initConfigs(TmsConfigs::TYPE_SYSTEM);
         if (count($configs) != 0) {
             foreach ($configs as $config) {
-                $label = $this->getAttrLabel($config->target);
+                $label = TmsConfigs::getAttrLabel($config->target);
                 $config->label = $label;
                 $data[] = $config;
             }
@@ -113,7 +112,7 @@ class SettingController extends Controller
         if (!empty($validates)) {
             $error_string_arr = [];
             foreach ($validates as $validate) {
-                $error_string_arr[] = $this->getAttrLabel($validate);
+                $error_string_arr[] = TmsConfigs::getAttrLabel($validate);
             }
             $error_string = implode(', ', $error_string_arr);
             return $error_string;

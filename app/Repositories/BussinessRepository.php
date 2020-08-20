@@ -2299,7 +2299,8 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
-    public function apiEnrolUserException(Request $request){
+    public function apiEnrolUserException(Request $request)
+    {
         self::apiInviteUser($request);
         $response = new ResponseModel();
         try {
@@ -2360,7 +2361,8 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
-    public function  apiRemoveUserException(Request $request){
+    public function apiRemoveUserException(Request $request)
+    {
         self::apiRemoveInviteUser($request);
         $response = new ResponseModel();
         try {
@@ -6800,6 +6802,8 @@ class BussinessRepository implements IBussinessInterface
 
             \DB::beginTransaction();
 
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', Auth::user()->id)->delete();
+
             $count_multi = count($question_answers);
 
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
@@ -6885,6 +6889,8 @@ class BussinessRepository implements IBussinessInterface
             $user_id = $request->input('user_id');
 
             \DB::beginTransaction();
+
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->delete();
 
             $count_multi = count($question_answers);
 
