@@ -229,18 +229,18 @@ class MailController extends Controller
             $turn_on_simple[] = TmsNotification::ENROL;
             $turn_on += 1;
         }
-        if ($configs[TmsNotification::QUIZ_COMPLETED] == 'enable') {
-            $turn_on_simple[] = TmsNotification::QUIZ_COMPLETED;
-            $turn_on += 1;
-        }
-        if ($configs[TmsNotification::QUIZ_START] == 'enable') {
-            $turn_on_simple[] = TmsNotification::QUIZ_START;
-            $turn_on += 1;
-        }
-        if ($configs[TmsNotification::QUIZ_END] == 'enable') {
-            $turn_on_complex[] = TmsNotification::QUIZ_END;
-            $turn_on += 1;
-        }
+//        if ($configs[TmsNotification::QUIZ_COMPLETED] == 'enable') {
+//            $turn_on_simple[] = TmsNotification::QUIZ_COMPLETED;
+//            $turn_on += 1;
+//        }
+//        if ($configs[TmsNotification::QUIZ_START] == 'enable') {
+//            $turn_on_simple[] = TmsNotification::QUIZ_START;
+//            $turn_on += 1;
+//        }
+//        if ($configs[TmsNotification::QUIZ_END] == 'enable') {
+//            $turn_on_complex[] = TmsNotification::QUIZ_END;
+//            $turn_on += 1;
+//        }
 
         if ($turn_on != 0) {
             $lstNotif = TmsNotification::where('status_send', \App\TmsNotification::UN_SENT)
@@ -281,7 +281,6 @@ class MailController extends Controller
 //                ->whereIn('tms_nofitications.course_id', function ($query) {
 //                    $query->select('id')->from('mdl_course');
 //                })
-
                 ->select(
                     'tms_nofitications.id',
                     'tms_nofitications.target',
@@ -417,8 +416,8 @@ class MailController extends Controller
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('d/m/Y', strtotime($itemNotif->startdate)),
-                                    date('d/m/Y', strtotime($itemNotif->enddate)),
+                                    date('d/m/Y', $itemNotif->startdate),
+                                    date('d/m/Y', $itemNotif->enddate),
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
@@ -852,8 +851,6 @@ class MailController extends Controller
             ->toArray();
     }
 
-
-
 //Send email remind certificate
 //Notification record created by Tho
 //Checked ok 2020 March 24
@@ -910,15 +907,18 @@ class MailController extends Controller
                                 '',
                                 $itemNotif->content
                             ));
+
+                            $decoded_content = json_decode($itemNotif->content);
+
                             $object_content = array(
                                 'object_id' => '',
-                                'object_name' => '',
-                                'object_type' => '',
+                                'object_name' => $decoded_content->competency_framework,
+                                'object_type' => 'training',
                                 'parent_id' => '',
                                 'parent_name' => '',
                                 'start_date' => '',
                                 'end_date' => '',
-                                'code' => $itemNotif->content,
+                                'code' => $decoded_content->certificate_code,
                                 'room' => '',
                                 'grade' => '',
                             );
@@ -2048,7 +2048,7 @@ class MailController extends Controller
             $flag = Cache::get('mail_development_mode');
             $mail_development_mode = $flag;
         } else {
-            $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
+            $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
             //Set development_flag
             if (isset($getDevelopment)) {
                 if ($getDevelopment->content = 'enable') {
