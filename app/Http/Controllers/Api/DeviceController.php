@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\TmsDevice;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 
 class DeviceController extends Controller
 {
