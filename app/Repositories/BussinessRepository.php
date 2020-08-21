@@ -208,11 +208,13 @@ class BussinessRepository implements IBussinessInterface
 
             //Số học viên hoàn thành khóa học
             $completed_student = CourseCompletion::where("course_completion.timecompleted", ">=", $start_time)
-                ->where("course_completion.timecompleted", "<=",  $end_time);
+                ->where("course_completion.timecompleted", "<=",  $end_time)
+                ->join("mdl_user","course_completion.userid","=","mdl_user.id");
 
             //Số học viên đang học
             $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
-                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time);
+                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
+                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
 
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
@@ -220,6 +222,7 @@ class BussinessRepository implements IBussinessInterface
                 ->where("mcmc.timemodified", "<=",  $end_time)
                 ->where("mcmc.completionstate","=",3) //state fail
                 ->join('mdl_course_modules as mcm','mcm.id','=','mcmc.coursemoduleid')
+                ->join("mdl_user","mcmc.userid","=","mdl_user.id")
                 ->where('mcm.module','=',16);//quiz
             if($organization_id > 0){
                 $completed_student = $completed_student
@@ -253,7 +256,7 @@ class BussinessRepository implements IBussinessInterface
             $completed_student = $completed_student
                 ->select(
                     DB::raw("date_format(from_unixtime(course_completion.timecompleted),'%c/%y') as mthyr"),
-                    DB::raw('count(DISTINCT userid) as total')
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
@@ -275,7 +278,7 @@ class BussinessRepository implements IBussinessInterface
             $in_progress_student = $in_progress_student
                 ->select(
                     DB::raw("date_format(from_unixtime(mdl_user_enrolments.timecreated),'%c/%y') as mthyr"),
-                    DB::raw('count(DISTINCT userid) as total')
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
@@ -296,7 +299,7 @@ class BussinessRepository implements IBussinessInterface
             $fail_student = $fail_student
                 ->select(
                     DB::raw("date_format(from_unixtime(mcmc.timemodified),'%c/%y') as mthyr"),
-                    DB::raw('count(DISTINCT userid) as total')
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
