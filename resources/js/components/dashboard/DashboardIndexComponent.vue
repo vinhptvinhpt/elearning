@@ -26,6 +26,21 @@
 <!--                                    <input type="date" id="inputStart" v-model="startdate" class="form-control" @change="listData()">&nbsp;<input type="date" id="inputEnd" v-model="enddate" class="form-control" @change="listData()">-->
                                 </div>
                             </div>
+                            <div class="hk-row justify-content-center">
+                              <div class="col-6">
+                                <treeselect v-model="organization_id"
+                                            :multiple="false" :options="optionsOrganize"
+                                            @input="listData()"/>
+                              </div>
+                              <div class="col-6">
+                                <select id="inputCountry" class="custom-select mb-0" v-model="country" @change="listData()">
+                                  <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+                                  <option v-for="(country_name, country_code, index) in countries" :value="country_code">
+                                    {{ country_name }}
+                                  </option>
+                                </select>
+                              </div>
+                            </div>
                             <div class="row justify-content-center">
                                 <p id="startdate-warning" class="text-danger code_required hide">
                                     {{trans.get('keys.vui_long_nhap_ngay_bat_dau')}}</p>
@@ -230,7 +245,7 @@
                         text: ''
                     },
                     subtitle: {
-                        text: this.trans.get('keys.so_luong_nhan_vien_hoan_thanh_dao_tao_tong_so_nhan_vien')
+                        //text: this.trans.get('keys.so_luong_nhan_vien_hoan_thanh_dao_tao_tong_so_nhan_vien')
                     },
                     color: ['#3a55b1', '#adb3b6'],
                     tooltip: {
@@ -288,14 +303,22 @@
                     ],
                     series: [
                         {
-                            name: this.trans.get('keys.nhan_vien_hoan_thanh_dao_tao'),
-                            type: 'column',
+                            name: this.trans.get('keys.completed'),
+                            //type: 'column',
                             data: [0, 0, 0, 0, 0, 0],
+                            color: '#33cc33',
                         },
                         {
-                            name: this.trans.get('keys.tong_so_nhan_vien'),
-                            type: 'column',
+                            name: this.trans.get('keys.in_progressing'),
+                            //type: 'column',
                             data: [0, 0, 0, 0, 0, 0],
+                            color: '#0066ff',
+                        },
+                        {
+                            name: this.trans.get('keys.fail_course'),
+                            //type: 'column',
+                            data: [0, 0, 0, 0, 0, 0],
+                            color: '#ff0000',
                         }
                     ]
                 },
@@ -406,6 +429,16 @@
                     showClear: true,
                     showClose: true,
                 },
+                //Treeselect options
+                optionsOrganize: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_id: 0,
+                country: '',
+                countries: [],
             }
         },
         methods: {
@@ -483,6 +516,8 @@
                     axios.post('/dashboard/chart_data', {
                       startdate: this.convertTime(this.startdate),
                       enddate: this.convertTime(this.enddate),
+                      organization_id: this.organization_id,
+                      country: this.country
                     })
                       .then(response => {
                         let chart_data = response.data;
@@ -492,10 +527,13 @@
                         //let enrolled_array = [];
 
                         //let registered_array = [];
-                        let stack_registered_array = [];
-                        let confirmed_array = [];
+                        //let stack_registered_array = [];
+                        //let confirmed_array = [];
                         //let quit_array = [];
                         //let label_array2 = [];
+                        let completed_array = [];
+                        let in_progressing_array = [];
+                        let fail_array = [];
 
 
                         // chart_data.completed.forEach(val => {
@@ -506,12 +544,15 @@
                         //     enrolled_array.push(val.total);
                         // });
 
-                        chart_data.confirmed.forEach(val => {
+                        chart_data.completed.forEach(val => {
                           label_array.push('T ' + val.mthyr);
-                          confirmed_array.push(val.total);
+                          completed_array.push(val.total);
                         });
-                        chart_data.stack_registered.forEach(val => {
-                          stack_registered_array.push(val.total);
+                        chart_data.progressing.forEach(val => {
+                          in_progressing_array.push(val.total);
+                        });
+                        chart_data.failed.forEach(val => {
+                          fail_array.push(val.total);
                         });
 
                         // chart_data.registered.forEach(val => {
@@ -521,10 +562,10 @@
                         // chart_data.quit.forEach(val => {
                         //   quit_array.push(val.total);
                         // });
-
                         this.option1.xAxis.categories = label_array;
-                        this.option1.series[0]['data'] = confirmed_array;
-                        this.option1.series[1]['data'] = stack_registered_array;
+                        this.option1.series[0]['data'] = completed_array;
+                        this.option1.series[1]['data'] = in_progressing_array;
+                        this.option1.series[2]['data'] = fail_array;
 
                         this.total1 = 0;
                         this.option2.series[0]['data'] = [];
@@ -571,11 +612,59 @@
             },
             customFormatter(date) {
               return moment(date).format('dd-mm-yyyy');
-            }
+            },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list', {
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.optionsOrganize = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+            setOptions(list, current_id) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name,
+                };
+                if (item.children.length > 0) {
+                  for (const [key, child] of Object.entries(item.children)) {
+                    if (child.id === current_id) {
+                      newOption.isDefaultExpanded = true;
+                      break;
+                    }
+                  }
+                  newOption.children = this.setOptions(item.children, current_id);
+                }
+                outPut.push(newOption);
+              }
+              return outPut;
+            },
+            getCountries() {
+              axios.post('/system/user/list_country')
+                .then(response => {
+                  this.countries = response.data;
+                })
+                .catch(error => {
+                  console.log(error.response.data);
+                });
+            },
         },
         mounted() {
             this.setTimeDefault();
             this.listData();
+            this.selectOrganization();
+            this.getCountries();
         }
     }
 </script>

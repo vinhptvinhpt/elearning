@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\CourseCompletion;
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
 use App\TmsLearnerHistory;
@@ -181,6 +182,8 @@ class BussinessRepository implements IBussinessInterface
     {
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
+        $organization_id = $request->input('organization_id');
+        $country = $request->input('country');
         $validates = validate_fails($request, [
             'startdate' => 'date',
             'enddate' => 'date',
@@ -203,104 +206,113 @@ class BussinessRepository implements IBussinessInterface
 
             $role_id = 5;
 
-            //chart 3 data
-            //hoc vien dang ki moi
-//            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-//            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-//                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
-//                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-//                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-//                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-//                ->select(
-//                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
-//                    DB::raw('count(*) as total')
-//                )
-//                ->groupBy('mthyr')
-//                ->get()
-//                ->toArray();
+            //Số học viên hoàn thành khóa học
+            $completed_student = CourseCompletion::where("course_completion.timecompleted", ">=", $start_time)
+                ->where("course_completion.timecompleted", "<=",  $end_time);
 
-            $students = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", date("Y-m-d H:i:s", $start_time))
-                ->where("mdl_user_enrolments.timecreated", "<=", date("Y-m-d H:i:s", $end_time))
-                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->where('mdl_course_categories.id', '=', 4)// khoa hoc ky nang mem
-                ->select(
-                    DB::raw('CONCAT(MONTH(mdl_user_enrolments.timecreated), "/", DATE_FORMAT(mdl_user_enrolments.timecreated, "%y")) mthyr'),
-                    DB::raw('count(*) as total')
-                )
-                ->groupBy('mthyr')
-                ->get()
-                ->toArray();
+            //Số học viên đang học
+            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
+                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time);
 
-            $registered = array();
-            $stack_registered = array();
+            //Số học viên fail
+            $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
+                ->where("mcmc.timemodified", ">=", $start_time)
+                ->where("mcmc.timemodified", "<=",  $end_time)
+                ->where("mcmc.completionstate","=",3) //state fail
+                ->join('mdl_course_modules as mcm','mcm.id','=','mcmc.coursemoduleid')
+                ->where('mcm.module','=',16);//quiz
 
-            foreach ($students as $student) {
-                $mthyr = $student['mthyr'];
-                $registered[$mthyr] = $student['total'];
+            if($organization_id){
+                $completed_student = $completed_student
+                    -> join('tms_organization_employee as toe', 'toe.user_id','=','course_completion.userid')
+                    -> where("toe.organization_id","=",$organization_id);
+
+                $in_progress_student = $in_progress_student
+                    -> join('tms_organization_employee as toe', 'toe.user_id','=','mdl_user_enrolments.userid')
+                    -> where("toe.organization_id","=",$organization_id);
+
+                $fail_student = $fail_student
+                    -> join('tms_organization_employee as toe', 'toe.user_id','=','mcmc.userid')
+                    -> where("toe.organization_id","=",$organization_id);
+
             }
+            if($country){
+                $completed_student = $completed_student
+                    -> join('tms_user_detail as tud', 'tud.user_id','=','course_completion.userid')
+                    -> where("tud.country","=",$country);
 
-            $registered_source = array();
-            foreach ($registered as $key => $val) {
-                $registered_source[] = array(
-                    'mthyr' => $key,
-                    'total' => $val
-                );
+                $in_progress_student = $in_progress_student
+                    -> join('tms_user_detail as tud', 'tud.user_id','=','mdl_user_enrolments.userid')
+                    -> where("tud.country","=",$country);
+
+                $fail_student = $fail_student
+                    -> join('tms_user_detail as tud', 'tud.user_id','=','mcmc.userid')
+                    -> where("tud.country","=",$country);
             }
-
-            $confirm_students = StudentCertificate::where("student_certificate.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-                ->join('course_final as cf', 'cf.userid', '=', 'student_certificate.userid')
-                ->where("student_certificate.created_at", "<=", date("Y-m-d H:i:s", $end_time))
+            $completed_student = $completed_student
                 ->select(
-                    DB::raw('CONCAT(MONTH(student_certificate.created_at), "/", DATE_FORMAT(student_certificate.created_at, "%y")) mthyr'),
-                    DB::raw('count(*) as total')
+                    DB::raw("date_format(from_unixtime(course_completion.timecompleted),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT userid) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
 
-            $confirmed = array();
-            foreach ($confirm_students as $confirm) {
-                $mthyr = $confirm['mthyr'];
-                $confirmed[$mthyr] = $confirm['total'];
+            $completed = array();
+            foreach ($completed_student as $complete) {
+                $mthyr = $complete['mthyr'];
+                $completed[$mthyr] = $complete['total'];
             }
-            $confirm_source = array();
-            foreach ($confirmed as $key => $val) {
-                $confirm_source[] = array(
+            $complete_source = array();
+            foreach ($completed as $key => $val) {
+                $complete_source[] = array(
                     'mthyr' => $key,
                     'total' => $val
                 );
             }
 
-            //quit student
-            /*$quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-            ->where("quit_time", ">=", $start_time)
-                ->where("quit_time", "<=", $end_time)
-                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            //Số học viên đang học
+            $in_progress_student = $in_progress_student
                 ->select(
-                    DB::raw('CONCAT(MONTH(FROM_UNIXTIME(quit_time)), "/", DATE_FORMAT(FROM_UNIXTIME(quit_time), "%y")) mthyr'),
-                    DB::raw('count(*) as total')
+                    DB::raw("date_format(from_unixtime(mdl_user_enrolments.timecreated),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT userid) as total')
+                )
+                ->groupBy('mthyr')
+                ->get()->toArray();
+            $progressing = array();
+            foreach ($in_progress_student as $progress) {
+                $mthyr = $progress['mthyr'];
+                $progressing[$mthyr] = $progress['total'];
+            }
+            $in_progress_source = array();
+            foreach ($progressing as $key => $val) {
+                $in_progress_source[] = array(
+                    'mthyr' => $key,
+                    'total' => $val
+                );
+            }
+
+            //Số học viên fail
+            $fail_student = $fail_student
+                ->select(
+                    DB::raw("date_format(from_unixtime(mcmc.timemodified),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT userid) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
 
-            $quit = array();
-
-            foreach ($quit_students as $student) {
-                $mthyr = $student['mthyr'];
-                $confirmed[$mthyr] = $student['total'];
+            $failed = array();
+            foreach ($fail_student as $fail) {
+                $mthyr = $fail['mthyr'];
+                $failed[$mthyr] = $fail['total'];
             }
-
-
-            $quit_source = array();
-            foreach ($quit as $key => $val) {
-                $quit_source[] = array(
+            $fail_source = array();
+            foreach ($failed as $key => $val) {
+                $fail_source[] = array(
                     'mthyr' => $key,
                     'total' => $val
                 );
-            }*/
+            }
+
 
             //chart 2(count course only), 4 data
             $courses = MdlCourse::where('mdl_course.deleted', 0)
@@ -330,25 +342,14 @@ class BussinessRepository implements IBussinessInterface
             $response['pie_data'] = array_values($pie_data);
 
             //Hoc vien dang ki
-            $registered = fillMissingMonthChartData($registered_source, $start_time, $end_time);
-            $response['registered'] = $registered;
+            $completed = fillMissingMonthChartData($complete_source, $start_time, $end_time);
+            $response['completed'] = $completed;
 
-            //Total employees
-            $stack_total = 0;
-            foreach ($registered as $key => $val) {
-                $stack_total += $val['total'];
-                $stack_registered[] = array(
-                    'mth' => $key,
-                    'total' => $stack_total
-                );
-            }
-            $response['stack_registered'] = $stack_registered;
+            $progressing = fillMissingMonthChartData($in_progress_source, $start_time, $end_time);
+            $response['progressing'] = $progressing;
 
-            $confirmed = fillMissingMonthChartData($confirm_source, $start_time, $end_time);
-            $response['confirmed'] = $confirmed;
-
-            //$quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
-            //$response['quit'] = $quit;
+            $failed = fillMissingMonthChartData($fail_source, $start_time, $end_time);
+            $response['failed'] = $failed;
 
             return response()->json($response);
         }
