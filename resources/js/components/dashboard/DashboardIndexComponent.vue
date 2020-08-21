@@ -301,6 +301,14 @@
                             }
                         }
                     ],
+                    plotOptions: {
+                      line: {
+                        dataLabels: {
+                          enabled: true
+                        },
+                        enableMouseTracking: false
+                      }
+                    },
                     series: [
                         {
                             name: this.trans.get('keys.completed'),
