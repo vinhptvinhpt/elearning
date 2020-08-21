@@ -471,7 +471,7 @@
         return outPut;
       },
       exportExcel() {
-        axios.post('/api/exportInvite', {
+        axios.post('/api/exportUserException', {
           keyword: this.keyword_curr,
           course_id: this.course_id,
           organization_id: this.organization_id_2,

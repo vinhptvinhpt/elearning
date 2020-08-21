@@ -606,6 +606,78 @@ class ExcelController extends Controller
         return response()->json($filename);
     }
 
+    public function apiExportUserException(Request $request)
+    {
+        $course_id = $request->input('course_id');
+        $keyword = $request->input('keyword');
+        $organization_id = $request->input('organization_id');
+        $course_name = $request->input('course_name');
+//        $invite_status = $request->input('invite_status');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'role_id' => 'number',
+            'keyword' => 'text',
+//            'invite_status' => 'text'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
+        $currentUserCourseException = DB::table('tms_user_course_exception')
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_course_exception.user_id')
+            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->where('tms_user_course_exception.course_id', '=', $course_id)
+            ->select(
+                'mdl_user.id',
+                'mdl_user.username',
+                'mdl_user.firstname',
+                'mdl_user.lastname',
+                'tms_user_detail.fullname'
+            );
+        if ($keyword) {
+            $currentUserCourseException = $currentUserCourseException->where(function ($query) use ($keyword) {
+                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
+                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
+            });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $currentUserCourseException = $currentUserCourseException->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $currentUserCourseException = $currentUserCourseException->where('tms_organization_employee.organization_id', '=', $organization_id);
+        }
+
+        $data = $currentUserCourseException->get();
+
+        $export_data = array();
+
+        $export_data[] = array(
+            __('stt'),
+            __('tai_khoan'),
+            __('ho_va_ten'),
+        );
+
+        foreach ($data as $key => $item) {
+            $export_data[] = array(
+                $key + 1,
+                $item->username,
+                isset($item->fullname) ? $item->fullname : $item->lastname . " " . $item->firstname
+            );
+        }
+
+
+        $exportExcel = new InvitationSheet($course_name, $export_data);
+
+        $filename = $course_name . " User Exception List.xlsx";
+
+        $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
+
+        return response()->json($filename);
+    }
+
     public function apiExportAttendance(Request $request)
     {
         $keyword = $request->input('keyword');
