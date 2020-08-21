@@ -9,6 +9,17 @@
 <body>
 <div>
     <?php
+    /**
+     * @var string $fullname
+     * @var string $competency_name
+     * @var string $course_code
+     * @var string $course_place
+     * @var integer $start_date
+     * @var integer $end_date
+     * @var string $course_description
+     * @var integer $content //invite_id
+     *
+     */
     //using class
     use App\Mail\CourseSendMail;
 
@@ -21,6 +32,10 @@
     // //decode content of file above=
     $data = json_decode($string, true);
     $text = $data['assigned_competency'];
+
+    $start_date = !empty($start_date) ? date('Y-m-d H:i:s', $start_date) : 'N/A';
+    $end_date = !empty($end_date) ? date('Y-m-d H:i:s', $end_date) : 'N/A';
+
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::COMPETENCYNAME, $competency_name, $text);

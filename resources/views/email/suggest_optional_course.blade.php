@@ -9,6 +9,13 @@
 <body>
 <div>
     <?php
+
+    /**
+     * @var string $fullname
+     * @var array $course_list
+     *
+     */
+
     //using class
     use App\Mail\CourseSendMail;
 
@@ -20,7 +27,7 @@
     $string = file_get_contents(public_path()."/files/email/template.json");
     // //decode content of file above=
     $data = json_decode($string, true);
-    $text = $data['suggest_optional_course'];
+    $text = $data['suggest'];
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     //
@@ -35,19 +42,20 @@
         </tr>';
     //loop to set tr to table
     foreach($course_list as $course) {
+        $start_date = !empty($course->startdate) ? date('Y-m-d', $course->startdate) : '';
+        $end_date = !empty($course->enddate) ? date('Y-m-d', $course->enddate) : '';
         $course_list_string .= '<tr>
-            <td><p style="color: blue;">'. $course->course_code .'</p></td>
-            <td><p style="color: blue;">'.$course->course_name.'</p></td>
-            <td><p style="color: blue;">'.date('d/m/Y', $course->startdate).'</p></td>
-            <td><p style="color: blue;">'.date('d/m/Y', $course->enddate).'</p></td>
-            <td><p style="color: blue;">'.$course->course_place.'</p></td>
+            <td><p style="color: black;">'. $course->shortname .'</p></td>
+            <td><p style="color: black;">'.$course->fullname.'</p></td>
+            <td><p style="color: black;">'. $start_date .'</p></td>
+            <td><p style="color: black;">'. $end_date .'</p></td>
+            <td><p style="color: black;">'.$course->course_place.'</p></td>
             </tr>';
     }
     $course_list_string .= '</table>';
     //replace string with list above
     $text = str_replace(CourseSendMail::COURSELIST, $course_list_string, $text);
 
-    //
     echo $text;
     ?>
 </div>
