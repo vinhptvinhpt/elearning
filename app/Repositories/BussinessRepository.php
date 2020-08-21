@@ -221,8 +221,7 @@ class BussinessRepository implements IBussinessInterface
                 ->where("mcmc.completionstate","=",3) //state fail
                 ->join('mdl_course_modules as mcm','mcm.id','=','mcmc.coursemoduleid')
                 ->where('mcm.module','=',16);//quiz
-
-            if($organization_id){
+            if($organization_id > 0){
                 $completed_student = $completed_student
                     -> join('tms_organization_employee as toe', 'toe.user_id','=','course_completion.userid')
                     -> where("toe.organization_id","=",$organization_id);
