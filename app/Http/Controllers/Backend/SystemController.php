@@ -440,4 +440,10 @@ class SystemController extends Controller
     {
         return $this->userRepository->loginStatistic($request);
     }
+
+    public function apiGetUserInfo(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        return $this->userRepository->getUserInfo($user_id);
+    }
 }

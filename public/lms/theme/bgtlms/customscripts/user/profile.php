@@ -14,8 +14,8 @@ $sqlGetBadges = 'select tms_traninning_programs.name as name, student_certificat
 $badges = array_values($DB->get_records_sql($sqlGetBadges));
 
 session_start();
-$percentCompleted = intval(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
-$percentStudying = intval(count($_SESSION["courses_current"])*100/$_SESSION["totalCourse"]);
+$percentCompleted = round(count($_SESSION["courses_completed"])*100/$_SESSION["totalCourse"]);
+$percentStudying = round(count($_SESSION["courses_current"])*100/$_SESSION["totalCourse"]);
 $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 ?>
 
@@ -290,8 +290,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .item-image{
         box-shadow: 3px 3px 6px #0000004D;
         border-radius: 10px;
-        max-height: 300px;
-        max-width: 185px;
+        /*max-height: 300px;*/
+        max-width: 70%;
+        margin: auto;
     }
 
     .item-image img{
@@ -482,11 +483,14 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="info-detail">
                     <ul>
-                        <li>Position: {{ user.position }}</li>
-                        <li>Department: {{ user.departmentname }}</li>
+                        <li v-if="user.position">Position: {{ user.position }}</li>
+                        <li v-else>Position: Not yet update</li>
+                        <li v-if="user.departmentname">Department: {{ user.departmentname }}</li>
+                        <li v-else>Department: Not yet update</li>
                         <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
                         <li v-else>Experience: Under 1 year</li>
-                        <li>Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
+                        <li v-if="linemanagers.length > 0">Line Manager: <p v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p></li>
+                        <li v-else>Line Manager: Not yet update</li>
                         <li>Company: Easia Travel</li>
                     </ul>
                 </div>
@@ -515,7 +519,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
 
 
-                                                <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?>%</text>
+                                                <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %</text>
                                             </svg>
                                         </div>
                                     </div>
@@ -573,13 +577,11 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 <tbody>
                                 <tr v-for="(course,index) in courses">
                                     <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td v-if="course.id == 506"><span class="numberget">100</span></td>
-                                    <td v-else-if="course.numofmodule == 0"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberget">{{ Math.floor(course.numoflearned*100/course.numofmodule) }}</span></td>
+                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span></td>
+                                    <td v-else><span class="numberget">{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span></td>
                                     <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberhave">{{ Math.floor(course.finalgrade) }}</span></td>
-                                    <td class="icon-circle" v-if="course.id == 506"><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
-                                    <td class="icon-circle" v-else-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                    <td v-else><span class="numberget">{{ Math.round(course.finalgrade) }}</span></td>
+                                    <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1"><i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                 </tr>
                                 </tbody>

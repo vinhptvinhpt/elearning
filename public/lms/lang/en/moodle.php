@@ -2302,6 +2302,7 @@ $string['failstatus'] = 'FAIL';
 
 $string['vietlot_introduction'] = 'Introduction';
 $string['guideline'] = 'User guide';
+$string['edit_guideline'] = 'Edit User guide';
 $string['surveydashboard'] = 'Survey';
 $string['surveytext'] = 'Click to take survey';
 $string['surveytitle'] = 'Survey questionnaire for Elearning';

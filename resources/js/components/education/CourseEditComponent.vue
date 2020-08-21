@@ -100,24 +100,17 @@
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText7">{{trans.get('keys.thoi_gian_bat_dau')}}
-                          *</label>
-                        <input v-model="course.startdate"
-                               type="datetime-local"
-                               id="inputText7"
-                               class="form-control mb-4">
-                        <label v-if="!course.startdate"
-                               class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <label>{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
+                          <date-picker v-model="course.startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                        <!--                        <input v-model="course.startdate" type="datetime-local" class="form-control mb-4">-->
+                        <label v-if="!course.startdate" class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText8">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
-                        <input v-model="course.enddate"
-                               type="datetime-local"
-                               id="inputText8"
-                               class="form-control mb-4">
-                        <!--                                                <label v-if="!course.enddate"-->
-                        <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                        <label>{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
+                        <date-picker v-model="course.enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+<!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
+<!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -187,11 +180,13 @@
 <script>
   import CKEditor from 'ckeditor4-vue';
   import EnrolTeacher from './EnrolTeacherComponent'
+  import datePicker from 'vue-bootstrap-datetimepicker'
 
   export default {
     components: {
       CKEditor,
-      EnrolTeacher
+      EnrolTeacher,
+      datePicker
     },
     props: ['course_id', 'slugs'],
     data() {
@@ -212,7 +207,15 @@
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
           filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
         },
-        last_update: {}
+        last_update: {},
+        options: {
+          //http://eonasdan.github.io/bootstrap-datetimepicker/Options/
+          format: 'DD-MM-YYYY hh:mm A',
+          useCurrent: false,
+          showClear: true,
+          showClose: true,
+          date: 'moment'
+        }
       }
     },
     methods: {
@@ -375,7 +378,7 @@
             var language = this.language;
             if (response.data.status) {
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-              this.$router.push({name: 'CourseIndex'});
+              this.$router.push({name: 'CourseIndex',params:{back_page: '1'}});
             } else {
               if (response.data.otherData) {
                 toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));

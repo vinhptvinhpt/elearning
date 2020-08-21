@@ -12,7 +12,7 @@
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
-                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung') }}</li>
+                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung_knl') }}</li>
                     </ol>
                 </nav>
             </div>
@@ -211,7 +211,7 @@
                         </div>
                     </div>
 
-                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
+                    <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_nguoi_dung_knl')}}</h5>
                     <div class="row">
                         <div class="col-sm">
                             <div class="table-wrap">
@@ -480,6 +480,9 @@
                 this.allSelected = false;
             },
             remove_trainning(id, user_id, tr_id) {
+                sessionStorage.setItem('userListPage', this.current);
+                sessionStorage.setItem('userListPageSize', this.row);
+                sessionStorage.setItem('userListKeyWord', this.keyword);
                 let current_pos = this;
                 //console.log('trainning_id: ' + tr_id);
                 swal({
@@ -498,8 +501,12 @@
                         .then(response => {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             $('.btn_open_select.actives').trigger('click');
-                            current_pos.getUser(current_pos.current);
-                            current_pos.getUserOutTrainning(current_pos.current_out);
+                            if(current_pos.posts.length == 1){
+                              current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                            }
+                            current_pos.onPageChange();
+                            // current_pos.getUser(current_pos.current);
+                            // current_pos.getUserOutTrainning(current_pos.current_out);
                         })
                         .catch(error => {
                             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
@@ -604,13 +611,33 @@
             return outPut;
           },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1'){
+                  this.current = Number(sessionStorage.getItem('userListPage'));
+                  this.row = Number(sessionStorage.getItem('userListPageSize'));
+                  this.keyword = sessionStorage.getItem('userListKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getUser();
                 this.getUserOutTrainning();
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
             },
         },
         mounted() {
             this.listOrganization();
-          this.selectOrganization();
+            this.selectOrganization();
+        },
+        destroyed() {
+            sessionStorage.setItem('userListPage', this.current);
+            sessionStorage.setItem('userListPageSize', this.row);
+            sessionStorage.setItem('userListKeyWord', this.keyword);
         }
     }
 </script>

@@ -3,7 +3,7 @@ require_once(__DIR__ . '/../config.php');
 
 $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : $USER->id;
 
-$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, tud.address, toe.position, toe.description as exactlypostion , tmso.name as departmentname, (YEAR(NOW())-YEAR(FROM_UNIXTIME(tud.start_time))) as yearworking, tmso.id as organization_id, dob, email, phone, sex from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id left join tms_organization tmso on toe.organization_id = tmso.id where tud.user_id = '.$user_id;
+$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, tud.address, toe.position, toe.description as exactlypostion , tmso.name as departmentname, IF(start_time IS NULL or start_time = \'\', \'\', (YEAR(NOW())-YEAR(FROM_UNIXTIME(tud.start_time)))) as yearworking, tmso.id as organization_id, dob, email, phone, sex from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id left join tms_organization tmso on toe.organization_id = tmso.id where tud.user_id = '.$user_id;
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
 //get list name of line manager
 

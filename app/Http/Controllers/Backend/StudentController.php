@@ -52,10 +52,6 @@ class StudentController extends Controller
     {
         return $this->bussinessRepository->randomNumber($length);
     }
-    public function sendMail($user, $certificatecode)
-    {
-        return $this->bussinessRepository->sendMail($user, $certificatecode);
-    }
     public function settingCertificate()
     {
         return $this->bussinessRepository->settingCertificate();

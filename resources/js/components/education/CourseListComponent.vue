@@ -57,14 +57,12 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="startdate" :config="options"
-                                                         :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                                            <date-picker v-model="startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="enddate" :config="options"
-                                                         :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                                            <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                                         </div>
                                     </div>
                                     <!--                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">-->
@@ -210,6 +208,11 @@
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                              :to="{ name: 'CourseDetail', params: { id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
+                                                </router-link>
+                                                <router-link :title="trans.get('keys.them_nguoi_dung_ngoai_le')"
+                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                             :to="{ name: 'UserCourseExceptionEdit', params: { id: course.id,come_from: 'online',course_name:course.fullname } }">
+                                                  <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>
                                                 </router-link>
 
                                                 <button v-if="slug_can('tms-educate-exam-online-deleted')"
@@ -372,6 +375,13 @@
               this.$route.params.back_page = value;
             },
             deletePost(id) {
+                sessionStorage.setItem('courseListPage', this.current);
+                sessionStorage.setItem('courseListPageSize', this.row);
+                sessionStorage.setItem('courseListCategory', this.category_id);
+                sessionStorage.setItem('courseListCourseStatus', this.status_course);
+                sessionStorage.setItem('courseListStartDate', this.startdate);
+                sessionStorage.setItem('courseListEndDate', this.enddate);
+                sessionStorage.setItem('courseListKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -388,7 +398,10 @@
                             loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getCourses(this.current);
+                                if(current_pos.courses.length == 1){
+                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                }
+                                current_pos.onPageChange();
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
