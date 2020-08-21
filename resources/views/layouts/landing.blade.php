@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TMS</title>
+    <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
     <meta name="description" content="Đào tạo trực tuyến nhân viên bán hàng"/>
     <link rel="shortcut icon" href="/images/favicon.png">
 <!-- <link rel="icon" href="{{asset('images/favicon.png')}}" type="image/x-icon"> -->

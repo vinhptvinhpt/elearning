@@ -8,35 +8,10 @@ use App\TmsLearnerHistory;
 use App\TmsUserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use mod_lti\local\ltiservice\response;
 
-class MdlUserRepository implements IMdlUserInterface, ICommonInterface
+class MdlUserRepository implements IMdlUserInterface
 {
-
-    public function getall(Request $request)
-    {
-        // TODO: Implement getall() method.
-    }
-
-    public function store(Request $request)
-    {
-        // TODO: Implement store() method.
-    }
-
-    public function update(Request $request)
-    {
-        // TODO: Implement update() method.
-    }
-
-    public function delete($id)
-    {
-        // TODO: Implement delete() method.
-    }
-
-    public function detail($id)
-    {
-        // TODO: Implement detail() method.
-    }
-
     public function getTrainningUser(Request $request)
     {
         // TODO: Implement getTrainningUser() method.
@@ -102,7 +77,6 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
         ];
 
 
-
         return response()->json($response);
     }
 
@@ -118,29 +92,29 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
         // TODO: Implement apiUserChangeWorkingStatus() method.
         try {
 
-            $user_id    = $request->input('user_id');
-            $status     = $request->input('status');
+            $user_id = $request->input('user_id');
+            $status = $request->input('status');
 
             $param = [
-                'user_id'   => 'number',
-                'status'    => 'number'
+                'user_id' => 'number',
+                'status' => 'number'
             ];
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response = [
-                    'status'    => false,
-                    'message'   => __('dinh_dang_du_lieu_khong_hop_le')
+                    'status' => false,
+                    'message' => __('dinh_dang_du_lieu_khong_hop_le')
                 ];
                 return response()->json($response);
             }
 
 
-            $user = TmsUserDetail::where('user_id',$user_id)->first();
+            $user = TmsUserDetail::where('user_id', $user_id)->first();
 
             if (!$user) {
                 $response = [
-                    'status'    => false,
-                    'message'   => __('khong_tim_thay_tai_khoan')
+                    'status' => false,
+                    'message' => __('khong_tim_thay_tai_khoan')
                 ];
                 return response()->json($response);
             }
@@ -150,13 +124,13 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
             ));
 
             $response = [
-                'status'    => true,
-                'message'   => __('cap_nhat_thanh_cong')
+                'status' => true,
+                'message' => __('cap_nhat_thanh_cong')
             ];
         } catch (\Exception $e) {
             $response = [
-                'status'    => false,
-                'message'   => $e->getMessage()
+                'status' => false,
+                'message' => $e->getMessage()
             ];
         }
         return response()->json($response);
@@ -233,5 +207,15 @@ class MdlUserRepository implements IMdlUserInterface, ICommonInterface
         ];
 
         return response()->json($response);
+    }
+
+    public function getUserInfo($user_id)
+    {
+        // TODO: Implement getUserInfo() method.
+        $user = DB::table('mdl_user as u')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
+            ->select('u.id', 'u.username', 'u.email', 'tud.fullname')
+            ->where('u.id', '=', $user_id)->first();
+        return response()->json($user);
     }
 }

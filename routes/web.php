@@ -312,6 +312,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/get_list_branch_select', 'Backend\SystemController@apiGetListBranchSelect');
     Route::post('/system/user/get_list_saleroom_select', 'Backend\SystemController@apiGetListSaleRoomSelect');
     Route::post('/api/system/user/change_status', 'Backend\SystemController@apiUserChangeWorkingStatus');
+    Route::post('/api/system/user/info', 'Backend\SystemController@apiGetUserInfo');
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
     Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');
@@ -562,6 +563,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/survey/getlstsalerooms/{branch_id}', 'Backend\SurveyController@apiGetSaleRooms');
     Route::post('/api/survey/export_file', 'Backend\SurveyController@apiExportFile');
     Route::get('/downloadexcelsurvey/{type_file}', 'Backend\SurveyController@downloadExportSurvey');
+    Route::post('/api/survey/view_result', 'Backend\SurveyController@apiViewResultSurvey');
+    Route::post('/api/survey/list_user_result', 'Backend\SurveyController@apiGetListUserSurvey');
+
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
     Route::post('/education/user/list_teacher', 'Backend\EducationController@apiListUserTeacher');
@@ -783,7 +787,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
-
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020

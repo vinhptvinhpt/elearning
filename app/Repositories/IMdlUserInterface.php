@@ -17,4 +17,7 @@ interface IMdlUserInterface
 
     //lay danh sach nguoi dung truy cap theo khoang thoi gian
     public function loginStatistic(Request $request);
+
+    //lay thong tin nguoi dung cho khao sat
+    public function getUserInfo($user_id);
 }

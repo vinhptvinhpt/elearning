@@ -143,26 +143,26 @@ class BussinessRepository implements IBussinessInterface
 //            $data = $data->orderBy('mdl_logstore_standard_log.timecreated', 'desc');
 //        } else {
 
-            $data = TmsLog::with('user');
-            if ($keyword) {
-                $data = $data->where(function($query) use ($keyword){
-                    $query->where('url', 'like', "%{$keyword}%");
-                    $query->orWhere('info', 'like', "%{$keyword}%");
-                    $query->orWhere('action', 'like', "%{$keyword}%");
-                    $query->orWhere('type', 'like', "%{$keyword}%");
-                    $query->orWhereHas('user', function($q) use($keyword){
-                        $q->where('username', 'like', "%{$keyword}%");
-                    });
+        $data = TmsLog::with('user');
+        if ($keyword) {
+            $data = $data->where(function ($query) use ($keyword) {
+                $query->where('url', 'like', "%{$keyword}%");
+                $query->orWhere('info', 'like', "%{$keyword}%");
+                $query->orWhere('action', 'like', "%{$keyword}%");
+                $query->orWhere('type', 'like', "%{$keyword}%");
+                $query->orWhereHas('user', function ($q) use ($keyword) {
+                    $q->where('username', 'like', "%{$keyword}%");
                 });
-            }
+            });
+        }
 
-            if ($type != '') {
-                $data = $data->where('type', $type);
-            }
-            if (strlen($action) != 0) {
-                $data = $data->where('action', $action);
-            }
-            $data = $data->orderBy('created_at', 'desc');
+        if ($type != '') {
+            $data = $data->where('type', $type);
+        }
+        if (strlen($action) != 0) {
+            $data = $data->where('action', $action);
+        }
+        $data = $data->orderBy('created_at', 'desc');
 
 //        }
 
@@ -772,12 +772,12 @@ class BussinessRepository implements IBussinessInterface
 
                 //new, get all activity for course and its modules, sections etc
                 ->where('courseid', $id)
-                ->where('mdl_logstore_standard_log.action', "<>", 'viewed') //update nên k tính viewed
-                ->orderBy('mdl_logstore_standard_log.timecreated','desc')
+                ->where('mdl_logstore_standard_log.action', "<>", 'viewed')//update nên k tính viewed
+                ->orderBy('mdl_logstore_standard_log.timecreated', 'desc')
                 ->first();
 
             if (isset($log_latest)) {
-                  $last_update = $log_latest;
+                $last_update = $log_latest;
 //                $last_update['user_id'] = $log_latest->userid;
 //                $last_update['user_fullname'] = $log_latest->user_detail ? $log_latest->user_detail->fullname : '';
 //                $last_update['updated_at'] = $log_latest->created_at;
@@ -850,29 +850,29 @@ class BussinessRepository implements IBussinessInterface
             if ($result == 1) {
 
                 //write log to mdl_logstore_standard_log
-/*                $app_name = Config::get('constants.domain.APP_NAME');
+                /*                $app_name = Config::get('constants.domain.APP_NAME');
 
-                $key_app = encrypt_key($app_name);
-                $user_id = Auth::id();
-                $dataLog = array(
-                    'app_key' => $key_app,
-                    'courseid' => $course->id,
-                    'action' => 'delete',
-                    //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
-                    'userid' => $user_id
-                );
-                $dataLog = createJWT($dataLog, 'data');
-                $data_write = array(
-                    'data' => $dataLog,
-                );
-                $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-                $checkUser = MdlUser::where('id', $user_id)->first();
-                $token = '';
-                if (isset($checkUser)) {
-                    $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
-                }
-                //call api write log
-                callAPI('POST', $url, $data_write, false, $token);*/
+                                $key_app = encrypt_key($app_name);
+                                $user_id = Auth::id();
+                                $dataLog = array(
+                                    'app_key' => $key_app,
+                                    'courseid' => $course->id,
+                                    'action' => 'delete',
+                                    //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
+                                    'userid' => $user_id
+                                );
+                                $dataLog = createJWT($dataLog, 'data');
+                                $data_write = array(
+                                    'data' => $dataLog,
+                                );
+                                $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+                                $checkUser = MdlUser::where('id', $user_id)->first();
+                                $token = '';
+                                if (isset($checkUser)) {
+                                    $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+                                }
+                                //call api write log
+                                callAPI('POST', $url, $data_write, false, $token);*/
 
                 devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'delete', 'Delete course: ' . $course->shortname);
                 updateLastModification('delete', $course->id);
@@ -1197,21 +1197,21 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //write log to mdl_logstore_standard_log
-/*            $app_name = Config::get('constants.domain.APP_NAME');
-            $key_app = encrypt_key($app_name);
-            $dataLog = array(
-                'app_key' => $key_app,
-                'courseid' => $course->id,
-                'action' => 'create',
-                'description' => json_encode($course),
-            );
-            $dataLog = createJWT($dataLog, 'data');
-            $data_write = array(
-                'data' => $dataLog,
-            );
-            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            //call api write log
-            callAPI('POST', $url, $data_write, false, '');*/
+            /*            $app_name = Config::get('constants.domain.APP_NAME');
+                        $key_app = encrypt_key($app_name);
+                        $dataLog = array(
+                            'app_key' => $key_app,
+                            'courseid' => $course->id,
+                            'action' => 'create',
+                            'description' => json_encode($course),
+                        );
+                        $dataLog = createJWT($dataLog, 'data');
+                        $data_write = array(
+                            'data' => $dataLog,
+                        );
+                        $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+                        //call api write log
+                        callAPI('POST', $url, $data_write, false, '');*/
 
             devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
             updateLastModification('create', $course->id);
@@ -1276,15 +1276,15 @@ class BussinessRepository implements IBussinessInterface
                 ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
                 ->where('mdl_course.category', '=', $category_id);
-                $select = [
-                    'mdl_course.id',
-                    'mdl_course.fullname',
-                    'mdl_course.shortname',
-                    'mdl_course.startdate',
-                    'mdl_course.enddate',
-                    'mdl_course.visible',
-                    'mdl_course_completion_criteria.gradepass as pass_score'
-                ];
+            $select = [
+                'mdl_course.id',
+                'mdl_course.fullname',
+                'mdl_course.shortname',
+                'mdl_course.startdate',
+                'mdl_course.enddate',
+                'mdl_course.visible',
+                'mdl_course_completion_criteria.gradepass as pass_score'
+            ];
         } else {
             //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
             //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
@@ -1315,17 +1315,17 @@ class BussinessRepository implements IBussinessInterface
                                     ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
                             });
                     });
-                   $select = [
-                        'mdl_course.id',
-                        'mdl_course.fullname',
-                        'mdl_course.shortname',
-                        'mdl_course.startdate',
-                        'mdl_course.enddate',
-                        'mdl_course.visible',
-                        'mdl_course.category',
-                        'mdl_course.deleted',
-                        'mccc.gradepass as pass_score'
-                    ];
+                $select = [
+                    'mdl_course.id',
+                    'mdl_course.fullname',
+                    'mdl_course.shortname',
+                    'mdl_course.startdate',
+                    'mdl_course.enddate',
+                    'mdl_course.visible',
+                    'mdl_course.category',
+                    'mdl_course.deleted',
+                    'mccc.gradepass as pass_score'
+                ];
             } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
@@ -1336,15 +1336,15 @@ class BussinessRepository implements IBussinessInterface
                         ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
                         ->where('mdl_course.category', '=', $category_id)
                         ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
-                        $select = [
-                            'mdl_course.id',
-                            'mdl_course.fullname',
-                            'mdl_course.shortname',
-                            'mdl_course.startdate',
-                            'mdl_course.enddate',
-                            'mdl_course.visible',
-                            'mdl_course_completion_criteria.gradepass as pass_score'
-                        ];
+                    $select = [
+                        'mdl_course.id',
+                        'mdl_course.fullname',
+                        'mdl_course.shortname',
+                        'mdl_course.startdate',
+                        'mdl_course.enddate',
+                        'mdl_course.visible',
+                        'mdl_course_completion_criteria.gradepass as pass_score'
+                    ];
                 }
             }
         }
@@ -1583,40 +1583,40 @@ class BussinessRepository implements IBussinessInterface
             if ($result == 1) {
 
 
-/*                $contextData = MdlContext::query();
-                $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
-                $contextData = $contextData->where('instanceid', '=', $id);
-                $contextData = $contextData->orderBy('id', 'desc')->first();
+                /*                $contextData = MdlContext::query();
+                                $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
+                                $contextData = $contextData->where('instanceid', '=', $id);
+                                $contextData = $contextData->orderBy('id', 'desc')->first();
 
-                if ($contextData) {
-                    //Write log to mdl_logstore_standard_log
-                    $new_event = new MdlLogstoreStandardLog();
-                    $new_event->eventname = '\core\event\course_restored';
-                    $new_event->component = 'core';
-                    $new_event->action = 'restored';
-                    $new_event->target = 'course';
-                    $new_event->objecttable = 'course';
-                    $new_event->objectid = $id;
-                    $new_event->crud = 'c';
-                    $new_event->edulevel = 1;
-                    $new_event->contextid = $contextData->id;
-                    $new_event->contextlevel = \App\MdlUser::CONTEXT_COURSE;
-                    $new_event->contextinstanceid = $id;
-                    $new_event->userid = Auth::id();
-                    $new_event->courseid = $id;
-                    $new_event->other = json_encode([
-                        "type"=>"course",
-                        "target"=> 1,
-                        "mode"=> 20,
-                        "operation" => "restore",
-                        "samesite" => true,
-                        "originalcourseid"=> "596"
-                    ]);
-                    $new_event->timecreated = time();
-                    $new_event->origin = "restore";
-                    $new_event->ip = '192.168.1.1';
-                    $new_event->save();
-                }*/
+                                if ($contextData) {
+                                    //Write log to mdl_logstore_standard_log
+                                    $new_event = new MdlLogstoreStandardLog();
+                                    $new_event->eventname = '\core\event\course_restored';
+                                    $new_event->component = 'core';
+                                    $new_event->action = 'restored';
+                                    $new_event->target = 'course';
+                                    $new_event->objecttable = 'course';
+                                    $new_event->objectid = $id;
+                                    $new_event->crud = 'c';
+                                    $new_event->edulevel = 1;
+                                    $new_event->contextid = $contextData->id;
+                                    $new_event->contextlevel = \App\MdlUser::CONTEXT_COURSE;
+                                    $new_event->contextinstanceid = $id;
+                                    $new_event->userid = Auth::id();
+                                    $new_event->courseid = $id;
+                                    $new_event->other = json_encode([
+                                        "type"=>"course",
+                                        "target"=> 1,
+                                        "mode"=> 20,
+                                        "operation" => "restore",
+                                        "samesite" => true,
+                                        "originalcourseid"=> "596"
+                                    ]);
+                                    $new_event->timecreated = time();
+                                    $new_event->origin = "restore";
+                                    $new_event->ip = '192.168.1.1';
+                                    $new_event->save();
+                                }*/
                 devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'restore', 'Restore course: ' . $course->shortname);
                 updateLastModification('restore', $course->id);
 
@@ -2300,7 +2300,8 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
-    public function apiEnrolUserException(Request $request){
+    public function apiEnrolUserException(Request $request)
+    {
         self::apiInviteUser($request);
         $response = new ResponseModel();
         try {
@@ -2361,7 +2362,8 @@ class BussinessRepository implements IBussinessInterface
         return json_encode($response);
     }
 
-    public function  apiRemoveUserException(Request $request){
+    public function apiRemoveUserException(Request $request)
+    {
         self::apiRemoveInviteUser($request);
         $response = new ResponseModel();
         try {
@@ -5249,7 +5251,6 @@ class BussinessRepository implements IBussinessInterface
             $user_id = $request->input('user_id');
             $trainning_id = $request->input('trainning_id');
 
-
             $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
 
             StudentCertificate::create([
@@ -5259,11 +5260,16 @@ class BussinessRepository implements IBussinessInterface
                 'status' => 1,
                 'timecertificate' => time()
             ]);
-            $get_user = $listCourses = DB::table('tms_user_detail')
+
+            $training_program = TmsTrainningProgram::where('id', $trainning_id)->first();
+            $training_name =  isset($training_program) ? $training_program->name : '';
+
+            $get_user = DB::table('tms_user_detail')
                 ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
                 ->select('tms_user_detail.user_id', 'tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username')
                 ->where('mdl_user.id', '=', $user_id)->first();
-            $this->sendMail($get_user, $certificatecode);
+
+            $this->sendMail($get_user, $certificatecode, $training_name);
 
             usleep(10); //sleep tranh tinh trang query db lien tiep
             //insert du lieu lich su hoc tap
@@ -5384,9 +5390,15 @@ class BussinessRepository implements IBussinessInterface
 
 
     //thêm vào table TmsNotification để tự động cron và gửi
-    public function sendMail($user, $certificatecode)
+    public function sendMail($user, $certificate_code = '', $framework = '')
     {
         $data = array();
+
+        $content = array(
+            'certificate_code' => $certificate_code,
+            'competency_framework' => $framework,
+        );
+
         $data[] = array(
             'type' => TmsNotification::MAIL,
             'target' => TmsNotification::REMIND_CERTIFICATE,
@@ -5396,8 +5408,9 @@ class BussinessRepository implements IBussinessInterface
             'course_id' => 0,
             'created_at' => date('Y-m-d H:i:s', time()),
             'updated_at' => date('Y-m-d H:i:s', time()),
-            'content' => $certificatecode
+            'content' => json_encode($content, JSON_UNESCAPED_UNICODE)
         );
+
         $mail = TmsNotification::where([
             ['type', '=', TmsNotification::MAIL],
             ['target', '=', TmsNotification::REMIND_CERTIFICATE],
@@ -5406,7 +5419,7 @@ class BussinessRepository implements IBussinessInterface
         ])->first();
         try {
             if ($mail) {
-                $mail->content = $certificatecode;
+                $mail->content = json_encode($content, JSON_UNESCAPED_UNICODE);
                 $mail->save();
             } else {
                 TmsNotification::insert($data);
@@ -5659,7 +5672,7 @@ class BussinessRepository implements IBussinessInterface
                 'position' => $position,
                 'organization_id' => $organization_id
             ]);
-            if($hashAvatar)
+            if ($hashAvatar)
                 $cer->path = $path_avatar;
             $cer->save();
             \DB::commit();
@@ -6380,7 +6393,7 @@ class BussinessRepository implements IBussinessInterface
                     $tms_ques_data->content = $question_childs[$m]['content'];
                     $tms_ques_data->created_by = Auth::user()->id;
                     $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
+                    $tms_ques_data->type_question = \App\TmsQuestion::GROUP;
                     $tms_ques_data->save();
 
                     for ($i = 0; $i < $count_ans; $i++) {
@@ -6599,7 +6612,7 @@ class BussinessRepository implements IBussinessInterface
                     $tms_ques_data->content = $question_childs[$m]['content'];
                     $tms_ques_data->created_by = Auth::user()->id;
                     $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
+                    $tms_ques_data->type_question = \App\TmsQuestion::GROUP;
                     $tms_ques_data->save();
 
                     for ($i = 0; $i < $count_ans; $i++) {
@@ -6801,6 +6814,8 @@ class BussinessRepository implements IBussinessInterface
 
             \DB::beginTransaction();
 
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', Auth::user()->id)->delete();
+
             $count_multi = count($question_answers);
 
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
@@ -6809,6 +6824,7 @@ class BussinessRepository implements IBussinessInterface
                     $tms_survey_user->survey_id = $id;
                     $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
                     $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
+                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
                     if (!empty(Auth::user())) {
                         $tms_survey_user->user_id = Auth::user()->id;
                     } else {
@@ -6832,7 +6848,7 @@ class BussinessRepository implements IBussinessInterface
 
                         $tms_survey_user = new TmsSurveyUser();
                         $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['id'];
+                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
                         if (!empty(Auth::user())) {
                             $tms_survey_user->user_id = Auth::user()->id;
                         } else {
@@ -6886,6 +6902,8 @@ class BussinessRepository implements IBussinessInterface
 
             \DB::beginTransaction();
 
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->delete();
+
             $count_multi = count($question_answers);
 
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
@@ -6894,7 +6912,7 @@ class BussinessRepository implements IBussinessInterface
                     $tms_survey_user->survey_id = $id;
                     $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
                     $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
-
+                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
                     $tms_survey_user->user_id = $user_id;
 
 
@@ -6915,7 +6933,7 @@ class BussinessRepository implements IBussinessInterface
 
                         $tms_survey_user = new TmsSurveyUser();
                         $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['id'];
+                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
 
                         $tms_survey_user->user_id = $user_id;
 
@@ -15013,7 +15031,7 @@ class BussinessRepository implements IBussinessInterface
             ->select('u.username', 'tud.cmtnd', 'tud.fullname', 'tud.email', 'data1.userid as user_id', 'data1.attempt_time', 'data2.finalgrade');
 
         if ($keyword) {
-            $data = $data->where(function($query) use ($keyword){
+            $data = $data->where(function ($query) use ($keyword) {
                 $query->where('u.username', 'like', "%{$keyword}%");
                 $query->orWhere('tud.cmtnd', 'like', "%{$keyword}%");
                 $query->orWhere('tud.fullname', 'like', "%{$keyword}%");

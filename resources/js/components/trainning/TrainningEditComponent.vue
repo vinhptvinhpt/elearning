@@ -859,4 +859,8 @@
     display: block;
     margin: 20px 0;
   }
+
+  .selectpicker{
+    display: block !important;
+  }
 </style>

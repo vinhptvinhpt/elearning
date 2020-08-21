@@ -11,11 +11,13 @@ use App\TmsConfigs;
 use App\TmsDevice;
 use App\TmsInvitation;
 use App\TmsNotification;
+use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redis;
 
 class MailController extends Controller
 {
@@ -25,16 +27,32 @@ class MailController extends Controller
     /* Load / generate configuration */
     public function loadConfiguration()
     {
+//        $configs = array(
+//            TmsNotification::ENROL => TmsConfigs::ENABLE,
+//            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
+//            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
+//            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
+//            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
+//            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
+//            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
+//            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
+//            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
+//            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
+//        );
+
         $configs = array(
-            TmsNotification::ASSIGNED_COURSE => TmsConfigs::ENABLE,
+            //Default list
+            TmsNotification::ENROL => TmsConfigs::ENABLE, // = ASSIGNED_COURSE
+            TmsNotification::SUGGEST => TmsConfigs::ENABLE, // = SUGGEST_OPTIONAL_COURSE
             TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::ENABLE,
-            TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
-            TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
             TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
-            TmsNotification::ENROL => TmsConfigs::ENABLE
+            TmsNotification::FORGOT_PASSWORD => TmsConfigs::ENABLE,
+            //Not in default list
+            TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::ENABLE,
+            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
@@ -211,18 +229,18 @@ class MailController extends Controller
             $turn_on_simple[] = TmsNotification::ENROL;
             $turn_on += 1;
         }
-        if ($configs[TmsNotification::QUIZ_COMPLETED] == 'enable') {
-            $turn_on_simple[] = TmsNotification::QUIZ_COMPLETED;
-            $turn_on += 1;
-        }
-        if ($configs[TmsNotification::QUIZ_START] == 'enable') {
-            $turn_on_simple[] = TmsNotification::QUIZ_START;
-            $turn_on += 1;
-        }
-        if ($configs[TmsNotification::QUIZ_END] == 'enable') {
-            $turn_on_complex[] = TmsNotification::QUIZ_END;
-            $turn_on += 1;
-        }
+//        if ($configs[TmsNotification::QUIZ_COMPLETED] == 'enable') {
+//            $turn_on_simple[] = TmsNotification::QUIZ_COMPLETED;
+//            $turn_on += 1;
+//        }
+//        if ($configs[TmsNotification::QUIZ_START] == 'enable') {
+//            $turn_on_simple[] = TmsNotification::QUIZ_START;
+//            $turn_on += 1;
+//        }
+//        if ($configs[TmsNotification::QUIZ_END] == 'enable') {
+//            $turn_on_complex[] = TmsNotification::QUIZ_END;
+//            $turn_on += 1;
+//        }
 
         if ($turn_on != 0) {
             $lstNotif = TmsNotification::where('status_send', \App\TmsNotification::UN_SENT)
@@ -263,7 +281,6 @@ class MailController extends Controller
 //                ->whereIn('tms_nofitications.course_id', function ($query) {
 //                    $query->select('id')->from('mdl_course');
 //                })
-
                 ->select(
                     'tms_nofitications.id',
                     'tms_nofitications.target',
@@ -399,8 +416,8 @@ class MailController extends Controller
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('d/m/Y', strtotime($itemNotif->startdate)),
-                                    date('d/m/Y', strtotime($itemNotif->enddate)),
+                                    date('d/m/Y', $itemNotif->startdate),
+                                    date('d/m/Y', $itemNotif->enddate),
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
@@ -679,6 +696,160 @@ class MailController extends Controller
         }
     }
 
+//Send email request more attempt
+//Send 1 time only, then change status of notification
+    public function sendRequestMoreAttempt()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
+            $lstCompletedFrameNotifi = MdlUser::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user.id')
+                ->join('tms_nofitications', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.sendto')
+                ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+                    'mdl_user.email',
+                    'tms_user_detail.fullname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstCompletedFrameNotifi);
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstCompletedFrameNotifi as $itemNotification) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $fullname = $itemNotification->fullname;
+                        $email = $itemNotification->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::ASSIGNED_COMPETENCY,
+                                $itemNotification->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification->content
+                            ));
+                            $object_content = [];
+                            $student = json_decode($itemNotification->content);
+                            if (isset($training)) {
+                                $object_content = array(
+                                    'object_id' => $student->user_id,
+                                    'object_name' => $student->fullname,
+                                    'object_type' => '',
+                                    'parent_id' => '',
+                                    'parent_name' => '',
+                                    'start_date' => '',
+                                    'end_date' => ' ',
+                                    'code' => '',
+                                    'room' => '',
+                                    'grade' => '',
+                                );
+                            }
+                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                $this->sendPushNotification($lstCompletedFrameNotifi);
+                \DB::commit();
+            }
+        }
+    }
+
+//Insert notification to manager to adding more attempt for fail student
+    public function insertRequestMoreAttempt() {
+
+        //Redis::set('name', 'Taylor');
+        //$user = Redis::get('name');
+        //echo $user;
+
+        $user_id = 23898;
+        $course_id = 389;
+
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
+            $user = TmsUserDetail::query()->where('user_id', $user_id)->first();
+            if (isset($user)) {
+                $course = MdlCourse::query()->where('id', $course_id)->first();
+                if (isset($course)) {
+                    $orgUppers = self::orgUppers($user_id);
+                    if (!empty($orgUppers)) {
+                        $data = array();
+                        foreach ($orgUppers as $orgUpper) {
+                            if (strlen($orgUpper->email) != 0) {
+                                $element = array(
+                                    'type' => TmsNotification::MAIL,
+                                    'target' => TmsNotification::REQUEST_MORE_ATTEMPT,
+                                    'status_send' => 0,
+                                    'sendto' => $orgUpper->user_id,
+                                    'createdby' => 0,
+                                    'course_id' => $course_id,
+                                    'created_at' => date('Y-m-d H:i:s', time()),
+                                    'updated_at' => date('Y-m-d H:i:s', time()),
+                                );
+                                $element['content'] = array(
+                                    'user_id' => $user_id,
+                                    'fullname' => $user->fullname,
+                                );
+
+                                $data[] = $element;
+                            }
+                        }
+                        if (!empty($data)) {
+                            $convert_to_json = array();
+                            foreach ($data as $item) { //auto strip key of element, just use value = necessary data
+                                $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
+                                $convert_to_json[] = $item;
+                            }
+                            //batch insert
+                            TmsNotification::insert($convert_to_json);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+//get managers, leaders of user
+    /**
+     * @param $user_id
+     * @return array
+     */
+    function orgUppers($user_id)
+    {
+        return DB::table('tms_organization_employee as toe')
+            ->join('tms_user_detail as tud', 'toe.user_id', '=', 'tud.user_id')
+            ->whereIn('toe.organization_id', function ($query) use ($user_id) {
+                //check exist in table tms_nofitications
+                $query->select('organization_id')->from('tms_organization_employee')->where('user_id', '=', $user_id);
+            })
+            ->whereIn('toe.position', [TmsOrganizationEmployee::POSITION_MANAGER, TmsOrganizationEmployee::POSITION_LEADER])
+            ->select('tud.email', 'tud.fullname', 'tud.user_id')
+            ->get()
+            ->toArray();
+    }
 
 //Send email remind certificate
 //Notification record created by Tho
@@ -736,15 +907,18 @@ class MailController extends Controller
                                 '',
                                 $itemNotif->content
                             ));
+
+                            $decoded_content = json_decode($itemNotif->content);
+
                             $object_content = array(
                                 'object_id' => '',
-                                'object_name' => '',
-                                'object_type' => '',
+                                'object_name' => $decoded_content->competency_framework,
+                                'object_type' => 'training',
                                 'parent_id' => '',
                                 'parent_name' => '',
                                 'start_date' => '',
                                 'end_date' => '',
-                                'code' => $itemNotif->content,
+                                'code' => $decoded_content->certificate_code,
                                 'room' => '',
                                 'grade' => '',
                             );
@@ -1874,7 +2048,7 @@ class MailController extends Controller
             $flag = Cache::get('mail_development_mode');
             $mail_development_mode = $flag;
         } else {
-            $getDevelopment = TmsConfigs::where('target', '=', TmsNotification::DEVELOPMENT)->first();
+            $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
             //Set development_flag
             if (isset($getDevelopment)) {
                 if ($getDevelopment->content = 'enable') {

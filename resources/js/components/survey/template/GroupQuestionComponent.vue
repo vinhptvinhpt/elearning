@@ -22,7 +22,7 @@
                                :name="'customRadio-'+ques_data.id+index"
                                :id="'customRadio-'+ans.id"
                                :value="ans.id"
-                               @click="getAnswerChoose(ques_data.id,ques_data.type_question,ans.id,ans.content)">
+                               @click="getAnswerChoose(ques_data.id,ques_data.type_question,ans.id,ans.content,question.id)">
                     </td>
                 </tr>
 
@@ -40,9 +40,15 @@
             return {}
         },
         methods: {
-            getAnswerChoose(ques_id, type_ques, ans_id, ans_content) {
+            getAnswerChoose(ques_id, type_ques, ans_id, ans_content, ques_pr) {
 
-                var data_answer = {ques_id: ques_id, type_ques: type_ques, ans_id: ans_id, ans_content: ans_content};
+                var data_answer = {
+                    ques_id: ques_id,
+                    type_ques: type_ques,
+                    ans_id: ans_id,
+                    ans_content: ans_content,
+                    ques_pr: ques_pr
+                };
                 var count_ans = this.question_answers.length;
                 if (count_ans > 0) {
                     for (var i = 0; i < count_ans; i++) {

@@ -940,6 +940,22 @@ $_SESSION["allowCms"] = $allowCms;
         }
     }
 
+    @media screen and (max-width: 1920px) {
+        .info-user .avatar img {
+            width: 105px !important;
+            height: 105px !important;
+            bottom: 26% !important;
+        }
+    }
+
+    @media screen and (max-width: 1440px) {
+        .info-user .avatar img {
+            width: 85px !important;
+            height: 85px !important;
+            bottom: 26% !important;
+        }
+    }
+
     @media screen and (max-width: 1024px) {
         .block-color {
             width: 80px !important;
@@ -1169,7 +1185,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 </div>
                                 <div class="info-statistic__completed-courses">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=other">
-                                        <div class="text-course">Other courses</div>
+                                        <div class="text-course">Optional courses</div>
                                         <div class="text-number"><?php echo count($coursesSuggest); ?></div>
                                     </a>
                                 </div>
@@ -1529,7 +1545,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
+                                        <div class="col-6 title"><h2>Optional <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a
                                                     href="lms/course/index.php?progress=1&type=other">Show All</a>

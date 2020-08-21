@@ -164,7 +164,6 @@
 </template>
 
 <script>
-  import Auth from '../../../services/auth'
   import Ls from '../../../services/ls'
 
   export default {
