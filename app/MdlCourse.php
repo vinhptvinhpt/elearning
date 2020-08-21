@@ -28,7 +28,8 @@ class MdlCourse extends Model
         'deleted',
         'last_modify_user',
         'last_modify_time',
-        'last_modify_action'
+        'last_modify_action',
+        'is_toeic'
     ];
 
 //    //Connection to logs

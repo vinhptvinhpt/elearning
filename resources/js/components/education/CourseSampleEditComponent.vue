@@ -79,6 +79,16 @@
                         <label v-if="!course.pass_score"
                                class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
+
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="is_toeic"
+                                 :checked="course.is_toeic==1?true:false" v-model="course.is_toeic">
+                          <label v-if="course.is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
+                          <label v-else class="custom-control-label" for="is_toeic">No</label>
+                        </div>
+                      </div>
                       <!--                <div class="col-4 form-group">-->
                       <!--                    <label for="inputText6">Thời gian bắt đầu *</label>-->
                       <!--                    <input v-model="course.startdate" type="text" id="inputText7"-->
@@ -164,7 +174,7 @@
           filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
           filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&responseType=json&_token=' + $('meta[name="csrf-token"]').attr('content')
         },
-        last_update: {}
+        last_update: {},
       }
     },
     methods: {
@@ -228,6 +238,8 @@
         this.formData.append('allow_register', 1);
         this.formData.append('is_end_quiz', 0);
         this.formData.append('course_place', '');
+        var is_toeic = this.course.is_toeic ? 1 : 0;
+        this.formData.append('is_toeic', is_toeic);
         this.formData.append('offline', 0);//ko phai khoa hoc tap trung
 
         axios.post('/api/courses/update/' + this.course_id, this.formData, {

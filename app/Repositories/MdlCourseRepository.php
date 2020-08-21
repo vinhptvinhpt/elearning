@@ -458,6 +458,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $estimate_duration = $request->input('estimate_duration');
         $course_budget = $request->input('course_budget');
         $access_ip_string = $request->input('access_ip');
+        $is_toeic = $request->input('is_toeic');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -484,6 +485,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course->shortname = $shortname;
         $course->fullname = $fullname;
         $course->summary = $description;
+        $course->is_toeic = $is_toeic;
         $course->course_avatar = $path_avatar;
         if ($sample == 1) {
             $course->startdate = strtotime(Carbon::now());
@@ -687,6 +689,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
             $access_ip_string = $request->input('access_ip');
+            $is_toeic = $request->input('is_toeic');
+
             //thực hiện insert dữ liệu
             $param = [
                 'shortname' => 'code',
@@ -790,7 +794,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $course->enddate = $eddate;
             }
 
-
             $course->total_date_course = $total_date_course;
             $course->course_place = $course_place;
             $course->category = $category_id;
@@ -799,10 +802,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course->summary = $description;
             $course->estimate_duration = $estimate_duration;
             $course->course_budget = $course_budget;
-
+            $course->is_toeic = $is_toeic;
             $course->allow_register = $allow_register;
             $access_ip = $this->spitIP($access_ip_string);
             $course->access_ip = $access_ip;
+
             $course->save();
 
 
