@@ -43,6 +43,6 @@ return [
 
         'ACCOUNT_KEY'=>'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==',
 
-        'TMS_NAME' => 'Easia Academy',
+        'TMS_NAME' => 'PHH Academy',
     ],
 ];
