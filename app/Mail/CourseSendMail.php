@@ -34,14 +34,10 @@ class CourseSendMail extends Mailable
 
     const EMAIL = "[EMAIL]";
     const COMPETENCYNAME = "[COMPETENCYNAME]";
-    const LANGUAGE = "[LANGUAGE]";
-    const TRAINER = "[TRAINER]";
-    const STARTTIME = "[STARTTIME]";
-    const ENDTIME = "[ENDTIME]";
-    const DEADLINE = "[DEADLINE]";
     const CERTIFICATECODE = "[CERTIFICATECODE]";
     const COURSEDESCRIPTION = "[COURSEDESCRIPTION]";
-
+    const STARTTIME = "[STARTTIME]";
+    const ENDTIME = "[ENDTIME]";
 
     private $activity;
     private $fullname;
@@ -59,7 +55,7 @@ class CourseSendMail extends Mailable
     private $competency_name;
     private $quiz_start;
     private $quiz_end;
-    private $desciption;
+    private $course_description;
     private $language;
     private $trainer;
     private $start_time;
@@ -82,16 +78,8 @@ class CourseSendMail extends Mailable
      * @param string $course_list
      * @param string $url_confirm_email
      * @param string $competency_name
-     * @param string $quiz_end
-     * @param string $quiz_start
      * @param string $password
-     * @param string $description
-     * @param string $language
-     * @param string $trainer
-     * @param string $start_time
-     * @param string $end_time
-     *
-     *
+     * @param string $course_description
      */
     public function __construct(
         $activity,
@@ -107,14 +95,8 @@ class CourseSendMail extends Mailable
         $course_list = '',
         $url_confirm_email = '',
         $competency_name = '',
-        $quiz_end = '',
-        $quiz_start = '',
         $password = '',
-        $description = '',
-        $language = '',
-        $trainer = '',
-        $start_time = '',
-        $end_time = ''
+        $course_description = ''
     )
     {
         $this->activity = $activity;
@@ -130,14 +112,9 @@ class CourseSendMail extends Mailable
         $this->course_list = $course_list;
         $this->url_confirm_email = $url_confirm_email;
         $this->password = $password;
-
         $this->competency_name = $competency_name;
-        $this->quiz_start = $quiz_start;
-        $this->quiz_end = $quiz_end;
-        $this->language = $language;
-        $this->trainer = $trainer;
-        $this->start_time = $start_time;
-        $this->end_time = $end_time;
+        $this->course_description = $course_description;
+
     }
 
     /**
@@ -164,44 +141,40 @@ class CourseSendMail extends Mailable
             $subject = '[ELEARNING] '. __('assigned_course');
             $view = 'email.assigned_course';
         }
-
+        elseif ($this->activity == TmsNotification::SUGGEST) {
+            $subject = '[ELEARNING] '. __('suggest_optional_course');
+            $view = 'email.suggest_optional_course';
+        }
         elseif ($this->activity == TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE) {
             $course_array = json_decode($this->content);
             $this->course_list = $course_array;
             $subject = '[ELEARNING] '. __('remind_expire_required_course');
             $view = 'email.remind_expire_required_course';
         }
+        elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
+            $subject = __('invitation_offline_course');
+            $view = 'email.invite_student';
+        }
+        elseif ($this->activity == TmsNotification::ASSIGNED_COMPETENCY) {
+            $detail = json_decode($this->content);
+            $this->competency_name = $detail->training_name;
+            $this->start_date = $detail->time_start;
+            $this->end_date = $detail->time_end;
+            $subject = '[ELEARNING] '. __('assigned_competency');
+            $view = 'email.assigned_competency';
+        }
+
+
+
         elseif($this->activity == TmsNotification::COMPLETED_FRAME){
             $course_array = json_decode($this->content);
             $this->course_list = $course_array;
             $subject = '[ELEARNING] Thông báo xác nhận email';
             $view = 'email.completed_competency';
         }
-
-        elseif ($this->activity == TmsNotification::ASSIGNED_COMPETENCY) {
-            $subject = '[ELEARNING] '. __('assigned_competency');
-            $view = 'email.assigned_competency';
-        }
-        elseif ($this->activity == TmsNotification::SUGGEST) {
-            $course_array = json_decode($this->course_list);
-            $this->course_list = $course_array;
-            $subject = '[ELEARNING] '. __('suggest_optional_course');
-            $view = 'email.suggest_optional_course';
-        }
         elseif ($this->activity == TmsNotification::REMIND_EXAM) {
             $subject = '[ELEARNING] '. __('remind_exam');
             $view = 'email.remind_exam';
-        }
-//        elseif ($this->activity == TmsNotification::INVITATION_OFFLINE_COURSE) {
-//            $subject = '[ELEARNING] '. __('invitation_offline_course');
-//            $view = 'email.invitation_offline_course';
-//        }
-        elseif ($this->activity == TmsNotification::INVITE_STUDENT) {
-            $subject = __('invitation_offline_course');
-            $view = 'email.invite_student';
-        }elseif($this->activity == TmsNotification::ENROL){
-            $subject = '[ELEARNING] '. __('thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc');
-            $view = 'email.enrol_course';
         }
         elseif($this->activity == TmsNotification::NOTICE_SPAM_EMAIL){
             $subject = '[ELEARNING] Testing email from Elearning';
@@ -226,10 +199,7 @@ class CourseSendMail extends Mailable
                 ->with('competency_name', $this->competency_name)
                 ->with('quiz_start', $this->quiz_start)
                 ->with('quiz_end', $this->quiz_end)
-                ->with('language', $this->language)
-                ->with('trainer', $this->trainer)
-                ->with('start_time', $this->start_time)
-                ->with('end_time', $this->end_time)
+                ->with('course_description', $this->course_description)
                 ->with('certificate_code', $this->certificate_code)
                 ->view($view);
         }

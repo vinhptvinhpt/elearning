@@ -172,6 +172,7 @@ class MailController extends Controller
                     $start_date = $item->course->startdate;
                     $end_date = $item->course->enddate;
                     $course_place = $item->course->course_place;
+                    $course_description = $item->course->summary;
                     $invite_id = $item->id;
 
                     //$email = "immrhy@gmail.com";
@@ -189,7 +190,12 @@ class MailController extends Controller
                                 $end_date,
                                 $course_place,
                                 '',
-                                $invite_id
+                                $invite_id,
+                                '',
+                                '',
+                                '',
+                                '',
+                                $course_description
                             ));
                             $sent += 1;
 
@@ -416,8 +422,8 @@ class MailController extends Controller
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('d/m/Y', $itemNotif->startdate),
-                                    date('d/m/Y', $itemNotif->enddate),
+                                    date('Y jS F g:iA', $itemNotif->startdate),
+                                    date('Y jS F g:iA', $itemNotif->enddate),
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
