@@ -249,6 +249,8 @@ class BussinessRepository implements IBussinessInterface
                     -> join('tms_user_detail as tud', 'tud.user_id','=','mcmc.userid')
                     -> where("tud.country","=",$country);
             }
+
+            //học viên hoàn thành khóa học
             $completed_student = $completed_student
                 ->select(
                     DB::raw("date_format(from_unixtime(course_completion.timecompleted),'%c/%y') as mthyr"),
@@ -341,7 +343,6 @@ class BussinessRepository implements IBussinessInterface
 
             $response['pie_data'] = array_values($pie_data);
 
-            //Hoc vien dang ki
             $completed = fillMissingMonthChartData($complete_source, $start_time, $end_time);
             $response['completed'] = $completed;
 
