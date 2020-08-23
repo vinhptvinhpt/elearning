@@ -1028,7 +1028,8 @@
         "learner": "Learner",
         "completed": "Completed",
         "in_progressing": "In progressing",
-        "fail_course": "Fail"
+        "fail_course": "Fail",
+        "toeic_course": "Toeic Course"
     },
     "vi.keys": {
         "language": "",
@@ -2050,6 +2051,7 @@
         "learner": "Học viên",
         "completed": "Hoàn thành",
         "in_progressing": "Đang học",
-        "fail_course": "Không hoàn thành"
+        "fail_course": "Không hoàn thành",
+        "toeic_course": "Khóa Toeic"
     }
 }

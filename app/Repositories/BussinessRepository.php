@@ -745,6 +745,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.course_place',
                 'mdl_course.estimate_duration',
                 'mdl_course.course_budget',
+                'mdl_course.is_toeic',
                 'mdl_course.access_ip'
             )
             ->where('mdl_course.id', '=', $id)->first();
@@ -985,6 +986,7 @@ class BussinessRepository implements IBussinessInterface
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
             $access_ip_string = $request->input('access_ip');
+            $is_toeic = $request->input('is_toeic');
 
             $param = [
                 'course_avatar' => 'text',
@@ -1077,6 +1079,8 @@ class BussinessRepository implements IBussinessInterface
             $access_ip = $this->spitIP($access_ip_string);
             $course->access_ip = $access_ip;
 
+            //toeic
+            $course->is_toeic = $is_toeic;
             $course->save();
 
             //insert dữ liệu điểm qua môn

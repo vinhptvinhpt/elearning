@@ -1,5 +1,5 @@
 <?php
-if(!isloggedin()){
+if (!isloggedin()) {
     require_login();
 }
 ?>
@@ -14,6 +14,11 @@ if(!isloggedin()){
 <script src="js/popper.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+
+<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
 <style>
     @font-face {
@@ -43,25 +48,28 @@ if(!isloggedin()){
         text-decoration: none;
     }
 
-    #page{
+    #page {
         margin-top: 50px !important;
     }
-    #page-wrapper .navbar{
+
+    #page-wrapper .navbar {
         padding: 7px 1rem 9px .5rem !important;
     }
-    .navbar .count-container{
+
+    .navbar .count-container {
         top: 2px !important;
     }
+
     /*    view*/
     .alert-block {
         opacity: 1 !important;
     }
 
-    .modal-body{
+    .modal-body {
         margin: 0 auto;
     }
 
-    .modal-body img{
+    .modal-body img {
         max-width: 400px;
     }
 
@@ -71,7 +79,51 @@ if(!isloggedin()){
     <?//=$marginPage?> /*;*/
     }
 
-    #page-wrapper #page{
+    .import-student-score .container{
+        padding: 2%;
+        display: inline-flex;
+    }
+
+    .btn-up-file{
+        width: 100%;
+        height: 100%;
+    }
+
+    .list-point-toeic {
+        width: 150px;
+        /* text-align: center; */
+        margin: 0 auto;
+    }
+
+    .list-point-toeic li {
+        width: 100%;
+        padding: 5%;
+    }
+
+    .list-point-toeic li span {
+        font-family: Roboto;
+        color: #0056b3;
+    }
+
+    .title-part {
+        float: left;
+        width: 50%;
+        text-align: left;
+    }
+
+    .score-part {
+        font-weight: bold;
+        color: #000000 !important;
+        float: left;
+        width: 50%;
+        text-align: right;
+    }
+
+    .score-total {
+        color: #ff0000 !important;
+    }
+
+    #page-wrapper #page {
         margin-right: 0;
     }
 
@@ -81,7 +133,7 @@ if(!isloggedin()){
         color: white;
     }
 
-    .sp-name-course{
+    .sp-name-course {
         font-size: 32px;
         position: absolute;
         width: 80%;
@@ -93,6 +145,7 @@ if(!isloggedin()){
         left: 50%;
         transform: translate(-50%, -50%);
     }
+
     .closebtn {
         margin-left: 15px;
         color: white;
@@ -199,7 +252,7 @@ if(!isloggedin()){
         display: none;
     }
 
-    .nav-unit {
+    .nav-tab-last {
         margin: 0 auto;
         margin-left: 0;
     }
@@ -273,7 +326,7 @@ if(!isloggedin()){
         display: none;
     }
 
-    #courseunit {
+    #courseunit, #toeicresult, #toeicadmin {
         display: none;
     }
 
@@ -302,7 +355,7 @@ if(!isloggedin()){
         color: #333;
     }
 
-    .detail-list li.li-module-done a, .detail-list li.li-module-done i{
+    .detail-list li.li-module-done a, .detail-list li.li-module-done i {
         color: #00A426;
     }
 
@@ -346,21 +399,22 @@ if(!isloggedin()){
     }
 
     .unit-click {
-        border: 2px solid<?=$_SESSION["color"]?> !important;
+        border: 2px solid <?=$_SESSION["color"]?> !important;
     }
 
-    .unit-done{
+    .unit-done {
         /*border: 2px solid #378449;*/
     }
 
-    .unit-done .unit__title{
+    .unit-done .unit__title {
         /*background: #378449 0% 0% no-repeat;*/
     }
-    .unit-done .unit__title p{
+
+    .unit-done .unit__title p {
         /*color: #ffffff;*/
     }
 
-    .unit-done .unit__icon i{
+    .unit-done .unit__icon i {
         color: #378449;
     }
 
@@ -734,11 +788,11 @@ if ($notifyeditingon == 1) {
 $result_ip = array_values($DB->get_records_sql("Select access_ip from mdl_course where id = " . $id))[0]->access_ip;
 $root_url = $CFG->wwwroot;
 
-$sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = '. $USER->id . ' AND course_id = '. $id;
+$sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = ' . $USER->id . ' AND course_id = ' . $id;
 
-$userCheck = array_values($DB->get_records_sql($sqlUserCheck)) ;
+$userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
-$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
+$sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, mc.is_toeic, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
 
 $teachers_sql = 'select @s:=@s+1 stt,
@@ -778,7 +832,7 @@ $start_course_link = '';
 if (!empty($units)) {
     foreach ($units as $unit) {
         $modules = $unit['modules'];
-        if ($modules){
+        if ($modules) {
             $start_course_link = $modules[0]['url'];
             break;
         }
@@ -789,6 +843,8 @@ if (!empty($units)) {
 
 $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 
+//
+$permission_admin = false;
 //Check permission edit course
 $permission_edit = false;
 $course_category = $course->category;
@@ -807,6 +863,7 @@ foreach ($permissions as $permission) {
 
     if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
         $permission_edit = true;
+        $permission_admin = true;
         break;
     }
 
@@ -836,7 +893,7 @@ $sqlGetBadge = 'select path from image_certificate where type = 2 and is_active 
 $getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
 $pathBadge = $getBadge->path;
 $pathBadge = ltrim($pathBadge, $pathBadge[0]);
-if(empty($pathBadge))
+if (empty($pathBadge))
     $pathBadge = 'images/default_badge.png';
 //$_SESSION["displayPopup"] = 1;
 //-1 chưa xem. 0 chưa có bản ghi trong db, 1 xem, 2 đã xem
@@ -855,10 +912,10 @@ if ($course->numofmodule == 0) {
             $sqlGetCourseNotification = 'select count(*) as total from tms_course_congratulations WHERE user_id = ' . $USER->id . ' and course_id = ' . $course->id;
             $getCourseNotification = array_values($DB->get_records_sql($sqlGetCourseNotification))[0];
             $courseNotification = $getCourseNotification->total;
-            if($courseNotification == 0){
+            if ($courseNotification == 0) {
                 $test = $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
                 $_SESSION["displayPopup"] = 1;
-            }else{
+            } else {
                 $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
                 $_SESSION["displayPopup"] = 1;
             }
@@ -873,201 +930,309 @@ if ($course->numofmodule == 0) {
         }
     }
 }
+
+//get score for toeic
+$sqlGetToeicScore = 'select listening, reading, total from tms_quiz_grades where userid =' . $USER->id . ' and courseid = ' . $course->id;
+$toeicScore = array_values($DB->get_records_sql($sqlGetToeicScore))[0];
+
+//check if is toeic course and is not admin => toeic result is last tab
+$tab_unit = '';
+$tab_toeic_result = '';
+$tab_toeic_admin = '';
+if ($course->is_toeic == 1 && $permission_admin) {
+    $tab_toeic_admin = 'nav-tab-last';
+} else if ($course->is_toeic == 1) {
+    $tab_toeic_result = 'nav-tab-last';
+} else {
+    $tab_unit = 'nav-tab-last';
+}
+//check if is toeic course and is admin => toeic result is last tab
+//else unit list is last tab
+
+//
 ?>
 <body <?php echo $bodyattributes ?>>
 
 <div class="wrapper"><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
-    <section class="section section--header"><!-- section -->
-        <div class="container">
-            <!--                progress info-->
-            <div class="progress-info">
-                <div class="progress-info__title mt-2 mb-3"><span title="<?php echo $course->fullname; ?>"><a class="prev-btn"><i
-                                class="fa fa-angle-left"
-                                aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
-                <div class="progress-info__content">
-                    <div class="row">
-                        <div class="col-4 info-course-detail">
-                            <ul>
-                                <li class="teacher"><i class="fa fa-user"
-                                                       aria-hidden="true"></i> <?php echo $teacher_name ?></li>
-                                <li class="units"><i class="fa fa-file"
-                                                     aria-hidden="true"></i> <?php echo $course->numofmodule; ?> Units
-                                </li>
-                                <li class="units"><i class="fa fa-clock-o"
-                                                     aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                    hours
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="col-6 row info-course-progress">
-                            <span class="col-3">PROGRESS</span>
 
-                            <div class="col-9">
-                                <?php if ($course->id != 506) { ?>
-                                    <hgroup class="speech-bubble">
-                                        <h7><?php echo $course->numoflearned; ?>
-                                            /<?php echo $course->numofmodule; ?></h7>
-                                    </hgroup>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar"
-                                             style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
-                                             aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
-                                <?php } else { ?>
-                                    <hgroup class="speech-bubble">
-                                        <h7><?php echo $course->numofmodule; ?>/<?php echo $course->numofmodule; ?></h7>
-                                    </hgroup>
-                                    <div class="progress">
-                                        <div class="progress-bar" role="progressbar"
-                                             style="width: <?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>%;"
-                                             aria-valuenow="<?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
+    <div id="app">
+        <section class="section section--header"><!-- section -->
+            <div class="container">
+                <!--                progress info-->
+                <div class="progress-info">
+                    <div class="progress-info__title mt-2 mb-3"><span title="<?php echo $course->fullname; ?>"><a
+                                class="prev-btn"><i
+                                    class="fa fa-angle-left"
+                                    aria-hidden="true"></i></a>  <?php echo $course->fullname; ?></span></div>
+                    <div class="progress-info__content">
+                        <div class="row">
+                            <div class="col-4 info-course-detail">
+                                <ul>
+                                    <li class="teacher"><i class="fa fa-user"
+                                                           aria-hidden="true"></i> <?php echo $teacher_name ?></li>
+                                    <li class="units"><i class="fa fa-file"
+                                                         aria-hidden="true"></i> <?php echo $course->numofmodule; ?>
+                                        Units
+                                    </li>
+                                    <li class="units"><i class="fa fa-clock-o"
+                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
+                                        hours
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-6 row info-course-progress">
+                                <span class="col-3">PROGRESS</span>
 
-                                <?php } ?>
+                                <div class="col-9">
+                                    <?php if ($course->id != 506) { ?>
+                                        <hgroup class="speech-bubble">
+                                            <span class="number-module"><?php echo $course->numoflearned; ?>
+                                                /<?php echo $course->numofmodule; ?></span>
+                                        </hgroup>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
+                                                 aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                    <?php } else { ?>
+                                        <hgroup class="speech-bubble">
+                                            <span class="number-module"><?php echo $course->numofmodule; ?>
+                                                /<?php echo $course->numofmodule; ?></span>
+                                        </hgroup>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar"
+                                                 style="width: <?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>%;"
+                                                 aria-valuenow="<?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>"
+                                                 aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+
+                                    <?php } ?>
+                                </div>
+                            </div>
+                            <div class="col-2 info-course-btn">
+                                <a href="<?php echo $start_course_link ?>"
+                                   <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()"
+                                    <?php } ?>
+                                   class="btn btn-start-course btn-click">start course</a>
                             </div>
                         </div>
-                        <div class="col-2 info-course-btn">
-                            <a href="<?php echo $start_course_link ?>"
-                               <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()"; <?php } ?>
-                               class="btn btn-start-course btn-click">start course</a>
-                        </div>
                     </div>
                 </div>
-            </div>
-    </section>
+        </section>
 
 
-    <section class="section section-nav">
-        <div class="container">
-            <!--                click tab - nav-->
-            <div class="nav-course">
-                <ul class="nav nav-tabs-courses">
-                    <li class="nav-item nav-click nav-introduction">
-                        <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
-                            introduction</a>
-                    </li>
-                    <li class="nav-item nav-click nav-unit">
-                        <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
-                    </li>
-                    <?php if ($permission_edit) { ?>
-                        <li class="nav-item nav-setting">
-                            <a class="dropdown-toggle setting-link" id="menu-edit" data-toggle="dropdown">
-                                <i class="fa fa-cog" aria-hidden="true"></i>
-                                Edit course
-                            </a>
-                            <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
-                                                           href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i
-                                            class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
-                                                           href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i
-                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course
-                                        completion</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
-                                                           href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i
-                                            class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
-                                <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
-                                                           href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i
-                                            class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
-                            </ul>
+        <section class="section section-nav">
+            <div class="container">
+                <!--                click tab - nav-->
+                <div class="nav-course">
+                    <ul class="nav nav-tabs-courses">
+                        <li class="nav-item nav-click nav-introduction">
+                            <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
+                                introduction</a>
                         </li>
-                    <?php } ?>
-                </ul>
+                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
+                            <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
+                                List</a>
+                        </li>
+                        <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
+                            <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
+                                <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin"
+                                   role="tab">List
+                                    Toeic Result</a>
+                            </li>
+                        <?php } else if ($course->is_toeic == 1) { ?>
+                            <li class="nav-item nav-click <?php echo $tab_toeic_result; ?>">
+                                <a id="toeic-admin-link" class="nav-link" data-toggle="tab" href="#toeicresult"
+                                   role="tab">Toeic
+                                    Result</a>
+                            </li>
+                        <?php } ?>
+                        <?php if ($permission_edit) { ?>
+                            <li class="nav-item nav-setting">
+                                <a class="dropdown-toggle setting-link" id="menu-edit" data-toggle="dropdown">
+                                    <i class="fa fa-cog" aria-hidden="true"></i>
+                                    Edit course
+                                </a>
+                                <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
+                                    <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                               href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i
+                                                class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                    <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                               href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i
+                                                class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course
+                                            completion</a></li>
+                                    <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                               href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i
+                                                class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
+                                    <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1"
+                                                               href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i
+                                                class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
+                                </ul>
+                            </li>
+                        <?php } ?>
+                    </ul>
+                </div>
             </div>
-        </div>
-    </section>
+        </section>
 
-    <!--    body-->
-    <section class="section section-content section-course-info">
-        <div class="container">
-            <div class="row col-12 course-content course-main" id="courseintroduction">
-                <div class="col-8 course-block-info">
-
-                    <div class="course-block course-description">
-                        <div class="course-block__content">
-                            <?php echo $course->summary; ?>
+        <!--    body-->
+        <section class="section section-content section-course-info">
+            <div class="container">
+                <div class="row col-12 course-content course-main" id="courseintroduction">
+                    <div class="col-8 course-block-info">
+                        <div class="course-block course-description">
+                            <div class="course-block__content">
+                                <?php echo $course->summary; ?>
+                            </div>
                         </div>
                     </div>
+                    <div class="col-4 course-block-img">
+                        <img src="<?php echo $course->course_avatar; ?>" alt="">
+                    </div>
                 </div>
-                <div class="col-4 course-block-img">
-                    <img src="<?php echo $course->course_avatar; ?>" alt="">
-                </div>
-            </div>
 
-
-            <div class="row col-12 course-content" id="courseunit">
-                <div class="col-5 unit-info">
-                    <div class="list-units">
-                        <?php foreach ($units as $no => $unit) { ?>
-                            <?php $modulCompletion = array_sum(array_map(function($item) {
-                                return $item['iscompletion'];
-                            }, $unit['modules']));
-                            $totalModul = count($unit['modules']);
-                            $icon = "pencil-square-o";
-                            $addName = "";
-                            if($totalModul > 0 && $modulCompletion == $totalModul) {
-                                $icon = "check";
-                                $addName = 'unit-done';
-                            }?>
-                            <div class="unit <?php echo $addName; ?>" id="unit_<?php echo $unit['id']; ?>" section-no="<?php echo $no ?>">
-                                <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
-                                <div class="unit__progress">
-                                    <div class="unit__icon">
-                                        <i class="fa fa-<?php echo $icon; ?>" aria-hidden="true"></i>
-                                    </div>
-                                    <div class="unit__progress-number">
-                                        <!--                                                class="percent-get">--><?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
-                                        <p><i class="fa fa-check" aria-hidden="true"></i> <span
-                                                class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul;?></span>
-                                        </p>
+                <div class="row col-12 course-content" id="courseunit">
+                    <div class="col-5 unit-info">
+                        <div class="list-units">
+                            <?php foreach ($units as $no => $unit) { ?>
+                                <?php $modulCompletion = array_sum(array_map(function ($item) {
+                                    return $item['iscompletion'];
+                                }, $unit['modules']));
+                                $totalModul = count($unit['modules']);
+                                $icon = "pencil-square-o";
+                                $addName = "";
+                                if ($totalModul > 0 && $modulCompletion == $totalModul) {
+                                    $icon = "check";
+                                    $addName = 'unit-done';
+                                } ?>
+                                <div class="unit <?php echo $addName; ?>" id="unit_<?php echo $unit['id']; ?>"
+                                     section-no="<?php echo $no ?>">
+                                    <div class="unit__title"><p><?php echo $unit['name']; ?></p></div>
+                                    <div class="unit__progress">
+                                        <div class="unit__icon">
+                                            <i class="fa fa-<?php echo $icon; ?>" aria-hidden="true"></i>
+                                        </div>
+                                        <div class="unit__progress-number">
+                                            <!--                                                class="percent-get">-->
+                                            <?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
+                                            <p><i class="fa fa-check" aria-hidden="true"></i> <span
+                                                    class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
+                            <?php } ?>
+                        </div>
+                    </div>
+
+                    <div class="col-7 unit-info unit-detail">
+                        <?php foreach ($units as $unit) { ?>
+                            <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
+                                <div class="detail-title">
+                                    <p><?php echo $unit['name']; ?></p>
+                                </div>
+                                <div class="detail-content">
+                                    <?php if ($unit['modules'] && !empty($unit['modules'])) {
+                                        foreach ($unit['modules'] as $module) { ?>
+                                            <ul class="detail-list">
+                                                <?php if ($module['iscompletion'] == 1) { ?>
+                                                    <li class="li-module-done"><i class="fa fa-check"
+                                                                                  aria-hidden="true"></i>
+                                                        <a class="module-done"
+                                                           href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                    </li>
+                                                <?php } else { ?>
+                                                    <li><i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                                        <a class="module-notyet"
+                                                           href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                    </li>
+                                                <?php } ?>
+                                            </ul>
+                                        <?php }
+                                    } else { ?>
+                                        Unit has no content.
+                                    <?php } ?>
+                                </div>
+                                <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
+                                    <div class="detail-btn">
+                                        <a href="<?php echo $unit['modules'][0]['url']; ?>"
+                                           class="btn btn-click btn-start-unit">Start unit</a>
+                                    </div>
+                                <?php } ?>
                             </div>
                         <?php } ?>
                     </div>
                 </div>
 
-                <div class="col-7 unit-info unit-detail">
-                    <?php foreach ($units as $unit) { ?>
-                        <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
-                            <div class="detail-title">
-                                <p><?php echo $unit['name']; ?></p>
-                            </div>
-                            <div class="detail-content">
-                                <?php if ($unit['modules'] && !empty($unit['modules'])) {
-                                    foreach ($unit['modules'] as $module) { ?>
-                                        <ul class="detail-list">
-                                            <?php if($module['iscompletion'] == 1){ ?>
-                                                <li class="li-module-done"> <i class="fa fa-check" aria-hidden="true"></i>
-                                                    <a class="module-done" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
-                                                </li>
-                                            <?php } else {?>
-                                                <li>  <i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                    <a class="module-notyet" href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
-                                                </li>
-                                            <?php }?>
-                                        </ul>
-                                    <?php }
-                                } else { ?>
-                                    Unit has no content.
-                                <?php } ?>
-                            </div>
-                            <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
-                                <div class="detail-btn">
-                                    <a href="<?php echo $unit['modules'][0]['url']; ?>"
-                                       class="btn btn-click btn-start-unit">Start unit</a>
+                <div class="row col-12 course-content" id="toeicresult">
+                    <ul class="list-style list-point-toeic">
+                        <li><span class="title-part">Listening:</span><span
+                                class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->listening; ?></span>
+                        </li>
+                        <li><span class="title-part">Reading:</span><span
+                                class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->reading; ?></span>
+                        </li>
+                        <li><span class="title-part">Total:</span><span
+                                class="score-part score-total"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->total; ?></span>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="row col-12 course-content" id="toeicadmin">
+                    <div class="import-student-score mb-3" style="background-color: #ffffff; width: 100%">
+                            <div class="container">
+                                <div class="custom-file" style="width: 90%">
+                                    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
+                                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                                    <div class="invalid-feedback">Example invalid custom file feedback</div>
                                 </div>
-                            <?php } ?>
+                                <div class="custom-file" style="width: 8%; margin: inherit">
+                                    <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Up file</button>
+                                </div>
+                            </div>
+                    </div>
+                    <div class="table-responsive" style="background-color: #ffffff">
+                        <table class="table table-bordered table_res">
+                            <thead>
+                            <th style="min-width: 30px">No</th>
+                            <th>Name</th>
+                            <th class="d-none d-sm-table-cell">Email</th>
+                            <th class="d-none d-sm-table-cell">Listening</th>
+                            <th class="d-none d-sm-table-cell">Reading</th>
+                            <th class="d-none d-sm-table-cell">Total</th>
+                            </thead>
+                            <tbody>
+                            <tr v-if="toeicScores.length == 0">
+                                <td colspan="6">No data</td>
+                            </tr>
+                            <tr v-else v-for="(item,index) in toeicScores">
+                                <td>{{ (current-1)*recordPerPage+(index+1) }}</td>
+                                <td>{{ item.fullname }}</td>
+                                <td class="d-none d-sm-table-cell">{{ item.email }}</td>
+                                <td class="d-none d-sm-table-cell">{{ item.listening }}</td>
+                                <td class="d-none d-sm-table-cell">{{ item.reading }}</td>
+                                <td class="d-none d-sm-table-cell">{{ item.total }}</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                        <div class="pagination" v-if="totalPage > 1">
+                            <v-pagination
+                                v-model="current"
+                                :page-count="totalPage"
+                                :classes="bootstrapPaginationClasses"
+                                :labels="customLabels"
+                                @input="onPageChange"
+                            ></v-pagination>
                         </div>
-                    <?php } ?>
+                    </div>
                 </div>
             </div>
-        </div>
-    </section>
-    <!--    --><?php //echo $OUTPUT->footer(); ?>
+        </section>
+
+    </div>
+
 </div>
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
@@ -1266,6 +1431,69 @@ $_SESSION["displayPopup"] = 2; ?>
         }
         <?php } ?>
     }
+
+
+    Vue.component('v-pagination', window['vue-plain-pagination'])
+    var app = new Vue({
+        el: '#app',
+        data: {
+            toeicScores: [],
+            typeCourse: '',
+            current: 1,
+            totalPage: 0,
+            typeToeic: 'get',
+            recordPerPage: 10,
+            bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
+                ul: 'pagination',
+                li: 'page-item',
+                liActive: 'active',
+                liDisable: 'disabled',
+                button: 'page-link'
+            },
+            customLabels: {
+                first: false,
+                prev: '<',
+                next: '>',
+                last: false
+            },
+        },
+        methods: {
+            onPageChange: function () {
+                this.getListToeicScore(this.typeToeic, this.current);
+            },
+            getListToeicScore: function (type, page) {
+                var _this = this;
+                if (page == 1)
+                    this.current = 1;
+                let url = '<?php echo $CFG->wwwroot; ?>';
+                const params = new URLSearchParams();
+                params.append('type', type || this.typeToeic);
+                params.append('current', page || this.current);
+                params.append('recordPerPage', this.recordPerPage);
+                params.append('courseid', <?php echo $course->id; ?>);
+
+                axios({
+                    method: 'post',
+                    url: url + '/pusher/course_view.php',
+                    data: params,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                    .then(response => {
+                        this.toeicScores = response.data.toeicScore;
+                        this.totalPage = response.data.totalPage;
+                    })
+                    .catch(error => {
+                    });
+            },
+            uploadFile: function(){}
+        },
+        mounted() {
+            this.getListToeicScore(this.typeToeic, this.current);
+        }
+    });
+
 </script>
 
 </body>

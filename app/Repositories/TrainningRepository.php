@@ -335,7 +335,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             //Admin thì lấy hết
             $lstData = DB::table('tms_traninning_programs as ttp')
                 ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
-                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
+                ->join('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
+                ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+//                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
+                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'))
                 ->where('ttp.deleted', '=', 0);
                 //->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
         } else {
