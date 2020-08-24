@@ -235,7 +235,8 @@
             .then(response => {
               // if()
               roam_message(response.data.status, response.data.message);
-              current_pos.user_restore = [];
+              if(response.data.status == 'success')
+                current_pos.user_restore = [];
             })
             .catch(error => {
               roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
@@ -269,7 +270,8 @@
           })
             .then(response => {
               roam_message(response.data.status, response.data.message);
-              current_pos.user_restore = [];
+              if(response.data.status == 'success')
+                current_pos.user_restore = [];
             })
             .catch(error => {
               roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
