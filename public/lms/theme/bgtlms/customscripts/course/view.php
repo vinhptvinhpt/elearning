@@ -1184,12 +1184,12 @@ if ($course->is_toeic == 1 && $permission_admin) {
                     <div class="import-student-score mb-3" style="background-color: #ffffff; width: 100%">
                             <div class="container">
                                 <div class="custom-file" style="width: 90%">
-                                    <input type="file" class="custom-file-input" id="validatedCustomFile" required>
-                                    <label class="custom-file-label" for="validatedCustomFile">Choose file...</label>
+                                    <input type="file" ref="file" name="file" class="custom-file-input" id="validatedCustomFile" required @change="selectedFile"/>
+                                    <label class="custom-file-label" id="labelValidatedCustomFile" for="validatedCustomFile">Choose file...</label>
                                     <div class="invalid-feedback">Example invalid custom file feedback</div>
                                 </div>
                                 <div class="custom-file" style="width: 8%; margin: inherit">
-                                    <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Up file</button>
+                                    <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Upload file</button>
                                 </div>
                             </div>
                     </div>
@@ -1461,6 +1461,10 @@ $_SESSION["displayPopup"] = 2; ?>
             onPageChange: function () {
                 this.getListToeicScore(this.typeToeic, this.current);
             },
+            selectedFile() {
+                let file = this.$refs.file.files[0];
+                document.getElementById('labelValidatedCustomFile').innerHTML = file.name;
+            },
             getListToeicScore: function (type, page) {
                 var _this = this;
                 if (page == 1)
@@ -1487,7 +1491,66 @@ $_SESSION["displayPopup"] = 2; ?>
                     .catch(error => {
                     });
             },
-            uploadFile: function(){}
+            uploadFile: function(){
+                var _this = this; 
+                var file = this.$refs.file.files[0];
+                var validate = this.validateFile(file);
+                let url = '<?php echo $CFG->wwwroot; ?>';
+                let formData = new FormData();
+                formData.append('courseid', <?php echo $course->id; ?>);
+                formData.append('file', this.$refs.file.files[0]);
+                if(validate){
+                    axios({
+                        method: 'post',
+                        url: url + '/pusher/inputtoeic.php',
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        }
+                    })
+                    .then(response => {
+                        console.log(response.data);
+                        if(response.data.status)
+                        {
+                            alert(response.data.msg);
+                            location.reload();
+                        }
+                        else
+                            alert(response.data.msg);
+                    })
+                    .catch(error => {
+                        console.log("Error ", error);
+                    });
+                }
+            },
+            validateFile: function (file) {
+                    //not selected file
+                    if (!file) {
+                        alert("Please choose a video file.");
+                        return false;
+                    }
+                    //get variable
+                    var name = file.name;
+                    var size = file.size;
+                    var ext = name.toLowerCase().split('.');
+                    var fileExt = ext[ext.length - 1];
+                    var extensions = ["csv", "xlsx", "xls"];
+                    //validate
+                    if (extensions.indexOf(fileExt) < 0) {
+                        alert("Extension not allowed, please choose a video file.");
+                        const input = this.$refs.file;
+                        input.type = 'file';
+                        this.$refs.file.value = '';
+                        return false;
+                    }
+
+                    if (size > 2536715) {
+                        alert('Maximum file size of 1.5GB');
+                        return false;
+                    }
+                    return true;
+            }
+
         },
         mounted() {
             this.getListToeicScore(this.typeToeic, this.current);
