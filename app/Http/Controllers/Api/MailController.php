@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
+use Tintnaingwin\EmailChecker\Facades\EmailChecker;
 
 class MailController extends Controller
 {
@@ -2239,6 +2240,9 @@ class MailController extends Controller
 
     function filterMail($email)
     {
+        if (!EmailChecker::check($email)) {
+            return false;
+        }
         //Cache::flush();
         $mail_development_mode = true; //Default true to avoid spam mail
         //Check development_flag
