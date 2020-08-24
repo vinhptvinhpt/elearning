@@ -79,12 +79,12 @@ if (!isloggedin()) {
     <?//=$marginPage?> /*;*/
     }
 
-    .import-student-score .container{
+    .import-student-score .container {
         padding: 2%;
         display: inline-flex;
     }
 
-    .btn-up-file{
+    .btn-up-file {
         width: 100%;
         height: 100%;
     }
@@ -286,7 +286,7 @@ if (!isloggedin()) {
 
     .course-main {
         background-color: #FFFFFF;
-        padding: 5%;
+        padding: 2%;
     }
 
     .course-block {
@@ -931,6 +931,13 @@ if ($course->numofmodule == 0) {
     }
 }
 
+//get content of competency framework
+$sqlGetContentCompetency = 'select description from tms_traninning_programs ttp
+join tms_traninning_users ttu on ttp.id = ttu.trainning_id
+join tms_trainning_courses ttc on ttc.trainning_id = ttp.id
+where user_id = ' . $USER->id . ' and course_id = ' . $course->id;
+$getContentCompetency = array_values($DB->get_records_sql($sqlGetContentCompetency))[0];
+
 //get score for toeic
 $sqlGetToeicScore = 'select listening, reading, total from tms_quiz_grades where userid =' . $USER->id . ' and courseid = ' . $course->id;
 $toeicScore = array_values($DB->get_records_sql($sqlGetToeicScore))[0];
@@ -985,30 +992,16 @@ if ($course->is_toeic == 1 && $permission_admin) {
                                 <span class="col-3">PROGRESS</span>
 
                                 <div class="col-9">
-                                    <?php if ($course->id != 506) { ?>
-                                        <hgroup class="speech-bubble">
+                                    <hgroup class="speech-bubble">
                                             <span class="number-module"><?php echo $course->numoflearned; ?>
-                                                /<?php echo $course->numofmodule; ?></span>
-                                        </hgroup>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar"
-                                                 style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
-                                                 aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
-                                                 aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-                                    <?php } else { ?>
-                                        <hgroup class="speech-bubble">
-                                            <span class="number-module"><?php echo $course->numofmodule; ?>
-                                                /<?php echo $course->numofmodule; ?></span>
-                                        </hgroup>
-                                        <div class="progress">
-                                            <div class="progress-bar" role="progressbar"
-                                                 style="width: <?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>%;"
-                                                 aria-valuenow="<?php echo (int)($course->numofmodule * 100 / $course->numofmodule); ?>"
-                                                 aria-valuemin="0" aria-valuemax="100"></div>
-                                        </div>
-
-                                    <?php } ?>
+                                                / <?php echo $course->numofmodule; ?></span>
+                                    </hgroup>
+                                    <div class="progress">
+                                        <div class="progress-bar" role="progressbar"
+                                             style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
+                                             aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-2 info-course-btn">
@@ -1032,9 +1025,13 @@ if ($course->is_toeic == 1 && $permission_admin) {
                             <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                 introduction</a>
                         </li>
-                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
+                        <li class="nav-item nav-click">
                             <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
                                 List</a>
+                        </li>
+                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
+                            <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">Content
+                                Competency Framework</a>
                         </li>
                         <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
                             <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
@@ -1166,18 +1163,26 @@ if ($course->is_toeic == 1 && $permission_admin) {
                     </div>
                 </div>
 
-                <div class="row col-12 course-content" id="toeicresult">
-                    <ul class="list-style list-point-toeic">
-                        <li><span class="title-part">Listening:</span><span
-                                class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->listening; ?></span>
-                        </li>
-                        <li><span class="title-part">Reading:</span><span
-                                class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->reading; ?></span>
-                        </li>
-                        <li><span class="title-part">Total:</span><span
-                                class="score-part score-total"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->total; ?></span>
-                        </li>
-                    </ul>
+                <div class="row col-12 course-content course-main" id="contentcompetency">
+                    <div class="container">
+                        <p><?php echo $getContentCompetency->description; ?></p>
+                    </div>
+                </div>
+
+                <div class="row col-12 course-content course-main" id="toeicresult">
+                    <div class="container">
+                        <ul class="list-style list-point-toeic">
+                            <li><span class="title-part">Listening:</span><span
+                                    class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->listening; ?></span>
+                            </li>
+                            <li><span class="title-part">Reading:</span><span
+                                    class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->reading; ?></span>
+                            </li>
+                            <li><span class="title-part">Total:</span><span
+                                    class="score-part score-total"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->total; ?></span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="row col-12 course-content" id="toeicadmin">
@@ -1193,7 +1198,7 @@ if ($course->is_toeic == 1 && $permission_admin) {
                                 </div>
                             </div>
                     </div>
-                    <div class="table-responsive" style="background-color: #ffffff">
+                    <div class="table-responsive" style="background-color: #ffffff; padding: 2%">
                         <table class="table table-bordered table_res">
                             <thead>
                             <th style="min-width: 30px">No</th>
@@ -1492,7 +1497,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     });
             },
             uploadFile: function(){
-                var _this = this; 
+                var _this = this;
                 var file = this.$refs.file.files[0];
                 var validate = this.validateFile(file);
                 let url = '<?php echo $CFG->wwwroot; ?>';
@@ -1524,31 +1529,31 @@ $_SESSION["displayPopup"] = 2; ?>
                 }
             },
             validateFile: function (file) {
-                    //not selected file
-                    if (!file) {
-                        alert("Please choose a excel file to import.");
-                        return false;
-                    }
-                    //get variable
-                    var name = file.name;
-                    var size = file.size;
-                    var ext = name.toLowerCase().split('.');
-                    var fileExt = ext[ext.length - 1];
-                    var extensions = ["csv", "xlsx", "xls"];
-                    //validate
-                    if (extensions.indexOf(fileExt) < 0) {
-                        alert("Extension not allowed, please choose a excel file.");
-                        const input = this.$refs.file;
-                        input.type = 'file';
-                        this.$refs.file.value = '';
-                        return false;
-                    }
+                //not selected file
+                if (!file) {
+                    alert("Please choose a excel file to import.");
+                    return false;
+                }
+                //get variable
+                var name = file.name;
+                var size = file.size;
+                var ext = name.toLowerCase().split('.');
+                var fileExt = ext[ext.length - 1];
+                var extensions = ["csv", "xlsx", "xls"];
+                //validate
+                if (extensions.indexOf(fileExt) < 0) {
+                    alert("Extension not allowed, please choose a excel file.");
+                    const input = this.$refs.file;
+                    input.type = 'file';
+                    this.$refs.file.value = '';
+                    return false;
+                }
 
-                    if (size > 2536715) {
-                        alert('Maximum file size of 2.5MB');
-                        return false;
-                    }
-                    return true;
+                if (size > 2536715) {
+                    alert('Maximum file size of 2.5MB');
+                    return false;
+                }
+                return true;
             }
 
         },
