@@ -417,6 +417,8 @@ class TaskController extends Controller
         }
 
         StudentCertificate::insert($arrDataST);
+        usleep(100); //sleep tranh tinh trang query db lien tiep
+        TmsLearnerHistory::insert($arr_data_his);
 
     }
     #endregion
