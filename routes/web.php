@@ -743,6 +743,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/exportReportDetailRaw', 'Backend\ExcelController@exportReportDetailRaw');
     Route::post('/api/exportResult', 'Backend\ExcelController@apiExportResult');
     Route::post('/api/exportInvite', 'Backend\ExcelController@apiExportInvite');
+    Route::post('/api/exportUserException', 'Backend\ExcelController@apiExportUserException');
     Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
     Route::get('/api/downloadExport/{file_name}', 'Backend\ExcelController@apiDownloadExport');
 

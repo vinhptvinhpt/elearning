@@ -11,8 +11,7 @@
     <?php
     /**
      * @var string $fullname
-     * @var string $start_time
-     * @var string $end_time
+     * @var string $content
      *
      */
     //using class
@@ -26,15 +25,21 @@
     $string = file_get_contents(public_path()."/files/email/template.json");
     // //decode content of file above=
     $data = json_decode($string, true);
-    $text = $data['remind_exam'];
+    $text = $data['request_more_attempt'];
 
-    $start_date = !empty($start_date) ? date('Y-m-d H:i:s', $start_date) : 'N/A';
-    $end_date = !empty($end_date) ? date('Y-m-d H:i:s', $end_date) : 'N/A';
-
+    $result = json_decode($content);
+    $student = "N/A";
+    $user_id = "N/A";
+    $url = "NA";
+    if (!empty($result)) {
+        $student = $result->fullname;
+        $user_id = $result->user_id;
+        $url = $result->link_to_review;
+    }
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
-    $text = str_replace(CourseSendMail::STARTTIME, $start_date, $text);
-    $text = str_replace(CourseSendMail::ENDTIME, $end_date, $text);
+    $text = str_replace(CourseSendMail::STUDENT, $student, $text);
+    $text = str_replace(CourseSendMail::LINK_TO_REVIEW, $url, $text);
 
     echo $text;
     ?>

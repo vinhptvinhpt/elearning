@@ -10,6 +10,16 @@
 <body>
 <div>
     <?php
+
+    /**
+     * @var string $fullname
+     * @var string $competency_name
+     * @var string $competency_code
+     * @var string $start_date
+     * @var string $end_date
+     *
+     */
+
     //using class
     use App\Mail\CourseSendMail;
 
@@ -22,30 +32,17 @@
     // //decode content of file above=
     $data = json_decode($string, true);
     $text = $data['completed_competency_framework'];
+
+
+    $start_date = !empty($start_date) ? date('Y-m-d H:i:s', $start_date) : 'N/A';
+    $end_date = !empty($end_date) ? date('Y-m-d H:i:s', $end_date) : 'N/A';
+
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
-    $text = str_replace(CourseSendMail::USERNAME, $username, $text);
-    //define string for table
-    $course_list_string = '<table style="border: 1px">
-        <tr>
-            <th>Mã khung năng lực</th>
-            <th>Tên khung năng lực</th>
-            <th>Thời gian bắt đầu</th>
-            <th>Thời gian kết thúc</th>
-        </tr>';
-    //loop to set tr to table
-    foreach($course_list as $course) {
-        $course_list_string .= '<tr>
-            <td><p style="color: blue;">'. $course->code .'</p></td>
-            <td><p style="color: blue;">'.$course->training_name.'</p></td>
-            <td><p style="color: blue;">'.($course->startdate != 0 ? date('d/m/Y', $course->startdate) : "").'</p></td>
-            <td><p style="color: blue;">'.($course->enddate != 0 ? date('d/m/Y', $course->enddate) : "").'</p></td>
-            </tr>';
-    }
-    $course_list_string .= '</table>';
-    //replace string with list above
-    $text = str_replace(CourseSendMail::COURSELIST, $course_list_string, $text);
-    //
+    $text = str_replace(CourseSendMail::COMPETENCYNAME, $competency_name, $text);
+    $text = str_replace(CourseSendMail::COMPETENCYCODE, $competency_code, $text);
+    $text = str_replace(CourseSendMail::STARTDATE, $start_date, $text);
+    $text = str_replace(CourseSendMail::ENDDATE, $end_date, $text);
     echo $text;
     ?>
 </div>

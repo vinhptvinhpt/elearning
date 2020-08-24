@@ -710,9 +710,12 @@
         this.formData.append('code', this.trainning.code);
         this.formData.append('name', this.trainning.name);
         this.formData.append('style', this.trainning.style);
-        this.formData.append('auto_certificate', this.trainning.auto_certificate);
-        this.formData.append('auto_badge', this.trainning.auto_badge);
-        this.formData.append('run_cron', this.trainning.run_cron);
+        var auto_certificate = this.trainning.auto_certificate ? 1 : 0;
+        this.formData.append('auto_certificate', auto_certificate);
+        var auto_badge = this.trainning.auto_badge ? 1 : 0;
+        this.formData.append('auto_badge', auto_badge);
+        var run_cron = this.trainning.run_cron ? 1 : 0;
+        this.formData.append('run_cron', run_cron);
         this.formData.append('description', this.trainning.description ? this.trainning.description : '');
         this.formData.append('time_start', this.trainning.time_start);
         this.formData.append('time_end', this.trainning.time_end);
