@@ -37,6 +37,7 @@ class TmsConfigs extends Model
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::EDITOR_CHECKBOX,
+            TmsNotification::CALCULATE_TOEIC_GRADE => TmsConfigs::EDITOR_CHECKBOX,
 
             TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY => TmsConfigs::EDITOR_TEXTAREA,
             TmsConfigs::TARGET_FIREBASE_TOPIC => TmsConfigs::EDITOR_TEXT,
@@ -59,6 +60,7 @@ class TmsConfigs extends Model
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
+            TmsNotification::CALCULATE_TOEIC_GRADE => TmsConfigs::ENABLE,
         );
     }
 
@@ -200,6 +202,10 @@ class TmsConfigs extends Model
             case TmsNotification::REQUEST_MORE_ATTEMPT:
                 $label = __('request_more_attempt');
                 break;
+            case TmsNotification::CALCULATE_TOEIC_GRADE:
+                $label = __('calculate_toeic_grade');
+                break;
+
             //System settings
             case TmsConfigs::TARGET_NOTIFICATION_SERVER_KEY:
                 $label = __('firebase_server_key');

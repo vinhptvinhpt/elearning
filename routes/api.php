@@ -32,7 +32,7 @@ Route::get('/cron/task/finalizeCourse', 'Api\TaskController@finalizeCourseForRol
 Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoEnrolCron', 'Api\TaskController@autoEnrolTrainningCron')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->middleware(['App\Http\Middleware\CheckToken']);
-Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrainning')->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrainning')->middleware(['App\Http\Middleware\CheckToken']); //Tạo records cho bảng tms_trainning_complete & tạo notifications (insert mail) thông báo hoàn thành KNL
 Route::get('/cron/task/autogenerateSASAzure', 'Api\TaskController@apiGenerateSASUrlAzure')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/addSingleUserToTrainning', 'Api\TaskController@addSingleUserToTrainningUser')->middleware(['App\Http\Middleware\CheckToken']);
 
@@ -40,16 +40,15 @@ Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDet
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
 
-//Import user by excel file on background
+//Import user by excel file on background & cms
 Route::get('/background/importEmployee', 'Api\BackgroundController@importEmployee');
 
 //Clean users, comment lại sau khi dùng xong
-Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
-Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
-Route::get('/test', 'Api\BackgroundController@test');
-Route::get('/background/resetOrganizationEmployeePassword', 'Api\BackgroundController@resetOrganizationEmployeePassword');
-Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingPQDL');
-Route::get('/background/fillTrainingForStandaloneCourses', 'Api\BackgroundController@fillTrainingForStandaloneCourses');
+//Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
+//Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
+//Route::get('/background/resetOrganizationEmployeePassword', 'Api\BackgroundController@resetOrganizationEmployeePassword');
+//Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingPQDL'); //Chuyển phân quyền dữ liệu thành bắt buộc, bổ sung pqdl cho các tổ chức còn thiếu do tạo từ trước
+//Route::get('/background/fillTrainingForStandaloneCourses', 'Api\BackgroundController@fillTrainingForStandaloneCourses'); //Tạo training cho các khóa lẻ đã tạo từ trước, vì hiện tai tất cả khóa lẻ đều có KNL của riêng nó
 
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
@@ -64,11 +63,16 @@ Route::get('/cron/mail/sendRemindAccess', 'Api\MailController@sendRemindAccess')
 Route::get('/cron/mail/demoSendMail', 'Api\MailController@demoSendMail');
 //08142020
 Route::get('/cron/mail/sendEnrolCompetency', 'Api\MailController@sendEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+Route::get('/cron/mail/sendCompetencyCompleted', 'Api\MailController@sendCompetencyCompleted')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+Route::get('/cron/mail/sendRemindExam', 'Api\MailController@sendRemindExam')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+Route::get('/cron/mail/sendToeicResult', 'Api\MailController@sendToeicResult')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+Route::get('/cron/mail/sendRequestMoreAttempt', 'Api\MailController@sendRequestMoreAttempt')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 
 //Insert mail
+//Insert suggest ssc
 Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
-
+//Insert Others
 Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindES', 'Api\MailController@insertRemindEducationSchedule')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindLogin', 'Api\MailController@insertRemindLogin')->middleware(['App\Http\Middleware\CheckToken']); //every minute
@@ -76,10 +80,9 @@ Route::get('/cron/mail/insertRemindUC', 'Api\MailController@insertRemindUpcoming
 Route::get('/cron/mail/insertRemindAccess', 'Api\MailController@insertRemindAccess')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 
 //08142020
-Route::get('/cron/mail/insertEnrolCompetency', 'Api\MailController@insertEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+//Route::get('/cron/mail/insertEnrolCompetency', 'Api\MailController@insertEnrolCompetency')->middleware(['App\Http\Middleware\CheckToken']); //every minute // chuyen sang dung code trong controller
 //08192020
-Route::get('/cron/mail/insertRequestMoreAttempt', 'Api\MailController@insertRequestMoreAttempt');
-
+//Route::get('/cron/mail/insertRequestMoreAttempt', 'Api\MailController@insertRequestMoreAttempt');//Sample
 
 //Clear mail
 Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->middleware(['App\Http\Middleware\CheckToken']); //every week
@@ -89,6 +92,9 @@ Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->
 // update email + active
 Route::get('/user/update_email_active', 'Api\TaskController@apiUpdateEmailAndAction');
 Route::get('/cron/testcron', 'Api\TaskController@testCron');
+
+//test
+Route::get('/test', 'Api\BackgroundController@test');
 
 // admin route
 Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function () {

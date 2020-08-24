@@ -82,6 +82,29 @@ try {
                         $insert = 'INSERT INTO tms_quiz_grades (userid, email, courseid, listening, reading, total) VALUES (?,?,?,?,?,?)';
                         $DB->execute($insert, array($result_check_user, $email, $courseid, $listening, $reading, $total));
                     }
+                    // Insert notifications
+                    global $USER;
+                    $noti = new stdClass();
+                    $noti->type = 'mail';
+                    $noti->target = 'calculate_toeic_grade';
+                    $noti->status_send = '0';
+                    $noti->course_id = $courseid;
+                    $noti->sendto = $result_check_user;
+                    $noti->createdby = $USER->id;
+                    $noti->listening = $listening;
+                    $noti->reading = $reading;
+                    $noti->total = $total;
+                    $content = json_encode($noti);
+                    $check_noti = 'SELECT id from tms_nofitications where (course_id=? and sendto=? and target=?)';
+                    $check_noti_result = array_values($DB->get_records_sql($check_noti, array($noti->course_id, $noti->sendto, 'calculate_toeic_grade')))[0]->id;
+                    if ($check_noti_result){
+                        $noti_quiz = 'UPDATE tms_nofitications SET type=?,target=?,status_send=?,sendto=?,createdby=?,course_id=?,content=? WHERE id=?';
+                        $DB->execute($noti_quiz, array($noti->type,$noti->target,$noti->status_send,$noti->sendto,$noti->createdby,$noti->course_id,$content,$check_noti_result));
+                    }else{
+                        $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id .',\''.$content.'\')';
+                        $DB->execute($noti_quiz);
+                    }
+                    $status = true;
                 } else {
                     // Invalid User
                     $status = false;
@@ -90,7 +113,7 @@ try {
                 }
             }
         }
-        if ($validatecheck){
+        if ($validatecheck && $status){
             $status = true;
             $msg = 'Import TOEIC grade successfully!';
         }
