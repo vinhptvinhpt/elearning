@@ -36,6 +36,7 @@ class TmsNotification extends Model
     const REQUEST_MORE_ATTEMPT = 'request_more_attempt';
     const ASSIGNED_COMPETENCY = 'assigned_competency';
     const REMIND_EXAM = 'remind_exam';
+    const CALCULATE_TOEIC_GRADE = 'calculate_toeic_grade';
 
     const NOTICE_SPAM_EMAIL ='notice_spam_email';
 
