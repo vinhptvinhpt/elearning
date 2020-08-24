@@ -238,7 +238,7 @@ class BussinessRepository implements IBussinessInterface
                     -> where("toe.organization_id","=",$organization_id);
 
             }
-            if($country){
+            if($country > 0){
                 $completed_student = $completed_student
                     -> join('tms_user_detail as tud', 'tud.user_id','=','course_completion.userid')
                     -> where("tud.country","=",$country);
