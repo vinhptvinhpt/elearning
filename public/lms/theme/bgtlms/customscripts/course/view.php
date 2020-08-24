@@ -1526,7 +1526,7 @@ $_SESSION["displayPopup"] = 2; ?>
             validateFile: function (file) {
                     //not selected file
                     if (!file) {
-                        alert("Please choose a video file.");
+                        alert("Please choose a excel file to import.");
                         return false;
                     }
                     //get variable
@@ -1537,7 +1537,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     var extensions = ["csv", "xlsx", "xls"];
                     //validate
                     if (extensions.indexOf(fileExt) < 0) {
-                        alert("Extension not allowed, please choose a video file.");
+                        alert("Extension not allowed, please choose a excel file.");
                         const input = this.$refs.file;
                         input.type = 'file';
                         this.$refs.file.value = '';
@@ -1545,7 +1545,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     }
 
                     if (size > 2536715) {
-                        alert('Maximum file size of 1.5GB');
+                        alert('Maximum file size of 2.5MB');
                         return false;
                     }
                     return true;
