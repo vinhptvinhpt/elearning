@@ -306,8 +306,8 @@ class BussinessRepository implements IBussinessInterface
 
             $failed = array();
             foreach ($fail_student as $fail) {
-                $mthyr = $fail['mthyr'];
-                $failed[$mthyr] = $fail['total'];
+                $mthyr = $fail->mthyr;
+                $failed[$mthyr] = $fail->total;
             }
             $fail_source = array();
             foreach ($failed as $key => $val) {
