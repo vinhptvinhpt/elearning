@@ -209,15 +209,21 @@ function push_course(&$array, $course)
 
 
 // Set session variables
-$_SESSION["courses_current"] = $courses_current;
-$_SESSION["courses_required"] = $courses_required_list;
-$_SESSION["courses_completed"] = $courses_completed;
-$_SESSION["totalCourse"] = $sttTotalCourse;
-
 $countBlock = 1;
-$percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
-$percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
-
+$_SESSION["courses_current"] = 0;
+$_SESSION["courses_required"] = 0;
+$_SESSION["courses_completed"] = 0;
+$_SESSION["totalCourse"] = 0;
+$percentCompleted = 0;
+$percentStudying = 0;
+if($sttTotalCourse > 0){
+    $_SESSION["courses_current"] = $courses_current;
+    $_SESSION["courses_required"] = $courses_required_list;
+    $_SESSION["courses_completed"] = $courses_completed;
+    $_SESSION["totalCourse"] = $sttTotalCourse;
+    $percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
+    $percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
+}
 
 //get course can not enrol
 $sqlCourseNotEnrol = 'select mc.id,
