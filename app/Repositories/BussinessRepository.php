@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\CourseCompletion;
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
 use App\TmsLearnerHistory;
@@ -181,6 +182,8 @@ class BussinessRepository implements IBussinessInterface
     {
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
+        $organization_id = $request->input('organization_id');
+        $country = $request->input('country');
         $validates = validate_fails($request, [
             'startdate' => 'date',
             'enddate' => 'date',
@@ -203,104 +206,117 @@ class BussinessRepository implements IBussinessInterface
 
             $role_id = 5;
 
-            //chart 3 data
-            //hoc vien dang ki moi
-//            $students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-//            ->where("model_has_roles.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-//                ->where("model_has_roles.created_at", "<=", date("Y-m-d H:i:s", $end_time))
-//                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-//                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-//                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-//                ->select(
-//                    DB::raw('CONCAT(MONTH(model_has_roles.created_at), "/", DATE_FORMAT(model_has_roles.created_at, "%y")) mthyr'),
-//                    DB::raw('count(*) as total')
-//                )
-//                ->groupBy('mthyr')
-//                ->get()
-//                ->toArray();
+            //Số học viên hoàn thành khóa học
+            $completed_student = CourseCompletion::where("course_completion.timecompleted", ">=", $start_time)
+                ->where("course_completion.timecompleted", "<=",  $end_time)
+                ->join("mdl_user","course_completion.userid","=","mdl_user.id");
 
-            $students = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", date("Y-m-d H:i:s", $start_time))
-                ->where("mdl_user_enrolments.timecreated", "<=", date("Y-m-d H:i:s", $end_time))
-                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->where('mdl_course_categories.id', '=', 4)// khoa hoc ky nang mem
+            //Số học viên đang học
+            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
+                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
+                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
+
+            //Số học viên fail
+            $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
+                ->where("mcmc.timemodified", ">=", $start_time)
+                ->where("mcmc.timemodified", "<=",  $end_time)
+                ->where("mcmc.completionstate","=",3) //state fail
+                ->join('mdl_course_modules as mcm','mcm.id','=','mcmc.coursemoduleid')
+                ->join("mdl_user","mcmc.userid","=","mdl_user.id")
+                ->where('mcm.module','=',16);//quiz
+            if($organization_id > 0){
+                $completed_student = $completed_student
+                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'course_completion.userid')
+                    ->where("toe.organization_id", "=", $organization_id);
+
+                $in_progress_student = $in_progress_student
+                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user_enrolments.userid')
+                    ->where("toe.organization_id", "=", $organization_id);
+
+                $fail_student = $fail_student
+                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mcmc.userid')
+                    ->where("toe.organization_id", "=", $organization_id);
+
+            }
+            if ($country) {
+                $completed_student = $completed_student
+                    ->join('tms_user_detail as tud', 'tud.user_id', '=', 'course_completion.userid')
+                    ->where("tud.country", "=", $country);
+
+                $in_progress_student = $in_progress_student
+                    ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mdl_user_enrolments.userid')
+                    ->where("tud.country", "=", $country);
+
+                $fail_student = $fail_student
+                    ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mcmc.userid')
+                    ->where("tud.country", "=", $country);
+            }
+
+            //học viên hoàn thành khóa học
+            $completed_student = $completed_student
                 ->select(
-                    DB::raw('CONCAT(MONTH(mdl_user_enrolments.timecreated), "/", DATE_FORMAT(mdl_user_enrolments.timecreated, "%y")) mthyr'),
-                    DB::raw('count(*) as total')
-                )
-                ->groupBy('mthyr')
-                ->get()
-                ->toArray();
-
-            $registered = array();
-            $stack_registered = array();
-
-            foreach ($students as $student) {
-                $mthyr = $student['mthyr'];
-                $registered[$mthyr] = $student['total'];
-            }
-
-            $registered_source = array();
-            foreach ($registered as $key => $val) {
-                $registered_source[] = array(
-                    'mthyr' => $key,
-                    'total' => $val
-                );
-            }
-
-            $confirm_students = StudentCertificate::where("student_certificate.created_at", ">=", date("Y-m-d H:i:s", $start_time))
-                ->join('course_final as cf', 'cf.userid', '=', 'student_certificate.userid')
-                ->where("student_certificate.created_at", "<=", date("Y-m-d H:i:s", $end_time))
-                ->select(
-                    DB::raw('CONCAT(MONTH(student_certificate.created_at), "/", DATE_FORMAT(student_certificate.created_at, "%y")) mthyr'),
-                    DB::raw('count(*) as total')
-                )
-                ->groupBy('mthyr')
-                ->get()->toArray();
-
-            $confirmed = array();
-            foreach ($confirm_students as $confirm) {
-                $mthyr = $confirm['mthyr'];
-                $confirmed[$mthyr] = $confirm['total'];
-            }
-            $confirm_source = array();
-            foreach ($confirmed as $key => $val) {
-                $confirm_source[] = array(
-                    'mthyr' => $key,
-                    'total' => $val
-                );
-            }
-
-            //quit student
-            /*$quit_students = MdlUser::where('roles.id', '=', $role_id)//Role hoc vien
-            ->where("quit_time", ">=", $start_time)
-                ->where("quit_time", "<=", $end_time)
-                ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
-                ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-                ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-                ->select(
-                    DB::raw('CONCAT(MONTH(FROM_UNIXTIME(quit_time)), "/", DATE_FORMAT(FROM_UNIXTIME(quit_time), "%y")) mthyr'),
-                    DB::raw('count(*) as total')
+                    DB::raw("date_format(from_unixtime(course_completion.timecompleted),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
 
-            $quit = array();
-
-            foreach ($quit_students as $student) {
-                $mthyr = $student['mthyr'];
-                $confirmed[$mthyr] = $student['total'];
+            $completed = array();
+            foreach ($completed_student as $complete) {
+                $mthyr = $complete['mthyr'];
+                $completed[$mthyr] = $complete['total'];
             }
-
-
-            $quit_source = array();
-            foreach ($quit as $key => $val) {
-                $quit_source[] = array(
+            $complete_source = array();
+            foreach ($completed as $key => $val) {
+                $complete_source[] = array(
                     'mthyr' => $key,
                     'total' => $val
                 );
-            }*/
+            }
+
+            //Số học viên đang học
+            $in_progress_student = $in_progress_student
+                ->select(
+                    DB::raw("date_format(from_unixtime(mdl_user_enrolments.timecreated),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
+                )
+                ->groupBy('mthyr')
+                ->get()->toArray();
+            $progressing = array();
+            foreach ($in_progress_student as $progress) {
+                $mthyr = $progress['mthyr'];
+                $progressing[$mthyr] = $progress['total'];
+            }
+            $in_progress_source = array();
+            foreach ($progressing as $key => $val) {
+                $in_progress_source[] = array(
+                    'mthyr' => $key,
+                    'total' => $val
+                );
+            }
+
+            //Số học viên fail
+            $fail_student = $fail_student
+                ->select(
+                    DB::raw("date_format(from_unixtime(mcmc.timemodified),'%c/%y') as mthyr"),
+                    DB::raw('count(DISTINCT mdl_user.id) as total')
+                )
+                ->groupBy('mthyr')
+                ->get()->toArray();
+
+            $failed = array();
+            foreach ($fail_student as $fail) {
+                $mthyr = $fail->mthyr;
+                $failed[$mthyr] = $fail->total;
+            }
+            $fail_source = array();
+            foreach ($failed as $key => $val) {
+                $fail_source[] = array(
+                    'mthyr' => $key,
+                    'total' => $val
+                );
+            }
+
 
             //chart 2(count course only), 4 data
             $courses = MdlCourse::where('mdl_course.deleted', 0)
@@ -329,26 +345,14 @@ class BussinessRepository implements IBussinessInterface
 
             $response['pie_data'] = array_values($pie_data);
 
-            //Hoc vien dang ki
-            $registered = fillMissingMonthChartData($registered_source, $start_time, $end_time);
-            $response['registered'] = $registered;
+            $completed = fillMissingMonthChartData($complete_source, $start_time, $end_time);
+            $response['completed'] = $completed;
 
-            //Total employees
-            $stack_total = 0;
-            foreach ($registered as $key => $val) {
-                $stack_total += $val['total'];
-                $stack_registered[] = array(
-                    'mth' => $key,
-                    'total' => $stack_total
-                );
-            }
-            $response['stack_registered'] = $stack_registered;
+            $progressing = fillMissingMonthChartData($in_progress_source, $start_time, $end_time);
+            $response['progressing'] = $progressing;
 
-            $confirmed = fillMissingMonthChartData($confirm_source, $start_time, $end_time);
-            $response['confirmed'] = $confirmed;
-
-            //$quit = fillMissingMonthChartData($quit_source, $start_time, $end_time);
-            //$response['quit'] = $quit;
+            $failed = fillMissingMonthChartData($fail_source, $start_time, $end_time);
+            $response['failed'] = $failed;
 
             return response()->json($response);
         }
@@ -741,6 +745,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.course_place',
                 'mdl_course.estimate_duration',
                 'mdl_course.course_budget',
+                'mdl_course.is_toeic',
                 'mdl_course.access_ip'
             )
             ->where('mdl_course.id', '=', $id)->first();
@@ -923,7 +928,7 @@ class BussinessRepository implements IBussinessInterface
                 );
 
         } else {
-            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+//            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
             $listCourses = DB::table('mdl_course')
                 ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
                 ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
@@ -981,6 +986,7 @@ class BussinessRepository implements IBussinessInterface
             $estimate_duration = $request->input('estimate_duration');
             $course_budget = $request->input('course_budget');
             $access_ip_string = $request->input('access_ip');
+            $is_toeic = $request->input('is_toeic');
 
             $param = [
                 'course_avatar' => 'text',
@@ -1073,6 +1079,8 @@ class BussinessRepository implements IBussinessInterface
             $access_ip = $this->spitIP($access_ip_string);
             $course->access_ip = $access_ip;
 
+            //toeic
+            $course->is_toeic = $is_toeic;
             $course->save();
 
             //insert dữ liệu điểm qua môn
@@ -1270,83 +1278,88 @@ class BussinessRepository implements IBussinessInterface
         $select = [];
         //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
         //if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-        if (true) { //hack show all courses offline
-            $listCourses = DB::table('mdl_course')
-                ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->where('mdl_course.category', '=', $category_id);
-            $select = [
-                'mdl_course.id',
-                'mdl_course.fullname',
-                'mdl_course.shortname',
-                'mdl_course.startdate',
-                'mdl_course.enddate',
-                'mdl_course.visible',
-                'mdl_course_completion_criteria.gradepass as pass_score'
-            ];
-        } else {
-            //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
-            //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-            //if ($checkRole === true) {
-            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
-            if ($checkRoleOrg != 0) {
-                $listCourses = DB::table('mdl_course')
-                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
-                    ->where('mdl_course.category', '=', $category_id)
-                    ->where(function ($query) {
-                        /* @var $query Builder */
-                        $query
-                            ->whereIn('mdl_course.id', function ($q1) { //enrol
-                                /* @var $q1 Builder */
-                                $q1->select('mdl_course.id')
-                                    ->from('mdl_user_enrolments as mue')
-                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-                                    ->where('mue.userid', '=', \Auth::user()->id);
-                            })
-                            ->orWhereIn('mdl_course.id', function ($q2) { //organization
-                                /* @var $q2 Builder */
-                                $q2->select('mdl_course.id')
-                                    ->from('tms_organization_employee')
-                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-                            });
-                    });
-                $select = [
-                    'mdl_course.id',
-                    'mdl_course.fullname',
-                    'mdl_course.shortname',
-                    'mdl_course.startdate',
-                    'mdl_course.enddate',
-                    'mdl_course.visible',
-                    'mdl_course.category',
-                    'mdl_course.deleted',
-                    'mccc.gradepass as pass_score'
-                ];
-            } else {
-                //Kiểm tra xem có phải role teacher hay không
-                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-                if ($checkRole == true) {
-                    $listCourses = DB::table('mdl_user_enrolments')
-                        ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
-                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
-                        ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
-                        ->where('mdl_course.category', '=', $category_id)
-                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
-                    $select = [
-                        'mdl_course.id',
-                        'mdl_course.fullname',
-                        'mdl_course.shortname',
-                        'mdl_course.startdate',
-                        'mdl_course.enddate',
-                        'mdl_course.visible',
-                        'mdl_course_completion_criteria.gradepass as pass_score'
-                    ];
-                }
-            }
-        }
+
+//        if (true) { //hack show all courses offline
+        $listCourses = DB::table('mdl_course')
+            ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->where('mdl_course.category', '=', $category_id);
+        $select = [
+            'mdl_course.id',
+            'mdl_course.fullname',
+            'mdl_course.shortname',
+            'mdl_course.startdate',
+            'mdl_course.enddate',
+            'mdl_course.visible',
+            'mdl_course_completion_criteria.gradepass as pass_score'
+        ];
+
+        //region comment code by require easia show all course offline
+//        }
+//        else {
+//            //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
+//            //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+//            //if ($checkRole === true) {
+//            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+//            if ($checkRoleOrg != 0) {
+//                $listCourses = DB::table('mdl_course')
+//                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
+//                    ->where('mdl_course.category', '=', $category_id)
+//                    ->where(function ($query) {
+//                        /* @var $query Builder */
+//                        $query
+//                            ->whereIn('mdl_course.id', function ($q1) { //enrol
+//                                /* @var $q1 Builder */
+//                                $q1->select('mdl_course.id')
+//                                    ->from('mdl_user_enrolments as mue')
+//                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+//                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
+//                                    ->where('mue.userid', '=', \Auth::user()->id);
+//                            })
+//                            ->orWhereIn('mdl_course.id', function ($q2) { //organization
+//                                /* @var $q2 Builder */
+//                                $q2->select('mdl_course.id')
+//                                    ->from('tms_organization_employee')
+//                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+//                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+//                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
+//                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
+//                            });
+//                    });
+//                $select = [
+//                    'mdl_course.id',
+//                    'mdl_course.fullname',
+//                    'mdl_course.shortname',
+//                    'mdl_course.startdate',
+//                    'mdl_course.enddate',
+//                    'mdl_course.visible',
+//                    'mdl_course.category',
+//                    'mdl_course.deleted',
+//                    'mccc.gradepass as pass_score'
+//                ];
+//            } else {
+//                //Kiểm tra xem có phải role teacher hay không
+//                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
+//                if ($checkRole == true) {
+//                    $listCourses = DB::table('mdl_user_enrolments')
+//                        ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
+//                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+//                        ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
+//                        ->where('mdl_course.category', '=', $category_id)
+//                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
+//                    $select = [
+//                        'mdl_course.id',
+//                        'mdl_course.fullname',
+//                        'mdl_course.shortname',
+//                        'mdl_course.startdate',
+//                        'mdl_course.enddate',
+//                        'mdl_course.visible',
+//                        'mdl_course_completion_criteria.gradepass as pass_score'
+//                    ];
+//                }
+//            }
+//        }
+        //endregion
 
         $listCourses->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id');
         //$select[] = 'mdl_course.last_modify_user';
@@ -5261,7 +5274,7 @@ class BussinessRepository implements IBussinessInterface
             ]);
 
             $training_program = TmsTrainningProgram::where('id', $trainning_id)->first();
-            $training_name =  isset($training_program) ? $training_program->name : '';
+            $training_name = isset($training_program) ? $training_program->name : '';
 
             $get_user = DB::table('tms_user_detail')
                 ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')

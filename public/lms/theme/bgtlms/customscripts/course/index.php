@@ -10,7 +10,7 @@ $home_selection = [
     'current' => 'Current courses',
     'required' => 'Required courses',
     'completed' => 'Completed courses',
-    'other' => 'Other courses',
+    'other' => 'Optional courses',
 ];
 
 $category_params = 0;

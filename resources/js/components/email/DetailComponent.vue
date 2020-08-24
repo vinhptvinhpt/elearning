@@ -91,25 +91,18 @@
               case 'enrol':
                 this.content_html = this.json_content.enrol;
                 break;
-
               case 'suggest':
                 this.content_html = this.json_content.suggest;
                 break;
-
-
               case 'remind_certificate':
                 this.content_html = this.json_content.remind_certificate;
                 break;
-
-
               case 'assigned_competency':
                 this.content_html = this.json_content.assigned_competency;
                 break;
-
               case 'remind_exam':
                 this.content_html = this.json_content.remind_exam;
                 break;
-
               case 'invitation_offline_course':
                 this.content_html = this.json_content.invitation_offline_course;
                 break;
@@ -124,6 +117,12 @@
                 break;
               case 'completed_competency_framework':
                 this.content_html = this.json_content.completed_competency_framework;
+                break;
+              case 'calculate_toeic_grade':
+                this.content_html = this.json_content.calculate_toeic_grade;
+                break;
+              case 'request_more_attempt':
+                this.content_html = this.json_content.request_more_attempt;
                 break;
               default:
                 break;

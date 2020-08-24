@@ -209,15 +209,21 @@ function push_course(&$array, $course)
 
 
 // Set session variables
-$_SESSION["courses_current"] = $courses_current;
-$_SESSION["courses_required"] = $courses_required_list;
-$_SESSION["courses_completed"] = $courses_completed;
-$_SESSION["totalCourse"] = $sttTotalCourse;
-
 $countBlock = 1;
-$percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
-$percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
-
+$_SESSION["courses_current"] = 0;
+$_SESSION["courses_required"] = 0;
+$_SESSION["courses_completed"] = 0;
+$_SESSION["totalCourse"] = 0;
+$percentCompleted = 0;
+$percentStudying = 0;
+if($sttTotalCourse > 0){
+    $_SESSION["courses_current"] = $courses_current;
+    $_SESSION["courses_required"] = $courses_required_list;
+    $_SESSION["courses_completed"] = $courses_completed;
+    $_SESSION["totalCourse"] = $sttTotalCourse;
+    $percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
+    $percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
+}
 
 //get course can not enrol
 $sqlCourseNotEnrol = 'select mc.id,
@@ -1218,13 +1224,8 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_current) > 0) { ?>
                                             <?php $countBlock = 1;
-                                            $stt = 1;
-                                            //get first training id of liest course
+                                            //get first training id of list course
                                             $training_id = array_values($courses_current)[0]->training_id;
-                                            //if exists in list competency => it learning => disable to learn
-                                            if (in_array($training_id, $competency_completed)) {
-                                                $stt = 2;
-                                            }
                                             foreach ($courses_current as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
@@ -1302,7 +1303,6 @@ $_SESSION["allowCms"] = $allowCms;
                                             foreach ($courses_required as $courses_traning) {
                                                 //defined enable
                                                 $enable = 'enable';
-                                                $stt = 1;
                                                 $allow = true;
                                                 //get first training id of liest course
                                                 $training_id = array_values($courses_traning)[0]->training_id;
@@ -1365,16 +1365,14 @@ $_SESSION["allowCms"] = $allowCms;
                                                     </div>
                                                     <?php $countBlock++;
                                                     $enable = 'disable';
-                                                    $stt++;
                                                     break;
-                                                    if ($countBlock == 5) break;
+//                                                    if ($countBlock == 5) break;
                                                 }
                                                 if ($countBlock == 5) break;
                                             }
                                         ;
                                             if ($countBlock < 5) {
                                                 foreach ($courses_required as $courses_traning) {
-                                                    $stt = 2;
                                                     $enable = 'enable';
                                                     $course_traning = array_values($courses_traning)[0];
                                                     //get first training id of liest course
@@ -1446,8 +1444,6 @@ $_SESSION["allowCms"] = $allowCms;
                                                         </div>
                                                         <?php $countBlock++;
                                                         $enable = 'disable';
-                                                        $stt++;
-                                                        break;
                                                         if ($countBlock == 5) break;
                                                     }
                                                     if ($countBlock == 5) break;
@@ -1481,7 +1477,6 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_completed) > 0) { ?>
                                             <?php $countBlock = 1;
-                                            $stt = 1;
                                             foreach ($courses_completed as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">

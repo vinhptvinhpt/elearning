@@ -53,6 +53,7 @@ class MailController extends Controller
             //Not in default list
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::ENABLE,
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
+            TmsNotification::CALCULATE_TOEIC_GRADE => TmsConfigs::ENABLE
         );
         $pdo = DB::connection()->getPdo();
         if ($pdo) {
@@ -144,7 +145,7 @@ class MailController extends Controller
         ));
     }
 
-//Send email invite student in tms_invitation table
+    //Send email invite student in tms_invitation table
     public function sendInvitation()
     {
         $configs = self::loadConfiguration();
@@ -172,6 +173,7 @@ class MailController extends Controller
                     $start_date = $item->course->startdate;
                     $end_date = $item->course->enddate;
                     $course_place = $item->course->course_place;
+                    $course_description = $item->course->summary;
                     $invite_id = $item->id;
 
                     //$email = "immrhy@gmail.com";
@@ -189,7 +191,12 @@ class MailController extends Controller
                                 $end_date,
                                 $course_place,
                                 '',
-                                $invite_id
+                                $invite_id,
+                                '',
+                                '',
+                                '',
+                                '',
+                                $course_description
                             ));
                             $sent += 1;
 
@@ -212,6 +219,177 @@ class MailController extends Controller
                 ]
             );
 
+        }
+    }
+
+//Send email remind exam
+    public function sendRemindExam()
+    {
+        $next_3_days = time() + 86400 * 3;
+
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REMIND_EXAM] == TmsConfigs::ENABLE) {
+            $lstNotifi = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::REMIND_EXAM)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->where('date_quiz', '<', $next_3_days)
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+
+                    'mdl_user.email',
+                    'mdl_user.firstname',
+                    'mdl_user.lastname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstNotifi);
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstNotifi as $itemNotification) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
+                        $email = $itemNotification->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::REMIND_EXAM,
+                                $itemNotification->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification->content
+                            ));
+                            $object_content = [];
+                            $exam = json_decode($itemNotification->content);
+                            if (!empty($exam)) {
+                                $object_content = array(
+                                    'object_id' => '',
+                                    'object_name' => '',
+                                    'object_type' => 'exam',
+                                    'parent_id' => '',
+                                    'parent_name' => '',
+                                    'start_date' => $exam->start_date,
+                                    'end_date' => $exam->start_date,
+                                    'code' => '',
+                                    'room' => '',
+                                    'grade' => '',
+                                );
+                            }
+                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                //$this->sendPushNotification($lstNotifi);
+                \DB::commit();
+            }
+        }
+    }
+
+//Send email toeic result (type = calculate_toeic_grade)
+    public function sendToeicResult()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::CALCULATE_TOEIC_GRADE] == TmsConfigs::ENABLE) {
+            $lstNotifi = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::CALCULATE_TOEIC_GRADE)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+                    'tms_nofitications.content',
+
+                    'mdl_user.email',
+                    'mdl_user.firstname',
+                    'mdl_user.lastname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstNotifi);
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstNotifi as $itemNotification) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
+                        $email = $itemNotification->email;
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::CALCULATE_TOEIC_GRADE,
+                                $itemNotification->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification->content
+                            ));
+
+                            $object_content = [];
+
+                            $result = json_decode($itemNotification->content);
+
+                            if (!empty($exam)) {
+                                $object_content = array(
+                                    'object_id' => '',
+                                    'object_name' => '',
+                                    'object_type' => 'toeic-result',
+                                    'parent_id' => '',
+                                    'parent_name' => '',
+                                    'start_date' => '',
+                                    'end_date' => '',
+                                    'code' => '',
+                                    'room' => '',
+                                    'grade' => '',
+                                    'reading' => $result->reading,
+                                    'listening' => $result->listening,
+                                    'total' => $result->total
+                                );
+                            }
+                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        } else {
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                    }
+                    //sleep(1);
+                }
+                //$this->sendPushNotification($lstNotifi);
+                \DB::commit();
+            }
         }
     }
 
@@ -416,8 +594,8 @@ class MailController extends Controller
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('d/m/Y', $itemNotif->startdate),
-                                    date('d/m/Y', $itemNotif->enddate),
+                                    date('Y jS F g:iA', $itemNotif->startdate),
+                                    date('Y jS F g:iA', $itemNotif->enddate),
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
@@ -446,6 +624,7 @@ class MailController extends Controller
                 ->where('tms_nofitications.target', \App\TmsNotification::COMPLETED_FRAME)
                 ->where('status_send', \App\TmsNotification::UN_SENT)
                 ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->join('tms_traninning_programs', 'tms_nofitications.content', '=', 'tms_traninning_programs.id')
                 ->select(
                     'tms_nofitications.id',
                     'tms_nofitications.target',
@@ -458,7 +637,15 @@ class MailController extends Controller
                     'mdl_user.email',
                     'mdl_user.firstname',
                     'mdl_user.lastname',
-                    'mdl_user.username'
+                    'mdl_user.username',
+
+                    'tms_traninning_programs.id as training_id',
+                    'tms_traninning_programs.name as training_name',
+                    'tms_traninning_programs.code as training_code',
+                    'tms_traninning_programs.time_start',
+                    'tms_traninning_programs.time_end'
+
+
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
@@ -473,6 +660,17 @@ class MailController extends Controller
                         $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
                         $email = $itemNotification->email;
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            $training = json_encode(
+                                array(
+                                    'training_id' => $itemNotification->training_id,
+                                    'training_name' => $itemNotification->training_name,
+                                    'training_code' => $itemNotification->training_code,
+                                    'time_start' => $itemNotification->time_start,
+                                    'time_end' => $itemNotification->time_end
+                                )
+                            );
+
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::COMPLETED_FRAME,
                                 $itemNotification->username,
@@ -483,30 +681,28 @@ class MailController extends Controller
                                 '',
                                 '',
                                 '',
-                                $itemNotification->content
+                                $training,
+                                '',
+                                '',
+                                $itemNotification->training_name,
+                                '',
+                                '',
+                                $itemNotification->training_code
                             ));
 
-                            $object_content = [];
+                            $object_content = array(
+                                'object_id' => $itemNotification->training_id,
+                                'object_name' => $itemNotification->training_name,
+                                'object_type' => 'training',
+                                'parent_id' => '',
+                                'parent_name' => '',
+                                'start_date' => $itemNotification->time_start,
+                                'end_date' => $itemNotification->time_end,
+                                'code' => $itemNotification->training_code,
+                                'room' => '',
+                                'grade' => '',
+                            );
 
-                            $completed_fws = json_decode($itemNotification->content);
-
-                            if (is_array($completed_fws) && !empty($completed_fws)) {
-                                foreach ($completed_fws as $completed_fw) {
-                                    //[{"training_id":57,"training_name":"Khoa_offline","startdate":0,"enddate":0,"code":"Khoa_offline585"}]
-                                    $object_content[] = array(
-                                        'object_id' => $completed_fw->training_id,
-                                        'object_name' => $completed_fw->training_name,
-                                        'object_type' => 'training',
-                                        'parent_id' => '',
-                                        'parent_name' => '',
-                                        'start_date' => $completed_fw->startdate,
-                                        'end_date' => $completed_fw->enddate,
-                                        'code' => $completed_fw->code,
-                                        'room' => '',
-                                        'grade' => '',
-                                    );
-                                }
-                            }
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
@@ -517,7 +713,7 @@ class MailController extends Controller
                     }
                     //sleep(1);
                 }
-                $this->sendPushNotification($lstCompletedFrameNotifi);
+                //$this->sendPushNotification($lstCompletedFrameNotifi);
                 \DB::commit();
             }
         }
@@ -598,7 +794,7 @@ class MailController extends Controller
                     }
                     //sleep(1);
                 }
-                $this->sendPushNotification($lstCompletedFrameNotifi);
+                //$this->sendPushNotification($lstCompletedFrameNotifi);
                 \DB::commit();
             }
         }
@@ -702,10 +898,10 @@ class MailController extends Controller
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
-            $lstCompletedFrameNotifi = MdlUser::query()
+            $lstNotifi = MdlUser::query()
                 ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user.id')
                 ->join('tms_nofitications', 'mdl_user.id', '=', 'tms_nofitications.sendto')
-                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.sendto')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
                 ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
                 ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
                 ->where('status_send', \App\TmsNotification::UN_SENT)
@@ -718,24 +914,24 @@ class MailController extends Controller
                     'tms_nofitications.createdby',
                     'tms_nofitications.content',
                     'mdl_user.email',
-                    'tms_user_detail.fullname',
+                    //'tms_user_detail.fullname',
                     'mdl_user.username'
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
 
-            $countRemindNotification = count($lstCompletedFrameNotifi);
+            $countRemindNotification = count($lstNotifi);
 
             if ($countRemindNotification > 0) {
                 \DB::beginTransaction();
-                foreach ($lstCompletedFrameNotifi as $itemNotification) {
+                foreach ($lstNotifi as $itemNotification) {
                     try {
                         //send mail can not continue if has fake email
                         $fullname = $itemNotification->fullname;
                         $email = $itemNotification->email;
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
                             Mail::to($email)->send(new CourseSendMail(
-                                TmsNotification::ASSIGNED_COMPETENCY,
+                                TmsNotification::REQUEST_MORE_ATTEMPT,
                                 $itemNotification->username,
                                 $fullname,
                                 '',
@@ -752,7 +948,7 @@ class MailController extends Controller
                                 $object_content = array(
                                     'object_id' => $student->user_id,
                                     'object_name' => $student->fullname,
-                                    'object_type' => '',
+                                    'object_type' => 'request-more-attempt',
                                     'parent_id' => '',
                                     'parent_name' => '',
                                     'start_date' => '',
@@ -760,19 +956,20 @@ class MailController extends Controller
                                     'code' => '',
                                     'room' => '',
                                     'grade' => '',
+                                    'link_to_review' => $student->link_to_review
                                 );
                             }
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
-                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                            //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
-                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                     }
                     //sleep(1);
                 }
-                $this->sendPushNotification($lstCompletedFrameNotifi);
+                //$this->sendPushNotification($lstNotifi);
                 \DB::commit();
             }
         }
@@ -812,6 +1009,7 @@ class MailController extends Controller
                                 $element['content'] = array(
                                     'user_id' => $user_id,
                                     'fullname' => $user->fullname,
+                                    'link_to_review' =>'http://google.com'
                                 );
 
                                 $data[] = $element;
@@ -932,7 +1130,7 @@ class MailController extends Controller
                     }
                     //sleep(1);
                 }
-                $this->sendPushNotification($lstRemindExpireNotif);
+                //$this->sendPushNotification($lstRemindExpireNotif);
                 \DB::commit();
             }
         }
@@ -1641,7 +1839,7 @@ class MailController extends Controller
                     }
                     //sleep(1);
                 }
-                $this->sendPushNotification($listRemindLoginNotification);
+                //$this->sendPushNotification($listRemindLoginNotification);
                 \DB::commit();
             }
         }
@@ -1781,7 +1979,7 @@ class MailController extends Controller
                         }
                         //(1);
                     }
-                    $this->sendPushNotification($lstUpcomingNotif);
+                    //$this->sendPushNotification($lstUpcomingNotif);
                     \DB::commit();
                 }
             }

@@ -122,6 +122,16 @@
                         <!--                                                     class="required text-danger course_budget_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
+                      <div class="col-md-4 col-sm-6 form-group">
+                        <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
+                        <div class="custom-control custom-switch">
+                          <input type="checkbox" class="custom-control-input" id="is_toeic"
+                                 :checked="course.is_toeic==1?true:false" v-model="course.is_toeic">
+                          <label v-if="course.is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
+                          <label v-else class="custom-control-label" for="is_toeic">No</label>
+                        </div>
+                      </div>
+
                       <div class="col-md-4 col-sm-6 form-group d-none">
                         <input v-model="course.allow_register" type="checkbox"
                                style="width:20px; height:20px;"
@@ -368,6 +378,9 @@
         this.formData.append('offline', 0); //ko phai khoa hoc tap trung
         this.formData.append('course_budget', this.course.course_budget ? this.course.course_budget : '');
         this.formData.append('access_ip', this.string_ip);
+        var is_toeic = this.course.is_toeic ? 1 : 0;
+        this.formData.append('is_toeic', is_toeic);
+
         let current_pos = this;
         axios.post('/api/courses/update/' + this.course_id, this.formData, {
           headers: {

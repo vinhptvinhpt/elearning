@@ -379,7 +379,7 @@
               if (response.data.status) {
                 toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                 current_pos.getCurrentUserException(current_pos.current_page);
-                current_pos.getUserNeedEnrol(current_pos.current_page);
+                current_pos.getUserNeedEnrol(current_pos.current);
               } else {
                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
               }
@@ -408,7 +408,7 @@
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
               current_pos.getCurrentUserException(current_pos.current_page);
-              current_pos.getUserNeedEnrol(current_pos.current_page);
+              current_pos.getUserNeedEnrol(current_pos.current);
             } else {
               toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
             }
@@ -471,7 +471,7 @@
         return outPut;
       },
       exportExcel() {
-        axios.post('/api/exportInvite', {
+        axios.post('/api/exportUserException', {
           keyword: this.keyword_curr,
           course_id: this.course_id,
           organization_id: this.organization_id_2,

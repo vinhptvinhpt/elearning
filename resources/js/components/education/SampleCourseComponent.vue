@@ -84,6 +84,16 @@
                                      class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
 
+                            <div class="col-sm-6 form-group">
+                              <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
+                              <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="is_toeic"
+                                       :checked="is_toeic==1?true:false" v-model="is_toeic">
+                                <label v-if="is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
+                                <label v-else class="custom-control-label" for="is_toeic">No</label>
+                              </div>
+                            </div>
+
                             <div class="col-12 form-group">
                               <label for="inputText6">{{trans.get('keys.mo_ta')}}</label>
                               <!--                                                            <textarea v-model="description" class="form-control"-->
@@ -266,6 +276,7 @@
         keyword: '',
         current: 1,
         totalPages: 0,
+        is_toeic: false,
         total_course: 0,
         row: 10,
         urlGetListUser: '/api/courses/list',
@@ -391,6 +402,9 @@
         this.formData.append('category_id', 2); //gắn cứng giá trị quy định đây là id danh mục mãu
         this.formData.append('sample', 1);// truyền giá trị để nhận biết đây là khóa học mẫu
         this.formData.append('selected_org', this.library.replace("_", "-"));// truyền giá trị để nhận biết thư viện được tạo cho một tổ chức cụ thể
+        var is_toeic = this.is_toeic ? 1 : 0;
+        this.formData.append('is_toeic', is_toeic);
+
         let current_pos = this;
         axios.post('/api/courses/create', this.formData, {
           headers: {
