@@ -323,6 +323,7 @@
                         .then(response => {
                             loader.fadeOut();
                             roam_message(response.data.status,response.data.message);
+                            current_pos.getListUsers(current_pos.current);
                         })
                         .catch(error => {
                             loader.fadeOut();

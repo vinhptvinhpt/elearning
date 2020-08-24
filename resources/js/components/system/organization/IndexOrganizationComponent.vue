@@ -402,7 +402,7 @@
             sessionStorage.setItem('organizationPageSize', this.row);
             sessionStorage.setItem('organizationKeyWord', this.keyword);
             sessionStorage.setItem('organizationLevel', this.level);
-            this.$route.params.back_page = "1";
+            this.$route.params.back_page = '1';
             let current_pos = this;
             swal({
               title: this.trans.get('keys.thong_bao'),

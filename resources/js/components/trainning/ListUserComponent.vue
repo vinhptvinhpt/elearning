@@ -8,7 +8,7 @@
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                       <li class="breadcrumb-item">
-                        <router-link :to="{ name: 'TrainningIndex' }">
+                        <router-link :to="{ name: 'TrainningIndex',params:{back_page: '1'} }">
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
