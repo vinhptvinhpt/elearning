@@ -543,8 +543,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-else>Department: Not yet update</li>
                         <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
                         <li v-else>Experience: Under 1 year</li>
-                        <li v-if="linemanagers.length > 0">Line Manager: <p
-                                v-for="(linemanager, index) in linemanagers"><span>{{linemanager.fullname}} </span></p>
+                        <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
                         <li v-else>Line Manager: Not yet update</li>
                         <li>Company: Easia Travel</li>
@@ -773,6 +772,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             requiredCourse: 0,
             currentCourse: 0,
             linemanagers: [],
+            linemanagersStr: '',
             user: {},
             clctgr: true,
             progressRequiredCourse: '0/0',
@@ -843,6 +843,15 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .then(response => {
                         this.user = response.data.profile;
                         this.linemanagers = response.data.linemanagers;
+                        if(response.data.linemanagers.length > 0){
+                            var lineStr = '';
+                            $.each(response.data.linemanagers, function(key, value) {
+                                lineStr += value.fullname+', ';
+                            });
+                            lineStr = lineStr.substring(0, lineStr.length - 2);
+                            this.linemanagersStr = lineStr;
+                        }
+
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;
                         var numRequiredCourses = Object.keys(response.data.requiredcourses).length;

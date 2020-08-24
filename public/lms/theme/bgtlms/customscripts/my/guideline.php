@@ -61,11 +61,16 @@ echo $OUTPUT->header();
         padding: 2%;
         overflow-wrap: break-word;
     }
+
+    .btn-guideline-click{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
 </style>
 <p></p>
 <?php if ($allowCms) { ?>
     <p align="right">
-        <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px"
+        <button type="button" class="btn btn-info py-2 px-3 btn-guideline-click" style="font-size: 20px"
                 onclick="window.location.href='/lms/my/edit_guideline.php'">Edit
         </button>
     </p>
@@ -73,7 +78,7 @@ echo $OUTPUT->header();
 <!--    <iframe src="introduction/user/user_guideline.html"></iframe>-->
 <div class="content mb-2"><?php echo $guide_line; ?></div>
 <p align="right">
-    <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px"
+    <button type="button" class="btn btn-info py-2 px-3 btn-guideline-click" style="font-size: 20px"
             onclick="window.location.href='/lms'"><?= get_string('learnnow') ?></button>
 </p>
 <?php

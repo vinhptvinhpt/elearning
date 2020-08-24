@@ -228,9 +228,12 @@
         this.formData.append('code', this.code);
         this.formData.append('name', this.name);
         this.formData.append('style', this.type);
-        this.formData.append('auto_certificate', this.auto_certificate);
-        this.formData.append('auto_badge', this.auto_badge);
-        this.formData.append('run_cron', this.run_cron);
+        var auto_certificate = this.auto_certificate ? 1 : 0;
+        this.formData.append('auto_certificate', auto_certificate);
+        var auto_badge = this.auto_badge ? 1 : 0;
+        this.formData.append('auto_badge', auto_badge);
+        var run_cron = this.run_cron ? 1 : 0;
+        this.formData.append('run_cron', run_cron);
         this.formData.append('time_start', this.time_start);
         this.formData.append('time_end', this.time_end);
         this.formData.append('description', this.description ? this.description : '');
