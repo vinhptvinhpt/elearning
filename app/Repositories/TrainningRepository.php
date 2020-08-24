@@ -1094,6 +1094,9 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $queryItem = [];
                 $queryItem['trainning_id'] = $trainning_id;
                 $queryItem['user_id'] = $user_id;
+                $queryItem['created_at'] = Carbon::now();
+                $queryItem['updated_at'] = Carbon::now();
+
                 array_push($queryArray, $queryItem);
                 $num++;
                 if ($num >= $limit) {
@@ -1185,6 +1188,9 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     $queryItem = [];
                     $queryItem['trainning_id'] = $trainning_id;
                     $queryItem['user_id'] = $user_id;
+                    $queryItem['created_at'] = Carbon::now();
+                    $queryItem['updated_at'] = Carbon::now();
+
                     array_push($queryArray, $queryItem);
                     $num++;
                     if ($num >= $limit) {
