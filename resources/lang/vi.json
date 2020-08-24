@@ -329,5 +329,6 @@
     "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Thông báo học viên được ghi danh vào khóa học",
     "completed_competency_framework": "Khung năng lực đã hoàn thành",
     "development": "Chế độ Develope",
-    "request_more_attempt": "Request more attempt"
+    "request_more_attempt": "Request more attempt",
+    "calculate_toeic_grade": "Tính điểm TOEIC"
 }
