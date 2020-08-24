@@ -111,24 +111,36 @@
                             });
                         }
                         else if(response.data.length !== 0) {
-                            swal({
-                                title: current_pos.trans.get('keys.du_lieu_sai_dinh_dang'),
-                                text: current_pos.trans.get('keys.du_lieu_nhap_vao_khong_dung') + response.data,
-                                type: "error",
-                                showCancelButton: false,
-                                closeOnConfirm: false,
-                                showLoaderOnConfirm: true
-                            });
-                        }
-                        else{
-                            swal({
+                            if (response.data === 'fail') {
+                              swal({
                                 title: current_pos.trans.get('keys.loi_he_thong'),
                                 text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
                                 type: "error",
                                 showCancelButton: false,
                                 closeOnConfirm: false,
                                 showLoaderOnConfirm: true
-                            });
+                              });
+                            } else {
+                              swal({
+                                title: current_pos.trans.get('keys.du_lieu_sai_dinh_dang'),
+                                text: current_pos.trans.get('keys.du_lieu_nhap_vao_khong_dung') + response.data,
+                                type: "error",
+                                showCancelButton: false,
+                                closeOnConfirm: false,
+                                showLoaderOnConfirm: true
+                              });
+                            }
+
+                        }
+                        else{
+                          swal({
+                            title: current_pos.trans.get('keys.loi_he_thong'),
+                            text: current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'),
+                            type: "error",
+                            showCancelButton: false,
+                            closeOnConfirm: false,
+                            showLoaderOnConfirm: true
+                          });
                         }
                     })
                     .catch(error => {

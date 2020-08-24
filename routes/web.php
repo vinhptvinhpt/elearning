@@ -312,6 +312,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/system/user/get_list_branch_select', 'Backend\SystemController@apiGetListBranchSelect');
     Route::post('/system/user/get_list_saleroom_select', 'Backend\SystemController@apiGetListSaleRoomSelect');
     Route::post('/api/system/user/change_status', 'Backend\SystemController@apiUserChangeWorkingStatus');
+    Route::post('/api/system/user/info', 'Backend\SystemController@apiGetUserInfo');
 
     Route::get('/system/branch_master', 'Backend\SystemController@viewBranchMaster')->name('system.branch_master');
     Route::post('/api/system/get_trainning_user', 'Backend\SystemController@apiGetTrainningUser');
@@ -512,11 +513,17 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_list_document_course', 'Backend\CourseController@apiGetListDocument');
     Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
     Route::post('/api/courses/get_library', 'Backend\CourseController@apiGetListLibrary');
+    Route::post('/api/courses/get_library_codes', 'Backend\CourseController@apiGetListLibraryCodes');
+    Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
 
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
+    Route::post('/api/course/user_need_invite_to_exception', 'Backend\CourseController@apiUserNeedInviteToException');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
+    Route::post('/api/course/user_course_exception', 'Backend\CourseController@apiUserCourseException');
     Route::post('/api/course/invite_user_to_course', 'Backend\CourseController@apiInviteUser');
+    Route::post('/api/course/enrol_user_exception_to_course', 'Backend\CourseController@apiEnrolUserException');
     Route::post('/api/course/remove_invite_user_to_course', 'Backend\CourseController@apiRemoveInviteUser');
+    Route::post('/api/course/remove_user_exception_to_course', 'Backend\CourseController@apiRemoveUserException');
     Route::get('/api/courses/get_last_update/{id}', 'Backend\CourseController@apiGetCourseLastUpdate');
 
     Route::get('/survey/list', 'Backend\SurveyController@viewIndex')->name('survey.list');
@@ -556,6 +563,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/api/survey/getlstsalerooms/{branch_id}', 'Backend\SurveyController@apiGetSaleRooms');
     Route::post('/api/survey/export_file', 'Backend\SurveyController@apiExportFile');
     Route::get('/downloadexcelsurvey/{type_file}', 'Backend\SurveyController@downloadExportSurvey');
+    Route::post('/api/survey/view_result', 'Backend\SurveyController@apiViewResultSurvey');
+    Route::post('/api/survey/list_user_result', 'Backend\SurveyController@apiGetListUserSurvey');
+
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
     Route::post('/education/user/list_teacher', 'Backend\EducationController@apiListUserTeacher');
@@ -777,7 +787,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
-
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020

@@ -22,6 +22,93 @@ $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'te
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
 
+
+$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = ' . $USER->id;
+$profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
+
+$sqlGetOrganization = 'SELECT f.id, f.level, f.code
+            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
+            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . ')) tmp1
+            JOIN tms_organization ON @id IS NOT NULL) tmp2
+            JOIN tms_organization f ON tmp2._id = f.id
+            where f.level = 1 limit 1';
+$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+$organization_id = $organization->id;
+
+$organizationCodeGet = "";
+$organizationLower = strtolower($organization->code);
+if(strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0){
+    $organizationCodeGet = "BG";
+} else if(strpos($organizationLower,'ea') === 0 || strpos($organizationLower,'easia') === 0){
+    $organizationCodeGet = "EA";
+} else if(strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0){
+    $organizationCodeGet = "EV";
+}else if(strpos($organizationLower, 'AV') === 0 || strpos($organizationLower, 'avana') === 0){
+    $organizationCodeGet = "AV";
+}else{
+    $organizationCodeGet = "PH";
+}
+
+
+//set for full page
+$organization_id = is_null($organization) ? 0 : $organization->id;
+//$organizationCodeGet
+$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
+//$organizationCode = "BG";
+switch ($organizationCode) {
+    case "EA":
+        {
+            $_SESSION["organizationName"] = 'Easia';
+            $_SESSION["color"] = '#862055';
+            $_SESSION["pathLogo"] = 'images/logo-black.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
+            $_SESSION["component"] = 'images/cpn-easia.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "EV":
+        {
+            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["color"] = '#CAB143';
+            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
+            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
+            $_SESSION["component"] = 'images/cpn-exotic.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "BG":
+        {
+            $_SESSION["organizationName"] = 'Begodi';
+            $_SESSION["color"] = '#333';
+            $_SESSION["pathLogo"] = 'images/begodi.png';
+            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
+            $_SESSION["component"] = 'images/cpn-begodi.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "AV":
+        {
+            $_SESSION["organizationName"] = 'Avana';
+            $_SESSION["color"] = '#202020';
+            $_SESSION["pathLogo"] = 'images/avana.png';
+            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
+            $_SESSION["component"] = 'images/cpn-avana.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    default:
+        {
+            $_SESSION["organizationName"] = 'PHH';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+}
+
+//get course list
 $sql = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
@@ -53,36 +140,14 @@ mc.estimate_duration,
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
   where me.enrol = \'manual\'
+  and ttc.deleted <> 1
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and mue.userid = ' . $USER->id;
-$sql .= ' group by mc.id'; //cần để tạo tên giáo viên
+$sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
 $courses = array_values($DB->get_records_sql($sql));
-
-$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = ' . $USER->id;
-$profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
-
-$sqlGetOrganization = 'SELECT f.id, f.level, f.code
-            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
-            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . ')) tmp1
-            JOIN tms_organization ON @id IS NOT NULL) tmp2
-            JOIN tms_organization f ON tmp2._id = f.id
-            where f.level = 2 or f.level = 1 limit 1';
-$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
-$organizationCodeGet = "";
-if (strpos(strtolower($organization->code), 'begodi') === 0) {
-    $organizationCodeGet = "BG";
-} else if (strpos(strtolower($organization->code), 'easia') === 0) {
-    $organizationCodeGet = "EA";
-} else if (strpos(strtolower($organization->code), 'exotic') === 0) {
-    $organizationCodeGet = "EV";
-} else if (strpos(strtolower($organization->code), 'av') === 0) {
-    $organizationCodeGet = "AV";
-} else {
-    $organizationCodeGet = "PH";
-}
 
 $courses_current = array();
 $courses_required = array();
@@ -90,30 +155,50 @@ $courses_completed = array();
 $courses_others = array();
 $courses_others_id = '(0';
 $courses_soft_skills = array();
+//
+$courses_training = array();
+//
+$courses_required_list = array();
+//
 $competency_exists = array();
+$competency_completed = array();
 $countRequiredCourses = 0;
+$sttTotalCourse = 0;
 foreach ($courses as $course) {
-    //current first
-    if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-        array_push($competency_exists, $course->training_id);
-        push_course($courses_current, $course);
-    } //then complete
-    elseif ($course->numoflearned / $course->numofmodule == 1) {
-        push_course($courses_completed, $course);
-    } //then required = khoa hoc trong khung nang luc
-    elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-        $courses_required[$course->training_id][$course->order_no] = $course;
-        if ($course->training_deleted == 2) {
-            $courses_others_id .= ', ' . $course->id;
+    $courses_training[$course->training_id][$course->order_no] = $course;
+}
+
+foreach ($courses_training as $courses){
+    $stt = 1;
+    foreach ($courses as &$course) {
+        $course->sttShow = $stt;
+        //current first
+        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            array_push($competency_exists, $course->training_id);
+            push_course($courses_current, $course);
+        } //then complete
+        elseif ($course->numoflearned / $course->numofmodule == 1) {
+            array_push($competency_completed, $course->training_id);
+            push_course($courses_completed, $course);
+        } //then required = khoa hoc trong khung nang luc
+        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
+            $courses_required[$course->training_id][$course->order_no] = $course;
+            if ($course->training_deleted == 2) {
+                $courses_others_id .= ', ' . $course->id;
+            }
+            $countRequiredCourses++;
+            $courses_required_list[] = $course;
         }
-        $countRequiredCourses++;
+        $stt++;
+        $sttTotalCourse++;
     } //the last is other courses
 //    else {
 //        push_course($courses_others, $course);
 ////        $courses_others_id .= ', '.$course->id;
 //    }
-
+    // }
 }
+
 $courses_others_id .= ')';
 function push_course(&$array, $course)
 {
@@ -126,6 +211,18 @@ function push_course(&$array, $course)
         $array[$course->id] = $course;
     }
 }
+
+
+// Set session variables
+$_SESSION["courses_current"] = $courses_current;
+$_SESSION["courses_required"] = $courses_required_list;
+$_SESSION["courses_completed"] = $courses_completed;
+$_SESSION["totalCourse"] = $sttTotalCourse;
+
+$countBlock = 1;
+$percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
+$percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
+
 
 //get course can not enrol
 $sqlCourseNotEnrol = 'select mc.id,
@@ -148,118 +245,44 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
-// Set session variables
-$_SESSION["courses_current"] = $courses_current;
-$_SESSION["courses_required"] = $courses_required;
-$_SESSION["courses_completed"] = $courses_completed;
-$_SESSION["totalCourse"] = count($courses);
-
-//set for full page
-$organization_id = 2;
-//$organizationCodeGet
-$organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
-//$organizationCode = "BG";
-switch ($organizationCode) {
-    case "EA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EASIA":
-        {
-            $_SESSION["organizationName"] = 'Easia';
-            $_SESSION["color"] = '#862055';
-            $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
-            $_SESSION["component"] = 'images/cpn-easia.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EV":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "EXOTIC":
-        {
-            $_SESSION["organizationName"] = 'Exotic voyages';
-            $_SESSION["color"] = '#CAB143';
-            $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
-            $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
-            $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BG":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "BEGODI":
-        {
-            $_SESSION["organizationName"] = 'Begodi';
-            $_SESSION["color"] = '#333';
-            $_SESSION["pathLogo"] = 'images/begodi.png';
-            $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
-            $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AV":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    case "AVANA":
-        {
-            $_SESSION["organizationName"] = 'Avana';
-            $_SESSION["color"] = '#202020';
-            $_SESSION["pathLogo"] = 'images/avana.png';
-            $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
-            $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-    default:
-        {
-            $_SESSION["organizationName"] = 'PHH';
-            $_SESSION["color"] = '#0080EF';
-            $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
-        }
-        break;
-}
-
-$countBlock = 1;
-$percentCompleted = intval(count($courses_completed) * 100 / count($courses));
-$percentStudying = intval(count($courses_current) * 100 / count($courses));
-
-
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
+
+//$organization_id = 0;
+//get footer address
+$sqlGetFooterAddresses = "select id, organization_id, country, name, address, tel, fax from tms_organization_addresses where organization_id = " . $organization_id . " group by id";
+$getFooterAddresses = array_values($DB->get_records_sql($sqlGetFooterAddresses));
+$footerAddresses = [];
+$footerAddressesTab = [];
+foreach ($getFooterAddresses as $footerAddress) {
+    $footerAddresses[$footerAddress->country][] = $footerAddress;
+    $footerAddressesTab[$footerAddress->country] = $footerAddress->country;
+}
+
+$_SESSION["OrganizationID"] = $organization_id;
+$_SESSION["footerAddressesTab"] = $footerAddressesTab;
+$_SESSION["footerAddresses"] = $footerAddresses;
+
+
+//get permission
+$sqlCheckPermission = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
+inner join `roles` on `roles`.`id` = `mhr`.`role_id`
+left join `permission_slug_role` as `psr` on `psr`.`role_id` = `mhr`.`role_id`
+inner join `mdl_user` as `mu` on `mu`.`id` = `mhr`.`model_id`
+where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser"';
+
+$getPermissions = $DB->get_records_sql($sqlCheckPermission);
+
+$allowCms = false;
+$permissions = array_values($getPermissions);
+foreach ($permissions as $permission) {
+    if (!in_array($permission->name, ['student', 'employee'])) {
+        $allowCms = true;
+        break;
+    }
+}
+$_SESSION["allowCms"] = $allowCms;
 ?>
 
 <html>
@@ -527,6 +550,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .section-footer {
         position: relative;
+        background: #000000 0% 0% no-repeat padding-box;
+        border: 1px solid #707070;
+        opacity: 1;
     }
 
     .section-footer .container {
@@ -535,6 +561,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .path-calendar .maincalendar .heightcontainer {
         height: auto !important;
+        padding: 3%;
     }
 
     .block-item__content_btn {
@@ -794,14 +821,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         top: 28%;
     }
 
-    .section-footer {
-        background: #202020 0% 0% no-repeat padding-box;
-        border: 1px solid #707070;
-        opacity: 1;
-    }
-
     .footer-ul {
         padding: 0;
+        padding-left: 5%;
     }
 
     .footer-ul li {
@@ -923,6 +945,22 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         }
     }
 
+    @media screen and (max-width: 1920px) {
+        .info-user .avatar img {
+            width: 105px !important;
+            height: 105px !important;
+            bottom: 26% !important;
+        }
+    }
+
+    @media screen and (max-width: 1440px) {
+        .info-user .avatar img {
+            width: 85px !important;
+            height: 85px !important;
+            bottom: 26% !important;
+        }
+    }
+
     @media screen and (max-width: 1024px) {
         .block-color {
             width: 80px !important;
@@ -958,6 +996,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
             width: 130px !important;
             height: 130px !important;
         }
+
+        .section-footer .container{
+            padding: 3% 3%;
+        }
     }
 
     @media screen and (max-width: 375px) {
@@ -971,12 +1013,68 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         background-repeat: no-repeat;
         background-position: 100% 50%;
         background-size: cover;
+        background-size: cover;
     }
 
     .circular-chart {
         margin: 0 !important;
         max-width: 100% !important;
     }
+
+    .footer-block__address {
+
+    }
+
+    .footer-block__address .nav-tabs {
+        border: none;
+    }
+
+    .footer-block__address .nav-tabs li {
+        /*padding: 1% 2%;*/
+        display: block;
+    }
+
+    .footer-block__address .nav-tabs li.active, .tab-content .active {
+        background-color: #222126;
+        color: #ffffff;
+    }
+
+    .footer-block__address .nav-tabs li a {
+        color: #ffffff;
+        position: relative;
+        display: block;
+        padding: 10px 15px;
+    }
+
+    .tab-content > .tab-pane {
+        padding: 2%;
+    }
+
+    .cls::after, .cls::before, .clearfix::after, .clearfix::before {
+        content: '';
+        display: block;
+        clear: both;
+    }
+
+    .regions {
+        color: #fff;
+        margin-bottom: 20px;
+        list-style: none;
+        font-size: 13px;
+        display: inline-grid;
+        /*width: 32%;*/
+    }
+
+    .regions .name {
+        padding-bottom: 4px;
+        border-bottom: 1px solid #3a3a3a;
+        font-size: 16px;
+    }
+
+    .regions .address, .regions .name {
+        letter-spacing: 1px;
+    }
+
 </style>
 <body>
 <div class="wrapper"><!-- wrapper -->
@@ -1049,7 +1147,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                               stroke-dasharray="<?php echo $percentCompleted; ?>,100" d="M18 2.0845
                             a 15.9155 15.9155 0 0 1 0 31.831
                             a 15.9155 15.9155 0 0 1 0 -31.831"/>
-                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?>%
+                                        <text x="18" y="20.35" class="percentage"><?php echo $percentCompleted; ?> %
                                         </text>
                                     </svg>
                                 </div>
@@ -1092,7 +1190,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 </div>
                                 <div class="info-statistic__completed-courses">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=other">
-                                        <div class="text-course">Other courses</div>
+                                        <div class="text-course">Optional courses</div>
                                         <div class="text-number"><?php echo count($coursesSuggest); ?></div>
                                     </a>
                                 </div>
@@ -1125,6 +1223,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_current) > 0) { ?>
                                             <?php $countBlock = 1;
+                                            $stt = 1;
+                                            //get first training id of liest course
+                                            $training_id = array_values($courses_current)[0]->training_id;
+                                            //if exists in list competency => it learning => disable to learn
+                                            if (in_array($training_id, $competency_completed)) {
+                                                $stt = 2;
+                                            }
                                             foreach ($courses_current as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
@@ -1161,7 +1266,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <p class="number-order number-order-hide"></p>
+                                                            <?php if ($course->training_deleted == 0) { ?>
+                                                                <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                            <?php } else { ?>
+                                                                <p class="number-order number-order-hide"></p>
+                                                            <?php } ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1199,14 +1308,16 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 //defined enable
                                                 $enable = 'enable';
                                                 $stt = 1;
+                                                $allow = true;
                                                 //get first training id of liest course
                                                 $training_id = array_values($courses_traning)[0]->training_id;
                                                 //if exists in list competency => it learning => disable to learn
-                                                if (in_array($training_id, $competency_exists)) {
+                                                if (in_array($training_id, $competency_exists) || in_array($training_id, $competency_completed)) {
                                                     $enable = 'disable';
+                                                    $allow = false;
                                                 }
                                                 foreach ($courses_traning as $course) {
-                                                    if ($course->training_deleted == 2) continue; ?>
+                                                    if ($course->training_deleted == 2 || !$allow) continue; ?>
                                                     <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                         <div class="block-data">
                                                             <div class="block-items__item <?php echo $enable; ?>">
@@ -1248,7 +1359,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                                 hours</p>
                                                                         </div>
                                                                     </div>
-                                                                    <p class="number-order"><?php echo $stt; ?></p>
+                                                                    <?php if ($course->training_deleted == 0) { ?>
+                                                                        <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                                    <?php } else { ?>
+                                                                        <p class="number-order number-order-hide"></p>
+                                                                    <?php } ?>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1266,7 +1381,14 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 foreach ($courses_required as $courses_traning) {
                                                     $stt = 2;
                                                     $enable = 'enable';
-                                                    if (array_values($courses_traning)[0]->training_deleted == 0) {
+                                                    $course_traning = array_values($courses_traning)[0];
+                                                    //get first training id of liest course
+                                                    $training_id = array_values($courses_traning)[0]->training_id;
+                                                    if (in_array($training_id, $competency_exists)){
+                                                        $enable = 'disable';
+                                                        //do nothing
+                                                    }
+                                                    elseif($course_traning->training_deleted == 0){
                                                         array_shift($courses_traning);
                                                         $enable = 'disable';
                                                     }
@@ -1319,7 +1441,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                             </div>
                                                                         </div>
                                                                         <?php if ($course->training_deleted == 0) { ?>
-                                                                            <p class="number-order"><?php echo $stt; ?></p>
+                                                                            <p class="number-order"><?php echo $course->sttShow; ?></p>
                                                                         <?php } else { ?>
                                                                             <p class="number-order number-order-hide"></p>
                                                                         <?php } ?>
@@ -1364,6 +1486,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($courses_completed) > 0) { ?>
                                             <?php $countBlock = 1;
+                                            $stt = 1;
                                             foreach ($courses_completed as $course) { ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
@@ -1402,7 +1525,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                         hours</p>
                                                                 </div>
                                                             </div>
-                                                            <p class="number-order number-order-hide"></p>
+                                                            <?php if ($course->training_deleted == 0) { ?>
+                                                                <p class="number-order"><?php echo $course->sttShow; ?></p>
+                                                            <?php } else { ?>
+                                                                <p class="number-order number-order-hide"></p>
+                                                            <?php } ?>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1423,7 +1550,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <!--top-->
                                 <div class="course-block__top">
                                     <div class="course-block__top-show row">
-                                        <div class="col-6 title"><h2>Other <span>Courses</span></h2></div>
+                                        <div class="col-6 title"><h2>Optional <span>Courses</span></h2></div>
                                         <div class="col-6 btn-show btn-show-all">
                                             <button class="btn btn-click"><a
                                                     href="lms/course/index.php?progress=1&type=other">Show All</a>
@@ -1539,50 +1666,60 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                 </div>
                 <div class="row mb-3">
-                    <!--Helps-->
-                    <div class="footer-block col-sm-3 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Helps & Support</p></div>
+                    <!--Home-->
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
+                        <div class="footer-block__title"><p class="footer-title">Home</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
+                                <li><a href="lms/course/index.php">Courses</a></li>
+                                <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
+                                <?php if($allowCms){ ?>
+                                    <li><a href="/tms/dashboard">CMS</a></li>
+                                <?php } ?>
                             </ul>
                         </div>
                     </div>
                     <!--FAQs-->
-                    <div class="footer-block col-sm-3 col-xs-6">
+                    <div class="footer-block col-12 col-sm-2 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
                             </ul>
                         </div>
                     </div>
-                    <div class="footer-block col-sm-3 col-xs-6">
+                    <!--Contact-->
+                    <div class="footer-block col-12 col-sm-8 col-xs-6">
                         <div class="footer-block__title"><p class="footer-title">Contact</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
+                        <div class="footer-block__ul footer-block__address">
+                            <ul class="nav nav-tabs">
+                                <?php $count = 1; $active = 'active';
+                                foreach ($footerAddressesTab as $footerAddressTab) { ?>
+                                        <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
+                                                                         href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                        </li>
+                                    <?php $count++; $active=''; }  ?>
                             </ul>
-                        </div>
-                    </div>
-                    <div class="footer-block col-sm-3 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Sitemap</p></div>
-                        <div class="footer-block__ul">
-                            <ul class="footer-ul">
-                                <li><a href="/">Home</a></li>
-                                <li><a href="/">Courses</a></li>
-                                <li><a href="/">Profile</a></li>
-                                <li><a href="/">Profile</a></li>
-                            </ul>
+                            <div class="tab-content">
+                                <?php $count = 1;
+                                $active = 'active';
+                                foreach ($footerAddresses as $footerAddress) { ?>
+                                    <div id="menu<?php echo $count; ?>" class="tab-pane in <?php echo $active; ?>">
+                                        <div class="content-address cls">
+                                            <?php foreach ($footerAddress as $footer) { ?>
+                                                <ul class="regions">
+                                                    <li class="name"><?php echo $footer->name; ?></li>
+                                                    <li class="address"><i class="fa fa-map-marker"
+                                                                           aria-hidden="true"></i>
+                                                        <?php echo $footer->address; ?>
+                                                    </li>
+                                                </ul>
+                                            <?php }
+                                            $count++;
+                                            $active = ''; ?>
+                                        </div>
+                                    </div>
+                                <?php } ?>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1610,6 +1747,11 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                 $('.percentage').text(<?php echo $percentCompleted; ?> +' %');
                 $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
             }
+        });
+
+        $('.nav-tabs li').click(function () {
+            $('.li-address').removeClass('active');
+            $(this).addClass('active');
         });
 
     });

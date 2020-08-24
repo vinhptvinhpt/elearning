@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\TmsConfigs;
 use App\TmsNotification;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class SettingController extends Controller
@@ -18,39 +19,17 @@ class SettingController extends Controller
     public function apiListSetting()
     {
         //check and insert development in db tms_configs
-        $this->insertDevelopeMode();
-        //
         $data = [];
-        $configs = TmsConfigs::orderByRaw('FIELD(editor, "checkbox") DESC')->get();
+        TmsConfigs::initConfigs(TmsConfigs::TYPE_SYSTEM);
+        $configs = TmsConfigs::initConfigs(TmsConfigs::TYPE_SYSTEM);
         if (count($configs) != 0) {
             foreach ($configs as $config) {
-                $label = $this->getAttrLabel($config->target);
+                $label = TmsConfigs::getAttrLabel($config->target);
                 $config->label = $label;
                 $data[] = $config;
             }
         }
         return response()->json($data);
-    }
-
-    public function insertDevelopeMode()
-    {
-        $configs = array(
-            TmsNotification::DEVELOPMENT => TmsConfigs::ENABLE
-        );
-        $pdo = DB::connection()->getPdo();
-        if ($pdo) {
-            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
-            $today = date('Y-m-d H:i:s', time());
-            if (count($stored_configs) == 0) {
-                $insert_configs = array(
-                    'target' => TmsNotification::DEVELOPMENT,
-                    'content' => TmsConfigs::ENABLE,
-                    'editor' => TmsConfigs::EDITOR_CHECKBOX,
-                    'created_at' => $today
-                );
-                TmsConfigs::insert($insert_configs);
-            }
-        }
     }
 
     public function apiUpdateSetting(Request $request)
@@ -75,22 +54,31 @@ class SettingController extends Controller
         if (!empty($validates)) {
             $error_string_arr = [];
             foreach ($validates as $validate) {
-                $error_string_arr[] = $this->getAttrLabel($validate);
+                $error_string_arr[] = TmsConfigs::getAttrLabel($validate);
             }
             $error_string = implode(', ', $error_string_arr);
             return $error_string;
             //var_dump($validates);
         } else {
             if (count($updates) != 0) {
-                foreach ($updates as $key => $val) {
-                    DB::beginTransaction();
-                    $setting = DB::table('tms_configs')->where('target', $key)->update(array('content' => $val));
-                    if (!$setting) {
-                        DB::rollBack();
-                    } else {
-                        DB::commit();
+                $mail_dev_mode = true; //Auto turn on
+                DB::beginTransaction();
+                try {
+                    foreach ($updates as $key => $val) {
+                        //$setting =
+                        DB::table('tms_configs')->where('target', $key)->update(array('content' => $val));
+                        //$setting trả về số lượng bản ghi được update, nếu không thay đổi giá trị thì update sẽ trả về 0
                     }
+                } catch (\Exception $e) {
+                    //dd($e->getMessage());
+                    DB::rollBack();
+                    return 'fail';
                 }
+                DB::commit();
+                if ($updates[TmsConfigs::DEVELOPMENT] == 'disable') {
+                    $mail_dev_mode = false;
+                }
+                Cache::put('mail_development_mode', $mail_dev_mode, 1440);
             }
             return 'success';
         }

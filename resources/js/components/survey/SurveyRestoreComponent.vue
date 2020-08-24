@@ -183,9 +183,21 @@
                     });
             },
             onPageChange() {
+                let back = this.getParamsBackPage();
+                if(back == '1') {
+                  this.current = Number(sessionStorage.getItem('surveyPage'));
+                  this.row = Number(sessionStorage.getItem('surveyPageSize'));
+                  this.keyword = sessionStorage.getItem('surveyKeyWord');
+
+                  sessionStorage.clear();
+                  this.$route.params.back_page= null;
+                }
                 this.getSurveys();
             },
             restoreSurvey(id) {
+                sessionStorage.setItem('surveyPage', this.current);
+                sessionStorage.setItem('surveyPageSize', this.row);
+                sessionStorage.setItem('surveyKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
@@ -199,7 +211,7 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getSurveys(this.current);
+                                current_pos.onPageChange();
 
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
@@ -215,6 +227,9 @@
                 return false;
             },
             deleteSurvey(id) {
+                sessionStorage.setItem('surveyPage', this.current);
+                sessionStorage.setItem('surveyPageSize', this.row);
+                sessionStorage.setItem('surveyKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
@@ -228,7 +243,11 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getSurveys(this.current);
+                                if(current_pos.surveys.length == 1){
+                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                }
+                                current_pos.onPageChange();
+
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
@@ -245,6 +264,11 @@
         },
         mounted() {
             this.getSurveys();
+        },
+        destroyed() {
+          sessionStorage.setItem('surveyPage', this.current);
+          sessionStorage.setItem('surveyPageSize', this.row);
+          sessionStorage.setItem('surveyKeyWord', this.keyword);
         }
     }
 </script>

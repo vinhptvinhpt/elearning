@@ -56,14 +56,14 @@ class EmailTemplateController extends Controller
 
     public function apiGetListEmailTemplate()
     {
-        //load
-        $this->deleteOldConfigs();
-        //
+
         $data = [];
-        $configs = TmsConfigs::where('editor', 'checkbox')->where('target', '<>', 'development')->get();
+        //Load configs
+        $configs = TmsConfigs::initConfigs(TmsConfigs::TYPE_NOTIFICATION);
+
         if (count($configs) != 0) {
             foreach ($configs as $config) {
-                $label = $this->convertNameFile($config->target);
+                $label = TmsConfigs::getAttrLabel($config->target);
                 if (empty($label) || $label == '')
                     $label = $config->target;
                 $config->label = $label;
@@ -73,64 +73,9 @@ class EmailTemplateController extends Controller
         return response()->json($data);
     }
 
-    public function deleteOldConfigs()
-    {
-        //set old configs (using in bgt)
-        $configsDelete = array(
-            TmsNotification::SUGGEST => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_START => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_END => TmsConfigs::ENABLE,
-            TmsNotification::QUIZ_COMPLETED => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_LOGIN => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_ACCESS_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EDUCATION_SCHEDULE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_UPCOMING_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE
-        );
-
-        $configs = array(
-            TmsNotification::ASSIGNED_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::ENABLE,
-            TmsNotification::SUGGEST_OPTIONAL_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
-            TmsNotification::INVITATION_OFFLINE_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE => TmsConfigs::ENABLE,
-            TmsNotification::INVITE_STUDENT => TmsConfigs::ENABLE,
-            TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
-            TmsNotification::ENROL => TmsConfigs::ENABLE
-        );
-        $pdo = DB::connection()->getPdo();
-        if ($pdo) {
-            $stored_configs = TmsConfigs::whereIn('target', array_keys($configs))->get();
-            $today = date('Y-m-d H:i:s', time());
-            ////delete all old configs (using in bgt)
-            TmsConfigs::whereIn('target', array_keys($configsDelete))->delete();
-            //
-            if (count($stored_configs) == 0 || count($stored_configs) != count($configs)) {
-                TmsConfigs::whereIn('target', array_keys($configs))->delete();
-                $insert_configs = array();
-                foreach ($configs as $key => $value) {
-                    $insert_configs[] = array(
-                        'target' => $key,
-                        'content' => $value,
-                        'editor' => TmsConfigs::EDITOR_CHECKBOX,
-                        'created_at' => $today
-                    );
-                }
-                TmsConfigs::insert($insert_configs);
-            } else {
-                $configs = array();
-                foreach ($stored_configs as $item) {
-                    $configs[$item->target] = $item->content;
-                }
-            }
-        }
-        return $configs;
-    }
-
     public function viewEmailTemplateDetail($name_file)
     {
-        $label = $this->convertNameFile($name_file);
+        $label = TmsConfigs::getAttrLabel($name_file);
         return view('email.template.detail', ['name_file' => $name_file, 'name_show' => $label]);
     }
 
@@ -151,54 +96,11 @@ class EmailTemplateController extends Controller
 
     public function getContentFile($name_file)
     {
-        $label = $this->convertNameFile($name_file);
+        $label = TmsConfigs::getAttrLabel($name_file);
         //get content of file with name
         $string = file_get_contents(public_path() . "/files/email/template.json");
 
         return response()->json(['content' => $string, 'name_show' => $label]);
-    }
-
-    public function convertNameFile($name_file)
-    {
-        switch ($name_file) {
-            case TmsNotification::ENROL:
-                $label = __("tham_gia_khoa_hoc");
-                break;
-            case TmsNotification::ASSIGNED_COURSE:
-                $label = __('assigned_course');
-                break;
-            case TmsNotification::ASSIGNED_COMPETENCY:
-                $label = __('assigned_competency');
-                break;
-            case TmsNotification::SUGGEST_OPTIONAL_COURSE:
-                $label = __('suggest_optional_course');
-                break;
-            case TmsNotification::REMIND_EXAM:
-                $label = __('remind_exam');
-                break;
-            case TmsNotification::INVITATION_OFFLINE_COURSE:
-                $label = __('invitation_offline_course');
-                break;
-            case TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE:
-                $label = __('nhac_nho_khoa_hoc_bat_buoc_sap_het_han');
-                break;
-            case TmsNotification::FORGOT_PASSWORD:
-                $label = __('quen_mat_khau');
-                break;
-            case TmsNotification::COMPLETED_FRAME:
-                $label = __('chung_chi_hoan_thanh');
-                break;
-            case TmsNotification::INVITE_STUDENT:
-                $label = __('invite_student');
-                break;
-            case TmsNotification::REMIND_CERTIFICATE:
-                $label = __('remind_certificate');
-                break;
-            default:
-                $label = '';
-                break;
-        }
-        return $label;
     }
 
     public function writeToJson(Request $rq)
@@ -223,7 +125,7 @@ class EmailTemplateController extends Controller
                 file_put_contents($path_html, $newJsonHtml);
             }
             $response->status = true;
-            $response->message = __('sua_thanh_cong_template') . $this->convertNameFile($name_file);
+            $response->message = __('sua_thanh_cong_template') . TmsConfigs::getAttrLabel($name_file);
         } catch (Exception $e) {
             $response->status = false;
             //$response->message = $e->getMessage();

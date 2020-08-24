@@ -220,6 +220,9 @@
                 alert("Copied to clipboard");
             },
             deletePost(id) {
+                sessionStorage.setItem('selfListPage', this.current);
+                sessionStorage.setItem('selfListPageSize', this.row);
+                sessionStorage.setItem('selfListKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -233,7 +236,11 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.getSurveys(current_pos.current);
+                                if(current_pos.surveys.length == 1){
+                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                }
+                                current_pos.onPageChange();
+
 
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));

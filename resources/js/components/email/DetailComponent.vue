@@ -64,22 +64,6 @@
     },
     data() {
       return {
-        StringHello: "Hello",
-        StringContent: "",
-        StringFullName: "Notice from management Elearing to you:",
-        StringUserName: "With account:",
-        StringIntro: "Courses are about to be opened.",
-        StringThanks: "Thank you so much",
-        IdCourse: "1",
-        NameCourse: "",
-        TimeStart: "",
-        TimeDone: "",
-        StringLogin: "",
-        NameExam: "",
-        ContentExam: "",
-        StringCheck: "",
-        email_teplate: {},
-        editField: "",
         content_html: '',
         json_content: {},
         name_show: '',
@@ -103,21 +87,29 @@
             this.json_content = JSON.parse(response.data.content);
             this.name_show = response.data.name_show;
             switch (this.name_file) {
+
               case 'enrol':
                 this.content_html = this.json_content.enrol;
                 break;
-              case 'assigned_course':
-                this.content_html = this.json_content.assigned_course;
+
+              case 'suggest':
+                this.content_html = this.json_content.suggest;
                 break;
+
+
+              case 'remind_certificate':
+                this.content_html = this.json_content.remind_certificate;
+                break;
+
+
               case 'assigned_competency':
                 this.content_html = this.json_content.assigned_competency;
                 break;
-              case 'suggest_optional_course':
-                this.content_html = this.json_content.suggest_optional_course;
-                break;
+
               case 'remind_exam':
                 this.content_html = this.json_content.remind_exam;
                 break;
+
               case 'invitation_offline_course':
                 this.content_html = this.json_content.invitation_offline_course;
                 break;

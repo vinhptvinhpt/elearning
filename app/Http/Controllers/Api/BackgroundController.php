@@ -8,6 +8,7 @@ use App\Exports\ImportResultSheet;
 use App\Exports\ListMismatchData;
 use App\Http\Controllers\Controller;
 use App\Imports\DataImport;
+use App\MdlCourse;
 use App\MdlEnrol;
 use App\MdlGradeGrade;
 use App\MdlGradeItem;
@@ -39,6 +40,8 @@ use App\TmsSaleRoomUser;
 use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use App\TmsTrainningCategory;
+use App\TmsTrainningCourse;
+use App\TmsTrainningProgram;
 use App\TmsTrainningUser;
 use App\TmsUserDetail;
 use App\TmsUserSaleDetail;
@@ -362,34 +365,115 @@ Log::info('348');
         }
     }
 
+    public function fillMissingPQDL() {
+        $organizations = TmsOrganization::query()->where('level', 2)->get();
+        DB::beginTransaction();
+        try {
+            foreach ($organizations as $organization) {
+                self::createPQDL($organization);
+            }
+            DB::commit();
+            return "Success";
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $e->getMessage();
+        }
+    }
+
+    public function fillTrainingForStandaloneCourses() {
+
+        $courses = DB::table('mdl_course as mc')
+            ->whereNotIn('mc.id', function ($q) {
+                $q->select('course_id')->from('tms_trainning_courses');
+            })
+            ->select('mc.*')
+            ->where('mc.category', '<>', 2)
+            ->get();
+
+        DB::beginTransaction();
+        try {
+            foreach ($courses as $course) {
+                self::createStandaloneTraining($course);
+            }
+            DB::commit();
+            return "Success";
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $e->getMessage();
+        }
+    }
+
     function createPQDL($organization) {
         if (!$organization->roleOrganization) { //Tạo role nếu chưa có
-            $lastRole = MdlRole::latest()->first();
-            $checkRole = Role::where('name', $organization->name)->first();
-            if ($checkRole) {
-                return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+
+            /*$mdlRole = MdlRole::query()
+                ->where('shortname', $organization->code)
+                ->first();
+
+            if (!isset($mdlRole)) {
+                $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                if (isset($lastRole)) {
+                    $sortorder = $lastRole['sortorder'] + 1;
+                } else {
+                    $sortorder = 1;
+                }
+                //Tạo quyền bên LMS
+                $mdlRole = new MdlRole;
+                $mdlRole->shortname = $organization->code;
+                $mdlRole->description = $organization->name;
+                $mdlRole->sortorder = $sortorder;
+                $mdlRole->archetype = 'user';
+                $mdlRole->save();
             }
 
-            //Tạo quyền bên LMS
-            $mdlRole = new MdlRole;
-            $mdlRole->shortname = $organization->code;
-            $mdlRole->description = $organization->name;
-            $mdlRole->sortorder = $lastRole['sortorder'] + 1;
-            $mdlRole->archetype = 'user';
-            $mdlRole->save();
-
-            $role = new Role();
-            $role->mdl_role_id = $mdlRole->id;
-            $role->name = $organization->code;
-            $role->description = $organization->name;
-            $role->guard_name = 'web';
-            $role->status = 1;
-            $role->save();
+            $role = Role::where('name', $organization->code)->first();
+            if (!isset($role)) {
+                $role = new Role();
+                $role->mdl_role_id = $mdlRole->id;
+                $role->name = $organization->code;
+                $role->description = $organization->name;
+                $role->guard_name = 'web';
+                $role->status = 1;
+                $role->save();
+            }
 
             $new_role_organization = new TmsRoleOrganization();
             $new_role_organization->organization_id = $organization->id;
             $new_role_organization->role_id = $role->id;
-            $new_role_organization->save();
+            $new_role_organization->save();*/
+
+            $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+            //Tạo quyền bên LMS
+            if (isset($lastRole)) {
+                $sortorder = $lastRole['sortorder'] + 1;
+            } else {
+                $sortorder = 1;
+            }
+
+            $mdlRole = MdlRole::firstOrCreate([
+                'shortname' => $organization->code,
+                'archetype' => 'user'
+            ], [
+                'description' => $organization->name,
+                'sortorder' => $sortorder
+            ]);
+
+            $role = Role::firstOrCreate([
+                'mdl_role_id' => $mdlRole->id,
+                'name' => $organization->code,
+                'guard_name' => 'web',
+                'status' => 1
+            ], [
+                'description' => $organization->name
+            ]);
+
+            TmsRoleOrganization::firstOrCreate([
+                'role_id' => $role->id,
+                'organization_id' => $organization->id
+            ]);
+
+
         } else {
             $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
             if ($check->role) { //Cập nhật role
@@ -397,6 +481,28 @@ Log::info('348');
                 $check->role->description = $organization->name;
                 $check->role->save();
             }
+        }
+    }
+
+    function createStandaloneTraining($course) {
+        $tms_trainning = TmsTrainningProgram::firstOrCreate([
+            'code' => $course->shortname . $course->id,
+            'name' => $course->fullname,
+            'style' => 1,
+            'run_cron' => 1,
+            'time_start' => 0,
+            'time_end' => 0,
+            'auto_certificate' => 1,
+            'auto_badge' => 1,
+            'deleted' => 2 //KNL ko hien thi tren he thong
+        ]);
+
+        if ($tms_trainning) {
+            TmsTrainningCourse::firstOrCreate([
+                'trainning_id' => $tms_trainning->id,
+                'sample_id' => $course->id,
+                'course_id' => $course->id
+            ]);
         }
     }
 

@@ -900,13 +900,16 @@
             goBack(){
                 switch (this.type) {
                     case "teacher":
-                        location.href = "/tms/education/user_teacher";
+                        this.$router.push({name: 'TeacherIndex', params: {back_page:'1'}});
+//                      location.href = "/tms/education/user_teacher";
                         break;
                     case "student":
-                        location.href = "/tms/education/user_student";
+                        this.$router.push({name: 'StudentIndex', params: {back_page:'1'}});
+                        // location.href = "/tms/education/user_student";
                         break;
                     default:
-                        location.href = "/tms/system/user";
+                        this.$router.push({name: 'SystemUserList', params: {back_page:'1'}});
+                        // location.href = "/tms/system/user";
                         break;
                 }
             },

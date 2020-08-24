@@ -8,6 +8,7 @@ use App\MdlCourse;
 use App\MdlUser;
 use App\Repositories\MdlCourseRepository;
 use App\Role;
+use App\TmsOrganization;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsTrainningCourse;
@@ -211,18 +212,25 @@ class CourseController extends Controller
             enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
             //Add newly course to phân quyền dữ liệu
+            $checkRoleOrg = 0;
             if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
                 //admin do nothing
-            } else {
-                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
-                if ($checkRoleOrg != 0) {
-                    $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
-                    if (isset($org_role)) {
-                        $new_relation = new TmsRoleCourse();
-                        $new_relation->role_id = $org_role->role_id;
-                        $new_relation->course_id = $course->id;
-                        $new_relation->save();
+                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+                    if (isset($checkOrg)) {
+                        $checkRoleOrg = $checkOrg->id;
                     }
+                }
+            } else { //User thuoc to chuc
+                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            }
+            if ($checkRoleOrg != 0) {
+                $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                if (isset($org_role)) {
+                    $new_relation = new TmsRoleCourse();
+                    $new_relation->role_id = $org_role->role_id;
+                    $new_relation->course_id = $course->id;
+                    $new_relation->save();
                 }
             }
 
@@ -329,6 +337,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserCurrentInvite($request);
     }
 
+    public function apiUserCourseException(Request $request)
+    {
+        return $this->bussinessRepository->apiUserCourseException($request);
+    }
+
     public function apiUserNeedEnrol(Request $request)
     {
         return $this->bussinessRepository->apiUserNeedEnrol($request);
@@ -344,6 +357,11 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiUserNeedInvite($request);
     }
 
+    public function apiUserNeedInviteToException(Request $request)
+    {
+        return $this->bussinessRepository->apiUserNeedInviteToException($request);
+    }
+
     public function apiEnrolUser(Request $request)
     {
         return $this->bussinessRepository->apiEnrolUser($request);
@@ -352,6 +370,11 @@ class CourseController extends Controller
     public function apiInviteUser(Request $request)
     {
         return $this->bussinessRepository->apiInviteUser($request);
+    }
+
+    public function apiEnrolUserException(Request $request)
+    {
+        return $this->bussinessRepository->apiEnrolUserException($request);
     }
 
     public function apiInvitationDetail($id)
@@ -372,6 +395,11 @@ class CourseController extends Controller
     public function apiRemoveInviteUser(Request $request)
     {
         return $this->bussinessRepository->apiRemoveInviteUser($request);
+    }
+
+    public function apiRemoveUserException(Request $request)
+    {
+        return $this->bussinessRepository->apiRemoveUserException($request);
     }
 
     public function apiImportExcelEnrol(Request $request)
@@ -518,5 +546,15 @@ class CourseController extends Controller
     public function apiGetListLibrary()
     {
         return $this->mdlCourseRepository->apiGetListLibrary();
+    }
+
+    public function apiGetListLibraryCodes()
+    {
+        return $this->mdlCourseRepository->apiGetListLibraryCodes();
+    }
+
+    public function apiGetExistedCodes()
+    {
+        return $this->mdlCourseRepository->apiGetExistedCodes();
     }
 }

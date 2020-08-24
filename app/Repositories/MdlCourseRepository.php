@@ -14,6 +14,7 @@ use App\MdlGradeItem;
 use App\MdlRole;
 use App\MdlUser;
 use App\Role;
+use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
@@ -532,24 +533,22 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                             'course_id' => $course->id
                         ]);
                     } else { //Enable use organization as role and map course to that role
-                        $lastRole = MdlRole::latest()->first();
 
+                        $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
                         //Tạo quyền bên LMS
-//                        $mdlRole = new MdlRole;
-//                        $mdlRole->shortname = $organization_employee->organization->code;
-//                        $mdlRole->description = $organization_employee->organization->name;
-//                        $mdlRole->sortorder = $lastRole['sortorder'] + 1;
-//                        $mdlRole->archetype = 'user';
-//                        $mdlRole->save();
+                        if (isset($lastRole)) {
+                            $sortorder = $lastRole['sortorder'] + 1;
+                        } else {
+                            $sortorder = 1;
+                        }
 
                         $mdlRole = MdlRole::firstOrCreate([
                             'shortname' => $organization_employee->organization->code,
                             'archetype' => 'user'
                         ], [
                             'description' => $organization_employee->organization->name,
-                            'sortorder' => $lastRole['sortorder'] + 1
+                            'sortorder' => $sortorder
                         ]);
-
 
                         $role = Role::firstOrCreate([
                             'mdl_role_id' => $mdlRole->id,
@@ -560,33 +559,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                             'description' => $organization_employee->organization->name
                         ]);
 
-//                        $role = new Role();
-//                        $role->mdl_role_id = $mdlRole->id;
-//                        $role->name = $organization_employee->organization->code;
-//                        $role->description = $organization_employee->organization->name;
-//                        $role->guard_name = 'web';
-//                        $role->status = 1;
-//                        $role->save();
-
                         $role_organization = TmsRoleOrganization::firstOrCreate([
                             'role_id' => $role->id,
                             'organization_id' => $organization_employee->organization_id
                         ]);
 
-                        $role_course = TmsRoleCourse::firstOrCreate([
+                        TmsRoleCourse::firstOrCreate([
                             'role_id' => $role_organization->role_id,
                             'course_id' => $course->id
                         ]);
-
-//                        $role_organization = new TmsRoleOrganization();
-//                        $role_organization->organization_id = $organization_employee->organization_id;
-//                        $role_organization->role_id = $role->id;
-//                        $role_organization->save();
-//
-//                        $role_course = new TmsRoleCourse();
-//                        $role_course->role_id = $role_organization->role_id;
-//                        $role_course->course_id = $course->id;
-//                        $role_course->save();
                     }
                 }
             }
@@ -776,12 +757,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
 
             if ($offline == 1) {
-                $startdate = new Carbon($startdate);
-                $startdate = $startdate->subHour(7);
+                $startdate = Carbon::createFromFormat('d-m-Y h:i A', $startdate);
+                $startdate = $startdate->format('Y-m-d H:i:s');
+                //$startdate = new Carbon($startdate);
+                //$startdate = $startdate->subHour(7);
 
                 if (!is_null($enddate)) {
-                    $enddate = new Carbon($enddate);
-                    $enddate = $enddate->subHour(7);
+                    $enddate = Carbon::createFromFormat('d-m-Y h:i A', $enddate);
+                    $enddate = $enddate->format('Y-m-d H:i:s');
+                    //$enddate = new Carbon($enddate);
+                    //$enddate = $enddate->subHour(7);
                 }
             }
 
@@ -890,8 +875,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $response->message = __('sua_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
+            $response->message = $e->getMessage();
+            //$response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
     }
@@ -1262,11 +1247,31 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
     public function apiGetListLibrary()
     {
-        $districts = MdlCourse::query()->where('category', 2)->where('deleted', 0)->get()->toArray();
-        return response()->json($districts);
+        $libraries = MdlCourse::query()
+            ->where('category', 2)
+            //->where('deleted', 0)
+            //->whereRaw('ROUND((CHAR_LENGTH(shortname) - CHAR_LENGTH(REPLACE(shortname, "_", ""))) / CHAR_LENGTH("_")) = 2')
+            ->get()
+            ->toArray();
+        return response()->json($libraries);
     }
 
+    public function apiGetListLibraryCodes()
+    {
+        $codes = TmsOrganization::query()
+            ->orderBy('level')
+            ->select('id', 'code')
+            ->get();
+        return response()->json($codes);
+    }
 
+    public function apiGetExistedCodes()
+    {
+        $codes = MdlCourse::query()
+            ->select('id', 'shortname')
+            ->get();
+        return response()->json($codes);
+    }
 
     /**
      * @param $num

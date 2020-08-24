@@ -248,7 +248,7 @@
                             <table id="datable_1" class="table_res">
                               <thead>
                               <tr>
-                                <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                <th style="width: 7%;">{{trans.get('keys.stt')}}</th>
                                 <th style="width: 40%;">{{trans.get('keys.ma_khoa_hoc')}}</th>
                                 <th>
                                   {{trans.get('keys.ten_khoa_hoc')}}
@@ -348,12 +348,12 @@
                                   <table id="datable_2" class="table_res">
                                     <thead>
                                     <tr>
-                                      <th style="width: 5%;">{{trans.get('keys.stt')}}</th>
+                                      <th style="width: 7%;">{{trans.get('keys.stt')}}</th>
                                       <th style="width: 40%;"> {{trans.get('keys.ma_khoa_hoc')}}</th>
                                       <th>
                                         {{trans.get('keys.ten_khoa_hoc')}}
                                       </th>
-                                      <th style="width: 10%;">{{trans.get('keys.hanh_dong')}}</th>
+                                      <th style="width: 12%;">{{trans.get('keys.hanh_dong')}}</th>
                                       <th class="text-center"><input type="checkbox"
                                                                      v-model="allSelectedRemove"
                                                                      @click="selectAllRemoveEnrol()"
@@ -543,6 +543,7 @@
         this.list.sort(sortArray);
       },
       saveOrder() {
+        let cc = this;
         axios.post('/api/trainning/saveorder', {
           training_id: this.id,
           list: this.list
@@ -553,11 +554,15 @@
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.that_bai'));
             }
+            //Reload new order, cho vao trong de chay sau khi api goi xong
+            cc.getListCourseTrainning();
           })
           .catch(error => {
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
+            //Reload new order
+            cc.getListCourseTrainning();
           });
-        this.getListCourseTrainning();
+
       },
       getRoles() {
         axios.post('/system/user/list_role')
@@ -853,5 +858,9 @@
   .action-order {
     display: block;
     margin: 20px 0;
+  }
+
+  .selectpicker{
+    display: block !important;
   }
 </style>

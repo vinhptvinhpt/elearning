@@ -113,7 +113,12 @@ class TmsOrganizationRepository implements ICommonInterface
                 }
             }
 
-            $list = $list->whereRaw('( name like "%' . $keyword . '%" )');
+            $list = $list->where(function ($query) use ($keyword) {
+                /* @var $query Builder */
+                $query
+                    ->whereRaw('( name like "%' . $keyword . '%" )')
+                    ->orWhereRaw('( code like "%' . $keyword . '%" )');
+            });
         }
 
         if (strlen($parent_id) != 0) {
@@ -196,17 +201,24 @@ class TmsOrganizationRepository implements ICommonInterface
 
                 //Create phân quyền dữ liệu
 
-                $lastRole = MdlRole::latest()->first();
+                /*$lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+
                 $checkRole = Role::where('name', $name)->first();
                 if ($checkRole) {
                     return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+                }
+
+                if (isset($lastRole)) {
+                    $sortorder = $lastRole['sortorder'] + 1;
+                } else {
+                    $sortorder = 1;
                 }
 
                 //Tạo quyền bên LMS
                 $mdlRole = new MdlRole;
                 $mdlRole->shortname = $code;
                 $mdlRole->description = $name;
-                $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+                $mdlRole->sortorder = $sortorder;
                 $mdlRole->archetype = 'user';
                 $mdlRole->save();
 
@@ -221,7 +233,38 @@ class TmsOrganizationRepository implements ICommonInterface
                 $new_role_organization = new TmsRoleOrganization();
                 $new_role_organization->organization_id = $course->id;
                 $new_role_organization->role_id = $role->id;
-                $new_role_organization->save();
+                $new_role_organization->save();*/
+
+                $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                //Tạo quyền bên LMS
+                if (isset($lastRole)) {
+                    $sortorder = $lastRole['sortorder'] + 1;
+                } else {
+                    $sortorder = 1;
+                }
+
+                $mdlRole = MdlRole::firstOrCreate([
+                    'shortname' => $course->code,
+                    'archetype' => 'user'
+                ], [
+                    'description' => $course->name,
+                    'sortorder' => $sortorder
+                ]);
+
+                $role = Role::firstOrCreate([
+                    'mdl_role_id' => $mdlRole->id,
+                    'name' => $course->code,
+                    'guard_name' => 'web',
+                    'status' => 1
+                ], [
+                    'description' => $course->name
+                ]);
+
+                TmsRoleOrganization::firstOrCreate([
+                    'role_id' => $role->id,
+                    'organization_id' => $course->id
+                ]);
+
             }
 
             return response()->json(status_message('success', __('them_moi_to_chuc_thanh_cong')));
@@ -282,17 +325,25 @@ class TmsOrganizationRepository implements ICommonInterface
             //Is role selected
             if ($is_role) {
                 if (!$item->roleOrganization) {
-                    $lastRole = MdlRole::latest()->first();
+
+
+        /*            $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
                     $checkRole = Role::where('name', $name)->first();
                     if ($checkRole) {
                         return response()->json(status_message('error', __('quen_da_ton_tai_khong_the_them')));
+                    }
+
+                    if (isset($lastRole)) {
+                        $sortorder = $lastRole['sortorder'] + 1;
+                    } else {
+                        $sortorder = 1;
                     }
 
                     //Tạo quyền bên LMS
                     $mdlRole = new MdlRole;
                     $mdlRole->shortname = $code;
                     $mdlRole->description = $name;
-                    $mdlRole->sortorder = $lastRole['sortorder'] + 1;
+                    $mdlRole->sortorder = $sortorder;
                     $mdlRole->archetype = 'user';
                     $mdlRole->save();
 
@@ -307,7 +358,39 @@ class TmsOrganizationRepository implements ICommonInterface
                     $new_role_organization = new TmsRoleOrganization();
                     $new_role_organization->organization_id = $id;
                     $new_role_organization->role_id = $role->id;
-                    $new_role_organization->save();
+                    $new_role_organization->save();*/
+
+                    $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                    //Tạo quyền bên LMS
+                    if (isset($lastRole)) {
+                        $sortorder = $lastRole['sortorder'] + 1;
+                    } else {
+                        $sortorder = 1;
+                    }
+
+                    $mdlRole = MdlRole::firstOrCreate([
+                        'shortname' => $code,
+                        'archetype' => 'user'
+                    ], [
+                        'description' => $name,
+                        'sortorder' => $sortorder
+                    ]);
+
+                    $role = Role::firstOrCreate([
+                        'mdl_role_id' => $mdlRole->id,
+                        'name' => $code,
+                        'guard_name' => 'web',
+                        'status' => 1
+                    ], [
+                        'description' => $name
+                    ]);
+
+                    TmsRoleOrganization::firstOrCreate([
+                        'role_id' => $role->id,
+                        'organization_id' => $id
+                    ]);
+
+
                 } else {
                     $check = TmsRoleOrganization::where('organization_id', $id)->first();
                     if ($check->role) {

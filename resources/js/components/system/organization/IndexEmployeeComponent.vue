@@ -481,6 +481,10 @@
               this.$route.params.back_page = value;
             },
             deletePost(url) {
+                sessionStorage.setItem('employeePage', this.current);
+                sessionStorage.setItem('employeePageSize', this.row);
+                sessionStorage.setItem('employeeKeyWord', this.keyword);
+                sessionStorage.setItem('employeePosition', this.position);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.thong_bao'),
@@ -493,7 +497,10 @@
                     axios.post(url)
                         .then(response => {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                            current_pos.getDataList(current_pos.current);
+                            if(current_pos.posts.length == 1){
+                              current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                            }
+                            current_pos.onPageChange();
                             //reload assign batch
                             current_pos.assignBatch += 1;
                         })

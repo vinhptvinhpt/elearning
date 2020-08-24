@@ -340,22 +340,22 @@
                     localStorage.setItem('auth.user', JSON.stringify(userinfo));
                     localStorage.setItem('auth.lang', 'en');
                     sslssso.login(data.jwt);
-                    loginLMS(data, callback);
+                    // loginLMS(data, callback);
                     // // [VinhPT]
                     // // Check if description is student => bgt.tinhvan.com/lms else => bgt.tinhvan.com
-                    {{--if (data.redirect_type.includes("lms")) {--}}
-                    {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
-                    {{--        window.location.href = '{{Config::get('constants.domain.LMS')}}';--}}
-                    {{--    } else {--}}
-                    {{--        window.location.href = callback;--}}
-                    {{--    }--}}
-                    {{--} else {--}}
-                    {{--    if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {--}}
-                    {{--        window.location.href = '/tms/dashboard';--}}
-                    {{--    } else {--}}
-                    {{--        window.location.href = callback;--}}
-                    {{--    }--}}
-                    {{--}--}}
+                    if (data.redirect_type.includes("lms")) {
+                        if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
+                            window.location.href = '{{Config::get('constants.domain.LMS')}}';
+                        } else {
+                            window.location.href = callback;
+                        }
+                    } else {
+                        if (callback === '{{Config::get('constants.domain.TMS-LOCAL')}}') {
+                            window.location.href = '/tms/dashboard';
+                        } else {
+                            window.location.href = callback;
+                        }
+                    }
 
                 } else if (
                     data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" || data.status === "FAILORGANIZATION" ||

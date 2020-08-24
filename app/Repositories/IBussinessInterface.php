@@ -167,7 +167,7 @@ interface IBussinessInterface
 
     public function apiListStudentsCertificate(Request $request);
 
-    public function sendMail($user, $certificatecode);
+    public function sendMail($user, $certificate_code = '', $framework = '');
 
     public function settingCertificate();
 

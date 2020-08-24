@@ -16,151 +16,258 @@
             </div>
         </div>
 
-        <div class="row mx-0">
+        <!--        <div class="row">-->
+        <!--            <div class="col-sm">-->
+        <!--                <div class="button-list">-->
+        <!--                    <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
+        <!--                                 class="btn-sm btn-danger">-->
+        <!--                        {{trans.get('keys.quay_lai')}}-->
+        <!--                    </router-link>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
 
-            <div class="col-12 hk-sec-wrapper">
-                <div class="row">
-                    <div class="col-sm">
-                        <div class="button-list">
-                            <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"
-                                         class="btn-sm btn-danger">
-                                {{trans.get('keys.quay_lai')}}
-                            </router-link>
+        <div class="row mx-0">
+            <ul class="col-12 nav nav-tabs nav-light" id="myTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
+                       aria-controls="home" aria-selected="true"> {{trans.get('keys.sumary')}}</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
+                       aria-controls="profile" aria-selected="false">{{trans.get('keys.question')}}</a>
+                </li>
+            </ul>
+
+            <div class="col-12 tab-content py-4 border-top-0 rounded-top-0" id="myTabContent">
+                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <section class="hk-sec-wrapper">
+                                <h4>{{trans.get('keys.tong_so_nguoi_tham_gia_danh_gia_khao_sat')}}: {{total_view}}</h4>
+                                <br/>
+                                <h5 class="hk-sec-title">
+                                    {{trans.get('keys.thong_ke_ket_qua_khao_sat_so_nguoi_chon_dap_an_tong_so')}}</h5>
+
+                                <div class="row">
+                                    <div class="col-6 form-group">
+                                        <div class="d-flex flex-row form-group">
+                                            <treeselect v-model="organization.parent_id" :multiple="false"
+                                                        :options="options" id="organization_parent_id"/>
+                                        </div>
+                                    </div>
+                                    <div class="col-3 form-group">
+
+                                        <div class="d-flex flex-row form-group">
+                                            <button type="button" id="btnFilter"
+                                                    class="btn btn-primary d-none d-lg-block"
+                                                    @click="search()">
+                                                {{trans.get('keys.tim')}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-3 form-group">
+                                        <label>{{trans.get('keys.ngay_bat_dau')}}</label>
+                                        <form v-on:submit.prevent="search()">
+                                            <div class="d-flex flex-row form-group">
+                                                <input type="date" id="inputStart" v-model="startdate"
+                                                       class="form-control">&nbsp;
+                                            </div>
+                                        </form>
+                                    </div>
+                                    <div class="col-3 form-group">
+                                        <label>{{trans.get('keys.ngay_ket_thuc')}} </label>
+                                        <form v-on:submit.prevent="search()">
+                                            <div class="d-flex flex-row form-group">
+                                                <input
+                                                        type="date" id="inputEnd" v-model="enddate"
+                                                        class="form-control">
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-2 form-group">
+
+                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/pdf'">-->
+                                        <button type="button" id="btnExportPdf"
+                                                class="btn-sm btn-pdf btn-primary d-none d-lg-block"
+                                                @click="exportFileData('pdf')">
+                                            {{trans.get('keys.xuat_file_pdf')}} <i class="fa fa-spinner"
+                                                                                   aria-hidden="true"></i>
+                                        </button>
+                                        <!--                                </a>-->
+
+                                    </div>
+                                    <div class="col-2 form-group">
+                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
+                                        <button type="button" id="btnExportExcel"
+                                                class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                                @click="exportFileData('excel')">
+                                            {{trans.get('keys.xuat_file_excel')}} <i class="fa fa-spinner"
+                                                                                     aria-hidden="true"></i>
+                                        </button>
+                                        <!--                                </a>-->
+                                    </div>
+                                    <div class="col-2 form-group">
+                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
+
+                                        <button type="button" v-if="chart_type==='bar'"
+                                                class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                                @click="changeChartFormat('pie')">
+                                            {{trans.get('keys.pie_chart')}} <i class="fa fa-spinner"
+                                                                               aria-hidden="true"></i>
+                                        </button>
+                                        <button type="button" v-else
+                                                class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                                @click="changeChartFormat('bar')">
+                                            {{trans.get('keys.bar_chart')}} <i class="fa fa-spinner"
+                                                                               aria-hidden="true"></i>
+                                        </button>
+
+
+                                        <!--                                </a>-->
+                                    </div>
+                                </div>
+                                <br/>
+                                <div class="row">
+                                    <div class="col-sm">
+                                        <div class="table-wrap">
+                                            <!--                                    <div v-if="survey_exam.length>0">-->
+                                            <div v-for="(question,index) in survey_exam">
+                                                <div v-if="question.type_question=='multiplechoice'">
+                                                    <question-statistic :question="question.lstQuesChild[0]"
+                                                                        :index_question="index" :chart_type="chart_type"
+                                                    ></question-statistic>
+                                                </div>
+                                                <div v-else-if="question.type_question=='checkbox'">
+                                                    <checkbox-statistic :question="question.lstQuesChild[0]"
+                                                                        :index_question="index" :chart_type="chart_type"
+                                                    ></checkbox-statistic>
+                                                </div>
+                                                <div v-else-if="question.type_question=='minmax'">
+                                                    <min-max-question-statistic :question="question"
+                                                                                :index_question="index"
+                                                                                :chart_type="chart_type"
+                                                    ></min-max-question-statistic>
+                                                </div>
+                                                <div v-else>
+                                                    <group-question-statistic :question="question"
+                                                                              :index_question="index"
+                                                                              :chart_type="chart_type"
+                                                    ></group-question-statistic>
+                                                </div>
+                                            </div>
+                                            <!--                                    </div>-->
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </section>
                         </div>
                     </div>
                 </div>
-                <br/>
-                <div class="row">
-                    <div class="col-12">
-                        <section class="hk-sec-wrapper">
-                            <h4>{{trans.get('keys.tong_so_nguoi_tham_gia_danh_gia_khao_sat')}}: {{total_view}}</h4>
-                            <br/>
-                            <h5 class="hk-sec-title">
-                                {{trans.get('keys.thong_ke_ket_qua_khao_sat_so_nguoi_chon_dap_an_tong_so')}}</h5>
-
-                            <div class="row">
-                                <div class="col-6 form-group">
-                                    <div class="d-flex flex-row form-group">
-                                        <treeselect v-model="organization.parent_id" :multiple="false"
-                                                    :options="options" id="organization_parent_id"/>
-                                    </div>
-                                </div>
-                                <div class="col-3 form-group">
-
-                                    <div class="d-flex flex-row form-group">
-                                        <button type="button" id="btnFilter"
-                                                class="btn btn-primary d-none d-lg-block"
-                                                @click="search()">
-                                            {{trans.get('keys.tim')}}
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="row">
-                                <div class="col-3 form-group">
-                                    <label>{{trans.get('keys.ngay_bat_dau')}}</label>
-                                    <form v-on:submit.prevent="search()">
-                                        <div class="d-flex flex-row form-group">
-                                            <input type="date" id="inputStart" v-model="startdate" class="form-control">&nbsp;
+                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                    <div class="row">
+                        <div class="col-12">
+                            <section class="hk-sec-wrapper">
+                                <div class="col-lg-12 col-sm-12 mb-3">
+                                    <h6 class="hk-sec-title">
+                                        {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <form v-on:submit.prevent="getUserSurvey(1)">
+                                                <div class="d-flex flex-row form-group">
+                                                    <input v-model="keyword_rs" type="text"
+                                                           class="form-control search_text"
+                                                           :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
+                                                    <button type="button" id="btnFilter1"
+                                                            class="btn btn-primary btn-sm"
+                                                            @click="getUserSurvey(1)">
+                                                        {{trans.get('keys.tim')}}
+                                                    </button>
+                                                </div>
+                                            </form>
                                         </div>
-                                    </form>
-                                </div>
-                                <div class="col-3 form-group">
-                                    <label>{{trans.get('keys.ngay_ket_thuc')}} </label>
-                                    <form v-on:submit.prevent="search()">
-                                        <div class="d-flex flex-row form-group">
-                                            <input
-                                                    type="date" id="inputEnd" v-model="enddate" class="form-control">
-                                        </div>
-                                    </form>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-2 form-group">
-
-                                    <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/pdf'">-->
-                                    <button type="button" id="btnExportPdf"
-                                            class="btn-sm btn-pdf btn-primary d-none d-lg-block"
-                                            @click="exportFileData('pdf')">
-                                        {{trans.get('keys.xuat_file_pdf')}} <i class="fa fa-spinner"
-                                                                               aria-hidden="true"></i>
-                                    </button>
-                                    <!--                                </a>-->
-
-                                </div>
-                                <div class="col-2 form-group">
-                                    <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
-                                    <button type="button" id="btnExportExcel"
-                                            class="btn-sm btn-excel btn-primary d-none d-lg-block"
-                                            @click="exportFileData('excel')">
-                                        {{trans.get('keys.xuat_file_excel')}} <i class="fa fa-spinner"
-                                                                                 aria-hidden="true"></i>
-                                    </button>
-                                    <!--                                </a>-->
-                                </div>
-                                <div class="col-2 form-group">
-                                    <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
-
-                                    <button type="button" v-if="chart_type==='bar'"
-                                            class="btn-sm btn-excel btn-primary d-none d-lg-block"
-                                            @click="changeChartFormat('pie')">
-                                        {{trans.get('keys.pie_chart')}} <i class="fa fa-spinner"
-                                                                           aria-hidden="true"></i>
-                                    </button>
-                                    <button type="button" v-else
-                                            class="btn-sm btn-excel btn-primary d-none d-lg-block"
-                                            @click="changeChartFormat('bar')">
-                                        {{trans.get('keys.bar_chart')}} <i class="fa fa-spinner"
-                                                                           aria-hidden="true"></i>
-                                    </button>
-
-
-                                    <!--                                </a>-->
-                                </div>
-                            </div>
-                            <br/>
-                            <div class="row">
-                                <div class="col-sm">
-                                    <div class="table-wrap">
-                                        <!--                                    <div v-if="survey_exam.length>0">-->
-                                        <div v-for="(question,index) in survey_exam">
-                                            <div v-if="question.type_question=='multiplechoice'">
-                                                <question-statistic :question="question.lstQuesChild[0]"
-                                                                    :index_question="index" :chart_type="chart_type"
-                                                ></question-statistic>
-                                            </div>
-                                            <div v-else-if="question.type_question=='checkbox'">
-                                                <checkbox-statistic :question="question.lstQuesChild[0]"
-                                                                    :index_question="index" :chart_type="chart_type"
-                                                ></checkbox-statistic>
-                                            </div>
-                                            <div v-else-if="question.type_question=='minmax'">
-                                                <min-max-question-statistic :question="question" :index_question="index"
-                                                                            :chart_type="chart_type"
-                                                ></min-max-question-statistic>
-                                            </div>
-                                            <div v-else>
-                                                <group-question-statistic :question="question" :index_question="index"
-                                                                          :chart_type="chart_type"
-                                                ></group-question-statistic>
+                                    </div>
+                                    <div class="row mb-3">
+                                        <div class="col-2 dataTables_wrapper">
+                                            <div class="dataTables_length"
+                                                 style="display:block;">
+                                                <label>{{trans.get('keys.hien_thi')}}
+                                                    <select v-model="row_rs"
+                                                            class="custom-select custom-select-sm form-control form-control-sm"
+                                                            @change="getUserSurvey(1)">
+                                                        <option value="5">5</option>
+                                                        <option value="10">10</option>
+                                                        <option value="50">50</option>
+                                                    </select>
+                                                </label>
                                             </div>
                                         </div>
-                                        <!--                                    </div>-->
-
+                                        <div class="col-4">
+                                            <treeselect v-model="organization_id_1"
+                                                        :multiple="false" :options="options"
+                                                        @input="getUserSurvey(1)"/>
+                                        </div>
                                     </div>
+                                    <table id="datable_1" class="table_res">
+                                        <thead>
+                                        <tr>
+                                            <th>{{trans.get('keys.stt')}}</th>
+                                            <th>{{trans.get('keys.username')}}</th>
+                                            <th class=" mobile_hide" style="width: 30%;">
+                                                {{trans.get('keys.ho_ten')}}
+                                            </th>
+                                            <th>{{trans.get('keys.email')}}</th>
+                                            <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(user,index) in lstUsers">
+                                            <td>{{ (current_rs-1)*row_rs+(index+1) }}</td>
+                                            <td>
+                                                <router-link
+                                                        :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.id }, query: {type: type} }">
+                                                    {{ user.username }}
+                                                </router-link>
+                                            </td>
+                                            <td class=" mobile_hide">{{ user.fullname }}
+                                            </td>
+                                            <td>{{ user.email }}</td>
+                                            <td class="text-center">
+                                                <router-link :title="trans.get('keys.chi_tiet_ks')"
+                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                             :to="{ name: 'SurveyResultUser', params: { survey_id: survey_id,user_id: user.id } }">
+                                                    <span class="btn-icon-wrap"><i
+                                                            class="fal fa-arrow-alt-right"></i></span>
+                                                </router-link>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+
+                                        </tfoot>
+                                    </table>
+                                    <v-pagination v-model="current_rs" @input="onPageChange"
+                                                  :page-count="totalPages_rs"
+                                                  :classes=$pagination.classes></v-pagination>
                                 </div>
-                            </div>
-                        </section>
+                            </section>
+                        </div>
+
                     </div>
                 </div>
             </div>
+
         </div>
     </div>
 </template>
 
 <script>
-    //import vPagination from 'vue-plain-pagination'
     import QuestionStatistic from "./template/StatisticQuestionComponent";
     import GroupQuestionStatistic from "./template/StatisticsGroupQuesComponent";
     import MinMaxQuestionStatistic from "./template/StatisticMinMaxQuesComponent"
@@ -169,7 +276,6 @@
     export default {
         props: ['survey_id'],
         components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic, CheckboxStatistic},
-        //components: {vPagination},
         data() {
             return {
                 organization: {
@@ -187,6 +293,8 @@
                     }
                 ],
 
+                organization_id_1: 0,
+
                 keyword: '',
                 row: 5,
                 current: 1,
@@ -197,7 +305,14 @@
                 startdate: '',
                 enddate: '',
                 base_url: '',
-                chart_type: 'pie'
+                chart_type: 'pie',
+
+                keyword_rs: '',
+                row_rs: 10,
+                lstUsers: [],
+                current_rs: 1,
+                totalPages_rs: 1,
+                type: ''
             }
         },
         methods: {
@@ -299,6 +414,26 @@
                     });
 
             },
+            onPageChange() {
+                this.getUserSurvey();
+            },
+            getUserSurvey(paged) {
+                axios.post('/api/survey/list_user_result', {
+                    page: paged || this.current_rs,
+                    survey_id: this.survey_id,
+                    org_id: this.organization_id_1,
+                    keyword: this.keyword_rs,
+                    row: this.row_rs
+                }).then(response => {
+                    this.lstUsers = response.data.data.data;
+                    this.current_rs = response.data.pagination.current_page;
+                    this.totalPages_rs = response.data.pagination.total;
+                })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+
+            },
             exportFileData(type_file) {
                 if (type_file === 'pdf') {
                     $('button.btn-pdf i').css("display", "inline-block");
@@ -341,6 +476,7 @@
             this.getStatictisSurveyExam();
             this.getStatictisSurveyView();
             this.fetch();
+            this.getUserSurvey();
         }
     }
 </script>

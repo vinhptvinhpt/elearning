@@ -488,9 +488,9 @@
                         if (response.data.status) {
                             toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                             if (this.certificate.type == 1)
-                                this.$router.push({name: 'SettingCertificate', query: {type: this.certificate.type}});
+                                this.$router.push({name: 'SettingCertificate',params:{back_page: '1'}, query: {type: this.certificate.type}});
                             else
-                                this.$router.push({name: 'SettingBadge', query: {type: this.certificate.type}});
+                                this.$router.push({name: 'SettingBadge',params:{back_page: '1'}, query: {type: this.certificate.type}});
                         } else {
                             $('.form-control').removeClass('notValidate');
                             $('#' + response.data.id).addClass('notValidate');
