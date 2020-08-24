@@ -492,6 +492,12 @@
       deleteSelectUser() {
         let user_delete = this.user_delete;
         let current_pos = this;
+        sessionStorage.setItem('userPage', this.current);
+        sessionStorage.setItem('userPageSize', this.row);
+        sessionStorage.setItem('userKeyWord', this.keyword);
+        sessionStorage.setItem('userRole', this.roles);
+        sessionStorage.setItem('userConfirm', this.confirm);
+        current_pos.$route.params.back_page= '1';
         if (this.user_delete.length === 0) {
           toastr['warning'](this.trans.get('keys.ban_chua_chon_tai_khoan'), this.trans.get('keys.thong_bao'));
           return;
@@ -519,6 +525,10 @@
                 //   if (~index) // if the post exists in array
                 //       current_pos.posts.splice(index, 1); //delete the post
                 this.user_delete = [];
+                if(current_pos.posts.length == 1){
+                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                }
+                current_pos.onPageChange();
               } else {
                 toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
               }
@@ -530,12 +540,13 @@
         });
       },
       deletePost(url) {
+        let current_pos = this;
         sessionStorage.setItem('userPage', this.current);
         sessionStorage.setItem('userPageSize', this.row);
         sessionStorage.setItem('userKeyWord', this.keyword);
         sessionStorage.setItem('userRole', this.roles);
         sessionStorage.setItem('userConfirm', this.confirm);
-        let current_pos = this;
+        current_pos.$route.params.back_page= '1';
         swal({
           title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
           text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
