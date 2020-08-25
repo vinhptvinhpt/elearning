@@ -294,8 +294,8 @@ class TaskController extends Controller
         //Lấy ra số khóa học theo khung năng lực
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->where('ttp.deleted', '=', '0') //khung nang lcu thong thuong, chua bi xoa
-            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
+            ->where('ttp.deleted', '=', '0')//khung nang lcu thong thuong, chua bi xoa
+            ->where('ttc.deleted', '=', '0')//Khoa hoc trong khung nang luc
             ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
             ->groupBy(['ttc.trainning_id'])
             ->get();
@@ -316,7 +316,7 @@ class TaskController extends Controller
                         $join->on('ttc.user_id', '=', 'cc.userid');
                         $join->on('ttc.trainning_id', '=', 'cc.training_id');
                     })
-                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->whereNull('ttc.id')//record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
                     ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
                     ->where('cc.training_id', '=', $training->trainning_id)
                     ->groupBy(['cc.training_id', 'cc.userid'])
@@ -435,6 +435,10 @@ class TaskController extends Controller
 
         }
         StudentCertificate::insert($arrDataST);
+
+        usleep(100); //sleep tranh tinh trang query db lien tiep
+        TmsLearnerHistory::insert($arr_data_his);
+
     }
     #endregion
 
@@ -1641,22 +1645,30 @@ class TaskController extends Controller
                     $this->trainning_id = $trainning->trainning_id;
                     //region Nhóm quyền
                     //lay danh sach nguoi dung thuoc nhom quyen ko nam trong KNL
-                    $users = DB::table('mdl_user as u')
-                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
-                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
-                            $join->on('ttu.user_id', '=', 'mhr.model_id');
-                        })
-                        ->whereNull('ttu.id')
-                        ->where('mhr.role_id', '=', $trainning->group_id)
-                        ->pluck('u.id');
+//                    $users = DB::table('mdl_user as u')
+//                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
+//                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
+//                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
+//                            $join->on('ttu.user_id', '=', 'mhr.model_id');
+//                        })
+//                        ->whereNull('ttu.id')
+//                        ->where('mhr.role_id', '=', $trainning->group_id)
+//                        ->pluck('u.id');
+
+                    $users = '(SELECT u.id as user_id from mdl_user u 
+                    join model_has_roles mhr on mhr.model_id = u.id 
+                    left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
+                    where mhr.role_id = ' . $trainning->group_id . ' and ttu.id is null)';
+
+                    $users = DB::raw($users);
+                    $users = DB::select($users);
 
                     if (count($users) > 0) {
                         foreach ($users as $user) {
                             $queryItem = [];
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
-                            $queryItem['user_id'] = $user;
+                            $queryItem['user_id'] = $user->user_id;
                             $queryItem['created_at'] = Carbon::now();
                             $queryItem['updated_at'] = Carbon::now();
 
@@ -1877,22 +1889,31 @@ class TaskController extends Controller
                     $this->trainning_id = $trainning->trainning_id;
                     //region Nhóm quyền
                     //lay danh sach nguoi dung thuoc nhom quyen ko nam trong KNL
-                    $users = DB::table('mdl_user as u')
-                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
-                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
-                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
-                            $join->on('ttu.user_id', '=', 'mhr.model_id');
-                        })
-                        ->whereNull('ttu.id')
-                        ->where('mhr.role_id', '=', $trainning->group_id)
-                        ->pluck('u.id');
+//                    $users = DB::table('mdl_user as u')
+//                        ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'u.id')
+//                        ->leftJoin('tms_traninning_users as ttu', function ($join) {
+//                            $join->on('ttu.trainning_id', '=', $this->trainning_id);
+//                            $join->on('ttu.user_id', '=', 'mhr.model_id');
+//                        })
+//                        ->whereNull('ttu.id')
+//                        ->where('mhr.role_id', '=', $trainning->group_id)
+//                        ->pluck('u.id');
+
+                    $users = '(SELECT u.id as user_id from mdl_user u 
+                    join model_has_roles mhr on mhr.model_id = u.id 
+                    left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
+                    where mhr.role_id = ' . $trainning->group_id . ' and ttu.id is null)';
+
+                    $users = DB::raw($users);
+                    $users = DB::select($users);
+
 
                     if (count($users) > 0) {
                         foreach ($users as $user) {
                             $queryItem = [];
 
                             $queryItem['trainning_id'] = $trainning->trainning_id;
-                            $queryItem['user_id'] = $user;
+                            $queryItem['user_id'] = $user->user_id;
                             $queryItem['created_at'] = Carbon::now();
                             $queryItem['updated_at'] = Carbon::now();
 
