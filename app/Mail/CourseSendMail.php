@@ -162,10 +162,11 @@ class CourseSendMail extends Mailable
             $view = 'email.invite_student';
         }
         elseif ($this->activity == TmsNotification::ASSIGNED_COMPETENCY) {
-            $detail = json_decode($this->content);
-            $this->competency_name = $detail->training_name;
-            $this->start_date = $detail->time_start;
-            $this->end_date = $detail->time_end;
+            $training = json_decode($this->content);
+            $this->competency_name = $training->training_name;
+            $this->competency_code = $training->training_code;
+            $this->start_date = $training->time_start;
+            $this->end_date = $training->time_end;
             $subject = '[ELEARNING] '. __('assigned_competency');
             $view = 'email.assigned_competency';
         }

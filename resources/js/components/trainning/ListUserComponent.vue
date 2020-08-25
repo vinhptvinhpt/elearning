@@ -180,9 +180,7 @@
                                             <div class="col-12 col-lg-12">
                                                 <div class="form-row">
                                                     <div class="col-sm-8 form-group">
-                                                        <treeselect v-model="organization_id"
-                                                                    :multiple="false" :options="tree_options"
-                                                                    id="organization_parent_id"/>
+                                                        <treeselect v-model="organization_id" :multiple="false" :options="tree_options" id="organization_id"/>
                                                     </div>
                                                     <div class="col-4 form-group">
                                                         <button type="button"
@@ -348,22 +346,16 @@
                 totalPagesOut: 0,
                 allSelected: false,
                 userTrainning: [],
-                tree_options: [
-                    {
-                        id: 0,
-                        label: this.trans.get('keys.chon_to_chuc')
-                    }
-                ],
-                organization_parent_list: [],
-                organization_id: 0,
-              //Treeselect options
-              options: [
-                {
+                tree_placeholder: {
                   id: 0,
                   label: this.trans.get('keys.chon_to_chuc')
-                }
-              ],
-              organization_id_1: 0
+                },
+                tree_options: [],
+                organization_parent_list: [],
+                organization_id: 0,
+                //Treeselect options
+                options: [],
+                organization_id_1: 0
             }
         },
         methods: {
@@ -380,6 +372,7 @@
                         this.organization_parent_list = response.data;
                         //Set options recursive
                         this.tree_options = this.setOptions(response.data);
+                        this.tree_options.unshift(this.tree_placeholder);
                     })
                     .catch(error => {
 
@@ -584,32 +577,33 @@
                   this.organization_list = response.data;
                   //Set options recursive
                   this.options = this.setOptions(response.data, current_id);
+                  this.options.unshift(this.tree_placeholder);
                   $('.content_search_box').removeClass('loadding');
                 })
                 .catch(error => {
                   $('.content_search_box').removeClass('loadding');
                 })
             },
-          setOptions(list, current_id) {
-            let outPut = [];
-            for (const [key, item] of Object.entries(list)) {
-              let newOption = {
-                id: item.id,
-                label: item.name,
-              };
-              if (item.children.length > 0) {
-                for (const [key, child] of Object.entries(item.children)) {
-                  if (child.id === current_id) {
-                    newOption.isDefaultExpanded = true;
-                    break;
+            setOptions(list, current_id) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name,
+                };
+                if (item.children.length > 0) {
+                  for (const [key, child] of Object.entries(item.children)) {
+                    if (child.id === current_id) {
+                      newOption.isDefaultExpanded = true;
+                      break;
+                    }
                   }
+                  newOption.children = this.setOptions(item.children, current_id);
                 }
-                newOption.children = this.setOptions(item.children, current_id);
+                outPut.push(newOption);
               }
-              outPut.push(newOption);
-            }
-            return outPut;
-          },
+              return outPut;
+            },
             onPageChange() {
                 let back = this.getParamsBackPage();
                 if(back == '1'){
