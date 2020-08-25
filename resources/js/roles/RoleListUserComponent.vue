@@ -247,6 +247,10 @@
                 }
             },
             addUserRole(){
+                if (this.user_add.length === 0) {
+                  toastr['error'](this.trans.get('keys.ban_chua_chon_nguoi_dung'), this.trans.get('keys.loi'));
+                  return;
+                }
                 let loader = $('.preloader-it');
                 loader.fadeIn();
                 if (this.user_add.length > 0) {
