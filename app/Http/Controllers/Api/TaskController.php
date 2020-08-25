@@ -259,6 +259,8 @@ class TaskController extends Controller
             $lstUser = DB::select($query_sql);
 
             $queryArray = [];
+            $userArrayByTraining = [];
+
             $num = 0;
             $limit = 300;
 
@@ -270,18 +272,27 @@ class TaskController extends Controller
                 $queryItem['updated_at'] = Carbon::now();
 
                 array_push($queryArray, $queryItem);
+                $userArrayByTraining[$data->trainning_id][] = $user;
 
                 $num++;
                 if ($num >= $limit) {
                     TmsTrainningUser::insert($queryArray);
+                    foreach ($userArrayByTraining as $training => $users) {
+                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                    }
                     $num = 0;
                     $queryArray = [];
+                    $userArrayByTraining = [];
                 }
             }
 
             TmsTrainningUser::insert($queryArray);
+            foreach ($userArrayByTraining as $training => $users) {
+                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+            }
             $num = 0;
             $queryArray = [];
+            $userArrayByTraining = [];
 
             usleep(200);
         }
@@ -294,8 +305,8 @@ class TaskController extends Controller
         //Lấy ra số khóa học theo khung năng lực
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->where('ttp.deleted', '=', '0')//khung nang lcu thong thuong, chua bi xoa
-            ->where('ttc.deleted', '=', '0')//Khoa hoc trong khung nang luc
+            ->where('ttp.deleted', '=', '0') //khung nang lcu thong thuong, chua bi xoa
+            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
             ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
             ->groupBy(['ttc.trainning_id'])
             ->get();
@@ -316,7 +327,7 @@ class TaskController extends Controller
                         $join->on('ttc.user_id', '=', 'cc.userid');
                         $join->on('ttc.trainning_id', '=', 'cc.training_id');
                     })
-                    ->whereNull('ttc.id')//record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
                     ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
                     ->where('cc.training_id', '=', $training->trainning_id)
                     ->groupBy(['cc.training_id', 'cc.userid'])
@@ -1031,6 +1042,47 @@ class TaskController extends Controller
         return $result;
     }
 
+    // funtion create notification with content
+
+    /**
+     *
+     * @param $target
+     * @param $receiver
+     * @param $content
+     * @param bool $encoded
+     */
+    function insert_mail_notifications($target, $receiver, $content, $encoded = false)
+    {
+        $send_to = [];
+        if (!empty($receiver)) {
+            if (is_array($receiver)) {
+                $send_to = $receiver;
+            } elseif(is_int($receiver)) {
+                $send_to[] = $receiver;
+            }
+
+            if (!empty($send_to)) {
+                foreach ($send_to as $user_id) {
+                    $element = array(
+                        'type' => TmsNotification::MAIL,
+                        'target' => $target,
+                        'status_send' => 0,
+                        'sendto' => $user_id,
+                        'createdby' => 0,
+                        'course_id' => 0,
+                        'created_at' => date('Y-m-d H:i:s', time()),
+                        'updated_at' => date('Y-m-d H:i:s', time()),
+                        'content' => $encoded ? json_encode($content, JSON_UNESCAPED_UNICODE) : $content
+                    );
+                    $data[] = $element;
+                }
+                if (!empty($data)) {
+                    TmsNotification::insert($data);
+                }
+            }
+        }
+    }
+
     //enrol user to course improve
     //ghi danh học viên vào khóa học
     //phuc vu chuc nang cron chay ghi danh hoc vien vao khoa hoc trong KNL
@@ -1511,6 +1563,8 @@ class TaskController extends Controller
             return;
 
         $queryArray = [];
+        $userArrayByTraining = [];
+
         $num = 0;
         $limit = 300;
         //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
@@ -1520,7 +1574,6 @@ class TaskController extends Controller
             ->where('ttp.deleted', '=', 0)
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
-
 
         if (!empty($trainningArray)) {
             foreach ($trainningArray as $trainning) {
@@ -1544,24 +1597,40 @@ class TaskController extends Controller
 
 
                         array_push($queryArray, $queryItem);
+                        $userArrayByTraining[$trainning][] = $user;
+
                         $num++;
-                        if ($num >= $limit) {
+                        if ($num >= $limit) { //Đạt giới hạn => insert luôn
                             TmsTrainningUser::insert($queryArray);
+                            foreach ($userArrayByTraining as $training => $users) {
+                                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                            }
+                            //Reset
                             $num = 0;
                             $queryArray = [];
+                            $userArrayByTraining = [];
                         }
+
                     }
                 }
             }
             TmsTrainningUser::insert($queryArray);
+            //Lần cuối insert nốt số còn lại
+            foreach ($userArrayByTraining as $training => $users) {
+                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+            }
+            //Reset
             $num = 0;
             $queryArray = [];
+            $userArrayByTraining = [];
         }
 
         usleep(100);
         //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
         //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
         $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
+
+        $userArrayByTraining = [];
 
         foreach ($lstDataTrainning as $trainning) {
             if ($trainning->total_tr == 2) {
@@ -1626,17 +1695,30 @@ class TaskController extends Controller
                         $queryItem['updated_at'] = Carbon::now();
 
                         array_push($queryArray, $queryItem);
+                        $userArrayByTraining[$trainning->trainning_id] = $user;
                         $num++;
 
-                        if ($num >= $limit) {
+                        if ($num >= $limit) { //Reached limit, execute this session
                             TmsTrainningUser::insert($queryArray);
+                            foreach ($userArrayByTraining as $training => $users) {
+                                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                            }
+                            //Reset
                             $num = 0;
                             $queryArray = [];
+                            $userArrayByTraining = [];
                         }
+
                     }//endforeach
+                    //Last turn, execute leftover < limit
                     TmsTrainningUser::insert($queryArray);
+                    foreach ($userArrayByTraining as $training => $users) {
+                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                    }
+                    //Reset
                     $num = 0;
                     $queryArray = [];
+                    $userArrayByTraining = [];
                 }
                 //endregion
             } else {
@@ -1655,8 +1737,8 @@ class TaskController extends Controller
 //                        ->where('mhr.role_id', '=', $trainning->group_id)
 //                        ->pluck('u.id');
 
-                    $users = '(SELECT u.id as user_id from mdl_user u 
-                    join model_has_roles mhr on mhr.model_id = u.id 
+                    $users = '(SELECT u.id as user_id from mdl_user u
+                    join model_has_roles mhr on mhr.model_id = u.id
                     left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
                     where mhr.role_id = ' . $trainning->group_id . ' and ttu.id is null)';
 
@@ -1673,17 +1755,28 @@ class TaskController extends Controller
                             $queryItem['updated_at'] = Carbon::now();
 
                             array_push($queryArray, $queryItem);
+                            $userArrayByTraining[$trainning->trainning_id][] = $user;
+
                             $num++;
 
                             if ($num >= $limit) {
                                 TmsTrainningUser::insert($queryArray);
+                                foreach ($userArrayByTraining as $training => $users) {
+                                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                                }
                                 $num = 0;
                                 $queryArray = [];
+                                $userArrayByTraining = [];
+
                             }
                         }//endforeach
                         TmsTrainningUser::insert($queryArray);
+                        foreach ($userArrayByTraining as $training => $users) {
+                            $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                        }
                         $num = 0;
                         $queryArray = [];
+                        $userArrayByTraining = [];
                     }
 
 
@@ -1720,17 +1813,27 @@ class TaskController extends Controller
                             $queryItem['updated_at'] = Carbon::now();
 
                             array_push($queryArray, $queryItem);
+                            $userArrayByTraining[$trainning->trainning_id][] = $user;
+
                             $num++;
 
                             if ($num >= $limit) {
                                 TmsTrainningUser::insert($queryArray);
+                                foreach ($userArrayByTraining as $training => $users) {
+                                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                                }
                                 $num = 0;
                                 $queryArray = [];
+                                $userArrayByTraining = [];
                             }
                         }//endforeach
                         TmsTrainningUser::insert($queryArray);
+                        foreach ($userArrayByTraining as $training => $users) {
+                            $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                        }
                         $num = 0;
                         $queryArray = [];
+                        $userArrayByTraining = [];
                     }
                     //endregion
                 }
@@ -1756,6 +1859,8 @@ class TaskController extends Controller
     function autoAddTrainningUserCron()
     {
         $queryArray = [];
+        $userArrayByTraining = [];
+
         $num = 0;
         $limit = 300;
         //Gán người dùng vào khung năng lực k được gán cơ cấu tổ chức và nhóm quyền ( Khung năng lực default )
@@ -1788,25 +1893,35 @@ class TaskController extends Controller
                         $queryItem['updated_at'] = Carbon::now();
 
                         array_push($queryArray, $queryItem);
+                        $userArrayByTraining[$trainning][] = $user;
+
                         $num++;
                         if ($num >= $limit) {
                             TmsTrainningUser::insert($queryArray);
+                            foreach ($userArrayByTraining as $training => $users) {
+                                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                            }
                             $num = 0;
                             $queryArray = [];
+                            $userArrayByTraining = [];
                         }
                     }
                 }
             }
             TmsTrainningUser::insert($queryArray);
+            foreach ($userArrayByTraining as $training => $users) {
+                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+            }
             $num = 0;
             $queryArray = [];
+            $userArrayByTraining = [];
         }
 
         sleep(1);
         //xy ly cho TH KNL gan cho co cau to chuc or nhom quyen
         //Gán người dùng vào khung năng lực đã được gán với cơ cấu tổ chức hoặc nhóm quyền
         $lstDataTrainning = TmsTrainningGroup::select('trainning_id', 'group_id', 'type', DB::raw('count(trainning_id) as total_tr'))->groupBy('trainning_id')->get();
-
+        $userArrayByTraining = [];
         foreach ($lstDataTrainning as $trainning) {
             if ($trainning->total_tr == 2) {
                 //region xu ly cho TH KNL ap dung cho ca role va cctc
@@ -1870,17 +1985,27 @@ class TaskController extends Controller
                         $queryItem['updated_at'] = Carbon::now();
 
                         array_push($queryArray, $queryItem);
+                        $userArrayByTraining[$trainning->trainning_id][] = $user;
+
                         $num++;
 
                         if ($num >= $limit) {
                             TmsTrainningUser::insert($queryArray);
+                            foreach ($userArrayByTraining as $training => $users) {
+                                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                            }
                             $num = 0;
                             $queryArray = [];
+                            $userArrayByTraining = [];
                         }
                     }//endforeach
                     TmsTrainningUser::insert($queryArray);
+                    foreach ($userArrayByTraining as $training => $users) {
+                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                    }
                     $num = 0;
                     $queryArray = [];
+                    $userArrayByTraining = [];
                 }
                 //endregion
             } else {
@@ -1899,8 +2024,8 @@ class TaskController extends Controller
 //                        ->where('mhr.role_id', '=', $trainning->group_id)
 //                        ->pluck('u.id');
 
-                    $users = '(SELECT u.id as user_id from mdl_user u 
-                    join model_has_roles mhr on mhr.model_id = u.id 
+                    $users = '(SELECT u.id as user_id from mdl_user u
+                    join model_has_roles mhr on mhr.model_id = u.id
                     left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
                     where mhr.role_id = ' . $trainning->group_id . ' and ttu.id is null)';
 
@@ -1918,17 +2043,27 @@ class TaskController extends Controller
                             $queryItem['updated_at'] = Carbon::now();
 
                             array_push($queryArray, $queryItem);
+                            $userArrayByTraining[$trainning->trainning_id][] = $user;
+
                             $num++;
 
                             if ($num >= $limit) {
                                 TmsTrainningUser::insert($queryArray);
+                                foreach ($userArrayByTraining as $training => $users) {
+                                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                                }
                                 $num = 0;
                                 $queryArray = [];
+                                $userArrayByTraining = [];
                             }
                         }//endforeach
                         TmsTrainningUser::insert($queryArray);
+                        foreach ($userArrayByTraining as $training => $users) {
+                            $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                        }
                         $num = 0;
                         $queryArray = [];
+                        $userArrayByTraining = [];
                     }
 
 
@@ -1965,17 +2100,27 @@ class TaskController extends Controller
                             $queryItem['updated_at'] = Carbon::now();
 
                             array_push($queryArray, $queryItem);
+                            $userArrayByTraining[$trainning->trainning_id][] = $user;
+
                             $num++;
 
                             if ($num >= $limit) {
                                 TmsTrainningUser::insert($queryArray);
+                                foreach ($userArrayByTraining as $training => $users) {
+                                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                                }
                                 $num = 0;
                                 $queryArray = [];
+                                $userArrayByTraining = [];
                             }
                         }//endforeach
                         TmsTrainningUser::insert($queryArray);
+                        foreach ($userArrayByTraining as $training => $users) {
+                            $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                        }
                         $num = 0;
                         $queryArray = [];
+                        $userArrayByTraining = [];
                     }
                     //endregion
                 }

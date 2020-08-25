@@ -12,6 +12,7 @@ use App\MdlEnrol;
 use App\MdlGradeCategory;
 use App\MdlGradeItem;
 use App\Role;
+use App\TmsNotification;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsTrainningCategory;
@@ -1066,6 +1067,45 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
     }
 
+    /**
+     *
+     * @param $target
+     * @param $receiver
+     * @param $content
+     * @param bool $encoded
+     */
+    public function insert_mail_notifications($target, $receiver, $content, $encoded = false)
+    {
+        $send_to = [];
+        if (!empty($receiver)) {
+            if (is_array($receiver)) {
+                $send_to = $receiver;
+            } elseif(is_int($receiver)) {
+                $send_to[] = $receiver;
+            }
+
+            if (!empty($send_to)) {
+                foreach ($send_to as $user_id) {
+                    $element = array(
+                        'type' => TmsNotification::MAIL,
+                        'target' => $target,
+                        'status_send' => 0,
+                        'sendto' => $user_id,
+                        'createdby' => 0,
+                        'course_id' => 0,
+                        'created_at' => date('Y-m-d H:i:s', time()),
+                        'updated_at' => date('Y-m-d H:i:s', time()),
+                        'content' => $encoded ? json_encode($content, JSON_UNESCAPED_UNICODE) : $content
+                    );
+                    $data[] = $element;
+                }
+                if (!empty($data)) {
+                    TmsNotification::insert($data);
+                }
+            }
+        }
+    }
+
     //them nguoi dung vao KNL
     public function apiAddUserToTrainning(Request $request)
     {
@@ -1087,6 +1127,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             //add user to competency framework
             DB::beginTransaction();
             $queryArray = [];
+            $userArrayByTraining = [];
+
             $num = 0;
             $limit = 300;
 
@@ -1098,14 +1140,20 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $queryItem['updated_at'] = Carbon::now();
 
                 array_push($queryArray, $queryItem);
+                $userArrayByTraining[] = $user_id;
+
                 $num++;
                 if ($num >= $limit) {
                     TmsTrainningUser::insert($queryArray);
+                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $userArrayByTraining, $trainning_id);
                     $num = 0;
                     $queryArray = [];
+                    $userArrayByTraining = [];
                 }
             }
+
             TmsTrainningUser::insert($queryArray);
+            $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $userArrayByTraining, $trainning_id);
 
             //lay danh sach course_id trong KNL
             $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
@@ -1183,6 +1231,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 $queryArray = [];
                 $num = 0;
                 $limit = 300;
+                $userArrayByTraining = [];
 
                 foreach ($lstUserIDs as $user_id) {
                     $queryItem = [];
@@ -1192,14 +1241,21 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     $queryItem['updated_at'] = Carbon::now();
 
                     array_push($queryArray, $queryItem);
+                    $userArrayByTraining[] = $user_id;
+
                     $num++;
                     if ($num >= $limit) {
                         TmsTrainningUser::insert($queryArray);
+                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $userArrayByTraining, $trainning_id);
+
                         $num = 0;
                         $queryArray = [];
+                        $userArrayByTraining = [];
+
                     }
                 }
                 TmsTrainningUser::insert($queryArray);
+                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $userArrayByTraining, $trainning_id);
 
                 //cap nhat flag, chay cron
                 updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
