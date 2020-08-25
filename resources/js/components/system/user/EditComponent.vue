@@ -804,44 +804,51 @@
                   return;
                 }
 
+                if(this.users.cmtnd === undefined || this.users.cmtnd === null){
+                  this.users.cmtnd = '';
+                }
+
                 // console.log(this.type);
                 // if (this.type == 'system' && !this.users.employee.organization_id) {
                 //   $('.organization_required').show();
                 //   return;
                 // }
 
-                let organization_roles_selected = [];
-                for (const [key, item] of Object.entries(this.roles)) {
-                  if (this.users.role.indexOf(item.id) !== -1) {
-                    if (this.organization_roles.indexOf(item.name) !== -1) {
-                      organization_roles_selected.push(item.name);
+                let validate_organization = true;
+                if (this.type === 'student' || this.type === 'teacher') {
+                  validate_organization = false;
+                }
+
+                if (validate_organization) {
+                  let organization_roles_selected = [];
+                  for (const [key, item] of Object.entries(this.roles)) {
+                    if (this.users.role.indexOf(item.id) !== -1) {
+                      if (this.organization_roles.indexOf(item.name) !== -1) {
+                        organization_roles_selected.push(item.name);
+                      }
                     }
                   }
-                }
-                if (organization_roles_selected.length > 1) {
-                  toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                  return;
-                }
-                if (organization_roles_selected.length > 0) {
-                  if (!this.users.employee.organization_id) {
-                    toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                    $('.organization_required').show();
+                  if (organization_roles_selected.length > 1) {
+                    toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
                     return;
                   }
-                }
-                if (this.users.employee.organization_id) {
-                  if (organization_roles_selected.length === 0) {
-                    toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                    return;
+                  if (organization_roles_selected.length > 0) {
+                    if (!this.users.employee.organization_id) {
+                      toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+                      $('.organization_required').show();
+                      return;
+                    }
                   }
-                }
+                  if (this.users.employee.organization_id) {
+                    if (organization_roles_selected.length === 0) {
+                      toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+                      return;
+                    }
+                  }
 
-                if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
-                  toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
-                }
-
-                if(this.users.cmtnd === undefined || this.users.cmtnd === null){
-                  this.users.cmtnd = '';
+                  if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
+                    toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
+                  }
                 }
 
                 this.formData = new FormData();
