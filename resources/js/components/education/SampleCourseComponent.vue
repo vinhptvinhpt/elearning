@@ -492,9 +492,9 @@
         this.$route.params.back_page = value;
       },
       deletePost(id) {
-        sessionStorage.setItem('surveyPage', this.current);
-        sessionStorage.setItem('surveyPageSize', this.row);
-        sessionStorage.setItem('surveyKeyWord', this.keyword);
+        // sessionStorage.setItem('surveyPage', this.current);
+        // sessionStorage.setItem('surveyPageSize', this.row);
+        // sessionStorage.setItem('surveyKeyWord', this.keyword);
         let current_pos = this;
         swal({
           title: this.trans.get('keys.thong_bao'),
@@ -511,7 +511,8 @@
                 if(current_pos.courses.length == 1){
                   current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
                 }
-                current_pos.onPageChange();
+                // current_pos.onPageChange();
+                current_pos.getCourses(current_pos.current);
               } else {
                 toastr['error'](response.data.message, current_pos.trans.get('keys.thong_bao'));
               }

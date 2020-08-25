@@ -257,6 +257,10 @@
                     axios.post('/system/user/restore', {user_id: user_id})
                         .then(response => {
                             roam_message(response.data.status, response.data.message);
+                            if(current_pos.questions.length == 1){
+                              current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                            }
+                            current_pos.getUser(current_pos.current);
                         })
                         .catch(error => {
                             roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));

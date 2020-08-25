@@ -191,9 +191,9 @@
               this.$route.params.back_page = value;
             },
             deletePost(id) {
-                sessionStorage.setItem('trainingPage', this.current);
-                sessionStorage.setItem('trainingPageSize', this.row);
-                sessionStorage.setItem('trainingKeyWord', this.keyword);
+                // sessionStorage.setItem('trainingPage', this.current);
+                // sessionStorage.setItem('trainingPageSize', this.row);
+                // sessionStorage.setItem('trainingKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_co_chac_muon_xoa_khung_nang_luc_nay'),
@@ -210,7 +210,8 @@
                                 if(current_pos.trainnings.length == 1){
                                   current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
                                 }
-                                current_pos.onPageChange();
+                                // current_pos.onPageChange();
+                                current_pos.getTrainnings(current_pos.current);
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

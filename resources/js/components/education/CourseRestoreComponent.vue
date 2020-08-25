@@ -266,7 +266,10 @@
                                     closeOnConfirm: true,
                                     showLoaderOnConfirm: true
                                 }, function () {
-                                    current_pos.getCourses();
+                                    if(current_pos.courses.length == 1){
+                                      current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                    }
+                                    current_pos.getCourses(current_pos.current);
                                     //location.reload();
                                 });
                             } else {
