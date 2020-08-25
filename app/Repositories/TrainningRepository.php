@@ -341,7 +341,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 //                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
                 ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'))
                 ->where('ttp.deleted', '=', 0);
-                //->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
+//                ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
         } else {
 
             $organization_id = 0;
@@ -371,7 +371,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         if ($style) {
-            $lstData = $lstData->where('.ttp.style', 1);
+            $lstData = $lstData->where('ttp.style', 1);
         } else {
             $lstData = $lstData->where('ttp.style', 0);
         }
