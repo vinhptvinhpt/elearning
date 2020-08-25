@@ -108,6 +108,7 @@ switch ($organizationCode) {
         break;
 }
 
+//  left join mdl_user_enrolments muet on met.id = muet.enrolid
 //get course list
 $sql = 'select @s:=@s+1 stt,
 mc.id,
@@ -118,24 +119,24 @@ mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
   ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
-    muet.userid as teacher_id,
+    mue.userid as teacher_id,
     tud.fullname as teacher_name,
     tor.name as teacher_organization,
-    muet.timecreated as teacher_created,
+    mue.timecreated as teacher_created,
     toe.position as teacher_position,
     toe.description as teacher_description,
     ttp.id as training_id,
     ttp.name as training_name,
     ttp.deleted as training_deleted,
     ttc.order_no,
-    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
+    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  mue.timecreated)) as teachers
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-  left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
+
+  left join tms_user_detail tud on tud.user_id = mue.userid
+  left join tms_organization_employee toe on toe.user_id = mue.userid
   left join tms_trainning_courses ttc on mc.id = ttc.course_id
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
@@ -164,8 +165,10 @@ $competency_exists = array();
 $competency_completed = array();
 $countRequiredCourses = 0;
 $sttTotalCourse = 0;
+
 foreach ($courses as $course) {
-    $courses_training[$course->training_id][$course->order_no] = $course;
+    $sttTotalCourse++;
+    $courses_training[$course->training_id][$course->id] = $course;
 }
 
 foreach ($courses_training as $courses){
@@ -190,10 +193,10 @@ foreach ($courses_training as $courses){
             $courses_required_list[] = $course;
         }
         $stt++;
-        $sttTotalCourse++;
     }
 }
-
+//echo $stt1, $stt2, $stt3, $stt4;
+//die;
 $courses_others_id .= ')';
 function push_course(&$array, $course)
 {

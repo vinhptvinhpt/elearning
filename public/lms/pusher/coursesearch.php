@@ -31,24 +31,23 @@ mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
   ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
-    muet.userid as teacher_id,
+    mue.userid as teacher_id,
     tud.fullname as teacher_name,
     tor.name as teacher_organization,
-    muet.timecreated as teacher_created,
+    mue.timecreated as teacher_created,
     toe.position as teacher_position,
     toe.description as teacher_description,
     ttp.name as training_name,
     ttc.order_no,
     ttp.id as training_id,
     ttp.deleted as training_deleted,
-    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
+    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  mue.timecreated)) as teachers
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-  left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
+  left join tms_user_detail tud on tud.user_id = mue.userid
+  left join tms_organization_employee toe on toe.user_id = mue.userid
   left join tms_trainning_courses ttc on mc.id = ttc.course_id
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
@@ -74,7 +73,7 @@ mc.estimate_duration,
     $courses_training = array();
 
     foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->order_no] = $course;
+        $courses_training[$course->training_id][$course->id] = $course;
     }
 
     foreach ($courses_training as $courses) {
@@ -90,7 +89,7 @@ mc.estimate_duration,
                 push_course($courses_completed, $course);
             } //then required = khoa hoc trong khung nang luc
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-                $courses_required[$course->training_id][$course->order_no] = $course;
+                $courses_required[$course->training_id][$course->id] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
                 if ($course->training_deleted == 2) {
                     $courses_others_id .= ', ' . $course->id;
@@ -145,7 +144,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
             $sttNew = 1;
             foreach ($training_courses as $course) {
                 $newCourse = $course;
-                if($course->training_deleted == 2)
+                if ($course->training_deleted == 2)
                     $newCourse->sttShow = 99999;
                 else
                     $newCourse->sttShow = $sttNew;
@@ -170,8 +169,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
-}
-else {
+} else {
     //course available
     //count total
     $sqlCountCoures = 'select mc.id
@@ -188,6 +186,7 @@ and mue.userid = ' . $USER->id;
     if ($category > 0) {
         $sqlCountCoures .= ' and category = ' . $category;
     }
+
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
     $sqlGetCoures = 'select
@@ -249,7 +248,7 @@ and mue.userid = ' . $USER->id;
     $courses_training = array();
 
     foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->order_no] = $course;
+        $courses_training[$course->training_id][$course->id] = $course;
     }
 
     $coures_result = array();
