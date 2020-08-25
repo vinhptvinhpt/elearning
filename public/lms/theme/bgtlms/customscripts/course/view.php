@@ -79,9 +79,23 @@ if (!isloggedin()) {
     <?//=$marginPage?> /*;*/
     }
 
+    .div-import{
+        width: 100%;
+        display: inline-flex;
+    }
+
+    .file-import{
+
+    }
+
+    .file-import a{
+        font-size: inherit;
+        font-style: italic;
+    }
+
     .import-student-score .container {
         padding: 2%;
-        display: inline-flex;
+        /*display: inline-flex;*/
     }
 
     .btn-up-file {
@@ -550,7 +564,7 @@ if (!isloggedin()) {
         border-radius: 0 !important;
     }
 
-    .number-module{
+    .number-module {
         font-size: 15px;
     }
 
@@ -669,6 +683,14 @@ if (!isloggedin()) {
 
         .nav-setting {
             margin-top: 8px !important;
+        }
+
+        .custom-file-select{
+            width: 85% !important;
+        }
+
+        .custom-file-btn{
+            width: 15% !important;
         }
     }
 
@@ -955,9 +977,9 @@ if ($course->is_toeic == 1 && $permission_admin) {
     $tab_toeic_admin = 'nav-tab-last';
 } else if ($course->is_toeic == 1) {
     $tab_toeic_result = 'nav-tab-last';
-} else if(!is_null($getContentCompetency->id)) {
+} else if (!is_null($getContentCompetency->id)) {
     $tab_competency = 'nav-tab-last';
-}else{
+} else {
     $tab_unit = 'nav-tab-last';
 }
 //check if is toeic course and is admin => toeic result is last tab
@@ -1036,9 +1058,10 @@ if ($course->is_toeic == 1 && $permission_admin) {
                             <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
                                 List</a>
                         </li>
-                        <?php if(!is_null($getContentCompetency->id)){ ?>
+                        <?php if (!is_null($getContentCompetency->id)) { ?>
                             <li class="nav-item nav-click <?php echo $tab_competency; ?>">
-                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">Content
+                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
+                                   role="tab">Content
                                     Competency Framework</a>
                             </li>
                         <?php } ?>
@@ -1196,16 +1219,25 @@ if ($course->is_toeic == 1 && $permission_admin) {
 
                 <div class="row col-12 course-content" id="toeicadmin">
                     <div class="import-student-score mb-3" style="background-color: #ffffff; width: 100%">
-                            <div class="container">
-                                <div class="custom-file" style="width: 90%">
-                                    <input type="file" ref="file" name="file" class="custom-file-input" id="validatedCustomFile" required @change="selectedFile"/>
-                                    <label class="custom-file-label" id="labelValidatedCustomFile" for="validatedCustomFile">Choose file...</label>
+                        <div class="container">
+                            <div class="div-import">
+                                <div class="custom-file custom-file-select" style="width: 90%; margin-right: 2%">
+                                    <input type="file" ref="file" name="file" class="custom-file-input"
+                                           id="validatedCustomFile" required @change="selectedFile"/>
+                                    <label class="custom-file-label" id="labelValidatedCustomFile"
+                                           for="validatedCustomFile">Choose file...</label>
                                     <div class="invalid-feedback">Example invalid custom file feedback</div>
                                 </div>
-                                <div class="custom-file" style="width: 8%; margin: inherit">
-                                    <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Upload file</button>
+                                <div class="custom-file custom-file-btn" style="width: 10%; margin: inherit;">
+                                    <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Upload
+                                        file
+                                    </button>
                                 </div>
                             </div>
+                            <div class="file-import mt-3">
+                                <a :href="file_url" class="btn px-0 not_shadow"><i aria-hidden="true" class="fa fa-file"></i> Download Excel Form</a>
+                            </div>
+                        </div>
                     </div>
                     <div class="table-responsive" style="background-color: #ffffff; padding: 2%">
                         <table class="table table-bordered table_res">
@@ -1455,6 +1487,7 @@ $_SESSION["displayPopup"] = 2; ?>
             typeCourse: '',
             current: 1,
             totalPage: 0,
+            file_url: 'files/TOEIC_grade.xlsx',
             typeToeic: 'get',
             recordPerPage: 10,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
@@ -1505,7 +1538,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     .catch(error => {
                     });
             },
-            uploadFile: function(){
+            uploadFile: function () {
                 var _this = this;
                 var file = this.$refs.file.files[0];
                 var validate = this.validateFile(file);
@@ -1513,7 +1546,7 @@ $_SESSION["displayPopup"] = 2; ?>
                 let formData = new FormData();
                 formData.append('courseid', <?php echo $course->id; ?>);
                 formData.append('file', this.$refs.file.files[0]);
-                if(validate){
+                if (validate) {
                     axios({
                         method: 'post',
                         url: url + '/pusher/inputtoeic.php',
@@ -1522,19 +1555,17 @@ $_SESSION["displayPopup"] = 2; ?>
                             'Content-Type': 'multipart/form-data',
                         }
                     })
-                    .then(response => {
-                        console.log(response.data);
-                        if(response.data.status)
-                        {
-                            alert(response.data.msg);
-                            location.reload();
-                        }
-                        else
-                            alert(response.data.msg);
-                    })
-                    .catch(error => {
-                        console.log("Error ", error);
-                    });
+                        .then(response => {
+                            console.log(response.data);
+                            if (response.data.status) {
+                                alert(response.data.msg);
+                                location.reload();
+                            } else
+                                alert(response.data.msg);
+                        })
+                        .catch(error => {
+                            console.log("Error ", error);
+                        });
                 }
             },
             validateFile: function (file) {
@@ -1564,7 +1595,6 @@ $_SESSION["displayPopup"] = 2; ?>
                 }
                 return true;
             }
-
         },
         mounted() {
             this.getListToeicScore(this.typeToeic, this.current);
