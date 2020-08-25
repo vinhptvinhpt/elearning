@@ -550,6 +550,10 @@ if (!isloggedin()) {
         border-radius: 0 !important;
     }
 
+    .number-module{
+        font-size: 15px;
+    }
+
     .info-course-btn {
         padding: 2% 1%;
         text-align: right;
@@ -932,10 +936,10 @@ if ($course->numofmodule == 0) {
 }
 
 //get content of competency framework
-$sqlGetContentCompetency = 'select description from tms_traninning_programs ttp
+$sqlGetContentCompetency = 'select ttp.id, ttp.description from tms_traninning_programs ttp
 join tms_traninning_users ttu on ttp.id = ttu.trainning_id
 join tms_trainning_courses ttc on ttc.trainning_id = ttp.id
-where user_id = ' . $USER->id . ' and course_id = ' . $course->id;
+where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $course->id;
 $getContentCompetency = array_values($DB->get_records_sql($sqlGetContentCompetency))[0];
 
 //get score for toeic
@@ -944,13 +948,16 @@ $toeicScore = array_values($DB->get_records_sql($sqlGetToeicScore))[0];
 
 //check if is toeic course and is not admin => toeic result is last tab
 $tab_unit = '';
+$tab_competency = '';
 $tab_toeic_result = '';
 $tab_toeic_admin = '';
 if ($course->is_toeic == 1 && $permission_admin) {
     $tab_toeic_admin = 'nav-tab-last';
 } else if ($course->is_toeic == 1) {
     $tab_toeic_result = 'nav-tab-last';
-} else {
+} else if(!is_null($getContentCompetency->id)) {
+    $tab_competency = 'nav-tab-last';
+}else{
     $tab_unit = 'nav-tab-last';
 }
 //check if is toeic course and is admin => toeic result is last tab
@@ -1025,14 +1032,16 @@ if ($course->is_toeic == 1 && $permission_admin) {
                             <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                 introduction</a>
                         </li>
-                        <li class="nav-item nav-click">
+                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
                             <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
                                 List</a>
                         </li>
-                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
-                            <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">Content
-                                Competency Framework</a>
-                        </li>
+                        <?php if(!is_null($getContentCompetency->id)){ ?>
+                            <li class="nav-item nav-click <?php echo $tab_competency; ?>">
+                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">Content
+                                    Competency Framework</a>
+                            </li>
+                        <?php } ?>
                         <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
                             <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
                                 <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin"
