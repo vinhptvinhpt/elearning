@@ -324,6 +324,7 @@
                             loader.fadeOut();
                             roam_message(response.data.status,response.data.message);
                             current_pos.getListUsers(current_pos.current);
+                            current_pos.getListAddUsers(current_pos.current2);
                         })
                         .catch(error => {
                             loader.fadeOut();
