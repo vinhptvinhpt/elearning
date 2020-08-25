@@ -342,7 +342,7 @@ if __name__ == '__main__':
                             for line in lines:
                                 w, h = canvas.textsize(line,font_training)                        
                                 canvas.text(((image_new_width-w+50)/2, y), line, font=font_training,fill=textColor)
-                                y = y + line_height + 24
+                                y = y + line_height + 20
                             #endregion
                             
                             #region xu ly hien thi ten hoc lien tren anh
