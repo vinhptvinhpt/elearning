@@ -9,6 +9,13 @@
 <body>
 <div>
     <?php
+
+    /**
+     * @var string $fullname
+     * @var array $course_list
+     *
+     */
+
         //using class
         use App\Mail\CourseSendMail;
 
@@ -34,12 +41,16 @@
         </tr>';
         //loop to set tr to table
         foreach($course_list as $course) {
+
+            $start_date = !empty($course->startdate) ? date('Y-m-d', $course->startdate) : '';
+            $end_date = !empty($course->enddate) ? date('Y-m-d', $course->enddate) : '';
+
             $course_list_string .= '<tr>
-            <td><p style="color: blue;">'. $course->course_code .'</p></td>
-            <td><p style="color: blue;">'.$course->course_name.'</p></td>
-            <td><p style="color: blue;">'.date('d/m/Y', $course->startdate).'</p></td>
-            <td><p style="color: blue;">'.date('d/m/Y', $course->enddate).'</p></td>
-            <td><p style="color: blue;">'.$course->course_place.'</p></td>
+            <td><p style="color: black;">'. $course->course_code .'</p></td>
+            <td><p style="color: black;">'.$course->course_name.'</p></td>
+            <td><p style="color: black;">'. $start_date .'</p></td>
+            <td><p style="color: black;">'. $end_date .'</p></td>
+            <td><p style="color: black;">'.$course->course_place.'</p></td>
             </tr>';
         }
         $course_list_string .= '</table>';

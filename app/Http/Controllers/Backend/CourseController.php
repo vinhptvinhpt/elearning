@@ -168,6 +168,7 @@ class CourseController extends Controller
             $stdate = strtotime($request->input('startdate'));
             $eddate = strtotime($request->input('enddate'));
 
+
             if ($eddate && $stdate > $eddate) {
                 $response->status = false;
                 $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
@@ -176,6 +177,7 @@ class CourseController extends Controller
 
             \DB::beginTransaction();
 
+            //create course
             $course = $this->mdlCourseRepository->store($request);
 
             if ($course->category != 2) { //ko phai thu vien khoa hoc

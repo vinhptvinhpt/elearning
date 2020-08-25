@@ -291,56 +291,76 @@ class TaskController extends Controller
     //danh sach hoc vien da hoan thanh KNL
     public function userCompleteTrainning()
     {
+        //Lấy ra số khóa học theo khung năng lực
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
-            ->where('ttc.deleted', '=', '0')
-            ->select('ttc.trainning_id', DB::raw('count(ttc.course_id) as total_course'))
-            ->groupBy('ttc.trainning_id')->get();
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.deleted', '=', '0') //khung nang lcu thong thuong, chua bi xoa
+            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
+            ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
+            ->groupBy(['ttc.trainning_id'])
+            ->get();
 
-        foreach ($lstTrainning as $key => $data) {
+        foreach ($lstTrainning as $training) {
 
-            $lstData = DB::table('course_completion as cc')
-                ->leftJoin('tms_trainning_complete as ttc', function ($join) {
-                    $join->on('ttc.user_id', '=', 'cc.userid');
-                    $join->on('ttc.trainning_id', '=', 'cc.training_id');
-                })
-                ->select('cc.userid', DB::raw('count(cc.courseid) as total_course_cp'))
-                ->whereNull('ttc.id')
-                ->where('cc.training_id', '=', $data->trainning_id)
-                ->groupBy('cc.training_id', 'cc.userid')->get();
-
-
-            $arrData = [];
-            $num = 0;
-            $limit = 200;
-
-            foreach ($lstData as $course) {
-                if ($course->total_course_cp == $data->total_course) {
-                    $data_item = [];
-                    $data_item['trainning_id'] = $data->trainning_id;
-                    $data_item['user_id'] = $course->userid;
-                    $data_item['created_at'] = Carbon::now();
-                    $data_item['updated_at'] = Carbon::now();
-
-                    array_push($arrData, $data_item);
-                    $num++;
-                }
-
-                if ($num >= $limit) {
-                    TmsTrainningComplete::insert($arrData);
-                    $this->insertCompetencyCompleted($arrData);
-                    $num = 0;
-                    $arrData = [];
-                }
-
-                usleep(100);
+            $training_courses = $training->training_courses;
+            $training_courses_arr = array();
+            if (strlen($training_courses) != 0) {
+                $training_courses_arr = explode(',', $training_courses);
             }
 
-            TmsTrainningComplete::insert($arrData);
-            $this->insertCompetencyCompleted($arrData);
-            sleep(1);
-        }
+            if (!empty($training_courses_arr)) {
 
-        sleep(5);
+                //lấy ra danh sách user và số khóa học đã hoàn thành theo khung năng lực
+                $lstData = DB::table('course_completion as cc')
+                    ->leftJoin('tms_trainning_complete as ttc', function ($join) {
+                        $join->on('ttc.user_id', '=', 'cc.userid');
+                        $join->on('ttc.trainning_id', '=', 'cc.training_id');
+                    })
+                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
+                    ->where('cc.training_id', '=', $training->trainning_id)
+                    ->groupBy(['cc.training_id', 'cc.userid'])
+                    ->get();
+
+                $arrData = [];
+                $num = 0;
+                $limit = 200;
+
+                foreach ($lstData as $course) {
+
+                    $completed_courses = $course->completed_courses;
+                    $completed_courses_arr = array();
+                    if (strlen($completed_courses) != 0) {
+                        $completed_courses_arr = explode(',', $completed_courses);
+                    }
+
+                    if (empty(array_diff($training_courses_arr, $completed_courses_arr))) {//Số hóa học đã hoàn thành trùng số khóa học trong khung => Đã hoàn thành KNL
+                        $data_item = [];
+                        $data_item['trainning_id'] = $training->trainning_id;
+                        $data_item['user_id'] = $course->userid;
+                        $data_item['created_at'] = Carbon::now();
+                        $data_item['updated_at'] = Carbon::now();
+
+                        array_push($arrData, $data_item);
+                        $num++;
+                    }
+
+                    if ($num >= $limit) {
+                        TmsTrainningComplete::insert($arrData);
+                        $this->insertCompetencyCompleted($arrData);
+                        $num = 0;
+                        $arrData = [];
+                    }
+
+                    usleep(100);
+                }
+
+                TmsTrainningComplete::insert($arrData);
+                $this->insertCompetencyCompleted($arrData);
+                sleep(1);
+            }
+        }
+        sleep(1);
 
         //tu dong gen ma chung chi cho hoc vien
         $listStudentsDone = DB::table('tms_trainning_complete as ttc')
@@ -354,7 +374,7 @@ class TaskController extends Controller
             ->select('tud.user_id', 'ttp.id as training_id')
             ->whereNull('sc.id')
             ->whereRaw('(ttp.auto_certificate = 1 OR ttp.auto_badge = 1)')
-            ->groupBy('ttc.user_id', 'ttc.trainning_id')->get();
+            ->groupBy(['ttc.user_id', 'ttc.trainning_id'])->get();
 
         $arrDataST = [];
         $data_item = [];
@@ -382,7 +402,6 @@ class TaskController extends Controller
                 $num = 0;
                 $arrDataST = [];
             }
-
 
             usleep(100); //sleep tranh tinh trang query db lien tiep
 
@@ -415,8 +434,10 @@ class TaskController extends Controller
             usleep(100); //sleep tranh tinh trang query db lien tiep
 
         }
-
         StudentCertificate::insert($arrDataST);
+
+        usleep(100); //sleep tranh tinh trang query db lien tiep
+        TmsLearnerHistory::insert($arr_data_his);
 
     }
     #endregion
@@ -426,51 +447,22 @@ class TaskController extends Controller
     {
         $data = array();
         foreach ($arrayData as $user_item) {
-            if (!array_key_exists($user_item['user_id'], $data)) {
-                $element = array(
-                    'type' => TmsNotification::MAIL,
-                    'target' => TmsNotification::COMPLETED_FRAME,
-                    'status_send' => 0,
-                    'sendto' => $user_item['user_id'],
-                    'createdby' => 0,
-                    'course_id' => 0,
-                    'created_at' => date('Y-m-d H:i:s', time()),
-                    'updated_at' => date('Y-m-d H:i:s', time()),
-                );
-                $training = TmsTrainningProgram::where('id', '=', $user_item['trainning_id'])
-                    ->get()->first();
-                $element['content'] = array(
-                    array(
-                        'training_id' => $training->id,
-                        'training_name' => $training->name,
-                        'startdate' => $training->time_start,
-                        'enddate' => $training->time_end,
-                        'code' => $training->code
-                    )
-                );
-                $data[$user_item['user_id']] = $element;
-            } else { // user exists in array, just update content element
-                $training = TmsTrainningProgram::where('id', '=', $user_item['trainning_id'])
-                    ->get()->first();
-                if (!is_null($training)) {
-                    $data[$user_item['user_id']]['content'][] = array(
-                        'training_id' => $training->id,
-                        'training_name' => $training->name,
-                        'startdate' => $training->time_start,
-                        'enddate' => $training->time_end,
-                        'code' => $training->code
-                    );
-                }
-            }
+            $element = array(
+                'type' => TmsNotification::MAIL,
+                'target' => TmsNotification::COMPLETED_FRAME,
+                'status_send' => 0,
+                'sendto' => $user_item['user_id'],
+                'createdby' => 0,
+                'course_id' => 0,
+                'created_at' => date('Y-m-d H:i:s', time()),
+                'updated_at' => date('Y-m-d H:i:s', time()),
+                'content' => $user_item['trainning_id']
+            );
+            $data[] = $element;
         }
         if (!empty($data)) {
-            $convert_to_json = array();
-            foreach ($data as $item) { //auto strip key of element, just use value = necessary data
-                $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
-                $convert_to_json[] = $item;
-            }
             //batch insert
-            TmsNotification::insert($convert_to_json);
+            TmsNotification::insert($data);
         }
     }
 
@@ -1610,8 +1602,7 @@ class TaskController extends Controller
 //                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
 //                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
 //                                ) ttp_r';
-                $role_query = '(SELECT u.id as user_id from mdl_user u 
-                                join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = ' . $role_id . ') ttp_r';
+                $role_query = '(SELECT u.id as user_id from mdl_user u join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = ' . $role_id . ') ttp_r';
 
                 $role_query = DB::raw($role_query);
 
@@ -1847,8 +1838,7 @@ class TaskController extends Controller
 //                                join model_has_roles mhr on mhr.role_id = ttgg.group_id
 //                                where ttp.deleted = 0 and ttgg.group_id = ' . $role_id . '
 //                                ) ttp_r';
-                $role_query = '(SELECT u.id as user_id from mdl_user u 
-                                join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = ' . $role_id . ') ttp_r';
+                $role_query = '(SELECT u.id as user_id from mdl_user u join model_has_roles mhr on mhr.model_id = u.id where mhr.role_id = ' . $role_id . ') ttp_r';
 
                 $role_query = DB::raw($role_query);
 
