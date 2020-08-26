@@ -71,10 +71,10 @@
                 <date-picker v-model="time_end" :config="options"
                              :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
               </div>
-              <div class="col-sm-6 form-group">
-                <p id="logic-warning" class="text-danger code_error hide">
-                  {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>
-              </div>
+<!--              <div class="col-sm-6 form-group">-->
+<!--                <p id="logic-warning" class="text-danger code_error hide">-->
+<!--                  {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>-->
+<!--              </div>-->
             </div>
 
             <div class="form-row">
@@ -226,7 +226,7 @@
           return;
         }
         if(this.type == 1){
-          $('#logic-warning').hide();
+          // $('#logic-warning').hide();
           let has_startdate = false;
           let has_enddate = false;
           if(this.time_start !== null && this.time_start !== undefined){
@@ -240,11 +240,13 @@
             let endDate_stamp = Date.parse(new Date(this.time_end.split("-").reverse().join("-")));
 
             if (startDate_stamp > endDate_stamp) {
-              $('#logic-warning').show();
+              // $('#logic-warning').show();
+              toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
               return;
-            } else {
-              $('#logic-warning').hide();
             }
+            // else {
+            //   $('#logic-warning').hide();
+            // }
           }
         }
 
