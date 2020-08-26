@@ -23,12 +23,10 @@ path = os.getcwd()
 # connect to db
 # path = 'D:\\Job\\elearning-easia\\python'
 # path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
-
 path = '/usr/share/nginx/html/source/phh/elearning-easia/python'
 path_gen_img = '/usr/share/nginx/html/source/phh/elearning-easia/storage/app/public/upload'
 path_gen_logo = '/usr/share/nginx/html/source/phh/elearning-easia/public/logo'
 path_gen_signature = '/usr/share/nginx/html/source/phh/elearning-easia/public/signature'
-
 bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
@@ -284,7 +282,9 @@ if __name__ == '__main__':
                             name_utf8_training = training_name + " training" 
                             #name_utf8_training = "Leading with emotional intelligence"
                             #name_utf8_training = name_utf8_training.upper()
-                            
+
+                            length_trainning = len(name_utf8_training)
+ 
                             # open image
                             img = Image.open(path_image)
                             img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
@@ -312,6 +312,11 @@ if __name__ == '__main__':
                             # and return
                             words = name_utf8_training.split(' ')
 
+                            if (length_trainning >= 46 and programSize >= 30):
+                                programSize = 24
+                                font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
+
+
                             if font_training.getsize(name_utf8_training)[0] <= bg_size_width:
                                 lines.append(name_utf8_training) 
                             else:
@@ -337,7 +342,7 @@ if __name__ == '__main__':
                             for line in lines:
                                 w, h = canvas.textsize(line,font_training)                        
                                 canvas.text(((image_new_width-w+50)/2, y), line, font=font_training,fill=textColor)
-                                y = y + line_height + 100
+                                y = y + line_height + 20
                             #endregion
                             
                             #region xu ly hien thi ten hoc lien tren anh
@@ -417,7 +422,7 @@ if __name__ == '__main__':
                             
                             max_width = image_new_width_bg
                             
-                            font = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize_badge, encoding="unic")
+                            
                             
                             lines = []
                            
@@ -426,12 +431,34 @@ if __name__ == '__main__':
                             # and return
                             words = text.split(' ')
 
+                            length_text = len(text)
+
+                            distance_2way_max = 350
+                            distance_2way = 100
+                            programSize_badge = 36
+
+                            if programSize_badge >=40:
+                                programSize_badge = 36
+
+                            if (length_text > 46):
+                                #programSize_badge = 36
+                                distance_2way_max = 400
+                                distance_2way = 260
+                                #print('433: '+code)
+                            elif (length_text >= 35 and length_text < 46):
+                                #programSize_badge = 36
+                                distance_2way_max = 350
+                                distance_2way = 240
+                                #print('448: '+code)
+                       
+                            font = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize_badge, encoding="unic")
+
                             if len(words) <= 2:
                                 # split the line by spaces to get words                                   
                                 for wd in words:
                                     lines.append(wd)                                  
                             else:
-                                if font.getsize(text)[0] <= max_width-250:
+                                if font.getsize(text)[0] <= max_width - distance_2way_max:
                                     lines.append(text) 
                                 else:
                                     # split the line by spaces to get words                                   
@@ -439,7 +466,7 @@ if __name__ == '__main__':
                                     # append every word to a line while its width is shorter than image width
                                     while i < len(words):
                                         line = ''         
-                                        while i < len(words) and font.getsize(line + words[i])[0] <= max_width-100:                
+                                        while i < len(words) and font.getsize(line + words[i])[0] <= max_width-distance_2way:                
                                             line = line + words[i] + " "
                                             i += 1
                                         if not line:
@@ -461,7 +488,7 @@ if __name__ == '__main__':
                             for line in lines:
                                 w, h = canvas.textsize(line,font)                        
                                 canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
-                                y = y + line_height + 150
+                                y = y + line_height + 120
 
                             img_badge.save(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
                             time.sleep(0.3)
