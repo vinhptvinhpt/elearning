@@ -123,7 +123,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  and ttp.deleted = 2 and
+  and ttp.deleted = 2 and mc.deleted = 0 and
   mc.id not in ' . $courses_others_id;
 
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
