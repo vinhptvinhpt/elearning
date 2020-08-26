@@ -13,8 +13,8 @@
   <div class="row">
     <div class="col-xl-12">
       <section class="hk-sec-wrapper">
-        <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.them_moi_du_lieu_excel')}}</h5>
-        <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.them_moi_du_lieu_excel')}}</h5>
+        <h5 class="hk-sec-title" v-if="type === 'system'">{{trans.get('keys.them_moi_du_lieu_excel')}}</h5>
+        <h5 class="hk-sec-title" v-else-if="type === 'teacher'">{{trans.get('keys.them_moi_du_lieu_excel')}}</h5>
         <h5 class="hk-sec-title" v-else>{{trans.get('keys.them_moi_du_lieu_excel')}}</h5>
         <div class="row mb-4">
           <div class="col-sm">
@@ -30,36 +30,20 @@
 
                     <div class="row">
                       <div class="col-sm-4">
+                        <div class="form-group">
+                            <label for="input-mode">{{trans.get('keys.chon_che_do')}}</label>
+                            <select id="input-mode" class="form-control" v-model="mode">
+                              <option value="full">{{trans.get('keys.full')}}</option>
+                              <option value="lite">{{trans.get('keys.lite')}}</option>
+                            </select>
+                        </div>
+                      </div>
+                      <div class="col-sm-4 offset-4 text-right">
                         <p class="mb-3">
-                          <a :href="file_url" class="btn px-0 not_shadow"><i class="fal fa-file-alt mr-3"></i>{{trans.get('keys.tai_ve_bieu_mau')}}</a>
+                          <a v-if="mode === 'lite'" :href="file_url_lite" class="btn px-0 not_shadow"><i class="fal fa-file-alt mr-3"></i>{{trans.get('keys.tai_ve_bieu_mau_rut_gon')}}</a>
+                          <a v-else :href="file_url" class="btn px-0 not_shadow"><i class="fal fa-file-alt mr-3"></i>{{trans.get('keys.tai_ve_bieu_mau')}}</a>
                         </p>
                       </div>
-
-                      <!--                                            <div class="col-sm-8">-->
-                      <!--                                                <div class="form-group">-->
-                      <!--                                                    <div class="input-group">-->
-                      <!--                                                        <select class="form-control selectpicker" v-model="city_id" data-live-search="true">-->
-                      <!--                                                            <option value="0">&#45;&#45; {{trans.get('keys.tinh_thanh')}} * &#45;&#45;</option>-->
-                      <!--                                                            <option v-for="city in data.city" :value="city.id">{{city.name}}</option>-->
-                      <!--                                                        </select>-->
-                      <!--                                                    </div>-->
-                      <!--                                                    <label v-if="!city_id" class="text-danger city_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
-                      <!--                                                </div>-->
-                      <!--                                            </div>-->
-
-<!--                      <div class="col-sm-8">-->
-<!--                        <div class="form-group">-->
-<!--                          <v-select-->
-<!--                            :options="departmentSelectOptions"-->
-<!--                            :reduce="departmentSelectOption => departmentSelectOption.id"-->
-<!--                            :placeholder="this.trans.get('keys.chon_chi_nhanh')"-->
-<!--                            :filter-by="myFilterBy"-->
-<!--                            v-model="department_id">-->
-<!--                          </v-select>-->
-<!--                          <label v-if="!department_id" class="text-danger department_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
-<!--                        </div>-->
-<!--                      </div>-->
-
                     </div>
                     <input type="file" ref="file" name="file" class="dropify fileImport" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"  @change="selectedFile"/>
                     <label class="text-danger file_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
@@ -79,17 +63,13 @@
 </template>
 
 <script>
-    //import vPagination from 'vue-plain-pagination'
-    //import vSelect from 'vue-select'
-    //import 'vue-select/dist/vue-select.css';
-
     export default {
         props: ['type'],
-        //components: {vPagination, vSelect},
         data() {
             return {
                 city_id: 0,
                 department_id: 0,
+                mode: 'full',
                 data: [],
                 urlImport:'/api/excel/import/user',
                 data_import: {},
@@ -97,6 +77,7 @@
                 confirm:'',
                 departmentSelectOptions: [],
                 file_url: '',
+                file_url_lite: ''
             }
         },
         methods: {
@@ -118,20 +99,6 @@
                     roam_message("error",this.trans.get('keys.dinh_dang_file_khong_hop_le'));
                 }
             },
-
-            // listData(){
-            //     axios.get('/system/organize/city/data')
-            //         .then(response => {
-            //             this.data = response.data;
-            //             this.$nextTick(function () {
-            //                 $('.selectpicker').selectpicker('refresh');
-            //             });
-            //         })
-            //         .catch(error => {
-            //             console.log(error);
-            //         })
-            // },
-
             listDepartment(){
                 axios.post('/system/organize/city/get_department_list')
                     .then(response => {
@@ -169,6 +136,11 @@
                     return;
                 }
                 let loader = $('.preloader-it');
+
+                if (this.mode === 'lite') {
+                  this.urlImport = '/api/excel/import/user/lite';
+                }
+
                 loader.fadeIn();
 
                 if(!$('button.hasLoading').hasClass('loadding')){
@@ -222,6 +194,7 @@
               })
                 .then(response => {
                   this.file_url = response.data.file_url;
+                  this.file_url_lite = response.data.file_url_lite
                 })
                 .catch(error => {
                   console.log(error);
