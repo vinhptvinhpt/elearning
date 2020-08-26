@@ -73,6 +73,10 @@ if (!isloggedin()) {
         max-width: 400px;
     }
 
+    .modal-title{
+        font-size: 17px;
+        font-weight: 400;
+    }
     #page {
         margin-right: 4%;
         /*margin-right: */
@@ -245,7 +249,7 @@ if (!isloggedin()) {
         margin: auto;
     }
 
-    .nav-introduction {
+    .nav-first-tab {
         margin: 0 auto;
         margin-right: 0;
     }
@@ -535,8 +539,9 @@ if (!isloggedin()) {
         position: relative;
         background: <?=$_SESSION["color"]?>;
         border-radius: 4px;
-        width: 50px;
-        padding: 1px 0px;
+        min-width: 50px;
+        width: fit-content;
+        padding: 1px 5px;
         margin: 0;
         margin-bottom: 1em;
         text-align: center;
@@ -820,7 +825,18 @@ $userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
 $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, mc.is_toeic, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
+//
+//$course->numoflearned * 100 / $course->numofmodule;
+$course_numoflearned = 0;
+$course_numofmodule = 0;
+$percent_learned = 0;
+if($course->numofmodule > 0){
+    $course_numoflearned = $course->numoflearned;
+    $course_numofmodule = $course->numofmodule;
+    $percent_learned = round($course_numoflearned*100/$course_numofmodule);
+}
 
+//
 $teachers_sql = 'select @s:=@s+1 stt,
 muet.userid as teacher_id,
 tud.fullname as teacher_name,
@@ -956,6 +972,7 @@ if ($course->numofmodule == 0) {
         }
     }
 }
+//$_SESSION["displayPopup"] = 1;
 
 //get content of competency framework
 $sqlGetContentCompetency = 'select ttp.id, ttp.description from tms_traninning_programs ttp
@@ -970,18 +987,25 @@ $toeicScore = array_values($DB->get_records_sql($sqlGetToeicScore))[0];
 
 //check if is toeic course and is not admin => toeic result is last tab
 $tab_unit = '';
-$tab_competency = '';
 $tab_toeic_result = '';
 $tab_toeic_admin = '';
 if ($course->is_toeic == 1 && $permission_admin) {
     $tab_toeic_admin = 'nav-tab-last';
 } else if ($course->is_toeic == 1) {
     $tab_toeic_result = 'nav-tab-last';
-} else if (!is_null($getContentCompetency->id)) {
-    $tab_competency = 'nav-tab-last';
-} else {
+}
+else {
     $tab_unit = 'nav-tab-last';
 }
+
+//
+$tab_introduction = '';
+$tab_competency = '';
+ if (!is_null($getContentCompetency->id)) {
+    $tab_competency = 'nav-first-tab';
+}else{
+     $tab_introduction = 'nav-first-tab';
+ }
 //check if is toeic course and is admin => toeic result is last tab
 //else unit list is last tab
 
@@ -1022,13 +1046,13 @@ if ($course->is_toeic == 1 && $permission_admin) {
 
                                 <div class="col-9">
                                     <hgroup class="speech-bubble">
-                                            <span class="number-module"><?php echo $course->numoflearned; ?>
-                                                / <?php echo $course->numofmodule; ?></span>
+                                            <span class="number-module" numoflearned="<?php echo $course_numoflearned; ?>" numofmodule="<?php echo $course_numofmodule; ?>"><?php echo $course_numoflearned; ?>
+                                                / <?php echo $course_numofmodule; ?></span>
                                     </hgroup>
                                     <div class="progress">
                                         <div class="progress-bar" role="progressbar"
                                              style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
-                                             aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                             aria-valuenow="<?php echo $percent_learned; ?>"
                                              aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
@@ -1050,7 +1074,14 @@ if ($course->is_toeic == 1 && $permission_admin) {
                 <!--                click tab - nav-->
                 <div class="nav-course">
                     <ul class="nav nav-tabs-courses">
-                        <li class="nav-item nav-click nav-introduction">
+                        <?php if (!is_null($getContentCompetency->id)) { ?>
+                            <li class="nav-item nav-click <?php echo $tab_competency; ?>">
+                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
+                                   role="tab">General
+                                    Competency Description</a>
+                            </li>
+                        <?php } ?>
+                        <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
                             <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                 introduction</a>
                         </li>
@@ -1058,13 +1089,6 @@ if ($course->is_toeic == 1 && $permission_admin) {
                             <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
                                 List</a>
                         </li>
-                        <?php if (!is_null($getContentCompetency->id)) { ?>
-                            <li class="nav-item nav-click <?php echo $tab_competency; ?>">
-                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
-                                   role="tab">Content
-                                    Competency Framework</a>
-                            </li>
-                        <?php } ?>
                         <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
                             <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
                                 <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin"
@@ -1289,7 +1313,7 @@ if ($course->is_toeic == 1 && $permission_admin) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
-                        course <?php echo $course->fullname; ?></h5>
+                        course <?php echo $course->fullname; ?>!</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -1318,8 +1342,13 @@ $_SESSION["displayPopup"] = 2; ?>
                 var getId = $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
+            //remove all active class not current active class
             $('.nav-click').not($(this)).each(function () {
                 $(this).removeClass('active');
+            });
+            //hide another content
+            $('.course-content').not($('#courseintroduction')).each(function () {
+                $(this).css('display', 'none');
             });
             $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
@@ -1345,7 +1374,18 @@ $_SESSION["displayPopup"] = 2; ?>
         });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
-        var marginLeft = getPercent - 6;
+        //
+        var numberMinus = 6;
+        var numofmodule = $('.number-module').attr('numofmodule');
+
+        if(numofmodule > 999)
+            numberMinus = 11;
+        else if(numofmodule > 99)
+            numberMinus = 10;
+        else if(numofmodule > 9)
+            numberMinus = 7;
+
+        var marginLeft = getPercent - numberMinus;
         var getScreenWidth = screen.width;
         if (getScreenWidth >= 1600) {
             marginLeft = getPercent - 3;
