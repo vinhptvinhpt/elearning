@@ -5,7 +5,7 @@
       aria-hidden="true"></i></a>
     <a class="navbar-brand d-none d-sm-flex" href="javascript:void(0)" @click="gotoDashboard()">
       <img id="vl_logo" class="brand-img d-inline-block" style="height: 34px;"
-           src="/assets/dist/img/logo-black.png" alt="Easia"/>
+           :src="imgLogo" alt="Easia"/>
     </a>
     <ul class="navbar-nav hk-navbar-content">
       <li class="nav-item dropdown dropdown-authentication">
@@ -176,7 +176,8 @@
         fullname: 'Guest',
         avatar: '/images/user.png',
         classObject: 'language_icon language_en',
-        domainWeb: ''
+        domainWeb: '',
+        imgLogo: ''
       }
     },
 
@@ -237,7 +238,7 @@
             Ls.remove('auth.lang');
             Ls.remove('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye');
             sslssso.logout();
-            window.location.href = '/';
+            window.location.href = '';
           })
           .catch(error => {
             console.log(error.response.data);
@@ -250,6 +251,7 @@
     mounted() {
       this.getDefaultValue();
       this.domainWeb = location.hostname;
+      this.imgLogo = sessionStorage.getItem('img-logo');
     },
     updated() {
       this.openMenu();
