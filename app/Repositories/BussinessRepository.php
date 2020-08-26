@@ -1888,13 +1888,18 @@ class BussinessRepository implements IBussinessInterface
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('mdl_user.deleted', '=', 0)
             ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
-            ->whereNotExists(function ($query) {
+            ->whereNotExists(function ($query) use ($role_id) {
                 $query->select(DB::raw(1))
                     ->from('mdl_user_enrolments')
                     ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
                     ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
                     ->where('mdl_course.id', '=', $this->courseCurrent_id)
                     ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
+
+//                if ($role_id == 4) { //Instructor => cho phép lấy ra, để có thể overwrite vào role học viên đã từng tạo
+//                    $query->where('mdl_enrol.roleid', '=', $role_id);
+//                }
+
             });
 
         if ($keyword) {
@@ -1904,11 +1909,13 @@ class BussinessRepository implements IBussinessInterface
             });
         }
 
+        //Lấy user trực thuộc tổ chức
 //        if (strlen($organization_id) != 0 && $organization_id != 0) {
 //            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
 //            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
 //        }
 
+        //Lấy user thuộc tổ chức và các tổ chức đệ quy của nó
         if (strlen($organization_id) != 0 && $organization_id != 0) {
 
             $org_query = '(select ttoe.organization_id,
