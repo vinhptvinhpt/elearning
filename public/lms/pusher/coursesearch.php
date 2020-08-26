@@ -83,11 +83,13 @@ mc.estimate_duration,
             $course->sttShow = $stt;
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                $courses_others_id .= ', ' . $course->id;
                 array_push($competency_exists, $course->training_id);
                 push_course($courses_current, $course);
             } //then complete
             elseif ($course->numoflearned / $course->numofmodule == 1) {
                 push_course($courses_completed, $course);
+                $courses_others_id .= ', ' . $course->id;
             } //then required = khoa hoc trong khung nang luc
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
                 $courses_required[$course->training_id][$course->id] = $course;
