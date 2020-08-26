@@ -33,7 +33,7 @@
                                             @input="listData()"/>
                               </div>
                               <div class="col-6">
-                                <select id="inputCountry" class="custom-select mb-0" v-model="country" @change="listData()">
+                                <select id="inputCountry" class="custom-select mb-0" v-model="country" @change="listData()" style="height: 35px; font-size: 14px !important;">
                                   <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
                                   <option v-for="(country_name, country_code, index) in countries" :value="country_code">
                                     {{ country_name }}

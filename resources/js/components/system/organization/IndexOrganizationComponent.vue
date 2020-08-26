@@ -411,9 +411,13 @@
               closeOnConfirm: true,
               showLoaderOnConfirm: true
             }, function () {
+              let loader = $('.preloader-it');
+              loader.fadeIn();
               axios.post(url)
                 .then(response => {
-                  roam_message(response.data.status, response.data.message);
+                  loader.fadeOut();
+                  // roam_message(response.data.status, response.data.message);
+                  toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                   if(current_pos.posts.length == 1){
                     current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
                   }
@@ -421,7 +425,9 @@
                   current_pos.getDataList(current_pos.current);
                 })
                 .catch(error => {
-                  roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                  loader.fadeOut();
+                  // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                  toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                 });
             });
 
