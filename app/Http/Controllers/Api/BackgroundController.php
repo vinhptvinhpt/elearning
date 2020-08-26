@@ -56,6 +56,7 @@ use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Excel;
 use Mockery\Exception;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
+use stdClass;
 use Symfony\Component\HttpFoundation\Request;
 
 set_time_limit(0);
@@ -160,17 +161,20 @@ class BackgroundController extends Controller
                 }
 
                 $base_level_organization_code = $user[7];
-
-                if (strlen($base_level_organization_code) != 0 && array_key_exists($base_level_organization_code, $base_level_orgs)) {
-                    $base_organization = TmsOrganization::firstOrCreate([
-                        'code' => $base_level_organization_code,
-                        'name' => $base_level_orgs[$base_level_organization_code],
-                        'level' => $base_level
-                    ]);
-                    self::createPQDL($base_organization);
-                    $base_level_id = $base_organization->id;
-                } else {
-                    $content[] = 'Organization mismatch';
+                if (self::validateRawData($base_level_organization_code, 'code')) {
+                    if (strlen($base_level_organization_code) != 0 && array_key_exists($base_level_organization_code, $base_level_orgs)) { //Check manual
+                        $base_organization = TmsOrganization::firstOrCreate([
+                            'code' => $base_level_organization_code,
+                            'name' => $base_level_orgs[$base_level_organization_code],
+                            'level' => $base_level
+                        ]);
+                        self::createPQDL($base_organization);
+                        $base_level_id = $base_organization->id;
+                    } else {
+                        $content[] = 'Parent organization code mismatch';
+                    }
+                } else { //check by validation function
+                    $content[] = 'Parent organization code is not validated';
                 }
 
                 $position_name = $user[8];
@@ -188,7 +192,6 @@ class BackgroundController extends Controller
                     }
                 }
 
-
                 if (strlen($position_name) == 0) {
                     $content[] = 'Position is missing';
                 }
@@ -204,20 +207,23 @@ class BackgroundController extends Controller
                 //Check / create department
                 $department_name = $user[5];
                 $department_code = $user[6];
-
-                if (strlen($department_name) == 0 || strlen($department_code) == 0) {
-                    $content[] = 'Department info is missing';
-                } else {
-                    if (empty($content) && $base_level_id != 0) {
-                        $organization = TmsOrganization::updateOrCreate([
-                            'code' => strtoupper($base_level_organization_code . "-" . $department_code), //$department_code,//strtoupper($base_level_organization . "-" . $department_name),
-                            'parent_id' => $base_level_id,
-                            'level' => $base_level + 1
-                        ], [
-                            'name' => $department_name,//ucwords($base_level_organization) . "-" . $department_name,
-                        ]);
-                        self::createPQDL($organization);
+                if (self::validateRawData($department_code, 'code')) {
+                    if (strlen($department_name) == 0 || strlen($department_code) == 0) {
+                        $content[] = 'Department info is missing';
+                    } else {
+                        if (empty($content) && $base_level_id != 0) {
+                            $organization = TmsOrganization::updateOrCreate([
+                                'code' => strtoupper($base_level_organization_code . "-" . $department_code),
+                                'parent_id' => $base_level_id,
+                                'level' => $base_level + 1
+                            ], [
+                                'name' => $department_name,
+                            ]);
+                            self::createPQDL($organization);
+                        }
                     }
+                } else {
+                    $content[] = 'Department code is not validated';
                 }
 
                 //Validate required fields
@@ -362,6 +368,325 @@ class BackgroundController extends Controller
             if ($env == 'cms') {
                 return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
             }
+        }
+    }
+
+    public function importEmployeeMinimum(Request $request)
+    {
+        set_time_limit(0);
+
+        $env = "background";
+
+        $manager_keys = array(
+            'manager',
+            'officer',
+            'director',
+            'controller',
+            'chief'
+        );
+
+        $base_level_orgs = array(
+            'EA' => 'Easia Travel',
+            'EV' => 'Exotic Voyages',
+            'BG' => 'Begodi',
+            'AV' => 'Avana',
+            'TVE' => 'TVE'
+        );
+
+        $countries = TmsUserDetail::country;
+
+        $from = $request->input('from');
+
+        if (strlen($from) != 0) { //Import from cms
+            $env = 'cms';
+            if (!$request->file('file')) {
+                return response()->json(self::status_message('error', "File missing"));
+            } else {
+                //check file is xlsx, xls
+                $extension = $request->file('file')->getClientOriginalExtension();
+                if ($extension != 'xls' && $extension != 'xlsx') {
+                    return response()->json(self::status_message('error', "File type mismatch. Allow XLS, XLSX file only"));
+                }
+                $files = array($request->file('file'));
+            }
+        } else { //background scan folder import
+            $dir = storage_path() . DIRECTORY_SEPARATOR . "app" . DIRECTORY_SEPARATOR . "import";
+            //return files or folders in directory above
+            $files = scandir($dir);
+            $files = array_diff($files, array('.', '..'));
+            $files = array_slice($files, 0, 1);
+        }
+
+
+        foreach ($files as $file_path) {
+
+            if ($env == 'background') {
+                //check file is xlsx, xls
+                $extension = pathinfo($file_path, PATHINFO_EXTENSION);
+                if ($extension != 'xls' && $extension != 'xlsx') {
+                    return response()->json([
+                        'extension' => 'error'
+                    ]);
+                }
+                $file_path = "import" . DIRECTORY_SEPARATOR . $file_path;
+                $file_name = pathinfo($file_path, PATHINFO_FILENAME);
+            } else {
+                /* @var $file_path UploadedFile */
+                $full_file_name = $file_path->getClientOriginalName();
+                $file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
+            }
+
+            $base_level = 1;
+
+            $list_uploaded = (new DataImport())->toArray($file_path, '', '');
+
+            $response = array();
+
+            //Lấy dữ liệu từ tab Staff List <= Required
+            $list_employee = $list_uploaded['Staff List'];
+
+            foreach ($list_employee as $user) {
+
+                $content = array();
+                $status = true;
+                $base_level_id = 0;
+
+                //Fetch data
+                //Skip 2 first row and department name row, check first column is numeric or not
+                $stt = $user[0];
+                if (!is_numeric($stt) || $stt == 0) {
+                    continue;
+                }
+
+                $base_level_organization_code = $user[7];
+                if (self::validateRawData($base_level_organization_code, 'code')) {
+                    if (strlen($base_level_organization_code) != 0) {
+                        if (array_key_exists($base_level_organization_code, $base_level_orgs)) { //To chuc cap 1
+                            $base_organization_name = $base_level_orgs[$base_level_organization_code];
+                        } else { //To chuc cap x
+                            $base_level = count(explode('-', $base_level_organization_code));
+                            $base_organization_name = $base_level_organization_code;
+                        }
+                        $base_organization = TmsOrganization::firstOrCreate([
+                            'code' => $base_level_organization_code,
+                            'name' => $base_organization_name,
+                            'level' => $base_level
+                        ]);
+                        self::createPQDL($base_organization);
+                        $base_level_id = $base_organization->id;
+                    } else {
+                        $content[] = 'Parent organization code mismatch';
+                    }
+                } else { //check by validation function
+                    $content[] = 'Parent organization code is not validated';
+                }
+
+                $position_name = $user[8];
+                $city =  $user[9]; //office name
+                $country = $user[10]; //country name
+                if (strlen($country) == 0) {//Set default country vi
+                    $country_code = array_search('Vietnam', $countries,true);
+                    $country = $country_code;
+                } else {
+                    $country_code = array_search($country, $countries,true);
+                    if ($country_code === false) {
+                        $content[] = 'Country name does not exist. Supported countries: Vietnam, Laos, Cambodia, Thailand, Myanmar';
+                    } else {
+                        $country = $country_code;
+                    }
+                }
+
+                if (strlen($position_name) == 0) {
+                    $content[] = 'Position is missing';
+                }
+
+                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
+                    $role = Role::ROLE_MANAGER;
+                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
+                    $role = Role::ROLE_LEADER;
+                } else {
+                    $role = Role::ROLE_EMPLOYEE;
+                }
+
+                //Check / create department
+                $department_name = $user[5];
+                $department_code = $user[6];
+                if (self::validateRawData($department_code, 'code')) {
+                    if (strlen($department_name) == 0 || strlen($department_code) == 0) {
+                        $content[] = 'Department info is missing';
+                    } else {
+                        if (empty($content) && $base_level_id != 0) {
+                            $organization = TmsOrganization::updateOrCreate([
+                                'code' => strtoupper($base_level_organization_code . "-" . $department_code),
+                                'parent_id' => $base_level_id,
+                                'level' => $base_level + 1
+                            ], [
+                                'name' => $department_name,
+                            ]);
+                            self::createPQDL($organization);
+                        }
+                    }
+                } else {
+                    $content[] = 'Department code is not validated';
+                }
+
+                //Validate required fields
+                //email
+                $email = trim($user[21]);
+
+                if (strlen($email) == 0) {
+                    $content[] = 'Email is missing';
+                } else {
+                    if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                        $content[] = "Email is wrong format";
+                    }
+                }
+                //name
+                $full_name = trim($user[1]);
+                $first_name = trim($user[2]);
+                $middle_name = trim($user[3]);
+                $last_name = trim($user[4]);
+
+                if (strlen($full_name) == 0) {
+                    $content[] = 'Full name is missing';
+                }
+
+                if (strlen($first_name) == 0) {
+                    $content[] = 'First name is missing';
+                }
+
+                if (strlen($last_name) == 0) {
+                    $content[] = 'Last name is missing';
+                }
+                //cmtnd
+                $personal_id = $user[19];
+                //Skip check missing
+//                if (strlen($personal_id) == 0) {
+//                    $content[] = 'Personal id is missing';
+//                }
+
+                $address = $user[18];
+                $phone = self::preparePhoneNo($user[20]);
+
+                $gender = $user[14];
+                if (strtolower($gender) == 'nam') {
+                    $gender = 1;
+                } elseif (strtolower($gender) == 'nữ') {
+                    $gender = 0;
+                } else {
+                    $gender = -1;
+                }
+
+                $dob = "";
+                if (strlen($user[11]) == 0 || strlen($user[12]) == 0 || strlen($user[13]) == 0) {
+                    $content[] = 'Dob is missing';
+                } else {
+                    $dob_date = str_pad($user[11], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[12], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[13];
+
+                    $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
+                    $dob = strtotime($dob_string);
+                }
+
+                $start_time = "";
+                if (strlen($user[15]) == 0 || strlen($user[16]) == 0 || strlen($user[17]) == 0) {
+                    $start_date = str_pad($user[15], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[16], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[17];
+                    $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
+                    $start_time = strtotime($start_time_string);
+                }
+
+                $response_item = array(
+                    $stt,
+                    $full_name,
+                    '',
+                    ''
+                );
+
+                $full_name = self::prepareName($full_name);
+                $first_name = self::prepareName($first_name);
+                $middle_name = self::prepareName($middle_name);
+                $last_name = self::prepareName($last_name);
+
+                if (empty($content)) {
+                    $createEmployeeResponse = self::createEmployee(
+                        $role,
+                        $email,
+                        $email,
+                        $full_name,
+                        $first_name,
+                        $middle_name,
+                        $last_name,
+                        $personal_id,
+                        $phone,
+                        '',
+                        '',
+                        $address,
+                        $city,
+                        $country,
+                        $gender,
+                        $dob,
+                        $start_time
+                    );
+
+                    if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
+                        $user_id = $createEmployeeResponse['id'];
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
+                        if (!is_numeric($employee)) {
+                            $content[] = $employee;
+                        }
+                    } else {
+                        $status = false;
+                        $content[] = $createEmployeeResponse['message']; //Tạo thất bại -> log lỗi
+                    }
+                } else { //validate fail
+                    $status = false;
+                }
+
+                if ($status ==  false) {
+                    $response_item[2] = 'error';
+                } else {
+                    $response_item[2] = 'success';
+                }
+                $response_item[3] = implode("\n", $content);
+
+                $response[] = $response_item;
+            }
+
+            $result_file_name = "bg_import_error_" . $file_name . ".xlsx";
+
+            //xóa file cũ
+            if (Storage::exists($result_file_name)) {
+                Storage::delete($result_file_name);
+            }
+
+            //ghi file vào thư mục storage, không được mở file khi đang lưu nếu k sẽ lỗi k lưu được
+            $exportExcel = new ImportResultSheet('Import Result', $response);
+            $exportExcel->store($result_file_name, '', Excel::XLSX);
+
+            if ($env == 'cms') {
+                return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+            }
+        }
+    }
+    /**
+     * @param $val
+     * @param $type
+     * @return bool
+     */
+    public function validateRawData($val, $type) {
+        $need_to_validate = new \Illuminate\Http\Request();
+        $need_to_validate['input'] = $val;
+        $param = [
+            'input' => $type
+        ];
+        $validator = validate_fails($need_to_validate, $param);
+        if (!empty($validator)) {
+            return false;
+        } else {
+            return true;
         }
     }
 
