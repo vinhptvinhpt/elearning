@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
-    <meta name="description" content="Đào tạo trực tuyến nhân viên bán hàng"/>
+    <meta name="description" content="Elearning"/>
     <link rel="shortcut icon" href="/images/favicon.png">
 <!-- <link rel="icon" href="{{asset('images/favicon.png')}}" type="image/x-icon"> -->
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese"
