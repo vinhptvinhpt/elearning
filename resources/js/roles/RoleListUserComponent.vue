@@ -326,13 +326,15 @@
                     })
                         .then(response => {
                             loader.fadeOut();
-                            roam_message(response.data.status,response.data.message);
+                            // roam_message(response.data.status,response.data.message);
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             current_pos.getListUsers(current_pos.current);
                             current_pos.getListAddUsers(current_pos.current2);
                         })
                         .catch(error => {
                             loader.fadeOut();
-                            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                            // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                         });
                 });
             },
