@@ -961,7 +961,7 @@ $_SESSION["allowCms"] = $allowCms;
         .info-user .avatar img {
             width: 150px;
             height: 150px;
-            padding: 0 4px;
+            padding: 4px;
         }
     }
 
@@ -970,7 +970,7 @@ $_SESSION["allowCms"] = $allowCms;
             width: 105px !important;
             height: 105px !important;
             bottom: 26% !important;
-            padding: 0 3px;
+            padding: 3px;
         }
     }
 
@@ -979,7 +979,7 @@ $_SESSION["allowCms"] = $allowCms;
             width: 85px !important;
             height: 85px !important;
             bottom: 26% !important;
-            padding: 0 3px;
+            padding: 3px;
         }
     }
 
