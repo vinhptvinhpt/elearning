@@ -245,7 +245,7 @@ if (!isloggedin()) {
         margin: auto;
     }
 
-    .nav-introduction {
+    .nav-first-tab {
         margin: 0 auto;
         margin-right: 0;
     }
@@ -820,7 +820,18 @@ $userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
 $sql = 'SELECT mc.id, mc.fullname, mc.category, mc.course_avatar, mc.estimate_duration, mc.summary, mc.is_toeic, ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections, ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule, ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned, mp.display FROM mdl_course mc LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id WHERE mc.id = ' . $id;
 $course = array_values($DB->get_records_sql($sql))[0];
+//
+//$course->numoflearned * 100 / $course->numofmodule;
+$course_numoflearned = 0;
+$course_numofmodule = 0;
+$percent_learned = 0;
+if($course->numofmodule > 0){
+    $course_numoflearned = $course->numoflearned;
+    $course_numofmodule = $course->numofmodule;
+    $percent_learned = round($course_numoflearned*100/$course_numofmodule);
+}
 
+//
 $teachers_sql = 'select @s:=@s+1 stt,
 muet.userid as teacher_id,
 tud.fullname as teacher_name,
@@ -971,18 +982,25 @@ $toeicScore = array_values($DB->get_records_sql($sqlGetToeicScore))[0];
 
 //check if is toeic course and is not admin => toeic result is last tab
 $tab_unit = '';
-$tab_competency = '';
 $tab_toeic_result = '';
 $tab_toeic_admin = '';
 if ($course->is_toeic == 1 && $permission_admin) {
     $tab_toeic_admin = 'nav-tab-last';
 } else if ($course->is_toeic == 1) {
     $tab_toeic_result = 'nav-tab-last';
-} else if (!is_null($getContentCompetency->id)) {
-    $tab_competency = 'nav-tab-last';
-} else {
+}
+else {
     $tab_unit = 'nav-tab-last';
 }
+
+//
+$tab_introduction = '';
+$tab_competency = '';
+ if (!is_null($getContentCompetency->id)) {
+    $tab_competency = 'nav-first-tab';
+}else{
+     $tab_introduction = 'nav-first-tab';
+ }
 //check if is toeic course and is admin => toeic result is last tab
 //else unit list is last tab
 
@@ -1023,13 +1041,13 @@ if ($course->is_toeic == 1 && $permission_admin) {
 
                                 <div class="col-9">
                                     <hgroup class="speech-bubble">
-                                            <span class="number-module"><?php echo $course->numoflearned; ?>
-                                                / <?php echo $course->numofmodule; ?></span>
+                                            <span class="number-module"><?php echo $course_numoflearned; ?>
+                                                / <?php echo $course_numofmodule; ?></span>
                                     </hgroup>
                                     <div class="progress">
                                         <div class="progress-bar" role="progressbar"
                                              style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
-                                             aria-valuenow="<?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                             aria-valuenow="<?php echo $percent_learned; ?>"
                                              aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
@@ -1051,14 +1069,6 @@ if ($course->is_toeic == 1 && $permission_admin) {
                 <!--                click tab - nav-->
                 <div class="nav-course">
                     <ul class="nav nav-tabs-courses">
-                        <li class="nav-item nav-click nav-introduction">
-                            <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
-                                introduction</a>
-                        </li>
-                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
-                            <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
-                                List</a>
-                        </li>
                         <?php if (!is_null($getContentCompetency->id)) { ?>
                             <li class="nav-item nav-click <?php echo $tab_competency; ?>">
                                 <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
@@ -1066,6 +1076,14 @@ if ($course->is_toeic == 1 && $permission_admin) {
                                     Competency Description</a>
                             </li>
                         <?php } ?>
+                        <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
+                            <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
+                                introduction</a>
+                        </li>
+                        <li class="nav-item nav-click <?php echo $tab_unit; ?>">
+                            <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
+                                List</a>
+                        </li>
                         <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
                             <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
                                 <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin"
@@ -1319,8 +1337,13 @@ $_SESSION["displayPopup"] = 2; ?>
                 var getId = $(this).find("a").attr('href');
                 $(getId).css('display', 'flex');
             }
+            //remove all active class not current active class
             $('.nav-click').not($(this)).each(function () {
                 $(this).removeClass('active');
+            });
+            //hide another content
+            $('.course-content').not($('#courseintroduction')).each(function () {
+                $(this).css('display', 'none');
             });
             $('.nav-tabs-courses .nav-introduction a').addClass('active');
         });
