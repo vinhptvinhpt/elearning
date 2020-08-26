@@ -37,20 +37,26 @@ $organization_id = $organization->id;
 
 $organizationCodeGet = "";
 $organizationLower = strtolower($organization->code);
+//echo $organizationLower;
+//die;
 if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0) {
     $organizationCodeGet = "BG";
 } else if (strpos($organizationLower, 'ea') === 0 || strpos($organizationLower, 'easia') === 0) {
     $organizationCodeGet = "EA";
 } else if (strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0) {
     $organizationCodeGet = "EV";
-} else if (strpos($organizationLower, 'AV') === 0 || strpos($organizationLower, 'avana') === 0) {
+} else if (strpos($organizationLower, 'av') === 0 || strpos($organizationLower, 'avana') === 0) {
     $organizationCodeGet = "AV";
-} else {
+}else if (strpos($organizationLower, 'tve') === 0) {
+    $organizationCodeGet = "TVE";
+}
+else {
     $organizationCodeGet = "PH";
 }
 
 
 //set for full page
+$className = 'Academy';
 $organization_id = is_null($organization) ? 0 : $organization->id;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
@@ -94,6 +100,17 @@ switch ($organizationCode) {
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "TVE":
+        {
+            $_SESSION["organizationName"] = 'VNU';
+            $_SESSION["color"] = '#0080EF';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $className = 'Elearning';
         }
         break;
     default:
@@ -1118,7 +1135,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <div class="carousel-caption">
-                                            <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
+                                            <h1><?php echo $_SESSION["organizationName"]; ?> <span><?php echo $className; ?></span></h1>
                                             <div class="block-color"></div>
                                         </div>
                                     </div>
