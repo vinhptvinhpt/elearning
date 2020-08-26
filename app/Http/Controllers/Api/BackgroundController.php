@@ -1461,6 +1461,24 @@ class BackgroundController extends Controller
 //        TmsOrganization::query()->where('name', '<>', 'TVE')->delete();
     }
 
+    //Xóa selected users và các dữ liệu liên quan khỏi hệ thống
+    public function removeSelectedUsers() {
+        $users = [
+            23884
+        ];
+        DB::beginTransaction();
+        try {
+            foreach ($users as $user) {
+                //Gọi hàm xóa tms user, trong hàm có gọi sang lms để xóa
+                TmsUserDetail::clearUser($user);
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            Log::error($e);
+            DB::rollBack();
+        }
+    }
+
     function buildSubQueryForUser1(&$q, $excludes, $exclude_email) {
         /**
          * @var $q Builder
