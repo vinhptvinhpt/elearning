@@ -956,6 +956,7 @@ if ($course->numofmodule == 0) {
         }
     }
 }
+//$_SESSION["displayPopup"] = 1;
 
 //get content of competency framework
 $sqlGetContentCompetency = 'select ttp.id, ttp.description from tms_traninning_programs ttp
@@ -1061,8 +1062,8 @@ if ($course->is_toeic == 1 && $permission_admin) {
                         <?php if (!is_null($getContentCompetency->id)) { ?>
                             <li class="nav-item nav-click <?php echo $tab_competency; ?>">
                                 <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
-                                   role="tab">Content
-                                    Competency Framework</a>
+                                   role="tab">General
+                                    Competency Description</a>
                             </li>
                         <?php } ?>
                         <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
@@ -1289,7 +1290,7 @@ if ($course->is_toeic == 1 && $permission_admin) {
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
-                        course <?php echo $course->fullname; ?></h5>
+                        course <?php echo $course->fullname; ?>!</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>

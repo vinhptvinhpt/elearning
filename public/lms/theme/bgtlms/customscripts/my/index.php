@@ -1401,7 +1401,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                         <div class="block-item__image block-item__image_complete col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $CFG->wwwtmsbase . $pathBadge; ?>"
-                                                                 alt="">
+                                                                 alt=""><span>Done</span>
                                                             <!--                                                            <span class="sp-name-course">-->
                                                             <?php //echo $course->fullname; ?><!--</span>-->
                                                         </div>

@@ -933,7 +933,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="col-5 course-block__image"
                                      v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
                                     <div class="div-image">
-                                            <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>" alt="">
+                                            <img style="width: 40px !important; height: 40px !important;" src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>" alt="">
                                     </div>
                                 </div>
                                 <div class="block-item__content col-7">
@@ -1062,7 +1062,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     <template v-if="course.numofmodule == 0"><img
                                             src="<?php echo $_SESSION['component']; ?>" alt=""><span>0%</span></template>
                                     <template v-else-if="course.numoflearned/course.numofmodule == 1">
-                                        <img src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
+                                        <img style="width: 40px !important; height: 40px !important;" src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
                                              alt="" class="img-completed">
                                     </template>
                                     <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
