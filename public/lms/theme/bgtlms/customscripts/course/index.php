@@ -776,7 +776,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <div class="header-block__quick-filter__title mb-4"><h2>Quick <span>Filter</span></h2></div>
                     <div class="header-block__quick-filter__main">
                         <ul>
-
                             <?php if ($progress == 1) {
                                 foreach ($home_selection as $key => $value) {
                                     ?>
@@ -806,7 +805,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <template v-else-if="category == 'required'">
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
-                            <div v-if="course.sttShow > 1 || (competency_exists.includes(course.training_id))">
+<!--                            Nếu training_deleted == 0 (khóa nằm trong khung năng lực) và stt show > 1 hoặc mã của trainning đó đã tồn tại trong current course => auto không cho học-->
+                            <div v-if="course.training_deleted == 0 && (course.sttShow > 1 || (competency_exists.includes(course.training_id)))">
                                 <div class="row course-block course-block-disable">
                                     <div class="col-5 course-block__image"
                                          v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
@@ -849,6 +849,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     </div>
                                 </div>
                             </div>
+<!--                            Ngược lại: khóa học lẻ (training_deleted == 2), sttShow == 1 (Khung năng lực chưa có khóa nào học và đây là khóa đầu tiên), !competency_exists.includes(course.training_id)-->
                             <div v-else>
                                 <div class="row course-block">
                                     <div class="col-5 course-block__image"

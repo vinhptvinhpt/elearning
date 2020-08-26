@@ -260,9 +260,9 @@
                 this.$route.params.back_page = value;
             },
             deletePost(id) {
-                sessionStorage.setItem('surveyPage', this.current);
-                sessionStorage.setItem('surveyPageSize', this.row);
-                sessionStorage.setItem('surveyKeyWord', this.keyword);
+                // sessionStorage.setItem('surveyPage', this.current);
+                // sessionStorage.setItem('surveyPageSize', this.row);
+                // sessionStorage.setItem('surveyKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -279,8 +279,8 @@
                                 if (current_pos.surveys.length == 1) {
                                     current_pos.current = current_pos.current > 1 ? current_pos.current - 1 : 1;
                                 }
-                                current_pos.onPageChange();
-
+                                // current_pos.onPageChange();
+                                current_pos.getSurveys(current_pos.current);
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

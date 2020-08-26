@@ -647,8 +647,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                             <?php } ?>
                                         </select>
                                     </th>
-                                    <th scope="col">Percent</th>
-                                    <th scope="col">Point</th>
+                                    <th scope="col" style="text-align: center">Percent</th>
                                     <th scope="col" class="width10">Qualified</th>
                                 </tr>
                                 </thead>
@@ -656,11 +655,10 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 <tr v-for="(course,index) in courses">
                                     <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
                                                             :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td v-if="course.numofmodule == 0"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberget">{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                    <td style="text-align: center">
+                                        <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                        <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
                                     </td>
-                                    <td v-if="course.finalgrade == null"><span class="numberget">0</span></td>
-                                    <td v-else><span class="numberget">{{ Math.round(course.finalgrade) }}</span></td>
                                     <td class="icon-circle"
                                         v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1">
                                         <i class="fa fa-check-circle" aria-hidden="true"></i></td>

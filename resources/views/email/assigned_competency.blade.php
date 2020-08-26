@@ -12,12 +12,9 @@
     /**
      * @var string $fullname
      * @var string $competency_name
-     * @var string $course_code
-     * @var string $course_place
      * @var integer $start_date
      * @var integer $end_date
-     * @var string $course_description
-     * @var integer $content //invite_id
+     * @var string $competency_code
      *
      */
     //using class
@@ -39,6 +36,7 @@
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::COMPETENCYNAME, $competency_name, $text);
+    $text = str_replace(CourseSendMail::COMPETENCYCODE, $competency_code, $text);
     $text = str_replace(CourseSendMail::STARTDATE, $start_date, $text);
     $text = str_replace(CourseSendMail::ENDDATE, $end_date, $text);
 

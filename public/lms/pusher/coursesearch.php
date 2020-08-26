@@ -74,7 +74,7 @@ mc.estimate_duration,
     $courses_training = array();
 
     foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->order_no] = $course;
+        $courses_training[$course->training_id][$course->id] = $course;
     }
 
     foreach ($courses_training as $courses) {
@@ -90,7 +90,7 @@ mc.estimate_duration,
                 push_course($courses_completed, $course);
             } //then required = khoa hoc trong khung nang luc
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-                $courses_required[$course->training_id][$course->order_no] = $course;
+                $courses_required[$course->training_id][$course->id] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
                 if ($course->training_deleted == 2) {
                     $courses_others_id .= ', ' . $course->id;
@@ -145,7 +145,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
             $sttNew = 1;
             foreach ($training_courses as $course) {
                 $newCourse = $course;
-                if($course->training_deleted == 2)
+                if ($course->training_deleted == 2)
                     $newCourse->sttShow = 99999;
                 else
                     $newCourse->sttShow = $sttNew;
@@ -170,8 +170,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
-}
-else {
+} else {
     //course available
     //count total
     $sqlCountCoures = 'select mc.id
@@ -188,6 +187,7 @@ and mue.userid = ' . $USER->id;
     if ($category > 0) {
         $sqlCountCoures .= ' and category = ' . $category;
     }
+
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
     $sqlGetCoures = 'select
@@ -249,7 +249,7 @@ and mue.userid = ' . $USER->id;
     $courses_training = array();
 
     foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->order_no] = $course;
+        $courses_training[$course->training_id][$course->id] = $course;
     }
 
     $coures_result = array();

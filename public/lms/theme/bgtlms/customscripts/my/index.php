@@ -108,6 +108,7 @@ switch ($organizationCode) {
         break;
 }
 
+//  left join mdl_user_enrolments muet on met.id = muet.enrolid
 //get course list
 $sql = 'select @s:=@s+1 stt,
 mc.id,
@@ -164,8 +165,10 @@ $competency_exists = array();
 $competency_completed = array();
 $countRequiredCourses = 0;
 $sttTotalCourse = 0;
+
 foreach ($courses as $course) {
-    $courses_training[$course->training_id][$course->order_no] = $course;
+    $sttTotalCourse++;
+    $courses_training[$course->training_id][$course->id] = $course;
 }
 
 foreach ($courses_training as $courses){
@@ -190,10 +193,10 @@ foreach ($courses_training as $courses){
             $courses_required_list[] = $course;
         }
         $stt++;
-        $sttTotalCourse++;
     }
 }
-
+//echo $stt1, $stt2, $stt3, $stt4;
+//die;
 $courses_others_id .= ')';
 function push_course(&$array, $course)
 {
