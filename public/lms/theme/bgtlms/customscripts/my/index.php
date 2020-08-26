@@ -49,18 +49,22 @@ if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi
     $organizationCodeGet = "AV";
 }else if (strpos($organizationLower, 'tve') === 0) {
     $organizationCodeGet = "TVE";
+//    $organization_id = 0;
 }
 else {
     $organizationCodeGet = "PH";
 }
 
+//color for h1 - organization
+$colorOrganizationText = '#ffffff';
 
 //set for full page
 $className = 'Academy';
-$organization_id = is_null($organization) ? 0 : $organization->id;
+//$organization_id = is_null($organization) ? 0 : $organization->id;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
 //$organizationCode = "BG";
+$_SESSION["pathImgAvailableCourse"] = 'images/bg-a-03.png';
 switch ($organizationCode) {
     case "EA":
         {
@@ -105,12 +109,14 @@ switch ($organizationCode) {
     case "TVE":
         {
             $_SESSION["organizationName"] = 'VNU';
-            $_SESSION["color"] = '#0080EF';
+            $_SESSION["color"] = '#007f48';
             $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathLogoWhite"] = 'images/Logo-VNU.png';
+            $_SESSION["component"] = 'images/cpn-vnu.png';
+            $_SESSION["pathImgAvailableCourse"] = 'images/2a.png';
+            $_SESSION["pathBackground"] = 'images/1a.png';
             $className = 'Elearning';
+            $colorOrganizationText = '#000';
         }
         break;
     default:
@@ -277,12 +283,14 @@ inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in ' . $courses_others_id;
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.deleted = 0 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
+
+$organization_id = is_null($organization_id) ? 0 : $organization->id;
 
 //$organization_id = 0;
 //get footer address
@@ -824,7 +832,7 @@ $_SESSION["allowCms"] = $allowCms;
 
     .carousel-caption h1 {
         font-family: HelveticaLTStd-Bold;
-        color: #ffffff;
+        color: <?=$colorOrganizationText?>;
         position: absolute;
         font-size: 60px;
         bottom: 25%;

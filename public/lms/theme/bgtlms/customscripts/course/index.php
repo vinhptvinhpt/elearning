@@ -342,7 +342,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .section-header {
-        background-image: url('images/bg-a-03.png');
+        background-image: url('<?=$_SESSION["pathImgAvailableCourse"]?>');
         width: 100%;
         background-repeat: no-repeat;
         background-position: 100% 90%;
