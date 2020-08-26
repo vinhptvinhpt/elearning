@@ -73,6 +73,10 @@ if (!isloggedin()) {
         max-width: 400px;
     }
 
+    .modal-title{
+        font-size: 17px;
+        font-weight: 400;
+    }
     #page {
         margin-right: 4%;
         /*margin-right: */
@@ -535,8 +539,9 @@ if (!isloggedin()) {
         position: relative;
         background: <?=$_SESSION["color"]?>;
         border-radius: 4px;
-        width: 50px;
-        padding: 1px 0px;
+        min-width: 50px;
+        width: fit-content;
+        padding: 1px 5px;
         margin: 0;
         margin-bottom: 1em;
         text-align: center;
@@ -1041,7 +1046,7 @@ $tab_competency = '';
 
                                 <div class="col-9">
                                     <hgroup class="speech-bubble">
-                                            <span class="number-module"><?php echo $course_numoflearned; ?>
+                                            <span class="number-module" numoflearned="<?php echo $course_numoflearned; ?>" numofmodule="<?php echo $course_numofmodule; ?>"><?php echo $course_numoflearned; ?>
                                                 / <?php echo $course_numofmodule; ?></span>
                                     </hgroup>
                                     <div class="progress">
@@ -1369,7 +1374,18 @@ $_SESSION["displayPopup"] = 2; ?>
         });
 
         var getPercent = $('.progress-bar').attr('aria-valuenow');
-        var marginLeft = getPercent - 6;
+        //
+        var numberMinus = 6;
+        var numofmodule = $('.number-module').attr('numofmodule');
+
+        if(numofmodule > 999)
+            numberMinus = 11;
+        else if(numofmodule > 99)
+            numberMinus = 10;
+        else if(numofmodule > 9)
+            numberMinus = 7;
+
+        var marginLeft = getPercent - numberMinus;
         var getScreenWidth = screen.width;
         if (getScreenWidth >= 1600) {
             marginLeft = getPercent - 3;

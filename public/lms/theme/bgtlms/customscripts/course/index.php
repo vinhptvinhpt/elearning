@@ -523,16 +523,17 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
     .footer-ul {
         padding: 0;
-        padding-left: 5%;
+        /*padding-left: 5%;*/
     }
 
     .footer-ul li {
         list-style: none;
         text-align: left;
         font-family: Nunito-Sans-Regular;
-        letter-spacing: 0.45px;
+        letter-spacing: 0.6px;
         opacity: 1;
         margin-top: 5%;
+        font-size: 20px;
     }
 
     .footer-ul a {
