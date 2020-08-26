@@ -10511,7 +10511,13 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_course as mc', 'mc.id', '=', 'me.courseid')
 //            ->join('mdl_role as mr', 'mr.id', '=', 'me.roleid')
             ->join('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mc.id')
+            ->leftJoin('tms_trainning_courses as ttc', 'mc.id', '=', 'ttc.course_id')
+            ->leftJoin('tms_traninning_programs as ttp', 'ttc.trainning_id', '=', 'ttp.id')
             ->where('enrolments.userid', '=', $user_id)
+            ->where('ttc.deleted', '<>', 1)
+            ->where('mc.deleted', '=', 0)
+            ->where('mc.visible', '=', 1)
+            ->whereNotIn('mc.category', [2, 7])
             ->where('mc.deleted', '=', 0)
             ->select(
                 'mc.id',

@@ -147,7 +147,6 @@
         },
         role: 0,
         roles: {},
-        organization_parent_list: [],
 
         language: this.trans.get('keys.language'),
         options: {
@@ -185,7 +184,6 @@
           paginated: 0 //không phân trang,
         })
           .then(response => {
-            this.organization_parent_list = response.data;
             //Set options recursive
             this.tree_options = this.setOptions(response.data);
           })

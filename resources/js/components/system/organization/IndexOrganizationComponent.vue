@@ -72,8 +72,7 @@
                         <!--                            </div>-->
                         <!--                          </div>-->
                         <!--                        </div>-->
-                        <treeselect v-model="organization.parent_id" :multiple="false" :options="options"
-                                    id="organization_parent_id"/>
+                        <treeselect v-model="organization.parent_id" :multiple="false" :options="options" id="organization_parent_id"/>
                       </div>
                     </div>
 
@@ -265,12 +264,11 @@
         max_level: 0,
         level: 0,
         //Treeselect options
-        options: [
-          {
-            id: 0,
-            label: this.trans.get('keys.chon_to_chuc')
-          }
-        ],
+        options: [],
+        tree_placeholder: {
+          id: 0,
+          label: this.trans.get('keys.chon_to_chuc')
+        },
         display: 'grid'
       }
     },
@@ -293,6 +291,7 @@
                 this.tree = response.data;
                 //Set options recursive
                 this.options = this.setOptions(response.data);
+                this.options.unshift(this.tree_placeholder);
                 $('.content_search_box').removeClass('loadding');
               })
               .catch(error => {
