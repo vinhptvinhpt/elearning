@@ -2,6 +2,12 @@
 <html lang="{{ app()->getLocale() == 'en' ? app()->getLocale() : 'vi' }}">
 <head>
     <meta charset="utf-8">
+
+    <meta property="og:title" content="Elearning" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/favicon.png" />
+    <meta property="og:description" content="Elearning" />
+
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
     <meta name="description" content="Elearning"/>
