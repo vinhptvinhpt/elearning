@@ -1028,7 +1028,7 @@ if ($course->is_toeic == 1 && $permission_admin) {
                                     <div class="progress">
                                         <div class="progress-bar" role="progressbar"
                                              style="width: <?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>%;"
-                                             aria-valuenow="<?php echo (int)($course->numoflearned * 100 / $course->numofmodule); ?>"
+                                             aria-valuenow="<?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>"
                                              aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>

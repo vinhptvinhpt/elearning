@@ -1249,7 +1249,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $_SESSION['component'] ?>"
-                                                                 alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                 alt=""><span><?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
