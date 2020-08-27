@@ -86,7 +86,10 @@
                                             </div>
                                         </form>
                                     </div>
-
+<!--                                  <div class="col-sm-6">-->
+<!--                                    <p id="logic-warning" class="text-danger code_error hide">-->
+<!--                                      {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>-->
+<!--                                  </div>-->
                                 </div>
 
                                 <div class="row">
@@ -332,6 +335,28 @@
                     });
             },
             getCourses(paged) {
+                // $('#logic-warning').hide();
+                let has_startdate = false;
+                let has_enddate = false;
+                if(this.startdate !== null && this.startdate !== undefined){
+                  has_startdate = true;
+                }
+                if(this.enddate !== null && this.enddate !== undefined){
+                  has_enddate = true;
+                }
+                if (has_startdate && has_enddate) {
+                  let startDate_stamp = Date.parse(new Date(this.startdate.split("-").reverse().join("-")));
+                  let endDate_stamp = Date.parse(new Date(this.enddate.split("-").reverse().join("-")));
+
+                  if (startDate_stamp > endDate_stamp) {
+                    toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
+                    // $('#logic-warning').show();
+                    return;
+                  }
+                  // } else {
+                  //   $('#logic-warning').hide();
+                  // }
+                }
                 axios.post(this.urlGetList, {
                     page: paged || this.current,
                     keyword: this.keyword,
