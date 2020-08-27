@@ -507,6 +507,7 @@ class CourseController extends Controller
 
             $course = MdlCourse::findOrFail($id);
             $course->delete();
+            removeCourseFromTraining($id);
 
             $result = 1;
 
