@@ -2,9 +2,17 @@
 <html lang="{{ app()->getLocale() == 'en' ? app()->getLocale() : 'vi' }}">
 <head>
     <meta charset="utf-8">
+
+    <meta property="og:title" content="Elearning" />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/images/favicon.png" />
+    <meta property="og:description" content="Elearning" />
+
+    <!-- Include this to make the og:image larger -->
+    <meta name="twitter:card" content="summary_large_image">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
-    <meta name="description" content="Đào tạo trực tuyến nhân viên bán hàng"/>
+    <meta name="description" content="Elearning"/>
     <link rel="shortcut icon" href="/images/favicon.png">
     <link rel="icon" href="/images/favicon.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese"
