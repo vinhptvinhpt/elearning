@@ -616,7 +616,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
                 $index_existed = array();
                 foreach ($existed_codes as $code) {
-                    $extract = self::extractCode($code);
+                    $extract = self::extractCode($code->shortname);
                     if (!empty($extract)) {
                         if (isset($index_existed[$extract['lib_code']])) {
                             if (intval($extract['number']) > intval($index_existed[$extract['lib_code']]))  {
@@ -851,7 +851,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
     /**
      * @param $code
-     * @return string
+     * @return array
      */
     public function extractCode($code) {
         $response = [];
