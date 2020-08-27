@@ -280,6 +280,7 @@ class CourseController extends Controller
             $response->message = __('tao_moi_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             \DB::rollBack();
+            dd($e->getMessage());
             $response->status = false;
             //$response->message = $e->getMessage();
             $response->message = __('loi_he_thong_thao_tac_that_bai');

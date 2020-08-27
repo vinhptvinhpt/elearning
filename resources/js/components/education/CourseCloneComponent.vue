@@ -293,16 +293,34 @@
         if (event.target.value == 3) {
           $('#pass_score').attr("disabled", true);
           $('#is_end_quiz').show();
-        } else {
+        }
+        else {
+          // if (this.is_toeic == 1) {
+          //   $('#pass_score').attr("disabled", true);
+          // } else {
+          //   $('#pass_score').attr("disabled", false);
+          // }
           $('#pass_score').attr("disabled", false);
           $('#is_end_quiz').hide();
         }
 
         if (event.target.value == 5) {
           this.is_toeic = false;
+          // $('#pass_score').attr("disabled", false);
           $('#div-is_active').hide();
         } else {
           $('#div-is_active').show();
+        }
+      },
+      onChangeToeic() {
+        if (this.is_toeic == 1) {
+          $('#pass_score').attr("disabled", true);
+        } else {
+          if (this.category_id == 3) {
+            $('#pass_score').attr("disabled", true);
+          } else {
+            $('#pass_score').attr("disabled", false);
+          }
         }
       },
       getCourseSamples() {
@@ -380,9 +398,12 @@
         //     $('.enddate_required').show();
         //     return;
         // }
-        if (!this.pass_score) {
-          $('.pass_score_required').show();
-          return;
+
+        if(this.is_toeic == 0){
+          if (!this.pass_score) {
+            $('.pass_score_required').show();
+            return;
+          }
         }
 
         var allow_reg = 0;
