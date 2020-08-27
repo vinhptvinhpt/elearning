@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\MdlUser;
 use App\TmsLearnerHistory;
 use App\TmsUserDetail;
 use Illuminate\Http\Request;
@@ -110,8 +111,9 @@ class MdlUserRepository implements IMdlUserInterface
 
 
             $user = TmsUserDetail::where('user_id', $user_id)->first();
+            $mdl_user = MdlUser::query()->where('id', $user_id)->first();
 
-            if (!$user) {
+            if (!$user || !$mdl_user) {
                 $response = [
                     'status' => false,
                     'message' => __('khong_tim_thay_tai_khoan')
@@ -123,9 +125,15 @@ class MdlUserRepository implements IMdlUserInterface
                 'working_status' => $status,
             ));
 
+            $active =  $status == 1 ? 0 : 1;
+            $mdl_user->update(array(
+                'active' => $active,
+            ));
+
             $response = [
                 'status' => true,
-                'message' => __('cap_nhat_thanh_cong')
+                'message' => __('cap_nhat_thanh_cong'),
+                'active' => $active
             ];
         } catch (\Exception $e) {
             $response = [

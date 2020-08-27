@@ -904,6 +904,7 @@ class BackgroundController extends Controller
                 $check->skype = $skype;
                 $check->city = $city;
                 $check->country = $country;
+                $check->active = 1;
                 $check->save();
 
                 //Xóa detail thừa
