@@ -130,7 +130,7 @@
                         <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
                         <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input" id="is_toeic"
-                                 :checked="course.is_toeic==1?true:false" v-model="course.is_toeic" @change="onChangeToeic">
+                                 :checked="course.is_toeic==1?true:false" v-model="course.is_toeic">
                           <label v-if="course.is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
                           <label v-else class="custom-control-label" for="is_toeic">No</label>
                         </div>
@@ -242,11 +242,12 @@
           $('#pass_score').attr("disabled", true);
           $('#is_end_quiz').show();
         } else {
-          if (this.course.is_toeic == 1) {
-            $('#pass_score').attr("disabled", true);
-          } else {
-            $('#pass_score').attr("disabled", false);
-          }
+          // if (this.course.is_toeic == 1) {
+          //   $('#pass_score').attr("disabled", true);
+          // } else {
+          //   $('#pass_score').attr("disabled", false);
+          // }
+          $('#pass_score').attr("disabled", false);
           $('#is_end_quiz').hide();
         }
       },
@@ -292,11 +293,12 @@
               $('#pass_score').attr("disabled", true);
               $('#is_end_quiz').show();
             } else {
-              if (this.course.is_toeic == 1) {
-                $('#pass_score').attr("disabled", true);
-              } else {
-                $('#pass_score').attr("disabled", false);
-              }
+              // if (this.course.is_toeic == 1) {
+              //   $('#pass_score').attr("disabled", true);
+              // } else {
+              //   $('#pass_score').attr("disabled", false);
+              // }
+              $('#pass_score').attr("disabled", false);
               $('#is_end_quiz').hide();
             }
             //Convert text-area to ck editor

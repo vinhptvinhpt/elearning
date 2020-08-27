@@ -133,7 +133,7 @@
                         <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
                         <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input" id="is_toeic"
-                                 :checked="is_toeic==1?true:false" v-model="is_toeic" @change="onChangeToeic">
+                                 :checked="is_toeic==1?true:false" v-model="is_toeic">
                           <label v-if="is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
                           <label v-else class="custom-control-label" for="is_toeic">No</label>
                         </div>
@@ -295,17 +295,18 @@
           $('#is_end_quiz').show();
         }
         else {
-          if (this.is_toeic == 1) {
-            $('#pass_score').attr("disabled", true);
-          } else {
-            $('#pass_score').attr("disabled", false);
-          }
+          // if (this.is_toeic == 1) {
+          //   $('#pass_score').attr("disabled", true);
+          // } else {
+          //   $('#pass_score').attr("disabled", false);
+          // }
+          $('#pass_score').attr("disabled", false);
           $('#is_end_quiz').hide();
         }
 
         if (event.target.value == 5) {
           this.is_toeic = false;
-          $('#pass_score').attr("disabled", false);
+          // $('#pass_score').attr("disabled", false);
           $('#div-is_active').hide();
         } else {
           $('#div-is_active').show();
