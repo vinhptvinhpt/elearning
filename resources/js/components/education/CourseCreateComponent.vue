@@ -121,7 +121,7 @@
                         <label for="is_toeic">{{trans.get('keys.toeic_course')}}</label>
                         <div class="custom-control custom-switch">
                           <input type="checkbox" class="custom-control-input" id="is_toeic"
-                                 :checked="is_toeic==1?true:false" v-model="is_toeic">
+                                 :checked="is_toeic==1?true:false" v-model="is_toeic" @change="onChangeToeic">
                           <label v-if="is_toeic == 1" class="custom-control-label" for="is_toeic">Yes</label>
                           <label v-else class="custom-control-label" for="is_toeic">No</label>
                         </div>
@@ -235,8 +235,23 @@
           $('#pass_score').attr("disabled", true);
           $('#is_end_quiz').show();
         } else {
-          $('#pass_score').attr("disabled", false);
+          if (this.is_toeic == 1) {
+            $('#pass_score').attr("disabled", true);
+          } else {
+            $('#pass_score').attr("disabled", false);
+          }
           $('#is_end_quiz').hide();
+        }
+      },
+      onChangeToeic() {
+        if (this.is_toeic == 1) {
+          $('#pass_score').attr("disabled", true);
+        } else {
+          if (this.course.category == 3) {
+            $('#pass_score').attr("disabled", true);
+          } else {
+            $('#pass_score').attr("disabled", false);
+          }
         }
       },
       createCourse() {
@@ -269,10 +284,13 @@
         //     $('.enddate_required').show();
         //     return;
         // }
-        if (!this.pass_score && this.category_id != 3) {
-          $('.pass_score_required').show();
-          return;
+        if (this.is_toeic == 0) {
+          if (!this.pass_score && this.category_id != 3) {
+            $('.pass_score_required').show();
+            return;
+          }
         }
+
         var allow_reg = 0;
         if (this.allow_register) {
           allow_reg = 1;
