@@ -30,7 +30,7 @@ class MdlUser extends Authenticatable
     // [VinhPT]
     // Get description for user check
     protected $fillable = [
-        'username', 'password', 'deleted', 'description', 'redirect_type', 'type_user', 'token_diva', 'token'
+        'username', 'password', 'deleted', 'description', 'redirect_type', 'type_user', 'token_diva', 'token', 'active'
     ];
 
     /**

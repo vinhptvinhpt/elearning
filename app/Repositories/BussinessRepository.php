@@ -7879,6 +7879,7 @@ class BussinessRepository implements IBussinessInterface
             }
             $mdlUser->city = $city;
             $mdlUser->country = $country;
+            $mdlUser->active = 1;
             $mdlUser->save();
 
             //Nếu chọn organization cho tài khoản, thêm hoặc sửa tms_organization_employee
