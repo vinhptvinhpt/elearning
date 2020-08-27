@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
+use Tintnaingwin\EmailChecker\Facades\EmailChecker;
 
 class MailController extends Controller
 {
@@ -747,6 +748,7 @@ class MailController extends Controller
             $lstCompletedFrameNotifi = MdlUser::query()
                 ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user.id')
                 ->join('tms_nofitications', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->join('tms_traninning_programs', 'tms_nofitications.content', '=', 'tms_traninning_programs.id')
                 ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
                 ->where('tms_nofitications.target', \App\TmsNotification::ASSIGNED_COMPETENCY)
                 ->where('status_send', \App\TmsNotification::UN_SENT)
@@ -760,7 +762,13 @@ class MailController extends Controller
                     'tms_nofitications.content',
                     'mdl_user.email',
                     'tms_user_detail.fullname',
-                    'mdl_user.username'
+                    'mdl_user.username',
+
+                    'tms_traninning_programs.id as training_id',
+                    'tms_traninning_programs.name as training_name',
+                    'tms_traninning_programs.code as training_code',
+                    'tms_traninning_programs.time_start',
+                    'tms_traninning_programs.time_end'
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
@@ -775,6 +783,17 @@ class MailController extends Controller
                         $fullname = $itemNotification->fullname;
                         $email = $itemNotification->email;
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            $training = json_encode(
+                                array(
+                                    'training_id' => $itemNotification->training_id,
+                                    'training_name' => $itemNotification->training_name,
+                                    'training_code' => $itemNotification->training_code,
+                                    'time_start' => $itemNotification->time_start,
+                                    'time_end' => $itemNotification->time_end
+                                )
+                            );
+
                             Mail::to($email)->send(new CourseSendMail(
                                 TmsNotification::ASSIGNED_COMPETENCY,
                                 $itemNotification->username,
@@ -785,24 +804,26 @@ class MailController extends Controller
                                 '',
                                 '',
                                 '',
-                                $itemNotification->content
+                                $training,
+                                '',
+                                '',
+                                $itemNotification->training_name,
+                                '',
+                                '',
+                                $itemNotification->training_code
                             ));
-                            $object_content = [];
-                            $training = json_decode($itemNotification->content);
-                            if (isset($training)) {
-                                $object_content = array(
-                                    'object_id' => $training->training_id,
-                                    'object_name' => $training->training_name,
-                                    'object_type' => '',
-                                    'parent_id' => '',
-                                    'parent_name' => '',
-                                    'start_date' => $training->time_start,
-                                    'end_date' => $training->time_end,
-                                    'code' => '',
-                                    'room' => '',
-                                    'grade' => '',
-                                );
-                            }
+                            $object_content = array(
+                                'object_id' => $itemNotification->training_id,
+                                'object_name' => $itemNotification->training_name,
+                                'object_type' => 'training',
+                                'parent_id' => '',
+                                'parent_name' => '',
+                                'start_date' => $itemNotification->time_start,
+                                'end_date' => $itemNotification->time_end,
+                                'code' => $itemNotification->training_code,
+                                'room' => '',
+                                'grade' => '',
+                            );
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
@@ -815,98 +836,6 @@ class MailController extends Controller
                 }
                 //$this->sendPushNotification($lstCompletedFrameNotifi);
                 \DB::commit();
-            }
-        }
-    }
-
-//Insert notification for enrol competency framework
-//50 each
-//Aug 14th 2020 by cuonghq
-    public function insertEnrolCompetency()
-    {
-
-        $limit = 50; //self::DEFAULT_ITEMS_PER_SESSION;
-
-        $configs = self::loadConfiguration();
-        if ($configs[TmsNotification::ASSIGNED_COMPETENCY] == TmsConfigs::ENABLE) {
-            $userNeedRemind =
-                //Type 1 limit table left record using sub query wit same condition
-                DB::query()->fromSub(function ($query) use ($limit) {
-                    $query->from('mdl_user')
-                        ->whereNotIn('id', function ($query) {
-                            //check exist in table tms_nofitications
-                            $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::ASSIGNED_COMPETENCY);
-                        })
-                        ->whereIn('id', function ($query) { //users assigned to training
-                            $query->select('tms_traninning_users.user_id')
-                                ->from('tms_traninning_users')
-                                ->join('tms_traninning_programs', 'tms_traninning_users.trainning_id', '=', 'tms_traninning_programs.id');
-                        })
-                        ->limit($limit);
-                }, 'mdl_user')//Set alias for sub table
-                    ->whereNotIn('mdl_user.id', function ($query) {
-                        //check exist in table tms_nofitications
-                        $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::ASSIGNED_COMPETENCY);
-                    })
-                    ->join('tms_traninning_users', 'mdl_user.id', '=', 'tms_traninning_users.user_id')
-                    ->join('tms_traninning_programs', 'tms_traninning_users.trainning_id', '=', 'tms_traninning_programs.id')
-                    ->select(
-                        'mdl_user.id',
-                        'mdl_user.username',
-                        'mdl_user.firstname',
-                        'mdl_user.lastname',
-                        'mdl_user.email',
-                        'tms_traninning_programs.id as training_id',
-                        'tms_traninning_programs.name as training_name',
-                        'tms_traninning_programs.time_start',
-                        'tms_traninning_programs.time_end'
-                    )
-                    ->groupBy(
-                        'mdl_user.id',
-                        'mdl_user.username',
-                        'mdl_user.firstname',
-                        'mdl_user.lastname',
-                        'mdl_user.email',
-                        'tms_traninning_programs.name',
-                        'tms_traninning_programs.time_start',
-                        'tms_traninning_programs.time_end'
-                    )
-                    ->get();
-
-            if (count($userNeedRemind) > 0) {
-                $data = array();
-                foreach ($userNeedRemind as $user_item) {
-                    if (strlen($user_item->email) != 0) {
-                        $element = array(
-                            'type' => TmsNotification::MAIL,
-                            'target' => TmsNotification::ASSIGNED_COMPETENCY,
-                            'status_send' => 0,
-                            'sendto' => $user_item->id,
-                            'createdby' => 0,
-                            'course_id' => 0,
-                            'created_at' => date('Y-m-d H:i:s', time()),
-                            'updated_at' => date('Y-m-d H:i:s', time()),
-                        );
-                        $element['content'] = array(
-                            'training_id' => $user_item->training_id,
-                            'training_name' => $user_item->training_name,
-                            'time_start' => $user_item->time_start,
-                            'time_end' => $user_item->time_end,
-                        );
-
-                        $data[] = $element;
-                    }
-                }
-
-                if (!empty($data)) {
-                    $convert_to_json = array();
-                    foreach ($data as $item) { //auto strip key of element, just use value = necessary data
-                        $item['content'] = json_encode($item['content'], JSON_UNESCAPED_UNICODE);
-                        $convert_to_json[] = $item;
-                    }
-                    //batch insert
-                    TmsNotification::insert($convert_to_json);
-                }
             }
         }
     }
@@ -981,10 +910,10 @@ class MailController extends Controller
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
-                            //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
-                        //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                        $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                     }
                     //sleep(1);
                 }
@@ -2258,6 +2187,11 @@ class MailController extends Controller
 
     function filterMail($email)
     {
+//        if (!EmailChecker::check($email)) {
+//            return false;
+//        } else {
+//            //continue
+//        }
         //Cache::flush();
         $mail_development_mode = true; //Default true to avoid spam mail
         //Check development_flag

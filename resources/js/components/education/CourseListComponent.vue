@@ -375,13 +375,13 @@
               this.$route.params.back_page = value;
             },
             deletePost(id) {
-                sessionStorage.setItem('courseListPage', this.current);
-                sessionStorage.setItem('courseListPageSize', this.row);
-                sessionStorage.setItem('courseListCategory', this.category_id);
-                sessionStorage.setItem('courseListCourseStatus', this.status_course);
-                sessionStorage.setItem('courseListStartDate', this.startdate);
-                sessionStorage.setItem('courseListEndDate', this.enddate);
-                sessionStorage.setItem('courseListKeyWord', this.keyword);
+                // sessionStorage.setItem('courseListPage', this.current);
+                // sessionStorage.setItem('courseListPageSize', this.row);
+                // sessionStorage.setItem('courseListCategory', this.category_id);
+                // sessionStorage.setItem('courseListCourseStatus', this.status_course);
+                // sessionStorage.setItem('courseListStartDate', this.startdate);
+                // sessionStorage.setItem('courseListEndDate', this.enddate);
+                // sessionStorage.setItem('courseListKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
@@ -401,7 +401,8 @@
                                 if(current_pos.courses.length == 1){
                                   current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
                                 }
-                                current_pos.onPageChange();
+                                // current_pos.onPageChange();
+                                current_pos.getCourses(current_pos.current);
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

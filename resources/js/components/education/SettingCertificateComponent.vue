@@ -167,7 +167,10 @@
                 toastr['error'](current_pos.trans.get('keys.chung_chi_nay_dang_duoc_chi_dinh_lam_mau_nen_khong_xoa_duoc'), current_pos.trans.get('keys.that_bai'));
               } else {
                 toastr['success'](current_pos.trans.get('keys.xoa_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
-                current_pos.getListImages();
+                if(current_pos.questions.length == 1){
+                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                }
+                current_pos.getListImages(current_pos.current);
               }
             })
             .catch(error => {

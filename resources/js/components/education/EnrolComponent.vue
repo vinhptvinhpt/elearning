@@ -518,7 +518,7 @@
                             if (response.data.status) {
                                 toastr['success'](response.data.message, this.trans.get('keys.thanh_cong'));
                                 current_pos.getCurrentUserEnrol(current_pos.current_page);
-                                current_pos.getUserNeedEnrol(current_pos.current_page);
+                                current_pos.getUserNeedEnrol(current_pos.current);
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }

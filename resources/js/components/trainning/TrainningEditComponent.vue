@@ -163,9 +163,15 @@
                           <div class="form-row">
                             <div class="col-12 form-group">
                               <div class="button-list text-right">
-                                <router-link
+                                <router-link v-if="trainning.style == 0"
                                   :to="{ path: '/tms/trainning/list', name: 'TrainningIndex',params:{back_page: '1'}, query: { type: trainning.style } }"
                                   class="btn btn-danger btn-sm"
+                                >
+                                  {{ trans.get('keys.huy') }}
+                                </router-link>
+                                <router-link v-else
+                                             :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex',params:{back_page: '1'}, query: { type: trainning.style } }"
+                                             class="btn btn-danger btn-sm"
                                 >
                                   {{ trans.get('keys.huy') }}
                                 </router-link>

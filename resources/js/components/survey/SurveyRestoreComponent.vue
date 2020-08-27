@@ -195,9 +195,9 @@
                 this.getSurveys();
             },
             restoreSurvey(id) {
-                sessionStorage.setItem('surveyPage', this.current);
-                sessionStorage.setItem('surveyPageSize', this.row);
-                sessionStorage.setItem('surveyKeyWord', this.keyword);
+                // sessionStorage.setItem('surveyPage', this.current);
+                // sessionStorage.setItem('surveyPageSize', this.row);
+                // sessionStorage.setItem('surveyKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
@@ -211,8 +211,8 @@
                         .then(response => {
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                current_pos.onPageChange();
-
+                                // current_pos.onPageChange();\
+                                current_pos.getSurveys(current_pos.current);
                             } else {
                                 toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                             }
