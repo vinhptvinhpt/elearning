@@ -188,11 +188,13 @@ $competency_exists = array();
 $competency_completed = array();
 $countRequiredCourses = 0;
 $sttTotalCourse = 0;
-
+//
+$couresIdAllow = array();
 
 foreach ($courses as $course) {
     $sttTotalCourse++;
     $courses_training[$course->training_id][$course->id] = $course;
+    array_push($couresIdAllow, $course->id);
 }
 
 
@@ -249,6 +251,8 @@ function cmp_stt($a, $b)
     return ($a->sttShow < $b->sttShow) ? -1 : 1;
 }
 
+//
+$_SESSION["couresIdAllow"] = $couresIdAllow;
 
 // Set session variables
 $countBlock = 1;
@@ -288,6 +292,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.deleted = 0 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
+$_SESSION["coursesSuggest"] = $coursesSuggest;
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
