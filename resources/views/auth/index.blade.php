@@ -156,20 +156,22 @@
         sessionStorage.setItem('img-logo', '/assets/dist/img/logo-black.png');
         //
         var url = document.URL;
-        var lastChar = url.substr(url.length - 1);
-        if(lastChar == '/'){
-            $('.name-organization').text('VNU');
-            $('.class-name-organization').text('Elearning');
-            $('.logo'). attr("src", "../images/Logo-VNU.png");
-            // $('.main-bg').css("background-image", "url(../images/3a.png) !important");
-            $('.main-bg').css('background-image', 'url(../images/3a.png)');
-            $('.before-main-content .img_fix_bg').css('background-image', 'none');
-            $('.before-main-content').css('border', '1px solid rgb(255 255 254 / 0.19)');
-            $('.before-main-content').css('background-color', 'rgb(255 255 254 / 0.19)');
-            $('.wrap-content .logo').css('width', '50%');
-            $('.btn-login').css('background', '#007f48 0% 0% no-repeat padding-box');
-            $('.wrap-login100').css('top', '21%');
-            sessionStorage.setItem('img-logo', '/images/Logo-VNU.png');
+        if(url.includes('tinhvan')){
+            var lastChar = url.substr(url.length - 1);
+            if(lastChar == '/'){
+                $('.name-organization').text('VNU');
+                $('.class-name-organization').text('Elearning');
+                $('.logo'). attr("src", "../images/Logo-VNU.png");
+                // $('.main-bg').css("background-image", "url(../images/3a.png) !important");
+                $('.main-bg').css('background-image', 'url(../images/3a.png)');
+                $('.before-main-content .img_fix_bg').css('background-image', 'none');
+                $('.before-main-content').css('border', '1px solid rgb(255 255 254 / 0.19)');
+                $('.before-main-content').css('background-color', 'rgb(255 255 254 / 0.19)');
+                $('.wrap-content .logo').css('width', '50%');
+                $('.btn-login').css('background', '#007f48 0% 0% no-repeat padding-box');
+                $('.wrap-login100').css('top', '21%');
+                sessionStorage.setItem('img-logo', '/images/Logo-VNU.png');
+            }
         }
     }
 
