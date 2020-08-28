@@ -78,7 +78,7 @@ echo $OUTPUT->header();
                             </div>
                         </div>
                         <form id="form_upload_file" action="videolib.php" method="post" enctype="multipart/form-data">
-                            Select File to upload:
+                            Select file to upload:
                             <input accept="video/*" type="file" name="fileazure" ref="file" name="file"
                                    class="form-control" id="fileazure" multiple
                                    style="display: inline-block;width: 300px; margin: 10px;height: auto;">

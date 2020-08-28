@@ -154,7 +154,7 @@ mc.estimate_duration,
     ttc.order_no,
     GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
@@ -902,11 +902,12 @@ $_SESSION["allowCms"] = $allowCms;
         color: #FFFFFF;
         opacity: 1;
         font-size: 20px;
+        margin: 0;
     }
 
     .footer-logo {
-        width: 246px;
-        height: 75px;
+        width: auto;
+        height: auto;
     }
 
     .block-note {
@@ -1296,7 +1297,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a class="teacher" data-toggle="modal"
+                                                                        <a title="Teacher name" class="teacher" data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
                                                                            data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
@@ -1307,11 +1308,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         </a>
                                                                     <?php } ?>
                                                                     <?php if (!empty($course->training_name)) { ?>
-                                                                        <p class="units"><i class="fa fa-file"
+                                                                        <p class="units" title="Competency name"><i class="fa fa-file"
                                                                                             aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
                                                                     <?php } ?>
-                                                                    <p class="units"><i class="fa fa-clock-o"
+                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
                                                                 </div>
@@ -1379,7 +1380,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                     </p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a class="teacher" data-toggle="modal"
+                                                                        <a title="Teacher name" class="teacher" data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
                                                                            data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
@@ -1390,11 +1391,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         </a>
                                                                     <?php } ?>
                                                                     <?php if (!empty($course->training_name)) { ?>
-                                                                        <p class="units"><i class="fa fa-file"
+                                                                        <p class="units" title="Competency name"><i class="fa fa-file"
                                                                                             aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
                                                                     <?php } ?>
-                                                                    <p class="units"><i class="fa fa-clock-o"
+                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
                                                                 </div>
@@ -1450,7 +1451,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a class="teacher" data-toggle="modal"
+                                                                        <a title="Teacher name" class="teacher" data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
                                                                            data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
@@ -1461,11 +1462,11 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         </a>
                                                                     <?php } ?>
                                                                     <?php if (!empty($course->training_name)) { ?>
-                                                                        <p class="units"><i class="fa fa-file"
+                                                                        <p class="units" title="Competency name"><i class="fa fa-file"
                                                                                             aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
                                                                     <?php } ?>
-                                                                    <p class="units"><i class="fa fa-clock-o"
+                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
                                                                 </div>
@@ -1522,7 +1523,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a class="teacher" data-toggle="modal"
+                                                                        <a title="Teacher name" class="teacher" data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
                                                                            data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
@@ -1532,7 +1533,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <p class="units"><i class="fa fa-clock-o"
+                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o"
                                                                                         aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
                                                                         hours</p>
                                                                 </div>
@@ -1613,9 +1614,10 @@ $_SESSION["allowCms"] = $allowCms;
                 <div class="row mb-3">
                     <!--Home-->
                     <div class="footer-block col-12 col-sm-2 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Home</p></div>
+<!--                        <div class="footer-block__title"><a href="lms/my" class="footer-title">Home</a></div>-->
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
+                                <li><a href="lms/my">Home</a></li>
                                 <li><a href="lms/course/index.php">Courses</a></li>
                                 <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
                                 <?php if ($allowCms) { ?>
@@ -1626,16 +1628,20 @@ $_SESSION["allowCms"] = $allowCms;
                     </div>
                     <!--FAQs-->
                     <div class="footer-block col-12 col-sm-2 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
+<!--                        <div class="footer-block__title"><p class="footer-title">FAQs</p></div>-->
                         <div class="footer-block__ul">
                             <ul class="footer-ul">
+                                <li><a href="lms/my">FAQs</a></li>
                             </ul>
                         </div>
                     </div>
                     <!--Contact-->
                     <div class="footer-block col-12 col-sm-8 col-xs-6">
-                        <div class="footer-block__title"><p class="footer-title">Contact</p></div>
+<!--                        <div class="footer-block__title"><p class="footer-title">Contact</p></div>-->
                         <div class="footer-block__ul footer-block__address">
+                            <ul class="footer-ul">
+                                <li style="margin-top: 1% !important;"><a style="color: #ffffff;">Contact</a></li>
+                            </ul>
                             <ul class="nav nav-tabs">
                                 <?php $count = 1;
                                 $active = 'active';

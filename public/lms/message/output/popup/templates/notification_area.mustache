@@ -56,26 +56,38 @@
     </div>
 </div>
 {{#js}}
-require(['jquery', 'message_popup/notification_area_control_area', 'message_popup/notification_area_content_area'],
+    require(['jquery', 'message_popup/notification_area_control_area', 'message_popup/notification_area_content_area'],
     function($, ControlArea, ContentArea) {
 
     var userId = {{userid}};
     var controlArea = new ControlArea($('[data-region="control-area"]'), userId);
     {{#offset}}
-    controlArea.setOffset({{.}});
+        controlArea.setOffset({{.}});
     {{/offset}}
     {{#limit}}
-    controlArea.setLimit({{.}});
+        controlArea.setLimit({{.}});
     {{/limit}}
     {{#notificationid}}
-    controlArea.loadMoreNotifications().done(function() {
+        controlArea.loadMoreNotifications().done(function() {
         controlArea.showNotification({{.}});
-    });
+        });
     {{/notificationid}}
     {{^notificationid}}
-    controlArea.loadMoreNotifications();
+        controlArea.loadMoreNotifications();
     {{/notificationid}}
 
     new ContentArea($('[data-region="content-area"]'), userId);
-});
+    });
 {{/js}}
+
+//datdt
+<style>
+    .tr-notification th, .tr-notification td {
+        border: 1px solid black;
+        padding: 7px;
+    }
+
+    .tb-notification{
+        border: 1px solid black;
+    }
+</style>
