@@ -44,6 +44,7 @@ class CourseSendMail extends Mailable
     const TOTAL = "[TOTAL]";
     const STUDENT = "[STUDENT]";
     const LINK_TO_REVIEW = "[LINK_TO_REVIEW]";
+    const EXAMNAME = "[EXAMNAME]";
 
 
     private $activity;
@@ -65,6 +66,7 @@ class CourseSendMail extends Mailable
     private $course_description;
     private $certificate_code;
     private $competency_code;
+    private $exam_name;
 
     /**
      * Create a new message instance.
@@ -183,6 +185,7 @@ class CourseSendMail extends Mailable
             $exam = json_decode($this->content);
             $this->start_date = $exam->start_time;
             $this->end_date = $exam->end_time;
+            $this->exam_name = $exam->quiz_name;
             $subject = '[ELEARNING] '. __('remind_exam');
             $view = 'email.remind_exam';
         }
@@ -223,6 +226,7 @@ class CourseSendMail extends Mailable
                 ->with('course_description', $this->course_description)
                 ->with('certificate_code', $this->certificate_code)
                 ->with('competency_code', $this->competency_code)
+                ->with('exam_name', $this->exam_name)
                 ->view($view);
         }
         return $this;
