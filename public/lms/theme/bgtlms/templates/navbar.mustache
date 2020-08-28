@@ -57,7 +57,7 @@
         <ul class="nav navbar-nav">
             <li class="nav-item align-items-center cms-link d-none d-sm-flex">
                 <a class="nav-link d-inline-block position-relative" style="max-width: 50px"
-                   href="{{ config.wwwroot }}/my/guideline.php" title="Guideline">
+                   href="{{ config.wwwroot }}/my/guideline.php" title="Instruction">
                     <i class="fa fa-info-circle"></i>
                 </a>
             </li>
@@ -65,15 +65,15 @@
             {{#permission_tms}}
                 <li class="nav-item align-items-center cms-link d-none d-sm-flex">
                     <a class="nav-link d-inline-block position-relative" style="max-width: 50px" href="{{ wwwtms }}"
-                       title="Back to cms">
+                       title="Training management system">
                         <img src="{{ getPathPublic }}/images/tms-icon.png" alt="tms-link-image">
                     </a>
                 </li>
             {{/permission_tms}}
             {{#permission_editor}}
                 <li class="nav-item align-items-center cms-link d-none d-sm-flex">
-                    <a class="nav-link d-inline-block position-relative" style="max-width: 50px"
-                       href="{{ config.wwwroot }}/videolib.php" title="Videos lib">
+                    <a class="nav-link d-inline-block position-relative" target="_blank" style="max-width: 50px"
+                       href="{{ config.wwwroot }}/videolib.php" title="Video Upload">
                         <i class="fa fa-youtube-play" aria-hidden="true"></i>
                     </a>
                 </li>

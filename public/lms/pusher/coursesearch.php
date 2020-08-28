@@ -12,7 +12,7 @@ $txtSearch = isset($_POST['txtSearch']) ? $_POST['txtSearch'] : null;
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
-
+$pageRequest = isset($_POST['pageRequest']) ? $_POST['pageRequest'] : '';
 
 if ($progress == 1) { //List from home
 
@@ -274,8 +274,11 @@ and mue.userid = ' . $USER->id;
             //$course->teacher_created = $teacher_created;
             //
             if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                $course->order_learn = 2;
                 array_push($competency_exists, $course->training_id);
-            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+            }
+            elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+                $course->order_learn = 1;
                 $course->category_type = 'required';
                 array_push($temp_competency_exists, $course->training_id);
                 //
@@ -288,9 +291,16 @@ and mue.userid = ' . $USER->id;
                 $tempCourse[$course->training_id]['stt'] = $stt_count;
                 $course->stt_count = $tempCourse[$course->training_id]['stt'];
             }
+            elseif($course->numoflearned / $course->numofmodule == 1){
+                $course->order_learn = 0;
+            }
             $stt++;
             $coures_result[] = $course;
         }
+    }
+
+    if($pageRequest == 'profile'){
+        usort($coures_result, 'cmp_order_learn');
     }
 
     $start_index = $current * $recordPerPage - $recordPerPage;
@@ -324,6 +334,13 @@ function cmp($a, $b)
 function cmp_training_id($a, $b)
 {
     return strcmp($a->training_id, $b->training_id);
+}
+
+function cmp_order_learn($a, $b)
+{
+//    return strcmp($a->order_learn, $b->order_learn);
+    if ($a->order_learn == $b->order_learn) return 0;
+    return ($a->order_learn < $b->order_learn) ? 1 : -1;
 }
 
 function cmp_stt($a, $b)
