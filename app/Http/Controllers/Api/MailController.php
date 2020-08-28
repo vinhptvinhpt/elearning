@@ -280,12 +280,12 @@ class MailController extends Controller
                             if (!empty($exam)) {
                                 $object_content = array(
                                     'object_id' => '',
-                                    'object_name' => '',
+                                    'object_name' => $exam->quiz_name ,
                                     'object_type' => 'exam',
                                     'parent_id' => '',
                                     'parent_name' => '',
-                                    'start_date' => $exam->start_date,
-                                    'end_date' => $exam->start_date,
+                                    'start_date' => $exam->start_time,
+                                    'end_date' => $exam->end_time,
                                     'code' => '',
                                     'room' => '',
                                     'grade' => '',

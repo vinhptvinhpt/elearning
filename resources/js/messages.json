@@ -1033,7 +1033,8 @@
         "chon_che_do": "Select Mode",
         "full": "Full",
         "lite": "Lite",
-        "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite"
+        "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite",
+        "chon_chuc_nang": "Select function"
     },
     "vi.keys": {
         "language": "",
@@ -2060,6 +2061,7 @@
         "chon_che_do": "Chọn chế độ",
         "full": "đầy đủ",
         "lite": "rút gọn",
-        "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn"
+        "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn",
+        "chon_chuc_nang": "Chọn chức năng"
     }
 }
