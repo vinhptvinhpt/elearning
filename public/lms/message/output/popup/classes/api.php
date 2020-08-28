@@ -204,7 +204,7 @@ class api
                     }
 
                     $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
-                    $record->fullmessagehtml .= '<p>The Annual PHH Academy TOEIC TEST is ready for you to complete,</p>';
+                    $record->fullmessagehtml .= '<p>The exam: '.$content->object_name.' is ready for you to complete,</p>';
                     $record->fullmessagehtml .= '<p>From <strong>'.$start_time.' to '.$end_time.' </strong></p>';
                     $record->fullmessagehtml .= '<p>Please log in to the PHH Academy using this link <a href="https://academy.phh-group.com">https://academy.phh-group.com</a> to do the test by the required time.</p>';
                     $record->fullmessagehtml .= '<p>Note: This test must be taken continuously for 120 minutes (without pausing or stopping), so please arrange your time &amp; workload to take the test in such a way that you can focus on achieving the best score possible.</p>';
