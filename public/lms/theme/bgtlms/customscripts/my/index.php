@@ -154,7 +154,7 @@ mc.estimate_duration,
     ttc.order_no,
     GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid

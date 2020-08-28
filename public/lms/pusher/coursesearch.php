@@ -43,7 +43,7 @@ mc.estimate_duration,
     ttp.deleted as training_deleted,
     GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
@@ -172,7 +172,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     //count total
     $sqlCountCoures = 'select mc.id
 from mdl_course mc
-inner join mdl_enrol me on mc.id = me.courseid
+inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
@@ -205,7 +205,7 @@ ttp.deleted as training_deleted,
 GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
 
 from mdl_course mc
-inner join mdl_enrol me on mc.id = me.courseid
+inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 left JOIN mdl_course_completion_criteria mccc on mccc.course = mc.id
 left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
