@@ -7611,6 +7611,7 @@ class BussinessRepository implements IBussinessInterface
     public function apiListRole(Request $request)
     {
         $type = $request->input('type');
+        $row = $request->input('row');
 
         $special_role = Role::arr_role_special;
         $default_role = Role::arr_role_default;
@@ -7624,20 +7625,38 @@ class BussinessRepository implements IBussinessInterface
 
         $hidden = Role::arr_role_hidden;
 
-        $roles = Role::whereNotIn('name', $hidden);
+        $roles = Role::query()->whereNotIn('name', $hidden);
+        $roles->leftJoin('tms_role_organization', 'roles.id', '=', 'tms_role_organization.role_id');
+        $roles->select(
+            'roles.id',
+            'name',
+            'description',
+            'status',
+            'tms_role_organization.organization_id'
+        );
 
         //Hide organization connected roles
-        if (strlen($type) == 0) {
-            $roles = $roles->whereNotIn('id', function ($query) {
-                $query->select('role_id')
-                    ->from('tms_role_organization');
-            });
+        if ($type == 'role') {
+            $roles = $roles->whereNull('tms_role_organization.organization_id');
+        } elseif ($type == 'content_permission') {
+            $roles = $roles->whereNotNull('tms_role_organization.organization_id');
+            $roles = $roles->paginate($row);
+            $total_item = $roles->total();
+            $total = ceil($total_item / $row);
+            $response = [
+                'pagination' => [
+                    'total_page' => $total,
+                    'total_item' => $total_item,
+                    'current_page' => $roles->currentPage(),
+                ],
+                'data' => $roles,
+            ];
+            return response()->json($response);
         }
 
-        $roles = $roles->select('id', 'name', 'description', 'status')
-            ->get()->toArray();
+        $response = $roles->get();
 
-        return response()->json($roles);
+        return response()->json($response);
     }
 
     public function apiListCountry(Request $request)

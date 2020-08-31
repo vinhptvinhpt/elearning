@@ -708,8 +708,8 @@ $_SESSION["allowCms"] = $allowCms;
 
     .info-user .avatar img {
         border-radius: 50%;
-        width: 85px;
-        height: 85px;
+        /*width: 85px;*/
+        /*height: 85px;*/
     }
 
     .info {
@@ -993,27 +993,27 @@ $_SESSION["allowCms"] = $allowCms;
         }
 
         .info-user .avatar img {
-            width: 150px;
-            height: 150px;
-            padding: 4px;
+            /*width: 150px;*/
+            /*height: 150px;*/
+            /*padding: 4px;*/
         }
     }
 
     @media screen and (max-width: 1920px) {
         .info-user .avatar img {
-            width: 105px !important;
-            height: 105px !important;
-            bottom: 26% !important;
-            padding: 3px;
+            /*width: 105px !important;*/
+            /*height: 105px !important;*/
+            /*bottom: 26% !important;*/
+            /*padding: 3px;*/
         }
     }
 
     @media screen and (max-width: 1440px) {
         .info-user .avatar img {
-            width: 85px !important;
-            height: 85px !important;
-            bottom: 26% !important;
-            padding: 3px;
+            /*width: 85px !important;*/
+            /*height: 85px !important;*/
+            /*bottom: 26% !important;*/
+            /*padding: 3px;*/
         }
     }
 
@@ -1037,8 +1037,8 @@ $_SESSION["allowCms"] = $allowCms;
         }
 
         .info-user .avatar img {
-            width: 150px !important;
-            height: 150px !important;
+            /*width: 150px !important;*/
+            /*height: 150px !important;*/
         }
     }
 
@@ -1049,8 +1049,8 @@ $_SESSION["allowCms"] = $allowCms;
         }
 
         .info-user .avatar img {
-            width: 130px !important;
-            height: 130px !important;
+            /*width: 130px !important;*/
+            /*height: 130px !important;*/
         }
 
         .section-footer .container {
@@ -1060,8 +1060,8 @@ $_SESSION["allowCms"] = $allowCms;
 
     @media screen and (max-width: 375px) {
         .info-user .avatar img {
-            width: 100px !important;
-            height: 100px !important;
+            /*width: 100px !important;*/
+            /*height: 100px !important;*/
         }
     }
 
@@ -1686,6 +1686,11 @@ $_SESSION["allowCms"] = $allowCms;
     $(function () {
         localStorage.setItem('courses', '<?php echo json_encode($course); ?>');
 
+        //
+        var withCircle = $('.circle-progress').width();
+        //set width and height
+        $(".info-user .avatar img").height(withCircle);
+        $(".info-user .avatar img").width(withCircle);
         // var heightTopBar = $('.navbar-expand').outerHeight();
         // $('.content-slider').css('margin-top', heightTopBar+'px');
 

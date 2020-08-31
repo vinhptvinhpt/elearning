@@ -2203,7 +2203,55 @@ class MailController extends Controller
                 'leduytho93@gmail.com',
                 'duongtiendat.it@gmail.com'
             ];
-            if (in_array($email, $dev_email)) {
+            $tester_email = [
+                'dieuly@easia-travel.com',
+                'nguyenthao@easia-travel.com',
+                'lanphuong@easia-travel.com',
+                'haison@easia-travel.com',
+                'quenguyen@easia-travel.com',
+                'thuylinh@easia-travel.com',
+                'quanghuy@easia-travel.com',
+                'thaontp@easia-travel.com',
+                'hongtham@easia-travel.com',
+                'maihuong@easia-travel.com',
+                'minhtrang@easia-travel.com',
+                'nguyentrang@easia-travel.com',
+                'ngocanh@easia-travel.com',
+                'myhanh@easia-travel.com',
+                'adam@easia-travel.com',
+                'wailin@easia-travel.com',
+                'j.renault@easia-travel.com',
+                'celia@easia-travel.com',
+                'suingun@easia-travel.com',
+                'yadanar@easia-travel.com',
+                'matt@easia-travel.com',
+                'diemmy@easia-travel.com',
+                'myvan@easia-travel.com',
+                'hoaithu@easia-travel.com',
+                'ngocthang@easia-travel.com',
+                'nguyenthuphuong@easia-travel.com',
+                'thuananh@easia-travel.com',
+                'soulikone@easia-travel.com',
+                'boun@easia-travel.com',
+                'rany@easia-travel.com',
+                'sreymom@easia-travel.com',
+                'sokharat@easia-travel.com',
+                'jessica@easia-travel.com',
+                'bandit@easia-travel.com',
+                'bram@easia-travel.com',
+                'pornpawee@easia-travel.com',
+                'suvaree@easia-travel.com',
+                'anong@easia-travel.com',
+                'suthi@easia-travel.com',
+                'nadi@easia-travel.com',
+                'zaryi@easia-travel.com',
+                'thomas@easia-travel.com',
+                'pichet@easia-travel.com',
+                'nathalie@easia-travel.com',
+                'sichan@easia-travel.com',
+            ];
+            $filter_email = array_merge($dev_email, $tester_email);
+            if (in_array($email, $filter_email)) {
                 return true;
             } else {
                 return false;
