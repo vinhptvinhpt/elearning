@@ -818,7 +818,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -860,7 +860,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <template v-if="course.numofmodule == 0"><img
                                                 src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                         </template>
-                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                         </template>
                                     </div>
                                     <div class="col-7">
@@ -972,7 +972,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                          alt=""><span>0%</span>
                                                 </template>
                                                 <template v-else>
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                                 </template>
                                             </div>
                                         </div>
@@ -1013,7 +1013,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -1055,7 +1055,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <img style="width: 40px !important; height: 40px !important;" src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
                                              alt="" class="img-completed">
                                     </template>
-                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                     </template>
                                 </div>
                                 <div class="col-7">

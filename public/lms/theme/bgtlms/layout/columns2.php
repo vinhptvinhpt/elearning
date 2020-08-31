@@ -45,7 +45,7 @@ $hasblocks = strpos($blockshtml, 'data-block=') !== false;
 $regionmainsettingsmenu = $OUTPUT->region_main_settings_menu();
 $courseid = $PAGE->course->id;
 $cmid = $PAGE->cm->id ? $PAGE->cm->id : 0;
-$section = $PAGE->cm->section ? $PAGE->cm->section: 0;
+$section = $PAGE->cm->section ? $PAGE->cm->section : 0;
 $sectionname = '';
 $pagelayout = $PAGE->pagelayout;
 $bodyid = $OUTPUT->body_id();
@@ -61,6 +61,12 @@ $permission_edit = false;
 $permission_editor = false;
 $permission_tms = false;
 $getPathPublic = '';
+$imgCongra = '';
+//
+$finishCourse = false;
+$pathBadge = 'images/default_badge.png';
+$course_name = '';
+//
 global $DB;
 $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
 inner join `roles` on `roles`.`id` = `mhr`.`role_id`
@@ -73,7 +79,9 @@ $check = $DB->get_records_sql($sqlCheck);
 $viewCoursePage = false;
 
 $permissions = array_values($check);
+
 if ($pagelayout == 'incourse') {
+    //
     require_once('courselib.php');
     $params = array('id' => $courseid);
     $units = get_course_contents($PAGE->course->id);
@@ -94,6 +102,40 @@ if ($pagelayout == 'incourse') {
             }
         }
     }
+    //
+    $sqlGetBadge = 'select path from image_certificate where type = 2 and is_active = 1';
+    $getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
+    $pathBadge = $getBadge->path;
+    $pathBadge = ltrim($pathBadge, $pathBadge[0]);
+    $pathBadge = $CFG->wwwtmsbase.$pathBadge;
+//    $viewCoursePage = true;
+    //get progress learning
+    $sqlGetProgress = ' select ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+  	tcc.display,
+  	mc.fullname,
+  	mcc.completion, mcc.completiongradeitemnumber
+	  from mdl_course mc
+		  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
+		  inner join mdl_user_enrolments mue on me.id = mue.enrolid
+		  LEFT JOIN tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
+		  inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = '.$cmid.'
+		where mue.userid = ' . $USER->id . ' and mc.id = ' . $courseid;
+
+    $progress = array_values($DB->get_records_sql($sqlGetProgress))[0];
+    $course_name = $progress->fullname;
+    $numOfModule = $progress->numofmodule;
+    $numOfLearned = $progress->numoflearned;
+
+    if ($numOfModule > 0) {
+        if ($numOfModule == $numOfLearned && $progress->display != 1) {
+            $finishCourse = true;
+            $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $courseid);
+        }
+    } else {
+        $finishCourse = false;
+    }
+    //
     $incourse = true;
     if (!empty($modules)) {
         $modulesidsstring = implode(',', array_column($modules, 'id'));
@@ -121,9 +163,9 @@ if ($pagelayout == 'incourse') {
             break;
         }
     }
-}
-else{
-    if($bodyid == 'page-course-view')
+} else {
+    $finishCourse = false;
+    if ($bodyid == 'page-course-view')
         $viewCoursePage = true;
 }
 
@@ -145,7 +187,7 @@ foreach ($permissions as $permission) {
     }
 }
 
-$getPathPublic =   str_replace('lms', '', $wwwroot);
+$getPathPublic = str_replace('lms', '', $wwwroot);
 
 $editing = false;
 if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
@@ -154,10 +196,11 @@ if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
 
 $top_bar_home = $bodyid == 'page-my-index' ? 'current-selected' : '';
 $top_bar_course = $bodyid == 'page-course-index' ? 'current-selected' : '';
-$wwwtms= $CFG->wwwtms;
+$wwwtms = $CFG->wwwtms;
 
 //color organization
-$color = $_SESSION["color"] ;
+$color = $_SESSION["color"];
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -190,7 +233,10 @@ $templatecontext = [
     'top_bar_course' => $top_bar_course,
     'wwwtms' => $wwwtms,
     'viewCoursePage' => $viewCoursePage,
-    'color' => $color
+    'color' => $color,
+    'finishCourse' => $finishCourse,
+    'pathBadge' => $pathBadge,
+    'courseName' => $course_name
 ];
 
 $nav = $PAGE->flatnav;

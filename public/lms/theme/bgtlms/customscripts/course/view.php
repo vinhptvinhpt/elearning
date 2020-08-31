@@ -850,8 +850,8 @@ mc.summary, mc.is_toeic,
 ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned,
 mp.display
 FROM mdl_course mc
-LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id
-WHERE mc.id = ' . $id;
+LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
+ WHERE mc.id = ' . $id;
 
 
 $course = array_values($DB->get_records_sql($sql))[0];
@@ -999,7 +999,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
         $displayVal = $course->display;
 //if percent of progress = 1 is complete course => display popup congratulation
         if ($percentProgress == 1) {
-            if ($displayVal == 0) {
+            if ($displayVal == 0 || is_null($displayVal)) {
                 $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
                 $_SESSION["displayPopup"] = 1;
             } else if ($displayVal == -1) {
@@ -1007,19 +1007,17 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                 $sqlGetCourseNotification = 'select count(*) as total from tms_course_congratulations WHERE user_id = ' . $USER->id . ' and course_id = ' . $course->id;
                 $getCourseNotification = array_values($DB->get_records_sql($sqlGetCourseNotification))[0];
                 $courseNotification = $getCourseNotification->total;
-                if ($courseNotification == 0) {
-                    $test = $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
-                    $_SESSION["displayPopup"] = 1;
+                if ($courseNotification == 0 || is_null($displayVal)) {
+                    $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", 1)");
                 } else {
                     $DB->execute("UPDATE tms_course_congratulations SET display=1 WHERE user_id = " . $USER->id . " and course_id = " . $course->id);
-                    $_SESSION["displayPopup"] = 1;
                 }
-
+                $_SESSION["displayPopup"] = 1;
             } else {
                 $_SESSION["displayPopup"] = 2;
             }
         } else {
-            if ($displayVal == 0) {
+            if ($displayVal == 0 || is_null($displayVal)) {
                 $DB->execute("INSERT INTO tms_course_congratulations (user_id, course_id, display) VALUES (" . $USER->id . ", " . $course->id . ", -1)");
                 $_SESSION["displayPopup"] = 0;
             }
@@ -1104,7 +1102,7 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
                                             <span class="number-module"
                                                   numoflearned="<?php echo $course_numoflearned; ?>"
                                                   numofmodule="<?php echo $course_numofmodule; ?>"><?php echo $course_numoflearned; ?>
-                                                / <?php echo $course_numofmodule; ?></span>
+                                                    / <?php echo $course_numofmodule; ?></span>
                                         </hgroup>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar"
@@ -1289,13 +1287,16 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
                         <div class="container">
                             <ul class="list-style list-point-toeic">
                                 <li><span class="title-part">Listening:</span><span
-                                        class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->listening; ?></span>
+                                        class="score-part"> <?php if (is_null($toeicScore)) echo 0;
+                                        else echo $toeicScore->listening; ?></span>
                                 </li>
                                 <li><span class="title-part">Reading:</span><span
-                                        class="score-part"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->reading; ?></span>
+                                        class="score-part"> <?php if (is_null($toeicScore)) echo 0;
+                                        else echo $toeicScore->reading; ?></span>
                                 </li>
                                 <li><span class="title-part">Total:</span><span
-                                        class="score-part score-total"> <?php if (is_null($toeicScore)) echo 0; else echo $toeicScore->total; ?></span>
+                                        class="score-part score-total"> <?php if (is_null($toeicScore)) echo 0;
+                                        else echo $toeicScore->total; ?></span>
                                 </li>
                             </ul>
                         </div>
