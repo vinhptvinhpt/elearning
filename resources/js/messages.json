@@ -114,7 +114,7 @@
         "danh_sach_giang_vien": "Content Creator List",
         "tong_so_giao_vien_hien_tai": "Total Instructors",
         "xoa": "Delete",
-        "danh_sach_hoc_vien": "Students List",
+        "danh_sach_hoc_vien": "Trainee",
         "tong_so_hoc_vien_hien_tai": "Total Students",
         "giay_chung_nhan": "Certificate Status",
         "so_chung_minh_nhan_dan_so_the_can_cuoc": "ID number",
@@ -568,7 +568,7 @@
         "chinh_sua_thong_tin_thu_vien_khoa_hoc": "Edit Courses Library",
         "chinh_sua_thong_tin_khoa_dao_tao_online": "Edit Online Courses",
         "tao_moi_khoa_dao_tao_online": "Add Online Courses",
-        "danh_sach_hoc_vien_du_dieu_kien_cap_chung_chi": "Students Certificate",
+        "danh_sach_hoc_vien_du_dieu_kien_cap_chung_chi": "Issue Certificate",
         "danh_sach_chung_chi": "Template Certificate",
         "thong_ke_thong_tin_khao_sat": "Survey Statistics",
         "sua_thong_tin_ca_nhan": "Edit User Info",
@@ -736,7 +736,7 @@
         "to_chuc": "Organization",
         "ten_to_chuc": "Organization name",
         "ma_to_chuc": "Organization code",
-        "truc_thuoc": "Inherit from",
+        "truc_thuoc": "Up-level",
         "ma_to_chuc_da_ton_tai": "Organization code existed",
         "them_moi_to_chuc_thanh_cong": "Add organization successfully",
         "nhap_ten_to_chuc": "Input organization name",
@@ -833,7 +833,7 @@
         "khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh": "No certificate image found, we will select the default certificate image",
         "vui_long_nhap_mat_khau_moi": "Please enter a new password",
         "su_dung_phan_quyen": "Use as role",
-        "phan_quyen_du_lieu": "Data permission",
+        "phan_quyen_du_lieu": "Data access permission",
         "danh_sach_khoa_hoc": "List courses",
         "danh_sach_khoa_hoc_da_cap": "List assgined courses",
         "huy_quyen": "Remove permission",
@@ -1033,7 +1033,8 @@
         "chon_che_do": "Select Mode",
         "full": "Full",
         "lite": "Lite",
-        "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite"
+        "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite",
+        "chon_chuc_nang": "Select function"
     },
     "vi.keys": {
         "language": "",
@@ -2060,6 +2061,7 @@
         "chon_che_do": "Chọn chế độ",
         "full": "đầy đủ",
         "lite": "rút gọn",
-        "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn"
+        "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn",
+        "chon_chuc_nang": "Chọn chức năng"
     }
 }

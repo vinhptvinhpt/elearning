@@ -147,7 +147,7 @@
                     <!--Items per page -->
                     <div class="dataTables_length" style="display: inline-block;">
                       <label>{{trans.get('keys.hien_thi')}}
-                        <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm"
+                        <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" style="height: 35px;"
                                 @change="getUser(1)">
                           <option value="10">10</option>
                           <option value="25">25</option>
@@ -159,7 +159,7 @@
                     <div class="fillterConfirm" style="display: inline-block;" v-if="type == 'system'">
                       <label>
                         <select v-model="roles" class="custom-select custom-select-sm form-control form-control-sm"
-                                @change="getUser(1)">
+                                @change="getUser(1)" style="height: 35px;">
                           <option value="0">{{trans.get('keys.theo_quyen')}}</option>
                           <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ?
                             trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}
@@ -167,14 +167,21 @@
                         </select>
                       </label>
                     </div>
-                    <div class="fillterConfirm" style="display: inline-block;" v-if="type == 'student'">
+<!--                    <div class="fillterConfirm" style="display: inline-block;" v-if="type == 'student'">-->
+<!--                      <label>-->
+<!--                        <select v-model="confirm" class="custom-select custom-select-sm form-control form-control-sm"-->
+<!--                                style="height: 35px;" @change="getUser(1)">-->
+<!--                          <option value="">{{trans.get('keys.giay_chung_nhan')}}</option>-->
+<!--                          <option value="1">{{trans.get('keys.da_co')}}</option>-->
+<!--                          <option value="0">{{trans.get('keys.chua_co')}}</option>-->
+<!--                        </select>-->
+<!--                      </label>-->
+<!--                    </div>-->
+                    <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
                       <label>
-                        <select v-model="confirm" class="custom-select custom-select-sm form-control form-control-sm"
-                                @change="getUser(1)">
-                          <option value="">{{trans.get('keys.giay_chung_nhan')}}</option>
-                          <option value="1">{{trans.get('keys.da_co')}}</option>
-                          <option value="0">{{trans.get('keys.chua_co')}}</option>
-                        </select>
+                        <treeselect v-model="organization_id"
+                                    :multiple="false" :options="optionsOrganize"
+                                    @input="getUser(1)"/>
                       </label>
                     </div>
                   </div>
@@ -205,8 +212,8 @@
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
-                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
-                      <th class="text-center">{{trans.get('keys.account_status')}}</th>
+<!--                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>-->
+                      <th v-if="type != 'student'" class="text-center">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
@@ -231,10 +238,10 @@
 
                       <td class="mobile_hide">{{ user.fullname }}</td>
                       <td class="mobile_hide">{{ user.email }}</td>
-                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?
-                        trans.get('keys.da_co') : trans.get('keys.chua_co') }}
-                      </td>
-                      <td class="mobile_hide text-center" v-if="slug_can('tms-system-user-edit')">
+<!--                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?-->
+<!--                        trans.get('keys.da_co') : trans.get('keys.chua_co') }}-->
+<!--                      </td>-->
+                      <td class="mobile_hide text-center" v-if="slug_can('tms-system-user-edit') && type != 'student' ">
                         <span v-if="user.working_status == 0">
                            <i class="fa fa-toggle-on text-success"
                               @click="changeStatus(user.user_id,1)"
@@ -248,11 +255,17 @@
                               aria-hidden="true"></i>
                         </span>
                       </td>
-                      <td v-else class="text-center">
+                      <td v-if="!slug_can('tms-system-user-edit') && type != 'student'"  class="text-center">
                         <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
                         <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
                       </td>
                       <td class="text-center">
+                        <router-link v-if="type == 'student'"
+                          :title="trans.get('keys.xem')"
+                          :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }"
+                          class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2">
+                          <span class="btn-icon-wrap"><i class="fal fa-user"></i></span>
+                        </router-link>
                         <router-link
                           :title="trans.get('keys.sua')"
                           :to="{ name: 'EditDetailUserById', params: { user_id: user.user_id }, query: {type: type} }"
@@ -278,8 +291,8 @@
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
-                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>
-                      <th class="text-center">{{trans.get('keys.account_status')}}</th>
+<!--                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>-->
+                      <th v-if="type != 'student'" class="text-center">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </tfoot>
@@ -342,7 +355,15 @@
         allSelected: false,
         file_url: '',
         user_filter: '',
-        userSelectOptions: []
+        userSelectOptions: [],
+        //Treeselect options
+        optionsOrganize: [
+          {
+            id: 0,
+            label: this.trans.get('keys.chon_to_chuc')
+          }
+        ],
+        organization_id: 0,
       }
     },
     methods: {
@@ -455,7 +476,8 @@
           row: this.row,
           confirm: this.confirm,
           roles: this.roles,
-          user: this.user_filter
+          user: this.user_filter,
+          organization_id: this.organization_id
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];
@@ -492,12 +514,6 @@
       deleteSelectUser() {
         let user_delete = this.user_delete;
         let current_pos = this;
-        // sessionStorage.setItem('userPage', this.current);
-        // sessionStorage.setItem('userPageSize', this.row);
-        // sessionStorage.setItem('userKeyWord', this.keyword);
-        // sessionStorage.setItem('userRole', this.roles);
-        // sessionStorage.setItem('userConfirm', this.confirm);
-        // current_pos.$route.params.back_page= '1';
         if (this.user_delete.length === 0) {
           toastr['warning'](this.trans.get('keys.ban_chua_chon_tai_khoan'), this.trans.get('keys.thong_bao'));
           return;
@@ -528,7 +544,6 @@
                 if(current_pos.posts.length == 1){
                   current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
                 }
-                // current_pos.onPageChange();
                 current_pos.getUser(current_pos.current);
               } else {
                 toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
@@ -542,12 +557,6 @@
       },
       deletePost(url) {
         let current_pos = this;
-        // sessionStorage.setItem('userPage', this.current);
-        // sessionStorage.setItem('userPageSize', this.row);
-        // sessionStorage.setItem('userKeyWord', this.keyword);
-        // sessionStorage.setItem('userRole', this.roles);
-        // sessionStorage.setItem('userConfirm', this.confirm);
-        // current_pos.$route.params.back_page= '1';
         swal({
           title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
           text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
@@ -571,7 +580,6 @@
               if(current_pos.posts.length == 1){
                 current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
               }
-              // current_pos.onPageChange();
               current_pos.getUser(current_pos.current);
             })
             .catch(error => {
@@ -630,6 +638,43 @@
       },
       setFileInput() {
         $('.dropify').dropify();
+      },
+      selectOrganization(current_id) {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/organization/list', {
+          keyword: this.organization_keyword,
+          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+          paginated: 0 //không phân trang
+        })
+          .then(response => {
+            this.organization_list = response.data;
+            //Set options recursive
+            this.optionsOrganize = this.setOptions(response.data, current_id);
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+          })
+      },
+      setOptions(list, current_id) {
+        let outPut = [];
+        for (const [key, item] of Object.entries(list)) {
+          let newOption = {
+            id: item.id,
+            label: item.name,
+          };
+          if (item.children.length > 0) {
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          outPut.push(newOption);
+        }
+        return outPut;
       }
     },
     mounted() {
@@ -638,6 +683,7 @@
       this.fetch();
       //this.getUserForFilter();
       this.getUser();
+      this.selectOrganization();
     },
     updated() {
       // this.setFileInput();

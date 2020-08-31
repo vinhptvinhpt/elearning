@@ -5756,7 +5756,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $user_id = $request->input('user');
         $row = $request->input('row');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -5774,6 +5774,21 @@ class BussinessRepository implements IBussinessInterface
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -5806,7 +5821,7 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $confirm = $request->input('confirm');
         $user_id = $request->input('user');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -5824,6 +5839,21 @@ class BussinessRepository implements IBussinessInterface
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm')
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -7599,6 +7629,7 @@ class BussinessRepository implements IBussinessInterface
     public function apiListRole(Request $request)
     {
         $type = $request->input('type');
+        $row = $request->input('row');
 
         $special_role = Role::arr_role_special;
         $default_role = Role::arr_role_default;
@@ -7612,20 +7643,38 @@ class BussinessRepository implements IBussinessInterface
 
         $hidden = Role::arr_role_hidden;
 
-        $roles = Role::whereNotIn('name', $hidden);
+        $roles = Role::query()->whereNotIn('name', $hidden);
+        $roles->leftJoin('tms_role_organization', 'roles.id', '=', 'tms_role_organization.role_id');
+        $roles->select(
+            'roles.id',
+            'name',
+            'description',
+            'status',
+            'tms_role_organization.organization_id'
+        );
 
         //Hide organization connected roles
-        if (strlen($type) == 0) {
-            $roles = $roles->whereNotIn('id', function ($query) {
-                $query->select('role_id')
-                    ->from('tms_role_organization');
-            });
+        if ($type == 'role') {
+            $roles = $roles->whereNull('tms_role_organization.organization_id');
+        } elseif ($type == 'content_permission') {
+            $roles = $roles->whereNotNull('tms_role_organization.organization_id');
+            $roles = $roles->paginate($row);
+            $total_item = $roles->total();
+            $total = ceil($total_item / $row);
+            $response = [
+                'pagination' => [
+                    'total_page' => $total,
+                    'total_item' => $total_item,
+                    'current_page' => $roles->currentPage(),
+                ],
+                'data' => $roles,
+            ];
+            return response()->json($response);
         }
 
-        $roles = $roles->select('id', 'name', 'description', 'status')
-            ->get()->toArray();
+        $response = $roles->get();
 
-        return response()->json($roles);
+        return response()->json($response);
     }
 
     public function apiListCountry(Request $request)
@@ -7640,17 +7689,18 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $roles = $request->input('roles');
         $user_id = $request->input('user');
+        $organization_id = $request->input('organization_id');
 
         $param = [
             'keyword' => 'text',
             'row' => 'number',
             'roles' => 'number',
+            'organization_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
         }
-
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
         $listUsers = $listUsers->select(
@@ -7668,7 +7718,6 @@ class BussinessRepository implements IBussinessInterface
         )
             ->where('tms_user_detail.deleted', 0)
             ->whereNotIn('mdl_user.username', ['admin']);
-
         if ($roles != 0) {
             $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
             $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
@@ -7685,6 +7734,19 @@ class BussinessRepository implements IBussinessInterface
         //$listUsers = $listUsers->where('status','=',0);
         //$listUsers = $listUsers->whereNotIn('roles.name',['teacher','student']);
         //}
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //đệ quy tổ chức con nếu có
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -10298,7 +10360,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $role_name = $request->input('role_name');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -10315,6 +10377,21 @@ class BussinessRepository implements IBussinessInterface
             $data = $data->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tud.user_id');
             $data = $data->join('roles as r', 'r.id', '=', 'mhr.role_id');
             $data = $data->where('r.name', '=', $role_name);
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $data = $data->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
         }
         $data = $data->where('tud.deleted', '=', 1);
         if ($this->keyword) {

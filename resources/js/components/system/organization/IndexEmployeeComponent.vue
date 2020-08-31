@@ -130,7 +130,7 @@
 
                                             <div class="dataTables_length" style="display: inline-block;">
                                                 <label>{{trans.get('keys.hien_thi')}}
-                                                    <select v-model="row"
+                                                    <select v-model="row" style="height: 35px;"
                                                             class="custom-select custom-select-sm form-control form-control-sm"
                                                             @change="getDataList(1)">
                                                         <option value="10">10</option>
@@ -143,7 +143,7 @@
 
                                             <div class="fillterConfirm" style="display: inline-block;">
                                                 <label>
-                                                    <select v-model="position"
+                                                    <select v-model="position" style="height: 35px;"
                                                             class="custom-select custom-select-sm form-control form-control-sm"
                                                             @change="getDataList(1)">
                                                         <option value="">{{ trans.get('keys.chon_vi_tri') }}</option>
@@ -154,7 +154,13 @@
                                                     </select>
                                                 </label>
                                             </div>
-
+                                            <div class="col-6" style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                                                <label>
+                                                    <treeselect v-model="organization_id1"
+                                                                :multiple="false" :options="optionsOrganize"
+                                                                @input="getDataList(1)"/>
+                                                </label>
+                                            </div>
                                         </div>
 
                                         <div class="col-sm-4">
@@ -308,16 +314,25 @@
                 assignBatch: 0,
                 selected_role: 'user',
                 organization_selected: false,
-                user_role: ''
+                user_role: '',
+                //Treeselect options
+                optionsOrganize: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_id1: this.organization_id,
             }
         },
         mounted() {
+            this.selectOrganization();
         },
         destroyed() {
-          sessionStorage.setItem('employeePage', this.current);
-          sessionStorage.setItem('employeePageSize', this.row);
-          sessionStorage.setItem('employeeKeyWord', this.keyword);
-          sessionStorage.setItem('employeePosition', this.position);
+            sessionStorage.setItem('employeePage', this.current);
+            sessionStorage.setItem('employeePageSize', this.row);
+            sessionStorage.setItem('employeeKeyWord', this.keyword);
+            sessionStorage.setItem('employeePosition', this.position);
         },
         methods: {
             slug_can(permissionName) {
@@ -345,19 +360,56 @@
             //   this.employee.input_user_id = input_id;
             //   this.fetchRole();
             // },
-            selectOrganization() {
-                $('.content_search_box').addClass('loadding');
-                axios.post('/organization/list', {
-                    keyword: this.organization_keyword,
-                    paginated: 0 //không phân trang
+            // selectOrganization() {
+            //     $('.content_search_box').addClass('loadding');
+            //     axios.post('/organization/list', {
+            //         keyword: this.organization_keyword,
+            //         paginated: 0 //không phân trang
+            //     })
+            //         .then(response => {
+            //             this.organization_list = response.data;
+            //             $('.content_search_box').removeClass('loadding');
+            //         })
+            //         .catch(error => {
+            //             $('.content_search_box').removeClass('loadding');
+            //         })
+            // },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list', {
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.optionsOrganize = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
                 })
-                    .then(response => {
-                        this.organization_list = response.data;
-                        $('.content_search_box').removeClass('loadding');
-                    })
-                    .catch(error => {
-                        $('.content_search_box').removeClass('loadding');
-                    })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+            setOptions(list, current_id) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name,
+                };
+                if (item.children.length > 0) {
+                  for (const [key, child] of Object.entries(item.children)) {
+                    if (child.id === current_id) {
+                      newOption.isDefaultExpanded = true;
+                      break;
+                    }
+                  }
+                  newOption.children = this.setOptions(item.children, current_id);
+                }
+                outPut.push(newOption);
+              }
+              return outPut;
             },
             // selectUser(){
             //   $('.content_search_box').addClass('loadding');
@@ -379,7 +431,7 @@
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    organization_id: this.query_organization_id,
+                    organization_id: this.organization_id1,
                     position: this.position,
                     role: this.selected_role,
                     view_mode: this.view_mode

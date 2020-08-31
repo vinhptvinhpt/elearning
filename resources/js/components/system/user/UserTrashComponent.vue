@@ -30,7 +30,7 @@
                   <div class="col-sm-8 dataTables_wrapper">
                     <div class="dataTables_length" style="display: inline-block;">
                       <label>{{trans.get('keys.hien_thi')}}
-                        <select v-model="row"
+                        <select v-model="row" style="height: 35px;"
                                 class="custom-select custom-select-sm form-control form-control-sm"
                                 @change="getUser(1)">
                           <option value="10">10</option>
@@ -43,13 +43,20 @@
                     <div class="fillterConfirm" style="display: inline-block;"
                          v-if="type != 'student' && type != 'teacher'">
                       <label>
-                        <select v-model="role_name"
+                        <select v-model="role_name" style="height: 35px;"
                                 class="custom-select custom-select-sm form-control form-control-sm"
                                 @change="getUser(1)">
                           <option value="">{{trans.get('keys.theo_quyen')}}</option>
                           <option v-for="role in listrole" :value="role.name">{{ role.name }}
                           </option>
                         </select>
+                      </label>
+                    </div>
+                    <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                      <label>
+                        <treeselect v-model="organization_id"
+                                    :multiple="false" :options="optionsOrganize"
+                                    @input="getUser(1)"/>
                       </label>
                     </div>
                   </div>
@@ -186,7 +193,15 @@
         user_restore: [],
         allSelected: false,
         role_name: '',
-        listrole: []
+        listrole: [],
+        //Treeselect options
+        optionsOrganize: [
+          {
+            id: 0,
+            label: this.trans.get('keys.chon_to_chuc')
+          }
+        ],
+        organization_id: 0,
       }
     },
     methods: {
@@ -234,12 +249,18 @@
           })
             .then(response => {
               // if()
-              roam_message(response.data.status, response.data.message);
+              // roam_message(response.data.status, response.data.message);
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               if(response.data.status == 'success')
                 current_pos.user_restore = [];
+              if(current_pos.posts.length == 1){
+                current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+              }
+              current_pos.getUser(current_pos.current);
             })
             .catch(error => {
-              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
       },
@@ -269,12 +290,18 @@
             user_restore: user_restore
           })
             .then(response => {
-              roam_message(response.data.status, response.data.message);
+              // roam_message(response.data.status, response.data.message);
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               if(response.data.status == 'success')
                 current_pos.user_restore = [];
+              if(current_pos.posts.length == 1){
+                current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+              }
+              current_pos.getUser(current_pos.current);
             })
             .catch(error => {
-              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
       },
@@ -290,6 +317,7 @@
           keyword: this.keyword,
           row: this.row,
           role_name: this.role_name,
+          organization_id: this.organization_id,
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];
@@ -344,11 +372,49 @@
         });
 
         return false;
+      },
+      selectOrganization(current_id) {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/organization/list', {
+          keyword: this.organization_keyword,
+          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+          paginated: 0 //không phân trang
+        })
+          .then(response => {
+            this.organization_list = response.data;
+            //Set options recursive
+            this.optionsOrganize = this.setOptions(response.data, current_id);
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+          })
+      },
+      setOptions(list, current_id) {
+        let outPut = [];
+        for (const [key, item] of Object.entries(list)) {
+          let newOption = {
+            id: item.id,
+            label: item.name,
+          };
+          if (item.children.length > 0) {
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          outPut.push(newOption);
+        }
+        return outPut;
       }
     },
     mounted() {
       //this.getUser();
       this.getListRole();
+      this.selectOrganization();
     }
   }
 </script>
