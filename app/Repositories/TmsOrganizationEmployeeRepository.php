@@ -108,7 +108,6 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //                $list = $list->where('organization_id', $organization_id);
 //            }
         }
-        dd($list->toSql());
         $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
 
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
