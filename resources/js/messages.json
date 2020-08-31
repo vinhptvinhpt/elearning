@@ -833,7 +833,7 @@
         "khong_tim_thay_anh_chung_toi_se_chon_anh_mac_dinh": "No certificate image found, we will select the default certificate image",
         "vui_long_nhap_mat_khau_moi": "Please enter a new password",
         "su_dung_phan_quyen": "Use as role",
-        "phan_quyen_du_lieu": "Data permission",
+        "phan_quyen_du_lieu": "Data access permission",
         "danh_sach_khoa_hoc": "List courses",
         "danh_sach_khoa_hoc_da_cap": "List assgined courses",
         "huy_quyen": "Remove permission",
