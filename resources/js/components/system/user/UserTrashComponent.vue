@@ -249,12 +249,18 @@
           })
             .then(response => {
               // if()
-              roam_message(response.data.status, response.data.message);
+              // roam_message(response.data.status, response.data.message);
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               if(response.data.status == 'success')
                 current_pos.user_restore = [];
+              if(current_pos.posts.length == 1){
+                current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+              }
+              current_pos.getUser(current_pos.current);
             })
             .catch(error => {
-              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
       },
@@ -284,12 +290,18 @@
             user_restore: user_restore
           })
             .then(response => {
-              roam_message(response.data.status, response.data.message);
+              // roam_message(response.data.status, response.data.message);
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               if(response.data.status == 'success')
                 current_pos.user_restore = [];
+              if(current_pos.posts.length == 1){
+                current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+              }
+              current_pos.getUser(current_pos.current);
             })
             .catch(error => {
-              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              // roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+              toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
             });
         });
       },

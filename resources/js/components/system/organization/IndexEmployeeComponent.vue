@@ -156,7 +156,7 @@
                                             </div>
                                             <div class="col-6" style="width: auto; height: 35px; display: inline-block; position: absolute;">
                                                 <label>
-                                                    <treeselect v-model="organization_id"
+                                                    <treeselect v-model="organization_id1"
                                                                 :multiple="false" :options="optionsOrganize"
                                                                 @input="getDataList(1)"/>
                                                 </label>
@@ -322,6 +322,7 @@
                     label: this.trans.get('keys.chon_to_chuc')
                   }
                 ],
+                organization_id1: this.organization_id,
             }
         },
         mounted() {
@@ -430,7 +431,7 @@
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    organization_id: this.organization_id,
+                    organization_id: this.organization_id1,
                     position: this.position,
                     role: this.selected_role,
                     view_mode: this.view_mode
