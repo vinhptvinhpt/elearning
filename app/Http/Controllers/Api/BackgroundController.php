@@ -482,7 +482,7 @@ class BackgroundController extends Controller
                 }
 
                 $position_name = $user[8];
-                $city =  $user[9]; //office name
+                $city = $user[9]; //office name
                 $country = $user[10]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);

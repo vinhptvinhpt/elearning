@@ -54,6 +54,7 @@
           </div>
         </div>
         <div class="col-12">
+          <!--Role list-->
           <div class="card">
             <div class="card-body">
               <h4 class="mb-20">{{trans.get('keys.danh_sach_quyen')}}</h4>
@@ -91,6 +92,41 @@
               </div>
             </div>
           </div>
+          <!--Content access permission-->
+          <div class="card">
+            <div class="card-body">
+              <h4 class="mb-20">{{trans.get('keys.phan_quyen_du_lieu')}}</h4>
+              <p class="mb-10">{{trans.get('keys.tong_so')}} : {{total_item}} {{trans.get('keys.to_chuc')}}.</p>
+              <div class="table-responsive">
+                <table class="table_res">
+                  <thead>
+                  <th>{{trans.get('keys.stt')}}</th>
+                  <th>{{trans.get('keys.ten_to_chuc')}}</th>
+                  <th class=" mobile_hide">{{trans.get('keys.mo_ta')}}</th>
+                  <th>{{trans.get('keys.hanh_dong')}}</th>
+                  </thead>
+                  <tbody>
+                  <tr v-for="(roc,index) in content_roles">
+                    <td>{{ index+1 }}</td>
+                    <td>{{ roc.name === 'teacher' ? 'creator' : roc.name }}</td>
+                    <td class=" mobile_hide">{{ roc.description }}</td>
+                    <td>
+                      <router-link :title="trans.get('keys.sua')"
+                                   class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                   :to="{ name: 'RoleEdit', params: { role_id: roc.id }}">
+                        <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
+                      </router-link>
+                    </td>
+                  </tr>
+                  </tbody>
+                </table>
+                <div :style="content_roles.length === 0 ? 'display:none;' : 'display:block;'">
+                  <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
+                                :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -105,7 +141,13 @@
                     name: '',
                     description:'',
                 },
-                roles:[]
+                roles:[],
+                content_roles: [],
+                type: 'all',
+                current: 1,
+                totalPages: 0,
+                row: 10,
+                total_item: 0,
             }
         },
         methods: {
@@ -141,17 +183,42 @@
             },
             listRoles(){
                 axios.post('/role/list_role', {
-                  type: 'all'
+                  type: 'role'
                 })
                     .then(response => {
-                        this.roles = response.data;
+                          this.roles = response.data;
                     })
                     .catch(error => {
                         console.log(error.response.data);
                     });
             },
+            listContentRoles(paged){
+              axios.post('/role/list_role', {
+                page: paged || this.current,
+                row: this.row,
+                type: 'content_permission'
+              })
+                .then(response => {
+                  this.content_roles = response.data.data ? response.data.data.data : [];
+                  this.current = response.data.pagination ? response.data.pagination.current_page : 1;
+                  this.totalPages = response.data.pagination ? response.data.pagination.total_page : 0;
+                  this.total_item = response.data.pagination ? response.data.pagination.total_item : 0;
+                })
+                .catch(error => {
+                  console.log(error.response.data);
+                });
+            },
+            onPageChange() {
+              let back = this.getParamsBackPage();
+              if(back === '1') {
+                this.current = Number(sessionStorage.getItem('userPage'));
+                this.row = Number(sessionStorage.getItem('userPageSize'));
+                sessionStorage.clear();
+                this.$route.params.back_page= null;
+              }
+              this.listContentRoles();
+            },
             deleteRole(role_id){
-                var role_id = role_id;
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.thong_bao'),
@@ -171,11 +238,23 @@
                             roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
                 });
-            }
+            },
+            getParamsBackPage() {
+              return this.$route.params.back_page;
+            },
+            setParamsBackPage(value) {
+              this.$route.params.back_page = value;
+            },
         },
         mounted() {
             this.listRoles();
-        }
+            this.listContentRoles();
+        },
+
+        destroyed() {
+          sessionStorage.setItem('userPage', this.current);
+          sessionStorage.setItem('userPageSize', this.row);
+      }
     }
 </script>
 
