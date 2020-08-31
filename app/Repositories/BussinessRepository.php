@@ -5756,7 +5756,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $user_id = $request->input('user');
         $row = $request->input('row');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -5774,6 +5774,12 @@ class BussinessRepository implements IBussinessInterface
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
+
+        if($organization_id){
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->where('tms_organization.id',$organization_id);
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -5806,7 +5812,7 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $confirm = $request->input('confirm');
         $user_id = $request->input('user');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -5824,6 +5830,12 @@ class BussinessRepository implements IBussinessInterface
         $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm')
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
+
+        if($organization_id){
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->where('tms_organization.id',$organization_id);
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -7640,17 +7652,18 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $roles = $request->input('roles');
         $user_id = $request->input('user');
+        $organization_id = $request->input('organization_id');
 
         $param = [
             'keyword' => 'text',
             'row' => 'number',
             'roles' => 'number',
+            'organization_id' => 'number',
         ];
         $validator = validate_fails($request, $param);
         if (!empty($validator)) {
             return response()->json([]);
         }
-
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
         $listUsers = $listUsers->select(
@@ -7668,7 +7681,6 @@ class BussinessRepository implements IBussinessInterface
         )
             ->where('tms_user_detail.deleted', 0)
             ->whereNotIn('mdl_user.username', ['admin']);
-
         if ($roles != 0) {
             $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
             $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
@@ -7685,6 +7697,11 @@ class BussinessRepository implements IBussinessInterface
         //$listUsers = $listUsers->where('status','=',0);
         //$listUsers = $listUsers->whereNotIn('roles.name',['teacher','student']);
         //}
+        if($organization_id){
+            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->where('tms_organization.id',$organization_id);
+        }
 
         if ($user_id) {
             $listUsers->where('mdl_user.id', $user_id);
@@ -10298,7 +10315,7 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $role_name = $request->input('role_name');
-
+        $organization_id = $request->input('organization_id');
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -10315,6 +10332,11 @@ class BussinessRepository implements IBussinessInterface
             $data = $data->join('model_has_roles as mhr', 'mhr.model_id', '=', 'tud.user_id');
             $data = $data->join('roles as r', 'r.id', '=', 'mhr.role_id');
             $data = $data->where('r.name', '=', $role_name);
+        }
+        if($organization_id){
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->where('tms_organization.id',$organization_id);
         }
         $data = $data->where('tud.deleted', '=', 1);
         if ($this->keyword) {
