@@ -95,7 +95,29 @@
             </div>
         </div>
 </nav>
-
+<div class="modal fade" id="myModal" role="dialog" aria-labelledby="exampleModalCenterTitle">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
+                    course {{ courseName }}!</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="{{ pathBadge }}" alt="">
+                <span class="sp-name-course">{{ courseName }}</span>
+            </div>
+            <div class="modal-footer" style="width: 100%">
+                <div style="margin: 0 auto">
+                    <button type="button" class="btn btn-secondary btn-close" data-dismiss="modal">Close</button>
+                    <!--                    <button type="button" class="btn btn-primary">Save changes</button>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
     $(document).ready(function() {
         let prevsectionno = {{ prevsectionno }};
@@ -106,6 +128,19 @@
         if (nextsectionno !== 0) {
             $('.navigate-next-section').removeClass('btn-hide');
         }
+
+        let finishCourse = {{ finishCourse }};
+        if(finishCourse == 1){
+            $('.modal').addClass('show');
+        }
+
+        $('.close').click(function(){
+            $('.modal').removeClass('show');
+        });
+
+        $('.btn-close').click(function(){
+            $('.modal').removeClass('show');
+        });
     });
 </script>
 <style>
@@ -176,5 +211,34 @@
 
     .activity-navigation a#prev-activity-link span.title, .activity-navigation a#next-activity-link span.title{
         color: #333 !important;
+    }
+
+    .sp-name-course {
+        font-size: 32px;
+        position: absolute;
+        width: 80%;
+        text-align: center;
+        margin-left: 0;
+        margin-right: 0;
+        right: 0;
+        top: 40%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .modal-title {
+        font-size: 17px;
+        font-weight: 400;
+    }
+
+    .modal{
+        background: #0101016b;
+    }
+
+    .modal-body img{
+        max-width: 400px;
+    }
+
+    .modal-body{
+        margin: 0 auto;
     }
 </style>

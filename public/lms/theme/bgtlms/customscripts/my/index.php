@@ -880,7 +880,7 @@ $_SESSION["allowCms"] = $allowCms;
     .footer-ul li {
         list-style: none;
         text-align: left;
-        font-family: Nunito-Sans-Regular;
+        font-family: Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
         letter-spacing: 0.6px;
         opacity: 1;
         margin-top: 5%;
@@ -1621,7 +1621,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <li><a href="lms/course/index.php">Courses</a></li>
                                 <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
                                 <?php if ($allowCms) { ?>
-                                    <li><a href="/tms/dashboard">CMS</a></li>
+                                    <li><a href="/tms/dashboard">TMS</a></li>
                                 <?php } ?>
                             </ul>
                         </div>

@@ -529,7 +529,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .footer-ul li {
         list-style: none;
         text-align: left;
-        font-family: Nunito-Sans-Regular;
+        font-family: Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
         letter-spacing: 0.6px;
         opacity: 1;
         margin-top: 5%;
@@ -818,7 +818,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -860,7 +860,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <template v-if="course.numofmodule == 0"><img
                                                 src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                         </template>
-                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                         </template>
                                     </div>
                                     <div class="col-7">
@@ -972,7 +972,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                          alt=""><span>0%</span>
                                                 </template>
                                                 <template v-else>
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                                 </template>
                                             </div>
                                         </div>
@@ -1013,7 +1013,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -1055,7 +1055,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <img style="width: 40px !important; height: 40px !important;" src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
                                              alt="" class="img-completed">
                                     </template>
-                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                     </template>
                                 </div>
                                 <div class="col-7">
@@ -1117,7 +1117,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     <li><a href="lms/course/index.php">Courses</a></li>
                                     <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
                                     <?php if($_SESSION["allowCms"]){ ?>
-                                        <li><a href="/tms/dashboard">CMS</a></li>
+                                        <li><a href="/tms/dashboard">TMS</a></li>
                                     <?php } ?>
                                 </ul>
                             </div>
