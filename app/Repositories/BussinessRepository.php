@@ -7760,7 +7760,6 @@ class BussinessRepository implements IBussinessInterface
             });
         }
         $listUsers = $listUsers->orderBy('tms_user_detail.created_at', 'desc');
-        dd($this->keyword);
         $listUsers = $listUsers->paginate($row);
 
         $total = ceil($listUsers->total() / $row);
