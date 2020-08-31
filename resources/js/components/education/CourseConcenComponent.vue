@@ -184,7 +184,7 @@
                                                 </router-link>
 
                                                 <router-link :title="trans.get('keys.them_nguoi_dung_ngoai_le')"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                             :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'UserCourseExceptionEdit', params: { id: course.id,come_from: 'offline',course_name:course.fullname } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>
                                                 </router-link>
