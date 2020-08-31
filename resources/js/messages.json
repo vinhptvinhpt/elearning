@@ -89,7 +89,7 @@
         "nhap_ten_tai_khoan_email": "Input login id, email",
         "tong_so_nguoi_dung_hien_tai": "Total Users",
         "tai_len_file_excel": "Upload Excel File",
-        "tai_ve_bieu_mau": "Download Excel Form",
+        "tai_ve_bieu_mau": "Download Excel Template",
         "them_moi": "Add New",
         "them_moi_va_cap_nhat": "Add New and Update",
         "import_nguoi_dung": "Import Users",
@@ -1029,7 +1029,12 @@
         "completed": "Completed",
         "in_progressing": "In progressing",
         "fail_course": "Fail",
-        "toeic_course": "Toeic Course"
+        "toeic_course": "Toeic Course",
+        "chon_che_do": "Select Mode",
+        "full": "Full",
+        "lite": "Lite",
+        "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite",
+        "chon_chuc_nang": "Select function"
     },
     "vi.keys": {
         "language": "",
@@ -2052,6 +2057,11 @@
         "completed": "Hoàn thành",
         "in_progressing": "Đang học",
         "fail_course": "Không hoàn thành",
-        "toeic_course": "Khóa Toeic"
+        "toeic_course": "Khóa Toeic",
+        "chon_che_do": "Chọn chế độ",
+        "full": "đầy đủ",
+        "lite": "rút gọn",
+        "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn",
+        "chon_chuc_nang": "Chọn chức năng"
     }
 }

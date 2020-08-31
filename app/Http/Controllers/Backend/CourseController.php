@@ -201,17 +201,23 @@ class CourseController extends Controller
                     ]);
                 }
             }
-            $user_id = Auth::id();
-            //Check role teacher and enrol for creator of course
-            $current_user_roles_and_slugs = checkRole();
-            //If user ís not a teacher, assign as teacher
-            $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
-            if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
-                add_user_by_role($user_id, $role_teacher->id);
-                enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+
+            $sample = $request->input('sample');
+            if ($sample == 1) {
+                //Khóa học mẫu k cần enrol
+            } else {
+                $user_id = Auth::id();
+                //Check role teacher and enrol for creator of course
+                $current_user_roles_and_slugs = checkRole();
+                //If user ís not a teacher, assign as teacher
+                $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
+                if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
+                    add_user_by_role($user_id, $role_teacher->id);
+                    enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
+                }
+                //Enrol user to newly created course as teacher, k cần gửi thông báo
+                enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, false);
             }
-            //Enrol user to newly created course as teacher
-            enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
 
             //Add newly course to phân quyền dữ liệu
             $checkRoleOrg = 0;
@@ -274,6 +280,7 @@ class CourseController extends Controller
             $response->message = __('tao_moi_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             \DB::rollBack();
+            dd($e->getMessage());
             $response->status = false;
             //$response->message = $e->getMessage();
             $response->message = __('loi_he_thong_thao_tac_that_bai');
@@ -501,6 +508,7 @@ class CourseController extends Controller
 
             $course = MdlCourse::findOrFail($id);
             $course->delete();
+            removeCourseFromTraining($id);
 
             $result = 1;
 

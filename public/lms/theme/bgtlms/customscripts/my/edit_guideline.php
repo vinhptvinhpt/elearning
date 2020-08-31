@@ -33,6 +33,11 @@ echo $OUTPUT->header();
     .cke_contents{
         height: calc(100vh - 100px) !important;
     }
+
+    .btn-guideline-click{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
 </style>
 
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
@@ -44,7 +49,7 @@ echo $OUTPUT->header();
         <ckeditor v-model="content" :config="editorConfig" :editor-url="editorUrl"></ckeditor>
     </div>
     <p align="right">
-        <button type="button" class="btn btn-info py-2 px-3" style="font-size: 20px"
+        <button type="button" class="btn btn-info py-2 px-3 btn-guideline-click" style="font-size: 20px"
                 @click="updateGuideLineContent">Update</button>
     </p>
 </div>

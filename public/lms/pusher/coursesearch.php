@@ -12,7 +12,7 @@ $txtSearch = isset($_POST['txtSearch']) ? $_POST['txtSearch'] : null;
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
-
+$pageRequest = isset($_POST['pageRequest']) ? $_POST['pageRequest'] : '';
 
 if ($progress == 1) { //List from home
 
@@ -43,7 +43,7 @@ mc.estimate_duration,
     ttp.deleted as training_deleted,
     GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
   from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid
+  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
@@ -83,11 +83,13 @@ mc.estimate_duration,
             $course->sttShow = $stt;
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                $courses_others_id .= ', ' . $course->id;
                 array_push($competency_exists, $course->training_id);
                 push_course($courses_current, $course);
             } //then complete
             elseif ($course->numoflearned / $course->numofmodule == 1) {
                 push_course($courses_completed, $course);
+                $courses_others_id .= ', ' . $course->id;
             } //then required = khoa hoc trong khung nang luc
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
                 $courses_required[$course->training_id][$course->id] = $course;
@@ -98,11 +100,6 @@ mc.estimate_duration,
 //            push_course($courses_required, $course);
             }
             $stt++;
-            //the last is other courses
-//        else {
-//            push_course($courses_others, $course);
-////            $courses_others_id .= ', '.$course->id;
-//        }
         }
     }
 
@@ -128,7 +125,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  and ttp.deleted = 2 and
+  and ttp.deleted = 2 and mc.deleted = 0 and
   mc.id not in ' . $courses_others_id;
 
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
@@ -175,7 +172,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     //count total
     $sqlCountCoures = 'select mc.id
 from mdl_course mc
-inner join mdl_enrol me on mc.id = me.courseid
+inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
@@ -208,7 +205,7 @@ ttp.deleted as training_deleted,
 GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
 
 from mdl_course mc
-inner join mdl_enrol me on mc.id = me.courseid
+inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 left JOIN mdl_course_completion_criteria mccc on mccc.course = mc.id
 left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
@@ -277,8 +274,11 @@ and mue.userid = ' . $USER->id;
             //$course->teacher_created = $teacher_created;
             //
             if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                $course->order_learn = 2;
                 array_push($competency_exists, $course->training_id);
-            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+            }
+            elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+                $course->order_learn = 1;
                 $course->category_type = 'required';
                 array_push($temp_competency_exists, $course->training_id);
                 //
@@ -291,9 +291,16 @@ and mue.userid = ' . $USER->id;
                 $tempCourse[$course->training_id]['stt'] = $stt_count;
                 $course->stt_count = $tempCourse[$course->training_id]['stt'];
             }
+            elseif($course->numoflearned / $course->numofmodule == 1){
+                $course->order_learn = 0;
+            }
             $stt++;
             $coures_result[] = $course;
         }
+    }
+
+    if($pageRequest == 'profile'){
+        usort($coures_result, 'cmp_order_learn');
     }
 
     $start_index = $current * $recordPerPage - $recordPerPage;
@@ -327,6 +334,13 @@ function cmp($a, $b)
 function cmp_training_id($a, $b)
 {
     return strcmp($a->training_id, $b->training_id);
+}
+
+function cmp_order_learn($a, $b)
+{
+//    return strcmp($a->order_learn, $b->order_learn);
+    if ($a->order_learn == $b->order_learn) return 0;
+    return ($a->order_learn < $b->order_learn) ? 1 : -1;
 }
 
 function cmp_stt($a, $b)

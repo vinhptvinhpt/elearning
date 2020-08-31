@@ -18,7 +18,7 @@
                 <div>
                     <div class="row mx-0">
                         <div class="col-12 hk-sec-wrapper">
-                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_email_template')}} : {{ source_data.length + 1 }}</h5>
+                            <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_email_template')}} : {{ source_data.length }}</h5>
                             <div class="col-sm">
                                 <div class="table-wrap">
                                     <div class="row">

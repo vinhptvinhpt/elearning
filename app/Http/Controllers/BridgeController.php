@@ -28,6 +28,7 @@ class BridgeController extends Controller
             'role_type' => '',
             'has_student' => '',
             'file_url' => '',
+            'file_url_lite' => '',
             'is_user_market' => '',
             'branch_id'=> '',
             'branch_name' => '',
@@ -82,6 +83,7 @@ class BridgeController extends Controller
 
         if ($view == 'ImportIndex') {
             $response['file_url'] = asset('files/import_data.xlsx');
+            $response['file_url_lite'] = asset('files/import_data_lite.xlsx');
         }
 
         if ($view == 'UserMarketIndex') {

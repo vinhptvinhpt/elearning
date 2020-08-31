@@ -104,77 +104,215 @@ class api
                 ORDER BY
                     created_at $sort";
         $notifications = [];
+
         $records = $DB->get_recordset_sql($sql, [$useridto], $offset, $limit);
         foreach ($records as $record) {
             if ($record->timecreated != null) {
                 $record->timecreated = strtotime($record->timecreated);
             }
             switch ($record->subject) {
-                case 'enrol':
-                    $record->subject = 'Ghi danh khóa học';
+                #region New cases
+                case 'remind_expire_required_course':
+                    $record->subject = 'Remind Expire Required Coure';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = 'Ghi danh khoá học thành công<br>Khoá học: <b>' . $content->object_name . '</b>';
+                    $record->fullmessagehtml = '<p>This email is to notify you that we have noticed that you have not yet completed the following assigned course(s) before the expiry dates.</p>';
+                    $record->fullmessagehtml .= '
+                    <table class="tb-notification">
+                        <thead>
+                            <tr class="tr-notification">
+                                <th>COURSE CODE</th>
+                                <th>COURSE NAME</th>
+                                <th>START DATE</th>
+                                <th>END DATE</th>
+                                <th>PLACE</th>
+                            </tr>
+                        </thead>
+                        <tbody>';
+                    foreach ($content as $contents) {
+                        //convert startdate
+                        $startdate = $contents->startdate;
+                        if($startdate > 0){
+                            $startdate = date('m/d/Y', $contents->startdate);
+                        }else{
+                            $startdate = '';
+                        }
+
+                        //convert enddate
+                        $enddate = $contents->enddate;
+                        if($enddate > 0){
+                            $enddate = date('m/d/Y', $contents->enddate);
+                        }else{
+                            $enddate = '';
+                        }
+
+
+                        $record->fullmessagehtml .= '<tr class="tr-notification">
+                            <td><p>'. $contents->course_code .'</p></td>
+                            <td><p>'.$contents->course_name.'</p></td>
+                            <td><p>'. $startdate .'</p></td>
+                            <td><p>'. $enddate .'</p></td>
+                            <td><p>'.$contents->course_place.'</p></td>
+                            </tr>';
+                    }
+                    $record->fullmessagehtml .= '</tbody></table>';
+                    break;
+                case 'assigned_competency':
+
+                    $record->subject = 'Assigned Competency';
+                    $content = json_decode($record->fullmessage);
+
+                    //convert startdate
+                    $startdate = $content->start_date;
+                    if($startdate > 0){
+                        $startdate = date('m/d/Y', $content->start_date);
+                    }else{
+                        $startdate = '';
+                    }
+
+                    //convert enddate
+                    $enddate = $content->end_date;
+                    if($enddate > 0){
+                        $enddate = date('m/d/Y', $content->end_date);
+                    }else{
+                        $enddate = '';
+                    }
+
+                    $record->fullmessagehtml = 'This email is to notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
+                    $record->fullmessagehtml .= '<br /><strong>Name:&nbsp;<strong>'.$content->object_name.'</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Code:&nbsp;<strong>'.$content->code.'</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Starting time:&nbsp;<strong>'.$startdate.'</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Ending time:&nbsp;<strong>'.$enddate.'</strong><br />';
+                    break;
+                case 'remind_exam':
+                    $record->subject = 'Remind Exam';
+                    $content = json_decode($record->fullmessage);
+
+                    //convert startdate
+                    $start_time = $content->start_time;
+                    if($start_time > 0){
+                        $start_time = date('m/d/Y', $content->start_time);
+                    }else{
+                        $start_time = '';
+                    }
+
+                    //convert enddate
+                    $end_time = $content->end_time;
+                    if($end_time > 0){
+                        $end_time = date('m/d/Y', $content->end_time);
+                    }else{
+                        $end_time = '';
+                    }
+
+                    $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
+                    $record->fullmessagehtml .= '<p>The exam: '.$content->object_name.' is ready for you to complete,</p>';
+                    $record->fullmessagehtml .= '<p>From <strong>'.$start_time.' to '.$end_time.' </strong></p>';
+                    $record->fullmessagehtml .= '<p>Please log in to the PHH Academy using this link <a href="https://academy.phh-group.com">https://academy.phh-group.com</a> to do the test by the required time.</p>';
+                    $record->fullmessagehtml .= '<p>Note: This test must be taken continuously for 120 minutes (without pausing or stopping), so please arrange your time &amp; workload to take the test in such a way that you can focus on achieving the best score possible.</p>';
                     break;
                 case 'suggest':
-                    $record->subject = 'Giới thiệu khóa học kĩ năng mềm';
+                    $record->subject = 'Suggest Optional Coure';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = '
-                    <table border="1">
+                    $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
+                    $record->fullmessagehtml .= '<p>There are some relevant (but not compulsory) courses that you may be interested in studying, as listed below: &nbsp;</p>';
+                    $record->fullmessagehtml .= '
+                    <table class="tb-notification">
                         <thead>
-                            <tr>
-                                <th>Mã khoá học</th>
-                                <th>Tên khoá học</th>
+                            <tr class="tr-notification">
+                                <th>COURSE CODE</th>
+                                <th>COURSE NAME</th>
+                                <th>START DATE</th>
+                                <th>END DATE</th>
+                                <th>PLACE</th>
                             </tr>
                         </thead>
                         <tbody>';
                     foreach ($content as $contents) {
-                        $record->fullmessagehtml .= '<tr><td>' . $contents->code . '</td><td>' . $contents->object_name . '</td></tr>';
+                        //convert startdate
+                        $start_date = $contents->start_date;
+                        if($start_date > 0){
+                            $start_date = date('m/d/Y', $contents->start_date);
+                        }else{
+                            $start_date = '';
+                        }
+
+                        //convert enddate
+                        $end_date = $contents->end_date;
+                        if($end_date > 0){
+                            $end_date = date('m/d/Y', $contents->end_date);
+                        }else{
+                            $end_date = '';
+                        }
+
+
+                        $record->fullmessagehtml .= '<tr class="tr-notification">
+                            <td><p>'. $contents->object_name .'</p></td>
+                            <td><p>'.$contents->code.'</p></td>
+                            <td><p>'. $start_date .'</p></td>
+                            <td><p>'. $end_date .'</p></td>
+                            <td><p>'.$contents->room.'</p></td>
+                            </tr>';
                     }
+                    $record->fullmessagehtml .= '</tbody></table>';
                     break;
-                case 'quiz_start':
-                    $record->subject = 'Bắt đầu bài kiểm tra';
+                case 'remind_certificate':
+                    $record->subject = 'Notice of certificate issued';
+                    $record->fullmessage = 'You are eligible for certification';
+                    break;
+                case 'enrol':
+                    $record->subject = 'Assigned Course';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = 'Bắt đầu làm bài kiểm tra<br>Khoá học: <b>' . $content->parent_name . '</b><br>Bài kiểm tra: <b>' . $content->object_name . '</b><br>Thời gian: <b>' . $content->end_date . '</b>';
+
+                    //convert startdate
+                    $start_date = $content->start_date;
+                    if($start_date > 0){
+                        $start_date = date('m/d/Y', $content->start_date);
+                    }else{
+                        $start_date = '';
+                    }
+
+                    //convert enddate
+                    $end_date = $content->end_date;
+                    if($end_date > 0){
+                        $end_date = date('m/d/Y', $content->end_date);
+                    }else{
+                        $end_date = '';
+                    }
+
+                    $record->fullmessagehtml = '<p>This is to notify you that <strong>you </strong>have been assigned to study the course:<br /><br />';
+                    $record->fullmessagehtml .= '<strong>'.$content->object_name.'</strong><br />';
+                    $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>'.$start_date.'</strong><br />';
+                    $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>'.$end_date.'</strong></p>';
+                    break;
+                #endregion
+                #region Old cases
+                case 'quiz_start':
+                    $record->subject = 'Start the Exam';
+                    $content = json_decode($record->fullmessage);
+                    $record->fullmessagehtml = 'Start to do the exam<br>Course: <b>' . $content->parent_name . '</b><br>Exam: <b>' . $content->object_name . '</b><br>Time: <b>' . $content->end_date . '</b>';
                     break;
                 case 'quiz_end':
-                    $record->subject = 'Kết thúc bài kiểm tra';
+                    $record->subject = 'End of Exam';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = 'Kết thúc bài kiểm tra<br>Khoá học: <b>' . $content->parent_name . '</b><br>Bài kiểm tra: <b>' . $content->object_name . '</b><br>Thời gian: <b>' . $content->end_date . '</b>';
+                    $record->fullmessagehtml = 'End to do the exam<br>Course: <b>' . $content->parent_name . '</b><br>Exam: <b>' . $content->object_name . '</b><br>Time: <b>' . $content->end_date . '</b>';
                     break;
                 case 'quiz_completed':
-                    $record->subject = 'Kết quả kiểm tra';
+                    $record->subject = 'Exam results';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = 'Hoàn thành bài kiểm tra<br>Khoá học: <b>' . $content->parent_name . '</b><br>Bài kiểm tra: <b>' . $content->object_name . '</b><br>Thời gian: <b>' . $content->end_date . '</b><br>Kết quả: <b>' . $content->grade . '</b>';
+                    $record->fullmessagehtml = 'Complete the Exam<br>Course: <b>' . $content->parent_name . '</b><br>Exam: <b>' . $content->object_name . '</b><br>Time: <b>' . $content->end_date . '</b><br>Result: <b>' . $content->grade . '</b>';
                     break;
                 case 'remind_login':
-                    $record->subject = 'Nhắc nhở đăng nhập';
-                    $record->fullmessage = 'Đã lâu bạn chưa đăng nhập vào hệ thống';
-                    break;
-                case 'remind_expire_required_course':
-                    $record->subject = 'Nhắc nhở khóa học bắt buộc sắp hết hạn';
-                    $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = '
-                    <table border="1">
-                        <thead>
-                            <tr>
-                                <th>Mã khoá học</th>
-                                <th>Tên khoá học</th>
-                            </tr>
-                        </thead>
-                        <tbody>';
-                    foreach ($content as $contents) {
-                        $record->fullmessagehtml .= '<tr><td>' . $contents->code . '</td><td>' . $contents->object_name . '</td></tr>';
-                    }
+                    $record->subject = 'Login reminder';
+                    $record->fullmessage = 'You have not logged into the system for a long time';
                     break;
                 case 'remind_education_schedule':
-                    $record->subject = 'Nhắc nhở hoàn thành lộ trình đào tạo';
+                    $record->subject = 'Reminder to complete the training route';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '
                     <table border="1">
                         <thead>
                             <tr>
-                                <th>Mã khoá học</th>
-                                <th>Tên khoá học</th>
+                                <th>Course code</th>
+                                <th>Course name</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -183,14 +321,14 @@ class api
                     }
                     break;
                 case 'remind_access_course':
-                    $record->subject = 'Nhắc nhở tương tác với các khóa học';
+                    $record->subject = 'Interactive reminders with courses';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '
                     <table border="1">
                         <thead>
                             <tr>
-                                <th>Mã khoá học</th>
-                                <th>Tên khoá học</th>
+                                <th>Course code</th>
+                                <th>Course name</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -201,15 +339,15 @@ class api
                     $record->fullmessagehtml .= '<tbody></table>';
                     break;
                 case 'remind_upcoming_course':
-                    $record->subject = 'Thông báo khóa học sắp bắt đầu';
+                    $record->subject = 'Announce the course is about to start';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '
                     <table border="1">
                         <thead>
                             <tr>
-                                <th>Mã khoá học</th>
-                                <th>Tên khoá học</th>
-                                <th>Thời gian</th>
+                                <th>Course code</th>
+                                <th>Course name</th>
+                                <th>Time</th>
                             </tr>
                         </thead>
                         <tbody>';
@@ -217,12 +355,9 @@ class api
                         $record->fullmessagehtml .= '<tr><td>' . $contents->code . '</td><td>' . $contents->object_name . '</td><td>' . $contents->end_date . '</td></tr>';
                     }
                     break;
-                case 'remind_certificate':
-                    $record->subject = 'Thông báo về việc cấp chứng chỉ';
-                    $record->fullmessage = 'Bạn đã đủ điều kiện để được cấp chứng chỉ';
-                    break;
+                #endregions
             }
-            $notifications[] = (object) $record;
+            $notifications[] = (object)$record;
         }
         $records->close();
 

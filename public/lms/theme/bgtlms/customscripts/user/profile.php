@@ -4,7 +4,7 @@ if (!isloggedin()) {
 }
 require_once(__DIR__ . '/../../../../config.php');
 
-$sqlGetCategories = 'select id, name from mdl_course_categories';
+$sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 5, 2)';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 $sqlGetCertificates = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 2 and tms_traninning_programs.auto_certificate = 1 and student_certificate.userid = ' . $USER->id;
@@ -203,6 +203,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .info-detail ul li p {
         margin: 0;
         display: contents;
+    }
+    .info-detail ul li span, .info-detail ul li p{
+        font-weight: bold;
     }
 
     .info-learn {
@@ -537,16 +540,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="info-detail">
                     <ul>
-                        <li v-if="user.position">Position: {{ user.position }}</li>
-                        <li v-else>Position: Not yet update</li>
-                        <li v-if="user.departmentname">Department: {{ user.departmentname }}</li>
-                        <li v-else>Department: Not yet update</li>
-                        <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
-                        <li v-else>Experience: Under 1 year</li>
+                        <li v-if="user.position">Position: <span>{{ user.position }}</span></li>
+                        <li v-else>Position: <span>Not yet update</span></li>
+                        <li v-if="user.departmentname">Department: <span>{{ user.departmentname }}</span></li>
+                        <li v-else>Department: <span>Not yet update</span></li>
+                        <li v-if="user.yearworking > 0">Experience: <span>{{ user.yearworking }} years</span></li>
+                        <li v-else>Experience: <span>Under 1 year</span></li>
                         <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
-                        <li v-else>Line Manager: Not yet update</li>
-                        <li>Company: Easia Travel</li>
+                        <li v-else>Line Manager: <span>Not yet update</span></li>
+                        <li>Company: <span>Easia Travel</span></li>
                     </ul>
                 </div>
                 <div><a href="lms/user/edit.php"
@@ -779,7 +782,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             user_id: <?php echo $user_id ?>,
             current: 1,
             totalPage: 0,
-            recordPerPage: 6,
+            recordPerPage: 5,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
@@ -809,6 +812,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 params.append('current', page || this.current);
                 // params.append('pageCount', this.total);
                 params.append('recordPerPage', this.recordPerPage);
+                params.append('pageRequest', 'profile');
 
                 axios({
                     method: 'post',

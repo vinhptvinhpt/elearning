@@ -13,6 +13,7 @@
      * @var string $fullname
      * @var string $start_time
      * @var string $end_time
+     * @var string $exam_name
      *
      */
     //using class
@@ -35,6 +36,7 @@
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::STARTTIME, $start_date, $text);
     $text = str_replace(CourseSendMail::ENDTIME, $end_date, $text);
+    $text = str_replace(CourseSendMail::EXAMNAME, $exam_name, $text);
 
     echo $text;
     ?>

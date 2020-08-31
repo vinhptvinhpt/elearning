@@ -41,8 +41,10 @@
                         <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
                           {{trans.get('keys.cap_nhat_lan_cuoi')}}
                           <hr>
-                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span></p>
-                          <p>{{trans.get('keys.vao_luc')}}: <span class="last-edited-text">{{last_update.updated_at}}</span></p>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span>
+                          </p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span
+                            class="last-edited-text">{{last_update.updated_at}}</span></p>
                         </div>
                       </div>
                     </div>
@@ -101,16 +103,18 @@
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-                          <date-picker v-model="course.startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                        <date-picker v-model="course.startdate" :config="options"
+                                     :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                         <!--                        <input v-model="course.startdate" type="datetime-local" class="form-control mb-4">-->
                         <label v-if="!course.startdate" class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
-                        <date-picker v-model="course.enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
-<!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
-<!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                        <date-picker v-model="course.enddate" :config="options"
+                                     :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                        <!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
+                        <!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -234,9 +238,28 @@
       },
       onChangeCate(event) {
         if (event.target.value == 3) {
+          this.pass_score = 0;
+          $('#pass_score').attr("disabled", true);
+          $('#is_end_quiz').show();
+        } else {
+          // if (this.course.is_toeic == 1) {
+          //   $('#pass_score').attr("disabled", true);
+          // } else {
+          //   $('#pass_score').attr("disabled", false);
+          // }
+          $('#pass_score').attr("disabled", false);
+          $('#is_end_quiz').hide();
+        }
+      },
+      onChangeToeic() {
+        if (this.course.is_toeic == 1) {
           $('#pass_score').attr("disabled", true);
         } else {
-          $('#pass_score').attr("disabled", false);
+          if (this.course.category == 3) {
+            $('#pass_score').attr("disabled", true);
+          }else{
+            $('#pass_score').attr("disabled", false);
+          }
         }
       },
       getCategories() {
@@ -270,6 +293,11 @@
               $('#pass_score').attr("disabled", true);
               $('#is_end_quiz').show();
             } else {
+              // if (this.course.is_toeic == 1) {
+              //   $('#pass_score').attr("disabled", true);
+              // } else {
+              //   $('#pass_score').attr("disabled", false);
+              // }
               $('#pass_score').attr("disabled", false);
               $('#is_end_quiz').hide();
             }
@@ -391,7 +419,7 @@
             var language = this.language;
             if (response.data.status) {
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-              this.$router.push({name: 'CourseIndex',params:{back_page: '1'}});
+              this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
             } else {
               if (response.data.otherData) {
                 toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));
@@ -405,7 +433,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'CourseIndex',params:{back_page: '1'}});
+        this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
       },
       setEditor() {
         // var CSRFToken = $('meta[name="csrf-token"]').attr('content');
