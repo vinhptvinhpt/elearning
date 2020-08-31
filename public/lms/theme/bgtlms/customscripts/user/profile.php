@@ -124,6 +124,14 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         top: 2px !important;
     }
 
+    .item-btn .btn{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
+    .item-btn .btn:hover{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
     /*    paging*/
     .pagination {
         margin: 0 auto;
@@ -344,7 +352,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
     .item-content {
         text-align: center;
-        margin-top: 10%;
+        /*margin-top: 10%;*/
         padding: 0;
     }
 
@@ -523,10 +531,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     }
 </style>
 <body>
-<!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
-<?php
-
-?>
 <div class="wrapper"><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
     <!--    body-->
@@ -697,17 +701,20 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
-                                <div class="row col-lg-12">
+                                <div class="row col-lg-12 pb-2">
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3">
                                             <div class="item-image">
-                                                <img
-                                                    src="/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png"
+                                                <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png"
                                                     alt="">
                                             </div>
-                                            <div class="item-content">
+                                            <div class="item-content mt-2">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
                                                 <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+                                            </div>
+                                            <div class="item-btn" style="text-align: center;color: #fff;">
+                                                <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
+                                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png')">Copy link</a>
                                             </div>
                                         </div>
                                     <?php } ?>
@@ -716,17 +723,20 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             <div id="badge" class="container tab-pane fade">
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
-                                    <div class="row col-lg-12">
+                                    <div class="row col-lg-12 pb-2">
                                         <?php foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3">
                                                 <div class="item-image">
-                                                    <img
-                                                        src="/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png"
-                                                        alt="">
+                                                    <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png"
+                                                        alt="" data-toggle="modal" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">
                                                 </div>
-                                                <div class="item-content">
+                                                <div class="item-content mt-2">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
                                                     <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                                </div>
+                                                <div class="item-btn" style="text-align: center;color: #fff;">
+                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
+                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.png')">Copy link</a>
                                                 </div>
                                             </div>
                                         <?php } ?>
@@ -745,7 +755,29 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     <?php echo $OUTPUT->footer(); ?>
 </div>
 
-<script>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle" style="font-size: 16px"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="" class="img-preview" alt="">
+            </div>
+            <div class="modal-footer">
+                <div class="btn-list" style="margin: auto">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
     $(document).ready(function () {
         $('.li-progress').click(function () {
             var classes = $(this).attr('class');
@@ -760,7 +792,24 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
             }
         });
+
+        $('.img-view').click(function(){
+            var src = $(this).attr('imgSrc');
+            $('.img-preview').attr('src', src);
+            var name = $(this).attr('nameImg');
+            $('#exampleModalCenterTitle').text(name);
+        });
     });
+
+    function copyToClipboard(url){
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val(url).select();
+        document.execCommand("copy");
+        $temp.remove();
+        alert("Copied to clipboard");
+        return false;
+    }
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
     var app = new Vue({
