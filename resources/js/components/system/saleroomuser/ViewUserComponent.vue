@@ -31,7 +31,7 @@
                 <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                 </h6>
                 <p>ID: <strong>{{users.username}}</strong></p>
-                <p>{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>
+<!--                <p>{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>-->
                 <div v-if="users.confirm == 0 && type == 'student'">
                   <hr>
                   <p>{{trans.get('keys.thoi_gian_het_han')}}</p>
