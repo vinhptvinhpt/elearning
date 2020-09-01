@@ -804,7 +804,7 @@ class BackgroundController extends Controller
             $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
             if (isset($check)) {
 
-                $role = Role::query()->where('mdl_role_id', $check->role_id)->first();
+                $role = Role::query()->where('id', $check->role_id)->first();
                 if (!isset($role)) {
                     $missing = true;
                 } else {
