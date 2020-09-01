@@ -167,9 +167,15 @@ class LoginController extends Controller
             if ($checkUser->deleted == 1) {
                 return response()->json(['status' => 'FAILBANNED']);
             }
+
+            if ($checkUser->active == 0) {
+                return response()->json(['status' => 'FAILBANNED']);
+            }
+
             if (!password_verify($password, $checkUser->password)) {
                 return response()->json(['status' => 'FAILPASSWORD']);
             }
+
 
             // grab credentials from the request
             $credentials = $request->only('username', 'password');

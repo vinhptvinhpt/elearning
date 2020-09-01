@@ -37,24 +37,34 @@ $organization_id = $organization->id;
 
 $organizationCodeGet = "";
 $organizationLower = strtolower($organization->code);
-if(strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0){
+//echo $organizationLower;
+//die;
+if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0) {
     $organizationCodeGet = "BG";
-} else if(strpos($organizationLower,'ea') === 0 || strpos($organizationLower,'easia') === 0){
+} else if (strpos($organizationLower, 'ea') === 0 || strpos($organizationLower, 'easia') === 0) {
     $organizationCodeGet = "EA";
-} else if(strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0){
+} else if (strpos($organizationLower, 'ev') === 0 || strpos($organizationLower, 'exotic') === 0) {
     $organizationCodeGet = "EV";
-}else if(strpos($organizationLower, 'AV') === 0 || strpos($organizationLower, 'avana') === 0){
+} else if (strpos($organizationLower, 'av') === 0 || strpos($organizationLower, 'avana') === 0) {
     $organizationCodeGet = "AV";
-}else{
+}else if (strpos($organizationLower, 'tve') === 0) {
+    $organizationCodeGet = "TVE";
+//    $organization_id = 0;
+}
+else {
     $organizationCodeGet = "PH";
 }
 
+//color for h1 - organization
+$colorOrganizationText = '#ffffff';
 
 //set for full page
-$organization_id = is_null($organization) ? 0 : $organization->id;
+$className = 'Academy';
+//$organization_id = is_null($organization) ? 0 : $organization->id;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
 //$organizationCode = "BG";
+$_SESSION["pathImgAvailableCourse"] = 'images/bg-a-03.png';
 switch ($organizationCode) {
     case "EA":
         {
@@ -94,6 +104,19 @@ switch ($organizationCode) {
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+        }
+        break;
+    case "TVE":
+        {
+            $_SESSION["organizationName"] = 'VNU';
+            $_SESSION["color"] = '#007f48';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/Logo-VNU.png';
+            $_SESSION["component"] = 'images/cpn-vnu.png';
+            $_SESSION["pathImgAvailableCourse"] = 'images/2a.png';
+            $_SESSION["pathBackground"] = 'images/1a.png';
+            $className = 'Elearning';
+            $colorOrganizationText = '#000';
         }
         break;
     default:
@@ -166,21 +189,26 @@ $competency_completed = array();
 $countRequiredCourses = 0;
 $sttTotalCourse = 0;
 
+
 foreach ($courses as $course) {
     $sttTotalCourse++;
     $courses_training[$course->training_id][$course->id] = $course;
 }
 
-foreach ($courses_training as $courses){
+
+foreach ($courses_training as $courses) {
     $stt = 1;
+
     foreach ($courses as &$course) {
         $course->sttShow = $stt;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            $courses_others_id .= ', ' . $course->id;
             array_push($competency_exists, $course->training_id);
             push_course($courses_current, $course);
         } //then complete
         elseif ($course->numoflearned / $course->numofmodule == 1) {
+            $courses_others_id .= ', ' . $course->id;
             array_push($competency_completed, $course->training_id);
             push_course($courses_completed, $course);
         } //then required = khoa hoc trong khung nang luc
@@ -194,7 +222,11 @@ foreach ($courses_training as $courses){
         }
         $stt++;
     }
+    //
+    usort($courses, 'cmp_stt');
+    //
 }
+
 //echo $stt1, $stt2, $stt3, $stt4;
 //die;
 $courses_others_id .= ')';
@@ -210,6 +242,13 @@ function push_course(&$array, $course)
     }
 }
 
+usort($courses_required_list, 'cmp_stt');
+function cmp_stt($a, $b)
+{
+    if ($a->sttShow == $b->sttShow) return 0;
+    return ($a->sttShow < $b->sttShow) ? -1 : 1;
+}
+
 
 // Set session variables
 $countBlock = 1;
@@ -219,7 +258,7 @@ $_SESSION["courses_completed"] = 0;
 $_SESSION["totalCourse"] = 0;
 $percentCompleted = 0;
 $percentStudying = 0;
-if($sttTotalCourse > 0){
+if ($sttTotalCourse > 0) {
     $_SESSION["courses_current"] = $courses_current;
     $_SESSION["courses_required"] = $courses_required_list;
     $_SESSION["courses_completed"] = $courses_completed;
@@ -246,12 +285,14 @@ inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.id not in ' . $courses_others_id;
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id and ttp.deleted = 2 and mc.deleted = 0 and mc.id not in ' . $courses_others_id;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
+
+$organization_id = is_null($organization_id) ? 0 : $organization->id;
 
 //$organization_id = 0;
 //get footer address
@@ -793,7 +834,7 @@ $_SESSION["allowCms"] = $allowCms;
 
     .carousel-caption h1 {
         font-family: HelveticaLTStd-Bold;
-        color: #ffffff;
+        color: <?=$colorOrganizationText?>;
         position: absolute;
         font-size: 60px;
         bottom: 25%;
@@ -827,16 +868,17 @@ $_SESSION["allowCms"] = $allowCms;
 
     .footer-ul {
         padding: 0;
-        padding-left: 5%;
+        /*padding-left: 5%;*/
     }
 
     .footer-ul li {
         list-style: none;
         text-align: left;
         font-family: Nunito-Sans-Regular;
-        letter-spacing: 0.45px;
+        letter-spacing: 0.6px;
         opacity: 1;
         margin-top: 5%;
+        font-size: 20px;
     }
 
     .footer-ul a {
@@ -946,6 +988,7 @@ $_SESSION["allowCms"] = $allowCms;
         .info-user .avatar img {
             width: 150px;
             height: 150px;
+            padding: 4px;
         }
     }
 
@@ -954,6 +997,7 @@ $_SESSION["allowCms"] = $allowCms;
             width: 105px !important;
             height: 105px !important;
             bottom: 26% !important;
+            padding: 3px;
         }
     }
 
@@ -962,6 +1006,7 @@ $_SESSION["allowCms"] = $allowCms;
             width: 85px !important;
             height: 85px !important;
             bottom: 26% !important;
+            padding: 3px;
         }
     }
 
@@ -1001,7 +1046,7 @@ $_SESSION["allowCms"] = $allowCms;
             height: 130px !important;
         }
 
-        .section-footer .container{
+        .section-footer .container {
             padding: 3% 3%;
         }
     }
@@ -1100,7 +1145,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="carousel-inner">
                                     <div class="carousel-item active">
                                         <div class="carousel-caption">
-                                            <h1><?php echo $_SESSION["organizationName"]; ?> <span>Academy</span></h1>
+                                            <h1><?php echo $_SESSION["organizationName"]; ?> <span><?php echo $className; ?></span></h1>
                                             <div class="block-color"></div>
                                         </div>
                                     </div>
@@ -1235,7 +1280,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                             <img src="<?php echo $_SESSION['component'] ?>"
-                                                                 alt=""><span><?php echo intval($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                 alt=""><span><?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1666,7 +1711,7 @@ $_SESSION["allowCms"] = $allowCms;
                             <ul class="footer-ul">
                                 <li><a href="lms/course/index.php">Courses</a></li>
                                 <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
-                                <?php if($allowCms){ ?>
+                                <?php if ($allowCms) { ?>
                                     <li><a href="/tms/dashboard">CMS</a></li>
                                 <?php } ?>
                             </ul>
@@ -1685,12 +1730,15 @@ $_SESSION["allowCms"] = $allowCms;
                         <div class="footer-block__title"><p class="footer-title">Contact</p></div>
                         <div class="footer-block__ul footer-block__address">
                             <ul class="nav nav-tabs">
-                                <?php $count = 1; $active = 'active';
+                                <?php $count = 1;
+                                $active = 'active';
                                 foreach ($footerAddressesTab as $footerAddressTab) { ?>
-                                        <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
-                                                                         href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
-                                        </li>
-                                    <?php $count++; $active=''; }  ?>
+                                    <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
+                                                                                     href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                    </li>
+                                    <?php $count++;
+                                    $active = '';
+                                } ?>
                             </ul>
                             <div class="tab-content">
                                 <?php $count = 1;

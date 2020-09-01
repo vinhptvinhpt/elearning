@@ -114,6 +114,10 @@
                               <date-picker v-model="trainning.time_end" :config="options"
                                            :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                             </div>
+<!--                            <div class="col-sm-6 form-group">-->
+<!--                              <p id="logic-warning" class="text-danger code_error hide">-->
+<!--                                {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>-->
+<!--                            </div>-->
                           </div>
                           <div class="form-row">
                             <div class="col-sm-4 form-group">
@@ -163,7 +167,7 @@
                           <div class="form-row">
                             <div class="col-12 form-group">
                               <div class="button-list text-right">
-                                <router-link v-if="trainning.style == 0"
+                                <router-link v-if="trainning.style == 1"
                                   :to="{ path: '/tms/trainning/list', name: 'TrainningIndex',params:{back_page: '1'}, query: { type: trainning.style } }"
                                   class="btn btn-danger btn-sm"
                                 >
@@ -709,6 +713,30 @@
         if (this.trainning.style == 1 && !this.trainning.time_start) {
           $('.time_start_required').show();
           return;
+        }
+        if(this.trainning.style == 1){
+          // $('#logic-warning').hide();
+          let has_startdate = false;
+          let has_enddate = false;
+          if(this.trainning.time_start !== null && this.trainning.time_start !== undefined){
+            has_startdate = true;
+          }
+          if(this.trainning.time_end !== null && this.trainning.time_end !== undefined){
+            has_enddate = true;
+          }
+          if (has_startdate && has_enddate) {
+            let startDate_stamp = Date.parse(new Date(this.trainning.time_start.split("-").reverse().join("-")));
+            let endDate_stamp = Date.parse(new Date(this.trainning.time_end.split("-").reverse().join("-")));
+
+            if (startDate_stamp > endDate_stamp) {
+              // $('#logic-warning').show();
+              toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
+              return;
+            }
+            // else {
+            //   $('#logic-warning').hide();
+            // }
+          }
         }
 
         this.formData = new FormData();

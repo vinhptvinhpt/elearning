@@ -520,7 +520,7 @@
               swal.close();
               if (response.data === 'success') {
                 toastr['success'](current_pos.trans.get('keys.xoa_tai_khoan_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
-                $('#btnFilter').trigger('click');
+                // $('#btnFilter').trigger('click');
                 //   const index = current_pos.posts.findIndex(post => post.user_id == user_delete);
                 //   if (~index) // if the post exists in array
                 //       current_pos.posts.splice(index, 1); //delete the post
@@ -562,7 +562,7 @@
             .then(response => {
               loader.fadeOut();
               toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-              $('#btnFilter').trigger('click');
+              // $('#btnFilter').trigger('click');
               // var url_split = url.split('/');
               // var user_id = url_split[url_split.length - 1];
               //   const index = current_pos.posts.findIndex(post => post.user_id == user_id);
