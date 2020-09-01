@@ -151,8 +151,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     'c.deleted',
                     'mccc.gradepass as pass_score'
                 ];
-            }
-            else {
+            } else {
                 //Kiểm tra xem có phải role teacher hay không
                 $checkRole = tvHasRole(\Auth::user()->id, "teacher");
                 if ($checkRole === TRUE) {
@@ -173,8 +172,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         'mccc.gradepass as pass_score'
                     ];
 //                    $ready = true;
+                }
             }
-        }
         }
 
         //Get last modify => Quá chậm so với query thuần, mặc dù đã paginated, do dữ liệu bảnh log quá nhiều => sử dụng trigger mdl_logstore_standard_log để cập nhật bảng mdl_course
