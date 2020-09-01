@@ -425,7 +425,6 @@ class ExcelController extends Controller
             }
         }
 
-
         $exportExcel = new ReportDetailRawSheet('Report Detail', $export_data, $type);
 
         $filename = "report_detail.xlsx";
