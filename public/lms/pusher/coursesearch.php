@@ -128,6 +128,12 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   and ttp.deleted = 2 and mc.deleted = 0 and
   mc.id not in ' . $courses_others_id;
 
+    if($category == 'other'){
+        if ($txtSearch) {
+            $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+        }
+    }
+
     $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
     //
 
