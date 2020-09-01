@@ -212,9 +212,13 @@ class BussinessRepository implements IBussinessInterface
                 ->join("mdl_user","course_completion.userid","=","mdl_user.id");
 
             //Số học viên đang học
-            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
-                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
-                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
+//            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
+//                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
+//                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
+            $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
+                ->where("tlal.created_at", ">=", Date('Y/m/d',$start_time))
+                ->where("tlal.created_at", "<=",  Date('Y/m/d',$end_time))
+                ->join("mdl_user","tlal.user_id","=","mdl_user.id");
 
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
@@ -237,7 +241,7 @@ class BussinessRepository implements IBussinessInterface
                                 select id from tms_organization where id = $organization_id) as merged"));
                     });
                 $in_progress_student = $in_progress_student
-                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user_enrolments.userid')
+                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user.id')
                     ->join('tms_organization','toe.organization_id','=','tms_organization.id')
                     ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                         $q->select('id')->from(DB::raw("
@@ -300,15 +304,15 @@ class BussinessRepository implements IBussinessInterface
             //Số học viên đang học
             $in_progress_student = $in_progress_student
                 ->select(
-                    DB::raw("date_format(from_unixtime(mdl_user_enrolments.timecreated),'%c/%y') as mthyr"),
+                    DB::raw("date_format(tlal.created_at,'%c/%y') as mthyr"),
                     DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
             $progressing = array();
             foreach ($in_progress_student as $progress) {
-                $mthyr = $progress['mthyr'];
-                $progressing[$mthyr] = $progress['total'];
+                $mthyr = $progress->mthyr;
+                $progressing[$mthyr] = $progress->total;
             }
             $in_progress_source = array();
             foreach ($progressing as $key => $val) {
