@@ -10382,7 +10382,7 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $data = $data->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
             $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
             $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
