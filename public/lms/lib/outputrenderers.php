@@ -689,9 +689,9 @@ class core_renderer extends renderer_base
         // $output .= <<<SSO
         // <script>
             // // Fired after validating JWT on page onLoad process, or after a successful identification
-			
+
 			 // function onIdentification(operation) {
-               
+
                 // if (operation.status === 'SUCCESS') {
                     // $.ajax({
                         // url:'{$ajax_login}',
@@ -699,7 +699,7 @@ class core_renderer extends renderer_base
                         // type: 'POST',
                         // // dataType: 'json',
                         // success: function(data) {
-                     
+
                             // if(data == 1){
                                  // window.location.href = '/lms/my';
                             // }
@@ -2663,7 +2663,7 @@ class core_renderer extends renderer_base
         }else{
             $src = $userpicture->get_url($this->page, $this);
         }
-        // END 
+        // END
         $attributes = array('src' => $src, 'class' => $class, 'width' => $size, 'height' => $size);
         if (!$userpicture->visibletoscreenreaders) {
             $attributes['role'] = 'presentation';
@@ -3148,7 +3148,7 @@ EOD;
     protected function render_paging_bar(paging_bar $pagingbar)
     {
         // Any more than 10 is not usable and causes weird wrapping of the pagination.
-        // [VinhPT][2019.12.04] Fix number page in paging_bar 
+        // [VinhPT][2019.12.04] Fix number page in paging_bar
         $pagingbar->maxdisplay = 3;
         return $this->render_from_template('core/paging_bar', $pagingbar->export_for_template($this));
     }
@@ -3406,11 +3406,11 @@ EOD;
 
         // Give subsystems an opportunity to inject extra html content. The callback
         // must always return a string containing valid html.
-        foreach (\core_component::get_core_subsystems() as $name => $path) {
-            if ($path) {
-                $output .= component_callback($name, 'render_navbar_output', [$this], '');
-            }
-        }
+//        foreach (\core_component::get_core_subsystems() as $name => $path) {
+//            if ($path) {
+//                $output .= component_callback($name, 'render_navbar_output', [$this], '');
+//            }
+//        }
 
         if ($pluginsfunction = get_plugins_with_function('render_navbar_output')) {
             foreach ($pluginsfunction as $plugintype => $plugins) {

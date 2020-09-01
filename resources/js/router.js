@@ -811,7 +811,7 @@ const routes = [
                 component: IndexEmployeeComponent,
                 name: 'IndexEmployee',
                 props: (route) => ({
-                    organization_id: route.query.organization_id,
+                    organization_id: route.query.organization_id ? route.query.organization_id : 0,
                     //back to org list
                     source_page: route.params.source_page ? route.params.source_page : 0,
                     view_mode: route.query.view_mode ? route.query.view_mode : '',

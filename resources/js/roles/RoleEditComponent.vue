@@ -74,18 +74,19 @@
                   </div>
                 </div>
               </div>
-              <div v-if="!roles.role_organization" class="row">
+
+              <div class="row">
                 <div class="col-6">
                   <div class="form-group">
 
-                    <router-link to="/tms/role" class="btn btn-secondary btn-sm">
+                    <router-link :to="{ name: 'RoleIndex', params: { back_page: '1' } }" class="btn btn-secondary btn-sm">
                       {{trans.get('keys.quay_lai')}}
                     </router-link>
 
                     <button type="button" class="btn btn-primary btn-sm" @click="updateRole()">{{trans.get('keys.cap_nhat_quyen')}}</button>
                   </div>
                 </div>
-                <div class="col-6" v-if="roles.status == 0">
+                <div  v-if="!roles.role_organization && roles.status === 0" class="col-6">
                   <div class="form-group text-right">
                     <button type="button" class="btn waves-effect waves-light btn-danger btn-sm" @click="deleteRole()">{{trans.get('keys.xoa')}}</button>
                   </div>

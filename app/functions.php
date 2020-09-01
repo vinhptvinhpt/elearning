@@ -3438,3 +3438,7 @@ function checkRole()
         $tms_answer->save();
     }
 }
+
+function removeCourseFromTraining($course_id) {
+    \App\TmsTrainningCourse::query()->where('course_id', $course_id)->delete();
+}

@@ -4,7 +4,7 @@ if (!isloggedin()) {
 }
 require_once(__DIR__ . '/../../../../config.php');
 
-$sqlGetCategories = 'select id, name from mdl_course_categories';
+$sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 5, 2)';
 $categories = array_values($DB->get_records_sql($sqlGetCategories));
 
 $sqlGetCertificates = 'select tms_traninning_programs.name as name, student_certificate.timecertificate as timecertificate, student_certificate.code as code from student_certificate join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 2 and tms_traninning_programs.auto_certificate = 1 and student_certificate.userid = ' . $USER->id;
@@ -124,6 +124,14 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         top: 2px !important;
     }
 
+    .item-btn .btn{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
+    .item-btn .btn:hover{
+        background-color: <?=$_SESSION["color"]?>;
+        border-color: <?=$_SESSION["color"]?>;
+    }
     /*    paging*/
     .pagination {
         margin: 0 auto;
@@ -203,6 +211,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     .info-detail ul li p {
         margin: 0;
         display: contents;
+    }
+    .info-detail ul li span, .info-detail ul li p{
+        font-weight: bold;
     }
 
     .info-learn {
@@ -341,7 +352,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
     .item-content {
         text-align: center;
-        margin-top: 10%;
+        /*margin-top: 10%;*/
         padding: 0;
     }
 
@@ -520,10 +531,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     }
 </style>
 <body>
-<!--<div id="container1" style="min-width: 300px; height: 400px; margin: 0 auto"></div>-->
-<?php
-
-?>
 <div class="wrapper"><!-- wrapper -->
     <?php echo $OUTPUT->header(); ?>
     <!--    body-->
@@ -537,16 +544,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="info-detail">
                     <ul>
-                        <li v-if="user.position">Position: {{ user.position }}</li>
-                        <li v-else>Position: Not yet update</li>
-                        <li v-if="user.departmentname">Department: {{ user.departmentname }}</li>
-                        <li v-else>Department: Not yet update</li>
-                        <li v-if="user.yearworking > 0">Experience: {{ user.yearworking }} years</li>
-                        <li v-else>Experience: Under 1 year</li>
+                        <li v-if="user.position">Position: <span>{{ user.position }}</span></li>
+                        <li v-else>Position: <span>Not yet update</span></li>
+                        <li v-if="user.departmentname">Department: <span>{{ user.departmentname }}</span></li>
+                        <li v-else>Department: <span>Not yet update</span></li>
+                        <li v-if="user.yearworking > 0">Experience: <span>{{ user.yearworking }} years</span></li>
+                        <li v-else>Experience: <span>Under 1 year</span></li>
                         <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
-                        <li v-else>Line Manager: Not yet update</li>
-                        <li>Company: Easia Travel</li>
+                        <li v-else>Line Manager: <span>Not yet update</span></li>
+                        <li>Company: <span>Easia Travel</span></li>
                     </ul>
                 </div>
                 <div><a href="lms/user/edit.php"
@@ -694,17 +701,20 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
-                                <div class="row col-lg-12">
+                                <div class="row col-lg-12 pb-2">
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3">
                                             <div class="item-image">
-                                                <img
-                                                    src="/storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png"
+                                                <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png"
                                                     alt="">
                                             </div>
-                                            <div class="item-content">
+                                            <div class="item-content mt-2">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
                                                 <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+                                            </div>
+                                            <div class="item-btn" style="text-align: center;color: #fff;">
+                                                <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
+                                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png')">Copy link</a>
                                             </div>
                                         </div>
                                     <?php } ?>
@@ -713,17 +723,20 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             <div id="badge" class="container tab-pane fade">
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
-                                    <div class="row col-lg-12">
+                                    <div class="row col-lg-12 pb-2">
                                         <?php foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3">
                                                 <div class="item-image">
-                                                    <img
-                                                        src="/storage/upload/certificate/<?php echo $badge->code; ?>_badge.png"
-                                                        alt="">
+                                                    <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png"
+                                                        alt="" data-toggle="modal" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">
                                                 </div>
-                                                <div class="item-content">
+                                                <div class="item-content mt-2">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
                                                     <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                                </div>
+                                                <div class="item-btn" style="text-align: center;color: #fff;">
+                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
+                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.png')">Copy link</a>
                                                 </div>
                                             </div>
                                         <?php } ?>
@@ -742,7 +755,29 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
     <?php echo $OUTPUT->footer(); ?>
 </div>
 
-<script>
+<!-- Modal -->
+<div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalCenterTitle" style="font-size: 16px"></h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <img src="" class="img-preview" alt="">
+            </div>
+            <div class="modal-footer">
+                <div class="btn-list" style="margin: auto">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
     $(document).ready(function () {
         $('.li-progress').click(function () {
             var classes = $(this).attr('class');
@@ -757,7 +792,24 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 $('.percentage').css('fill', '<?php echo $_SESSION["color"]; ?>');
             }
         });
+
+        $('.img-view').click(function(){
+            var src = $(this).attr('imgSrc');
+            $('.img-preview').attr('src', src);
+            var name = $(this).attr('nameImg');
+            $('#exampleModalCenterTitle').text(name);
+        });
     });
+
+    function copyToClipboard(url){
+        var $temp = $("<input>");
+        $("body").append($temp);
+        $temp.val(url).select();
+        document.execCommand("copy");
+        $temp.remove();
+        alert("Copied to clipboard");
+        return false;
+    }
 
     Vue.component('v-pagination', window['vue-plain-pagination'])
     var app = new Vue({
@@ -779,7 +831,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             user_id: <?php echo $user_id ?>,
             current: 1,
             totalPage: 0,
-            recordPerPage: 6,
+            recordPerPage: 5,
             currentCoursesTotal: 0,
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
@@ -809,6 +861,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 params.append('current', page || this.current);
                 // params.append('pageCount', this.total);
                 params.append('recordPerPage', this.recordPerPage);
+                params.append('pageRequest', 'profile');
 
                 axios({
                     method: 'post',

@@ -529,7 +529,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .footer-ul li {
         list-style: none;
         text-align: left;
-        font-family: Nunito-Sans-Regular;
+        font-family: Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
         letter-spacing: 0.6px;
         opacity: 1;
         margin-top: 5%;
@@ -551,17 +551,19 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         letter-spacing: 0.6px;
         color: #FFFFFF;
         opacity: 1;
-        font-size: 17px;
+        font-size: 20px;
+        margin: 0;
     }
 
     .footer-logo {
-        height: 11%;
+        height: auto;
+        width: auto;
     }
 
-    .footer-logo img {
-        width: 15%;
-        position: absolute;
-    }
+    /*.footer-logo img {*/
+    /*    width: 15%;*/
+    /*    position: absolute;*/
+    /*}*/
 
     #overlay {
         position: fixed; /* Sit on top of the page content */
@@ -636,8 +638,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .footer-logo {
-        width: 246px;
-        height: 75px;
+        height: auto;
+        width: auto;
     }
 
     @media screen and (min-width: 2000px) {
@@ -816,7 +818,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -831,14 +833,14 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <div class="course-info__detail">
                                                     <ul>
-                                                        <li class="teacher" v-if="course.teacher_name">
+                                                        <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                         </li>
 
-                                                        <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                        <li class="units" title="Competency name"><i class="fa fa-file" aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
-                                                        <li class="units" v-if="course.estimate_duration">
+                                                        <li class="units" v-if="course.estimate_duration" title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hours
                                                         </li>
@@ -858,7 +860,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <template v-if="course.numofmodule == 0"><img
                                                 src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                         </template>
-                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                        <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                         </template>
                                     </div>
                                     <div class="col-7">
@@ -871,16 +873,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <div class="course-info__detail">
                                                     <ul>
-                                                        <li class="teacher" v-if="course.teacher_name">
+                                                        <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                         </li>
-                                                        <li class="teacher" v-else>
-                                                            <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                        </li>
-                                                        <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                        <li class="units" title="Competency name"><i class="fa fa-file" aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
-                                                        <li class="units" v-if="course.estimate_duration">
+                                                        <li class="units" v-if="course.estimate_duration" title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hours
                                                         </li>
@@ -908,14 +907,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                             <div class="course-info__detail">
                                                 <ul>
-                                                    <li class="teacher" v-if="course.teacher_name">
-                                                        <i class="fa fa-user" aria-hidden="true"></i> {{
-                                                        course.teacher_name }}
+                                                    <li class="teacher" v-if="course.teacher_name" title="Teacher name">
+                                                        <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
-                                                    <li class="teacher" v-else>
-                                                        <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                    </li>
-                                                    <li class="units">
+                                                    <li class="units" title="Estimate time">
                                                         <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                         {{course.estimate_duration}} hours
                                                     </li>
@@ -944,13 +939,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                             <div class="course-info__detail">
                                                 <ul>
-                                                    <li class="teacher" v-if="course.teacher_name">
+                                                    <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                         <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
-                                                    <li class="units" v-if="course.training_name"><i class="fa fa-file" aria-hidden="true"></i>
+                                                    <li class="units" v-if="course.training_name" title="Competency name"><i class="fa fa-file" aria-hidden="true"></i>
                                                         {{course.training_name}}
                                                     </li>
-                                                    <li class="units">
+                                                    <li class="units" title="Estimate time">
                                                         <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                         {{course.estimate_duration}} hours
                                                     </li>
@@ -977,7 +972,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                          alt=""><span>0%</span>
                                                 </template>
                                                 <template v-else>
-                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                    <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                                 </template>
                                             </div>
                                         </div>
@@ -991,17 +986,14 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     </div>
                                                     <div class="course-info__detail">
                                                         <ul>
-                                                            <li class="teacher" v-if="course.teacher_name">
+                                                            <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                                 <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                             </li>
-                                                            <li class="teacher" v-else>
-                                                                <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                            </li>
-                                                            <li class="units"><i class="fa fa-file"
+                                                            <li class="units" title="Competency name"><i class="fa fa-file"
                                                                                  aria-hidden="true"></i>
                                                                 {{course.training_name}}
                                                             </li>
-                                                            <li class="units">
+                                                            <li class="units" title="Estimate time">
                                                                 <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                                 {{course.estimate_duration}} hours
                                                             </li>
@@ -1021,7 +1013,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                             </template>
                                             <template v-else>
-                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                                <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                             </template>
                                         </div>
                                         <div class="div-image-disable"></div>
@@ -1036,16 +1028,13 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <div class="course-info__detail">
                                                     <ul>
-                                                        <li class="teacher" v-if="course.teacher_name">
+                                                        <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                         </li>
-                                                        <li class="teacher" v-else>
-                                                            <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                        </li>
-                                                        <li class="units"><i class="fa fa-file" aria-hidden="true"></i>
+                                                        <li class="units" title="Competency name"><i class="fa fa-file" aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
-                                                        <li class="units">
+                                                        <li class="units" title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hours
                                                         </li>
@@ -1066,7 +1055,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <img style="width: 40px !important; height: 40px !important;" src="<?php echo $CFG->wwwtmsbase.$pathBadge; ?>"
                                              alt="" class="img-completed">
                                     </template>
-                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.floor(course.numoflearned*100/course.numofmodule) }}%</span>
+                                    <template v-else><img src="<?php echo $_SESSION['component']; ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
                                     </template>
                                 </div>
                                 <div class="col-7">
@@ -1078,17 +1067,14 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             </div>
                                             <div class="course-info__detail">
                                                 <ul>
-                                                    <li class="teacher" v-if="course.teacher_name">
+                                                    <li class="teacher" v-if="course.teacher_name" title="Teacher name">
                                                         <i class="fa fa-user" aria-hidden="true"></i> {{ course.teacher_name }}
                                                     </li>
-                                                    <li class="teacher" v-else>
-                                                        <!--                                                        <i class="fa fa-user" aria-hidden="true"></i> No teacher assign-->
-                                                    </li>
-                                                    <li class="units" v-if="course.training_name"><i class="fa fa-file"
+                                                    <li class="units" title="Competency name" v-if="course.training_name"><i class="fa fa-file"
                                                                                                      aria-hidden="true"></i>
                                                         {{course.training_name}}
                                                     </li>
-                                                    <li class="units">
+                                                    <li class="units" title="Estimate time">
                                                         <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                         {{course.estimate_duration}} hours
                                                     </li>
@@ -1124,29 +1110,34 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                     <div class="row mb-3">
                         <!--Home-->
                         <div class="footer-block col-12 col-sm-2 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Home</p></div>
+<!--                            <div class="footer-block__title"><p class="footer-title">Home</p></div>-->
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
+                                    <li><a href="lms/my">Home</a></li>
                                     <li><a href="lms/course/index.php">Courses</a></li>
                                     <li><a href="lms/user/profile.php?id=<?php echo $USER->id; ?>">Profile</a></li>
                                     <?php if($_SESSION["allowCms"]){ ?>
-                                        <li><a href="/tms/dashboard">CMS</a></li>
+                                        <li><a href="/tms/dashboard">TMS</a></li>
                                     <?php } ?>
                                 </ul>
                             </div>
                         </div>
                         <!--FAQs-->
                         <div class="footer-block col-12 col-sm-2 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>
+<!--                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>-->
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
+                                    <li><a href="lms/my">FAQs</a></li>
                                 </ul>
                             </div>
                         </div>
                         <!--Contact-->
                         <div class="footer-block col-12 col-sm-8 col-xs-6">
-                            <div class="footer-block__title"><p class="footer-title">Contact</p></div>
+<!--                            <div class="footer-block__title"><p class="footer-title">Contact</p></div>-->
                             <div class="footer-block__ul footer-block__address">
+                                <ul class="footer-ul">
+                                    <li style="margin-top: 1% !important;"><a style="color: #ffffff;">Contact</a></li>
+                                </ul>
                                 <ul class="nav nav-tabs">
                                     <?php $count = 1; $active = 'active';
                                     foreach ($_SESSION["footerAddressesTab"] as $footerAddressTab) { ?>

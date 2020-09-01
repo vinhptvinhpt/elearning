@@ -119,7 +119,7 @@
                         .then(response => {
                             if(response.data == 'success'){
                               toastr['success'](current_pos.trans.get('keys.cap_nhat_chuc_nang_chi_tiet_thanh_cong'), current_pos.trans.get('keys.thanh_cong'));
-                              current_pos.$router.push({ name: 'DetailPermission', params: {id: current_pos.id} });
+                              current_pos.$router.push({ name: 'DetailPermission', params: {id: current_pos.permission_id} });
                             }else if(response.data == 'warning'){
                               toastr['warning'](current_pos.trans.get('keys.key_da_ton_tai'), current_pos.trans.get('keys.thong_bao'));
                             }else{
