@@ -4,8 +4,12 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
                     <h4 class="hk-sec-title">{{trans.get('keys.survey')}}: {{survey.code}} - {{survey.name}}</h4>
+                    <br/>
+                    <h6>{{trans.get('keys.learner')}}: {{user.fullname}}</h6>
+                    <h6>{{trans.get('keys.email')}}: {{user.email}}</h6><br/>
                     <div class="hk-sec-title" v-html="survey.description">
                     </div>
+
                     <br/>
                     <div class="row">
                         <div class="col-sm">
@@ -76,6 +80,8 @@
                     user_id = user_info.id;
                 }
 
+                this.getLeanerInfo(user_id);
+
                 axios.post('/api/survey/view_result', {
                     survey_id: this.survey_id,
                     user_id: user_id
@@ -87,7 +93,19 @@
                     .catch(error => {
                         console.log(error);
                     });
-            }
+            },
+            getLeanerInfo(user_id) {
+
+                axios.post('/api/system/user/info', {
+                    user_id: user_id
+                })
+                    .then(response => {
+                        this.user = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
         },
         mounted() {
             this.getSurvey();

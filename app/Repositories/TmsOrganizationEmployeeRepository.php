@@ -46,15 +46,21 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                     $keyword = substr($keyword, 1, $total_len - 1);
                 }
             }
-            $list = $list->whereHas('user', function($q) use($keyword) {
+            $list->whereHas('user', function($q) use($keyword) {
                 // Query the name field in status table
                 $q->where('fullname', 'like', '%' . $keyword . '%');
                 $q->orWhere('email', 'like', '%' . $keyword . '%');
             });
         }
 
+        $list->whereHas('user', function($q) {
+            // Loại trừ user đã xóa
+            $q->where('deleted', '=', 0);
+        });
+
+
         if (strlen($position) != 0) {
-            $list = $list->where('position', $position);
+            $list->where('position', $position);
         }
 
         $current_user_id = \Auth::user()->id;
@@ -95,7 +101,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //        }
 
         if (is_numeric($organization_id) && $organization_id != 0) {
-//            if ($view_mode == 'recursive') {
+            if ($view_mode == 'recursive') {
                 $list->whereIn('user_id', function ($q2) use ($organization_id) {
                     $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
                             from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
@@ -104,11 +110,12 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
                 });
-//            } else {
-//                $list = $list->where('organization_id', $organization_id);
-//            }
+            } else {
+                $list->where('organization_id', $organization_id);
+            }
         }
-        $list = $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
+
+        $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
 
         $total_all = $list->count(); //lấy tổng số khóa học hiện tại
         $list = $list->paginate($row);
