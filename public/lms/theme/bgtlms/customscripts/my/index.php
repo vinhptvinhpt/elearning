@@ -1357,8 +1357,7 @@ $_SESSION["allowCms"] = $allowCms;
                                             $enable = '';
                                             if ($course->sttShow > 1 || in_array($course->training_id, $competency_exists) || in_array($course->training_id, $competency_completed)) {
                                                 $enable = 'disable';
-                                            }
-                                            if ($course->training_deleted == 2) continue; ?>
+                                            }?>
                                             <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                 <div class="block-data">
                                                     <div class="block-items__item <?php echo $enable; ?>">
