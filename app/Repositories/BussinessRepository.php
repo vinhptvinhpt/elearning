@@ -227,15 +227,38 @@ class BussinessRepository implements IBussinessInterface
             if($organization_id > 0){
                 $completed_student = $completed_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'course_completion.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
-
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
                 $in_progress_student = $in_progress_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user_enrolments.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
 
                 $fail_student = $fail_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mcmc.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
 
             }
             if ($country) {
