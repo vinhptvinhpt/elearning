@@ -808,7 +808,7 @@ class BackgroundController extends Controller
                 if (!isset($role)) {
                     $missing = true;
                 } else {
-                    $mdl_role = MdlRole::query()->where('mdl_role_id', $role->mdl_role_id)->first();
+                    $mdl_role = MdlRole::query()->where('id', $role->mdl_role_id)->first();
                     if (!isset($mdl_role)) {
                         $role->delete();
                         $missing = true;
