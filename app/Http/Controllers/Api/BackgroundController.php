@@ -800,11 +800,61 @@ class BackgroundController extends Controller
 
 
         } else {
+            $missing = false;
             $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
-            if ($check->role) { //Cập nhật role
-                $check->role->name = $organization->code;
-                $check->role->description = $organization->name;
-                $check->role->save();
+            if (isset($check)) {
+
+                $role = Role::query()->where('mdl_role_id', $check->role_id)->first();
+                if (!isset($role)) {
+                    $missing = true;
+                } else {
+                    $mdl_role = MdlRole::query()->where('mdl_role_id', $role->mdl_role_id)->first();
+                    if (!isset($mdl_role)) {
+                        $role->delete();
+                        $missing = true;
+                    }
+                }
+
+                if ($missing == true) {
+                    //Xóa và tạo lại
+                    $check->delete();
+
+                    $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                    //Tạo quyền bên LMS
+                    if (isset($lastRole)) {
+                        $sortorder = $lastRole['sortorder'] + 1;
+                    } else {
+                        $sortorder = 1;
+                    }
+
+                    $mdlRole = MdlRole::firstOrCreate([
+                        'shortname' => $organization->code,
+                        'archetype' => 'user'
+                    ], [
+                        'description' => $organization->name,
+                        'sortorder' => $sortorder
+                    ]);
+
+                    $role = Role::firstOrCreate([
+                        'mdl_role_id' => $mdlRole->id,
+                        'name' => $organization->code,
+                        'guard_name' => 'web',
+                        'status' => 1
+                    ], [
+                        'description' => $organization->name
+                    ]);
+
+                    TmsRoleOrganization::firstOrCreate([
+                        'role_id' => $role->id,
+                        'organization_id' => $organization->id
+                    ]);
+
+                } else {
+                    //Cập nhật role name và description
+                    $check->role->name = $organization->code;
+                    $check->role->description = $organization->name;
+                    $check->role->save();
+                }
             }
         }
     }
