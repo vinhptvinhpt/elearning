@@ -3988,7 +3988,7 @@ class BussinessRepository implements IBussinessInterface
                 });
                 $select_array_per[] = 'tms_learning_activity_logs.duration';
                 $select_array_per[] = 'mdl_course.estimate_duration';
-
+                $select_array_per[] = 'mdl_course.category';
             }
             $query->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
                 /* @var $join JoinClause */
@@ -3998,6 +3998,7 @@ class BussinessRepository implements IBussinessInterface
 
             $select_array[] = 'tms_learning_activity_logs.duration';
             $select_array[] = 'mdl_course.estimate_duration';
+            $select_array[] = 'mdl_course.category';
         }
 
         $query->select($select_array);
@@ -4045,6 +4046,7 @@ class BussinessRepository implements IBussinessInterface
                     if ($mode_select == 'learning_time') {
                         $user['duration'] = $item['duration'];
                         $user['estimate_duration'] = $item['estimate_duration'];
+                        $user['category'] = $item['category'];
                     }
                     if ($data_type == 'person') { //certificated & complete training
                         //col3
@@ -4319,15 +4321,22 @@ class BussinessRepository implements IBussinessInterface
     {
         if ($mode_select == 'learning_time') {
             if ($key == 'col1') {
+                if ($user['category'] == 5) {
+                    $duration = $user['estimate_duration'] * 3600;
+                } else {
+                    $duration = $user['duration'];
+                }
+
                 //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration
                 if (isset($object[$key][$id]) && isset($object[$key][$id]['duration'])) {
-                    $object[$key][$id]['duration'] += $user['duration'];
+                    $object[$key][$id]['duration'] += $duration;
                 } else { //Khởi tạo
                     $object[$key][$id] = $user;
-                    $object[$key][$id]['duration'] = $user['duration'];
+                    $object[$key][$id]['duration'] = $duration;
                 }
+
                 //Cộng vào tổng ủa pảent
-                $object['col1_counter'] += $user['duration'];
+                $object['col1_counter'] += $duration;
             } else { //nếu không gom user bình thường
                 $object[$key][$id] = $user;
             }

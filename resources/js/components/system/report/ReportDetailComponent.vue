@@ -292,6 +292,8 @@
             },
             listData() {
                 this.checkTime();
+                let loader = $('.preloader-it');
+                loader.fadeIn();
                 axios.post('/report/list_detail', {
                     organization_id: this.organization_id,
                     training_id: this.training_id,
@@ -302,12 +304,14 @@
                     course_id: this.course_id
                 })
                     .then(response => {
+                        loader.fadeOut();
                         this.export_data = response.data;
                         this.report_data = [];
                         this.setData(this.export_data, 'organization', '');
                         //Reset report_data array
                     })
                     .catch(error => {
+                        loader.fadeOut();
                         console.log(error);
                     });
             },
@@ -345,11 +349,14 @@
                     });
             },
             exportExcelRaw(data) {
+            let loader = $('.preloader-it');
+            loader.fadeIn();
             axios.post('/exportReportDetailRaw', {
               data: data,
               type: this.mode_select
             })
               .then(response => {
+                loader.fadeOut();
                 var a = $("<a>")
                   .prop("href", "/api/downloadExport/" + 'report_detail.xlsx')
                   .appendTo("body");
@@ -358,6 +365,7 @@
                 toastr['success'](this.trans.get('keys.xuat_du_lieu_thanh_cong'), this.trans.get('keys.thanh_cong'));
               })
               .catch(error => {
+                loader.fadeOut();
                 toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
               });
           },

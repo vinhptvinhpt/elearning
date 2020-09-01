@@ -425,6 +425,8 @@ class ExcelController extends Controller
             }
         }
 
+        dd($export_data);
+
 
         $exportExcel = new ReportDetailRawSheet('Report Detail', $export_data, $type);
 
