@@ -212,9 +212,13 @@ class BussinessRepository implements IBussinessInterface
                 ->join("mdl_user","course_completion.userid","=","mdl_user.id");
 
             //Số học viên đang học
-            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
-                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
-                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
+//            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
+//                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
+//                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
+            $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
+                ->where("tlal.created_at", ">=", Date('Y/m/d',$start_time))
+                ->where("tlal.created_at", "<=",  Date('Y/m/d',$end_time))
+                ->join("mdl_user","tlal.user_id","=","mdl_user.id");
 
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
@@ -227,15 +231,38 @@ class BussinessRepository implements IBussinessInterface
             if($organization_id > 0){
                 $completed_student = $completed_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'course_completion.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
-
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
                 $in_progress_student = $in_progress_student
-                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user_enrolments.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
+                    ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user.id')
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
 
                 $fail_student = $fail_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mcmc.userid')
-                    ->where("toe.organization_id", "=", $organization_id);
+                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                        $q->select('id')->from(DB::raw("
+                                (select id from (select * from tms_organization) torg,
+                                (select @pv := $organization_id) initialisation
+                                where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                                UNION
+                                select id from tms_organization where id = $organization_id) as merged"));
+                    });
 
             }
             if ($country) {
@@ -277,15 +304,15 @@ class BussinessRepository implements IBussinessInterface
             //Số học viên đang học
             $in_progress_student = $in_progress_student
                 ->select(
-                    DB::raw("date_format(from_unixtime(mdl_user_enrolments.timecreated),'%c/%y') as mthyr"),
+                    DB::raw("date_format(tlal.created_at,'%c/%y') as mthyr"),
                     DB::raw('count(DISTINCT mdl_user.id) as total')
                 )
                 ->groupBy('mthyr')
                 ->get()->toArray();
             $progressing = array();
             foreach ($in_progress_student as $progress) {
-                $mthyr = $progress['mthyr'];
-                $progressing[$mthyr] = $progress['total'];
+                $mthyr = $progress->mthyr;
+                $progressing[$mthyr] = $progress->total;
             }
             $in_progress_source = array();
             foreach ($progressing as $key => $val) {
@@ -4758,6 +4785,7 @@ class BussinessRepository implements IBussinessInterface
         $role_id = $request->input('id');
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
+        $organization_id = $request->input('organization_id');
         $param = [
             'id' => 'number',
             'keyword' => 'longtext',
@@ -4789,6 +4817,21 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mu.username', 'like', "%{$this->keyword}%");
             });
         }
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        }
+
         $data = $data->orderBy('mu.username', 'ASC');
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -10391,7 +10434,7 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $data = $data->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
             $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
             $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
@@ -10411,6 +10454,7 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mu.username', 'like', "%{$this->keyword}%");
             });
         }
+        $total_all = $data->count();
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
         $response = [
@@ -10419,6 +10463,7 @@ class BussinessRepository implements IBussinessInterface
                 'current_page' => $data->currentPage(),
             ],
             'data' => $data,
+            'total' => $total_all,
         ];
         return response()->json($response);
     }
@@ -13758,7 +13803,7 @@ class BussinessRepository implements IBussinessInterface
         $this->saleroom_id = $request->input('sale_room_id');
         $this->city_id = 0;
         $role_id = $request->input('role_id');
-
+        $organization_id = $request->input('organization_id');
         //
 //        $typeKeyword = 'text';
 //        if(strpos($this->keyword, '+') !== false)
@@ -13824,6 +13869,21 @@ class BussinessRepository implements IBussinessInterface
                         ->where('.tsru.type', '=', TmsSaleRoomUser::POS)
                         ->whereRaw('tsru.user_id = tud.user_id');
                 });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
         }
 
         //Check đã tồn tại role
