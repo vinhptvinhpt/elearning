@@ -691,7 +691,9 @@ class BackgroundController extends Controller
     }
 
     public function fillMissingPQDL() {
-        $organizations = TmsOrganization::query()->where('level', 2)->get();
+        $organizations = TmsOrganization::query()
+            //->where('level', 2)
+            ->get();
         DB::beginTransaction();
         try {
             foreach ($organizations as $organization) {
