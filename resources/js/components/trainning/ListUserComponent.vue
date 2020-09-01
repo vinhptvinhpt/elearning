@@ -217,7 +217,7 @@
                                     <div class="col-sm-8 dataTables_wrapper">
                                         <div class="dataTables_length" style="display: inline-block;">
                                             <label>{{trans.get('keys.hien_thi')}}
-                                                <select v-model="row"
+                                                <select v-model="row" style="height: 35px"
                                                         class="custom-select custom-select-sm form-control form-control-sm"
                                                         @change="getUser(1)">
                                                     <option value="10">10</option>
@@ -227,7 +227,13 @@
                                                 </select>
                                             </label>
                                         </div>
-
+                                        <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                                          <label>
+                                            <treeselect v-model="organization_id1"
+                                                        :multiple="false" :options="optionsOrganize"
+                                                        @input="getUser(1)"/>
+                                          </label>
+                                        </div>
                                     </div>
                                     <div class="col-sm-4">
                                         <form v-on:submit.prevent="getUser(1)">
@@ -355,7 +361,14 @@
                 organization_id: 0,
                 //Treeselect options
                 options: [],
-                organization_id_1: 0
+                organization_id_1: 0,
+                optionsOrganize: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_id1: 0,
             }
         },
         methods: {
@@ -554,7 +567,8 @@
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    trainning: this.trainning_id
+                    trainning: this.trainning_id,
+                    organization_id: this.organization_id1
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
@@ -623,10 +637,28 @@
             setParamsBackPage(value) {
               this.$route.params.back_page = value;
             },
+            selectOrganization1(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list', {
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.optionsOrganize = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            }
         },
         mounted() {
             this.listOrganization();
             this.selectOrganization();
+            this.selectOrganization1();
         },
         destroyed() {
             sessionStorage.setItem('userListPage', this.current);

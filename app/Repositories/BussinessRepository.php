@@ -4749,6 +4749,7 @@ class BussinessRepository implements IBussinessInterface
         $role_id = $request->input('id');
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
+        $organization_id = $request->input('organization_id');
         $param = [
             'id' => 'number',
             'keyword' => 'longtext',
@@ -4780,6 +4781,21 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mu.username', 'like', "%{$this->keyword}%");
             });
         }
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
+        }
+
         $data = $data->orderBy('mu.username', 'ASC');
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -13751,7 +13767,7 @@ class BussinessRepository implements IBussinessInterface
         $this->saleroom_id = $request->input('sale_room_id');
         $this->city_id = 0;
         $role_id = $request->input('role_id');
-
+        $organization_id = $request->input('organization_id');
         //
 //        $typeKeyword = 'text';
 //        if(strpos($this->keyword, '+') !== false)
@@ -13817,6 +13833,21 @@ class BussinessRepository implements IBussinessInterface
                         ->where('.tsru.type', '=', TmsSaleRoomUser::POS)
                         ->whereRaw('tsru.user_id = tud.user_id');
                 });
+        }
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+            //đệ quy tổ chức con nếu có
+            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+            });
         }
 
         //Check đã tồn tại role
