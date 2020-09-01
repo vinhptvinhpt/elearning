@@ -10,6 +10,7 @@ use App\PermissionSlugRole;
 use App\Role;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsTrainningGroup;
 use Exception;
@@ -481,6 +482,7 @@ class TmsOrganizationRepository implements ICommonInterface
                 PermissionSlugRole::where('role_id', $role_id)->delete();
                 ModelHasRole::where('role_id', $role_id)->delete();
                 removePermissionTo($role_id); //Remove permission to role
+                TmsRoleCourse::query()->where('role_id', $role_id)->delete(); //Xóa phân quyền dữ liệu
                 $check_role->role->delete();
             }
             $check_role->delete();

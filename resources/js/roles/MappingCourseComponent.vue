@@ -216,7 +216,6 @@
         category_id: 0,
         sample: 0,
 
-
         currentUserEnrols: [],
         keyword_curr: '',
         current_page: 1,

@@ -803,7 +803,7 @@ class BackgroundController extends Controller
             $missing = false;
             $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
             if (isset($check)) {
-
+                $old_role_id = $check->role_id;
                 $role = Role::query()->where('id', $check->role_id)->first();
                 if (!isset($role)) {
                     $missing = true;
@@ -835,7 +835,7 @@ class BackgroundController extends Controller
                         'sortorder' => $sortorder
                     ]);
 
-                    $role = Role::firstOrCreate([
+                    $roleNew = Role::firstOrCreate([
                         'mdl_role_id' => $mdlRole->id,
                         'name' => $organization->code,
                         'guard_name' => 'web',
@@ -845,9 +845,15 @@ class BackgroundController extends Controller
                     ]);
 
                     TmsRoleOrganization::firstOrCreate([
-                        'role_id' => $role->id,
+                        'role_id' => $roleNew->id,
                         'organization_id' => $organization->id
                     ]);
+
+                    if ($old_role_id != 0) { //Cập nhật các PQDL cũ
+                        TmsRoleCourse::query()
+                            ->where('role_id', $old_role_id)
+                            ->update(['role_id' => $roleNew->id]);
+                    }
 
                 } else {
                     //Cập nhật role name và description
