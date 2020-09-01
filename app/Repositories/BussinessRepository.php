@@ -10402,6 +10402,7 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mu.username', 'like', "%{$this->keyword}%");
             });
         }
+        $total_all = $data->count();
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
         $response = [
@@ -10410,6 +10411,7 @@ class BussinessRepository implements IBussinessInterface
                 'current_page' => $data->currentPage(),
             ],
             'data' => $data,
+            'total' => $total_all,
         ];
         return response()->json($response);
     }
