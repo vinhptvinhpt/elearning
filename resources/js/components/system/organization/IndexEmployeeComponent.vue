@@ -434,7 +434,7 @@
                     organization_id: this.organization_id1,
                     position: this.position,
                     role: this.selected_role,
-                    view_mode: this.view_mode
+                    view_mode: this.view_mode || 'recursive'
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
