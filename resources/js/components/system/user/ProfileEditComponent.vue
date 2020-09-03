@@ -255,7 +255,9 @@
       },
       getRoles() {
         if (this.type == 'system') {
-          axios.post('/system/user/list_role')
+          axios.post('/system/user/list_role', {
+            type: 'role'
+          })
             .then(response => {
               this.roles = response.data;
             })
