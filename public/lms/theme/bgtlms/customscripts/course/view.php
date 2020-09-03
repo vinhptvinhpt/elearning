@@ -1336,7 +1336,7 @@ where ttc.course_id = ' . $id . ')';
                                     <?php if ($unit['modules'] && !empty($unit['modules'])) {
                                         foreach ($unit['modules'] as $module) { ?>
                                             <ul class="detail-list">
-                                                <?php if ($module['iscompletion'] == 1) { ?>
+                                                <?php if ($module['countcompletion'] == 1) { ?>
                                                     <li class="li-module-done"><i class="fa fa-check"
                                                                                   aria-hidden="true"></i>
                                                         <a class="module-done"
