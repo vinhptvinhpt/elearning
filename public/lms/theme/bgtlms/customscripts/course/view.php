@@ -853,6 +853,7 @@ $sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = ' . $U
 $userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
 $sql = 'SELECT mc.id,
+me.roleid,
 mc.fullname,
 mc.category,
 mc.course_avatar,
@@ -863,9 +864,10 @@ mc.summary, mc.is_toeic,
 ( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned,
 mp.display
 FROM mdl_course mc
+inner join mdl_enrol me on mc.id = me.courseid
+inner join mdl_user_enrolments mue on me.id = mue.enrolid
 LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
- WHERE mc.id = ' . $id;
-
+ WHERE mc.id = ' . $id.' and mue.userid = '.$USER->id;
 
 $course = array_values($DB->get_records_sql($sql))[0];
 
@@ -931,6 +933,8 @@ where mc.id = ' . $id;
 
     $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 
+    //get role in course
+//    $roleInCourse = $course->roleid;
 //
     $permission_admin = false;
 //Check permission edit course
@@ -955,15 +959,15 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
 
-        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3 && $course->roleid != 5) {
             $permission_edit = true;
             break;
         }
-        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5 && $course->roleid != 5) {
             $permission_edit = true;
             break;
         }
-        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5 && $course->roleid != 5) {
             $permission_edit = true;
             break;
         }
@@ -1110,7 +1114,7 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
     <?php echo $OUTPUT->header(); ?>
 
     <div id="app">
-        <?php if ($checkExist) { ?>
+<!--        --><?php //if ($checkExist) { ?>
         <section class="section section--header"><!-- section -->
             <div class="container">
                 <!--                progress info-->
@@ -1430,10 +1434,10 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
                 </div>
             </div>
         </section>
-    <?php } else { ?>
-        <p>You do not have access to this course</p>
-        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>
-    <?php } ?>
+<!--    --><?php //} else { ?>
+<!--        <p>You do not have access to this course</p>-->
+<!--        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>-->
+<!--    --><?php //} ?>
     </div>
 
 </div>
