@@ -1098,10 +1098,14 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
 		  LEFT JOIN tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
 			inner join tms_trainning_courses ttc on ttc.course_id = mc.id
 			LEFT JOIN student_certificate sc on sc.userid = mue.userid and ttc.trainning_id = sc.trainning_id and sc.status = 2
-		where mue.userid = ' . $USER->id . '  and ttc.deleted <> ' . $id . '
+		where mue.userid = ' . $USER->id . ' and ttc.deleted <> 1
   and mc.deleted = 0
   and mc.visible = 1
-  and mc.category NOT IN (2,7)';
+  and mc.category NOT IN (2,7)
+	and ttc.trainning_id = (select ttp.id from tms_traninning_programs ttp
+join tms_trainning_courses ttc on ttp.id = ttc.trainning_id
+where ttc.course_id = ' . $id . ')';
+
     $getCourses = array_values($DB->get_records_sql($sqlGetCourses));
     $countCourses = count($getCourses);
     $doneCompetency = false;
