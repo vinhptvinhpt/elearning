@@ -2635,7 +2635,7 @@ function validate_fails($request, $param)
                 case 'number':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            "regex:/^[0-9]*$/i"
+                            "regex:/^-?[0-9]\d*(\.\d+)?$/i"
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
