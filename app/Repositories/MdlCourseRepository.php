@@ -131,11 +131,15 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                                     ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
                                     ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
                             })
-                            ->orwhereIn('c.id', function ($q1) { //được enrol
+                            ->orWhereIn('c.id', function ($q1) { //được enrol
                                 /* @var $q1 Builder */
                                 $q1->select('mdl_course.id')
                                     ->from('mdl_user_enrolments as mue')
-                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                    //->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
+                                    ->join('mdl_enrol as e', function($join) {
+                                        $join->on('mue.enrolid', '=', 'e.id');
+                                        $join->where('e.roleid', '=', Role::ROLE_TEACHER); //role teacher
+                                    })
                                     ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
                                     ->where('mue.userid', '=', \Auth::user()->id);
                             });
