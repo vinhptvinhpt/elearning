@@ -47,7 +47,7 @@
                             </select>
                         </div>
                         <div class="col-6 mb-1"
-                             v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
+                             v-if="mode_selected === 'completed_course' || mode_selected === 'learning_time'">
                             <select id="course_select" v-model="course_id" class="custom-select">
                                 <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
                                 <option v-for="course in course_list" :value="course.id">
@@ -135,23 +135,23 @@
                             <tr>
                                 <th>{{trans.get('keys.ten')}}</th>
 
-                                <th v-if="mode_select === 'completed_course' || mode_select === 'completed_training'">
+                                <th v-if="mode_selected === 'completed_course' || mode_selected === 'completed_training'">
                                     {{trans.get('keys.da_hoan_thanh_dao_tao')}}
                                 </th>
-                                <th v-if="mode_select === 'completed_course' || mode_select === 'completed_training'">
+                                <th v-if="mode_selected === 'completed_course' || mode_selected === 'completed_training'">
                                     {{trans.get('keys.chua_hoan_thanh_dao_tao')}}
                                 </th>
 
-                                <th v-if="mode_select === 'certificated'">{{trans.get('keys.da_co_giay_chung_nhan')}}
+                                <th v-if="mode_selected === 'certificated'">{{trans.get('keys.da_co_giay_chung_nhan')}}
                                 </th>
-                                <th v-if="mode_select === 'certificated'">
+                                <th v-if="mode_selected === 'certificated'">
                                     {{trans.get('keys.chua_co_giay_chung_nhan')}}
                                 </th>
 
-                                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.thoi_gian_hoc')}}</th>
-                                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.so_nguoi_tham_gia')}}</th>
+                                <th v-if="mode_selected === 'learning_time'">{{trans.get('keys.thoi_gian_hoc')}}</th>
+                                <th v-if="mode_selected === 'learning_time'">{{trans.get('keys.so_nguoi_tham_gia')}}</th>
 
-                                <th v-if="mode_select === 'learning_time'">{{trans.get('keys.thoi_luong_hoc')}}</th>
+                                <th v-if="mode_selected === 'learning_time'">{{trans.get('keys.thoi_luong_hoc')}}</th>
                                 <th v-else>{{trans.get('keys.tong_so')}}</th>
                             </tr>
                             </thead>
@@ -168,14 +168,14 @@
                                 </tr>
                                 <tr v-else-if="item.type === 'courses'" :style="'background:'+ item.color"
                                     v-on:click="toggleRow('student_list_' + item.id, parseInt(item.column4))"
-                                    :class="mode_select === 'certificated' ? 'hidden' : ''">
+                                    :class="mode_selected === 'certificated' ? 'hidden' : ''">
                                     <td>{{item.column1}}</td>
                                     <td style="vertical-align: top;">{{item.column2}}</td>
                                     <td style="vertical-align: top;">{{item.column3}}</td>
                                     <td style="vertical-align: top;">{{item.column4}}</td>
                                 </tr>
                                 <tr v-else :style="'background:'+ item.color" :id="'student_list_' + item.parent"
-                                    class="hidden" :has-content="mode_select === 'completed'">
+                                    class="hidden" :has-content="mode_selected === 'completed'">
                                     <td>{{item.column1}}</td>
                                     <td v-html="item.column2" style="vertical-align: top;"></td>
                                     <td v-html="item.column3" style="vertical-align: top;"></td>
@@ -213,6 +213,7 @@
                 course_id: 0,
                 training_options: [],
                 mode_select: 'certificated',
+                mode_selected: 'certificated',
                 startdate: '',
                 enddate: '',
                 country: '',
@@ -291,13 +292,14 @@
                 }
             },
             listData() {
+                this.mode_selected = this.mode_select;
                 this.checkTime();
                 let loader = $('.preloader-it');
                 loader.fadeIn();
                 axios.post('/report/list_detail', {
                     organization_id: this.organization_id,
                     training_id: this.training_id,
-                    mode_select: this.mode_select,
+                    mode_select: this.mode_selected,
                     start_date: this.startdate,
                     end_date: this.enddate,
                     country: this.country,
