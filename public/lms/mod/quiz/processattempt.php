@@ -30,6 +30,7 @@
 
 require_once(__DIR__ . '/../../config.php');
 require_once($CFG->dirroot . '/mod/quiz/locallib.php');
+require_once($CFG->dirroot . '/mod/quiz/lib.php');
 
 // Remember the current time as the time any responses were submitted
 // (so as to make sure students don't get penalized for slow processing on this page).
@@ -124,10 +125,30 @@ if ($status == quiz_attempt::OVERDUE) {
     $quiz_info->end_date = gmdate("Y-m-d H:i:s", $attemptobj->get_submitted_date());
 
     $info = json_encode($quiz_info);
-    $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id .',\''.$info.'\')';
+    $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info . '\')';
     $DB->execute($noti_quiz);
     $noti_quiz_log = 'INSERT INTO tms_nofitication_logs (type,target,action,content,status_send,sendto,createdby,course_id) values ("' . $noti->type . '","' . $noti->target . '","' . $action . '",\'' . $content . '\', ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ')';
     $DB->execute($noti_quiz_log);
+
+    // Write log case trainee fail quiz (grade not meet requirement and out of attempts) 
+    // Check in mdl_course_modules_completion completionstate = 0 where viewed = 1
+    // Get list attempts of user => check the last attempt
+    $attempts = quiz_get_user_attempts($attemptobj->get_quizobj()->get_quiz()->id, $USER->id, 'all', true);
+    $lastattempt = end($attempts);
+    if ($lastattempt->attempt >= $attemptobj->get_quizobj()->get_quiz()->attempts) {
+        // $fail_info = new stdClass();
+        // $fail_info->lastattempt =  $lastattempt->attempt;
+        // $fail_info->quizattempt = $attemptobj->get_quizobj()->get_quiz()->attempt;
+        // $fail_info_json = json_encode($fail_info);
+        $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
+        $check_noti_result = array_values($DB->get_records_sql($check_noti, array($cmid, $USER->id)))[0];
+        if ($check_noti_result->completionstate == 0 && $check_noti_result->viewed == 1) {
+            $fail_target = 'fail_exam';
+            $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info . '\')';
+            $DB->execute($fail_noti);
+        }
+    }
+
     // Attempt abandoned or finished.
     redirect($attemptobj->review_url());
 }

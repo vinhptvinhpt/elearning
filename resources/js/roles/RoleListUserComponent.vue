@@ -28,12 +28,19 @@
                         <div class="col-sm-5 col-md-8 dataTables_wrapper">
                           <div class="dataTables_length" style="display: inline-block;">
                             <label>{{trans.get('keys.hien_thi')}}
-                              <select v-model="row2" class="custom-select custom-select-sm form-control form-control-sm" @change="getListAddUsers(1)">
+                              <select style="height: 35px" v-model="row2" class="custom-select custom-select-sm form-control form-control-sm" @change="getListAddUsers(1)">
                                 <option value="10">10</option>
                                 <option value="25">25</option>
                                 <option value="50">50</option>
                                 <option value="100">100</option>
                               </select>
+                            </label>
+                          </div>
+                          <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                            <label>
+                              <treeselect v-model="organization_id1"
+                                          :multiple="false" :options="optionsOrganize"
+                                          @input="getListAddUsers(1)"/>
                             </label>
                           </div>
                         </div>
@@ -107,12 +114,19 @@
                     <div class="col-sm-5 col-md-8 dataTables_wrapper">
                       <div class="dataTables_length" style="display: inline-block;">
                         <label>{{trans.get('keys.hien_thi')}}
-                          <select v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getListUsers(1)">
+                          <select style="height: 35px" v-model="row" class="custom-select custom-select-sm form-control form-control-sm" @change="getListUsers(1)">
                             <option value="10">10</option>
                             <option value="25">25</option>
                             <option value="50">50</option>
                             <option value="100">100</option>
                           </select>
+                        </label>
+                      </div>
+                      <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                        <label>
+                          <treeselect v-model="organization_id"
+                                      :multiple="false" :options="optionsOrganize"
+                                      @input="getListUsers(1)"/>
                         </label>
                       </div>
                     </div>
@@ -222,7 +236,16 @@
                 user_add:[],
                 allSelected: false,
                 user_length:0,
-                role_name: ''
+                role_name: '',
+                //Treeselect options
+                optionsOrganize: [
+                  {
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
+                  }
+                ],
+                organization_id: 0,
+                organization_id1: 0,
             }
         },
         methods: {
@@ -275,7 +298,8 @@
                     page: paged2 || this.current2,
                     keyword: this.keyword2,
                     row: this.row2,
-                    role_id:this.role_id
+                    role_id:this.role_id,
+                    organization_id: this.organization_id1
                 })
                     .then(response => {
                         this.posts2 = response.data.data ? response.data.data.data : [];
@@ -291,7 +315,8 @@
                     page: paged || this.current,
                     keyword: this.keyword,
                     row: this.row,
-                    id:this.role_id
+                    id:this.role_id,
+                    organization_id: this.organization_id
                 })
                     .then(response => {
                         this.posts = response.data.data ? response.data.data.data : [];
@@ -338,9 +363,47 @@
                         });
                 });
             },
+            selectOrganization(current_id) {
+              $('.content_search_box').addClass('loadding');
+              axios.post('/organization/list', {
+                keyword: this.organization_keyword,
+                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                paginated: 0 //không phân trang
+              })
+                .then(response => {
+                  this.organization_list = response.data;
+                  //Set options recursive
+                  this.optionsOrganize = this.setOptions(response.data, current_id);
+                  $('.content_search_box').removeClass('loadding');
+                })
+                .catch(error => {
+                  $('.content_search_box').removeClass('loadding');
+                })
+            },
+            setOptions(list, current_id) {
+              let outPut = [];
+              for (const [key, item] of Object.entries(list)) {
+                let newOption = {
+                  id: item.id,
+                  label: item.name,
+                };
+                if (item.children.length > 0) {
+                  for (const [key, child] of Object.entries(item.children)) {
+                    if (child.id === current_id) {
+                      newOption.isDefaultExpanded = true;
+                      break;
+                    }
+                  }
+                  newOption.children = this.setOptions(item.children, current_id);
+                }
+                outPut.push(newOption);
+              }
+              return outPut;
+            }
         },
         mounted() {
           this.fetch();
+          this.selectOrganization();
         }
     }
 </script>

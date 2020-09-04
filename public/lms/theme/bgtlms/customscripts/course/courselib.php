@@ -90,6 +90,7 @@ function get_course_contents($courseid)
                     $options
                 );
             $sectionvalues['section'] = $section->section;
+            $sectionvalues['completion'] = $section->completion;
             $sectionvalues['hiddenbynumsections'] = $section->section > $coursenumsections ? 1 : 0;
             $sectionvalues['uservisible'] = $section->uservisible;
             if (!empty($section->availableinfo)) {
@@ -142,7 +143,10 @@ function get_course_contents($courseid)
 
                     //common info (for people being able to see the module or availability dates)
                     $module['id'] = $cm->id;
+                    $module['countcompletion'] = 0;
                     $module['iscompletion'] = $getStatusCompletion->completionstate;
+                    if($getStatusCompletion->completionstate < 3 && $getStatusCompletion->completionstate > 0 )
+                        $module['countcompletion'] = 1;
                     $module['name'] = external_format_string($cm->name, $modcontext->id);
                     $module['instance'] = $cm->instance;
                     $module['modname'] = $cm->modname;
@@ -153,6 +157,8 @@ function get_course_contents($courseid)
                     $module['afterlink'] = $cm->afterlink;
                     $module['customdata'] = json_encode($cm->customdata);
                     $module['completion'] = $cm->completion;
+
+
 
                     // Check module completion.
                     $completion = $completioninfo->is_enabled($cm);

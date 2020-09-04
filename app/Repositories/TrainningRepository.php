@@ -915,6 +915,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $keyword = $request->input('keyword');
             $row = $request->input('row');
             $trainning = $request->input('trainning');
+            $organization_id = $request->input('organization_id');
 
             $param = [
                 'keyword' => 'text',
@@ -940,7 +941,20 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             if ($keyword) {
                 $data = $data->whereRaw('(tud.fullname like "%' . $keyword . '%" OR mu.email like "%' . $keyword . '%" OR mu.username like "%' . $keyword . '%")');
             }
-
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
+                //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+                //đệ quy tổ chức con nếu có
+                $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
+                $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+                $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                    $q->select('id')->from(DB::raw("
+                            (select id from (select * from tms_organization) torg,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
+                            UNION
+                            select id from tms_organization where id = $organization_id) as merged"));
+                });
+            }
 
             $data = $data->orderBy('mu.id', 'desc');
             $data = $data->groupBy('mu.id');

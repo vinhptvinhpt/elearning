@@ -1240,7 +1240,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                 this.category = category;
                 if (page == 1)
                     this.current = 1;
-                this.urlTms = 'http://localhost:8888/elearning-easia/public';
+                // this.urlTms = 'http://localhost:8888/elearning-easia/public';
                 let url = '<?php echo $CFG->wwwroot; ?>';
                 const params = new URLSearchParams();
                 params.append('category', this.category);

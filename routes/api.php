@@ -47,7 +47,7 @@ Route::get('/background/importEmployee', 'Api\BackgroundController@importEmploye
 //Route::get('/background/removeUsers', 'Api\BackgroundController@removeUsers');
 //Route::get('/background/deleteLeftoverData', 'Api\BackgroundController@deleteLeftoverData');
 //Route::get('/background/resetOrganizationEmployeePassword', 'Api\BackgroundController@resetOrganizationEmployeePassword');
-//Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingPQDL'); //Chuyển phân quyền dữ liệu thành bắt buộc, bổ sung pqdl cho các tổ chức còn thiếu do tạo từ trước
+Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingPQDL'); //Chuyển phân quyền dữ liệu thành bắt buộc, bổ sung pqdl cho các tổ chức còn thiếu do tạo từ trước
 //Route::get('/background/fillTrainingForStandaloneCourses', 'Api\BackgroundController@fillTrainingForStandaloneCourses'); //Tạo training cho các khóa lẻ đã tạo từ trước, vì hiện tai tất cả khóa lẻ đều có KNL của riêng nó
 Route::get('/background/removeSelectedUsers', 'Api\BackgroundController@removeSelectedUsers'); //Xóa users theo id
 

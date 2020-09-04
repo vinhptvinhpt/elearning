@@ -75,6 +75,11 @@
                     </form>
                   </div>
                 </div>
+                <div class="mt-10 mb-20">
+                  <strong>
+                    {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{ totalRow }}
+                  </strong>
+                </div>
                 <div class="table-responsive">
                   <table class="table_res">
                     <thead>
@@ -188,6 +193,7 @@
         keyword: '',
         current: 1,
         totalPages: 0,
+        totalRow: 0,
         row: 10,
         urlListUser: '/system/user/list_trash',
         user_restore: [],
@@ -209,6 +215,10 @@
         axios.post('/system/user/get_list_role')
           .then(response => {
             this.listrole = response.data;
+            let check = this.listrole.findIndex(val => val.name == "teacher");
+            if(check > -1){
+              this.listrole[check].name = "content creator";
+            }
           })
           .catch(error => {
             console.log(error.response.data);
@@ -323,6 +333,8 @@
             this.posts = response.data.data ? response.data.data.data : [];
             this.current = response.data.pagination ? response.data.pagination.current_page : 1;
             this.totalPages = response.data.pagination ? response.data.pagination.total : 0;
+            this.totalRow = response.data ? response.data.total : 0;
+
           })
           .catch(error => {
             console.log(error.response.data);

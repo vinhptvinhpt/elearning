@@ -106,6 +106,7 @@
         <div class="col-md-4 col-sm-6  form-group">
           <label for="inputSex">{{trans.get('keys.gioi_tinh')}}</label>
           <select id="inputSex" class="form-control custom-select" v-model="sex">
+            <option value="-1">{{trans.get('keys.chon_gioi_tinh')}}</option>
             <option value="1">{{trans.get('keys.nam')}}</option>
             <option value="0">{{trans.get('keys.nu')}}</option>
           </select>
@@ -322,7 +323,7 @@
         country: '',
         inputRole: [],
         roles: [],
-        sex: 1,
+        sex: -1,
         code: '',
         start_time: '',
         working_status: 0,
@@ -542,7 +543,9 @@
       },
       getRoles() {
         if (this.type === 'system') {
-          axios.post('/system/user/list_role')
+          axios.post('/system/user/list_role', {
+            type: 'role'
+          })
             .then(response => {
               this.roles = response.data;
               this.getRoleFromCurrentRoles(this.current_roles);
