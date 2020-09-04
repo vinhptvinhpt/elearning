@@ -859,8 +859,8 @@ mc.course_avatar,
 mc.estimate_duration,
 mc.summary, mc.is_toeic,
 ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections,
-( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.course = mc.id) AS numofmodule,
-( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id AND cmc.userid = ' . $USER->id . ') AS numoflearned,
+( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.completion <> 0 AND cm.course = mc.id) AS numofmodule,
+( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = ' . $USER->id . ') AS numoflearned,
 mp.display
 FROM mdl_course mc
 LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
@@ -872,7 +872,7 @@ $course = array_values($DB->get_records_sql($sql))[0];
 $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
 left join mdl_enrol me on mc.id = me.courseid
 left join mdl_user_enrolments mue on me.id = mue.enrolid
-where mc.id = '.$id.' and mue.userid = ' . $USER->id;
+where mc.id = ' . $id . ' and mue.userid = ' . $USER->id;
 $getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
 $roleId = $getRole->roleid;
 
@@ -924,7 +924,6 @@ where mc.id = ' . $id;
     }
 
     $units = get_course_contents($id);
-
 
     $start_course_link = '';
 
@@ -1127,7 +1126,7 @@ where ttc.course_id = ' . $id . ')';
     <?php echo $OUTPUT->header(); ?>
 
     <div id="app">
-<!--        --><?php //if ($checkExist) { ?>
+        <!--        --><?php //if ($checkExist) { ?>
         <section class="section section--header"><!-- section -->
             <div class="container">
                 <!--                progress info-->
@@ -1258,23 +1257,23 @@ where ttc.course_id = ' . $id . ')';
                     </div>
                     <div class="col-4 course-block-img course-block__content">
                         <?php if (!$doneCompetency) { ?>
-                        <div class="competency-check">
-                            <p>The competency has not been completed <i class="fa fa-check-circle"></i></p><br/>
-                            <img src="<?php echo $pathBadge; ?>" alt="">
-                        </div>
-                        <?php } else if($doneCompetency && is_null($codeCer)){ ?>
+                            <div class="competency-check">
+                                <p>The competency has not been completed <i class="fa fa-check-circle"></i></p><br/>
+                                <img src="<?php echo $pathBadge; ?>" alt="">
+                            </div>
+                        <?php } else if ($doneCompetency && is_null($codeCer)) { ?>
                             <div class="competency-done">
                                 <p>The competency has been completed <i class="fa fa-check-circle"></i></p><br/>
                                 <p>Please wait while generating image badge!</p><br/>
                                 <img src="images/wait.png" alt="">
                             </div>
                         <?php } else { ?>
-                        <!--                            <img src="images/icontick.png" alt="">-->
-                        <div class="competency-done">
-                            <p>The competency has been completed <i class="fa fa-check-circle"></i></p><br/>
-                            <p>Your image badge below!</p><br/>
-                            <img src="storage/upload/certificate/<?php echo $codeCer; ?>_badge.png" alt="">
-                        </div>
+                            <!--                            <img src="images/icontick.png" alt="">-->
+                            <div class="competency-done">
+                                <p>The competency has been completed <i class="fa fa-check-circle"></i></p><br/>
+                                <p>Your image badge below!</p><br/>
+                                <img src="storage/upload/certificate/<?php echo $codeCer; ?>_badge.png" alt="">
+                            </div>
                         <?php } ?>
                     </div>
                 </div>
@@ -1299,6 +1298,10 @@ where ttc.course_id = ' . $id . ')';
                                 <?php $modulCompletion = array_sum(array_map(function ($item) {
                                     return $item['countcompletion'];
                                 }, $unit['modules']));
+                                $countCompletion = count(array_filter($unit['modules'], function ($unitT) {
+                                    // condition which makes a result belong to div2.
+                                    return $unitT['completion'] == 0;
+                                }));
                                 $totalModul = count($unit['modules']);
                                 $icon = "pencil-square-o";
                                 $addName = "";
@@ -1314,10 +1317,12 @@ where ttc.course_id = ' . $id . ')';
                                             <i class="fa fa-<?php echo $icon; ?>" aria-hidden="true"></i>
                                         </div>
                                         <div class="unit__progress-number">
-                                            <!--                                                class="percent-get">-->
-                                            <?php //echo count($unit['modules']['iscompletion']); ?><!--</span>-->
-                                            <p><i class="fa fa-check" aria-hidden="true"></i> <span
-                                                    class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
+                                            <p><i class="fa fa-check" aria-hidden="true"></i>
+                                                <?php if ($countCompletion > 0) { ?>
+                                                    <span class="percent-get"><?php echo $totalModul; ?></span>
+                                                <?php } else { ?>
+                                                    <span class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
+                                                <?php } ?>
                                             </p>
                                         </div>
                                     </div>
@@ -1342,11 +1347,18 @@ where ttc.course_id = ' . $id . ')';
                                                         <a class="module-done"
                                                            href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
                                                     </li>
-                                                <?php } else { ?>
-                                                    <li><i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                        <a class="module-notyet"
-                                                           href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
-                                                    </li>
+                                                <?php } else {
+                                                    if ($module['completion'] == 0) { ?>
+                                                        <li><i class="fa fa-info-circle" aria-hidden="true"></i>
+                                                            <a class="module-notyet"
+                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                        </li>
+                                                    <?php } else { ?>
+                                                        <li><i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                                            <a class="module-notyet"
+                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                        </li>
+                                                    <?php } ?>
                                                 <?php } ?>
                                             </ul>
                                         <?php }
@@ -1447,10 +1459,10 @@ where ttc.course_id = ' . $id . ')';
                 </div>
             </div>
         </section>
-<!--    --><?php //} else { ?>
-<!--        <p>You do not have access to this course</p>-->
-<!--        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>-->
-<!--    --><?php //} ?>
+        <!--    --><?php //} else { ?>
+        <!--        <p>You do not have access to this course</p>-->
+        <!--        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>-->
+        <!--    --><?php //} ?>
     </div>
 
 </div>

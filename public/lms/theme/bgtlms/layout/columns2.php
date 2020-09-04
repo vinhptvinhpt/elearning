@@ -195,7 +195,10 @@ if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
 }
 
 $top_bar_home = $bodyid == 'page-my-index' ? 'current-selected' : '';
-$top_bar_course = $bodyid == 'page-course-index' ? 'current-selected' : '';
+$top_bar_course = '';
+if($bodyid == 'page-course-index' || $bodyid == 'page-course-view')
+    $top_bar_course = 'current-selected';
+
 $wwwtms = $CFG->wwwtms;
 
 //color organization

@@ -90,6 +90,7 @@ function get_course_contents($courseid)
                     $options
                 );
             $sectionvalues['section'] = $section->section;
+            $sectionvalues['completion'] = $section->completion;
             $sectionvalues['hiddenbynumsections'] = $section->section > $coursenumsections ? 1 : 0;
             $sectionvalues['uservisible'] = $section->uservisible;
             if (!empty($section->availableinfo)) {
