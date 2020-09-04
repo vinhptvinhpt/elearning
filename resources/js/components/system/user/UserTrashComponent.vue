@@ -215,6 +215,10 @@
         axios.post('/system/user/get_list_role')
           .then(response => {
             this.listrole = response.data;
+            let check = this.listrole.findIndex(val => val.name == "teacher");
+            if(check > -1){
+              this.listrole[check].name = "content creator";
+            }
           })
           .catch(error => {
             console.log(error.response.data);
