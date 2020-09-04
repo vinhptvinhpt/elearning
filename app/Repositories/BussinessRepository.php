@@ -271,7 +271,7 @@ class BussinessRepository implements IBussinessInterface
                     ->where("tud.country", "=", $country);
 
                 $in_progress_student = $in_progress_student
-                    ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mdl_user_enrolments.userid')
+                    ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mdl_user.id')
                     ->where("tud.country", "=", $country);
 
                 $fail_student = $fail_student
