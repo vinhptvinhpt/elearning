@@ -691,7 +691,9 @@ Log::info('348');
     }
 
     public function fillMissingPQDL() {
-        $organizations = TmsOrganization::query()->where('level', 2)->get();
+        $organizations = TmsOrganization::query()
+            //->where('level', 2)
+            ->get();
         DB::beginTransaction();
         try {
             foreach ($organizations as $organization) {
@@ -800,11 +802,67 @@ Log::info('348');
 
 
         } else {
+            $missing = false;
             $check = TmsRoleOrganization::where('organization_id', $organization->id)->first();
-            if ($check->role) { //Cập nhật role
-                $check->role->name = $organization->code;
-                $check->role->description = $organization->name;
-                $check->role->save();
+            if (isset($check)) {
+                $old_role_id = $check->role_id;
+                $role = Role::query()->where('id', $check->role_id)->first();
+                if (!isset($role)) {
+                    $missing = true;
+                } else {
+                    $mdl_role = MdlRole::query()->where('id', $role->mdl_role_id)->first();
+                    if (!isset($mdl_role)) {
+                        $role->delete();
+                        $missing = true;
+                    }
+                }
+
+                if ($missing == true) {
+                    //Xóa và tạo lại
+                    $check->delete();
+
+                    $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                    //Tạo quyền bên LMS
+                    if (isset($lastRole)) {
+                        $sortorder = $lastRole['sortorder'] + 1;
+                    } else {
+                        $sortorder = 1;
+                    }
+
+                    $mdlRole = MdlRole::firstOrCreate([
+                        'shortname' => $organization->code,
+                        'archetype' => 'user'
+                    ], [
+                        'description' => $organization->name,
+                        'sortorder' => $sortorder
+                    ]);
+
+                    $roleNew = Role::firstOrCreate([
+                        'mdl_role_id' => $mdlRole->id,
+                        'name' => $organization->code,
+                        'guard_name' => 'web',
+                        'status' => 1
+                    ], [
+                        'description' => $organization->name
+                    ]);
+
+                    TmsRoleOrganization::firstOrCreate([
+                        'role_id' => $roleNew->id,
+                        'organization_id' => $organization->id
+                    ]);
+
+                    if ($old_role_id != 0) { //Cập nhật các PQDL cũ
+                        TmsRoleCourse::query()
+                            ->where('role_id', $old_role_id)
+                            ->update(['role_id' => $roleNew->id]);
+                    }
+
+                } else {
+                    //Cập nhật role name và description
+                    $check->role->name = $organization->code;
+                    $check->role->description = $organization->name;
+                    $check->role->save();
+                }
             }
         }
     }

@@ -106,6 +106,7 @@
                 <div class="col-4 form-group">
                   <label for="inputSex">{{trans.get('keys.gioi_tinh')}}</label>
                   <select id="inputSex" class="form-control custom-select" v-model="users.sex">
+                    <option value="-1">{{trans.get('keys.chon_gioi_tinh')}}</option>
                     <option value="1">{{trans.get('keys.nam')}}</option>
                     <option value="0">{{trans.get('keys.nu')}}</option>
                   </select>
@@ -255,7 +256,9 @@
       },
       getRoles() {
         if (this.type == 'system') {
-          axios.post('/system/user/list_role')
+          axios.post('/system/user/list_role', {
+            type: 'role'
+          })
             .then(response => {
               this.roles = response.data;
             })

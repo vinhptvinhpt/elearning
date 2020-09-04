@@ -575,7 +575,9 @@
 
       },
       getRoles() {
-        axios.post('/system/user/list_role')
+        axios.post('/system/user/list_role', {
+          type: 'role'
+        })
           .then(response => {
             this.roles = response.data;
             this.$nextTick(function () {

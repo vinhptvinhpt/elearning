@@ -92,8 +92,9 @@
                                 <li>
                                     <div class="row">
                                         <div class="col-sm-6">{{trans.get('keys.gioi_tinh')}}</div>
-                                        <div class="col-sm-6 pl-30 pl-sm-15">{{ (users.sex == 1) ? trans.get('keys.nam') : trans.get('keys.nu')}}
-                                        </div>
+                                        <div class="col-sm-6 pl-40 pl-sm-15" v-if="users.sex === 1">{{ trans.get('keys.nam') }}</div>
+                                        <div class="col-sm-6 pl-40 pl-sm-15" v-else-if="users.sex === 0">{{ trans.get('keys.nu') }}</div>
+                                        <div class="col-sm-6 pl-40 pl-sm-15" v-else>{{ trans.get('keys.chua_cap_nhat') }}</div>
                                     </div>
                                 </li>
                                 <li>
