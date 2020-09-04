@@ -62,6 +62,7 @@ $permission_editor = false;
 $permission_tms = false;
 $getPathPublic = '';
 $imgCongra = '';
+$roleInCourse = 0;
 //
 $finishCourse = false;
 $pathBadge = 'images/default_badge.png';
@@ -81,6 +82,14 @@ $viewCoursePage = false;
 $permissions = array_values($check);
 
 if ($pagelayout == 'incourse') {
+    //get role in course is teacher or trainee
+    $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
+    left join mdl_enrol me on mc.id = me.courseid
+    left join mdl_user_enrolments mue on me.id = mue.enrolid
+    where mc.id = ' . $courseid . ' and mue.userid = ' . $USER->id;
+    $getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
+    $roleInCourse = $getRole->roleid;
+
     //
     require_once('courselib.php');
     $params = array('id' => $courseid);
@@ -107,7 +116,7 @@ if ($pagelayout == 'incourse') {
     $getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
     $pathBadge = $getBadge->path;
     $pathBadge = ltrim($pathBadge, $pathBadge[0]);
-    $pathBadge = $CFG->wwwtmsbase.$pathBadge;
+    $pathBadge = $CFG->wwwtmsbase . $pathBadge;
 //    $viewCoursePage = true;
     //get progress learning
     $sqlGetProgress = ' select ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
@@ -119,7 +128,7 @@ if ($pagelayout == 'incourse') {
 		  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 		  inner join mdl_user_enrolments mue on me.id = mue.enrolid
 		  LEFT JOIN tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
-		  inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = '.$cmid.'
+		  inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = ' . $cmid . '
 		where mue.userid = ' . $USER->id . ' and mc.id = ' . $courseid;
 
     $progress = array_values($DB->get_records_sql($sqlGetProgress))[0];
@@ -170,6 +179,9 @@ if ($pagelayout == 'incourse') {
 }
 
 foreach ($permissions as $permission) {
+    if (in_array($permission->name, ['admin', 'root'])) {
+        $roleInCourse = 0;
+    }
     if (!in_array($permission->name, ['student', 'employee'])) {
         $permission_tms = true;
     }
@@ -196,7 +208,7 @@ if ($pagelayout == 'course' && strpos($bodyattributes, 'editing ') !== false) {
 
 $top_bar_home = $bodyid == 'page-my-index' ? 'current-selected' : '';
 $top_bar_course = '';
-if($bodyid == 'page-course-index' || $bodyid == 'page-course-view')
+if ($bodyid == 'page-course-index' || $bodyid == 'page-course-view')
     $top_bar_course = 'current-selected';
 
 $wwwtms = $CFG->wwwtms;
@@ -239,7 +251,8 @@ $templatecontext = [
     'color' => $color,
     'finishCourse' => $finishCourse,
     'pathBadge' => $pathBadge,
-    'courseName' => $course_name
+    'courseName' => $course_name,
+    'roleInCourse' => $roleInCourse
 ];
 
 $nav = $PAGE->flatnav;
@@ -459,10 +472,6 @@ try {
     }
 } catch (Exception $e) {
     $can_access_tms = false;
-}
-
-if (is_siteadmin($USER)) {
-    $can_access_tms = true;
 }
 
 if (is_siteadmin($USER)) {
