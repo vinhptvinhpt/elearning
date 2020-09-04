@@ -1294,8 +1294,8 @@ where ttc.course_id = ' . $id . ')';
                 <div class="row col-12 course-content" id="courseunit">
                     <div class="col-5 unit-info">
                         <div class="list-units">
-                            <?php foreach ($units as $no => $unit) { ?>
-                                <?php $modulCompletion = array_sum(array_map(function ($item) {
+                            <?php $countUnit = 0; foreach ($units as $no => $unit) {
+                                $modulCompletion = array_sum(array_map(function ($item) {
                                     return $item['countcompletion'];
                                 }, $unit['modules']));
                                 $countCompletion = count(array_filter($unit['modules'], function ($unitT) {
@@ -1318,7 +1318,7 @@ where ttc.course_id = ' . $id . ')';
                                         </div>
                                         <div class="unit__progress-number">
                                             <p><i class="fa fa-check" aria-hidden="true"></i>
-                                                <?php if ($countCompletion > 0) { ?>
+                                                <?php if ($countUnit == 0 || $countCompletion > 0) { ?>
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
                                                     <span class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
@@ -1327,12 +1327,12 @@ where ttc.course_id = ' . $id . ')';
                                         </div>
                                     </div>
                                 </div>
-                            <?php } ?>
+                            <?php $countUnit++; } ?>
                         </div>
                     </div>
 
                     <div class="col-7 unit-info unit-detail">
-                        <?php foreach ($units as $unit) { ?>
+                        <?php $countUnit = 0; foreach ($units as $unit) { ?>
                             <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
                                 <div class="detail-title">
                                     <p><?php echo $unit['name']; ?></p>
@@ -1348,7 +1348,7 @@ where ttc.course_id = ' . $id . ')';
                                                            href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
                                                     </li>
                                                 <?php } else {
-                                                    if ($module['completion'] == 0) { ?>
+                                                    if ($countUnit == 0 || $module['completion'] == 0) { ?>
                                                         <li><i class="fa fa-info-circle" aria-hidden="true"></i>
                                                             <a class="module-notyet"
                                                                href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
@@ -1361,7 +1361,7 @@ where ttc.course_id = ' . $id . ')';
                                                     <?php } ?>
                                                 <?php } ?>
                                             </ul>
-                                        <?php }
+                                        <?php } $countUnit++;
                                     } else { ?>
                                         Unit has no content.
                                     <?php } ?>
