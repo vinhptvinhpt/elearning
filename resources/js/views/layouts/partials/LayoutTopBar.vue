@@ -252,6 +252,7 @@
       this.getDefaultValue();
       this.domainWeb = location.hostname;
       this.imgLogo = sessionStorage.getItem('img-logo');
+
       if(!this.imgLogo || this.imgLogo == undefined){
         this.imgLogo = '/assets/dist/img/logo-black.png';
       }

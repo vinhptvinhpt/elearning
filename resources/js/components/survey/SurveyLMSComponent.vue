@@ -111,6 +111,7 @@
                         if (response.data.status) {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             // window.history.back();
+                            this.$router.push({name: 'SurveyResult', params: {survey_id: this.survey_id}});
                         } else {
                             toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
                         }
