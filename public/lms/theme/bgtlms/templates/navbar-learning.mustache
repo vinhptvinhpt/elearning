@@ -141,6 +141,13 @@
         $('.btn-close').click(function(){
             $('.modal').removeClass('show');
         });
+
+
+
+        let roleInCourse = {{ roleInCourse }};
+        if(roleInCourse == 5){
+            $('#action-menu-2-menubar').addClass('disableEdit');
+        }
     });
 </script>
 <style>
@@ -240,5 +247,9 @@
 
     .modal-body{
         margin: 0 auto;
+    }
+
+    .disableEdit{
+        display: none !important;
     }
 </style>
