@@ -94,10 +94,12 @@ import ProfileEditComponent from "./components/system/user/ProfileEditComponent"
 import IndexOrganizationComponent from "./components/system/organization/IndexOrganizationComponent";
 import EditOrganizationComponent from "./components/system/organization/EditOrganizationComponent";
 import IndexEmployeeComponent from "./components/system/organization/IndexEmployeeComponent";
+import IndexTeamComponent from "./components/system/organization/IndexTeamComponent";
 import TrainningListComponent from "./components/trainning/TrainningListComponent";
 import TrainningEditComponent from "./components/trainning/TrainningEditComponent";
 import ListUserComponent from "./components/trainning/ListUserComponent";
 import EditEmployeeComponent from "./components/system/organization/EditEmployeeComponent";
+import EditTeamComponent from "./components/system/organization/EditTeamComponent";
 import PermissionIndexComponent from "./roles/PermissionIndexComponent";
 import PermissionAddComponent from "./roles/PermissionAddComponent";
 import PermissionDetailComponent from "./roles/PermissionDetailComponent";
@@ -828,6 +830,29 @@ const routes = [
                     organization_id: route.query.organization_id ? route.query.organization_id : 0,
                     view_mode: route.params.view_mode ? route.params.view_mode : '',
                 })
+            },
+            {
+              path: 'organization-team',
+              component: IndexTeamComponent,
+              name: 'IndexTeam',
+              props: (route) => ({
+                organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                //back to org list
+                source_page: route.params.source_page ? route.params.source_page : 0,
+                view_mode: route.query.view_mode ? route.query.view_mode : '',
+              })
+            },
+            {
+              path: 'organization-team/edit/:id',
+              component: EditTeamComponent,
+              name: 'EditTeam',
+              props: (route) => ({
+                id: route.params.id,
+                //Back to employee list
+                source_page: route.params.source_page ? route.params.source_page : 0,
+                organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                view_mode: route.params.view_mode ? route.params.view_mode : '',
+              })
             },
             // Trainning
             {

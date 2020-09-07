@@ -1035,7 +1035,14 @@
         "full": "Full",
         "lite": "Lite",
         "tai_ve_bieu_mau_rut_gon": "Download Excel Template Lite",
-        "chon_chuc_nang": "Select function"
+        "chon_chuc_nang": "Select function",
+        "danh_sach_team": "Team list",
+        "ten_team": "Team name",
+        "ma_team": "Team code",
+        "tong_so_team_hien_tai": "Total team count",
+        "so_luong_thanh_vien": "Member count",
+        "xem_thanh_vien": "View member",
+        "sua_team": "Edit team"
     },
     "vi.keys": {
         "language": "",
@@ -2064,6 +2071,13 @@
         "full": "đầy đủ",
         "lite": "rút gọn",
         "tai_ve_bieu_mau_rut_gon": "Tải về biểu mẫu rút gọn",
-        "chon_chuc_nang": "Chọn chức năng"
+        "chon_chuc_nang": "Chọn chức năng",
+        "danh_sach_team": "Danh sách team",
+        "ten_team": "Tên team",
+        "ma_team": "Mã team",
+        "tong_so_team_hien_tai": "Tổng số team hiện tại",
+        "so_luong_thanh_vien": "Số lượng thành viên",
+        "xem_thanh_vien": "Xem thành viên",
+        "sua_team": "Sửa team"
     }
 }
