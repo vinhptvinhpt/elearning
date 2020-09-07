@@ -778,6 +778,13 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-employee/assign', 'Backend\OrganizationController@apiAssignEmployee');
     Route::post('/organization-employee/get-user-detail/{id}', 'Backend\OrganizationController@apiDetailUser');
 
+    Route::post('/organization-team/list', 'Backend\OrganizationController@apiListTeam');
+    Route::post('/organization-team/create', 'Backend\OrganizationController@apiCreateTeam');
+    Route::post('/organization-team/delete/{id}', 'Backend\OrganizationController@apiDeleteTeam');
+    Route::post('/organization-team/detail/{id}', 'Backend\OrganizationController@apiTeamDetail');
+    Route::post('/organization-team/update', 'Backend\OrganizationController@apiEditTeam');
+
+
 
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 

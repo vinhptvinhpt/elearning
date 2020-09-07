@@ -379,5 +379,7 @@
     "completed_competency_framework": "Completed competency framework",
     "development": "Development",
     "request_more_attempt": "Request more attempt",
-    "calculate_toeic_grade": "TOEIC Result"
+    "calculate_toeic_grade": "TOEIC Result",
+    "them_moi_team_thanh_cong": "Add team successfully",
+    "team_da_ton_tai": "Team existed"
 }
