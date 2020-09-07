@@ -8,6 +8,8 @@ $current = isset($_POST['current']) ? $_POST['current'] : 1;
 //    $pageCount = isset($_POST['pageCount']) ? $_POST['pageCount']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage'] : 1;
 $txtSearch = isset($_POST['txtSearch']) ? $_POST['txtSearch'] : null;
+//trim text search
+$txtSearch = trim($txtSearch);
 
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
