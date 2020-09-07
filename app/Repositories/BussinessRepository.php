@@ -191,6 +191,8 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             //var_dump($validates);
         } else {
+            $full_start_date = '';
+            $full_end_date = '';
             if (strlen($startdate) != 0 && strlen($enddate) != 0) {
                 $full_start_date = $startdate . " 00:00:00";
                 $full_end_date = $enddate . " 23:59:59";
@@ -216,8 +218,8 @@ class BussinessRepository implements IBussinessInterface
 //                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
 //                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
             $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
-                ->where("tlal.created_at", ">=", Date('Y/m/d',$start_time))
-                ->where("tlal.created_at", "<=",  Date('Y/m/d',$end_time))
+                ->where("tlal.created_at", ">=", $full_start_date)
+                ->where("tlal.created_at", "<=",  $full_end_date)
                 ->join("mdl_user","tlal.user_id","=","mdl_user.id");
 
             //Số học viên fail
