@@ -1339,7 +1339,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <?php if (!empty($course->training_name)) { ?>
+                                                                    <?php if (!empty($course->training_name) && $course->training_deleted == 0) { ?>
                                                                         <p class="units" title="Competency name"><i
                                                                                 class="fa fa-file"
                                                                                 aria-hidden="true"></i> <?php echo $course->training_name; ?>
@@ -1389,8 +1389,6 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php $countBlock = 1;
                                         foreach ($courses_required_list as $course) {
-
-
                                             //Nếu đang học thì disable
                                             if (in_array($course->training_id, $competency_exists)) {
                                                 $enable = 'disable';
@@ -1400,13 +1398,6 @@ $_SESSION["allowCms"] = $allowCms;
                                                 $enable = 'enable';
                                                 array_push($exitCourseInRequiredCourse, $course->training_id);
                                             }
-//                                            //
-//                                            else if(){
-//
-//                                            }
-//                                            if ($course->sttShow > 1 || in_array($course->training_id, $competency_exists)) {
-//                                                $enable = 'disable';
-//                                            }
                                             ?>
                                             <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                 <div class="block-data">
@@ -1440,7 +1431,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <?php if (!empty($course->training_name)) { ?>
+                                                                    <?php if (!empty($course->training_name) && $course->training_deleted == 0) { ?>
                                                                         <p class="units" title="Competency name"><i
                                                                                 class="fa fa-file"
                                                                                 aria-hidden="true"></i> <?php echo $course->training_name; ?>
@@ -1515,7 +1506,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <?php if (!empty($course->training_name)) { ?>
+                                                                    <?php if (!empty($course->training_name) && $course->training_deleted == 0) { ?>
                                                                         <p class="units" title="Competency name"><i
                                                                                 class="fa fa-file"
                                                                                 aria-hidden="true"></i> <?php echo $course->training_name; ?>
