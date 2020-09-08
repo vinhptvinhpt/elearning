@@ -783,6 +783,10 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/organization-team/delete/{id}', 'Backend\OrganizationController@apiDeleteTeam');
     Route::post('/organization-team/detail/{id}', 'Backend\OrganizationController@apiTeamDetail');
     Route::post('/organization-team/update', 'Backend\OrganizationController@apiEditTeam');
+    Route::post('/api/team/user_out', 'Backend\OrganizationController@apiTeamUserOut');
+    Route::post('/api/team/user_in', 'Backend\OrganizationController@apiTeamUserIn');
+    Route::post('/api/team/assign_member', 'Backend\OrganizationController@apiAssignMember');
+    Route::post('/api/team/remove_member', 'Backend\OrganizationController@apiRemoveMember');
 
 
 
