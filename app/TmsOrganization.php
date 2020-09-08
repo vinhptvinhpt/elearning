@@ -24,6 +24,14 @@ class TmsOrganization extends Model
     }
 
     /**
+     * Get teams for the organization.
+     */
+    public function teams()
+    {
+        return $this->hasMany('App\TmsOrganizationTeam', 'organization_id');
+    }
+
+    /**
      * Get parent for the organization.
      */
     public function parent()
