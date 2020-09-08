@@ -308,8 +308,7 @@
         loader.fadeIn();
         axios.post('/api/team/assign_member', {
           users: this.userEnrols,
-          team_id: this.team_id,
-          organization_id: this.organization_id
+          team_id: this.team_id
         })
           .then(response => {
             loader.fadeOut();

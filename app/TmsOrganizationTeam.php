@@ -11,7 +11,7 @@ class TmsOrganizationTeam extends Model
      */
     public function employees()
     {
-        return $this->hasMany('App\TmsOrganizationEmployee', 'organization_id')->whereHas('user', function($q) {
+        return $this->hasMany('App\TmsOrganizationTeamMember', 'team_id')->whereHas('user', function($q) {
             // Loại trừ user đã xóa
             $q->where('deleted', '=', 0);
         });
