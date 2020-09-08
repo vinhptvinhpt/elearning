@@ -847,7 +847,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                             course.teacher_name }}
                                                         </li>
 
-                                                        <li class="units" title="Competency name"><i class="fa fa-file"
+                                                        <li class="units" title="Competency name" v-if="course.training_name && course.training_deleted == 0"><i class="fa fa-file"
                                                                                                      aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
@@ -891,7 +891,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{
                                                             course.teacher_name }}
                                                         </li>
-                                                        <li class="units" title="Competency name"><i class="fa fa-file"
+                                                        <li class="units" title="Competency name" v-if="course.training_name && course.training_deleted == 0"><i class="fa fa-file"
                                                                                                      aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
@@ -963,8 +963,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                         <i class="fa fa-user" aria-hidden="true"></i> {{
                                                         course.teacher_name }}
                                                     </li>
-                                                    <li class="units" v-if="course.training_name"
-                                                        title="Competency name"><i class="fa fa-file"
+                                                    <li class="units" v-if="course.training_name && course.training_deleted == 0"
+                                                         title="Competency name"><i class="fa fa-file"
                                                                                    aria-hidden="true"></i>
                                                         {{course.training_name}}
                                                     </li>
@@ -1015,7 +1015,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                                 <i class="fa fa-user" aria-hidden="true"></i> {{
                                                                 course.teacher_name }}
                                                             </li>
-                                                            <li class="units" title="Competency name"><i
+                                                            <li class="units" title="Competency name"  v-if="course.training_name && course.training_deleted == 0"><i
                                                                     class="fa fa-file"
                                                                     aria-hidden="true"></i>
                                                                 {{course.training_name}}
@@ -1061,7 +1061,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{
                                                             course.teacher_name }}
                                                         </li>
-                                                        <li class="units" title="Competency name"><i class="fa fa-file"
+                                                        <li class="units" title="Competency name" v-if="course.training_name && course.training_deleted == 0"><i class="fa fa-file"
                                                                                                      aria-hidden="true"></i>
                                                             {{course.training_name}}
                                                         </li>
@@ -1106,7 +1106,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                         course.teacher_name }}
                                                     </li>
                                                     <li class="units" title="Competency name"
-                                                        v-if="course.training_name"><i class="fa fa-file"
+                                                        v-if="course.training_name"  v-if="course.training_name && course.training_deleted == 0"><i class="fa fa-file"
                                                                                        aria-hidden="true"></i>
                                                         {{course.training_name}}
                                                     </li>
