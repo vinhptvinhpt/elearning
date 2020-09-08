@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\TmsOrganizationEmployee;
 use App\TmsOrganizationTeam;
+use App\TmsOrganizationTeamMember;
 use App\ViewModel\ResponseModel;
 use Exception;
 use Illuminate\Http\Request;
@@ -195,9 +196,8 @@ class TmsOrganizationTeamRepository implements ICommonInterface
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_organization_employee.user_id')
             ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->where('organization_id', $organization_id)
-            ->where(function ($query) use ($team_id) {
-                $query->whereNull('team_id');
-                    //->orWhere('team_id', '<>', $team_id);
+            ->whereNotIn('tms_organization_employee.user_id', function ($q) use ($team_id) {
+                $q->select('user_id')->from('tms_organization_team_members')->where('team_id', $team_id);
             })
             ->where('mdl_user.deleted', '=', 0)
             ->select('mdl_user.id',
@@ -248,9 +248,15 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         }
 
         //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
-        $userNeedEnrol = TmsOrganizationEmployee::query()
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_organization_employee.user_id')
+        $userNeedEnrol = TmsOrganizationTeamMember::query()
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_organization_team_members.user_id')
             ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->join('tms_organization_teams', 'tms_organization_team_members.team_id', '=', 'tms_organization_teams.id')
+            ->leftJoin('tms_organization_employee', function($join)
+            {
+                $join->on('tms_organization_employee.user_id', '=', 'tms_organization_team_members.user_id');
+                $join->on('tms_organization_employee.organization_id', '=' , 'tms_organization_teams.organization_id');
+            })
             ->where('team_id', $team_id)
             ->where('mdl_user.deleted', '=', 0)
             ->select('mdl_user.id',
@@ -258,7 +264,7 @@ class TmsOrganizationTeamRepository implements ICommonInterface
                 'tms_user_detail.fullname',
                 'mdl_user.firstname',
                 'mdl_user.lastname',
-                'position as rolename'
+                'tms_organization_employee.position as rolename'
             );
 
         if ($keyword) {
@@ -288,7 +294,6 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         $response = new ResponseModel();
         try {
             $team_id = $request->input('team_id');
-            $organization_id = $request->input('organization_id');
             $users = $request->input('users');
 
             $param = [
@@ -303,18 +308,20 @@ class TmsOrganizationTeamRepository implements ICommonInterface
             }
 
             if (!empty($users)) {
-                TmsOrganizationEmployee::query()
-                    ->where('organization_id', $organization_id)
-                    ->whereIn('user_id', $users)
-                    ->update(['team_id' => $team_id]);
+                foreach ($users as $user) {
+                    $new_member = new TmsOrganizationTeamMember();
+                    $new_member->user_id = $user;
+                    $new_member->team_id = $team_id;
+                    $new_member->save();
+                }
             }
 
             $response->status = true;
             $response->message = __('thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
-            $response->message = $e->getMessage();
-            //$response->message = __('loi_he_thong_thao_tac_that_bai');
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return json_encode($response);
     }
@@ -336,12 +343,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
             }
 
             if (!empty($users)) {
-                TmsOrganizationEmployee::query()
+                TmsOrganizationTeamMember::query()
                     ->where('team_id', $team_id)
                     ->whereIn('user_id', $users)
-                    ->update(['team_id' => null]);
+                    ->delete();
             }
-
             $response->status = true;
             $response->message = __('thanh_cong');
         } catch (\Exception $e) {
