@@ -667,7 +667,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
                                     </td>
                                     <td class="icon-circle"
-                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1">
+                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
                                         <i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
                                                                       aria-hidden="true"></i></td>
