@@ -197,6 +197,7 @@ foreach ($courses as $course) {
     array_push($couresIdAllow, $course->id);
 }
 
+$exitCourseInRequiredCourse = array();
 
 foreach ($courses_training as $courses) {
     $stt = 1;
@@ -220,6 +221,7 @@ foreach ($courses_training as $courses) {
             }
             $countRequiredCourses++;
             $courses_required_list[] = $course;
+
         }
         $stt++;
     }
@@ -1354,10 +1356,26 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php $countBlock = 1; foreach ($courses_required_list as $course) {
-                                            $enable = '';
-                                            if ($course->sttShow > 1 || in_array($course->training_id, $competency_exists) || in_array($course->training_id, $competency_completed)) {
+
+
+                                            //Nếu đang học thì disable
+                                            if (in_array($course->training_id, $competency_exists)) {
                                                 $enable = 'disable';
-                                            }?>
+                                            }
+                                            else if(in_array($course->training_id, $exitCourseInRequiredCourse)){
+                                                $enable = 'disable';
+                                            }else{
+                                                $enable = 'enable';
+                                                array_push($exitCourseInRequiredCourse, $course->training_id);
+                                            }
+//                                            //
+//                                            else if(){
+//
+//                                            }
+//                                            if ($course->sttShow > 1 || in_array($course->training_id, $competency_exists)) {
+//                                                $enable = 'disable';
+//                                            }
+                                            ?>
                                             <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                 <div class="block-data">
                                                     <div class="block-items__item <?php echo $enable; ?>">
