@@ -24,63 +24,69 @@
     <div class="row">
       <div class="col-12">
         <div>
-          <div class="card">
-            <div class="card-body">
-              <div class="edit_city_form form-material">
-                <h5 class="mb-20">{{trans.get('keys.sua_team')}}: {{team.name}}</h5>
+          <div class="accordion" id="accordion_1">
 
-                <div class="row">
+            <div class="card">
+              <div class="card-body">
+                <div class="edit_city_form form-material">
+                  <h5 class="mb-20">{{trans.get('keys.sua_team')}}: {{team.name}}</h5>
 
-
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label for="team_organization_id"><strong>{{trans.get('keys.to_chuc')}}</strong></label>
-                      <treeselect :disabled="true" v-model="team.organization_id" :multiple="false" :options="options" id="team_organization_id"/>
-                      <label v-if="!team.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-
-                    </div>
-                  </div>
-
-
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label for="team_name"><strong>{{trans.get('keys.ten_team')}} *</strong></label>
-                      <div class="input-group">
-                        <input type="text" id="team_name" class="form-control form-control-line" :placeholder="trans.get('keys.ten_team')+' *'" required v-model="team.name">
+                  <div class="row">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="team_organization_id"><strong>{{trans.get('keys.to_chuc')}}</strong></label>
+                        <treeselect :disabled="true" v-model="team.organization_id" :multiple="false" :options="options" id="team_organization_id"/>
+                        <label v-if="!team.organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
-                      <label v-if="!team.name" class="text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                     </div>
-                  </div>
 
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label for="team_code"><strong>{{trans.get('keys.ma_team')}} *</strong></label>
-                      <div class="input-group">
-                        <input type="text" id="team_code" class="form-control form-control-line" :placeholder="trans.get('keys.ma_team')+' *'" v-model="team.code">
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="team_name"><strong>{{trans.get('keys.ten_team')}} *</strong></label>
+                        <div class="input-group">
+                          <input type="text" id="team_name" class="form-control form-control-line" :placeholder="trans.get('keys.ten_team')+' *'" required v-model="team.name">
+                        </div>
+                        <label v-if="!team.name" class="text-danger name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
-                      <em>{{trans.get('keys.gom_chu_cai_khong_dau_chu_so_ky_tu_dac_biet_-_/_.')}}</em>
-                      <label v-if="!team.code" class="text-danger code_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                     </div>
-                  </div>
 
-                  <div class="col-sm-6">
-                    <div class="form-group">
-                      <label for="team_description" ><strong>{{trans.get('keys.mo_ta')}}</strong></label>
-                      <textarea id="team_description" class="form-control form-control-line" :placeholder="trans.get('keys.mo_ta')" required v-model="team.description"></textarea>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="team_code"><strong>{{trans.get('keys.ma_team')}} *</strong></label>
+                        <div class="input-group">
+                          <input type="text" id="team_code" class="form-control form-control-line" :placeholder="trans.get('keys.ma_team')+' *'" v-model="team.code">
+                        </div>
+                        <em>{{trans.get('keys.gom_chu_cai_khong_dau_chu_so_ky_tu_dac_biet_-_/_.')}}</em>
+                        <label v-if="!team.code" class="text-danger code_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                      </div>
                     </div>
-                  </div>
 
-                </div>
-                <div class="row">
-                  <div class="col-12">
-                    <div class="form-group text-right">
-                      <router-link :to="backButton()" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
-                      <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
+                    <div class="col-sm-6">
+                      <div class="form-group">
+                        <label for="team_description" ><strong>{{trans.get('keys.mo_ta')}}</strong></label>
+                        <textarea id="team_description" class="form-control form-control-line" :placeholder="trans.get('keys.mo_ta')" required v-model="team.description"></textarea>
+                      </div>
+                    </div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-12">
+                      <div class="form-group text-right">
+                        <router-link :to="backButton()" class="btn btn-secondary btn-sm" style="color: rgb(255, 255, 255);">{{trans.get('keys.quay_lai')}}</router-link>
+                        <button type="button" class="btn btn-primary btn-sm" @click="update()">{{trans.get('keys.cap_nhat')}}</button>
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
+
+            <assign-team-employee
+              v-if="team.organization_id !== 0"
+              :organization_id="team.organization_id"
+              :team_id="id"
+            ></assign-team-employee>
+
           </div>
         </div>
       </div>
@@ -89,7 +95,9 @@
 </template>
 
 <script>
+  import AssignTeamEmployee from './AssignTeamEmployeeComponent'
   //import vPagination from 'vue-plain-pagination'
+
   export default {
     props: [
       'id',
@@ -99,13 +107,14 @@
     ],
     components: {
       //vPagination
+      AssignTeamEmployee,
     },
     data() {
       return {
         team: {
           name: '',
           code: '',
-          organization_id: '',
+          organization_id: 0,
           description: '',
         },
         options: []

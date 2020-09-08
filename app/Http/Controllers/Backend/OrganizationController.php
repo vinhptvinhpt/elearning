@@ -41,7 +41,8 @@ class OrganizationController extends Controller
         return $this->tmsOrganizationRepository->delete($id);
     }
 
-    public function apiEditOrganization(Request $request) {
+    public function apiEditOrganization(Request $request)
+    {
         return $this->tmsOrganizationRepository->update($request);
     }
 
@@ -90,23 +91,48 @@ class OrganizationController extends Controller
         return $this->tmsOrganizationTeamRepository->detail($id);
     }
 
-    public function apiEditEmployee(Request $request) {
+    public function apiEditEmployee(Request $request)
+    {
         return $this->tmsOrganizationEmployeeRepository->update($request);
     }
 
-    public function apiEditTeam(Request $request) {
+    public function apiEditTeam(Request $request)
+    {
         return $this->tmsOrganizationTeamRepository->update($request);
     }
 
-    public function apiAssignEmployee(Request $request) {
+    public function apiAssignEmployee(Request $request)
+    {
         return $this->tmsOrganizationEmployeeRepository->assignEmployee($request);
     }
 
-    public function apiDetailUser($id) {
+    public function apiDetailUser($id)
+    {
         return $this->tmsOrganizationEmployeeRepository->userDetail($id);
     }
 
-    public function apiGetOrganizations() {
+    public function apiGetOrganizations()
+    {
         return $this->tmsOrganizationRepository->GetOrganizations();
+    }
+
+    public function apiTeamUserOut(Request $request)
+    {
+        return $this->tmsOrganizationTeamRepository->apiTeamUserOut($request);
+    }
+
+    public function apiTeamUserIn(Request $request)
+    {
+        return $this->tmsOrganizationTeamRepository->apiTeamUserIn($request);
+    }
+
+    public function apiAssignMember(Request $request)
+    {
+        return $this->tmsOrganizationTeamRepository->apiAssignMember($request);
+    }
+
+    public function apiRemoveMember(Request $request)
+    {
+        return $this->tmsOrganizationTeamRepository->apiRemoveMember($request);
     }
 }
