@@ -27,4 +27,12 @@ class TmsOrganizationEmployee extends Model
     {
         return $this->belongsTo('App\TmsOrganization', 'organization_id', 'id');
     }
+
+    /**
+     * Get teams for the organization.
+     */
+    public function teams()
+    {
+        return $this->hasMany('App\TmsOrganizationTeamMember', 'user_id', 'user_id');
+    }
 }

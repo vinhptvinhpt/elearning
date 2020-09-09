@@ -14,4 +14,13 @@ class TmsOrganizationTeamMember extends Model
     {
         return $this->hasOne('App\TmsUserDetail', 'user_id', 'user_id');
     }
+
+    //
+    /**
+     * Get user detail.
+     */
+    public function team()
+    {
+        return $this->hasOne('App\TmsOrganizationTeam', 'id', 'team_id');
+    }
 }
