@@ -35,7 +35,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             return response()->json([]);
         }
 
-        $list = TmsOrganizationEmployee::with('organization')->with('user');
+        $list = TmsOrganizationEmployee::with('organization')->with('user')->with('teams.team');
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
