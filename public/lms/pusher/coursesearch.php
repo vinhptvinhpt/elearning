@@ -294,7 +294,7 @@ and mue.userid = ' . $USER->id;
             $course->teacher_name = $teacher_name;
             //$course->teacher_created = $teacher_created;
             //
-            if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $course->order_learn = 2;
                 array_push($competency_exists, $course->training_id);
             }
@@ -311,6 +311,8 @@ and mue.userid = ' . $USER->id;
                 }
                 $tempCourse[$course->training_id]['stt'] = $stt_count;
                 $course->stt_count = $tempCourse[$course->training_id]['stt'];
+            }else if($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0)) ){
+                $course->order_learn = 1;
             }
             elseif($course->numoflearned / $course->numofmodule == 1){
                 $course->order_learn = 0;
