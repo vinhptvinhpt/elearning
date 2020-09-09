@@ -142,11 +142,11 @@
             $('.modal').removeClass('show');
         });
 
-
-
         let roleInCourse = {{ roleInCourse }};
         if(roleInCourse == 5){
             $('#action-menu-2-menubar').addClass('disableEdit');
+        }else{
+            $('#action-menu-2-menubar').css('display', 'block');
         }
     });
 </script>
@@ -164,6 +164,10 @@
         padding-left: 10px;
         line-height: 2rem;
         font-family: Roboto, sans-serif;
+    }
+
+    #action-menu-2-menubar{
+        display: none;
     }
 
     .current-option-selected {
