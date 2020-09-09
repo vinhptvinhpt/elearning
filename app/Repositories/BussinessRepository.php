@@ -220,7 +220,19 @@ class BussinessRepository implements IBussinessInterface
             $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
                 ->where("tlal.created_at", ">=", $full_start_date)
                 ->where("tlal.created_at", "<=",  $full_end_date)
-                ->join("mdl_user","tlal.user_id","=","mdl_user.id");
+                ->join("mdl_user","tlal.user_id","=","mdl_user.id")
+                ->whereNotIn("tlal.id",function ($query) use ($full_start_date,$full_end_date,$start_time,$end_time) {
+                    $query->select('tlal.id')
+                        ->from('tms_learning_activity_logs as tlal')
+                        ->join('course_completion as cc',function($join){
+                            $join->on('tlal.user_id','=','cc.userid')
+                                ->on('tlal.course_id','=','cc.courseid');
+                        })
+                        ->where('tlal.created_at','>=',$full_start_date)
+                        ->where('tlal.created_at','<=',$full_end_date)
+                        ->where('cc.timecompleted','>=',$start_time)
+                        ->where('cc.timecompleted','<=',$end_time);
+                });
 
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
