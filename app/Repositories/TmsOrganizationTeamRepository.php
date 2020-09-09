@@ -152,12 +152,12 @@ class TmsOrganizationTeamRepository implements ICommonInterface
             }
             $item = TmsOrganizationTeam::findOrFail($id);
             if ($item) {
-                TmsOrganizationEmployee::query()->where('team_id', $id)->update(['team_id' => null]);
+                //Delete connection to team members
+                TmsOrganizationTeamMember::query()->where('team_id', $id)->delete();
                 $item->delete();
-                //TmsOrganization::where('parent_id', $id)->delete();
             }
             \DB::commit();
-            return response()->json(status_message('success', __('xoa_nhan_vien_thanh_cong')));
+            return response()->json(status_message('success', __('xoa_thanh_cong')));
         } catch (Exception $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }

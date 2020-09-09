@@ -1048,7 +1048,10 @@
         "ban_chua_chon_thanh_vien": "Please select member",
         "gan_thanh_vien_vao_team": "Assign member to team",
         "nhan_vien_trong_to_chuc": "Employee in organization",
-        "thanh_vien_trong_team": "Team member"
+        "thanh_vien_trong_team": "Team member",
+        "ban_co_muon_xoa": "Do you want to delete?",
+        "gan_nhan_vien": "Assign employee",
+        "bo_nhan_vien": "Remove employee"
     },
     "vi.keys": {
         "language": "",
@@ -2090,6 +2093,9 @@
         "ban_chua_chon_thanh_vien": "Bạn chưa chọn thành viên",
         "gan_thanh_vien_vao_team": "Gán thành viên vào team",
         "nhan_vien_trong_to_chuc": "Nhân viên trong tổ chức",
-        "thanh_vien_trong_team": "Thành viên trong team"
+        "thanh_vien_trong_team": "Thành viên trong team",
+        "ban_co_muon_xoa": "Bạn có muốn xóa?",
+        "gan_nhan_vien": "Gán nhân viên",
+        "bo_nhan_vien": "Bỏ nhân viên"
     }
 }
