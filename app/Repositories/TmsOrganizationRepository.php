@@ -75,7 +75,7 @@ class TmsOrganizationRepository implements ICommonInterface
             return response()->json([]);
         }
 
-        $list = TmsOrganization::with('employees')->with('parent')->with('children')
+        $list = TmsOrganization::with('employees')->with('parent')->with('children')->with('teams')
         ->select(
             "*",
             DB::raw(' (select MAX(level) from tms_organization) as max_level')

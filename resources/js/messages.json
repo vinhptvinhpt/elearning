@@ -1042,7 +1042,13 @@
         "tong_so_team_hien_tai": "Total team count",
         "so_luong_thanh_vien": "Member count",
         "xem_thanh_vien": "View member",
-        "sua_team": "Edit team"
+        "sua_team": "Edit team",
+        "teams": "Teams",
+        "xem_team": "View teams",
+        "ban_chua_chon_thanh_vien": "Please select member",
+        "gan_thanh_vien_vao_team": "Assign member to team",
+        "nhan_vien_trong_to_chuc": "Employee in organization",
+        "thanh_vien_trong_team": "Team member"
     },
     "vi.keys": {
         "language": "",
@@ -2078,6 +2084,12 @@
         "tong_so_team_hien_tai": "Tổng số team hiện tại",
         "so_luong_thanh_vien": "Số lượng thành viên",
         "xem_thanh_vien": "Xem thành viên",
-        "sua_team": "Sửa team"
+        "sua_team": "Sửa team",
+        "teams": "Teams",
+        "xem_team": "Xem danh sách team",
+        "ban_chua_chon_thanh_vien": "Bạn chưa chọn thành viên",
+        "gan_thanh_vien_vao_team": "Gán thành viên vào team",
+        "nhan_vien_trong_to_chuc": "Nhân viên trong tổ chức",
+        "thanh_vien_trong_team": "Thành viên trong team"
     }
 }

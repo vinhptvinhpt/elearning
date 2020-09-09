@@ -968,20 +968,31 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
 
+        if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+            $permission_edit = true;
+            break;
+        }
+
+        //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
         if(!is_null($roleId) && $roleId != 5)
         {
             $permission_edit = true;
             break;
         }
 
+        //có quyền chỉnh sửa thư viện khóa học
         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
             $permission_edit = true;
             break;
         }
+
+        //có quyền chỉnh sửa khóa học offline
         if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
             $permission_edit = true;
             break;
         }
+
+        //có quyền chỉnh sửa khóa học online
         if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
             $permission_edit = true;
             break;
