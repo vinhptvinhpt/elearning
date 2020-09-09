@@ -224,15 +224,16 @@ class BussinessRepository implements IBussinessInterface
                 ->whereNotIn("tlal.id",function ($query) use ($full_start_date,$full_end_date,$start_time,$end_time) {
                     $query->select('tlal.id')
                         ->from('tms_learning_activity_logs as tlal')
-                        ->join('course_completion as cc','tlal.user_id','=','cc.userid')
-                        ->where('tlal.course_id', '=','courseid')
+                        ->join('course_completion as cc',function($join){
+                            $join->on('tlal.user_id','=','cc.userid')
+                                ->on('tlal.course_id','=','cc.courseid');
+                        })
                         ->where('tlal.created_at','>=',$full_start_date)
                         ->where('tlal.created_at','<=',$full_end_date)
                         ->where('cc.timecompleted','>=',$start_time)
                         ->where('cc.timecompleted','<=',$end_time);
                 });
-//                ->whereNotIn("tlal.id",DB::raw("SELECT tlal.id FROM tms_learning_activity_logs as tlal JOIN course_completion as cc on tlal.user_id = cc.userid and tlal.course_id = cc.courseid
-//                                                             WHERE tlal.created_at => ".$full_start_date." AND tlal.created_at <= ".$full_end_date." AND cc.timecompleted => ".$start_time." AND cc.timecompleted <= ".$end_time));
+
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
                 ->where("mcmc.timemodified", ">=", $start_time)
