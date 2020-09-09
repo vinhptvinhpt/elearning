@@ -381,5 +381,6 @@
     "request_more_attempt": "Request more attempt",
     "calculate_toeic_grade": "TOEIC Result",
     "them_moi_team_thanh_cong": "Add team successfully",
-    "team_da_ton_tai": "Team existed"
+    "team_da_ton_tai": "Team existed",
+    "xoa_thanh_cong": "Successfully deleted"
 }
