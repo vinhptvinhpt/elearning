@@ -133,8 +133,13 @@ echo json_encode([
  *
  *    @return   Boolean 
  */
-function validate_grade($grade, $type)
-{
+function validate_grade($graderaw, $type)
+{   
+    // Remove all whitespace
+    $grade = preg_replace('/\s+/', '', $graderaw);
+    if ($grade == '0'){
+        return true;
+    }
     $validate = true;
     switch ($type) {
         case "skill":
