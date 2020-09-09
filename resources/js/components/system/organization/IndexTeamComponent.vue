@@ -183,14 +183,8 @@
 
 <script>
 
-    import AssignEmployee from './AssignEmployeeComponent'
-    import SystemUserCreate from '../user/CreateComponent'
-
     export default {
-        components: {
-            AssignEmployee,
-            SystemUserCreate
-        },
+        components: {},
         props: {
             source_page: Number,
             current_roles: Object,
@@ -376,7 +370,7 @@
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.thong_bao'),
-                    text: this.trans.get('keys.ban_co_muon_xoa_nhan_vien_nay'),
+                    text: this.trans.get('keys.ban_co_muon_xoa'),
                     type: "warning",
                     showCancelButton: true,
                     closeOnConfirm: true,

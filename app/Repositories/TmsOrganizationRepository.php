@@ -10,6 +10,8 @@ use App\PermissionSlugRole;
 use App\Role;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsOrganizationTeam;
+use App\TmsOrganizationTeamMember;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsTrainningGroup;
@@ -422,17 +424,23 @@ class TmsOrganizationRepository implements ICommonInterface
             }
             $item = TmsOrganization::findOrFail($id);
             if ($item) {
-                $item->delete();
                 //TmsOrganization::where('parent_id', $id)->delete();
-                //Update con
-                TmsOrganization::where('parent_id', $id)
-                    ->update(['parent_id' => 0]);
+                //Update to chuc con
+                TmsOrganization::where('parent_id', $id)->update(['parent_id' => 0, 'level' => 1]);
                 //Xoa nhan vien connected
                 TmsOrganizationEmployee::where('organization_id', $id)->delete();
+                //Xóa team
+                $teams = TmsOrganizationTeam::where('organization_id', $id)->get();
+                foreach ($teams as $team) {
+                    TmsOrganizationTeamMember::where('team_id', $team->id)->delete();
+                    $team->delete();
+                }
                 //Xóa role connected
                 self::clearRoleOrganization($id);
                 //Delete connection to competency framework
                 TmsTrainningGroup::where('type', 1)->where('group_id', $id)->delete();
+                //Xóa tổ chức
+                $item->delete();
             }
             \DB::commit();
             return response()->json(status_message('success', __('xoa_to_chuc_thanh_cong')));
