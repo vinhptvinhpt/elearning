@@ -123,7 +123,7 @@ if ($status == quiz_attempt::OVERDUE) {
     $quiz_info->object_name = $attemptobj->get_quizobj()->get_quiz()->name;
     $quiz_info->grade = $attemptobj->get_sum_marks();
     $quiz_info->end_date = gmdate("Y-m-d H:i:s", $attemptobj->get_submitted_date());
-
+    $quiz_info->attempt = $attemptid;
     $info = json_encode($quiz_info);
     $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info . '\')';
     $DB->execute($noti_quiz);
@@ -143,7 +143,7 @@ if ($status == quiz_attempt::OVERDUE) {
         $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
         $check_noti_result = array_values($DB->get_records_sql($check_noti, array($cmid, $USER->id)))[0];
         if ($check_noti_result->completionstate == 0 && $check_noti_result->viewed == 1) {
-            $fail_target = 'fail_exam';
+            $fail_target = 'request_more_attempt';
             $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info . '\')';
             $DB->execute($fail_noti);
         }

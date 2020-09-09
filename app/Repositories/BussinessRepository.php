@@ -191,6 +191,8 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validates)) {
             //var_dump($validates);
         } else {
+            $full_start_date = '';
+            $full_end_date = '';
             if (strlen($startdate) != 0 && strlen($enddate) != 0) {
                 $full_start_date = $startdate . " 00:00:00";
                 $full_end_date = $enddate . " 23:59:59";
@@ -216,9 +218,21 @@ class BussinessRepository implements IBussinessInterface
 //                ->where("mdl_user_enrolments.timecreated", "<=",  $end_time)
 //                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
             $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
-                ->where("tlal.created_at", ">=", Date('Y/m/d',$start_time))
-                ->where("tlal.created_at", "<=",  Date('Y/m/d',$end_time))
-                ->join("mdl_user","tlal.user_id","=","mdl_user.id");
+                ->where("tlal.created_at", ">=", $full_start_date)
+                ->where("tlal.created_at", "<=",  $full_end_date)
+                ->join("mdl_user","tlal.user_id","=","mdl_user.id")
+                ->whereNotIn("tlal.id",function ($query) use ($full_start_date,$full_end_date,$start_time,$end_time) {
+                    $query->select('tlal.id')
+                        ->from('tms_learning_activity_logs as tlal')
+                        ->join('course_completion as cc',function($join){
+                            $join->on('tlal.user_id','=','cc.userid')
+                                ->on('tlal.course_id','=','cc.courseid');
+                        })
+                        ->where('tlal.created_at','>=',$full_start_date)
+                        ->where('tlal.created_at','<=',$full_end_date)
+                        ->where('cc.timecompleted','>=',$start_time)
+                        ->where('cc.timecompleted','<=',$end_time);
+                });
 
             //Số học viên fail
             $fail_student =  DB::table('mdl_course_modules_completion as mcmc')

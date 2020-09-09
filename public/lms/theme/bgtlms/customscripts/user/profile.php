@@ -548,7 +548,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-else>Position: <span>Not yet update</span></li>
                         <li v-if="user.departmentname">Department: <span>{{ user.departmentname }}</span></li>
                         <li v-else>Department: <span>Not yet update</span></li>
-                        <li v-if="user.yearworking > 0">Experience: <span>{{ user.yearworking }} years</span></li>
+                        <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
+                        <li v-if="user.yearworking < 0 ">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
                         <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
@@ -667,7 +668,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
                                     </td>
                                     <td class="icon-circle"
-                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || course.numoflearned/course.numofmodule > 0 || course.numoflearned/course.numofmodule < 1">
+                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
                                         <i class="fa fa-check-circle" aria-hidden="true"></i></td>
                                     <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
                                                                       aria-hidden="true"></i></td>

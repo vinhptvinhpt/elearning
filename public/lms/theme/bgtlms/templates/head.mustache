@@ -109,6 +109,10 @@
             return jwtsso;
         }
 
+        function logoutClick(){
+            localStorage.clear();
+        }
+
 		// Disable F12/inspect item + right click LMS
 		window.onload = function () {
 			document.addEventListener("contextmenu", function (e) {
@@ -151,7 +155,7 @@
     </script>
     <style>
         @font-face {
-            font-family: Roboto;
+            font-family: Roboto-Regular;
             src: url('fonts/Roboto-Regular.ttf');
         }
 

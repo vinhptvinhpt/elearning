@@ -8,6 +8,8 @@ $current = isset($_POST['current']) ? $_POST['current'] : 1;
 //    $pageCount = isset($_POST['pageCount']) ? $_POST['pageCount']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage'] : 1;
 $txtSearch = isset($_POST['txtSearch']) ? $_POST['txtSearch'] : null;
+//trim text search
+$txtSearch = trim($txtSearch);
 
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
@@ -72,7 +74,9 @@ mc.estimate_duration,
 
     $competency_exists = array();
     $courses_training = array();
-
+    //
+    $getInCourses = array();
+    //
     foreach ($courses as $course) {
         $courses_training[$course->training_id][$course->id] = $course;
     }
@@ -96,6 +100,13 @@ mc.estimate_duration,
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
                 if ($course->training_deleted == 2) {
                     $courses_others_id .= ', ' . $course->id;
+                }
+                //
+                if(!in_array($course->training_id,$getInCourses)){
+                    array_push($getInCourses, $course->training_id);
+                    $course->enable = true;
+                }else{
+                    $course->enable = false;
                 }
 //            push_course($courses_required, $course);
             }
@@ -140,6 +151,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     $course_list = array();
     //
     $courses_required_sort = [];
+//    $courses_completed
 
     if ($category == 'current') {
         $all_courses = $courses_current;
@@ -150,8 +162,8 @@ left join tms_user_detail tud on tud.user_id = muet.userid
                 $newCourse = $course;
                 if ($course->training_deleted == 2)
                     $newCourse->sttShow = 99999;
-                else
-                    $newCourse->sttShow = $sttNew;
+//                else
+//                    $newCourse->sttShow = $sttNew;
                 $courses_required_sort[] = $newCourse;
                 $sttNew++;
             }
@@ -256,6 +268,9 @@ and mue.userid = ' . $USER->id;
     }
 
     $coures_result = array();
+    //
+    $getInCourses = array();
+    //
     foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
@@ -264,7 +279,7 @@ and mue.userid = ' . $USER->id;
             $teacher_name = '';
             $teacher_created = 0;
             //
-            $course->enable = 'enable';
+            $course->enable = true;
             $course->category_type = '';
             if (strlen($teachers) != 0) {
                 $teachers_and_created = explode(',', $teachers);
@@ -279,7 +294,7 @@ and mue.userid = ' . $USER->id;
             $course->teacher_name = $teacher_name;
             //$course->teacher_created = $teacher_created;
             //
-            if ($course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $course->order_learn = 2;
                 array_push($competency_exists, $course->training_id);
             }
@@ -296,6 +311,8 @@ and mue.userid = ' . $USER->id;
                 }
                 $tempCourse[$course->training_id]['stt'] = $stt_count;
                 $course->stt_count = $tempCourse[$course->training_id]['stt'];
+            }else if($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0)) ){
+                $course->order_learn = 1;
             }
             elseif($course->numoflearned / $course->numofmodule == 1){
                 $course->order_learn = 0;

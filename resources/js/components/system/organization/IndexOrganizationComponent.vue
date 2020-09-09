@@ -151,6 +151,7 @@
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
 <!--                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>-->
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
+                        <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.teams')}}</th>
                         <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </thead>
                         <tbody>
@@ -175,6 +176,13 @@
                             <router-link :title="trans.get('keys.xem_nhan_vien')"
                                          :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current}}">
                               {{ item.recusive_employees }}
+                            </router-link>
+                          </td>
+                          <td class="text-center" v-if="slug_can('tms-system-employee-view')">
+                            <router-link :title="trans.get('keys.xem_team')"
+                                         :to="{ name: 'IndexTeam', query: { organization_id: item.id}, params: {source_page: current}}">
+                              {{ item.teams.length }}
+
                             </router-link>
                           </td>
                           <td class="text-center" v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')">
@@ -209,6 +217,7 @@
                         <th class="d-none d-sm-table-cell">{{trans.get('keys.truc_thuoc')}}</th>
 <!--                        <th class="text-center">{{trans.get('keys.nhan_vien_truc_thuoc')}}</th>-->
                         <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.nhan_vien')}}</th>
+                        <th class="text-center d-none d-sm-table-cell">{{trans.get('keys.teams')}}</th>
                         <th v-if="slug_can('tms-system-organize-edit') || slug_can('tms-system-organize-deleted')" class="text-center" style="min-width: 130px;">{{trans.get('keys.hanh_dong')}}</th>
                         </tfoot>
                       </table>
