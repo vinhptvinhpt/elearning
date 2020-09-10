@@ -706,7 +706,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3">
                                             <div class="item-image">
-                                                <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png"
+                                                <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
                                                     alt="">
                                             </div>
                                             <div class="item-content mt-2">
@@ -714,8 +714,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                 <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
                                             </div>
                                             <div class="item-btn" style="text-align: center;color: #fff;">
-                                                <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
-                                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.png')">Copy link</a>
+                                                <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
+                                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg')">Copy link</a>
                                             </div>
                                         </div>
                                     <?php } ?>
@@ -728,7 +728,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <?php foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3">
                                                 <div class="item-image">
-                                                    <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png"
+                                                    <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
                                                         alt="" data-toggle="modal" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">
                                                 </div>
                                                 <div class="item-content mt-2">
@@ -736,8 +736,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                     <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
                                                 </div>
                                                 <div class="item-btn" style="text-align: center;color: #fff;">
-                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.png" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
-                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.png')">Copy link</a>
+                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
+                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg')">Copy link</a>
                                                 </div>
                                             </div>
                                         <?php } ?>

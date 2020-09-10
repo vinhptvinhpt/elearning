@@ -1295,7 +1295,7 @@ where ttc.course_id = ' . $id . ')';
                             <div class="competency-done">
                                 <p>The competency has been completed <i class="fa fa-check-circle"></i></p><br/>
                                 <p>Your image badge below!</p><br/>
-                                <img src="storage/upload/certificate/<?php echo $codeCer; ?>_badge.png" alt="">
+                                <img src="storage/upload/certificate/<?php echo $codeCer; ?>_badge.jpeg" alt="">
                             </div>
                         <?php } ?>
                     </div>
