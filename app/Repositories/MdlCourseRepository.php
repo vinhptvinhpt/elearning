@@ -1255,7 +1255,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
     public function apiGetListLibrary()
     {
         $libraries = MdlCourse::query()
-            //->whereIn('category', 2)
+            ->whereIn('category', 2)
             //->where('deleted', 0)
             //->whereRaw('ROUND((CHAR_LENGTH(shortname) - CHAR_LENGTH(REPLACE(shortname, "_", ""))) / CHAR_LENGTH("_")) = 2')
             ->get()

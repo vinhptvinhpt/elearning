@@ -531,9 +531,9 @@ if __name__ == '__main__':
 
 
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
-                        #cursor.execute(sql, (student_certificate_id,))
+                        cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
-                        #cursor.execute(sql_update_confirm, (get_user_id,))
+                        cursor.execute(sql_update_confirm, (get_user_id,))
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
