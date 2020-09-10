@@ -959,45 +959,50 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     $check = $DB->get_records_sql($sqlCheck);
 
     $permissions = array_values($check);
-
+    //check admin or root permission
     foreach ($permissions as $permission) {
-
-        if (in_array($permission->name, ['root', 'admin'])) { //Nếu admin => full quyền
+        if (in_array($permission->name, ['root', 'admin'])) { //Nếu root or admin => full quyền
             $permission_edit = true;
             $permission_admin = true;
             break;
         }
+    }
 
-        if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
-            $permission_edit = true;
-            break;
-        }
+    //Nếu chưa có quyền permission_edit thì loop để check
+    if(!$permission_edit){
+        foreach ($permissions as $permission) {
 
-        //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
-        if(!is_null($roleId) && $roleId != 5)
-        {
-            $permission_edit = true;
-            break;
-        }
+            if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+                $permission_edit = true;
+                break;
+            }
 
-        //có quyền chỉnh sửa thư viện khóa học
-        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
-            $permission_edit = true;
-            break;
-        }
+            //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
+            if (!is_null($roleId) && $roleId != 5) {
+                $permission_edit = true;
+                break;
+            }
 
-        //có quyền chỉnh sửa khóa học offline
-        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
-            $permission_edit = true;
-            break;
-        }
+            //có quyền chỉnh sửa thư viện khóa học
+            if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+                $permission_edit = true;
+                break;
+            }
 
-        //có quyền chỉnh sửa khóa học online
-        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
-            $permission_edit = true;
-            break;
+            //có quyền chỉnh sửa khóa học offline
+            if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+                $permission_edit = true;
+                break;
+            }
+
+            //có quyền chỉnh sửa khóa học online
+            if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+                $permission_edit = true;
+                break;
+            }
         }
     }
+
 
 //check permission for start course
 //var_dump($permission_edit);
@@ -1312,7 +1317,8 @@ where ttc.course_id = ' . $id . ')';
                 <div class="row col-12 course-content" id="courseunit">
                     <div class="col-5 unit-info">
                         <div class="list-units">
-                            <?php $countUnit = 0; foreach ($units as $no => $unit) {
+                            <?php $countUnit = 0;
+                            foreach ($units as $no => $unit) {
                                 $modulCompletion = array_sum(array_map(function ($item) {
                                     return $item['countcompletion'];
                                 }, $unit['modules']));
@@ -1339,18 +1345,21 @@ where ttc.course_id = ' . $id . ')';
                                                 <?php if ($countUnit == 0 || $countCompletion > 0) { ?>
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
-                                                    <span class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
+                                                    <span
+                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
                                                 <?php } ?>
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                            <?php $countUnit++; } ?>
+                                <?php $countUnit++;
+                            } ?>
                         </div>
                     </div>
 
                     <div class="col-7 unit-info unit-detail">
-                        <?php $countUnit = 0; foreach ($units as $unit) { ?>
+                        <?php $countUnit = 0;
+                        foreach ($units as $unit) { ?>
                             <div class="main-detail" id="detail-<?php echo $unit['id']; ?>">
                                 <div class="detail-title">
                                     <p><?php echo $unit['name']; ?></p>
@@ -1379,7 +1388,8 @@ where ttc.course_id = ' . $id . ')';
                                                     <?php } ?>
                                                 <?php } ?>
                                             </ul>
-                                        <?php } $countUnit++;
+                                        <?php }
+                                        $countUnit++;
                                     } else { ?>
                                         Unit has no content.
                                     <?php } ?>
