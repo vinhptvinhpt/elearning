@@ -336,14 +336,13 @@
           });
       },
       async getReloadLibrary() {
-        let arrayCodes = [];
         let result = await axios.post('/api/courses/get_library', {})
           .then(response => {
             let codes = [];
             response.data.forEach(function (cityItem) {
               codes.push(cityItem.shortname);
             });
-            return arrayCodes;
+            return codes;
           })
           .catch(error => {
             console.log(error);
