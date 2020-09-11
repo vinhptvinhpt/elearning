@@ -868,6 +868,7 @@ LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id =
 
 $course = array_values($DB->get_records_sql($sql))[0];
 
+//case when enrol
 //get role to show edit button
 $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
 left join mdl_enrol me on mc.id = me.courseid
@@ -967,15 +968,32 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             break;
         }
 
-        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3 && !is_null($roleId) && $roleId != 5) {
+        if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
             $permission_edit = true;
             break;
         }
-        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5 && !is_null($roleId) && $roleId != 5) {
+
+        //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
+        if(!is_null($roleId) && $roleId != 5)
+        {
             $permission_edit = true;
             break;
         }
-        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5 && !is_null($roleId) && $roleId != 5) {
+
+        //có quyền chỉnh sửa thư viện khóa học
+        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+            $permission_edit = true;
+            break;
+        }
+
+        //có quyền chỉnh sửa khóa học offline
+        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+            $permission_edit = true;
+            break;
+        }
+
+        //có quyền chỉnh sửa khóa học online
+        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
             $permission_edit = true;
             break;
         }

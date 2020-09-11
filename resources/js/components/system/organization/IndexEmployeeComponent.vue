@@ -114,10 +114,11 @@
                         </div>
 
                         <!-- Gán người dùng vào tổ chức batch -->
-                        <!--              <assign-employee-->
-                        <!--                v-if="selected_role == 'root' || selected_role === 'admin' || selected_role === 'manager'"-->
-                        <!--                :key="assignBatch"-->
-                        <!--                :organization_id="query_organization_id"></assign-employee>-->
+<!--                                      <assign-employee-->
+<!--                                        v-if="selected_role === 'root' || selected_role === 'admin' || selected_role === 'manager'"-->
+<!--                                        :key="assignBatch"-->
+<!--                                        :organization_id="query_organization_id"-->
+<!--                                      ></assign-employee>-->
 
                         <div class="card">
                             <div class="card-body">
@@ -189,10 +190,11 @@
                                             <th>{{trans.get('keys.nguoi_dung')}}</th>
                                             <th>{{trans.get('keys.to_chuc')}}</th>
                                             <th>{{trans.get('keys.vi_tri')}}</th>
-                                            <th>{{trans.get('keys.hanh_dong')}}</th>
+                                            <th class="text-center">{{trans.get('keys.team')}}</th>
+                                            <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                             </thead>
                                             <tbody>
-                                            <tr v-if="posts.length == 0">
+                                            <tr v-if="posts.length === 0">
                                                 <td colspan="6">{{ trans.get('keys.khong_tim_thay_du_lieu') }}</td>
                                             </tr>
                                             <tr v-else v-for="(item,index) in posts">
@@ -218,13 +220,17 @@
                                                 <td v-else-if="item.position === 'employee'">
                                                     <label class="badge badge-info">{{ trans.get('keys.employee') }}</label>
                                                 </td>
-                                                <td>
+                                                <td class="text-center">
+                                                  <template v-for="(team,index) in item.teams">
+                                                    <label class="badge badge-danger">{{ team.team.name }}</label>&nbsp;
+                                                  </template>
+                                                </td>
+                                                <td class="text-center">
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
                                                                  :class="checkEditPermission(user_role, item.position) ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                                  :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
-
                                                     <a href="javascript(0)"
                                                        @click.prevent="deletePost('/organization-employee/delete/'+item.id)"
                                                        :title="trans.get('keys.xoa_nhan_vien')"
@@ -239,7 +245,8 @@
                                             <th>{{trans.get('keys.nguoi_dung')}}</th>
                                             <th>{{trans.get('keys.to_chuc')}}</th>
                                             <th>{{trans.get('keys.vi_tri')}}</th>
-                                            <th>{{trans.get('keys.hanh_dong')}}</th>
+                                            <th class="text-center">{{trans.get('keys.team')}}</th>
+                                            <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                             </tfoot>
                                         </table>
                                         <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">

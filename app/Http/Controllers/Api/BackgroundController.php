@@ -32,6 +32,8 @@ use App\TmsNotification;
 use App\TmsNotificationLog;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsOrganizationTeam;
+use App\TmsOrganizationTeamMember;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsRoleOrganize;
@@ -92,6 +94,7 @@ class BackgroundController extends Controller
             'EV' => 'Exotic Voyages',
             'BG' => 'Begodi',
             'AV' => 'Avana',
+            //Developer & tester
             'TVE' => 'TVE'
         );
 
@@ -152,6 +155,7 @@ Log::info('157');
                 $content = array();
                 $status = true;
                 $base_level_id = 0;
+                $team_id = 0;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -177,9 +181,10 @@ Log::info('157');
                     $content[] = 'Parent organization code is not validated';
                 }
 
-                $position_name = $user[8];
-                $city =  $user[9]; //office name
-                $country = $user[10]; //country name
+                $team_code = $user[8];
+                $position_name = $user[9];
+                $city =  $user[10]; //office name
+                $country = $user[11]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);
                     $country = $country_code;
@@ -212,14 +217,19 @@ Log::info('157');
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
-                            $organization = TmsOrganization::updateOrCreate([
-                                'code' => strtoupper($base_level_organization_code . "-" . $department_code),
-                                'parent_id' => $base_level_id,
-                                'level' => $base_level + 1
-                            ], [
-                                'name' => $department_name,
-                            ]);
+                            $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
+                            $new_org_level = $base_level + 1;
+                            $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
                             self::createPQDL($organization);
+                            if (strlen($team_code) > 0) {
+                                //tạo team
+                                if (self::validateRawData($team_code, 'code')) {
+                                    $team = self::createTeam($organization, $team_code);
+                                    $team_id = $team->id;
+                                } else {
+                                    $content[] = 'Team code is not validated';
+                                }
+                            }
                         }
                     }
                 } else {
@@ -228,7 +238,7 @@ Log::info('157');
 
                 //Validate required fields
                 //email
-                $email = trim($user[30]);
+                $email = trim($user[31]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -255,44 +265,44 @@ Log::info('157');
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[22];
+                $personal_id = $user[23];
                 //Skip check missing
 //                if (strlen($personal_id) == 0) {
 //                    $content[] = 'Personal id is missing';
 //                }
 
-                $address = $user[21];
-                $phone = self::preparePhoneNo($user[28]);
-                $phone2 = self::preparePhoneNo($user[29]);
+                $address = $user[22];
+                $phone = self::preparePhoneNo($user[29]);
+                $phone2 = self::preparePhoneNo($user[30]);
 
-                $skype = $user[31];
+                $skype = $user[32];
 
-                $gender = $user[16];
-                if (strtolower($gender) == 'nam') {
+                $gender = $user[17];
+                if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
                     $gender = 1;
-                } elseif (strtolower($gender) == 'nữ') {
+                } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
                     $gender = 0;
                 } else {
                     $gender = -1;
                 }
 
                 $dob = "";
-                if (strlen($user[12]) == 0 || strlen($user[13]) == 0 || strlen($user[14]) == 0) {
+                if (strlen($user[13]) == 0 || strlen($user[14]) == 0 || strlen($user[15]) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[12], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[13], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[14];
+                    $dob_date = str_pad($user[13], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[14], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[15];
 
                     $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
                     $dob = strtotime($dob_string);
                 }
 
                 $start_time = "";
-                if (strlen($user[18]) == 0 || strlen($user[19]) == 0 || strlen($user[20]) == 0) {
-                    $start_date = str_pad($user[18], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[19], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[20];
+                if (strlen($user[19]) == 0 || strlen($user[20]) == 0 || strlen($user[21]) == 0) {
+                    $start_date = str_pad($user[19], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[20], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[21];
                     $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
                     $start_time = strtotime($start_time_string);
                 }
@@ -335,6 +345,12 @@ Log::info('157');
                         $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
+                        }
+                        if ($team_id != 0) {
+                            $member = self::createTeamMember($team_id, $user_id);
+                            if (!is_numeric($member)) {
+                                $content[] = $member;
+                            }
                         }
                     } else {
                         $status = false;
@@ -450,6 +466,7 @@ Log::info('348');
                 $content = array();
                 $status = true;
                 $base_level_id = 0;
+                $team_id = 0;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -481,9 +498,10 @@ Log::info('348');
                     $content[] = 'Parent organization code is not validated';
                 }
 
-                $position_name = $user[8];
-                $city = $user[9]; //office name
-                $country = $user[10]; //country name
+                $team_code = $user[8];
+                $position_name = $user[9];
+                $city = $user[10]; //office name
+                $country = $user[11]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);
                     $country = $country_code;
@@ -516,14 +534,19 @@ Log::info('348');
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
-                            $organization = TmsOrganization::updateOrCreate([
-                                'code' => strtoupper($base_level_organization_code . "-" . $department_code),
-                                'parent_id' => $base_level_id,
-                                'level' => $base_level + 1
-                            ], [
-                                'name' => $department_name,
-                            ]);
+                            $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
+                            $new_org_level = $base_level + 1;
+                            $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
                             self::createPQDL($organization);
+                            if (strlen($team_code) > 0) {
+                                //tạo team
+                                if (self::validateRawData($team_code, 'code')) {
+                                    $team = self::createTeam($organization, $team_code);
+                                    $team_id = $team->id;
+                                } else {
+                                    $content[] = 'Team code is not validated';
+                                }
+                            }
                         }
                     }
                 } else {
@@ -532,7 +555,7 @@ Log::info('348');
 
                 //Validate required fields
                 //email
-                $email = trim($user[21]);
+                $email = trim($user[22]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -559,41 +582,41 @@ Log::info('348');
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[19];
+                $personal_id = $user[20];
                 //Skip check missing
 //                if (strlen($personal_id) == 0) {
 //                    $content[] = 'Personal id is missing';
 //                }
 
-                $address = $user[18];
-                $phone = self::preparePhoneNo($user[20]);
+                $address = $user[19];
+                $phone = self::preparePhoneNo($user[21]);
 
-                $gender = $user[14];
-                if (strtolower($gender) == 'nam') {
+                $gender = $user[15];
+                if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
                     $gender = 1;
-                } elseif (strtolower($gender) == 'nữ') {
+                } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
                     $gender = 0;
                 } else {
                     $gender = -1;
                 }
 
                 $dob = "";
-                if (strlen($user[11]) == 0 || strlen($user[12]) == 0 || strlen($user[13]) == 0) {
+                if (strlen($user[12]) == 0 || strlen($user[13]) == 0 || strlen($user[14]) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[11], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[12], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[13];
+                    $dob_date = str_pad($user[12], 2, '0', STR_PAD_LEFT);
+                    $dob_month = str_pad($user[13], 2, '0', STR_PAD_LEFT);
+                    $dob_year = $user[14];
 
                     $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
                     $dob = strtotime($dob_string);
                 }
 
                 $start_time = "";
-                if (strlen($user[15]) == 0 || strlen($user[16]) == 0 || strlen($user[17]) == 0) {
-                    $start_date = str_pad($user[15], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[16], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[17];
+                if (strlen($user[16]) == 0 || strlen($user[17]) == 0 || strlen($user[18]) == 0) {
+                    $start_date = str_pad($user[16], 2, '0', STR_PAD_LEFT);
+                    $start_month = str_pad($user[17], 2, '0', STR_PAD_LEFT);
+                    $start_year = $user[18];
                     $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
                     $start_time = strtotime($start_time_string);
                 }
@@ -636,6 +659,12 @@ Log::info('348');
                         $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
+                        }
+                        if ($team_id != 0) {
+                            $member = self::createTeamMember($team_id, $user_id);
+                            if (!is_numeric($member)) {
+                                $content[] = $member;
+                            }
                         }
                     } else {
                         $status = false;
@@ -908,6 +937,19 @@ Log::info('348');
             $check->description = $description;
             $check->save();
         }
+        return $check->id;
+    }
+
+    function createTeamMember($team_id, $user_id) {
+        $check = TmsOrganizationTeamMember::query()->where('team_id', $team_id)->where('user_id', $user_id)->first();
+        if (!isset($check)) {
+            //tạo mới nếu chưa có
+            $check = new TmsOrganizationTeamMember();
+            $check->user_id = $user_id;
+            $check->team_id = $team_id;
+            $check->save();
+        }
+        //return 'Thong bao neu that bai';
         return $check->id;
     }
 
@@ -1900,6 +1942,48 @@ Log::info('348');
             $user->save();
         }
         echo "Successfully!";
+    }
+
+    /**
+     * @param $organization
+     * @param $team_code
+     * @return TmsOrganizationTeam|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
+     */
+    function createTeam($organization, $team_code) {
+        $check = TmsOrganizationTeam::query()
+            ->where('code', $team_code)
+            ->where('organization_id', $organization->id)->first();
+
+        if (!isset($check)) {
+            $check = new TmsOrganizationTeam();
+            $check->name = $team_code;
+            $check->code = $team_code;
+            $check->organization_id = $organization->id;
+            $check->save();
+        }
+        return $check;
+    }
+
+    /**
+     * @param $code
+     * @param $name
+     * @param $parent_id
+     * @param $level
+     * @return TmsOrganization|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
+     */
+    function createOrganization($code, $name, $parent_id, $level) {
+        $check = TmsOrganization::query()
+            ->where('code', $code)->first();
+
+        if (!isset($check)) {
+            $check = new TmsOrganization();
+            $check->name = $name;
+            $check->code = $code;
+            $check->parent_id = $parent_id;
+            $check->level = $level;
+            $check->save();
+        }
+        return $check;
     }
 }
 

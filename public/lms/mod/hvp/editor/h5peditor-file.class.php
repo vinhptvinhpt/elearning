@@ -137,8 +137,8 @@ class H5peditorFile {
 
         // Resize the image if size is bigger than 5mb
         $image_size = $_FILES['file']['size'];
-        if ($image_size > 5000000){
-          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $image[0] / 2, $image[1] / 2);
+        if ($image_size > 1000000){
+          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $image[0] / 10, $image[1] / 10);
           $image = @getimagesize($_FILES['file']['tmp_name']);
         }
         

@@ -23,10 +23,12 @@ path = os.getcwd()
 # connect to db
 # path = 'D:\\Job\\elearning-easia\\python'
 # path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
+
 path = '/usr/share/nginx/html/source/phh/elearning-easia/python'
 path_gen_img = '/usr/share/nginx/html/source/phh/elearning-easia/storage/app/public/upload'
 path_gen_logo = '/usr/share/nginx/html/source/phh/elearning-easia/public/logo'
 path_gen_signature = '/usr/share/nginx/html/source/phh/elearning-easia/public/signature'
+
 bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
@@ -36,6 +38,7 @@ logo_size_height = 100
 if __name__ == '__main__':
     get_user_id = int(sys.argv[1])
     get_training_id = int(sys.argv[2])
+
     connection = mysql.connector.connect(host='10.2.1.130',
                                          database='easiaelearning',
                                          user='easia',
@@ -53,11 +56,11 @@ if __name__ == '__main__':
             # region get image certificate path from db
             link_image = record_image[0].replace('/storage/upload/', '')
             path_image = os.path.join(path_gen_img, link_image)
-           
+
             # open image
             img = Image.open(path_image)
             img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
-            
+
             # width and height of image
             image_width, image_height = img.size
             #
@@ -70,7 +73,7 @@ if __name__ == '__main__':
             # endregion
 
             coordinates = json.loads(record_image[1])
-           
+
             logoX = coordinates["logoX"]
             logoY = coordinates["logoY"]
 
@@ -125,7 +128,7 @@ if __name__ == '__main__':
             positon_date_X = image_width * dateX / image_new_width- 20
             positon_date_Y = image_height * dateY / image_new_height - 10
 
-           
+
             font_size_name_new = image_width * fullnameSize / image_new_width
             font_size_program_new = image_width * programSize / image_new_width
             font_size_date_new = image_width * 16 / image_new_width
@@ -136,21 +139,21 @@ if __name__ == '__main__':
             font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
             font_date = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=dateSize, encoding="unic")
             #font_sign = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=signSize, encoding="unic")
-            
+
             #region lay anh badge mau
             sql_select_badge = "select path, position from image_certificate where is_active = 1 and type = 2"
             #sql_select_image = "select path, position from image_certificate where id = 7"
             cursor = connection.cursor()
             cursor.execute(sql_select_badge)
             record_badge = cursor.fetchone()
-            
+
             link_badge = record_badge[0].replace('/storage/upload/', '')
             path_badge = os.path.join(path_gen_img, link_badge)
-            
+
 
             #lay toa do text tren mau huy hieu
             coordinates_badge = json.loads(record_badge[1])
-            
+
             programX_badge = coordinates_badge["programX"]
             programY_badge = coordinates_badge["programY"]
             programSize_badge = int(coordinates_badge["programSize"])
@@ -180,22 +183,22 @@ if __name__ == '__main__':
                         get_training_id)
                 cursor.execute(sql_select_Query)
                 records = cursor.fetchall()
-                
+
                 num = 0
                 limit = 50
-                
+
                 for row in records:
 
                     # 19/3/2020 uydd
                     user_id = row[0]
                     name = row[1].encode('utf-8').strip()
                     training_name = row[2]
-                    
-                    
+
+
                     timecertificate = row[4]
                     code = row[5]
                     student_certificate_id = row[6]
-                    
+
                     org_id = row[7]
                     auto_cer = row[8]
                     auto_badge = row[9]
@@ -211,10 +214,20 @@ if __name__ == '__main__':
                                     print "Failed with cer:", e.strerror # look what it says
                                     print "Error code cer:", e.code
 
+                            #remove image certificate new
+                            path_cer_new = path_gen_img + '/certificate/'+code+ '_certificate.jpeg'
+
+                            if os.path.exists(path_cer_new):
+                                try:
+                                    os.remove(path_cer_new)
+                                except OSError as e:
+                                    print "Failed with cer:", e.strerror # look what it says
+                                    print "Error code cer:", e.code
+
                             # open image
                             img = Image.open(path_image)
                             img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
-            
+
                             # width and height of image
                             image_width, image_height = img.size
 
@@ -223,7 +236,7 @@ if __name__ == '__main__':
                             sql_query_org = "SELECT f.id, f.level, f.code FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)FROM (SELECT @id := " + str(org_id) +") tmp1 JOIN tms_organization ON @id IS NOT NULL) tmp2 JOIN tms_organization f ON tmp2._id = f.id where f.level = 2 limit 1"
                             cursor.execute(sql_query_org)
                             data_org = cursor.rowcount
-                            
+
                             if data_org == 1:
                                 record_org = cursor.fetchone()
                                 org_name_root = record_org[2]
@@ -236,7 +249,7 @@ if __name__ == '__main__':
                             #logo
                             logo_name = "phh.png"
                             org_name_lower = org_name_root.lower()
-                            
+
                             if("easia" in org_name_lower):
                                 logo_name = "easia.png"
                             elif("begodi" in org_name_lower):
@@ -247,14 +260,14 @@ if __name__ == '__main__':
                                 logo_name = "avana.png"
                             #elif("phh" in org_name_lower):
                              #   logo_name = "phh.png"
-                            
+
                             path_logo = os.path.join(path_gen_logo, logo_name)
                             logo = Image.open(path_logo)
                             logo_size_width, logo_size_height = logo.size
-                            
+
                             logo_size_width = logo_size_width / 4
                             logo_size_height = logo_size_height / 4
-                            
+
                             logo = logo.resize((logo_size_width, logo_size_height), Image.ANTIALIAS)
 
                             #signature
@@ -276,19 +289,19 @@ if __name__ == '__main__':
                             logosig2_size_width = logosig2_size_width / 8
                             logosig2_size_height = logosig2_size_height / 8
                             signature2 = signature2.resize((logosig2_size_width, logosig2_size_height), Image.ANTIALIAS)
-                            
+
                             name_utf8 = name.decode('utf8')
-                            
-                            name_utf8_training = training_name + " training" 
+
+                            name_utf8_training = training_name + " training"
                             #name_utf8_training = "Leading with emotional intelligence"
                             #name_utf8_training = name_utf8_training.upper()
 
                             length_trainning = len(name_utf8_training)
- 
+
                             # open image
                             img = Image.open(path_image)
                             img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
-                            
+
                             # region fill text
                             # create the canvas
                             canvas = ImageDraw.Draw(img)
@@ -304,9 +317,9 @@ if __name__ == '__main__':
                             #endregion
 
                             #region xu ly hien thi ten khung nang luc tren anh
-                            
+
                             lines = []
-                           
+
                             # If the width of the text is smaller than image width
                             # we don't need to split it, just add it to the lines array
                             # and return
@@ -318,86 +331,93 @@ if __name__ == '__main__':
 
 
                             if font_training.getsize(name_utf8_training)[0] <= bg_size_width:
-                                lines.append(name_utf8_training) 
+                                lines.append(name_utf8_training)
                             else:
-                                # split the line by spaces to get words                                   
+                                # split the line by spaces to get words
                                 i = 0
                                 # append every word to a line while its width is shorter than image width
                                 while i < len(words):
-                                    line = ''         
-                                    while i < len(words) and font_training.getsize(line + words[i])[0] <= bg_size_width-100:                
+                                    line = ''
+                                    while i < len(words) and font_training.getsize(line + words[i])[0] <= bg_size_width-100:
                                         line = line + words[i] + " "
                                         i += 1
                                     if not line:
                                         line = words[i]
                                         i += 1
-                                    # when the line gets longer than the max width do not append the word, 
+                                    # when the line gets longer than the max width do not append the word,
                                     # add the line to the lines array
-                                    lines.append(line)    
-                           
+                                    lines.append(line)
+
                             # create the canvas
                             line_height = font_training.getsize('hg')[1]
-                                                      
+
                             y = programY
                             for line in lines:
-                                w, h = canvas.textsize(line,font_training)                        
+                                w, h = canvas.textsize(line,font_training)
                                 canvas.text(((image_new_width-w+50)/2, y), line, font=font_training,fill=textColor)
                                 y = y + line_height + 20
                             #endregion
-                            
+
                             #region xu ly hien thi ten hoc lien tren anh
                             line_names = []
-                           
+
                             # If the width of the text is smaller than image width
                             # we don't need to split it, just add it to the lines array
                             # and return
                             word_names = name_utf8.split(' ')
 
                             if font_name.getsize(name_utf8)[0] <= bg_size_width:
-                                line_names.append(name_utf8) 
+                                line_names.append(name_utf8)
                             else:
-                                # split the line by spaces to get words                                   
+                                # split the line by spaces to get words
                                 i = 0
                                 # append every word to a line while its width is shorter than image width
                                 while i < len(word_names):
-                                    line = ''         
-                                    while i < len(word_names) and font_name.getsize(line + word_names[i])[0] <= bg_size_width-100:                
+                                    line = ''
+                                    while i < len(word_names) and font_name.getsize(line + word_names[i])[0] <= bg_size_width-100:
                                         line = line + word_names[i] + " "
                                         i += 1
                                     if not line:
                                         line = word_names[i]
                                         i += 1
-                                    # when the line gets longer than the max width do not append the word, 
+                                    # when the line gets longer than the max width do not append the word,
                                     # add the line to the lines array
-                                    line_names.append(line)    
-                           
+                                    line_names.append(line)
+
                             # create the canvas
                             line_height_name = font_name.getsize('hg')[1]
-                                                      
+
                             for line in line_names:
-                                w, h = canvas.textsize(line,font_name)                        
+                                w, h = canvas.textsize(line,font_name)
                                 canvas.text(((image_new_width-w+50)/2, fullnameY), line, font=font_name,fill=textColor)
-                                
+
                             #endregion
-                            
+
                             positon_logo_X = int(positon_logo_X)
                             positon_logo_Y = int(positon_logo_Y)
-             
+
                             img.paste(logo, (positon_logo_X, positon_logo_Y))
 
                             positon_logosig1_X = int(positon_logosig1_X)
                             positon_logosig1_Y = int(positon_logosig1_Y)
-             
+
                             img.paste(signature1, (positon_logosig1_X, positon_logosig1_Y))
 
 
                             positon_logosig2_X = int(positon_logosig2_X)
                             positon_logosig2_Y = int(positon_logosig2_Y)
-             
+
                             img.paste(signature2, (positon_logosig2_X, positon_logosig2_Y))
-                            
-                            # save image
+
+                            # save image certificate
                             img.save(os.path.join(path_gen_img, 'certificate', code + '_certificate.png'))
+                            #replace fill transparency with white color
+                            imgA = Image.open(os.path.join(path_gen_img, 'certificate/'+code + '_certificate.png'))
+                            new_image = Image.new("RGBA", imgA.size, "WHITE")  # Create a white rgba background
+                            new_image.paste(imgA, (0, 0), imgA)
+                            new_image.convert('RGB').save(os.path.join(path_gen_img, 'certificate', code + '_certificate.jpeg'), "JPEG")
+                            os.remove(os.path.join(path_gen_img, 'certificate', code + '_certificate.png'))
+
                             time.sleep(0.3)
                             #endregion
 
@@ -411,21 +431,31 @@ if __name__ == '__main__':
                                 except OSError as e:
                                     print "Failed with:", e.strerror # look what it says
                                     print "Error code:", e.code
-                            
+
+                            #remove image badge new
+                            path_bag_new = path_gen_img + '/certificate/'+code+ '_badge.jpeg'
+
+                            if os.path.exists(path_bag_new):
+                                try:
+                                    os.remove(path_bag_new)
+                                except OSError as e:
+                                    print "Failed with cer:", e.strerror # look what it says
+                                    print "Error code cer:", e.code
+
                             #khoi tao bien tai day de tranh hien tuong bien bi giu lai sau khi gen anh xong, tam thoi fix
                             img_badge = Image.open(path_badge)
                             img_badge = img_badge.resize((image_new_width_bg, image_new_height_bg), Image.ANTIALIAS)
                             #region in anh huy hieu
                             name_utf8_training = training_name
-                            
+
                             text = name_utf8_training
-                            
+
                             max_width = image_new_width_bg
-                            
-                            
-                            
+
+
+
                             lines = []
-                           
+
                             # If the width of the text is smaller than image width
                             # we don't need to split it, just add it to the lines array
                             # and return
@@ -450,47 +480,55 @@ if __name__ == '__main__':
                                 distance_2way_max = 350
                                 distance_2way = 240
                                 #print('448: '+code)
-                       
+
                             font = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize_badge, encoding="unic")
 
                             if len(words) <= 2:
-                                # split the line by spaces to get words                                   
+                                # split the line by spaces to get words
                                 for wd in words:
-                                    lines.append(wd)                                  
+                                    lines.append(wd)
                             else:
                                 if font.getsize(text)[0] <= max_width - distance_2way_max:
-                                    lines.append(text) 
+                                    lines.append(text)
                                 else:
-                                    # split the line by spaces to get words                                   
+                                    # split the line by spaces to get words
                                     i = 0
                                     # append every word to a line while its width is shorter than image width
                                     while i < len(words):
-                                        line = ''         
-                                        while i < len(words) and font.getsize(line + words[i])[0] <= max_width-distance_2way:                
+                                        line = ''
+                                        while i < len(words) and font.getsize(line + words[i])[0] <= max_width-distance_2way:
                                             line = line + words[i] + " "
                                             i += 1
                                         if not line:
                                             line = words[i]
                                             i += 1
-                                        # when the line gets longer than the max width do not append the word, 
+                                        # when the line gets longer than the max width do not append the word,
                                         # add the line to the lines array
-                                        lines.append(line)    
-                           
+                                        lines.append(line)
+
                             # create the canvas
                             canvas = ImageDraw.Draw(img_badge)
                             line_height = font.getsize('hg')[1]
-                           
+
                             y_min = (programY_badge * 150) // 100   # 150% from the top
-                            y_max = (programY_badge * 175) //100   # 175% to the bottom                          
+                            y_max = (programY_badge * 175) //100   # 175% to the bottom
                             ran_y = randint(y_min, y_max)      # Generate random point
                             y = ran_y
-                            
+
                             for line in lines:
-                                w, h = canvas.textsize(line,font)                        
+                                w, h = canvas.textsize(line,font)
                                 canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
                                 y = y + line_height + 120
 
+                            #save image badge
                             img_badge.save(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
+                            #replace fill transparency with white color
+                            imgA = Image.open(os.path.join(path_gen_img, 'certificate/'+code + '_badge.png'))
+                            new_image = Image.new("RGBA", imgA.size, "WHITE")  # Create a white rgba background
+                            new_image.paste(imgA, (0, 0), imgA)
+                            new_image.convert('RGB').save(os.path.join(path_gen_img, 'certificate', code + '_badge.jpeg'), "JPEG")
+                            os.remove(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
+
                             time.sleep(0.3)
                             #endregion
 
@@ -503,7 +541,6 @@ if __name__ == '__main__':
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
                         cursor.execute(sql, (student_certificate_id,))
-                    
                     #gian cach thoi gian chay script
                     time.sleep(0.3)
                 num = num + 1
@@ -570,13 +607,21 @@ if __name__ == '__main__':
 
                         # save image
                         img.save(os.path.join(path_gen_img, 'certificate', code + '.png'))
+                        #replace fill transparency with white color
+                        imgA = Image.open(os.path.join(path_gen_img, 'certificate/'+code + '.png'))
+                        new_image = Image.new("RGBA", imgA.size, "WHITE")  # Create a white rgba background
+                        new_image.paste(imgA, (0, 0), imgA)
+                        new_image.convert('RGB').save(os.path.join(path_gen_img, 'certificate', code + '.jpeg'), "JPEG")
+                        os.remove(os.path.join(path_gen_img, 'certificate', code + '.png'))
+
+                        #update db
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
                         cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
                         cursor.execute(sql_update_confirm, (get_user_id,))
                     except Error as e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
-                        cursor.execute(sql, (student_certificate_id,))
+                        #cursor.execute(sql, (student_certificate_id,))
                 connection.commit()
                 print('luu anh thanh cong')
     except Error as e:
@@ -586,4 +631,3 @@ if __name__ == '__main__':
             cursor.close()
             connection.close()
             print("Finish!!!")
-
