@@ -183,10 +183,7 @@ class TaskController extends Controller
 				//where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
                 )
                 ->groupBy(['u.id'])
-                ->toSql();
-
-            echo $lstUserCourse;
-            die;
+                ->get();
 
             $arrData = [];
             $data_item = [];
