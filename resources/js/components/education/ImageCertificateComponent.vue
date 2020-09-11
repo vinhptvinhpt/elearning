@@ -5,7 +5,7 @@
         <img :src="img_certificate_path" alt="" class="logo_img">
       </div>
       <div class="cl-download">
-        <a :download="this.code+'_certificate.png'" :href="this.img_certificate_path" class="btn"><i class="fa fa-download"></i> Download</a>
+        <a :download="this.code+'_certificate.jpeg'" :href="this.img_certificate_path" class="btn"><i class="fa fa-download"></i> Download</a>
       </div>
     </div>
 
@@ -15,7 +15,7 @@
         <img :src="img_badge_path" alt="" class="logo_img">
       </div>
       <div class="cl-download">
-        <a :download="this.code+'_badge.png'" :href="this.img_badge_path" class="btn"><i class="fa fa-download"></i> Download</a>
+        <a :download="this.code+'_badge.jpeg'" :href="this.img_badge_path" class="btn"><i class="fa fa-download"></i> Download</a>
       </div>
     </div>
   </div>
@@ -26,8 +26,8 @@
         props: ['code', 'badge'],
         data() {
             return {
-                img_certificate_path : '/storage/upload/certificate/'+this.code+'_certificate.png',
-                img_badge_path: '/storage/upload/certificate/'+this.code+'_badge.png',
+                img_certificate_path : '/storage/upload/certificate/'+this.code+'_certificate.jpeg',
+                img_badge_path: '/storage/upload/certificate/'+this.code+'_badge.jpeg',
             }
         },
         methods: {
