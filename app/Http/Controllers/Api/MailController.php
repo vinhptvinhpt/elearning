@@ -861,7 +861,7 @@ class MailController extends Controller
                         //send mail can not continue if has fake email
                         $user_id = $itemNotification->sendto;
                         $fullname = $itemNotification->fullname;
-                        $email = 'innrhy@gmail.com';//$itemNotification->email;
+                        $email = $itemNotification->email;
 
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
 
@@ -1060,7 +1060,10 @@ class MailController extends Controller
                 //check exist in table tms_nofitications
                 $query->select('organization_id')->from('tms_organization_employee')->where('user_id', '=', $user_id);
             })
-            ->whereIn('toe.position', [TmsOrganizationEmployee::POSITION_MANAGER, TmsOrganizationEmployee::POSITION_LEADER])
+            ->whereIn('toe.position', [
+                TmsOrganizationEmployee::POSITION_MANAGER
+                //, TmsOrganizationEmployee::POSITION_LEADER
+            ])
             ->select('tud.email', 'tud.fullname', 'tud.user_id')
             ->get()
             ->toArray();
