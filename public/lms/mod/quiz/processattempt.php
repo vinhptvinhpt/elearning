@@ -130,7 +130,7 @@ if ($status == quiz_attempt::OVERDUE) {
     $noti_quiz_log = 'INSERT INTO tms_nofitication_logs (type,target,action,content,status_send,sendto,createdby,course_id) values ("' . $noti->type . '","' . $noti->target . '","' . $action . '",\'' . $content . '\', ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ')';
     $DB->execute($noti_quiz_log);
 
-    // Write log case trainee fail quiz (grade not meet requirement and out of attempts) 
+    // Write log case trainee fail quiz (grade not meet requirement and out of attempts)
     // Check in mdl_course_modules_completion completionstate = 0 where viewed = 1
     // Get list attempts of user => check the last attempt
     $attempts = quiz_get_user_attempts($attemptobj->get_quizobj()->get_quiz()->id, $USER->id, 'all', true);
@@ -144,7 +144,10 @@ if ($status == quiz_attempt::OVERDUE) {
         $check_noti_result = array_values($DB->get_records_sql($check_noti, array($cmid, $USER->id)))[0];
         if ($check_noti_result->completionstate == 0 && $check_noti_result->viewed == 1) {
             $fail_target = 'request_more_attempt';
-            $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info . '\')';
+            $quiz_info->object_id = $USER->id;
+            $quiz_info->object_type = $fail_target;
+            $info_fail = json_encode($quiz_info);
+            $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info_fail . '\')';
             $DB->execute($fail_noti);
         }
     }
