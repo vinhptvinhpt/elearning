@@ -107,6 +107,7 @@ import InviteStudentComponent from "./components/education/InviteStudentComponen
 import TemplateIndexComponent from "./components/email/IndexComponent";
 import TemplateDetailComponent from "./components/email/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
+import UnlockAttemptComponent from "./components/email/UnlockAttemptComponent";
 import AttendanceComponent from "./components/education/AttendanceComponent";
 import ConfirmEmailComponent from "./components/email/ConfirmEmailComponent";
 import ReportBaseComponent from "./components/system/report/ReportBaseComponent";
@@ -911,6 +912,14 @@ const routes = [
                 props: (route) => ({
                     invitation_id: route.params.invitation_id ? route.params.invitation_id : 0
                 })
+            },
+            {
+              path: 'attempt/unlock/:attempt_id',
+              component: UnlockAttemptComponent,
+              name: 'UnlockAttempt',
+              props: (route) => ({
+                invitation_id: route.params.attempt_id ? route.params.attempt_id : 0
+              })
             },
             {
                 path: 'email/confirm/:no_id/:email',

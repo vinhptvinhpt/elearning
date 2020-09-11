@@ -36,6 +36,7 @@ class TmsConfigs extends Model
             //Not in the list
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::EDITOR_CHECKBOX,
+            TmsNotification::FAIL_EXAM => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::CALCULATE_TOEIC_GRADE => TmsConfigs::EDITOR_CHECKBOX,
 
@@ -59,6 +60,7 @@ class TmsConfigs extends Model
             //Not in the list
             TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::ENABLE,
+            TmsNotification::FAIL_EXAM => TmsConfigs::ENABLE,
             TmsNotification::COMPLETED_FRAME => TmsConfigs::ENABLE,
             TmsNotification::CALCULATE_TOEIC_GRADE => TmsConfigs::ENABLE,
         );
@@ -201,6 +203,9 @@ class TmsConfigs extends Model
                 break;
             case TmsNotification::REQUEST_MORE_ATTEMPT:
                 $label = __('request_more_attempt');
+                break;
+            case TmsNotification::FAIL_EXAM:
+                $label = __('fail_exam');
                 break;
             case TmsNotification::CALCULATE_TOEIC_GRADE:
                 $label = __('calculate_toeic_grade');
