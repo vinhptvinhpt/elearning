@@ -247,13 +247,13 @@ if __name__ == '__main__':
                             logo_name = "phh.png"
                             org_name_lower = org_name_root.lower()
 
-                            if("easia" in org_name_lower):
+                            if("ea" in org_name_lower):
                                 logo_name = "easia.png"
-                            elif("begodi" in org_name_lower):
+                            elif("ev" in org_name_lower):
                                 logo_name = "begodi.png"
-                            elif("exotic" in org_name_lower):
+                            elif("bg" in org_name_lower):
                                 logo_name = "exotic.png"
-                            elif("avana" in org_name_lower):
+                            elif("av" in org_name_lower):
                                 logo_name = "avana.png"
                             #elif("phh" in org_name_lower):
                              #   logo_name = "phh.png"
