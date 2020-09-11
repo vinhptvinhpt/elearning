@@ -841,6 +841,7 @@ class MailController extends Controller
                     'tms_nofitications.id',
                     'tms_nofitications.target',
                     'tms_nofitications.course_id',
+                    'tms_nofitications.type',
                     'tms_nofitications.content',
                     'tms_user_detail.email',
                     'tms_user_detail.fullname',
@@ -1061,8 +1062,8 @@ class MailController extends Controller
                 $query->select('organization_id')->from('tms_organization_employee')->where('user_id', '=', $user_id);
             })
             ->whereIn('toe.position', [
-                TmsOrganizationEmployee::POSITION_MANAGER
-                //, TmsOrganizationEmployee::POSITION_LEADER
+                //TmsOrganizationEmployee::POSITION_MANAGER,
+                TmsOrganizationEmployee::POSITION_LEADER
             ])
             ->select('tud.email', 'tud.fullname', 'tud.user_id')
             ->get()
