@@ -939,9 +939,9 @@ class MailController extends Controller
 
                             //Cập nhật
                             $object_content = array(
-                                'object_id' => $student->user_id,
-                                'object_name' => $student->fullname,
-                                'object_type' => 'request-more-attempt',
+                                'object_id' => $user_id,
+                                'object_name' => $fullname,
+                                'object_type' => 'request_more_attempt',
                                 'parent_id' => '',
                                 'parent_name' => '',
                                 'start_date' => '',
