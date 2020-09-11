@@ -554,9 +554,8 @@ if __name__ == '__main__':
                 sql_select_Query = "select tms_user_detail.user_id, tms_user_detail.fullname as fullname, tms_traninning_programs.name as name, tms_traninning_programs.logo as logo, student_certificate.timecertificate as timecertificate, student_certificate.code as code, student_certificate.id as student_certificate_id from student_certificate join tms_user_detail on student_certificate.userid = tms_user_detail.user_id join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and student_certificate.userid = " + str(get_user_id)
                 # cursor = connection.cursor()
                 cursor.execute(sql_select_Query)
-                row = cursor.fetchone()
-
-                if cursor.rowcount == 1:
+                rows = cursor.fetchall()
+                for row in rows:
                     # 2/11/2019
                     now = datetime.datetime.now()
                     user_id = row[0]
@@ -569,6 +568,10 @@ if __name__ == '__main__':
                     path_logo = os.path.join(path_gen_img, link_logo)
 
                     try:
+                        # open image
+                        img = Image.open(path_image)
+                        img = img.resize((bg_size_width, bg_size_height), Image.ANTIALIAS)
+
                         logo = Image.open(path_logo)
                         logo = logo.resize((logo_size_width, logo_size_height), Image.ANTIALIAS)
 

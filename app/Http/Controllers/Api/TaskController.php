@@ -311,7 +311,7 @@ class TaskController extends Controller
     //danh sach hoc vien da hoan thanh KNL
     public function userCompleteTrainning()
     {
-        //Lấy ra số khóa học theo khung năng lực
+        //Lấy ra số khóa học theo khung năng lực deleted = 0
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttp.deleted', '=', '0') //khung nang lcu thong thuong, chua bi xoa
@@ -329,6 +329,77 @@ class TaskController extends Controller
             }
 
             if (!empty($training_courses_arr)) {
+
+                //lấy ra danh sách user và số khóa học đã hoàn thành theo khung năng lực
+                $lstData = DB::table('course_completion as cc')
+                    ->leftJoin('tms_trainning_complete as ttc', function ($join) {
+                        $join->on('ttc.user_id', '=', 'cc.userid');
+                        $join->on('ttc.trainning_id', '=', 'cc.training_id');
+                    })
+                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
+                    ->where('cc.training_id', '=', $training->trainning_id)
+                    ->groupBy(['cc.training_id', 'cc.userid'])
+                    ->get();
+
+                $arrData = [];
+                $num = 0;
+                $limit = 200;
+
+                foreach ($lstData as $course) {
+
+                    $completed_courses = $course->completed_courses;
+                    $completed_courses_arr = array();
+                    if (strlen($completed_courses) != 0) {
+                        $completed_courses_arr = explode(',', $completed_courses);
+                    }
+
+                    if (empty(array_diff($training_courses_arr, $completed_courses_arr))) {//Số hóa học đã hoàn thành trùng số khóa học trong khung => Đã hoàn thành KNL
+                        $data_item = [];
+                        $data_item['trainning_id'] = $training->trainning_id;
+                        $data_item['user_id'] = $course->userid;
+                        $data_item['created_at'] = Carbon::now();
+                        $data_item['updated_at'] = Carbon::now();
+
+                        array_push($arrData, $data_item);
+                        $num++;
+                    }
+
+                    if ($num >= $limit) {
+                        TmsTrainningComplete::insert($arrData);
+                        $this->insertCompetencyCompleted($arrData);
+                        $num = 0;
+                        $arrData = [];
+                    }
+
+                    usleep(100);
+                }
+
+                TmsTrainningComplete::insert($arrData);
+                $this->insertCompetencyCompleted($arrData);
+                sleep(1);
+            }
+        }
+        sleep(1);
+
+        //Với những khóa học đơn lẻ : deleted = 2
+        $lstTrainning = DB::table('tms_trainning_courses as ttc')
+            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.deleted', '=', '2') //những khóa lẻ
+            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
+            ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
+            ->groupBy(['ttc.trainning_id'])
+            ->get();
+
+
+        foreach ($lstTrainning as $training) {
+
+            $training_courses = $training->training_courses;
+            $training_courses_arr = array();
+            if (strlen($training_courses) != 0) {
+                $training_courses_arr = explode(',', $training_courses);
+            }
+            if (!empty($training_courses_arr) && $training->trainning_id == 118) {
 
                 //lấy ra danh sách user và số khóa học đã hoàn thành theo khung năng lực
                 $lstData = DB::table('course_completion as cc')
