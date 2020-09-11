@@ -33,7 +33,6 @@
     $user_id = "N/A";
     $url = "NA";
     if (!empty($result)) {
-        $user_id = $result->user_id;
         $attempt = $result->attempt;
         $app_base_url = Config::get('constants.domain.LMS');
         $url = $app_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
