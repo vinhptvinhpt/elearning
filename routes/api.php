@@ -39,6 +39,8 @@ Route::get('/cron/task/addSingleUserToTrainning', 'Api\TaskController@addSingleU
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
 
+Route::get('/attempt/detail/{id}', 'Backend\CourseController@apiAttemptDetail');
+Route::post('/attempt/unlock', 'Backend\CourseController@apiAttemptUnlock');
 
 //Import user by excel file on background & cms
 Route::get('/background/importEmployee', 'Api\BackgroundController@importEmployee');

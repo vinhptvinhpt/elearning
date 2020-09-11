@@ -45,6 +45,7 @@ class CourseSendMail extends Mailable
     const STUDENT = "[STUDENT]";
     const LINK_TO_REVIEW = "[LINK_TO_REVIEW]";
     const EXAMNAME = "[EXAMNAME]";
+    const LINK_TO_UNLOCK = "[LINK_TO_UNLOCK]";
 
 
     private $activity;
@@ -197,6 +198,12 @@ class CourseSendMail extends Mailable
         }
         //request_more_attempt
         elseif ($this->activity == TmsNotification::REQUEST_MORE_ATTEMPT) {
+            //Passing data via content
+            $subject = '[ELEARNING] '. __('request_more_attempt');
+            $view = 'email.request_more_attempt';
+        }
+        //fail exam
+        elseif ($this->activity == TmsNotification::FAIL_EXAM) {
             //Passing data via content
             $subject = '[ELEARNING] '. __('request_more_attempt');
             $view = 'email.request_more_attempt';
