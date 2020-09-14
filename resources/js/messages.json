@@ -1052,7 +1052,9 @@
         "thanh_vien_trong_team": "Team member",
         "ban_co_muon_xoa": "Do you want to delete?",
         "gan_nhan_vien": "Assign employee",
-        "bo_nhan_vien": "Remove employee"
+        "bo_nhan_vien": "Remove employee",
+        "bai_kiem_tra": "Test",
+        "xac_nhan_cap_luot_lam_bai_kiem_tra": "Confirm request more attempts"
     },
     "vi.keys": {
         "language": "",
@@ -2098,6 +2100,8 @@
         "thanh_vien_trong_team": "Thành viên trong team",
         "ban_co_muon_xoa": "Bạn có muốn xóa?",
         "gan_nhan_vien": "Gán nhân viên",
-        "bo_nhan_vien": "Bỏ nhân viên"
+        "bo_nhan_vien": "Bỏ nhân viên",
+        "bai_kiem_tra": "Bài kiểm tra",
+        "xac_nhan_cap_luot_lam_bai_kiem_tra": "Xác nhận cấp lượt làm bài kiểm tra"
     }
 }

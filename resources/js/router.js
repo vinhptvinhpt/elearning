@@ -914,11 +914,11 @@ const routes = [
                 })
             },
             {
-              path: 'attempt/unlock/:attempt_id',
+              path: 'notification/unlock/:notification_id',
               component: UnlockAttemptComponent,
               name: 'UnlockAttempt',
               props: (route) => ({
-                invitation_id: route.params.attempt_id ? route.params.attempt_id : 0
+                notification_id: route.params.notification_id ? route.params.notification_id : 0
               })
             },
             {

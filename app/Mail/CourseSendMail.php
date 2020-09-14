@@ -46,6 +46,7 @@ class CourseSendMail extends Mailable
     const LINK_TO_REVIEW = "[LINK_TO_REVIEW]";
     const EXAMNAME = "[EXAMNAME]";
     const LINK_TO_UNLOCK = "[LINK_TO_UNLOCK]";
+    const LINK_TO_QUIZ = "[LINK_TO_QUIZ]";
 
 
     private $activity;
@@ -207,6 +208,12 @@ class CourseSendMail extends Mailable
             //Passing data via content
             $subject = '[ELEARNING] '. __('fail_exam');
             $view = 'email.fail_exam';
+        }
+        //retake exam
+        elseif ($this->activity == TmsNotification::RETAKE_EXAM) {
+            //Passing data via content
+            $subject = '[ELEARNING] '. __('retake_exam');
+            $view = 'email.retake_exam';
         }
 
         elseif($this->activity == TmsNotification::NOTICE_SPAM_EMAIL){

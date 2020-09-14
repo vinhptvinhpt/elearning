@@ -12,7 +12,7 @@
     /**
      * @var string $fullname
      * @var string $course_name
-     * @var string $content
+     * @var \App\TmsNotification $content
      *
      */
     //using class
@@ -28,21 +28,26 @@
     $data = json_decode($string, true);
     $text = $data['request_more_attempt'];
 
-    $result = json_decode($content);
+    $real_content = $content->content;
+    $notification_id = $content->id;
+
+    $result = json_decode($real_content);
+
     $student = "N/A";
     $user_id = "N/A";
     $url = "NA";
     if (!empty($result)) {
         $student = $result->object_name;
         $attempt = $result->attempt;
-        $app_base_url = Config::get('constants.domain.LMS');
-        $url = $app_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
-        $url_unlock = '';//Pending
+        $lms_base_url = Config::get('constants.domain.LMS');
+        $url_review = $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
+        $tms_base_url = Config::get('constants.domain.TMS');
+        $url_unlock = $tms_base_url . 'page/notification/unlock/' . $notification_id;
     }
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::STUDENT, $student, $text);
-    $text = str_replace(CourseSendMail::LINK_TO_REVIEW, $url, $text);
+    $text = str_replace(CourseSendMail::LINK_TO_REVIEW, $url_review, $text);
     $text = str_replace(CourseSendMail::LINK_TO_UNLOCK, $url_unlock, $text);
 
     echo $text;
