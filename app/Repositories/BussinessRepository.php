@@ -5,6 +5,7 @@ namespace App\Repositories;
 
 
 use App\CourseCompletion;
+use App\Mail\CourseSendMail;
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
 use App\TmsLearnerHistory;
@@ -16,6 +17,7 @@ use App\TmsUserCourseException;
 use App\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
+use Illuminate\Support\Facades\Mail;
 use mod_lti\local\ltiservice\response;
 use PDF;
 use Illuminate\Http\Request;
@@ -2955,6 +2957,48 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($invitation);
     }
 
+    public function apiAttemptDetail($id)
+    {
+        $check = new \stdClass();
+        $check->unlocked = 0;
+        $notification = TmsNotification::query()
+            ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+            ->where('tms_nofitications.id', $id)
+            ->first();
+        if (isset($notification)) {
+            //lưu vào date_quiz trong tms_nofitications làm flag đã approve
+            $check_unlocked = $notification->date_quiz;
+            $check->fullname =  $notification->fullname;
+            $check->shortname =  $notification->shortname;
+            $check->startdate =  $notification->startdate;
+            $check->enddate =  $notification->enddate;
+            $check->course_place =  $notification->course_place;
+            if ($check_unlocked == 1) {
+                $check->unlocked = 1;
+            } else {
+                if (strlen($notification->content) != 0) {
+                    $content = json_decode($notification->content);
+
+                    $check->student_name = $content->object_name;
+                    $check->quiz_name = $content->quiz_name;
+
+//                    if ($content->quiz_id && $content->quiz_id != 0) {
+//                        $attempt_data = MdlQuiz::query()
+//                            ->leftJoin('mdl_quiz_overrides', 'mdl_quiz.id', '=', 'mdl_quiz_overrides.quiz')
+//                            ->select(
+//                                'mdl_quiz.attempts as base_attempt',
+//                                'mdl_quiz_overrides.attempts as updated_attempt'
+//                            )
+//                            ->get();
+//
+//                    }
+                }
+            }
+        }
+
+        return response()->json($check);
+    }
+
     public function apiInvitationConfirm(Request $request)
     {
         $id = $request->input('id');
@@ -2984,6 +3028,131 @@ class BussinessRepository implements IBussinessInterface
             $data['message'] = __('xac_nhan_thanh_cong');
         } catch (\Exception $e) {
             //dd($e);
+            DB::rollBack();
+            $data['status'] = 'error';
+            $data['message'] = __('xac_nhan_that_bai');
+        }
+        return response()->json($data);
+
+    }
+
+    public function apiUnlockConfirm(Request $request)
+    {
+        $notification_id = $request->input('notification_id');
+        $updated = 0;
+        $module_id = 0;
+
+        DB::beginTransaction();
+        try {
+
+            $notification = TmsNotification::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.content',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+
+                    'tms_user_detail.email',
+                    'tms_user_detail.fullname',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name'
+                )
+                ->where('tms_nofitications.id', $notification_id)
+                ->first();
+
+            if (isset($notification)) {
+                if ($notification->date_quiz == 0) {
+                    if (strlen($notification->content) != 0) {
+                        $content = json_decode($notification->content);
+
+                        $module_id = $content->module_id;
+
+                        if ($content->quiz_id && $content->quiz_id != 0) {
+                            $attempt_data = MdlQuiz::query()
+                                ->where('mdl_quiz.id', $content->quiz_id)
+                                ->leftJoin('mdl_quiz_overrides', 'mdl_quiz.id', '=', 'mdl_quiz_overrides.quiz')
+                                ->select(
+                                    'mdl_quiz.attempts as base_attempt',
+                                    'mdl_quiz_overrides.id as updated_id',
+                                    'mdl_quiz_overrides.attempts as updated_attempt'
+                                )
+                                ->first();
+
+                            if (isset($attempt_data)) {
+                                $user_id = $notification->sendto;
+                                if ($attempt_data->updated_id != null) {
+                                    $updated_attempt = $attempt_data->updated_attempt + 1;
+                                    DB::table('mdl_quiz_overrides')
+                                        ->where('quiz', $content->quiz_id)
+                                        ->where('userid', $user_id)
+                                        ->update([
+                                                'attempts' => $updated_attempt
+                                            ]);
+                                } else {
+                                    $new_attempts = $attempt_data->base_attempt + 1;
+                                    DB::table('mdl_quiz_overrides')->insert([
+                                        ['quiz' => $content->quiz_id, 'userid' => $user_id, 'attempts' => $new_attempts]
+                                    ]);
+                                }
+                            }
+                        }
+                    }
+                    $notification->date_quiz = 1;
+                    $notification->save();
+                    $updated = 1;
+                }
+            }
+            DB::commit();
+
+            if ($updated == 1) {
+                if (strlen($notification->email) != 0 && filter_var($notification->email, FILTER_VALIDATE_EMAIL)) {
+
+
+                    $lms_base_url = Config::get('constants.domain.LMS');
+                    $quiz_url = $lms_base_url . '/mod/quiz/view.php?id=' . $module_id;
+
+                    Mail::to($notification->email)->send(new CourseSendMail(
+                        TmsNotification::RETAKE_EXAM,
+                        '',
+                        $notification->fullname,
+                        $notification->course_code,
+                        $notification->course_name,
+                        '',
+                        '',
+                        '',
+                        '',
+                        $notification,
+                        '',
+                        $quiz_url
+                    ));
+                    //Cập nhật
+                    $object_content = array(
+                        'object_id' => $notification->sendto,
+                        'object_name' => $notification->fullname,
+                        'object_type' => 'retake_exam',
+                        'parent_id' => '',
+                        'parent_name' => '',
+                        'start_date' => '',
+                        'end_date' => ' ',
+                        'code' => '',
+                        'room' => '',
+                        'grade' => '',
+                        'url' => $quiz_url
+                    );
+                    $notification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                    update_notification($notification, \App\TmsNotification::SENT);
+                }
+            }
+
+            $data['status'] = 'success';
+            $data['message'] = __('xac_nhan_thanh_cong');
+        } catch (\Exception $e) {
+            dd($e);
             DB::rollBack();
             $data['status'] = 'error';
             $data['message'] = __('xac_nhan_that_bai');
