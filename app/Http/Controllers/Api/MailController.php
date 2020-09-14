@@ -591,14 +591,18 @@ class MailController extends Controller
 
                             if ($send == 1) {
                                 //send mail can not continue if has fake email
+
+                                $startdate = strlen($itemNotif->startdate) != 0 && $itemNotif->startdate != 0 ? date('Y jS F g:iA', $itemNotif->startdate) : 'N/A';
+                                $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->startdate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
+
                                 Mail::to($email)->send(new CourseSendMail(
                                     $itemNotif->target,
                                     $itemNotif->username,
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('Y jS F g:iA', $itemNotif->startdate),
-                                    date('Y jS F g:iA', $itemNotif->enddate),
+                                    $startdate,
+                                    $enddate,
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
@@ -843,11 +847,14 @@ class MailController extends Controller
                     'tms_nofitications.course_id',
                     'tms_nofitications.type',
                     'tms_nofitications.content',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+
                     'tms_user_detail.email',
                     'tms_user_detail.fullname',
                     'mdl_course.shortname as course_code',
-                    'mdl_course.fullname as course_name',
-                    'tms_nofitications.sendto'
+                    'mdl_course.fullname as course_name'
+
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
@@ -866,7 +873,7 @@ class MailController extends Controller
 
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
 
-                            $student = json_decode($itemNotification->content);
+                            $content = json_decode($itemNotification->content);
 
                             //Thông báo fail exam cho student
                             Mail::to($email)->send(new CourseSendMail(
@@ -911,7 +918,7 @@ class MailController extends Controller
                                         '',
                                         '',
                                         '',
-                                        $itemNotification->content
+                                        $itemNotification
                                     ));
                                 }
                             }
@@ -932,7 +939,7 @@ class MailController extends Controller
                                             '',
                                             '',
                                             '',
-                                            $itemNotification->content
+                                            $itemNotification
                                         ));
                                     }
                                 }
@@ -942,15 +949,15 @@ class MailController extends Controller
                             $object_content = array(
                                 'object_id' => $user_id,
                                 'object_name' => $fullname,
-                                'object_type' => 'request_more_attempt',
+                                'object_type' => 'fail_exam',
                                 'parent_id' => '',
-                                'parent_name' => '',
+                                'parent_name' => $itemNotification->course_name,
                                 'start_date' => '',
                                 'end_date' => ' ',
                                 'code' => '',
                                 'room' => '',
                                 'grade' => '',
-                                'attempt' => $student->attempt
+                                'attempt' => $content->attempt
                             );
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
@@ -996,11 +1003,24 @@ class MailController extends Controller
                         'created_at' => date('Y-m-d H:i:s', time()),
                         'updated_at' => date('Y-m-d H:i:s', time()),
                     );
+
+                    //{"quiz_id":"254",
+                    //"quiz_name":"Listening Test",
+                    //"parent_name":"test u0111iem",
+                    //"object_name":"Listening Test",
+                    //"grade":0,
+                    //"end_date":"2020-09-11 11:49:46",
+                    //"attempt":1057,
+                    //"object_id":"23908",
+                    //"object_type":"request_more_attempt"}
                     $element['content'] = json_encode(array(
                         'object_id' => $user_id,
                         'object_name' => $user->fullname,
                         'object_type' => 'request_more_attempt',
-                        'attempt' => '999'
+                        'attempt' => 999,
+                        'quiz_id' => 185,
+                        'module_id' => 988
+
                     ), JSON_UNESCAPED_UNICODE);
                     $data[] = $element;
                     TmsNotification::insert($data);

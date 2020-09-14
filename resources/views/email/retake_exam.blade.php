@@ -12,7 +12,7 @@
     /**
      * @var string $fullname
      * @var string $course_name
-     * @var string $content
+     * @var string $url_confirm_email
      *
      */
     //using class
@@ -26,19 +26,11 @@
     $string = file_get_contents(public_path()."/files/email/template.json");
     // //decode content of file above=
     $data = json_decode($string, true);
-    $text = $data['fail_exam'];
+    $text = $data['retake_exam'];
 
-    $result = json_decode($content);
-    $url = "N/A";
-    if (!empty($result)) {
-        $attempt = $result->attempt;
-        $app_base_url = Config::get('constants.domain.LMS');
-        $url = $app_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
-    }
-    //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::COURSENAME, $course_name, $text);
-    $text = str_replace(CourseSendMail::LINK_TO_REVIEW, $url, $text);
+    $text = str_replace(CourseSendMail::LINK_TO_QUIZ, $url_confirm_email, $text);
 
     echo $text;
     ?>
