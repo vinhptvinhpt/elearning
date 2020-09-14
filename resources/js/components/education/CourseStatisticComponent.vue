@@ -194,9 +194,9 @@
                             {{trans.get('keys.ho_ten')}}
                           </th>
                           <th class="text-center">{{trans.get('keys.tien_do_hoc_%')}}</th>
-                          <th class="text-center mobile_hide">
-                            {{trans.get('keys.diem_hoc_vien')}}
-                          </th>
+<!--                          <th class="text-center mobile_hide">-->
+<!--                            {{trans.get('keys.diem_hoc_vien')}}-->
+<!--                          </th>-->
                           <th class="text-center">{{trans.get('keys.trang_thai')}}</th>
                         </tr>
                         </thead>
@@ -220,9 +220,9 @@
                               0
                             </div>
                           </td>
-                          <td class="text-center mobile_hide">
-                            <div v-if="cu.finalgrade>0">{{ Math.floor(cu.finalgrade)}}</div>
-                          </td>
+<!--                          <td class="text-center mobile_hide">-->
+<!--                            <div v-if="cu.finalgrade>0">{{ Math.floor(cu.finalgrade)}}</div>-->
+<!--                          </td>-->
 
                           <td class="text-center">
                             <!--                                                <div v-if="total_course==0">-->
@@ -234,15 +234,21 @@
                             <!--                                                    <span v-else class="badge badge-danger">Failed</span>-->
                             <!--                                                </div>-->
 
-                            <div v-if="cu.finalgrade>0">
-                              <div v-if="cu.user_course_learn>total_course">
-                                                             <span v-if="cu.finalgrade>=course.pass_score"
-                                                                   class="badge badge-success">Pass</span>
-                                <span v-else class="badge badge-danger">Failed</span>
-                              </div>
-                              <div v-else>
-                                <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>
-                              </div>
+<!--                            <div v-if="cu.finalgrade > 0">-->
+<!--                              <div v-if="cu.user_course_learn > total_course">-->
+<!--                                <span v-if="cu.finalgrade >= course.pass_score" class="badge badge-success">Pass</span>-->
+<!--                                <span v-else class="badge badge-danger">Failed</span>-->
+<!--                              </div>-->
+<!--                              <div v-else>-->
+<!--                                <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>-->
+<!--                              </div>-->
+<!--                            </div>-->
+<!--                            <div v-else>-->
+<!--                              <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>-->
+<!--                            </div>-->
+
+                            <div v-if="cu.user_course_learn > total_course">
+                              <span class="badge badge-success">Pass</span>
                             </div>
                             <div v-else>
                               <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>

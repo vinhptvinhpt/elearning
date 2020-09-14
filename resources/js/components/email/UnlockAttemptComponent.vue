@@ -44,8 +44,8 @@
                 course_name: "",
                 course_code: "",
                 course_place: "",
-                start_date: "",
-                end_date: "",
+                start_date: 0,
+                end_date: 0,
                 student_name: "",
                 quiz_name: "",
                 quiz_id: 0,
@@ -105,8 +105,12 @@
                     });
             },
             convertUnixTimeToDate(timestamp) {
+              if (timestamp !== 0) {
                 let date = new Date(timestamp * 1000);
                 return date.toLocaleString();
+              } else {
+                return 'N/A';
+              }
             }
         },
         mounted() {
