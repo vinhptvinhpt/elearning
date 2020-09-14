@@ -10940,7 +10940,7 @@ class BussinessRepository implements IBussinessInterface
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id)
+                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0)
                 as user_course_completionstate'),
                 DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
