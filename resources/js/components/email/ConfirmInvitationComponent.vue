@@ -76,8 +76,8 @@
                 course_name: "",
                 course_code: "",
                 course_place: "",
-                start_date: "",
-                end_date: "",
+                start_date: 0,
+                end_date: 0,
                 accepted: false,
                 rejected: false,
                 reason: "",
@@ -156,8 +156,12 @@
 
             },
             convertUnixTimeToDate(timestamp) {
-                let date = new Date(timestamp * 1000);
-                return date.toLocaleString();
+                if (timestamp !== 0) {
+                  let date = new Date(timestamp * 1000);
+                  return date.toLocaleString();
+                } else {
+                  return 'N/A';
+                }
             }
         },
         mounted() {
