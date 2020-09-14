@@ -1720,6 +1720,7 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
             ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
             ->where('mdl_course.id', '=', $course_id)
+            ->where('mdl_enrol.enrol', '<>', 'self')
             ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'mdl_enrol.id as enrol_id');
         if ($keyword) {
             $currentUserEnrol = $currentUserEnrol->where(function ($query) use ($keyword) {

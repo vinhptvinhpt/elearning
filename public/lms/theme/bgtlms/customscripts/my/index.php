@@ -124,7 +124,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["component"] = 'ifooter-logomages/cpn-phh.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
@@ -215,9 +215,10 @@ foreach ($courses_training as $courses) {
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
             $courses_required[$course->training_id][$course->order_no] = $course;
-            if ($course->training_deleted == 2) {
-                $courses_others_id .= ', ' . $course->id;
-            }
+//            if ($course->training_deleted == 2) {
+//                $courses_others_id .= ', ' . $course->id;
+//            }
+            $courses_others_id .= ', ' . $course->id;
             $countRequiredCourses++;
             $courses_required_list[] = $course;
 
@@ -325,7 +326,8 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   and mc.visible = 1
   and mc.category NOT IN (2,7) and mc.id not in ' . $courses_others_id;
 }
-
+//echo $sqlCourseNotEnrol;
+//die;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 $_SESSION["coursesSuggest"] = $coursesSuggest;
