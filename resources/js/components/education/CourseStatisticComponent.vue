@@ -247,7 +247,7 @@
 <!--                              <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>-->
 <!--                            </div>-->
 
-                            <div v-if="cu.user_course_learn > total_course">
+                            <div v-if="cu.user_course_learn >= total_course">
                               <span class="badge badge-success">Pass</span>
                             </div>
                             <div v-else>
