@@ -463,8 +463,8 @@ class api
                         $enddate = '';
                     }
 
-                    $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that <strong>you </strong>have been finished the competency framework as follows,</p>';
-                    $record->fullmessagehtml .= '<p>Name:&nbsp;<strong>' . $content->object_name . '/strong><br />';
+                    $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that you have been finished the competency framework as follows,</p>';
+                    $record->fullmessagehtml .= '<p>Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
                     $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
                     $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $startdate . '</strong><br />';
                     $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $enddate . '</strong></p>';
