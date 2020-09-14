@@ -120,7 +120,10 @@ if ($status == quiz_attempt::OVERDUE) {
     $quiz_info->quiz_id = $attemptobj->get_quizobj()->get_quiz()->id;
     $quiz_info->quiz_name = $attemptobj->get_quizobj()->get_quiz()->name;
     $quiz_info->parent_name = $COURSE->fullname;
+    // Fullname of user take part in test
     $quiz_info->object_name = $attemptobj->get_quizobj()->get_quiz()->name;
+    // Module id of quiz
+    $quiz_info->module_id = $attemptobj->get_cm()->id;
     $quiz_info->grade = $attemptobj->get_sum_marks();
     $quiz_info->end_date = gmdate("Y-m-d H:i:s", $attemptobj->get_submitted_date());
     $quiz_info->attempt = $attemptid;
@@ -141,7 +144,7 @@ if ($status == quiz_attempt::OVERDUE) {
         // $fail_info->quizattempt = $attemptobj->get_quizobj()->get_quiz()->attempt;
         // $fail_info_json = json_encode($fail_info);
         $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
-        $check_noti_result = array_values($DB->get_records_sql($check_noti, array($cmid, $USER->id)))[0];
+        $check_noti_result = array_values($DB->get_records_sql($check_noti, array($attemptobj->get_cm()->id, $USER->id)))[0];
         if ($check_noti_result->completionstate == 0 && $check_noti_result->viewed == 1) {
             $fail_target = 'request_more_attempt';
             $quiz_info->object_id = $USER->id;
