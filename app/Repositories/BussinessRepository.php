@@ -3113,7 +3113,6 @@ class BussinessRepository implements IBussinessInterface
             if ($updated == 1) {
                 if (strlen($notification->email) != 0 && filter_var($notification->email, FILTER_VALIDATE_EMAIL)) {
 
-
                     $lms_base_url = Config::get('constants.domain.LMS');
                     $quiz_url = $lms_base_url . '/mod/quiz/view.php?id=' . $module_id;
 
@@ -3136,8 +3135,8 @@ class BussinessRepository implements IBussinessInterface
                         'object_id' => $notification->sendto,
                         'object_name' => $notification->fullname,
                         'object_type' => 'retake_exam',
-                        'parent_id' => '',
-                        'parent_name' => '',
+                        'parent_id' => $notification->course_id,
+                        'parent_name' => $notification->course_name,
                         'start_date' => '',
                         'end_date' => ' ',
                         'code' => '',
@@ -3146,6 +3145,7 @@ class BussinessRepository implements IBussinessInterface
                         'url' => $quiz_url
                     );
                     $notification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                    $notification->target = TmsNotification::RETAKE_EXAM;
                     update_notification($notification, \App\TmsNotification::SENT);
                 }
             }
@@ -3153,7 +3153,7 @@ class BussinessRepository implements IBussinessInterface
             $data['status'] = 'success';
             $data['message'] = __('xac_nhan_thanh_cong');
         } catch (\Exception $e) {
-            dd($e);
+            //dd($e);
             DB::rollBack();
             $data['status'] = 'error';
             $data['message'] = __('xac_nhan_that_bai');
