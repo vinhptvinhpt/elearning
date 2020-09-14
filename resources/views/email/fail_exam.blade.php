@@ -29,9 +29,7 @@
     $text = $data['fail_exam'];
 
     $result = json_decode($content);
-    $student = "N/A";
-    $user_id = "N/A";
-    $url = "NA";
+    $url = "N/A";
     if (!empty($result)) {
         $attempt = $result->attempt;
         $app_base_url = Config::get('constants.domain.LMS');
