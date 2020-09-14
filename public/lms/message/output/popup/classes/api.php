@@ -131,27 +131,27 @@ class api
                     foreach ($content as $contents) {
                         //convert startdate
                         $startdate = $contents->startdate;
-                        if($startdate > 0){
+                        if ($startdate > 0) {
                             $startdate = date('m/d/Y', $contents->startdate);
-                        }else{
+                        } else {
                             $startdate = '';
                         }
 
                         //convert enddate
                         $enddate = $contents->enddate;
-                        if($enddate > 0){
+                        if ($enddate > 0) {
                             $enddate = date('m/d/Y', $contents->enddate);
-                        }else{
+                        } else {
                             $enddate = '';
                         }
 
 
                         $record->fullmessagehtml .= '<tr class="tr-notification">
-                            <td><p>'. $contents->course_code .'</p></td>
-                            <td><p>'.$contents->course_name.'</p></td>
-                            <td><p>'. $startdate .'</p></td>
-                            <td><p>'. $enddate .'</p></td>
-                            <td><p>'.$contents->course_place.'</p></td>
+                            <td><p>' . $contents->course_code . '</p></td>
+                            <td><p>' . $contents->course_name . '</p></td>
+                            <td><p>' . $startdate . '</p></td>
+                            <td><p>' . $enddate . '</p></td>
+                            <td><p>' . $contents->course_place . '</p></td>
                             </tr>';
                     }
                     $record->fullmessagehtml .= '</tbody></table>';
@@ -163,25 +163,25 @@ class api
 
                     //convert startdate
                     $startdate = $content->start_date;
-                    if($startdate > 0){
+                    if ($startdate > 0) {
                         $startdate = date('m/d/Y', $content->start_date);
-                    }else{
+                    } else {
                         $startdate = '';
                     }
 
                     //convert enddate
                     $enddate = $content->end_date;
-                    if($enddate > 0){
+                    if ($enddate > 0) {
                         $enddate = date('m/d/Y', $content->end_date);
-                    }else{
+                    } else {
                         $enddate = '';
                     }
 
                     $record->fullmessagehtml = 'This email is to notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
-                    $record->fullmessagehtml .= '<br /><strong>Name:&nbsp;<strong>'.$content->object_name.'</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Code:&nbsp;<strong>'.$content->code.'</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Starting time:&nbsp;<strong>'.$startdate.'</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Ending time:&nbsp;<strong>'.$enddate.'</strong><br />';
+                    $record->fullmessagehtml .= '<br /><strong>Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Code:&nbsp;<strong>' . $content->code . '</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Starting time:&nbsp;<strong>' . $startdate . '</strong><br />';
+                    $record->fullmessagehtml .= '<strong>Ending time:&nbsp;<strong>' . $enddate . '</strong><br />';
                     break;
                 case 'remind_exam':
                     $record->subject = 'Remind Exam';
@@ -189,23 +189,23 @@ class api
 
                     //convert startdate
                     $start_time = $content->start_time;
-                    if($start_time > 0){
+                    if ($start_time > 0) {
                         $start_time = date('m/d/Y', $content->start_time);
-                    }else{
+                    } else {
                         $start_time = '';
                     }
 
                     //convert enddate
                     $end_time = $content->end_time;
-                    if($end_time > 0){
+                    if ($end_time > 0) {
                         $end_time = date('m/d/Y', $content->end_time);
-                    }else{
+                    } else {
                         $end_time = '';
                     }
 
                     $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
-                    $record->fullmessagehtml .= '<p>The exam: '.$content->object_name.' is ready for you to complete,</p>';
-                    $record->fullmessagehtml .= '<p>From <strong>'.$start_time.' to '.$end_time.' </strong></p>';
+                    $record->fullmessagehtml .= '<p>The exam: ' . $content->object_name . ' is ready for you to complete,</p>';
+                    $record->fullmessagehtml .= '<p>From <strong>' . $start_time . ' to ' . $end_time . ' </strong></p>';
                     $record->fullmessagehtml .= '<p>Please log in to the PHH Academy using this link <a href="https://academy.phh-group.com">https://academy.phh-group.com</a> to do the test by the required time.</p>';
                     $record->fullmessagehtml .= '<p>Note: This test must be taken continuously for 120 minutes (without pausing or stopping), so please arrange your time &amp; workload to take the test in such a way that you can focus on achieving the best score possible.</p>';
                     break;
@@ -229,27 +229,27 @@ class api
                     foreach ($content as $contents) {
                         //convert startdate
                         $start_date = $contents->start_date;
-                        if($start_date > 0){
+                        if ($start_date > 0) {
                             $start_date = date('m/d/Y', $contents->start_date);
-                        }else{
+                        } else {
                             $start_date = '';
                         }
 
                         //convert enddate
                         $end_date = $contents->end_date;
-                        if($end_date > 0){
+                        if ($end_date > 0) {
                             $end_date = date('m/d/Y', $contents->end_date);
-                        }else{
+                        } else {
                             $end_date = '';
                         }
 
 
                         $record->fullmessagehtml .= '<tr class="tr-notification">
-                            <td><p>'. $contents->object_name .'</p></td>
-                            <td><p>'.$contents->code.'</p></td>
-                            <td><p>'. $start_date .'</p></td>
-                            <td><p>'. $end_date .'</p></td>
-                            <td><p>'.$contents->room.'</p></td>
+                            <td><p>' . $contents->object_name . '</p></td>
+                            <td><p>' . $contents->code . '</p></td>
+                            <td><p>' . $start_date . '</p></td>
+                            <td><p>' . $end_date . '</p></td>
+                            <td><p>' . $contents->room . '</p></td>
                             </tr>';
                     }
                     $record->fullmessagehtml .= '</tbody></table>';
@@ -264,24 +264,211 @@ class api
 
                     //convert startdate
                     $start_date = $content->start_date;
-                    if($start_date > 0){
+                    if ($start_date > 0) {
                         $start_date = date('m/d/Y', $content->start_date);
-                    }else{
+                    } else {
                         $start_date = '';
                     }
 
                     //convert enddate
                     $end_date = $content->end_date;
-                    if($end_date > 0){
+                    if ($end_date > 0) {
                         $end_date = date('m/d/Y', $content->end_date);
-                    }else{
+                    } else {
                         $end_date = '';
                     }
 
                     $record->fullmessagehtml = '<p>This is to notify you that <strong>you </strong>have been assigned to study the course:<br /><br />';
-                    $record->fullmessagehtml .= '<strong>'.$content->object_name.'</strong><br />';
-                    $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>'.$start_date.'</strong><br />';
-                    $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>'.$end_date.'</strong></p>';
+                    $record->fullmessagehtml .= '<strong>' . $content->object_name . '</strong><br />';
+                    $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $start_date . '</strong><br />';
+                    $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $end_date . '</strong></p>';
+                    break;
+                case'fail_exam':
+                    $record->subject = 'Fail exam';
+                    $content = json_decode($record->fullmessage);
+                    //
+                    $record->fullmessagehtml = '<p>Unfortunately, after two attempts you have not passed the final test for this course with 100%.</p>';
+                    $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow you another attempt, your line manager will discuss with you your knowledge gap and why you did not pass.</p>';
+                    $record->fullmessagehtml .= '<p>You can also click on the link to review which part(s) of the test you did not pass.</p>';
+                    $record->fullmessagehtml .= '<p>Course: <strong>' . $content->parent_name . '</strong></p>';
+//                    $record->fullmessagehtml .= '<p>Review: <strong><a href="lms/mod/quiz/review.php?attempt=">LINK</a></strong></p> <p>&nbsp;</p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
+                    break;
+                case'request_more_attempt':
+                    $record->subject = 'Request more attempt';
+                    $content = json_decode($record->fullmessage);
+                    //
+                    $record->fullmessagehtml = '<p>The following learner has not passed a final test with a 100% pass rate and will need to make another attempt.</p>';
+                    $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow them another attempt, please review their result and give them feedback about their knowledge gap.</p>';
+                    $record->fullmessagehtml .= '<p>Learner: <strong>' . $content->object_name . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>&nbsp;</p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
+                    break;
+                case'calculate_toeic_grade':
+                    $record->subject = 'TOEIC Result';
+                    $content = json_decode($record->fullmessage);
+                    //
+                    $record->fullmessagehtml = '<p>Thank you for your completion of our online TOEIC TEST.<br />Your test result is great input for us to understand the current overall English level of PHH Group staff.<br />Besides that, there is no pass or fail on this test, just your annual score so it can help you understand your current level and check your improvement each year.</p>';
+                    $record->fullmessagehtml .= '<p>Remember too, your result is private and is not publicly shared to other staff, only your team leader/line manager will have access to your results.</p>';
+                    $record->fullmessagehtml .= '<p>To compare your results to other common levels and tests please refer to the conversion table below.</p>';
+                    $record->fullmessagehtml .= '<table cellspacing="0" style="border-collapse:collapse">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:96px">
+                                                        <p><strong>TOEIC Score</strong></p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:54px">
+                                                        <p><strong>CEFR </strong></p>
+
+                                                        <p><strong>Level</strong></p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:96px">
+                                                        <p><strong>IELTS Bandscore</strong></p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:90px">
+                                                        <p><strong>TOEFL iBT</strong></p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:1px solid black; vertical-align:top; width:90px">
+                                                        <p><strong>Cambridge Exam Level</strong></p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>911 &amp; Above</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>C2</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>7.5 or Above</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>111 - 120</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>CPE</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>701 - 910</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>C1</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>6.5 - 7</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>96 - 110</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>CAE</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>541 - 700</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>B2</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>5 - 6</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>66 - 95</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>FCE</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>381 - 540</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>B1</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>3.5 &ndash; 4.5</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>41 - 65</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>PET</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>246 - 380</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>A2</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>3</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>31 - 40</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>KET</p>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border-bottom:1px solid black; border-left:1px solid black; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>Below 245</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:54px">
+                                                        <p>A1</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:96px">
+                                                        <p>1 - 2</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>0 to 30</p>
+                                                        </td>
+                                                        <td style="border-bottom:1px solid black; border-left:none; border-right:1px solid black; border-top:none; vertical-align:top; width:90px">
+                                                        <p>Starter</p>
+                                                        </td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>';
+                    $record->fullmessagehtml .= '<p>Congratulations, here are the results of your efforts.</p>';
+                    $record->fullmessagehtml .= '<p>Listening: <strong>' . $content->listening . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Reading: <strong>' . $content->reading . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Total: <strong>' . $content->total . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>&nbsp;</p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
+                    break;
+                case 'completed_competency_framework':
+                    $record->subject = 'Completed competency framework';
+                    $content = json_decode($record->fullmessage);
+
+                    //convert startdate
+                    $startdate = $content->start_date;
+                    if ($startdate > 0) {
+                        $startdate = date('m/d/Y', $content->start_date);
+                    } else {
+                        $startdate = '';
+                    }
+
+                    //convert enddate
+                    $enddate = $content->end_date;
+                    if ($enddate > 0) {
+                        $enddate = date('m/d/Y', $content->end_date);
+                    } else {
+                        $enddate = '';
+                    }
+
+                    $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that <strong>you </strong>have been finished the competency framework as follows,</p>';
+                    $record->fullmessagehtml .= '<p>Name:&nbsp;<strong>' . $content->object_name . '/strong><br />';
+                    $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
+                    $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $startdate . '</strong><br />';
+                    $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $enddate . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 #endregion
                 #region Old cases
