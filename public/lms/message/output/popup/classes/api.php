@@ -113,7 +113,7 @@ class api
             switch ($record->subject) {
                 #region New cases
                 case 'remind_expire_required_course':
-                    $record->subject = 'Remind Expire Required Coure';
+                    $record->subject = 'Remind expire required coure';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '<p>This email is to notify you that we have noticed that you have not yet completed the following assigned course(s) before the expiry dates.</p>';
                     $record->fullmessagehtml .= '
@@ -157,7 +157,7 @@ class api
                     $record->fullmessagehtml .= '</tbody></table>';
                     break;
                 case 'assigned_competency':
-                    $record->subject = 'Assigned Competency';
+                    $record->subject = 'Assigned competency';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -183,7 +183,7 @@ class api
                     $record->fullmessagehtml .= '<strong>Ending time:&nbsp;<strong>' . $enddate . '</strong><br />';
                     break;
                 case 'remind_exam':
-                    $record->subject = 'Remind Exam';
+                    $record->subject = 'Remind exam';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -209,7 +209,7 @@ class api
                     $record->fullmessagehtml .= '<p>Note: This test must be taken continuously for 120 minutes (without pausing or stopping), so please arrange your time &amp; workload to take the test in such a way that you can focus on achieving the best score possible.</p>';
                     break;
                 case 'suggest':
-                    $record->subject = 'Suggest Optional Coure';
+                    $record->subject = 'Suggest optional coure';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
                     $record->fullmessagehtml .= '<p>There are some relevant (but not compulsory) courses that you may be interested in studying, as listed below: &nbsp;</p>';
@@ -260,11 +260,11 @@ class api
                     $record->fullmessagehtml = '<p>Thank you for participate and complete competency framwork <strong>' . $content->object_name . '.</strong></p>';
                     $record->fullmessagehtml .= '<p>Congratulations, you have got the certificate for your efforts.</p>';
                     $record->fullmessagehtml .= '<p>Here is your certificate code: <strong>' . $content->code . '</strong></p>';
-                    $record->fullmessagehtml .= '<p>You will receive the certificate witthin 3 days from now</p>';
+                    $record->fullmessagehtml .= '<p>You will receive the certificate with in 3 days from now</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case 'enrol':
-                    $record->subject = 'Assigned Course';
+                    $record->subject = 'Assigned course';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -475,15 +475,24 @@ class api
                     $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $enddate . '</strong></p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
+                case 'retake_exam':
+                    $record->subject = 'Retake exam';
+                    $content = json_decode($record->fullmessage);
+                    //
+                    $record->fullmessagehtml = '<p>You have been given one more attempt to retake the test of <strong>' . $content->parent_name . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Click to the link below which will take you back the test. Good luck!</p>';
+                    $record->fullmessagehtml .= '<p>Test: <strong><a href="' . $content->url . '">LINK</a></strong></p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
+                    break;
                 #endregion
                 #region Old cases
                 case 'quiz_start':
-                    $record->subject = 'Start the Exam';
+                    $record->subject = 'Start the exam';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = 'Start to do the exam<br>Course: <b>' . $content->parent_name . '</b><br>Exam: <b>' . $content->object_name . '</b><br>Time: <b>' . $content->end_date . '</b>';
                     break;
                 case 'quiz_end':
-                    $record->subject = 'End of Exam';
+                    $record->subject = 'End of exam';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = 'End to do the exam<br>Course: <b>' . $content->parent_name . '</b><br>Exam: <b>' . $content->object_name . '</b><br>Time: <b>' . $content->end_date . '</b>';
                     break;
