@@ -443,6 +443,33 @@ class api
                     $record->fullmessagehtml .= '<p>&nbsp;</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
+                case 'completed_competency_framework':
+                    $record->subject = 'Completed competency framework';
+                    $content = json_decode($record->fullmessage);
+
+                    //convert startdate
+                    $startdate = $content->start_date;
+                    if ($startdate > 0) {
+                        $startdate = date('m/d/Y', $content->start_date);
+                    } else {
+                        $startdate = '';
+                    }
+
+                    //convert enddate
+                    $enddate = $content->end_date;
+                    if ($enddate > 0) {
+                        $enddate = date('m/d/Y', $content->end_date);
+                    } else {
+                        $enddate = '';
+                    }
+
+                    $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that <strong>you </strong>have been finished the competency framework as follows,</p>';
+                    $record->fullmessagehtml .= '<p>Name:&nbsp;<strong>' . $content->object_name . '/strong><br />';
+                    $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
+                    $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $startdate . '</strong><br />';
+                    $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $enddate . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
+                    break;
                 #endregion
                 #region Old cases
                 case 'quiz_start':
