@@ -157,7 +157,6 @@ class api
                     $record->fullmessagehtml .= '</tbody></table>';
                     break;
                 case 'assigned_competency':
-
                     $record->subject = 'Assigned Competency';
                     $content = json_decode($record->fullmessage);
 
@@ -256,7 +255,13 @@ class api
                     break;
                 case 'remind_certificate':
                     $record->subject = 'Notice of certificate issued';
-                    $record->fullmessage = 'You are eligible for certification';
+                    $content = json_decode($record->fullmessage);
+                    //
+                    $record->fullmessagehtml = '<p>Thank you for participate and complete competency framwork <strong>' . $content->object_name . '.</strong></p>';
+                    $record->fullmessagehtml .= '<p>Congratulations, you have got the certificate for your efforts.</p>';
+                    $record->fullmessagehtml .= '<p>Here is your certificate code: <strong>' . $content->code . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>You will receive the certificate witthin 3 days from now</p>';
+                    $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case 'enrol':
                     $record->subject = 'Assigned Course';
