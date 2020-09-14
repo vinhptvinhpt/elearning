@@ -3113,7 +3113,6 @@ class BussinessRepository implements IBussinessInterface
             if ($updated == 1) {
                 if (strlen($notification->email) != 0 && filter_var($notification->email, FILTER_VALIDATE_EMAIL)) {
 
-
                     $lms_base_url = Config::get('constants.domain.LMS');
                     $quiz_url = $lms_base_url . '/mod/quiz/view.php?id=' . $module_id;
 
@@ -3136,8 +3135,8 @@ class BussinessRepository implements IBussinessInterface
                         'object_id' => $notification->sendto,
                         'object_name' => $notification->fullname,
                         'object_type' => 'retake_exam',
-                        'parent_id' => '',
-                        'parent_name' => '',
+                        'parent_id' => $notification->course_id,
+                        'parent_name' => $notification->course_name,
                         'start_date' => '',
                         'end_date' => ' ',
                         'code' => '',
@@ -3146,6 +3145,7 @@ class BussinessRepository implements IBussinessInterface
                         'url' => $quiz_url
                     );
                     $notification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                    $notification->target = TmsNotification::RETAKE_EXAM;
                     update_notification($notification, \App\TmsNotification::SENT);
                 }
             }
@@ -3153,7 +3153,7 @@ class BussinessRepository implements IBussinessInterface
             $data['status'] = 'success';
             $data['message'] = __('xac_nhan_thanh_cong');
         } catch (\Exception $e) {
-            dd($e);
+            //dd($e);
             DB::rollBack();
             $data['status'] = 'error';
             $data['message'] = __('xac_nhan_that_bai');
@@ -10940,11 +10940,11 @@ class BussinessRepository implements IBussinessInterface
                 DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id)
+                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0)
                 as user_course_completionstate'),
                 DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cm.course = c.id) as user_course_learn'),
+                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),
                 DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
                                  where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user'),
                 DB::raw('(select `g`.`finalgrade`

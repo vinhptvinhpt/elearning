@@ -960,6 +960,8 @@ class MailController extends Controller
                                 'attempt' => $content->attempt
                             );
                             $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            //chỉ lưu log cho email thông báo fail của học viên
+                            $itemNotification->target =  TmsNotification::FAIL_EXAM;
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
                             $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
