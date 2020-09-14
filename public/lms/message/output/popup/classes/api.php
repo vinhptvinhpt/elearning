@@ -278,7 +278,7 @@ class api
                         $end_date = '';
                     }
 
-                    $record->fullmessagehtml = '<p>This is to notify you that <strong>you </strong>have been assigned to study the course:<br /><br />';
+                    $record->fullmessagehtml = '<p>This is to notify you that you have been assigned to study the course:<br /><br />';
                     $record->fullmessagehtml .= '<strong>' . $content->object_name . '</strong><br />';
                     $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $start_date . '</strong><br />';
                     $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $end_date . '</strong></p>';
