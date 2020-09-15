@@ -127,7 +127,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'ifooter-logomages/cpn-phh.png';
+            $_SESSION["component"] = 'images/cpn-phh.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;

@@ -177,10 +177,10 @@ class api
                     }
 
                     $record->fullmessagehtml = 'This email is to notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
-                    $record->fullmessagehtml .= '<br /><strong>Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Code:&nbsp;<strong>' . $content->code . '</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Starting time:&nbsp;<strong>' . $startdate . '</strong><br />';
-                    $record->fullmessagehtml .= '<strong>Ending time:&nbsp;<strong>' . $enddate . '</strong><br />';
+                    $record->fullmessagehtml .= '<br />Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
+                    $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
+                    $record->fullmessagehtml .= 'Starting time:&nbsp;<strong>' . $startdate . '</strong><br />';
+                    $record->fullmessagehtml .= 'Ending time:&nbsp;<strong>' . $enddate . '</strong><br />';
                     break;
                 case 'remind_exam':
                     $record->subject = 'Remind exam';
