@@ -1197,20 +1197,31 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
-    public function apiHintCourseCode()
+    public function apiHintCourseCode(Request $request)
     {
+        $type = $request->input('type');
         $response = new ResponseModel();
         try {
-            $code_org = DB::table('mdl_user as mu')->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')
+            $code_org = DB::table('mdl_user as mu')
+                ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')
                 ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
                 ->where('mu.id', '=', Auth::id())
                 ->select('tor.code')->first();
             $num = 0;
-
             if ($code_org) {
-                $courses = MdlCourse::where('shortname', 'like', '%' . $code_org->code . '%')->select('shortname')->orderBy('id', 'desc')->get();
+                $prefix = str_replace('-', '_', $code_org->code);
+                $courses = MdlCourse::where('shortname', 'like', '%' . $prefix . '%')
+                    ->select('shortname');
+                if ($type == 'library') {
+                    $courses->where('category', 2);
+                } elseif ($type == 'online') {
+                    $courses->where('category', '<>', 2);
+                    $courses->where('category', '<>', 5);
+                } elseif ($type == 'online') {
+                    $courses->where('category', 5);
+                }
+                $courses = $courses->orderBy('id', 'desc')->get();
                 $arr_code = [];
-
                 foreach ($courses as $course) {
                     $arr_data = explode('_', $course->shortname);
                     $count_dt = count($arr_data);
@@ -1220,11 +1231,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         }
                     }
                 }
-
                 $count_code = count($arr_code);
                 if ($count_code > 0) {
                     $num = max($arr_code);
-
                     if ($num == 0) {
                         $num = 1;
                     } else {
@@ -1233,8 +1242,18 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 } else {
                     $num = 1;
                 }
+
+                $join_string = "_";
+                if ($type == 'sample') {
+                    $join_string = "_";
+                } elseif ($type == 'online') {
+                    $join_string = '_ONL';
+                } elseif ($type == 'offline') {
+                    $join_string = '_OFFL';
+                }
+                $code_hint = $prefix . $join_string . self::composeAppend($num);
             }
-            $code_hint = $code_org->code . '_' . self::composeAppend($num);
+
             if ($num > 0) {
                 $response->status = true;
                 $response->otherData = $code_hint;

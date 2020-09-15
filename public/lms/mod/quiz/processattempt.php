@@ -145,7 +145,7 @@ if ($status == quiz_attempt::OVERDUE) {
         // $fail_info_json = json_encode($fail_info);
         $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
         $check_noti_result = array_values($DB->get_records_sql($check_noti, array($attemptobj->get_cm()->id, $USER->id)))[0];
-        if ($check_noti_result->completionstate == 0 && $check_noti_result->viewed == 1) {
+        if (($check_noti_result->completionstate == 0 || $check_noti_result->completionstate == 3) && $check_noti_result->viewed == 1) {
             $fail_target = 'request_more_attempt';
             $quiz_info->object_id = $USER->id;
             $quiz_info->object_type = $fail_target;

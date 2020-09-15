@@ -32,7 +32,7 @@ mc.course_avatar,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
-  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 AND cm.completion <> 0  and cmc.completionstate <> 0 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 AND cm.completion <> 0  and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
     muet.userid as teacher_id,
     tud.fullname as teacher_name,
     tor.name as teacher_organization,
@@ -56,7 +56,7 @@ mc.estimate_duration,
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
   where me.enrol = \'manual\'
   and mc.deleted = 0
-  and mc.visible = 1
+   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
   and mue.userid = ' . $USER->id;
@@ -136,9 +136,10 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  and ttp.deleted = 2 and mc.deleted = 0
-  and mc.visible = 1 and
-  mc.id not in ' . $courses_others_id;
+  and ttp.deleted = 2
+  and mc.deleted = 0
+   and mc.visible = 1
+ and mc.id not in ' . $courses_others_id;
 
     if($category == 'other'){
         if ($txtSearch) {
@@ -196,7 +197,7 @@ inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
 and mc.deleted = 0
-and mc.visible = 1
+ and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
@@ -214,7 +215,7 @@ SUBSTR(mc.course_avatar, 2) as course_avatar,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
 ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
-( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 AND cm.completion <> 0  and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) AND cm.completion <> 0  and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
 FLOOR(mccc.gradepass) as pass_score,
 (select mgg.finalgrade from mdl_grade_items mgi join mdl_grade_grades mgg on mgg.itemid = mgi.id where mgg.userid=mue.userid and mgi.courseid=mc.id group by mgi.courseid) as finalgrade,
 ttp.name as training_name,
@@ -237,7 +238,7 @@ left join tms_organization tor on tor.id = toe.organization_id
 
 where me.enrol = \'manual\'
 and mc.deleted = 0
-and mc.visible = 1
+ and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
