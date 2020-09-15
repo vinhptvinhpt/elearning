@@ -3,14 +3,16 @@
 /**
  * Class
  */
-class H5peditorFile {
+class H5peditorFile
+{
   private $result, $field, $interface;
   public $type, $name, $path, $mime, $size;
 
   /**
    * Constructor. Process data for file uploaded through the editor.
    */
-  function __construct($interface) {
+  function __construct($interface)
+  {
     $field = filter_input(INPUT_POST, 'field', FILTER_SANITIZE_STRING, FILTER_FLAG_NO_ENCODE_QUOTES);
 
     // Check for file upload.
@@ -31,12 +33,10 @@ class H5peditorFile {
       $finfo = finfo_open(FILEINFO_MIME_TYPE);
       $this->type = finfo_file($finfo, $_FILES['file']['tmp_name']);
       finfo_close($finfo);
-    }
-    elseif (function_exists('mime_content_type')) {
+    } elseif (function_exists('mime_content_type')) {
       // Deprecated, only when finfo isn't available.
       $this->type = mime_content_type($_FILES['file']['tmp_name']);
-    }
-    else {
+    } else {
       $this->type = $_FILES['file']['type'];
     }
 
@@ -49,7 +49,8 @@ class H5peditorFile {
    *
    * @return boolean
    */
-  public function isLoaded() {
+  public function isLoaded()
+  {
     return is_object($this->result);
   }
 
@@ -59,7 +60,8 @@ class H5peditorFile {
    * @param array $mimes List to check against.
    * @return boolean
    */
-  public function check($mimes) {
+  public function check($mimes)
+  {
     $ext = strtolower($this->extension);
     foreach ($mimes as $mime => $extension) {
       if (is_array($extension)) {
@@ -68,8 +70,7 @@ class H5peditorFile {
           $this->type = $mime;
           return TRUE;
         }
-      }
-      elseif (/*$this->type === $mime && */$ext === $extension) {
+      } elseif (/*$this->type === $mime && */$ext === $extension) {
         // TODO: Either remove everything that has to do with mime types, or make it work
         // Currently we're experiencing trouble with mime types on different servers...
         $this->type = $mime;
@@ -84,7 +85,8 @@ class H5peditorFile {
    *
    * @return boolean
    */
-  public function validate() {
+  public function validate()
+  {
     if (isset($this->result->error)) {
       return FALSE;
     }
@@ -137,11 +139,11 @@ class H5peditorFile {
 
         // Resize the image if size is bigger than 5mb
         $image_size = $_FILES['file']['size'];
-        if ($image_size > 1000000){
-          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $image[0] / 10, $image[1] / 10);
+        if ($image_size > 1000000) {
+          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / 10, $image[1] / 10);
           $image = @getimagesize($_FILES['file']['tmp_name']);
         }
-        
+
         $this->result->width = $image[0];
         $this->result->height = $image[1];
         $this->result->mime = $this->type;
@@ -161,7 +163,6 @@ class H5peditorFile {
         if (!$this->check($allowed)) {
           $this->result->error = $this->interface->t('Invalid audio file format. Use mp3 or wav.');
           return FALSE;
-
         }
 
         $this->result->mime = $this->type;
@@ -171,7 +172,7 @@ class H5peditorFile {
         $allowed = array(
           'video/mp4' => 'mp4',
           'video/webm' => 'webm',
-         // 'application/ogg' => 'ogv',
+          // 'application/ogg' => 'ogv',
           'video/ogg' => 'ogv',
         );
         if (!$this->check($allowed)) {
@@ -195,7 +196,8 @@ class H5peditorFile {
    *
    * @return string
    */
-  public function getType() {
+  public function getType()
+  {
     return $this->field->type;
   }
 
@@ -204,7 +206,8 @@ class H5peditorFile {
    *
    * @return string
    */
-  public function getName() {
+  public function getName()
+  {
     static $name;
 
     if (empty($name)) {
@@ -223,14 +226,16 @@ class H5peditorFile {
   /**
    * Get result from file processing.
    */
-  public function getResult() {
+  public function getResult()
+  {
     return json_encode($this->result);
   }
 
   /**
    * Print result from file processing.
    */
-  public function printResult() {
+  public function printResult()
+  {
     $this->result->path = $this->getType() . 's/' . $this->getName() . '#tmp';
 
     // text/plain is used to support IE
@@ -244,7 +249,7 @@ class H5peditorFile {
    * [Easia-Elearning][Modified] Resize the big size image.
    *
    */
-  public function resize_image($file, $w, $h, $crop = FALSE)
+  public function resize_image($file, $extension, $w, $h, $crop = FALSE)
   {
     list($width, $height) = getimagesize($file);
     $r = $width / $height;
@@ -265,7 +270,21 @@ class H5peditorFile {
         $newwidth = $w;
       }
     }
-    $src = imagecreatefromjpeg($file);
+    // Create image from diffrent kinds of extension
+    switch ($extension) {
+      case "png":
+        $src = imagecreatefrompng($file);
+        break;
+      case "jpg":
+        $src = imagecreatefromjpeg($file);
+        break;
+      case "jpeg":
+        $src = imagecreatefromjpeg($file);
+        break;
+      case "gif":
+        $src = imagecreatefromgif($file);
+        break;
+    }
     $dst = imagecreatetruecolor($newwidth, $newheight);
     imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
     imagedestroy($src);

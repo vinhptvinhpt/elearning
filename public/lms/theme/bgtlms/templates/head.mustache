@@ -47,6 +47,12 @@
     <script>
         $(document).ready(function () {
             var currentUrl = window.location.href;
+            var getAuthUser = localStorage.getItem('auth.user');
+            //if null -> required login
+            if(!getAuthUser){
+                localStorage.clear();
+                window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+            }
             var jwtsso = getToken();
             if (jwtsso) {
                 <!-- $.ajax({ -->

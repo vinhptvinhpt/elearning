@@ -225,7 +225,11 @@ Log::info('157');
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    $team_id = $team->id;
+                                    if (!is_numeric($team)) {
+                                        $content[] = $team; //Team đã được tạo cho tổ chức khác
+                                    } else {
+                                        $team_id = $team->id;
+                                    }
                                 } else {
                                     $content[] = 'Team code is not validated';
                                 }
@@ -542,7 +546,11 @@ Log::info('348');
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    $team_id = $team->id;
+                                    if (!is_numeric($team)) {
+                                        $content[] = $team; //Team đã được tạo cho tổ chức khác
+                                    } else {
+                                        $team_id = $team->id;
+                                    }
                                 } else {
                                     $content[] = 'Team code is not validated';
                                 }
@@ -1947,12 +1955,11 @@ Log::info('348');
     /**
      * @param $organization
      * @param $team_code
-     * @return TmsOrganizationTeam|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object
+     * @return TmsOrganizationTeam|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Eloquent\Model|object|string
      */
     function createTeam($organization, $team_code) {
         $check = TmsOrganizationTeam::query()
-            ->where('code', $team_code)
-            ->where('organization_id', $organization->id)->first();
+            ->where('code', $team_code)->first();
 
         if (!isset($check)) {
             $check = new TmsOrganizationTeam();
@@ -1960,6 +1967,10 @@ Log::info('348');
             $check->code = $team_code;
             $check->organization_id = $organization->id;
             $check->save();
+        } else {
+            if ($check->organization_id != $organization->id) { //Team đã được gán cho tổ chức khác
+                return 'Team code is used by another organization';
+            }
         }
         return $check;
     }

@@ -366,6 +366,8 @@ H5P.init = function (target) {
 
     // Logic for hiding focus effects when using mouse
     $element.addClass('using-mouse');
+    // [Easia-Elearning][Modified] Turn on scroll mode for iframe embedded
+    $element.find('iframe.h5p-iframe-content.h5p-iframe-wrapper').attr("scrolling", "yes");
     $element.on('mousedown keydown keyup', function (event) {
       $element.toggleClass('using-mouse', event.type === 'mousedown');
     });
