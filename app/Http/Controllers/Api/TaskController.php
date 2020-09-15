@@ -91,9 +91,9 @@ class TaskController extends Controller
                 , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
-                cs.section <> 0 and cmc.completionstate != 0 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
+                cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                 DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
-	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id) as total_module'),
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module'),
                 DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
 
@@ -176,7 +176,7 @@ class TaskController extends Controller
                     DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
-                cs.section <> 0 and cmc.completionstate != 0 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
+                cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                     DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
 	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
                     //,DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
@@ -582,9 +582,9 @@ class TaskController extends Controller
                 , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
-                cs.section <> 0 and cmc.completionstate != 0 and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
+                cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                 DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
-	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id) as total_module'),
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module'),
                 DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
 				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
 
@@ -767,12 +767,12 @@ class TaskController extends Controller
                 , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = u.id and cm.course = c.id)
+                where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = u.id and cm.course = c.id)
                 as user_course_completionstate')
 
                 , DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cm.course = c.id) as user_course_learn')
+                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn')
 
                 , DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
                                  where cc.userid = u.id and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
@@ -1530,12 +1530,12 @@ class TaskController extends Controller
                 , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cmc.completionstate != 0 and cmc.userid = ' . $user_id . ' and cm.course = c.id)
+                where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id)
                 as user_course_completionstate')
 
                 , DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cm.course = c.id) as user_course_learn')
+                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn')
 
                 , DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
                                  where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
