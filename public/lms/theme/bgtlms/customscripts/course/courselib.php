@@ -8,6 +8,7 @@ function get_course_contents($courseid)
     require_once($CFG->dirroot . "/course/lib.php");
     require_once($CFG->libdir . '/completionlib.php');
 
+    $countModules = 0;
     //retrieve the course
     $course = $DB->get_record('course', array('id' => $courseid), '*', MUST_EXIST);
 
@@ -49,6 +50,8 @@ function get_course_contents($courseid)
 
         //for each sections (first displayed to last displayed)
         $modinfosections = $modinfo->get_sections();
+//        echo count($modinfosections);
+//        die;
         foreach ($sections as $key => $section) {
 
             // This becomes true when we are filtering and we found the value to filter with.
@@ -269,6 +272,7 @@ function get_course_contents($courseid)
             }
             $sectionvalues['modules'] = $sectioncontents;
 
+//            $countModules += count($sectioncontents);
             // assign result to $coursecontents
             $coursecontents[$key] = $sectionvalues;
 
@@ -309,7 +313,10 @@ function get_course_contents($courseid)
                 'modules' => $stealthmodules
             );
         }
+
     }
 
+//    echo $countModules;
+//    die;
     return $coursecontents;
 }
