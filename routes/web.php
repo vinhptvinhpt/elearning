@@ -509,7 +509,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/course/total_activity', 'Backend\CourseController@apiGetTotalActivityCourse');
     Route::post('/api/courses/get_list_category_clone', 'Backend\CourseController@apiGetListCategoryForClone');
     Route::post('/api/courses/get_list_category_edit', 'Backend\CourseController@apiGetListCategoryForEdit');
-    Route::get('/api/courses/hint_code', 'Backend\CourseController@apiHintCourseCode');
+    Route::post('/api/courses/hint_code', 'Backend\CourseController@apiHintCourseCode');
     Route::post('/api/courses/get_list_document_course', 'Backend\CourseController@apiGetListDocument');
     Route::get('/api/courses/get_list_module_course/{course_id}', 'Backend\CourseController@apiGetListModule');
     Route::post('/api/courses/get_library', 'Backend\CourseController@apiGetListLibrary');

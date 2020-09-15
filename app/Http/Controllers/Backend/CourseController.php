@@ -548,9 +548,9 @@ class CourseController extends Controller
         return $this->bussinessRepository->apiEnrolUserCourseConcent($request);
     }
 
-    public function apiHintCourseCode()
+    public function apiHintCourseCode(Request $request)
     {
-        return $this->mdlCourseRepository->apiHintCourseCode();
+        return $this->mdlCourseRepository->apiHintCourseCode($request);
     }
 
     public function apiGetListLibrary()

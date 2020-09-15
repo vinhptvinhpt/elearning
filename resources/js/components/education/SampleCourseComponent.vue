@@ -320,23 +320,8 @@
         //return this.filterBy(option, new_label, new_search); //can not call components function here
         return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
       },
-      getLibrary() {
-        let _this = this;
-        this.libraryCodes = [];
-        axios.post('/api/courses/get_library', {})
-          .then(response => {
-            let codes = [];
-            response.data.forEach(function (cityItem) {
-              codes.push(cityItem.shortname);
-            });
-            _this.libraryCodes = codes;
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      },
-      async getReloadLibrary() {
-        let result = await axios.post('/api/courses/get_library', {})
+      async getLibrary() {
+        return await axios.post('/api/courses/get_library', {})
           .then(response => {
             let codes = [];
             response.data.forEach(function (cityItem) {
@@ -347,19 +332,17 @@
           .catch(error => {
             console.log(error);
           });
-        return result;
       },
-      getLibraryCodes() {
+      getLibraryCodes() { //Data for select2, admin only
         this.librarySelectOptions = [];
         this.libraryCodes = [];
         axios.post('/api/courses/get_library_codes', {})
           .then(response => {
             let additionalCities = [];
             response.data.forEach(function (cityItem) {
-              let code = cityItem.code.replace("-", "_");
               let newCity = {
-                label: code,
-                id: code
+                label: cityItem.code,
+                id: cityItem.code
               };
               additionalCities.push(newCity);
             });
@@ -378,8 +361,8 @@
       },
       async setShortName() {
         if (this.library) {
-          let codesA = await this.getReloadLibrary();
-          let prefix = this.library;
+          let codesA = await this.getLibrary();
+          let prefix = this.library.replace("-", "_");
           let biggest = 0;
           let curPos = this;
           codesA.forEach(function (item) {
@@ -441,7 +424,7 @@
         this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
         this.formData.append('category_id', 2); //gắn cứng giá trị quy định đây là id danh mục mãu
         this.formData.append('sample', 1);// truyền giá trị để nhận biết đây là khóa học mẫu
-        this.formData.append('selected_org', this.library.replace("_", "-"));// truyền giá trị để nhận biết thư viện được tạo cho một tổ chức cụ thể
+        this.formData.append('selected_org', this.library);// truyền giá trị để nhận biết thư viện được tạo cho một tổ chức cụ thể
         var is_toeic = this.is_toeic ? 1 : 0;
         this.formData.append('is_toeic', is_toeic);
 
@@ -491,7 +474,9 @@
           });
       },
       hintCode() {
-        axios.get('/api/courses/hint_code')
+        axios.post('/api/courses/hint_code', {
+          type: 'sample'
+        })
           .then(response => {
             if (response.data.status) {
               this.shortname = response.data.otherData;
@@ -586,7 +571,6 @@
       // this.getCourses();
       this.hintCode();
       // this.fetch();
-      this.getLibrary();
       this.getLibraryCodes();
     },
     updated() {
