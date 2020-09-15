@@ -312,13 +312,13 @@ class api
                     $lms_base_url = $tms_base_url . '/lms';
                     $attempt = $content->attempt;
                     $url_review = $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
-                    $url_unlock = $tms_base_url . '/page/notification/unlock/' . $content->parent_id;
+//                    $url_unlock = $tms_base_url . '/page/notification/unlock/' . $content->parent_id;
                     //
                     $record->fullmessagehtml = '<p>The following learner has not passed a final test with a 100% pass rate and will need to make another attempt.</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow them another attempt, please review their result and give them feedback about their knowledge gap.</p>';
                     $record->fullmessagehtml .= '<p>Learner: <strong>' . $content->object_name . '</strong></p>';
                     $record->fullmessagehtml .= '<p>Review learner&rsquo;s test result: <strong><a href="' . $url_review . '">LINK</a></strong></p>';
-                    $record->fullmessagehtml .= '<p>Unlock test to allow more attempts: <strong><a href="' . $url_unlock . '">LINK</a></strong></p>';
+//                    $record->fullmessagehtml .= '<p>Unlock test to allow more attempts: <strong><a href="' . $url_unlock . '">LINK</a></strong></p>';
                     $record->fullmessagehtml .= '<p>&nbsp;</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
