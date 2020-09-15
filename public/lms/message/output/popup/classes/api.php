@@ -309,10 +309,10 @@ class api
                     //
                     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
                     $tms_base_url = $protocol.$_SERVER['HTTP_HOST'];
-                    $lms_base_url = $protocol.$tms_base_url . '/lms';
+                    $lms_base_url = $tms_base_url . '/lms';
                     $attempt = $content->attempt;
                     $url_review = $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
-                    $url_unlock = $tms_base_url . 'page/notification/unlock/' . $content->parent_id;
+                    $url_unlock = $tms_base_url . '/page/notification/unlock/' . $content->parent_id;
                     //
                     $record->fullmessagehtml = '<p>The following learner has not passed a final test with a 100% pass rate and will need to make another attempt.</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow them another attempt, please review their result and give them feedback about their knowledge gap.</p>';
