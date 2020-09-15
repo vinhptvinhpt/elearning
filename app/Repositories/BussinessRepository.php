@@ -3144,9 +3144,17 @@ class BussinessRepository implements IBussinessInterface
                         'grade' => '',
                         'url' => $quiz_url
                     );
-                    $notification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
-                    $notification->target = TmsNotification::RETAKE_EXAM;
-                    update_notification($notification, \App\TmsNotification::SENT);
+
+                    //chỉ lưu log cho email thông báo fail của học viên
+                    $tms_notifLog = new \stdClass();
+                    $tms_notifLog->type = $notification->type;
+                    $tms_notifLog->target = TmsNotification::RETAKE_EXAM;
+                    $tms_notifLog->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                    $tms_notifLog->sendto = $notification->sendto;
+                    $tms_notifLog->status_send = 1;
+                    $tms_notifLog->createdby = $notification->createdby;
+                    $tms_notifLog->course_id = $notification->course_id;
+                    insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
                 }
             }
 
