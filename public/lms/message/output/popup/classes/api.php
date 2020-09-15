@@ -292,19 +292,31 @@ class api
                     $record->subject = 'Fail exam';
                     $content = json_decode($record->fullmessage);
                     //
+                    $lms_base_url = $_SERVER['HTTP_HOST'] . '/lms';
+                    $attempt = $content->attempt;
+                    //
                     $record->fullmessagehtml = '<p>Unfortunately, after two attempts you have not passed the final test for this course with 100%.</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow you another attempt, your line manager will discuss with you your knowledge gap and why you did not pass.</p>';
+                    $record->fullmessagehtml .= '<p>You can also click on the link to review which part(s) of the test you did not pass.</p>';
                     $record->fullmessagehtml .= '<p>Course: <strong>' . $content->parent_name . '</strong></p>';
-//                    $record->fullmessagehtml .= '<p>Review: <strong><a href="lms/mod/quiz/review.php?attempt=">LINK</a></strong></p> <p>&nbsp;</p>';
+                    $record->fullmessagehtml .= '<p>Review: <strong><a href="' . $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt . '">LINK</a></strong></p> <p>&nbsp;</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case'request_more_attempt':
                     $record->subject = 'Request more attempt';
                     $content = json_decode($record->fullmessage);
                     //
+                    $tms_base_url = $_SERVER['HTTP_HOST'];
+                    $lms_base_url = $tms_base_url . '/lms';
+                    $attempt = $content->attempt;
+                    $url_review = $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
+                    $url_unlock = $tms_base_url . 'page/notification/unlock/' . $content->parent_id;
+                    //
                     $record->fullmessagehtml = '<p>The following learner has not passed a final test with a 100% pass rate and will need to make another attempt.</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow them another attempt, please review their result and give them feedback about their knowledge gap.</p>';
                     $record->fullmessagehtml .= '<p>Learner: <strong>' . $content->object_name . '</strong></p>';
+                    $record->fullmessagehtml .= '<p>Review learner&rsquo;s test result: <strong><a href="' . $url_review . '">LINK</a></strong></p>';
+                    $record->fullmessagehtml .= '<p>Unlock test to allow more attempts: <strong><a href="' . $url_unlock . '">LINK</a></strong></p>';
                     $record->fullmessagehtml .= '<p>&nbsp;</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
