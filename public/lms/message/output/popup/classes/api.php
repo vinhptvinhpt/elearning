@@ -292,7 +292,8 @@ class api
                     $record->subject = 'Fail exam';
                     $content = json_decode($record->fullmessage);
                     //
-                    $lms_base_url = $_SERVER['HTTP_HOST'] . '/lms';
+                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                    $lms_base_url = $protocol.$_SERVER['HTTP_HOST'] . '/lms';
                     $attempt = $content->attempt;
                     //
                     $record->fullmessagehtml = '<p>Unfortunately, after two attempts you have not passed the final test for this course with 100%.</p>';
@@ -306,8 +307,9 @@ class api
                     $record->subject = 'Request more attempt';
                     $content = json_decode($record->fullmessage);
                     //
-                    $tms_base_url = $_SERVER['HTTP_HOST'];
-                    $lms_base_url = $tms_base_url . '/lms';
+                    $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
+                    $tms_base_url = $protocol.$_SERVER['HTTP_HOST'];
+                    $lms_base_url = $protocol.$tms_base_url . '/lms';
                     $attempt = $content->attempt;
                     $url_review = $lms_base_url . '/mod/quiz/review.php?attempt=' . $attempt;
                     $url_unlock = $tms_base_url . 'page/notification/unlock/' . $content->parent_id;
