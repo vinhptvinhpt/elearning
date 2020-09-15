@@ -7,6 +7,7 @@ use App\Mail\CourseSendMail;
 use App\MdlCourse;
 use App\MdlQuiz;
 use App\MdlUser;
+use App\Role;
 use App\TmsConfigs;
 use App\TmsDevice;
 use App\TmsInvitation;
@@ -16,6 +17,7 @@ use App\TmsUserDetail;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Redis;
 use Tintnaingwin\EmailChecker\Facades\EmailChecker;
@@ -380,7 +382,7 @@ class MailController extends Controller
 
                             $result = json_decode($itemNotification->content);
 
-                            if (!empty($exam)) {
+                            if (!empty($result)) {
                                 $object_content = array(
                                     'object_id' => '',
                                     'object_name' => '',
@@ -608,14 +610,18 @@ class MailController extends Controller
 
                             if ($send == 1) {
                                 //send mail can not continue if has fake email
+
+                                $startdate = strlen($itemNotif->startdate) != 0 && $itemNotif->startdate != 0 ? date('Y jS F g:iA', $itemNotif->startdate) : 'N/A';
+                                $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->startdate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
+
                                 Mail::to($email)->send(new CourseSendMail(
                                     $itemNotif->target,
                                     $itemNotif->username,
                                     $fullname, //user full name
                                     $itemNotif->shortname, // course code
                                     $itemNotif->fullname, //course name
-                                    date('Y jS F g:iA', $itemNotif->startdate),
-                                    date('Y jS F g:iA', $itemNotif->enddate),
+                                    $startdate,
+                                    $enddate,
                                     $itemNotif->course_place,
                                     $itemNotif->date_quiz,
                                     $quiz_data
@@ -840,15 +846,16 @@ class MailController extends Controller
         }
     }
 
-//Send email request more attempt
+//Send email about exam fail for to student
+//Send email request more attempt to uppers(For T&D, Manager, Leader of trainee)
+
 //Send 1 time only, then change status of notification
     public function sendRequestMoreAttempt()
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
-            $lstNotifi = MdlUser::query()
-                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user.id')
-                ->join('tms_nofitications', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+            $lstNotifi = TmsNotification::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
                 ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
                 ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
                 ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
@@ -858,12 +865,15 @@ class MailController extends Controller
                     'tms_nofitications.target',
                     'tms_nofitications.course_id',
                     'tms_nofitications.type',
+                    'tms_nofitications.content',
                     'tms_nofitications.sendto',
                     'tms_nofitications.createdby',
-                    'tms_nofitications.content',
-                    'mdl_user.email',
-                    //'tms_user_detail.fullname',
-                    'mdl_user.username'
+
+                    'tms_user_detail.email',
+                    'tms_user_detail.fullname',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name'
+
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
@@ -873,49 +883,126 @@ class MailController extends Controller
             if ($countRemindNotification > 0) {
                 \DB::beginTransaction();
                 foreach ($lstNotifi as $itemNotification) {
+
                     try {
                         //send mail can not continue if has fake email
+                        $user_id = $itemNotification->sendto;
                         $fullname = $itemNotification->fullname;
                         $email = $itemNotification->email;
+
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            $content = json_decode($itemNotification->content);
+
+                            //Thông báo fail exam cho student
                             Mail::to($email)->send(new CourseSendMail(
-                                TmsNotification::REQUEST_MORE_ATTEMPT,
+                                TmsNotification::FAIL_EXAM,
                                 $itemNotification->username,
                                 $fullname,
-                                '',
-                                '',
+                                $itemNotification->course_code,
+                                $itemNotification->course_name,
                                 '',
                                 '',
                                 '',
                                 '',
                                 $itemNotification->content
                             ));
-                            $object_content = [];
-                            $student = json_decode($itemNotification->content);
-                            if (isset($training)) {
-                                $object_content = array(
-                                    'object_id' => $student->user_id,
-                                    'object_name' => $student->fullname,
-                                    'object_type' => 'request-more-attempt',
-                                    'parent_id' => '',
-                                    'parent_name' => '',
-                                    'start_date' => '',
-                                    'end_date' => ' ',
-                                    'code' => '',
-                                    'room' => '',
-                                    'grade' => '',
-                                    'link_to_review' => $student->link_to_review
-                                );
+                            //Ghi log
+                            $object_content = array(
+                                'object_id' => $user_id,
+                                'object_name' => $fullname,
+                                'object_type' => 'fail_exam',
+                                'parent_id' => '',
+                                'parent_name' => $itemNotification->course_name,
+                                'start_date' => '',
+                                'end_date' => ' ',
+                                'code' => '',
+                                'room' => '',
+                                'grade' => '',
+                                'attempt' => $content->attempt
+                            );
+
+                            //chỉ lưu log cho email thông báo fail của học viên
+                            $tms_notifLog = new \stdClass();
+                            $tms_notifLog->type = $itemNotification->type;
+                            $tms_notifLog->target = TmsNotification::FAIL_EXAM;
+                            $tms_notifLog->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $tms_notifLog->sendto = $itemNotification->sendto;
+                            $tms_notifLog->status_send = 1;
+                            $tms_notifLog->createdby = $itemNotification->createdby;
+                            $tms_notifLog->course_id = $itemNotification->course_id;
+                            $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
+
+                            //T&D employee = admins, send only
+                            $admins =  DB::table('model_has_roles as mhr')
+                                ->join('roles', 'roles.id', '=', 'mhr.role_id')
+                                ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                                ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                                ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+                                ->where('mhr.model_type', 'App/MdlUser')
+                                ->where('mhr.model_id', '<>', 2)
+                                ->where(function ($q) {
+                                    $q->where('roles.name', 'root')->orWhere('psr.permission_slug', 'tms-system-administrator-grant');
+                                })
+                                ->select('mhr.model_id', 'mu.username', 'tud.fullname')
+                                ->groupBy(['mhr.model_id', 'mu.username', 'tud.fullname'])
+                                ->get();
+                            $sent = array();
+                            foreach ($admins as $admin) {
+                                $sent[] = $admin->model_id;
+                                $admin_email = $admin->username;
+                                if (strlen($admin_email) != 0 && filter_var($admin_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($admin_email)) {
+                                    Mail::to($admin_email)->send(new CourseSendMail(
+                                        TmsNotification::REQUEST_MORE_ATTEMPT,
+                                        $admin->username,
+                                        $admin->fullname,
+                                        $itemNotification->course_code,
+                                        $itemNotification->course_name,
+                                        '',
+                                        '',
+                                        '',
+                                        '',
+                                        $itemNotification
+                                    ));
+                                }
                             }
-                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+
+                            //org uppers, send only
+                            $orgUppers = self::orgUppers($user_id);
+                            if (!empty($orgUppers)) {
+                                foreach ($orgUppers as $orgUpper) {
+                                    $upper_email = $orgUpper->email;
+                                    if (!in_array($orgUpper->user_id, $sent) && strlen($upper_email) != 0 && filter_var($upper_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($upper_email)) {
+                                        Mail::to($upper_email)->send(new CourseSendMail(
+                                            TmsNotification::REQUEST_MORE_ATTEMPT,
+                                            $admin->username,
+                                            $admin->fullname,
+                                            $itemNotification->course_code,
+                                            $itemNotification->course_name,
+                                            '',
+                                            '',
+                                            '',
+                                            '',
+                                            $itemNotification
+                                        ));
+                                    }
+                                }
+                            }
+
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
                         $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                     }
-                    //sleep(1);
+                    sleep(1);
                 }
                 //$this->sendPushNotification($lstNotifi);
                 \DB::commit();
@@ -923,14 +1010,14 @@ class MailController extends Controller
         }
     }
 
-//Insert notification to manager to adding more attempt for fail student
+//Insert notification to manager to adding more attempt for fail student //Demo only
     public function insertRequestMoreAttempt() {
 
         //Redis::set('name', 'Taylor');
         //$user = Redis::get('name');
         //echo $user;
 
-        $user_id = 23898;
+        $user_id = 23696;
         $course_id = 389;
 
         $configs = self::loadConfiguration();
@@ -939,6 +1026,42 @@ class MailController extends Controller
             if (isset($user)) {
                 $course = MdlCourse::query()->where('id', $course_id)->first();
                 if (isset($course)) {
+                    //Tạo 1 notification only
+                    $data = array();
+                    $element = array(
+                        'type' => TmsNotification::MAIL,
+                        'target' => TmsNotification::REQUEST_MORE_ATTEMPT,
+                        'status_send' => 0,
+                        'sendto' => $user_id,
+                        'createdby' => 0,
+                        'course_id' => $course_id,
+                        'created_at' => date('Y-m-d H:i:s', time()),
+                        'updated_at' => date('Y-m-d H:i:s', time()),
+                    );
+
+                    //{"quiz_id":"254",
+                    //"quiz_name":"Listening Test",
+                    //"parent_name":"test u0111iem",
+                    //"object_name":"Listening Test",
+                    //"grade":0,
+                    //"end_date":"2020-09-11 11:49:46",
+                    //"attempt":1057,
+                    //"object_id":"23908",
+                    //"object_type":"request_more_attempt"}
+                    $element['content'] = json_encode(array(
+                        'object_id' => $user_id,
+                        'object_name' => $user->fullname,
+                        'object_type' => 'request_more_attempt',
+                        'attempt' => 999,
+                        'quiz_id' => 185,
+                        'module_id' => 988
+
+                    ), JSON_UNESCAPED_UNICODE);
+                    $data[] = $element;
+                    TmsNotification::insert($data);
+
+                    //Tạo nhiều notifications cho uppers
+                    /*
                     $orgUppers = self::orgUppers($user_id);
                     if (!empty($orgUppers)) {
                         $data = array();
@@ -955,11 +1078,11 @@ class MailController extends Controller
                                     'updated_at' => date('Y-m-d H:i:s', time()),
                                 );
                                 $element['content'] = array(
-                                    'user_id' => $user_id,
-                                    'fullname' => $user->fullname,
-                                    'link_to_review' =>'http://google.com'
+                                    'object_id' => $user_id,
+                                    'object_name' => $user->fullname,
+                                    'object_type' => 'request_more_attempt',
+                                    'attempt' => '999'
                                 );
-
                                 $data[] = $element;
                             }
                         }
@@ -972,7 +1095,9 @@ class MailController extends Controller
                             //batch insert
                             TmsNotification::insert($convert_to_json);
                         }
-                    }
+                    }*/
+
+
                 }
             }
         }
@@ -991,7 +1116,10 @@ class MailController extends Controller
                 //check exist in table tms_nofitications
                 $query->select('organization_id')->from('tms_organization_employee')->where('user_id', '=', $user_id);
             })
-            ->whereIn('toe.position', [TmsOrganizationEmployee::POSITION_MANAGER, TmsOrganizationEmployee::POSITION_LEADER])
+            ->whereIn('toe.position', [
+                //TmsOrganizationEmployee::POSITION_MANAGER,
+                TmsOrganizationEmployee::POSITION_LEADER
+            ])
             ->select('tud.email', 'tud.fullname', 'tud.user_id')
             ->get()
             ->toArray();
@@ -1128,14 +1256,77 @@ class MailController extends Controller
             if (count($userNeedEnrol) > 0) {
                 //batch insert
                 $data = array();
-                $user_ids_array = array();
                 foreach ($userNeedEnrol as $user_item) {
-                    $user_ids_array[] = $user_item->id;
                     $data[] = array(
                         'type' => TmsNotification::MAIL,
                         'target' => TmsNotification::SUGGEST,
                         'status_send' => 0,
                         'sendto' => $user_item->id,
+                        'createdby' => 0,
+                        'course_id' => 0,
+                        'created_at' => date('Y-m-d H:i:s', time()),
+                        'updated_at' => date('Y-m-d H:i:s', time())
+                    );
+                }
+                if (!empty($data)) {
+                    TmsNotification::insert($data);
+                }
+            }
+        }
+    }
+
+//Insert notification records to db for suggest optional courses (các khóa được phân quyền dữ liệu cho tổ chức mà user chưa enrol)
+//Created September 10, 2020
+//Limit
+    public function insertSuggestOptionalCourses()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
+            $userNeedEnrol = DB::table('tms_organization')
+                //Lấy nhân viên
+                ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+                ->join('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
+                //Lấy khóa được phân quyền dữ liệu
+                ->join('tms_role_organization', 'tms_organization.id', '=', 'tms_role_organization.organization_id')
+                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id')
+                //User được enrol as student
+                ->leftjoin('mdl_enrol', function ($join) {
+                    $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                    $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT);
+                })
+                ->leftJoin('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                //Lấy thông tin user
+                ->select(
+                    'tms_user_detail.user_id',
+                    'tms_user_detail.fullname',
+                    'tms_user_detail.email'
+                )
+                //check not exist in table tms_nofitications
+                ->whereNotIn('tms_user_detail.user_id', function ($query) {
+                    $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
+                })
+                //Null tức là chưa được enrol
+                ->whereNull('mdl_user_enrolments.userid')
+                //Ngoại trừ thư viện
+                ->where('mdl_course.category', '<>', 2)
+                //Ngoại trừ khóa bị xóa
+                ->where('mdl_course.deleted', '=', 0)
+                //Loại bỏ bản ghi trùng
+                ->groupBy(['tms_user_detail.user_id'])
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get();
+            //Khóa học phân quyền dữ liệu - các khóa đã enrol => Ra những khóa thư viện và những khóa bị xóa => Có cần thiết
+
+            if (count($userNeedEnrol) > 0) {
+                //batch insert
+                $data = array();
+                foreach ($userNeedEnrol as $user_item) {
+                    $data[] = array(
+                        'type' => TmsNotification::MAIL,
+                        'target' => TmsNotification::SUGGEST,
+                        'status_send' => 0,
+                        'sendto' => $user_item->user_id,
                         'createdby' => 0,
                         'course_id' => 0,
                         'created_at' => date('Y-m-d H:i:s', time()),
@@ -1259,8 +1450,125 @@ class MailController extends Controller
         }
     }
 
+//Send email suggest optional courses
+//Limit
+//Chưa gửi
+
+    public function sendSuggestOptionalCourses()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
+            $lstNotif = TmsNotification::where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::SUGGEST)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+
+                    'mdl_user.email',
+                    'mdl_user.firstname',
+                    'mdl_user.lastname',
+                    'mdl_user.username'
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+
+            $countNotif = count($lstNotif);
+            if ($countNotif > 0) {
+                \DB::beginTransaction();
+                foreach ($lstNotif as $itemNotif) {
+                    try {
+                        //send mail can not continue if has fake email
+                        $user_id = $itemNotif->sendto;
+                        $fullname = $itemNotif->lastname . ' ' . $itemNotif->firstname;
+                        $email = $itemNotif->email;
+                        //Check email format
+                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                            //Get list optional course
+                            $courses = DB::table('tms_organization')
+                                //Lấy nhân viên
+                                ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+                                ->join('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
+                                //Lấy khóa được phân quyền dữ liệu
+                                ->join('tms_role_organization', 'tms_organization.id', '=', 'tms_role_organization.organization_id')
+                                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                                ->join('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id')
+                                //User được enrol as student
+                                ->leftjoin('mdl_enrol', function ($join) {
+                                    $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                                    $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT);
+                                })
+                                ->leftJoin('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                                //Lấy thông tin user
+                                ->select('mdl_course.*')
+                                //Null tức là chưa được enrol
+                                ->whereNull('mdl_user_enrolments.userid')
+                                //cho user hiện tại
+                                ->where('tms_user_detail.user_id', $user_id)
+                                //Ngoại trừ thư viện
+                                ->where('mdl_course.category', '<>', 2)
+                                //Ngoại trừ khóa bị xóa
+                                ->where('mdl_course.deleted', '=', 0)
+                                //Lấy 5 khóa
+                                ->limit(5)
+                                //Mới nhất
+                                ->orderBy('mdl_course.id', 'desc')
+                                ->get();
+
+                            Mail::to($email)->send(new CourseSendMail(
+                                TmsNotification::SUGGEST,
+                                $itemNotif->username,
+                                $fullname,
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                '',
+                                $courses
+                            ));
+
+                            $object_content = [];
+                            foreach ($courses as $course_detail) {
+                                $object_content[] = array(
+                                    'object_id' => $course_detail->id,
+                                    'object_name' => $course_detail->fullname,
+                                    'object_type' => 'course',
+                                    'parent_id' => '',
+                                    'parent_name' => '',
+                                    'start_date' => $course_detail->startdate,
+                                    'end_date' => $course_detail->enddate,
+                                    'code' => $course_detail->shortname,
+                                    'room' => $course_detail->course_place,
+                                    'grade' => '',
+                                );
+                            }
+                            $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $this->update_notification($itemNotif, \App\TmsNotification::SENT);
+                            sleep(1);
+                        } else {
+                            $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                        }
+                    } catch (Exception $e) {
+                        $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
+                    }
+                }
+                \DB::commit();
+            }
+
+        }
+    }
+
 //Remove reminds notification type repeat
-//Every weeks
+//Every week => month
     public function removeAllRemind()
     {
         TmsNotification::where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE)->delete();
@@ -1268,6 +1576,8 @@ class MailController extends Controller
         TmsNotification::where('target', '=', TmsNotification::REMIND_LOGIN)->delete();
         TmsNotification::where('target', '=', TmsNotification::REMIND_UPCOMING_COURSE)->delete();
         TmsNotification::where('target', '=', TmsNotification::REMIND_ACCESS_COURSE)->delete();
+        //2020 September 09, Thêm loại này do đổi query sang optional course và dùng chung template suggest
+        TmsNotification::where('target', '=', TmsNotification::SUGGEST)->delete();
     }
 
 //Insert notification remind expired required courses
@@ -2123,7 +2433,7 @@ class MailController extends Controller
         }
     }
 
-    function update_notification($tmsNotif, $status_send)
+    function update_notification($tmsNotif, $status_send, $write_log = true)
     {
         $tms_notifLog = \App\TmsNotification::findOrFail($tmsNotif->id);
         $tms_notifLog->type = $tmsNotif->type;
@@ -2134,8 +2444,9 @@ class MailController extends Controller
         $tms_notifLog->course_id = $tmsNotif->course_id;
         $tms_notifLog->updated_at = date('Y-m-d H:i:s', time());
         $tms_notifLog->save();
-
-        $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tmsNotif->content);
+        if ($write_log) {
+            $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tmsNotif->content);
+        }
     }
 
     function insert_single_notification_log($tmsNotif, $action, $content)
@@ -2268,6 +2579,14 @@ class MailController extends Controller
                 'pichet@easia-travel.com',
                 'nathalie@easia-travel.com',
                 'sichan@easia-travel.com',
+                'minhphuc@easia-travel.com',
+                'tuphuong@easia-travel.com',
+                'minhhoa@easia-travel.com',
+                'baothu@easia-travel.com',
+                'phuocdoan@easia-travel.com',
+                'myvan@easia-travel.com',
+                'ngochien@easia-travel.com',
+                'quockhanh@easia-travel.com',
             ];
             $filter_email = array_merge($dev_email, $tester_email);
             if (in_array($email, $filter_email)) {

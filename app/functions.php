@@ -1531,31 +1531,23 @@ function update_notification($tmsNotif, $status_send)
 
 //insert single notification log
 // ThoLD 17/09/2019
-function insert_single_notification_log($tmsNotif, $action)  //action bao gồm create, update, delete lấy trong bảng TmsNotificationLog
+// CuongHQ 15/09/2020
+function insert_single_notification_log($tmsNotif, $action, $content = '')  //action bao gồm create, update, delete lấy trong bảng TmsNotificationLog
 {
-    TmsNotificationLog::firstOrCreate(
-        [
-            'type' => $tmsNotif->type,
-            'target' => $tmsNotif->target,
-            'sendto' => $tmsNotif->sendto
-        ],
-        [
-            'content' => json_encode($tmsNotif),
-            'status_send' => $tmsNotif->status_send,
-            'createdby' => $tmsNotif->createdby,
-            'course_id' => $tmsNotif->course_id,
-            'action' => $action
-        ]);
-//    $tms_notifLog = new TmsNotificationLog();
-//    $tms_notifLog->type = $tmsNotif->type;
-//    $tms_notifLog->target = $tmsNotif->target;
-//    $tms_notifLog->content = json_encode($tmsNotif);
-//    $tms_notifLog->sendto = $tmsNotif->sendto;
-//    $tms_notifLog->status_send = $tmsNotif->status_send;
-//    $tms_notifLog->createdby = $tmsNotif->createdby;
-//    $tms_notifLog->course_id = $tmsNotif->course_id;
-//    $tms_notifLog->action = $action;
-//    $tms_notifLog->save();
+    $tms_notifLog = new \App\TmsNotificationLog();
+    $tms_notifLog->type = $tmsNotif->type;
+    $tms_notifLog->target = $tmsNotif->target;
+    $tms_notifLog->content = $content;
+    $tms_notifLog->sendto = $tmsNotif->sendto;
+    $tms_notifLog->status_send = $tmsNotif->status_send;
+    $tms_notifLog->createdby = $tmsNotif->createdby;
+    $tms_notifLog->course_id = $tmsNotif->course_id;
+    $tms_notifLog->action = $action;
+    $tms_notifLog->save();
+
+    if (strlen($tmsNotif->sendto) != 0 && $tmsNotif->sendto != 0) {
+        TmsUserDetail::where('user_id', $tmsNotif->sendto)->update(['total_unread_msg' => DB::raw('total_unread_msg+1')]);
+    }
 }
 
 //insert user when login

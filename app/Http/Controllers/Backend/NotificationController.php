@@ -30,4 +30,14 @@ class NotificationController extends Controller
     {
         return $this->bussinessRepository->apiSend($request);
     }
+
+    public function apiAttemptDetail($id)
+    {
+        return $this->bussinessRepository->apiAttemptDetail($id);
+    }
+
+    public function apiUnlockConfirm(Request $request)
+    {
+        return $this->bussinessRepository->apiUnlockConfirm($request);
+    }
 }

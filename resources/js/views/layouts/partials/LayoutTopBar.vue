@@ -238,7 +238,7 @@
             Ls.remove('auth.lang');
             Ls.remove('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye');
             sslssso.logout();
-            window.location.href = '';
+            window.location.href = '/';
           })
           .catch(error => {
             console.log(error.response.data);

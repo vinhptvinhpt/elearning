@@ -34,9 +34,11 @@ class TmsNotification extends Model
     const ACTIVE_EMAIL = 'active_email';
     const COMPLETED_FRAME = 'completed_competency_framework';
     const REQUEST_MORE_ATTEMPT = 'request_more_attempt';
+    const FAIL_EXAM = 'fail_exam';
     const ASSIGNED_COMPETENCY = 'assigned_competency';
     const REMIND_EXAM = 'remind_exam';
     const CALCULATE_TOEIC_GRADE = 'calculate_toeic_grade';
+    const RETAKE_EXAM = 'retake_exam';
 
     const NOTICE_SPAM_EMAIL ='notice_spam_email';
 

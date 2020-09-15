@@ -333,5 +333,7 @@
     "calculate_toeic_grade": "Tính điểm TOEIC",
     "them_moi_team_thanh_cong": "Thêm mới team thành công",
     "team_da_ton_tai": "Team đã tồn tại",
-    "xoa_thanh_cong": "Xóa thành công"
+    "xoa_thanh_cong": "Xóa thành công",
+    "fail_exam": "Trượt bài kiểm tra",
+    "retake_exam": "Làm lại bài kiểm tra"
 }
