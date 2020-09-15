@@ -301,7 +301,9 @@
         this.$router.push({name: 'CourseConcentrateIndex'});
       },
       hintCode() {
-        axios.get('/api/courses/hint_code')
+        axios.post('/api/courses/hint_code', {
+          type: 'offline'
+        })
           .then(response => {
             if (response.data.status) {
               this.shortname = response.data.otherData;

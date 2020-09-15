@@ -593,7 +593,7 @@ class MailController extends Controller
                                 //send mail can not continue if has fake email
 
                                 $startdate = strlen($itemNotif->startdate) != 0 && $itemNotif->startdate != 0 ? date('Y jS F g:iA', $itemNotif->startdate) : 'N/A';
-                                $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->startdate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
+                                $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->enddate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
 
                                 Mail::to($email)->send(new CourseSendMail(
                                     $itemNotif->target,
