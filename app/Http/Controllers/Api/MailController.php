@@ -363,7 +363,7 @@ class MailController extends Controller
 
                             $result = json_decode($itemNotification->content);
 
-                            if (!empty($exam)) {
+                            if (!empty($result)) {
                                 $object_content = array(
                                     'object_id' => '',
                                     'object_name' => '',
@@ -888,6 +888,31 @@ class MailController extends Controller
                                 '',
                                 $itemNotification->content
                             ));
+                            //Ghi log
+                            $object_content = array(
+                                'object_id' => $user_id,
+                                'object_name' => $fullname,
+                                'object_type' => 'fail_exam',
+                                'parent_id' => '',
+                                'parent_name' => $itemNotification->course_name,
+                                'start_date' => '',
+                                'end_date' => ' ',
+                                'code' => '',
+                                'room' => '',
+                                'grade' => '',
+                                'attempt' => $content->attempt
+                            );
+
+                            //chỉ lưu log cho email thông báo fail của học viên
+                            $tms_notifLog = new \stdClass();
+                            $tms_notifLog->type = $itemNotification->type;
+                            $tms_notifLog->target = TmsNotification::FAIL_EXAM;
+                            $tms_notifLog->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                            $tms_notifLog->sendto = $itemNotification->sendto;
+                            $tms_notifLog->status_send = 1;
+                            $tms_notifLog->createdby = $itemNotification->createdby;
+                            $tms_notifLog->course_id = $itemNotification->course_id;
+                            $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
 
                             //T&D employee = admins, send only
                             $admins =  DB::table('model_has_roles as mhr')
@@ -945,25 +970,14 @@ class MailController extends Controller
                                 }
                             }
 
-                            //Cập nhật
-                            $object_content = array(
-                                'object_id' => $user_id,
-                                'object_name' => $fullname,
-                                'object_type' => 'fail_exam',
-                                'parent_id' => '',
-                                'parent_name' => $itemNotification->course_name,
-                                'start_date' => '',
-                                'end_date' => ' ',
-                                'code' => '',
-                                'room' => '',
-                                'grade' => '',
-                                'attempt' => $content->attempt
-                            );
-                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
-                            //chỉ lưu log cho email thông báo fail của học viên
-                            $itemNotification->target =  TmsNotification::FAIL_EXAM;
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
@@ -2400,7 +2414,7 @@ class MailController extends Controller
         }
     }
 
-    function update_notification($tmsNotif, $status_send)
+    function update_notification($tmsNotif, $status_send, $write_log = true)
     {
         $tms_notifLog = \App\TmsNotification::findOrFail($tmsNotif->id);
         $tms_notifLog->type = $tmsNotif->type;
@@ -2411,8 +2425,9 @@ class MailController extends Controller
         $tms_notifLog->course_id = $tmsNotif->course_id;
         $tms_notifLog->updated_at = date('Y-m-d H:i:s', time());
         $tms_notifLog->save();
-
-        $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tmsNotif->content);
+        if ($write_log) {
+            $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tmsNotif->content);
+        }
     }
 
     function insert_single_notification_log($tmsNotif, $action, $content)

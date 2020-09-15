@@ -12,7 +12,7 @@
     <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
     <meta name="ssls.validate" content="false"/>
 
-    <title>Đào tạo trực tuyến nhân viên bán hàng</title>
+{{--    <title>Đào tạo trực tuyến nhân viên bán hàng</title>--}}
 {{--    <link href="{{ asset('css/app.css') }}" rel="stylesheet">--}}
 <!-- Font Awesome -->
     <link href="/css/all.min.css" rel="stylesheet">

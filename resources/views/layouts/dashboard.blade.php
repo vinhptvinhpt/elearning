@@ -13,8 +13,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
     <meta name="description" content="Elearning"/>
-    <link rel="shortcut icon" href="/images/favicon.png">
-    <link rel="icon" href="/images/favicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="/images/favicon.ico">
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap&subset=vietnamese"
           rel="stylesheet">
 
