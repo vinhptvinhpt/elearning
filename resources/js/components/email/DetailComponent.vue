@@ -124,6 +124,12 @@
               case 'request_more_attempt':
                 this.content_html = this.json_content.request_more_attempt;
                 break;
+              case 'fail_exam':
+                this.content_html = this.json_content.fail_exam;
+                break;
+              case 'retake_exam':
+                this.content_html = this.json_content.retake_exam;
+                break;
               default:
                 break;
             }

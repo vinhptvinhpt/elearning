@@ -77,12 +77,13 @@ switch ($organizationCode) {
         break;
     case "EV":
         {
-            $_SESSION["organizationName"] = 'Exotic voyages';
+            $_SESSION["organizationName"] = 'EV';
             $_SESSION["color"] = '#CAB143';
             $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             $_SESSION["pathLogoWhite"] = 'images/exoticvoyages-white.png';
             $_SESSION["component"] = 'images/cpn-exotic.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/EV-home.jpg';
+            $_SESSION["pathImgAvailableCourse"] = 'images/EV-course.jpg';
         }
         break;
     case "BG":
@@ -92,7 +93,8 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/begodi.png';
             $_SESSION["pathLogoWhite"] = 'images/begodi-white.png';
             $_SESSION["component"] = 'images/cpn-begodi.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/Begodi-home.jpg';
+            $_SESSION["pathImgAvailableCourse"] = 'images/Begodi-course.jpg';
         }
         break;
     case "AV":
@@ -102,7 +104,8 @@ switch ($organizationCode) {
             $_SESSION["pathLogo"] = 'images/avana.png';
             $_SESSION["pathLogoWhite"] = 'images/avana-white.png';
             $_SESSION["component"] = 'images/cpn-avana.png';
-            $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
+            $_SESSION["pathBackground"] = 'images/Avana-home.jpg';
+            $_SESSION["pathImgAvailableCourse"] = 'images/Avana-courses.jpg';
         }
         break;
     case "TVE":
@@ -124,7 +127,7 @@ switch ($organizationCode) {
             $_SESSION["color"] = '#0080EF';
             $_SESSION["pathLogo"] = 'images/phh.png';
             $_SESSION["pathLogoWhite"] = 'images/phh-white.png';
-            $_SESSION["component"] = 'images/cpn-phh.png';
+            $_SESSION["component"] = 'ifooter-logomages/cpn-phh.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
         break;
@@ -215,9 +218,10 @@ foreach ($courses_training as $courses) {
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
             $courses_required[$course->training_id][$course->order_no] = $course;
-            if ($course->training_deleted == 2) {
-                $courses_others_id .= ', ' . $course->id;
-            }
+//            if ($course->training_deleted == 2) {
+//                $courses_others_id .= ', ' . $course->id;
+//            }
+            $courses_others_id .= ', ' . $course->id;
             $countRequiredCourses++;
             $courses_required_list[] = $course;
 
@@ -325,7 +329,8 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   and mc.visible = 1
   and mc.category NOT IN (2,7) and mc.id not in ' . $courses_others_id;
 }
-
+//echo $sqlCourseNotEnrol;
+//die;
 $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 $_SESSION["coursesSuggest"] = $coursesSuggest;

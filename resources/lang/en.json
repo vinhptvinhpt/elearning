@@ -382,5 +382,7 @@
     "calculate_toeic_grade": "TOEIC Result",
     "them_moi_team_thanh_cong": "Add team successfully",
     "team_da_ton_tai": "Team existed",
-    "xoa_thanh_cong": "Successfully deleted"
+    "xoa_thanh_cong": "Successfully deleted",
+    "fail_exam": "Fail exam",
+    "retake_exam": "Retake exam"
 }

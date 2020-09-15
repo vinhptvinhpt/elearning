@@ -1342,11 +1342,11 @@ where ttc.course_id = ' . $id . ')';
                                         </div>
                                         <div class="unit__progress-number">
                                             <p><i class="fa fa-check" aria-hidden="true"></i>
-                                                <?php if ($countUnit == 0 || $countCompletion > 0) { ?>
+                                                <?php if ($countUnit == 0) { ?>
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
                                                     <span
-                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo $totalModul; ?></span>
+                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo ($totalModul-$countCompletion); ?></span>
                                                 <?php } ?>
                                             </p>
                                         </div>

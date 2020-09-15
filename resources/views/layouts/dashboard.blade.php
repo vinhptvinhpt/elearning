@@ -102,6 +102,16 @@
 @endphp
 <script>
 
+    $(document).ready(function () {
+        var getAuthUser = localStorage.getItem('auth.user');
+        var getAuthToken = localStorage.getItem('auth.token');
+        //if null -> required login
+        if (!getAuthUser || !getAuthToken) {
+            logout();
+        }
+    });
+
+
     function roam_message(status, message) {
         $('.roam_message').removeClass('message_success');
         $('.roam_message').removeClass('message_warning');
