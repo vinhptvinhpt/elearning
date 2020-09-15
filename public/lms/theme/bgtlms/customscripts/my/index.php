@@ -168,6 +168,7 @@ mc.estimate_duration,
   where me.enrol = \'manual\'
   and ttc.deleted <> 1
   and mc.deleted = 0
+   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and mue.userid = ' . $USER->id;
 $sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
@@ -302,6 +303,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `mc`.`id`
 where (`mc`.`id` in (select `mdl_course`.`id` from `tms_organization_employee` inner join `tms_role_organization` on `tms_organization_employee`.`organization_id` = `tms_role_organization`.`organization_id` inner join `tms_role_course` on `tms_role_organization`.`role_id` = `tms_role_course`.`role_id` inner join `mdl_course` on `tms_role_course`.`course_id` = `mdl_course`.`id` where `tms_organization_employee`.`user_id` = ' . $USER->id . ') or `mc`.`id` in (select `mdl_course`.`id` from `mdl_user_enrolments` as `mue` inner join `mdl_enrol` as `e` on `mue`.`enrolid` = `e`.`id` and `e`.`roleid` = 4 inner join `mdl_course` on `e`.`courseid` = `mdl_course`.`id` where `mue`.`userid` = ' . $USER->id . '))
 and mc.deleted = 0
+ and mc.visible = 1
 and mc.category NOT IN (2,7)
  and mc.id not in ' . $courses_others_id;
 } //Nếu không thuộc cơ cấu tổ chức thì gợi ý tất
@@ -324,7 +326,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id where ttp.deleted = 2   and mc.deleted = 0
-  and mc.category NOT IN (2,7) and mc.id not in ' . $courses_others_id;
+  and mc.category NOT IN (2,7) and mc.visible = 1 and mc.id not in ' . $courses_others_id;
 }
 //echo $sqlCourseNotEnrol;
 //die;

@@ -56,6 +56,7 @@ mc.estimate_duration,
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
   where me.enrol = \'manual\'
   and mc.deleted = 0
+   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
   and mue.userid = ' . $USER->id;
@@ -135,7 +136,9 @@ left join tms_user_detail tud on tud.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  and ttp.deleted = 2 and mc.deleted = 0
+  and ttp.deleted = 2
+  and mc.deleted = 0
+   and mc.visible = 1
  and mc.id not in ' . $courses_others_id;
 
     if($category == 'other'){
@@ -194,6 +197,7 @@ inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 where me.enrol = \'manual\'
 and mc.deleted = 0
+ and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
@@ -234,6 +238,7 @@ left join tms_organization tor on tor.id = toe.organization_id
 
 where me.enrol = \'manual\'
 and mc.deleted = 0
+ and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
