@@ -294,7 +294,6 @@ class api
                     //
                     $record->fullmessagehtml = '<p>Unfortunately, after two attempts you have not passed the final test for this course with 100%.</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow you another attempt, your line manager will discuss with you your knowledge gap and why you did not pass.</p>';
-                    $record->fullmessagehtml .= '<p>You can also click on the link to review which part(s) of the test you did not pass.</p>';
                     $record->fullmessagehtml .= '<p>Course: <strong>' . $content->parent_name . '</strong></p>';
 //                    $record->fullmessagehtml .= '<p>Review: <strong><a href="lms/mod/quiz/review.php?attempt=">LINK</a></strong></p> <p>&nbsp;</p>';
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
