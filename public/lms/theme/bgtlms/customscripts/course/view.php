@@ -860,7 +860,7 @@ mc.estimate_duration,
 mc.summary, mc.is_toeic,
 ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections,
 ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.completion <> 0 AND cm.course = mc.id) AS numofmodule,
-( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate <> 0 AND cmc.completionstate <> 3 AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = ' . $USER->id . ') AS numoflearned,
+( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = ' . $USER->id . ') AS numoflearned,
 mp.display
 FROM mdl_course mc
 LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
@@ -1113,7 +1113,7 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
     $sqlGetCourses = 'select mc.id,
     sc.code,
 		( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
-  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate <> 0 and cmc.completionstate <> 3 and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned
 	  from mdl_course mc
 		  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 		  inner join mdl_user_enrolments mue on me.id = mue.enrolid
