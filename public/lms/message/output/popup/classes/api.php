@@ -165,7 +165,7 @@ class api
                     if ($startdate > 0) {
                         $startdate = date('m/d/Y', $content->start_date);
                     } else {
-                        $startdate = '';
+                        $startdate = 'N/A';
                     }
 
                     //convert enddate
@@ -173,7 +173,7 @@ class api
                     if ($enddate > 0) {
                         $enddate = date('m/d/Y', $content->end_date);
                     } else {
-                        $enddate = '';
+                        $enddate = 'N/A';
                     }
 
                     $record->fullmessagehtml = 'This email is to notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
@@ -191,7 +191,7 @@ class api
                     if ($start_time > 0) {
                         $start_time = date('m/d/Y', $content->start_time);
                     } else {
-                        $start_time = '';
+                        $start_time = 'N/A';
                     }
 
                     //convert enddate
@@ -199,7 +199,7 @@ class api
                     if ($end_time > 0) {
                         $end_time = date('m/d/Y', $content->end_time);
                     } else {
-                        $end_time = '';
+                        $end_time = 'N/A';
                     }
 
                     $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
@@ -231,7 +231,7 @@ class api
                         if ($start_date > 0) {
                             $start_date = date('m/d/Y', $contents->start_date);
                         } else {
-                            $start_date = '';
+                            $start_date = 'N/A';
                         }
 
                         //convert enddate
@@ -239,7 +239,7 @@ class api
                         if ($end_date > 0) {
                             $end_date = date('m/d/Y', $contents->end_date);
                         } else {
-                            $end_date = '';
+                            $end_date = 'N/A';
                         }
 
 
@@ -272,7 +272,7 @@ class api
                     if ($start_date > 0) {
                         $start_date = date('m/d/Y', $content->start_date);
                     } else {
-                        $start_date = '';
+                        $start_date = 'N/A';
                     }
 
                     //convert enddate
@@ -280,7 +280,7 @@ class api
                     if ($end_date > 0) {
                         $end_date = date('m/d/Y', $content->end_date);
                     } else {
-                        $end_date = '';
+                        $end_date = 'N/A';
                     }
 
                     $record->fullmessagehtml = '<p>This is to notify you that you have been assigned to study the course:<br /><br />';
@@ -470,7 +470,7 @@ class api
                     if ($startdate > 0) {
                         $startdate = date('m/d/Y', $content->start_date);
                     } else {
-                        $startdate = '';
+                        $startdate = 'N/A';
                     }
 
                     //convert enddate
@@ -478,7 +478,7 @@ class api
                     if ($enddate > 0) {
                         $enddate = date('m/d/Y', $content->end_date);
                     } else {
-                        $enddate = '';
+                        $enddate = 'N/A';
                     }
 
                     $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that you have been finished the competency framework as follows,</p>';
@@ -549,7 +549,6 @@ class api
                     foreach ($content as $contents) {
                         $record->fullmessagehtml .= '<tr><td>' . $contents->code . '</td><td>' . $contents->object_name . '</td></tr>';
                     }
-
                     $record->fullmessagehtml .= '<tbody></table>';
                     break;
                 case 'remind_upcoming_course':
