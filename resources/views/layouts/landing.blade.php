@@ -5,7 +5,7 @@
 
     <meta property="og:title" content="Elearning" />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="/images/favicon.png" />
+    <meta property="og:image" content="/images/favicon.ico" />
     <meta property="og:description" content="Elearning" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
