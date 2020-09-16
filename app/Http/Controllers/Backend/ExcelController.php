@@ -486,7 +486,7 @@ class ExcelController extends Controller
             __('ma_khoa_hoc'),
             __('ten_khoa_hoc'),
             __('tien_do'),
-            __('diem'),
+            //__('diem'),
             __('trang_thai'),
         );
 
@@ -501,13 +501,13 @@ class ExcelController extends Controller
                 $key + 1,
                 isset($item['shortname']) ? $item['shortname'] : '',
                 isset($item['fullname']) ? $item['fullname'] : '',
-                $item['user_course_learn'] > 0 ? $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . (($item['user_course_completionstate'] / $item['user_course_learn']) * 100 | 0.00) . "%)" : $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(0%)',
-                $final_grade,
+                $item['user_course_learn'] > 0 ? $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(' . round($item['user_course_completionstate'] * 100 / $item['user_course_learn']) . "%)" : $item['user_course_completionstate'] . '/' . $item['user_course_learn'] . '(0%)',
+                //$final_grade,
                 //$item['status_user'] == 1 &&
-                floatval($item['finalgrade']) >= floatval($item['gradepass'])
-                && $item['user_course_completionstate'] == $item['user_course_learn']
+                //floatval($item['finalgrade']) >= floatval($item['gradepass'])
+                //&&
+                $item['user_course_completionstate'] >= $item['user_course_learn']
                 && $item['user_course_completionstate'] > 0
-
                     ? __('hoan_thanh') : __('chua_hoan_thanh')
             );
         }
