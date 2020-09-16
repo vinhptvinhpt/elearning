@@ -2502,6 +2502,7 @@ class BussinessRepository implements IBussinessInterface
             })
             ->where('cs.section', '<>', 0)
             ->where('cm.course', '=', $course_id)
+            ->where('cm.completion', '>', 0)
             ->count();
 
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
