@@ -208,11 +208,12 @@
                           <td class=" mobile_hide">{{ cu.fullname }}</td>
                           <td class="text-center">
                             <div v-if="total_course>0">
-                              <div v-if="cu.user_course_learn==0">
-                                0
+                              <div v-if="cu.user_course_learn == 0">
+                                0 / 0(0%)
                               </div>
                               <div v-else>
-                                {{ ((cu.user_course_learn*100)/total_course).toFixed(2)}}
+                                {{cu.user_course_learn}} / {{total_course}}
+                                {{ Math.round((cu.user_course_learn*100)/total_course) + '%'}}
                               </div>
 
                             </div>
@@ -247,7 +248,7 @@
 <!--                              <span class="badge badge-yellow">{{trans.get('keys.chua_hoan_thanh')}}</span>-->
 <!--                            </div>-->
 
-                            <div v-if="cu.user_course_learn >= total_course">
+                            <div v-if="parseInt(total_course) > 0 && cu.user_course_learn >= parseInt(total_course)">
                               <span class="badge badge-success">Pass</span>
                             </div>
                             <div v-else>
