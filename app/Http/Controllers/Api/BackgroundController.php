@@ -90,6 +90,7 @@ class BackgroundController extends Controller
         );
 
         $base_level_orgs = array(
+            //PHH level 1 organizations
             'EA' => 'Easia Travel',
             'EV' => 'Exotic Voyages',
             'BG' => 'Begodi',
