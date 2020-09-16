@@ -90,6 +90,7 @@ class BackgroundController extends Controller
         );
 
         $base_level_orgs = array(
+            //PHH level 1 organizations
             'EA' => 'Easia Travel',
             'EV' => 'Exotic Voyages',
             'BG' => 'Begodi',
@@ -303,7 +304,7 @@ class BackgroundController extends Controller
                 }
 
                 $start_time = "";
-                if (strlen($user[19]) == 0 || strlen($user[20]) == 0 || strlen($user[21]) == 0) {
+                if (strlen($user[19]) != 0 && strlen($user[20]) != 0 && strlen($user[21]) != 0) {
                     $start_date = str_pad($user[19], 2, '0', STR_PAD_LEFT);
                     $start_month = str_pad($user[20], 2, '0', STR_PAD_LEFT);
                     $start_year = $user[21];
@@ -393,6 +394,7 @@ class BackgroundController extends Controller
 
     public function importEmployeeMinimum(Request $request)
     {
+
         set_time_limit(0);
 
         $env = "background";
@@ -621,7 +623,7 @@ class BackgroundController extends Controller
                 }
 
                 $start_time = "";
-                if (strlen($user[16]) == 0 || strlen($user[17]) == 0 || strlen($user[18]) == 0) {
+                if (strlen($user[16]) != 0 && strlen($user[17]) != 0 && strlen($user[18]) != 0) {
                     $start_date = str_pad($user[16], 2, '0', STR_PAD_LEFT);
                     $start_month = str_pad($user[17], 2, '0', STR_PAD_LEFT);
                     $start_year = $user[18];
