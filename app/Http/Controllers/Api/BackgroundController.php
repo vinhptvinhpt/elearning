@@ -226,7 +226,7 @@ class BackgroundController extends Controller
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    if (!is_numeric($team)) {
+                                    if (is_string($team)) { //báo lỗi
                                         $content[] = $team; //Team đã được tạo cho tổ chức khác
                                     } else {
                                         $team_id = $team->id;
@@ -548,7 +548,7 @@ class BackgroundController extends Controller
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    if (!is_numeric($team)) {
+                                    if (is_string($team)) { // Báo lỗi
                                         $content[] = $team; //Team đã được tạo cho tổ chức khác
                                     } else {
                                         $team_id = $team->id;
