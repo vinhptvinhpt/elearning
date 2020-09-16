@@ -2502,6 +2502,7 @@ class BussinessRepository implements IBussinessInterface
             })
             ->where('cs.section', '<>', 0)
             ->where('cm.course', '=', $course_id)
+            ->where('cm.completion', '>', 0)
             ->count();
 
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
@@ -10949,10 +10950,10 @@ class BussinessRepository implements IBussinessInterface
                 inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
                 where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0)
-                as user_course_completionstate'),
+                as user_course_completionstate'), //Đã học
                 DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
                 inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),
+                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
                 DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
                                  where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user'),
                 DB::raw('(select `g`.`finalgrade`

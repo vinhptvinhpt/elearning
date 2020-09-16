@@ -956,8 +956,8 @@ class MailController extends Controller
                                     if (!in_array($orgUpper->user_id, $sent) && strlen($upper_email) != 0 && filter_var($upper_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($upper_email)) {
                                         Mail::to($upper_email)->send(new CourseSendMail(
                                             TmsNotification::REQUEST_MORE_ATTEMPT,
-                                            $admin->username,
-                                            $admin->fullname,
+                                            $orgUpper->email,
+                                            $orgUpper->fullname,
                                             $itemNotification->course_code,
                                             $itemNotification->course_name,
                                             '',
