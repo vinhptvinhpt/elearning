@@ -90,7 +90,7 @@
                                     <tbody>
                                     <tr v-for="(att,index) in logs">
                                         <td>{{ index+1 }}</td>
-                                        <td><a :href="trans.get('keys.language')+'/system/user/edit/'+att.id">
+                                        <td><a :href="'/tms/system/user/edit/'+att.id">
                                             {{ att.username }}
                                         </a></td>
                                         <td>{{ att.fullname }}</td>
