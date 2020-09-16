@@ -204,7 +204,8 @@ $exitCourseInRequiredCourse = array();
 foreach ($courses_training as $courses) {
     $stt = 1;
     foreach ($courses as &$course) {
-        $course->sttShow = $stt;
+//        $course->sttShow = $stt;
+        $course->sttShow = $course->order_no;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             $courses_others_id .= ', ' . $course->id;
