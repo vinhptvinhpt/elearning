@@ -1326,6 +1326,7 @@ where ttc.course_id = ' . $id . ')';
                                     // condition which makes a result belong to div2.
                                     return $unitT['completion'] == 0;
                                 }));
+                                echo $countCompletion;
                                 $totalModul = count($unit['modules']);
                                 $icon = "pencil-square-o";
                                 $addName = "";
@@ -1342,7 +1343,7 @@ where ttc.course_id = ' . $id . ')';
                                         </div>
                                         <div class="unit__progress-number">
                                             <p><i class="fa fa-check" aria-hidden="true"></i>
-                                                <?php if ($countUnit == 0) { ?>
+                                                <?php if ($countUnit == 0 || ($countCompletion == $totalModul)) { ?>
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
                                                     <span
@@ -1389,10 +1390,9 @@ where ttc.course_id = ' . $id . ')';
                                                 <?php } ?>
                                             </ul>
                                         <?php }
-                                        $countUnit++;
                                     } else { ?>
                                         Unit has no content.
-                                    <?php } ?>
+                                    <?php } $countUnit++; ?>
                                 </div>
                                 <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                     <div class="detail-btn">
