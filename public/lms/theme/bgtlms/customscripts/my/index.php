@@ -941,6 +941,7 @@ $_SESSION["allowCms"] = $allowCms;
     .footer-logo {
         width: auto;
         height: auto;
+        max-width: 200px;
     }
 
     .block-note {
