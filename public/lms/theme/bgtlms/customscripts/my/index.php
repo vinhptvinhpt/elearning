@@ -205,6 +205,7 @@ foreach ($courses_training as $courses) {
     $stt = 1;
     foreach ($courses as &$course) {
         $course->sttShow = $stt;
+//        $course->sttShow = $course->order_no;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             $courses_others_id .= ', ' . $course->id;
@@ -218,9 +219,9 @@ foreach ($courses_training as $courses) {
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
             $courses_required[$course->training_id][$course->order_no] = $course;
-//            if ($course->training_deleted == 2) {
-//                $courses_others_id .= ', ' . $course->id;
-//            }
+            if ($course->training_deleted == 2) {
+                $course->sttShow = 99999;
+            }
             $courses_others_id .= ', ' . $course->id;
             $countRequiredCourses++;
             $courses_required_list[] = $course;
@@ -228,17 +229,11 @@ foreach ($courses_training as $courses) {
         }
         $stt++;
     }
-    //
-//    usort($courses, 'cmp_stt');
-    //
 }
-//var_dump();
-//die;
+$courses_others_id .= ')';
+
 usort($courses_required_list, 'cmp_stt');
 
-//echo $stt1, $stt2, $stt3, $stt4;
-//die;
-$courses_others_id .= ')';
 function push_course(&$array, $course)
 {
     if (array_key_exists($course->id, $array)) {//đã có, check created date mới nhất thì overwwrite
@@ -256,7 +251,6 @@ function cmp_stt($a, $b)
     if ($a->sttShow == $b->sttShow) return 0;
     return ($a->sttShow < $b->sttShow) ? -1 : 1;
 }
-
 //
 $_SESSION["couresIdAllow"] = $couresIdAllow;
 
@@ -947,6 +941,7 @@ $_SESSION["allowCms"] = $allowCms;
     .footer-logo {
         width: auto;
         height: auto;
+        max-width: 200px;
     }
 
     .block-note {
