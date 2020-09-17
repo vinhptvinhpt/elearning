@@ -15,7 +15,7 @@ WHERE tms_learning_activity_logs.user_id = $userid
 AND tms_learning_activity_logs.course_id = $course_id
 AND tms_learning_activity_logs.studying = 1
 AND mue.userid = $userid
-ORDER BY id DESC
+ORDER BY tms_learning_activity_logs.id DESC
 LIMIT 1";
         $log = $DB->get_records_sql($sql);
         if (!empty($log)) { //Start learning
