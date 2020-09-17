@@ -226,7 +226,7 @@ class BackgroundController extends Controller
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    if (!is_numeric($team)) {
+                                    if (is_string($team)) { //báo lỗi
                                         $content[] = $team; //Team đã được tạo cho tổ chức khác
                                     } else {
                                         $team_id = $team->id;
@@ -292,24 +292,37 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                if (strlen($user[13]) == 0 || strlen($user[14]) == 0 || strlen($user[15]) == 0) {
+                $day_raw = $user[13];
+                $month_raw = $user[14];
+                $year_raw = $user[15];
+                if (strlen($day_raw) == 0 || strlen($month_raw) == 0 || strlen($year_raw) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[13], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[14], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[15];
-
-                    $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
-                    $dob = strtotime($dob_string);
+                    if (checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
+                        $dob_date = str_pad($day_raw, 2, '0', STR_PAD_LEFT);
+                        $dob_month = str_pad($month_raw, 2, '0', STR_PAD_LEFT);
+                        $dob_year = $year_raw;
+                        $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
+                        $dob = strtotime($dob_string);
+                    } else {
+                        $content[] = 'Dob is not valid';
+                    }
                 }
 
                 $start_time = "";
-                if (strlen($user[19]) != 0 && strlen($user[20]) != 0 && strlen($user[21]) != 0) {
-                    $start_date = str_pad($user[19], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[20], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[21];
-                    $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
-                    $start_time = strtotime($start_time_string);
+                $start_day_raw = $user[19];
+                $start_month_raw = $user[20];
+                $start_year_raw = $user[21];
+                if (strlen($start_day_raw) != 0 && strlen($start_month_raw) != 0 && strlen($start_year_raw) != 0) {
+                    if (checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
+                        $start_date = str_pad($start_day_raw, 2, '0', STR_PAD_LEFT);
+                        $start_month = str_pad($start_month_raw, 2, '0', STR_PAD_LEFT);
+                        $start_year = $start_year_raw;
+                        $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
+                        $start_time = strtotime($start_time_string);
+                    } else {
+                        $content[] = 'Start working date is not valid';
+                    }
                 }
 
                 $response_item = array(
@@ -548,7 +561,7 @@ class BackgroundController extends Controller
                                 //tạo team
                                 if (self::validateRawData($team_code, 'code')) {
                                     $team = self::createTeam($organization, $team_code);
-                                    if (!is_numeric($team)) {
+                                    if (is_string($team)) { // Báo lỗi
                                         $content[] = $team; //Team đã được tạo cho tổ chức khác
                                     } else {
                                         $team_id = $team->id;
@@ -611,24 +624,37 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                if (strlen($user[12]) == 0 || strlen($user[13]) == 0 || strlen($user[14]) == 0) {
+                $day_raw = $user[12];
+                $month_raw = $user[13];
+                $year_raw = $user[14];
+                if (strlen($day_raw) == 0 || strlen($month_raw) == 0 || strlen($year_raw) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    $dob_date = str_pad($user[12], 2, '0', STR_PAD_LEFT);
-                    $dob_month = str_pad($user[13], 2, '0', STR_PAD_LEFT);
-                    $dob_year = $user[14];
-
-                    $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
-                    $dob = strtotime($dob_string);
+                    if (checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
+                        $dob_date = str_pad($day_raw, 2, '0', STR_PAD_LEFT);
+                        $dob_month = str_pad($month_raw, 2, '0', STR_PAD_LEFT);
+                        $dob_year = $year_raw;
+                        $dob_string = $dob_year . "-" . $dob_month . "-" . $dob_date;
+                        $dob = strtotime($dob_string);
+                    } else {
+                        $content[] = 'Dob is not valid';
+                    }
                 }
 
                 $start_time = "";
-                if (strlen($user[16]) != 0 && strlen($user[17]) != 0 && strlen($user[18]) != 0) {
-                    $start_date = str_pad($user[16], 2, '0', STR_PAD_LEFT);
-                    $start_month = str_pad($user[17], 2, '0', STR_PAD_LEFT);
-                    $start_year = $user[18];
-                    $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
-                    $start_time = strtotime($start_time_string);
+                $start_day_raw = $user[16];
+                $start_month_raw = $user[17];
+                $start_year_raw = $user[18];
+                if (strlen($start_day_raw) != 0 && strlen($start_month_raw) != 0 && strlen($start_year_raw) != 0) {
+                    if (checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
+                        $start_date = str_pad($start_day_raw, 2, '0', STR_PAD_LEFT);
+                        $start_month = str_pad($start_month_raw, 2, '0', STR_PAD_LEFT);
+                        $start_year = $start_year_raw;
+                        $start_time_string = $start_year . "-" . $start_month . "-" . $start_date;
+                        $start_time = strtotime($start_time_string);
+                    } else {
+                        $content[] = 'Start working date is not valid';
+                    }
                 }
 
                 $response_item = array(
