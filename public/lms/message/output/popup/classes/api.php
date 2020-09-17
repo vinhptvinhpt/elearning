@@ -130,7 +130,7 @@ class api
                         <tbody>';
                     foreach ($content as $contents) {
                         //convert startdate
-                        $startdate = $contents->startdate;
+                        $startdate = $contents->start_date;
                         if ($startdate > 0) {
                             $startdate = date('m/d/Y', $contents->startdate);
                         } else {
@@ -138,7 +138,7 @@ class api
                         }
 
                         //convert enddate
-                        $enddate = $contents->enddate;
+                        $enddate = $contents->end_date;
                         if ($enddate > 0) {
                             $enddate = date('m/d/Y', $contents->enddate);
                         } else {
@@ -147,11 +147,11 @@ class api
 
 
                         $record->fullmessagehtml .= '<tr class="tr-notification">
-                            <td><p>' . $contents->course_code . '</p></td>
-                            <td><p>' . $contents->course_name . '</p></td>
+                            <td><p>' . $contents->code . '</p></td>
+                            <td><p>' . $contents->object_name . '</p></td>
                             <td><p>' . $startdate . '</p></td>
                             <td><p>' . $enddate . '</p></td>
-                            <td><p>' . $contents->course_place . '</p></td>
+                            <td><p>' . $contents->room . '</p></td>
                             </tr>';
                     }
                     $record->fullmessagehtml .= '</tbody></table>';
