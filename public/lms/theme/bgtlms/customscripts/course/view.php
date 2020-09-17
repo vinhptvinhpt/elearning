@@ -1326,7 +1326,6 @@ where ttc.course_id = ' . $id . ')';
                                     // condition which makes a result belong to div2.
                                     return $unitT['completion'] == 0;
                                 }));
-                                echo $countCompletion;
                                 $totalModul = count($unit['modules']);
                                 $icon = "pencil-square-o";
                                 $addName = "";
