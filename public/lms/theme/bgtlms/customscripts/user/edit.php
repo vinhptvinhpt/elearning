@@ -187,7 +187,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             Address <input type="text" class="form-control" v-model="user.address">
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
-                            Email <input type="text" class="form-control" v-model="user.email">
+                            Email <input type="text" class="form-control" v-model="user.email" readonly>
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Contact Number <input type="text" class="form-control" v-model="user.phone">
@@ -202,7 +202,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     </div>
                     <div class="row">
                         <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
-                            <button type="button" class="btn-update btn-click" @click="updateProfile('')">Update Infomation</button>
+                            <button type="button" class="btn-update btn-click" @click="updateProfile('')">Update</button>
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
                             <button type="button" class="btn-cancel btn-click btn-cancel-update"><a href="lms/user/profile.php" class="a-link">Cancel</a></button>
@@ -230,7 +230,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             </div>
                             <div class="row">
                                 <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
-                                    <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Update Password</button>
+                                    <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Change</button>
                                 </div>
                                 <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
                                     <button type="button" class="btn-cancel btn-click btn-cancel-pass">Cancel</button>
