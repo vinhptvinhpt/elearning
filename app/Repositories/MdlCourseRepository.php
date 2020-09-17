@@ -1201,6 +1201,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
     {
         $type = $request->input('type');
         $response = new ResponseModel();
+
+        $join_string = "_";
+        if ($type == 'sample') {
+            $join_string = "_";
+        } elseif ($type == 'online') {
+            $join_string = '_ONL';
+        } elseif ($type == 'offline') {
+            $join_string = '_OFFL';
+        }
+
         try {
             $code_org = DB::table('mdl_user as mu')
                 ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mu.id')
@@ -1210,7 +1220,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $num = 0;
             if ($code_org) {
                 $prefix = str_replace('-', '_', $code_org->code);
-                $courses = MdlCourse::where('shortname', 'like', '%' . $prefix . '%')
+                $courses = MdlCourse::where('shortname', 'like', $prefix . '%')
                     ->select('shortname');
                 if ($type == 'library') {
                     $courses->where('category', 2);
@@ -1223,7 +1233,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 $courses = $courses->orderBy('id', 'desc')->get();
                 $arr_code = [];
                 foreach ($courses as $course) {
-                    $arr_data = explode('_', $course->shortname);
+                    $arr_data = explode($join_string, $course->shortname);
                     $count_dt = count($arr_data);
                     if ($count_dt > 0) {
                         if (is_numeric($arr_data[$count_dt - 1])) {
@@ -1241,15 +1251,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                     }
                 } else {
                     $num = 1;
-                }
-
-                $join_string = "_";
-                if ($type == 'sample') {
-                    $join_string = "_";
-                } elseif ($type == 'online') {
-                    $join_string = '_ONL';
-                } elseif ($type == 'offline') {
-                    $join_string = '_OFFL';
                 }
                 $code_hint = $prefix . $join_string . self::composeAppend($num);
             }

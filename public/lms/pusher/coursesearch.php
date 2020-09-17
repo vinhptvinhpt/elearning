@@ -61,12 +61,12 @@ mc.estimate_duration,
   and ttc.deleted <> 1
   and mue.userid = ' . $USER->id;
 
-    if ($category > 0) {
-        $sql .= ' and mc.category = ' . $category;
-    }
-    if ($txtSearch) {
-        $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
-    }
+//    if ($category > 0) {
+//        $sql .= ' and mc.category = ' . $category;
+//    }
+//    if ($txtSearch) {
+//        $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+//    }
 
     $sql .= ' group by mc.id ORDER BY ttp.deleted, ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
@@ -84,7 +84,8 @@ mc.estimate_duration,
     foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
-            $course->sttShow = $stt;
+//            $course->sttShow = $stt;
+            $course->sttShow = $course->order_no;
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $courses_others_id .= ', ' . $course->id;
@@ -179,15 +180,38 @@ left join tms_user_detail tud on tud.user_id = muet.userid
         $all_courses = $coursesSuggest;
     }
 
+    $resultSearch = array();
+    if($txtSearch || $category > 0){
+        foreach ($all_courses as $courseA) {
+            if($txtSearch && $category > 0){
+                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && strpos($courseA->category, $category) !== false)
+                    $resultSearch[] = $courseA;
+            }
+            else if ($txtSearch) {
+//                echo strtolower($courseA->fullname). '   '.strtolower($txtSearch). '<br/>';
+                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false)
+                    $resultSearch[] = $courseA;
+            }
+            else if ($category > 0) {
+                if (strpos($courseA->category, $category) !== false)
+                    $resultSearch[] = $courseA;
+            }
+        }
+    }
+    else{
+        $resultSearch = $all_courses;
+    }
+
     $start_index = $current * $recordPerPage - $recordPerPage;
 
-    $course_list = array_slice($all_courses, $start_index, $recordPerPage);
+    $course_list = array_slice($resultSearch, $start_index, $recordPerPage);
 
-    $total = count($all_courses);
+    $total = count($resultSearch);
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
-} else {
+}
+else {
     //course available
     //count total
     $sqlCountCoures = 'select mc.id
@@ -201,6 +225,7 @@ and mc.deleted = 0
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
+
     if ($category > 0) {
         $sqlCountCoures .= ' and category = ' . $category;
     }
@@ -244,12 +269,12 @@ and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
 
 
-    if ($category > 0) {
-        $sqlGetCoures .= ' and mc.category = ' . $category;
-    }
-    if ($txtSearch) {
-        $sqlGetCoures .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
-    }
+//    if ($category > 0) {
+//        $sqlGetCoures .= ' and mc.category = ' . $category;
+//    }
+//    if ($txtSearch) {
+//        $sqlGetCoures .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+//    }
 
     $sqlGetCoures .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 //    $start_index = $current * $recordPerPage - $recordPerPage;
@@ -276,7 +301,8 @@ and mue.userid = ' . $USER->id;
     foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
-            $course->sttShow = $stt;
+//            $course->sttShow = $stt;
+            $course->sttShow = $course->order_no;
             $teachers = $course->teachers;
             $teacher_name = '';
             $teacher_created = 0;
@@ -328,11 +354,46 @@ and mue.userid = ' . $USER->id;
         usort($coures_result, 'cmp_order_learn');
     }
 
+    $resultSearch = array();
+    if($txtSearch || $category > 0){
+        foreach ($coures_result as $courseR) {
+            if($txtSearch && $category > 0){
+                strtolower($txtSearch);
+                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false && strpos($courseR->category, $category) !== false)
+                    $resultSearch[] = $courseR;
+            }
+            else if ($txtSearch) {
+                strtolower($txtSearch);
+                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false)
+                    $resultSearch[] = $courseR;
+            }
+            else if ($category > 0) {
+                if (strpos($courseR->category, $category) !== false)
+                    $resultSearch[] = $courseR;
+            }
+        }
+    }
+    else{
+        $resultSearch = $coures_result;
+    }
+
+//    if ($category > 0) {
+//        $sqlGetCoures .= ' and mc.category = ' . $category;
+//    }
+//    $coures_result = (array) $coures_result;
+//    if ($txtSearch) {
+//        $key = array_search($txtSearch, array_column($coures_result, 'fullname'));
+//        $coures_result = $coures_result[$key];
+//    }
+
+//    var_dump($coures_result);
+//    die;
     $start_index = $current * $recordPerPage - $recordPerPage;
 
-    $course_list = array_slice($coures_result, $start_index, $recordPerPage);
+    $course_list = array_slice($resultSearch, $start_index, $recordPerPage);
 
-    $total = count($coures_result);
+    $total = count($resultSearch);
+
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
 }
@@ -353,7 +414,6 @@ function cmp($a, $b)
 {
     if ($a->training_deleted == $b->training_deleted) return 0;
     return ($a->training_deleted < $b->training_deleted) ? -1 : 1;
-//    return strcmp($a->training_deleted, $b->training_deleted);
 }
 
 function cmp_training_id($a, $b)
@@ -363,7 +423,6 @@ function cmp_training_id($a, $b)
 
 function cmp_order_learn($a, $b)
 {
-//    return strcmp($a->order_learn, $b->order_learn);
     if ($a->order_learn == $b->order_learn) return 0;
     return ($a->order_learn < $b->order_learn) ? 1 : -1;
 }
