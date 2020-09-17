@@ -463,30 +463,43 @@ if __name__ == '__main__':
 
                             length_text = len(text)
 
-                            distance_2way_max = 350
-                            distance_2way = 100
-                            programSize_badge = 36
+                            distance_2way_max = 320
+                            distance_2way = 80
+                            distance_line = 100
+                            #programSize_badge = 36
 
-                            if programSize_badge >=40:
-                                programSize_badge = 36
-
-                            if (length_text > 46):
-                                #programSize_badge = 36
-                                distance_2way_max = 400
-                                distance_2way = 260
+                            # if programSize_badge >=40:
+                            #     programSize_badge = 36
+                            
+                            
+                            if (length_text >= 46):
+                                programSize_badge = 28
+                                distance_2way_max = 360
+                                distance_2way = 240
+                                distance_line = 80
                                 #print('433: '+code)
                             elif (length_text >= 35 and length_text < 46):
-                                #programSize_badge = 36
+                                programSize_badge = 30
                                 distance_2way_max = 350
                                 distance_2way = 240
+                                distance_line = 80
                                 #print('448: '+code)
+                            elif (length_text >= 20 and length_text < 35):
+                                programSize_badge = 38
+                                distance_2way_max = 350
+                                distance_2way = 150
+                            else:
+                                programSize_badge = 36
+                                distance_2way_max = 260
+                                distance_2way = 60
 
                             font = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize_badge, encoding="unic")
 
                             if len(words) <= 2:
+                                lines.append(text)
                                 # split the line by spaces to get words
-                                for wd in words:
-                                    lines.append(wd)
+                                # for wd in words:
+                                #     lines.append(wd)
                             else:
                                 if font.getsize(text)[0] <= max_width - distance_2way_max:
                                     lines.append(text)
@@ -518,7 +531,7 @@ if __name__ == '__main__':
                             for line in lines:
                                 w, h = canvas.textsize(line,font)
                                 canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
-                                y = y + line_height + 120
+                                y = y + line_height + distance_line
 
                             #save image badge
                             img_badge.save(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
@@ -540,7 +553,9 @@ if __name__ == '__main__':
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
+
                         cursor.execute(sql, (student_certificate_id,))
+
                     #gian cach thoi gian chay script
                     time.sleep(0.3)
                 num = num + 1

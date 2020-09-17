@@ -87,8 +87,7 @@
                                         <td class="text-center">
                                             <label style="display: block;">
                                                 {{post.user_course_completionstate}} / {{post.user_course_learn}} (
-                                                {{((post.user_course_completionstate/post.user_course_learn) * 100 |
-                                                0.00)+"%"}} )
+                                                {{ Math.round(post.user_course_completionstate*100/post.user_course_learn) + "%"}} )
                                             </label>
                                             <!-- <ul class="devcpt_progress_bar" v-if="post.user_course_learn > 0">
                                                  <li v-for="index in post.user_course_learn"
@@ -111,7 +110,7 @@
                                             //parseInt(post.status_user) === 1 &&
                                             //checkGradepass(post.finalgrade, post.gradepass)
                                             //&&
-                                            parseInt(post.user_course_completionstate) === parseInt(post.user_course_learn)
+                                            parseInt(post.user_course_completionstate) >= parseInt(post.user_course_learn)
                                             && parseInt(post.user_course_completionstate) > 0">
                                                 <span class="badge badge-success">{{trans.get('keys.hoan_thanh')}}</span>
                                             </div>
