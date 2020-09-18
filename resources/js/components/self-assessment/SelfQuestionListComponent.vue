@@ -117,7 +117,7 @@
                                             <td>{{ ques.survey_code }} - {{ ques.survey_name }}</td>
                                             <td class="text-center">
                                                 <router-link
-                                                        :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
+                                                        :title="trans.get('keys.edit_survey_question')"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                         :to="{name:'SelfQuestionEdit', params: {question_id: ques.id}}"><span
                                                         class="btn-icon-wrap"><i
