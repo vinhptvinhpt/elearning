@@ -69,18 +69,26 @@ switch ($btnType) {
                     }
                 }
 
-                if($status){
-                    $sql = "update tms_user_detail set fullname = N'".$fullname."', ".
-                        " address = N'".$address."', ".
-                        " dob = '".$dob."', ".
-                        " email = N'".$email."', ".
-                        " phone = '".$phone."', ".
-                        " sex = ".$sex;
-                    if($is_avatar)
-                        $sql .= ", avatar = "."'/storage/upload/user/avatar_".$user_id.".png'";
-                    $sql .= " where user_id = ".$user_id;
-                    $DB->execute($sql);
-                    $msg = 'Update profile successful';
+                //regex phone
+                preg_match('/^[0-9\+\.\-\s]*$/i', $phone, $matches, PREG_OFFSET_CAPTURE);
+                if(count($matches) == 0)
+                {
+                    $status = false;
+                    $msg = 'Phone number incorrect format. Please try again later';
+                }else{
+                    if($status){
+                        $sql = "update tms_user_detail set fullname = N'".$fullname."', ".
+                            " address = N'".$address."', ".
+                            " dob = '".$dob."', ".
+                            " email = N'".$email."', ".
+                            " phone = '".$phone."', ".
+                            " sex = ".$sex;
+                        if($is_avatar)
+                            $sql .= ", avatar = "."'/storage/upload/user/avatar_".$user_id.".png'";
+                        $sql .= " where user_id = ".$user_id;
+                        $DB->execute($sql);
+                        $msg = 'Update profile successful';
+                    }
                 }
             }catch (Exception $e) {
                 $status = false;
