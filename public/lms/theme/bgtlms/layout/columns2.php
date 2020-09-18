@@ -179,7 +179,7 @@ if ($pagelayout == 'incourse') {
 }
 
 foreach ($permissions as $permission) {
-    if (in_array($permission->name, ['admin', 'root', 'teacher'])) {
+    if (in_array($permission->name, ['admin', 'root'])) {
         $roleInCourse = 0;
     }
     if (!in_array($permission->name, ['student', 'employee'])) {

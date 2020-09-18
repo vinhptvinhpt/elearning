@@ -945,9 +945,6 @@ where mc.id = ' . $id;
     //get role in course
 //    $roleInCourse = $course->roleid;
 //
-    $permission_admin = false;
-//Check permission edit course
-    $permission_edit = false;
     $course_category = $course->category;
 
     $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
@@ -959,6 +956,11 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     $check = $DB->get_records_sql($sqlCheck);
 
     $permissions = array_values($check);
+
+    $permission_admin = false;
+//Check permission edit course
+    $permission_edit = false;
+
     //check admin or root permission
     foreach ($permissions as $permission) {
         if (in_array($permission->name, ['root', 'admin'])) { //Nếu root or admin => full quyền
@@ -969,38 +971,44 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     }
 
     //Nếu chưa có quyền permission_edit thì loop để check
-    if(!$permission_edit){
-        foreach ($permissions as $permission) {
+    if (!$permission_edit) {
+        //Kiểm tra nếu có enrol mà là quyền học viên thì không được sửa
+        if (!is_null($roleId) && $roleId == 5) {
+            $permission_edit = false;
+        } else {
+            foreach ($permissions as $permission) {
 
-            if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
-                $permission_edit = true;
-                break;
-            }
+                if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+                    $permission_edit = true;
+                    break;
+                }
 
-            //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
-            if (!is_null($roleId) && $roleId != 5) {
-                $permission_edit = true;
-                break;
-            }
+                //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
+                if (!is_null($roleId) && $roleId != 5) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa thư viện khóa học
-            if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
-                $permission_edit = true;
-                break;
-            }
+                //có quyền chỉnh sửa thư viện khóa học
+                if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa khóa học offline
-            if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
-                $permission_edit = true;
-                break;
-            }
+                //có quyền chỉnh sửa khóa học offline
+                if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa khóa học online
-            if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
-                $permission_edit = true;
-                break;
+                //có quyền chỉnh sửa khóa học online
+                if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+                    $permission_edit = true;
+                    break;
+                }
             }
         }
+
     }
 
 
@@ -1346,7 +1354,7 @@ where ttc.course_id = ' . $id . ')';
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
                                                     <span
-                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo ($totalModul-$countCompletion); ?></span>
+                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo($totalModul - $countCompletion); ?></span>
                                                 <?php } ?>
                                             </p>
                                         </div>
@@ -1391,7 +1399,8 @@ where ttc.course_id = ' . $id . ')';
                                         <?php }
                                     } else { ?>
                                         Unit has no content.
-                                    <?php } $countUnit++; ?>
+                                    <?php }
+                                    $countUnit++; ?>
                                 </div>
                                 <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                     <div class="detail-btn">
