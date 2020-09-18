@@ -92,7 +92,7 @@ class TmsOrganizationRepository implements ICommonInterface
 //                $q->select('organization_id')->from('tms_organization_employee')->where('user_id', $current_user_id);
 //            });
             //Lấy tổ chức hiện tại và các tổ chức dưới nó
-            $employee = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+            $employee = TmsOrganizationEmployee::query()->with('organization')->where('user_id', $current_user_id)->first();
             if (isset($employee)) {
                 $organization_id = $employee->organization_id;
                 $list->whereIn('id', function ($q) use ($organization_id) {
@@ -103,6 +103,7 @@ class TmsOrganizationRepository implements ICommonInterface
                             UNION
                             select id from tms_organization where id = $organization_id) as merged"));
                 });
+                $level = $employee->organization->level;
             }
         }
 
