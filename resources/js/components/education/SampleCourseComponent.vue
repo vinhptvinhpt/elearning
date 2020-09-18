@@ -80,13 +80,10 @@
                             </div>
 
                             <div class="col-sm-6 form-group">
-                              <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}
-                                *</label>
+                              <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                               <input v-model="pass_score" type="number" id="pass_score"
                                      :placeholder="trans.get('keys.vi_du')+': 50'"
                                      class="form-control mb-4">
-                              <label v-if="!pass_score"
-                                     class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                             </div>
 
                             <div class="col-sm-6 form-group">
@@ -402,12 +399,12 @@
           $('.fullname_required').show();
           return;
         }
-        if (this.is_active == 0) {
-          if (!this.pass_score) {
-            $('.pass_score_required').show();
-            return;
-          }
-        }
+        // if (this.is_active == 0) {
+        //   if (!this.pass_score) {
+        //     $('.pass_score_required').show();
+        //     return;
+        //   }
+        // }
 
         // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
         this.formData = new FormData();
