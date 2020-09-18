@@ -229,10 +229,10 @@
             this.selectOrganization();
         },
         destroyed() {
-            sessionStorage.setItem('employeePage', this.current);
-            sessionStorage.setItem('employeePageSize', this.row);
-            sessionStorage.setItem('employeeKeyWord', this.keyword);
-            sessionStorage.setItem('employeePosition', this.position);
+            sessionStorage.setItem('teamPage', this.current);
+            sessionStorage.setItem('teamPageSize', this.row);
+            sessionStorage.setItem('teamKeyWord', this.keyword);
+            sessionStorage.setItem('teamPosition', this.position);
         },
         methods: {
             createTeam() {
@@ -344,12 +344,15 @@
             onPageChange() {
                 let back = this.getParamsBackPage();
                 if(back == '1') {
-                  this.current = Number(sessionStorage.getItem('employeePage'));
-                  this.row = Number(sessionStorage.getItem('employeePageSize'));
-                  this.keyword = sessionStorage.getItem('employeeKeyWord');
-                  this.position = sessionStorage.getItem('employeePosition');
+                  this.current = Number(sessionStorage.getItem('teamPage'));
+                  this.row = Number(sessionStorage.getItem('teamPageSize'));
+                  this.keyword = sessionStorage.getItem('teamKeyWord');
+                  this.position = sessionStorage.getItem('teamPosition');
 
-                  sessionStorage.clear();
+                  sessionStorage.removeItem('teamPage');
+                  sessionStorage.removeItem('teamPageSize');
+                  sessionStorage.removeItem('teamKeyWord');
+                  sessionStorage.removeItem('teamPosition');
                   this.$route.params.back_page= null;
                 }
 

@@ -70,12 +70,10 @@
                                class="required text-danger category_id_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
-                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                         <input v-model="pass_score" type="number" id="pass_score"
                                :placeholder="trans.get('keys.vi_du')+': 50'"
                                class="form-control mb-4">
-                        <label v-if="!pass_score"
-                               class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -285,12 +283,12 @@
         //     $('.enddate_required').show();
         //     return;
         // }
-        if (this.is_toeic == 0) {
-          if (!this.pass_score && this.category_id != 3) {
-            $('.pass_score_required').show();
-            return;
-          }
-        }
+        // if (this.is_toeic == 0) {
+        //   if (!this.pass_score && this.category_id != 3) {
+        //     $('.pass_score_required').show();
+        //     return;
+        //   }
+        // }
 
         var allow_reg = 0;
         if (this.allow_register) {
@@ -300,6 +298,9 @@
         if (this.is_end_quiz) {
           quiz_test = 1;
         }
+
+        if(this.pass_score == null)
+          this.pass_score = '';
 
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 

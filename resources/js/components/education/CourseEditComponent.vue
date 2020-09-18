@@ -257,7 +257,7 @@
         } else {
           if (this.course.category == 3) {
             $('#pass_score').attr("disabled", true);
-          }else{
+          } else {
             $('#pass_score').attr("disabled", false);
           }
         }
@@ -287,7 +287,8 @@
             } else {
               this.course.enddate = "";
             }
-            this.course.pass_score = Math.floor(response.data.pass_score);
+            if (response.data.pass_score)
+              this.course.pass_score = Math.floor(response.data.pass_score);
 
             if (this.course.category == 3) {
               $('#pass_score').attr("disabled", true);
@@ -385,6 +386,9 @@
         if (this.course.is_end_quiz) {
           quiz_test = 1;
         }
+
+        if(this.course.pass_score == null)
+          this.course.pass_score = '';
 
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 

@@ -113,12 +113,10 @@
                         <!--                                                       class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
                       <div class="col-sm-6 col-md-4 form-group">
-                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                         <input v-model="pass_score" type="number" id="pass_score"
                                :placeholder="trans.get('keys.vi_du')+ ': 50'"
                                class="form-control mb-4">
-                        <label v-if="!pass_score"
-                               class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -252,7 +250,8 @@
         this.total_date_course = this.sample.total_date_course;
         //CKEDITOR.instances.article_ckeditor.setData(this.description);
         this.description = this.sample.description;
-        this.pass_score = Math.floor(this.sample.pass_score);
+        if (this.sample.pass_score)
+          this.pass_score = Math.floor(this.sample.pass_score);
         this.is_end_quiz = this.sample.is_end_quiz;
 
         //this.shortname = this.convertToShortName(this.fullname);
@@ -293,8 +292,7 @@
         if (event.target.value == 3) {
           $('#pass_score').attr("disabled", true);
           $('#is_end_quiz').show();
-        }
-        else {
+        } else {
           // if (this.is_toeic == 1) {
           //   $('#pass_score').attr("disabled", true);
           // } else {
@@ -349,7 +347,8 @@
         }
         axios.get('/api/courses/get_course_detail/' + this.course_id)
           .then(response => {
-            this.pass_score = Math.floor(response.data.pass_score);
+            if (response.data.pass_score)
+              this.pass_score = Math.floor(response.data.pass_score);
             this.shortname = response.data.shortname;
             this.fullname = response.data.fullname;
             this.description = response.data.description;
@@ -399,12 +398,12 @@
         //     return;
         // }
 
-        if(this.is_toeic == 0){
-          if (!this.pass_score) {
-            $('.pass_score_required').show();
-            return;
-          }
-        }
+        // if (this.is_toeic == 0) {
+        //   if (!this.pass_score) {
+        //     $('.pass_score_required').show();
+        //     return;
+        //   }
+        // }
 
         var allow_reg = 0;
         if (this.allow_register) {
@@ -415,6 +414,9 @@
         if (this.is_end_quiz) {
           quiz_test = 1;
         }
+
+        if(this.pass_score == null)
+          this.pass_score = '';
 
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
