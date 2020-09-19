@@ -344,6 +344,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         /*max-height: 300px;*/
         max-width: 70%;
         margin: auto;
+        display: flex;
     }
 
     .item-image img {
@@ -549,7 +550,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="user.departmentname">Department: <span>{{ user.departmentname }}</span></li>
                         <li v-else>Department: <span>Not yet update</span></li>
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
-                        <li v-if="user.yearworking < 0 ">Experience: <span>Not yet update</span></li>
+                        <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
                         <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
@@ -702,9 +703,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <div class="tab-content">
                             <div id="certificate" class="tab-pane active">
                                 <br/>
-                                <div class="row col-lg-12 pb-2">
+                                <div class="row col-lg-12 pb-3">
                                     <?php foreach ($certificates as $certificate) { ?>
-                                        <div class="col-lg-3">
+                                        <div class="col-lg-3 mb-3">
                                             <div class="item-image">
                                                 <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
                                                     alt="">
@@ -724,12 +725,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             <div id="badge" class="container tab-pane fade">
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
-                                    <div class="row col-lg-12 pb-2">
+                                    <div class="row col-lg-12 pb-3">
                                         <?php foreach ($badges as $badge) { ?>
-                                            <div class="col-lg-3">
+                                            <div class="col-lg-3 mb-3">
                                                 <div class="item-image">
                                                     <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
-                                                        alt="" data-toggle="modal" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">
+                                                        alt="">
                                                 </div>
                                                 <div class="item-content mt-2">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>

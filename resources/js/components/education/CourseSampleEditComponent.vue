@@ -40,8 +40,10 @@
                         <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
                           {{trans.get('keys.cap_nhat_lan_cuoi')}}
                           <hr>
-                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span></p>
-                          <p>{{trans.get('keys.vao_luc')}}: <span class="last-edited-text">{{last_update.updated_at}}</span></p>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span>
+                          </p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span
+                            class="last-edited-text">{{last_update.updated_at}}</span></p>
                         </div>
                       </div>
                     </div>
@@ -72,12 +74,10 @@
                       <!--                    </select>-->
                       <!--                </div>-->
                       <div class="col-sm-4 form-group">
-                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}} *</label>
+                        <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                         <input v-model="course.pass_score" type="number" id="inputText1-2"
                                :placeholder="trans.get('keys.vi_du')+': 50'"
                                class="form-control mb-4">
-                        <label v-if="!course.pass_score"
-                               class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -182,7 +182,8 @@
         axios.get('/api/courses/get_course_detail/' + this.course_id)
           .then(response => {
             this.course = response.data;
-            this.course.pass_score = Math.floor(response.data.pass_score);
+            if (response.data.pass_score)
+              this.course.pass_score = Math.floor(response.data.pass_score);
           })
           .catch(error => {
             console.log(error.response.data);
@@ -219,10 +220,14 @@
         //     $('.enddate_required').show();
         //     return;
         // }
-        if (!this.course.pass_score) {
-          $('.pass_score_required').show();
-          return;
-        }
+        // if (!this.course.pass_score) {
+        //   $('.pass_score_required').show();
+        //   return;
+        // }
+
+        if(this.course.pass_score == null)
+          this.course.pass_score = '';
+
         // var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
         this.formData = new FormData();
@@ -250,7 +255,7 @@
           .then(response => {
             if (response.data.status) {
               toastr['success'](response.data.message, this.trans.get('keys.thong_bao'));
-              this.$router.push({name: 'SampleCourseIndex',params: {back_page:'1'}});
+              this.$router.push({name: 'SampleCourseIndex', params: {back_page: '1'}});
 
             } else {
               toastr['error'](response.data.message, this.trans.get('keys.thong_bao'));
@@ -261,7 +266,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'SampleCourseIndex',params:{back_page:'1'}});
+        this.$router.push({name: 'SampleCourseIndex', params: {back_page: '1'}});
       },
 
       setFileInput() {

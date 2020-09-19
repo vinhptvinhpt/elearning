@@ -103,16 +103,22 @@
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-                        <date-picker v-model="course.startdate" :config="options"
-                                     :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+<!--                        <date-picker v-model="course.startdate" :config="options"-->
+<!--                                     :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>-->
+                        <input v-model="course.startdate" type="date"
+                               id="inputText7"
+                               class="form-control mb-4">
                         <!--                        <input v-model="course.startdate" type="datetime-local" class="form-control mb-4">-->
                         <label v-if="!course.startdate" class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
-                        <date-picker v-model="course.enddate" :config="options"
-                                     :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                        <input v-model="course.enddate" type="date"
+                               id="inputText8"
+                               class="form-control mb-4">
+<!--                        <date-picker v-model="course.enddate" :config="options"-->
+<!--                                     :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>-->
                         <!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
                         <!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
@@ -257,7 +263,7 @@
         } else {
           if (this.course.category == 3) {
             $('#pass_score').attr("disabled", true);
-          }else{
+          } else {
             $('#pass_score').attr("disabled", false);
           }
         }
@@ -287,7 +293,8 @@
             } else {
               this.course.enddate = "";
             }
-            this.course.pass_score = Math.floor(response.data.pass_score);
+            if (response.data.pass_score)
+              this.course.pass_score = Math.floor(response.data.pass_score);
 
             if (this.course.category == 3) {
               $('#pass_score').attr("disabled", true);
@@ -333,7 +340,9 @@
         let DD = ten(jstimestamp.getDate());
         let HH = ten(jstimestamp.getHours());
         let II = ten(jstimestamp.getMinutes());
-        return YYYY + '-' + MM + '-' + DD + 'T' + HH + ':' + II;
+        console.log(DD + '-' + MM + '-' + YYYY);
+        return YYYY + '-' + MM + '-' + DD;
+        // return MM + '/' + DD + '/' + YYYY;
       },
       editCourse() {
 
@@ -385,6 +394,9 @@
         if (this.course.is_end_quiz) {
           quiz_test = 1;
         }
+
+        if(this.course.pass_score == null)
+          this.course.pass_score = '';
 
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
