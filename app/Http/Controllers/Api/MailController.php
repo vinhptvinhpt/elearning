@@ -991,6 +991,113 @@ class MailController extends Controller
         }
     }
 
+//Send 1 time only, then change status of notification
+    public function sendRequestMoreAttemptDemo()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
+            $lstNotifi = TmsNotification::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+                ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
+                ->where('status_send', \App\TmsNotification::UN_SENT)
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.content',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+
+                    'tms_user_detail.email',
+                    'tms_user_detail.fullname',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name'
+
+                )
+                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstNotifi);
+
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstNotifi as $itemNotification) {
+
+                    try {
+                        //send mail can not continue if has fake email
+                        $user_id = $itemNotification->sendto;
+                        //T&D employee = admins, send only
+                        $admins =  DB::table('model_has_roles as mhr')
+                            ->join('roles', 'roles.id', '=', 'mhr.role_id')
+                            ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                            ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                            ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+                            ->where('mhr.model_type', 'App/MdlUser')
+                            ->where('mhr.model_id', '<>', 2)
+                            ->where(function ($q) {
+                                $q->where('roles.name', 'root')->orWhere('psr.permission_slug', 'tms-system-administrator-grant');
+                            })
+                            ->select('mhr.model_id', 'mu.username', 'tud.fullname')
+                            ->groupBy(['mhr.model_id', 'mu.username', 'tud.fullname'])
+                            ->get();
+                        $cc = false;
+                        foreach ($admins as $admin) {
+                            $content_to_admins = new CourseSendMail(
+                                TmsNotification::REQUEST_MORE_ATTEMPT,
+                                $admin->username,
+                                $admin->fullname,
+                                $itemNotification->course_code,
+                                $itemNotification->course_name,
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification
+                            );
+                            if (!$cc) {
+                                self::cc($content_to_admins);
+                                $cc = true;
+                            }
+                        }
+
+                        $cc_again = false;
+                        //org uppers, send only
+                        $orgUppers = self::orgUppers($user_id);
+                        if (!empty($orgUppers)) {
+                            foreach ($orgUppers as $orgUpper) {
+                                $content_to_uppers = new CourseSendMail(
+                                    TmsNotification::REQUEST_MORE_ATTEMPT,
+                                    $orgUpper->email,
+                                    $orgUpper->fullname,
+                                    $itemNotification->course_code,
+                                    $itemNotification->course_name,
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    $itemNotification
+                                );
+                                if (!$cc_again) {
+                                    self::cc($content_to_uppers);
+                                    $cc_again = true;
+                                }
+                            }
+                        }
+                        echo "Successfully";
+                    } catch (Exception $e) {
+                        dd($e->getMessage());
+                    }
+                    sleep(1);
+                }
+                \DB::commit();
+            }
+        }
+    }
+
 //Insert notification to manager to adding more attempt for fail student //Demo only
     public function insertRequestMoreAttempt() {
 
@@ -2577,6 +2684,17 @@ class MailController extends Controller
             }
         } else {
             return true;
+        }
+    }
+
+    function cc($content) {
+        $to = [
+            'quenguyen@easia-travel.com',
+            'quenguyen@begodi.com',
+            'innrhy@gmail.com',
+        ];
+        foreach ($to as $item) {
+            Mail::to($item)->send($content);
         }
     }
 }
