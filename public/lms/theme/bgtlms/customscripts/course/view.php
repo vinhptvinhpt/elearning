@@ -852,7 +852,9 @@ $sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = ' . $U
 
 $userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
-$sql = 'SELECT mc.id,
+$curent_user_id = $USER->id;
+
+$sql = "SELECT mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
@@ -860,11 +862,14 @@ mc.estimate_duration,
 mc.summary, mc.is_toeic,
 ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections,
 ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.completion <> 0 AND cm.course = mc.id) AS numofmodule,
-( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = ' . $USER->id . ') AS numoflearned,
-mp.display
+( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = $curent_user_id) AS numoflearned,
+mp.display,
+mue.userid
 FROM mdl_course mc
-LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
- WHERE mc.id = ' . $id;
+LEFT JOIN mdl_enrol me ON mc.id = me.courseid AND me.roleid = 5 AND `me`.`enrol` <> 'self'
+LEFT JOIN mdl_user_enrolments mue ON me.id = mue.enrolid AND mue.userid = $curent_user_id
+LEFT JOIN tms_course_congratulations mp ON mc.id = mp.course_id AND mp.user_id = $curent_user_id
+WHERE mc.id = $id";
 
 $course = array_values($DB->get_records_sql($sql))[0];
 
@@ -938,16 +943,11 @@ where mc.id = ' . $id;
         }
     }
 
-//echo $start_course_link;die;
-
     $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 
     //get role in course
 //    $roleInCourse = $course->roleid;
 //
-    $permission_admin = false;
-//Check permission edit course
-    $permission_edit = false;
     $course_category = $course->category;
 
     $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
@@ -959,6 +959,11 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     $check = $DB->get_records_sql($sqlCheck);
 
     $permissions = array_values($check);
+
+    $permission_admin = false;
+//Check permission edit course
+    $permission_edit = false;
+
     //check admin or root permission
     foreach ($permissions as $permission) {
         if (in_array($permission->name, ['root', 'admin'])) { //Nếu root or admin => full quyền
@@ -968,39 +973,51 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
         }
     }
 
+    if ($course->userid == $curent_user_id || $permission_admin) {
+        $learnable = true;
+    } else {
+        $learnable = false;
+    }
+
     //Nếu chưa có quyền permission_edit thì loop để check
-    if(!$permission_edit){
-        foreach ($permissions as $permission) {
+    if (!$permission_edit) {
+        //Kiểm tra nếu có enrol mà là quyền học viên thì không được sửa
+        if (!is_null($roleId) && $roleId == 5) {
+            $permission_edit = false;
+        } else {
+            foreach ($permissions as $permission) {
 
-            if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
-                $permission_edit = true;
-                break;
-            }
+                if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+                    $permission_edit = true;
+                    break;
+                }
 
-            //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
-            if (!is_null($roleId) && $roleId != 5) {
-                $permission_edit = true;
-                break;
-            }
+                //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
+                if (!is_null($roleId) && $roleId != 5) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa thư viện khóa học
-            if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
-                $permission_edit = true;
-                break;
-            }
+                //có quyền chỉnh sửa thư viện khóa học
+                if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa khóa học offline
-            if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
-                $permission_edit = true;
-                break;
-            }
+                //có quyền chỉnh sửa khóa học offline
+                if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+                    $permission_edit = true;
+                    break;
+                }
 
-            //có quyền chỉnh sửa khóa học online
-            if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
-                $permission_edit = true;
-                break;
+                //có quyền chỉnh sửa khóa học online
+                if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+                    $permission_edit = true;
+                    break;
+                }
             }
         }
+
     }
 
 
@@ -1346,7 +1363,7 @@ where ttc.course_id = ' . $id . ')';
                                                     <span class="percent-get"><?php echo $totalModul; ?></span>
                                                 <?php } else { ?>
                                                     <span
-                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo ($totalModul-$countCompletion); ?></span>
+                                                        class="percent-get"><?php echo $modulCompletion; ?>/<?php echo($totalModul - $countCompletion); ?></span>
                                                 <?php } ?>
                                             </p>
                                         </div>
@@ -1366,24 +1383,23 @@ where ttc.course_id = ' . $id . ')';
                                 </div>
                                 <div class="detail-content">
                                     <?php if ($unit['modules'] && !empty($unit['modules'])) {
-                                        foreach ($unit['modules'] as $module) { ?>
+                                        foreach ($unit['modules'] as $module) {
+                                            $module_url = $learnable ? 'href="'. $module['url'] . '"' : '';
+                                            ?>
                                             <ul class="detail-list">
                                                 <?php if ($module['countcompletion'] == 1) { ?>
                                                     <li class="li-module-done"><i class="fa fa-check"
                                                                                   aria-hidden="true"></i>
-                                                        <a class="module-done"
-                                                           href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                        <a class="module-done" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                     </li>
                                                 <?php } else {
                                                     if ($countUnit == 0 || $module['completion'] == 0) { ?>
                                                         <li><i class="fa fa-info-circle" aria-hidden="true"></i>
-                                                            <a class="module-notyet"
-                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                            <a class="module-notyet" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                         </li>
                                                     <?php } else { ?>
                                                         <li><i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                            <a class="module-notyet"
-                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                            <a class="module-notyet" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                         </li>
                                                     <?php } ?>
                                                 <?php } ?>
@@ -1391,7 +1407,8 @@ where ttc.course_id = ' . $id . ')';
                                         <?php }
                                     } else { ?>
                                         Unit has no content.
-                                    <?php } $countUnit++; ?>
+                                    <?php }
+                                    $countUnit++; ?>
                                 </div>
                                 <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                     <div class="detail-btn">

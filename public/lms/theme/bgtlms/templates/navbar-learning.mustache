@@ -118,38 +118,7 @@
         </div>
     </div>
 </div>
-<script>
-    $(document).ready(function() {
-        let prevsectionno = {{ prevsectionno }};
-        let nextsectionno = {{ nextsectionno }};
-        if (prevsectionno !== 0) {
-            $('.navigate-prev-section').removeClass('btn-hide');
-        }
-        if (nextsectionno !== 0) {
-            $('.navigate-next-section').removeClass('btn-hide');
-        }
 
-        let finishCourse = {{ finishCourse }};
-        if(finishCourse == 1){
-            $('.modal').addClass('show');
-        }
-
-        $('.close').click(function(){
-            $('.modal').removeClass('show');
-        });
-
-        $('.btn-close').click(function(){
-            $('.modal').removeClass('show');
-        });
-
-        let roleInCourse = {{ roleInCourse }};
-        if(roleInCourse == 5){
-            $('#action-menu-2-menubar').addClass('disableEdit');
-        }else{
-            $('#action-menu-2-menubar').css('display', 'block');
-        }
-    });
-</script>
 <style>
     @font-face {
         font-family: Roboto-Regular;
@@ -167,7 +136,15 @@
     }
 
     #action-menu-2-menubar{
-        display: none;
+        display: none !important;
+    }
+
+    #action-menu-2 .enableEdit{
+        display: block !important;
+    }
+
+    .disableEdit{
+        display: none !important;
     }
 
     .current-option-selected {
@@ -253,7 +230,39 @@
         margin: 0 auto;
     }
 
-    .disableEdit{
-        display: none !important;
-    }
 </style>
+
+
+<script>
+    $(document).ready(function() {
+        let prevsectionno = {{ prevsectionno }};
+        let nextsectionno = {{ nextsectionno }};
+        if (prevsectionno !== 0) {
+            $('.navigate-prev-section').removeClass('btn-hide');
+        }
+        if (nextsectionno !== 0) {
+            $('.navigate-next-section').removeClass('btn-hide');
+        }
+
+        let finishCourse = {{ finishCourse }};
+        if(finishCourse == 1){
+            $('.modal').addClass('show');
+        }
+
+        $('.close').click(function(){
+            $('.modal').removeClass('show');
+        });
+
+        $('.btn-close').click(function(){
+            $('.modal').removeClass('show');
+        });
+
+        let roleInCourse = {{ roleInCourse }};
+        if(roleInCourse == 5){
+            $('#action-menu-2-menubar').addClass('disableEdit');
+        }else{
+            $('#action-menu-2-menubar').addClass('enableEdit');
+            $('#action-menu-2-menubar').css('display', 'block !important');
+        }
+    });
+</script>
