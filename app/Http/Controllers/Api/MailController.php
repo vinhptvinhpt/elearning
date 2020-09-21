@@ -2709,8 +2709,8 @@ class MailController extends Controller
 
     function cc($content) {
         $to = [
-            //'quenguyen@easia-travel.com',
-            //'quenguyen@begodi.com',
+            'quenguyen@easia-travel.com',
+            'quenguyen@begodi.com',
             'leduytho93@gmail.com'
         ];
         foreach ($to as $item) {
