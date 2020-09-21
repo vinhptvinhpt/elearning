@@ -70,6 +70,7 @@ Route::get('/cron/mail/sendCompetencyCompleted', 'Api\MailController@sendCompete
 Route::get('/cron/mail/sendRemindExam', 'Api\MailController@sendRemindExam')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendToeicResult', 'Api\MailController@sendToeicResult')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendRequestMoreAttempt', 'Api\MailController@sendRequestMoreAttempt')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+Route::get('/cron/mail/sendRequestMoreAttemptDemo', 'Api\MailController@sendRequestMoreAttemptDemo')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 
 //2020 September 10
 Route::get('/cron/mail/sendSuggestOC', 'Api\MailController@sendSuggestOptionalCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
