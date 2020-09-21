@@ -2691,7 +2691,7 @@ class MailController extends Controller
         $to = [
             'quenguyen@easia-travel.com',
             'quenguyen@begodi.com',
-            'hyquoccuong@gmail.com'
+            'innrhy@gmail.com',
         ];
         foreach ($to as $item) {
             Mail::to($item)->send($content);
