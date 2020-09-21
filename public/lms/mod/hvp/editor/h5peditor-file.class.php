@@ -262,7 +262,7 @@ class H5peditorFile
       }
     }
     // Create image from diffrent kinds of extension
-    switch ($extension) {
+    switch (strtolower($extension)) {
       case "png":
         $src = imagecreatefrompng($file);
         break;
