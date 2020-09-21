@@ -649,21 +649,22 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     $data_trainning = DB::table('tms_trainning_courses as ttc')
                         ->where('ttc.trainning_id', '=', $trainning_id)
                         ->where('ttc.sample_id', '=', $course_id)
-                        ->where('ttc.deleted', '=', 1)->select('ttc.id', 'ttc.deleted')->first();
+                        ->where('ttc.deleted', '=', 1)
+                        ->select('ttc.id', 'ttc.deleted', 'ttc.course_id')
+                        ->first();
 
                     $current_max = TmsTrainningCourse::query()->where('trainning_id', $trainning_id)->max('order_no');
                     $next_max = is_integer($current_max) ? $current_max + 1 : 1;
-
 
                     if ($data_trainning) {
                         DB::table('tms_trainning_courses')
                             ->where('id', '=', $data_trainning->id)
                             ->update(['deleted' => 0, 'order_no' => $next_max]);
-                        //Enbale khóa học lại
+                        //Enable khóa học lại
+                        $old_course_id = $data_trainning->course_id;
                         DB::table('mdl_course')
-                            ->where('id', '=', $course_id)
+                            ->where('id', '=', $old_course_id)
                             ->update(['deleted' => 0]);
-
                     } else if ($course_sample) {
                         #region clone course tu thu vien khoa hoc
                         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
@@ -896,12 +897,13 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     DB::table('tms_trainning_courses as ttc')
                         ->where('ttc.trainning_id', '=', $trainning_id)
                         ->where('ttc.course_id', '=', $course_id)
-                        ->where('ttc.deleted', '=', 0)->update(['deleted' => 1]);
+                        ->where('ttc.deleted', '=', 0)
+                        ->update(['deleted' => 1]);
 
                     //Disable khoa hoc luon?
-                    DB::table('mdl_course')
-                        ->where('id', '=', $course_id)
-                        ->update(['deleted' => 1]);
+//                    DB::table('mdl_course')
+//                        ->where('id', '=', $course_id)
+//                        ->update(['deleted' => 1]);
 
                     sleep(0.01);
                 }
