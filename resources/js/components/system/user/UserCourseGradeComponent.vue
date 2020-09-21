@@ -85,10 +85,12 @@
                                             {{post.trainning_name}}
                                         </td>
                                         <td class="text-center">
-                                            <label style="display: block;">
-                                                {{post.user_course_completionstate}} / {{post.user_course_learn}} (
-                                                {{ Math.round(post.user_course_completionstate*100/post.user_course_learn) + "%"}} )
+                                            <label style="display: block;" v-if="parseInt(post.user_course_learn) > 0">
+                                                {{post.user_course_completionstate}} / {{post.user_course_learn}} ( {{Math.round(post.user_course_completionstate*100/post.user_course_learn) + "%"}} )
                                             </label>
+                                          <label style="display: block;" v-else>
+                                            0 / 0 ( 0% )
+                                          </label>
                                             <!-- <ul class="devcpt_progress_bar" v-if="post.user_course_learn > 0">
                                                  <li v-for="index in post.user_course_learn"
                                                      :class='(index <= post.user_course_completionstate) ? ((post.status_user == 1 && post.finalgrade > 0 && post.user_course_completionstate / post.user_course_learn == 1) ? "success" : "warning"):""'

@@ -152,6 +152,22 @@ if ($mform->is_cancelled()) {
         list($cm, $fromform) = update_moduleinfo($cm, $fromform, $course, $mform);
     } else if (!empty($fromform->add)) {
         $fromform = add_moduleinfo($fromform, $course, $mform);
+        // Add notification for quiz_remind if exist timeopen or timeclose or both
+        if (($fromform->timeopen || $fromform->timeclose) && $module->name == 'quiz'){
+            global $USER;
+            $noti = new stdClass();
+            $noti->type = 'mail';
+            $noti->target = 'remind_exam';
+            $noti->status_send = '0';
+            $noti->course_id = $course->id;
+            $noti->createdby = $USER->id;
+            $noti->quiz_name = $fromform->name;
+            $noti->start_time = $fromform->timeopen;
+            $noti->end_time = $fromform->timeclose;
+            $content = json_encode($noti);
+            $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->createdby . ', ' . $noti->course_id .',\''.$content.'\')';
+            $DB->execute($noti_quiz);
+        }
     } else {
         print_error('invaliddata');
     }
