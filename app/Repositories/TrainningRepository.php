@@ -662,7 +662,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         //Enbale khóa học lại
                         DB::table('mdl_course')
                             ->where('id', '=', $course_id)
-                            ->update(['deleted' => 1]);
+                            ->update(['deleted' => 0]);
 
                     } else if ($course_sample) {
                         #region clone course tu thu vien khoa hoc
