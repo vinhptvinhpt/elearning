@@ -1001,7 +1001,7 @@ class MailController extends Controller
                 ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
                 ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
                 ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
-                ->where('status_send', \App\TmsNotification::UN_SENT)
+                //->where('status_send', \App\TmsNotification::UN_SENT)
                 ->select(
                     'tms_nofitications.id',
                     'tms_nofitications.target',
@@ -1017,7 +1017,8 @@ class MailController extends Controller
                     'mdl_course.fullname as course_name'
 
                 )
-                ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                ->limit(1)
+                ->orderBy('id', 'desc')
                 ->get(); //lay danh sach cac thong bao chua gui
 
             $countRemindNotification = count($lstNotifi);
@@ -1049,7 +1050,7 @@ class MailController extends Controller
                             $content_to_admins = new CourseSendMail(
                                 TmsNotification::REQUEST_MORE_ATTEMPT,
                                 $admin->username,
-                                $admin->fullname,
+                                'Admins',
                                 $itemNotification->course_code,
                                 $itemNotification->course_name,
                                 '',
@@ -1072,7 +1073,7 @@ class MailController extends Controller
                                 $content_to_uppers = new CourseSendMail(
                                     TmsNotification::REQUEST_MORE_ATTEMPT,
                                     $orgUpper->email,
-                                    $orgUpper->fullname,
+                                    'Leaders',
                                     $itemNotification->course_code,
                                     $itemNotification->course_name,
                                     '',
@@ -2691,7 +2692,7 @@ class MailController extends Controller
         $to = [
             'quenguyen@easia-travel.com',
             'quenguyen@begodi.com',
-            'innrhy@gmail.com',
+            'leduytho93@gmail.com'
         ];
         foreach ($to as $item) {
             Mail::to($item)->send($content);
