@@ -659,6 +659,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         DB::table('tms_trainning_courses')
                             ->where('id', '=', $data_trainning->id)
                             ->update(['deleted' => 0, 'order_no' => $next_max]);
+                        //Enbale khóa học lại
+                        DB::table('mdl_course')
+                            ->where('id', '=', $course_id)
+                            ->update(['deleted' => 1]);
+
                     } else if ($course_sample) {
                         #region clone course tu thu vien khoa hoc
                         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
@@ -894,6 +899,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         ->where('ttc.deleted', '=', 0)->update(['deleted' => 1]);
 
                     //Disable khoa hoc luon?
+                    DB::table('mdl_course')
+                        ->where('id', '=', $course_id)
+                        ->update(['deleted' => 1]);
+
                     sleep(0.01);
                 }
             }
