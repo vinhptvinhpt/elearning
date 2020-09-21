@@ -901,9 +901,9 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         ->update(['deleted' => 1]);
 
                     //Disable khoa hoc luon?
-//                    DB::table('mdl_course')
-//                        ->where('id', '=', $course_id)
-//                        ->update(['deleted' => 1]);
+                    DB::table('mdl_course')
+                        ->where('id', '=', $course_id)
+                        ->update(['deleted' => 1]);
 
                     sleep(0.01);
                 }
