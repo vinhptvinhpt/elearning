@@ -852,7 +852,9 @@ $sqlUserCheck = 'SELECT id FROM tms_user_course_exception where user_id = ' . $U
 
 $userCheck = array_values($DB->get_records_sql($sqlUserCheck));
 
-$sql = 'SELECT mc.id,
+$curent_user_id = $USER->id;
+
+$sql = "SELECT mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
@@ -860,11 +862,14 @@ mc.estimate_duration,
 mc.summary, mc.is_toeic,
 ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections,
 ( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.completion <> 0 AND cm.course = mc.id) AS numofmodule,
-( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = ' . $USER->id . ') AS numoflearned,
-mp.display
+( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = $curent_user_id) AS numoflearned,
+mp.display,
+mue.userid
 FROM mdl_course mc
-LEFT JOIN tms_course_congratulations mp on mc.id = mp.course_id and mp.user_id = ' . $USER->id . '
- WHERE mc.id = ' . $id;
+LEFT JOIN mdl_enrol me ON mc.id = me.courseid AND me.roleid = 5 AND `me`.`enrol` <> 'self'
+LEFT JOIN mdl_user_enrolments mue ON me.id = mue.enrolid AND mue.userid = $curent_user_id
+LEFT JOIN tms_course_congratulations mp ON mc.id = mp.course_id AND mp.user_id = $curent_user_id
+WHERE mc.id = $id";
 
 $course = array_values($DB->get_records_sql($sql))[0];
 
@@ -938,8 +943,6 @@ where mc.id = ' . $id;
         }
     }
 
-//echo $start_course_link;die;
-
     $bodyattributes = 'id="page-course-view-topics" class="pagelayout-course course-' . $id . '"';
 
     //get role in course
@@ -968,6 +971,12 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             $permission_admin = true;
             break;
         }
+    }
+
+    if ($course->userid == $curent_user_id || $permission_admin) {
+        $learnable = true;
+    } else {
+        $learnable = false;
     }
 
     //Nếu chưa có quyền permission_edit thì loop để check
@@ -1374,24 +1383,23 @@ where ttc.course_id = ' . $id . ')';
                                 </div>
                                 <div class="detail-content">
                                     <?php if ($unit['modules'] && !empty($unit['modules'])) {
-                                        foreach ($unit['modules'] as $module) { ?>
+                                        foreach ($unit['modules'] as $module) {
+                                            $module_url = $learnable ? 'href="'. $module['url'] . '"' : '';
+                                            ?>
                                             <ul class="detail-list">
                                                 <?php if ($module['countcompletion'] == 1) { ?>
                                                     <li class="li-module-done"><i class="fa fa-check"
                                                                                   aria-hidden="true"></i>
-                                                        <a class="module-done"
-                                                           href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                        <a class="module-done" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                     </li>
                                                 <?php } else {
                                                     if ($countUnit == 0 || $module['completion'] == 0) { ?>
                                                         <li><i class="fa fa-info-circle" aria-hidden="true"></i>
-                                                            <a class="module-notyet"
-                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                            <a class="module-notyet" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                         </li>
                                                     <?php } else { ?>
                                                         <li><i class="fa fa-file-text-o" aria-hidden="true"></i>
-                                                            <a class="module-notyet"
-                                                               href="<?php echo $module['url'] ?>"><?php echo $module['name']; ?></a>
+                                                            <a class="module-notyet" <?php echo $module_url ?>><?php echo $module['name']; ?></a>
                                                         </li>
                                                     <?php } ?>
                                                 <?php } ?>
