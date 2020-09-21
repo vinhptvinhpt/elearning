@@ -3569,8 +3569,12 @@ EOD;
             // [VinhPT][08.11.2019] Hide preference action menu nav bar
             $navitemcount = count($opts->navitems)-1;
             $idx = 0;
+//            var_dump($opts->navitems);
+//            die;
             foreach ($opts->navitems as $key => $value) {
-                if($key == 4){
+                //hidden action grades, messages, switch role
+                //$key = 2 => grade, = 3 => messages, = 6 => switch to role
+                if($key == 4 || $key == 2 || $key == 3 || $key == 6){
                     continue;
                 }
                 switch ($value->itemtype) {

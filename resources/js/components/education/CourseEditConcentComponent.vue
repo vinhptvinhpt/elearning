@@ -40,8 +40,10 @@
                         <div v-if="Object.entries(last_update).length !== 0" class="mt-3 last-edited">
                           {{trans.get('keys.cap_nhat_lan_cuoi')}}
                           <hr>
-                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span></p>
-                          <p>{{trans.get('keys.vao_luc')}}: <span class="last-edited-text">{{last_update.updated_at}}</span></p>
+                          <p>{{trans.get('keys.nguoi_cap_nhat')}}: <span class="last-edited-text">{{last_update.user_fullname}}</span>
+                          </p>
+                          <p>{{trans.get('keys.vao_luc')}}: <span
+                            class="last-edited-text">{{last_update.updated_at}}</span></p>
                         </div>
                       </div>
                     </div>
@@ -50,12 +52,14 @@
                     <form action="" class="form-row">
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText1-1">{{trans.get('keys.ma_khoa_hoc')}} *</label>
-                        <input v-model="course.shortname" type="text" id="inputText1-1" :placeholder="trans.get('keys.nhap_ma')" class="form-control mb-4">
+                        <input v-model="course.shortname" type="text" id="inputText1-1"
+                               :placeholder="trans.get('keys.nhap_ma')" class="form-control mb-4">
                         <label v-if="!course.shortname" class="required text-danger shortname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.ten_khoa_hoc')}} *</label>
-                        <input v-model="course.fullname" type="text" id="inputText6" :placeholder="trans.get('keys.nhap_ten_khoa_hoc')" class="form-control mb-4">
+                        <input v-model="course.fullname" type="text" id="inputText6"
+                               :placeholder="trans.get('keys.nhap_ten_khoa_hoc')" class="form-control mb-4">
                         <label v-if="!course.fullname" class="required text-danger fullname_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <!--                                        <div class="col-4 form-group">-->
@@ -69,52 +73,63 @@
                       <!--                                        </div>-->
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText1-2">{{trans.get('keys.diem_qua_mon')}}</label>
-                        <input v-model="course.pass_score" type="number" id="inputText1-2" :placeholder="trans.get('keys.vi_du')+': 50'" class="form-control mb-4">
-<!--                        <label v-if="!course.pass_score" class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                        <input v-model="course.pass_score" type="number" id="inputText1-2"
+                               :placeholder="trans.get('keys.vi_du')+': 50'" class="form-control mb-4">
+                        <!--                        <label v-if="!course.pass_score" class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
-                        <input v-model="course.estimate_duration" id="estimate_duration" type="number" :placeholder="trans.get('keys.nhap_so_gio_can_thiet')" class="form-control mb-4">
-                        <label v-if="!course.estimate_duration" class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <input v-model="course.estimate_duration" id="estimate_duration" type="number"
+                               :placeholder="trans.get('keys.nhap_so_gio_can_thiet')" class="form-control mb-4">
+                        <label v-if="!course.estimate_duration"
+                               class="required text-danger estimate_duration_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.thoi_gian_bat_dau')}} *</label>
-<!--                        <input v-model="course.startdate" type="datetime-local" id="inputText7" class="form-control mb-4">-->
-                        <date-picker v-model="course.startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                        <!--                        <input v-model="course.startdate" type="datetime-local" id="inputText7" class="form-control mb-4">-->
+                        <date-picker v-model="course.startdate" :config="options"
+                                     :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                         <label v-if="!course.startdate" class="required text-danger startdate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.thoi_gian_ket_thuc')}}</label>
-                        <date-picker v-model="course.enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
-<!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
-<!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                        <date-picker v-model="course.enddate" :config="options"
+                                     :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                        <!--                        <input v-model="course.enddate" type="datetime-local" class="form-control mb-4">-->
+                        <!--                        <label v-if="!course.enddate" class="required text-danger enddate_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label>{{trans.get('keys.phong_hoc')}} *</label>
-                        <input v-model="course.course_place" type="text" :placeholder="trans.get('keys.nhap_phong_hoc')" class="form-control mb-4">
+                        <input v-model="course.course_place" type="text" :placeholder="trans.get('keys.nhap_phong_hoc')"
+                               class="form-control mb-4">
                         <label v-if="!course.course_place" class="required text-danger course_place_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="inputText6">{{trans.get('keys.so_buoi_hoc_trong_khoa')}} *</label>
-                        <input v-model="course.total_date_course" type="number" id="inputText101" :placeholder="trans.get('keys.so_buoi_hoc_trong_khoa')" class="form-control mb-4">
-                        <label v-if="!course.total_date_course" class="required text-danger total_date_course_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                        <input v-model="course.total_date_course" type="number" id="inputText101"
+                               :placeholder="trans.get('keys.so_buoi_hoc_trong_khoa')" class="form-control mb-4">
+                        <label v-if="!course.total_date_course"
+                               class="required text-danger total_date_course_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="course_budget">{{trans.get('keys.chi_phi')}} ($)</label>
-                        <input v-model="course.course_budget" id="course_budget" type="number" step="0.01" :placeholder="trans.get('keys.nhap_chi_phi')" class="form-control mb-4">
+                        <input v-model="course.course_budget" id="course_budget" type="number" step="0.01"
+                               :placeholder="trans.get('keys.nhap_chi_phi')" class="form-control mb-4">
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group d-none">
                         <div class="d-sm-block pt-40" style="display:none;"></div>
-                        <input v-model="course.allow_register" type="checkbox" style="width:20px; height:20px;" id="inputText10">
+                        <input v-model="course.allow_register" type="checkbox" style="width:20px; height:20px;"
+                               id="inputText10">
                         <label for="inputText10">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>
                       </div>
 
                       <div class="col-12 form-group">
                         <label for="inputText6">{{trans.get('keys.dia_chi_ip_cho_phep')}} (<label for="inputText6">{{trans.get('keys.cac_dia_dia_chi_ngan_cach_nhau_boi_dau_phay')}}</label>)</label>
-                        <input v-model="string_ip" :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text" class="form-control mb-4">
+                        <input v-model="string_ip" :placeholder="trans.get('keys.nhap_dia_chi_ip')" type="text"
+                               class="form-control mb-4">
                       </div>
 
 
@@ -135,7 +150,8 @@
                       <button type="button" @click="goBack()" class="btn btn-secondary btn-sm">
                         {{trans.get('keys.huy')}}
                       </button>
-                      <button v-if="slug_can('tms-educate-exam-offline-edit')" @click="editCourse()" type="button" class="btn btn-primary btn-sm">
+                      <button v-if="slug_can('tms-educate-exam-offline-edit')" @click="editCourse()" type="button"
+                              class="btn btn-primary btn-sm">
                         {{trans.get('keys.sua')}}
                       </button>
                     </div>
@@ -230,7 +246,8 @@
             } else {
               this.course.enddate = "";
             }
-            this.course.pass_score = Math.floor(response.data.pass_score);
+            if (response.data.pass_score)
+              this.course.pass_score = Math.floor(response.data.pass_score);
 
           })
           .catch(error => {
@@ -307,6 +324,9 @@
           allow_reg = 1;
         }
 
+        if(this.course.pass_score == null)
+          this.course.pass_score = '';
+
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
         this.formData = new FormData();
@@ -346,7 +366,7 @@
           });
       },
       goBack() {
-        this.$router.push({name: 'CourseConcentrateIndex', params:{back_page: '1'}});
+        this.$router.push({name: 'CourseConcentrateIndex', params: {back_page: '1'}});
       },
 
       setFileInput() {

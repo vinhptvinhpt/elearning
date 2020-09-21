@@ -204,8 +204,8 @@ $exitCourseInRequiredCourse = array();
 foreach ($courses_training as $courses) {
     $stt = 1;
     foreach ($courses as &$course) {
-//        $course->sttShow = $stt;
-        $course->sttShow = $course->order_no;
+        $course->sttShow = $stt;
+//        $course->sttShow = $course->order_no;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             $courses_others_id .= ', ' . $course->id;
@@ -941,6 +941,7 @@ $_SESSION["allowCms"] = $allowCms;
     .footer-logo {
         width: auto;
         height: auto;
+        max-width: 200px;
     }
 
     .block-note {
