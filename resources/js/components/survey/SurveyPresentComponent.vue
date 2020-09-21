@@ -27,23 +27,23 @@
                         <div class="col-sm">
                             <div class="table-wrap">
                                 <div v-for="(question,index) in survey.questions">
-                                    <div v-if="question.type_question=='multiplechoice'">
+                                    <div v-if="question.type_question==='multiplechoice'">
                                         <multiple-choice :question="question" :index_question="index"
                                                          :question_answers="question_answers"></multiple-choice>
                                     </div>
-                                    <div v-else-if="question.type_question=='ddtotext'">
+                                    <div v-else-if="question.type_question==='ddtotext'">
                                         <d-d-to-text :question="question" :index_question="index"
                                                      :question_answers="question_answers"></d-d-to-text>
                                     </div>
-                                    <div v-else-if="question.type_question=='group'">
+                                    <div v-else-if="question.type_question==='group'">
                                         <group-question :question="question" :index_question="index"
-                                                        :question_answers="question_answers"></group-question>
+                                                        :question_answers="question_answers" ></group-question>
                                     </div>
-                                    <div v-else-if="question.type_question=='minmax'">
+                                    <div v-else-if="question.type_question==='minmax'">
                                         <min-max-question :question="question" :index_question="index"
-                                                          :question_answers="question_answers"></min-max-question>
+                                                          :question_answers="question_answers" ></min-max-question>
                                     </div>
-                                    <div v-else-if="question.type_question=='checkbox'">
+                                    <div v-else-if="question.type_question==='checkbox'">
                                         <checkbox-question :question="question" :index_question="index"
                                                            :question_answers="question_answers"></checkbox-question>
                                     </div>
