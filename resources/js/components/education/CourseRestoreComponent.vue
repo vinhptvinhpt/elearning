@@ -178,7 +178,6 @@
                     });
 
             },
-
             getCourses(paged) {
                 // $('#logic-warning').hide();
                 let has_startdate = false;
@@ -315,7 +314,6 @@
                             //console.log(error);
                         });
                 });
-
                 return false;
             }
         },
