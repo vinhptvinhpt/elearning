@@ -115,7 +115,7 @@ class api
                 case 'remind_expire_required_course':
                     $record->subject = 'Remind expire required coure';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = '<p>This email is to notify you that we have noticed that you have not yet completed the following assigned course(s) before the expiry dates.</p>';
+                    $record->fullmessagehtml = '<p>E-learning system notify you that we have noticed that you have not yet completed the following assigned course(s) before the expiry dates.</p>';
                     $record->fullmessagehtml .= '
                     <table class="tb-notification">
                         <thead>
@@ -176,7 +176,7 @@ class api
                         $enddate = 'N/A';
                     }
 
-                    $record->fullmessagehtml = 'This email is to notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
+                    $record->fullmessagehtml = 'E-learning system notify you that you have been assigned to study courses according to the competency framework as follows,<br />';
                     $record->fullmessagehtml .= '<br />Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
                     $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
                     $record->fullmessagehtml .= 'Starting time:&nbsp;<strong>' . $startdate . '</strong><br />';
@@ -202,7 +202,7 @@ class api
                         $end_time = 'N/A';
                     }
 
-                    $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
+                    $record->fullmessagehtml = '<p>E-learning system notify you that,</p>';
                     $record->fullmessagehtml .= '<p>The exam: ' . $content->object_name . ' is ready for you to complete,</p>';
                     $record->fullmessagehtml .= '<p>From <strong>' . $start_time . ' to ' . $end_time . ' </strong></p>';
                     $record->fullmessagehtml .= '<p>Please log in to the PHH Academy using this link <a href="https://academy.phh-group.com">https://academy.phh-group.com</a> to do the test by the required time.</p>';
@@ -211,7 +211,7 @@ class api
                 case 'suggest':
                     $record->subject = 'Suggest optional coure';
                     $content = json_decode($record->fullmessage);
-                    $record->fullmessagehtml = '<p>This email is to notify you that,</p>';
+                    $record->fullmessagehtml = '<p>E-learning system notify you that,</p>';
                     $record->fullmessagehtml .= '<p>There are some relevant (but not compulsory) courses that you may be interested in studying, as listed below: &nbsp;</p>';
                     $record->fullmessagehtml .= '
                     <table class="tb-notification">
@@ -296,7 +296,7 @@ class api
                     $lms_base_url = $protocol.$_SERVER['HTTP_HOST'] . '/lms';
                     $attempt = $content->attempt;
                     //
-                    $record->fullmessagehtml = '<p>Unfortunately, after two attempts you have not passed the final test for this course with 100%.</p>';
+                    $record->fullmessagehtml = '<p>Unfortunately, after all available attempts you have not passed the final test for this course with 100% .</p>';
                     $record->fullmessagehtml .= '<p>Prior to unlocking the test to allow you another attempt, your line manager will discuss with you your knowledge gap and why you did not pass.</p>';
                     $record->fullmessagehtml .= '<p>You can also click on the link to review which part(s) of the test you did not pass.</p>';
                     $record->fullmessagehtml .= '<p>Course: <strong>' . $content->parent_name . '</strong></p>';
@@ -481,7 +481,7 @@ class api
                         $enddate = 'N/A';
                     }
 
-                    $record->fullmessagehtml = '<p>This email from PHH Academy is to notify you that you have been finished the competency framework as follows,</p>';
+                    $record->fullmessagehtml = '<p>E-learning system notify you that you have been finished the competency framework as follows,</p>';
                     $record->fullmessagehtml .= '<p>Name:&nbsp;<strong>' . $content->object_name . '</strong><br />';
                     $record->fullmessagehtml .= 'Code:&nbsp;<strong>' . $content->code . '</strong><br />';
                     $record->fullmessagehtml .= 'Starting date:&nbsp;<strong>' . $startdate . '</strong><br />';
