@@ -306,6 +306,10 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         $listCourses = $listCourses->orderBy('c.id', 'desc');
 
+        if ($row == 0) {
+            return $listCourses->get();
+        }
+
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
         $response = [

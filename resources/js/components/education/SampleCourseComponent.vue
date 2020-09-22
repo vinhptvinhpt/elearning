@@ -137,7 +137,7 @@
             <div class="col-sm">
               <div class="table-wrap">
                 <div class="row">
-                  <div class="col-md-6 col-sm-5 dataTables_wrapper">
+                  <div class="col-4 dataTables_wrapper">
                     <div class="dataTables_length" style="display: block;">
                       <label>{{trans.get('keys.hien_thi')}}
                         <select v-model="row"
@@ -151,7 +151,19 @@
                       </label>
                     </div>
                   </div>
-                  <div class="col-md-6 col-sm-7">
+                  <div class="col-4">
+                    <div class="dataTables_length">
+                      <v-select
+                        @input="selectCourse()"
+                        :options="courseSelectOptions"
+                        :reduce="courseSelectOption => courseSelectOption.id"
+                        :placeholder="this.trans.get('keys.khoa_hoc')"
+                        :filter-by="myFilterBy"
+                        v-model="courseSearch">
+                      </v-select>
+                    </div>
+                  </div>
+                  <div class="col-4">
                     <form v-on:submit.prevent="getCourses(1)">
                       <div class="d-flex flex-row form-group">
                         <input v-model="keyword" type="text"
@@ -295,7 +307,9 @@
         lms_url: '',
         librarySelectOptions: [],
         library: '',
-        libraryCodes: []
+        libraryCodes: [],
+        courseSearch:'',
+        courseSelectOptions: [],
       }
     },
     filters: {
@@ -305,6 +319,29 @@
       }
     },
     methods: {
+      getCourseSelectOptions(){
+        axios.post(this.urlGetListUser, {
+          row: 0,
+          sample: 1,
+        })
+          .then(response => {
+            let additionalCities = [];
+            response.data.forEach(function(cityItem) {
+              let newCity = {
+                label: cityItem.shortname + ' - ' + cityItem.fullname,
+                id: cityItem.id
+              };
+              additionalCities.push(newCity);
+            });
+            this.courseSelectOptions = additionalCities;
+          })
+          .catch(error => {
+            //console.log(error.response.data);
+          });
+      },
+      selectCourse() {
+        window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
+      },
       slug_can(permissionName) {
         return this.slugs.indexOf(permissionName) !== -1;
       },
@@ -569,6 +606,7 @@
       this.hintCode();
       // this.fetch();
       this.getLibraryCodes();
+      this.getCourseSelectOptions();
     },
     updated() {
       this.setFileInput();

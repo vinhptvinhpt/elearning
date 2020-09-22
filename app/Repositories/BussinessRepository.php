@@ -1465,6 +1465,10 @@ class BussinessRepository implements IBussinessInterface
 
         $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
 
+        if ($row == 0) {
+            return $listCourses->get();
+        }
+
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         $listCourses = $listCourses->paginate($row);
