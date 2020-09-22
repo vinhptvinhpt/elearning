@@ -1,10 +1,10 @@
 <?php
 // Bypass login to test performance
-$test_mode        = optional_param('test', -1, PARAM_BOOL);
+$test_mode        = optional_param('test', 0, PARAM_BOOL);
 if($test_mode){
     // Bypass require login by login as admin
     global $SESSION, $DB;
-    $fake_user = $DB->get_record('user', ['id' => 23895]);
+    $fake_user = $DB->get_record('user', ['id' => 2]);
     if (!empty($fake_user)) {
         $fake_id = $fake_user->id;
     } else {
