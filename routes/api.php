@@ -27,7 +27,7 @@ Route::group(['prefix' => 'auth'], function () {
 //]);
 Route::get('/cron/task/autoAddTrainningUserCron', 'Api\TaskController@autoAddTrainningUserCron')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoAddTrainningUser', 'Api\TaskController@autoAddTrainningUser')->middleware(['App\Http\Middleware\CheckToken']);
-Route::get('/cron/task/completeCourse', 'Api\TaskController@completeCourseForStudent');//->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/completeCourse', 'Api\TaskController@completeCourseForStudent')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/finalizeCourse', 'Api\TaskController@finalizeCourseForRole')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoEnrol', 'Api\TaskController@autoEnrolTrainning')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/autoEnrolCron', 'Api\TaskController@autoEnrolTrainningCron')->middleware(['App\Http\Middleware\CheckToken']);

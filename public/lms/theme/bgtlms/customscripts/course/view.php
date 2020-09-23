@@ -1159,7 +1159,7 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
   and mc.deleted = 0
    and mc.visible = 1
   and mc.category NOT IN (2,7)
-	and ttc.trainning_id = (select ttp.id from tms_traninning_programs ttp
+	and ttc.trainning_id in (select ttp.id from tms_traninning_programs ttp
 join tms_trainning_courses ttc on ttp.id = ttc.trainning_id
 where ttc.course_id = ' . $id . ')';
 
