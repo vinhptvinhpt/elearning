@@ -496,7 +496,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $row = $request->input('row');
         $is_excluded = $request->input('is_excluded');
         $training_id = $request->input('training_id'); //đã gán vào quyền hay chưa
-        
+
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -535,6 +535,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         $listCourses = $listCourses->where('c.deleted', '=', 0);
+        $listCourses = $listCourses->where('c.category', '<>', 2);
 
 
         if ($keyword) {
