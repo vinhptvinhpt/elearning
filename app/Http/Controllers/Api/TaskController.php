@@ -296,9 +296,8 @@ class TaskController extends Controller
             foreach ($userArrayByTraining as $training => $users) {
                 $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
             }
-            $num = 0;
+
             $queryArray = [];
-            $userArrayByTraining = [];
 
             usleep(200);
         }
@@ -1649,6 +1648,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
+            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
@@ -1945,6 +1945,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
+            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
