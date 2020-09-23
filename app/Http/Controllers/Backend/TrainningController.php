@@ -60,6 +60,13 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiGetCourseSampleTrainning($request);
     }
 
+    //api lấy danh sách khóa học phân quyền dữ liệu
+    //DatDT (01/04/2020)
+    public function apiGetListTrainingCourse(Request $request)
+    {
+        return $this->trainningRepository->apiGetListTrainingCourse($request);
+    }
+
     public function apiSaveOrder(Request $request)
     {
         return $this->trainningRepository->apiSaveOrder($request);
@@ -101,11 +108,22 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiAddCourseTrainning($request);
     }
 
+    //them khoa hoc vao khung nang luc
+    public function apiAddCourseToTraining(Request $request)
+    {
+        return $this->trainningRepository->apiAddCourseToTraining($request);
+    }
+
 
     //xoa khoa hoc khoi khung nang luc
     public function apiRemoveCourseTrainning(Request $request)
     {
         return $this->trainningRepository->apiRemoveCourseTrainning($request);
+    }
+
+    public function apiRemoveCourseFromTraining(Request $request)
+    {
+        return $this->trainningRepository->apiRemoveCourseFromTraining($request);
     }
 
     public function apiTrainningListUser(Request $request)

@@ -869,8 +869,16 @@ const routes = [
                 component: TrainningListComponent,
                 name: 'TrainningIndex',
                 props: (route) => ({
-                    type: route.query.type ? route.query.type : 0
+                    type: route.query.type ? route.query.type : 1
                 })
+            },
+            {
+              path: 'trainning/group',
+              component: TrainningListComponent,
+              name: 'TrainningGroupIndex',
+              props: (route) => ({
+                type: route.query.type ? route.query.type : 2
+              })
             },
             {
                 path: 'trainning/detail/:id',
