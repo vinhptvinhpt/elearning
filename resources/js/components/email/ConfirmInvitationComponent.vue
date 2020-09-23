@@ -58,7 +58,7 @@
               {{ trans.get('keys.ban_da_xac_nhan_loi_moi_nay') }}
             </div>
             <div class="col-12" v-else>
-              {{ trans.get('keys.ban_da_tu_choi_loi_moi_nay') }}
+              {{ trans.get('keys.ban_da_tu_choi_khoa_hoc_nay') }}
             </div>
           </div>
         </section>
