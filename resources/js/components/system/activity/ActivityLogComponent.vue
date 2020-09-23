@@ -227,6 +227,15 @@
           });
       },
       onPageChange() {
+        if(sessionStorage.getItem('activityLogBack') == '1'){
+          this.current = Number(sessionStorage.getItem('activityLogPage'));
+          this.row = Number(sessionStorage.getItem('activityLogPageSize'));
+          this.keyword = sessionStorage.getItem('activityLogKeyWord');
+          this.action = sessionStorage.getItem('activityLogAction');
+          this.type = sessionStorage.getItem('activityLogType');
+
+          // this.$route.params.back_page= null;
+        }
         this.getActivity();
       },
       fetch() {
@@ -245,6 +254,15 @@
     mounted() {
       // this.translateAction();
       this.fetch();
+      sessionStorage.clear();
+    },
+    destroyed() {
+      sessionStorage.setItem('activityLogBack', '1');
+      sessionStorage.setItem('activityLogPage', this.current);
+      sessionStorage.setItem('activityLogPageSize', this.row);
+      sessionStorage.setItem('activityLogKeyWord', this.keyword);
+      sessionStorage.setItem('activityLogAction', this.action);
+      sessionStorage.setItem('activityLogType', this.type);
     }
   }
 </script>

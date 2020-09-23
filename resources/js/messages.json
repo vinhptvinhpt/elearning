@@ -139,7 +139,7 @@
         "thoi_gian_bat_dau": "Start Date",
         "thoi_gian_ket_thuc": "End Date",
         "vai_tro": "Role",
-        "khung_nang_luc": "Competency Framework",
+        "khung_nang_luc": "Competency framework",
         "khoa_hoc_lay_chung_chi": "Required Courses to get Certificate",
         "diem_khoa_hoc": "Courses Result",
         "nhap_khoa_hoc": "Input Courses Name",
@@ -489,9 +489,9 @@
         "danh_sach_khoa_hoc_mau": "Courses Library List",
         "danh_sach_khoa_hoc_trong_knl": "Courses In Competency framework",
         "dua_vao_knl": "Add Course To Competency framework",
-        "go_khoi_knl": "Remove Course To Competency framework",
+        "go_khoi_knl": "Remove Course From Competency framework",
         "them_khoa_hoc_vao_knl_thanh_cong": "Add Course To Competency framework successfully",
-        "xoa_khoa_hoc_vao_knl_thanh_cong": "Remove Course To Competency framework successfully",
+        "xoa_khoa_hoc_vao_knl_thanh_cong": "Remove Course From Competency framework successfully",
         "khoa_hoc_dang_co_hoc_vien": "The course is currently attended by students, are you sure you want to remove the course from the competency framework",
         "vi_tri": "Position",
         "chon_vi_tri": "Choose Position",
@@ -706,7 +706,7 @@
         "them_thanh_cong": "Add successfull. ",
         "cap_nhat_thanh_cong": "Update successfull. ",
         "khong_ton_tai": "Does not exist. ",
-        "quan_tri_khung_nang_luc": "Competency framework List",
+        "quan_tri_khung_nang_luc": "Competency Framework",
         "chinh_sua_thong_tin_knl": "Edit Competency framework",
         "delete_branch_success": "Delete Branch successfully",
         "remove_city_from_branch_success": "Remove Province from Branch successfully",
@@ -1057,7 +1057,9 @@
         "bai_kiem_tra": "Test",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Confirm request more attempts",
         "ban_da_tu_choi_khoa_hoc_nay": "You have denied this course",
-        "edit_survey_question": "Edit question"
+        "edit_survey_question": "Edit question",
+        "khung_nang_luc_nhom": "Competency framework group",
+        "danh_sach_khoa_hoc_kha_dung": "Available courses"
     },
     "vi.keys": {
         "language": "",
@@ -2108,6 +2110,8 @@
         "bai_kiem_tra": "Bài kiểm tra",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Xác nhận cấp lượt làm bài kiểm tra",
         "ban_da_tu_choi_khoa_hoc_nay": "Bạn đã từ chối khóa học này",
-        "edit_survey_question": "Chỉnh sửa câu hỏi"
+        "edit_survey_question": "Chỉnh sửa câu hỏi",
+        "khung_nang_luc_nhom": "Khung năng lực nhóm",
+        "danh_sach_khoa_hoc_kha_dung": "Danh sách khóa học khả dụng"
     }
 }

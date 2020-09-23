@@ -371,8 +371,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         if ($style) {
-            $lstData = $lstData->where('ttp.style', 1);
-        } else {
+            $lstData = $lstData->where('ttp.style', $style);
+        } else { //Khung năng lực thông thường
             $lstData = $lstData->where('ttp.style', 0);
         }
 
@@ -489,6 +489,87 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    public function apiGetListTrainingCourse(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $is_excluded = $request->input('is_excluded');
+        $training_id = $request->input('training_id'); //đã gán vào quyền hay chưa
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number',
+            'is_excluded' => 'number',
+            'training_id' => 'number',
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $listCourses = DB::table('mdl_course as c')
+            ->leftJoin('tms_trainning_courses as ttc', function($join) use ($training_id)
+            {
+                $join->on('c.id', '=', 'ttc.course_id');
+                $join->where('ttc.trainning_id', $training_id);
+                $join->where('ttc.deleted', 0);
+            })
+            ->select(
+                'c.id',
+                'c.fullname',
+                'c.shortname',
+                'c.startdate',
+                'c.enddate',
+                'c.visible',
+                'c.deleted',
+                'ttc.order_no'
+            );
+
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 0) { //List khóa học chưa gán
+                $listCourses->whereNull('ttc.id');
+            } else { //List khóa học đã gán
+                $listCourses->whereNotNull('ttc.id');
+            }
+        }
+
+        $listCourses = $listCourses->where('c.deleted', '=', 0);
+        $listCourses = $listCourses->where('c.category', '<>', 2);
+
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
+        }
+
+        $listCourses = $listCourses->orderBy('c.id', 'desc');
+
+        $lstAllData = $listCourses->get();
+        $totalCourse = count($lstAllData); //lấy tổng số khóa học hiện tại
+        $listCourses = $listCourses->paginate($row);
+        $total = ceil($listCourses->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $listCourses->currentPage(),
+            ],
+            'data' => $listCourses,
+            'total_course' => $totalCourse,
+            'allData' => $lstAllData
+        ];
+
+
+        return response()->json($response);
+    }
 
     public function apiSaveOrder(Request $request)
     {
@@ -841,6 +922,78 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //them khoa hoc vao khung nang luc
+    public function apiAddCourseToTraining(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
+
+            \DB::beginTransaction();
+            $count_course = count($lstCourseId);
+            if ($count_course > 0) {
+                foreach ($lstCourseId as $course_id) {
+
+
+                    $data_trainning = DB::table('tms_trainning_courses as ttc')
+                        ->where('ttc.trainning_id', '=', $trainning_id)
+                        ->where('ttc.sample_id', '=', $course_id)
+                        ->where('ttc.deleted', '=', 1)
+                        ->select('ttc.id', 'ttc.deleted', 'ttc.course_id')
+                        ->first();
+
+                    $current_max = TmsTrainningCourse::query()->where('trainning_id', $trainning_id)->max('order_no');
+                    $next_max = is_integer($current_max) ? $current_max + 1 : 1;
+
+                    if ($data_trainning) { //Nếu từng bị remove khỏi khung năng lực => mở lại
+                        DB::table('tms_trainning_courses')
+                            ->where('id', '=', $data_trainning->id)
+                            ->update(['deleted' => 0, 'order_no' => $next_max]);
+                    } else { //Nếu chưa từng thì add mới vào bảng quan hệ
+
+                        $course_sample = DB::table('mdl_course')
+                            ->where('mdl_course.id', '=', $course_id)
+                            ->select(
+                                'mdl_course.id',
+                                'mdl_course.fullname',
+                                'mdl_course.shortname',
+                                'mdl_course.category',
+                                'mdl_course.summary',
+                                'mdl_course.course_avatar',
+                                'mdl_course.startdate',
+                                'mdl_course.enddate',
+                                'mdl_course.visible'
+                            )->first();
+
+                        //insert du lieu vao bang chua thong tin course trong khung nang luc
+                        TmsTrainningCourse::firstOrCreate([
+                            'trainning_id' => $trainning_id,
+                            'sample_id' => $course_id, // khoa hoc vua tao duoc clone tu khoa hoc mau nao
+                            'course_id' => $course_id,
+                            'order_no' => $next_max
+                        ]);
+
+                        devcpt_log_system('course', 'lms/course/view.php?id=' . $course_id, 'create', 'Create course: ' . $course_sample->shortname);
+                        updateLastModification('create', $course_id);
+                        #endregion
+                    }
+
+                    sleep(0.01);
+                }
+            }
+            \DB::commit();
+            $response->status = true;
+            $response->message = __('them_khoa_hoc_vao_knl_thanh_cong');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return response()->json($response);
+    }
+
 
     /**
      * @param $num
@@ -919,6 +1072,43 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
+    public function apiRemoveCourseFromTraining(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
+
+            //\DB::beginTransaction();
+            $count_course = count($lstCourseId);
+            if ($count_course > 0) {
+                foreach ($lstCourseId as $course_id) {
+                    $course_id = is_numeric($course_id) ? $course_id : 0;
+
+                    DB::table('tms_trainning_courses as ttc')
+                        ->where('ttc.trainning_id', '=', $trainning_id)
+                        ->where('ttc.course_id', '=', $course_id)
+                        ->where('ttc.deleted', '=', 0)
+                        ->update(['deleted' => 1]);
+
+                    //Không disable khoa hoc vì không phải là khóa học dành riêng cho KNL
+                    sleep(0.01);
+                }
+            }
+            //\DB::commit();
+            $response->status = true;
+            $response->message = __('xoa_khoa_hoc_vao_knl_thanh_cong');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return response()->json($response);
+    }
+
+
 
     public function apiTrainningListUser(Request $request)
     {
