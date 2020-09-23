@@ -195,6 +195,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Gender
                             <select class="form-control" v-model="user.sex">
+                                <option value="-1">Select gender</option>
                                 <option value="0">Female</option>
                                 <option value="1">Male</option>
                             </select>
@@ -324,8 +325,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 formData.append('user_id', this.user_id);
                 formData.append('fullname', this.user.fullname);
                 formData.append('dob', this.user.dob);
+                if(!this.user.address)
+                    this.user.address = '';
                 formData.append('address', this.user.address);
                 formData.append('email', this.user.email);
+                if(!this.user.phone)
+                    this.user.phone = '';
                 formData.append('phone', this.user.phone);
                 formData.append('sex', this.user.sex);
                 formData.append('password', this.password);

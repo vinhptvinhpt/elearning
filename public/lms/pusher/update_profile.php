@@ -29,28 +29,26 @@ switch ($btnType) {
     case "password":
         {
             try {
-                if (!validate_password_func($password)){
+                if (!validate_password_func($password)) {
                     $status = false;
                     $msg = 'The password has not been met yet. The password should include uppercase letters, numbers and special characters';
                 }
-                if (!validate_password_func($re_password))
-                {
+                if (!validate_password_func($re_password)) {
                     $status = false;
                     $msg = 'The password has not been met yet. The password should include uppercase letters, numbers and special characters';
                 }
-                if ($password != $re_password)
-                {
+                if ($password != $re_password) {
                     $status = false;
                     $msg = 'Password not match';
                 }
 
-                if($status){
+                if ($status) {
                     $new_pass = password_hash($password, PASSWORD_BCRYPT);
                     $DB->execute('update mdl_user set password = :password where id = :userid', ['password' => $new_pass, 'userid' => $user_id]);
                     $msg = 'Update password successful';
                 }
 
-            }catch (Exception $e){
+            } catch (Exception $e) {
                 $status = false;
                 $msg = 'Error! An error occurred while updating the password. Please try again later';
             }
@@ -59,38 +57,63 @@ switch ($btnType) {
     default:
         {
             try {
-                if(!is_null($filename)) {
-                    $path_image = $CFG->dirstorage. DIRECTORY_SEPARATOR . 'user'. DIRECTORY_SEPARATOR. "avatar_".$user_id.".png";
-                    if(!move_uploaded_file($_FILES['file']['tmp_name'], $path_image)){
-                        $status=false;
+                if (!is_null($filename)) {
+                    $path_image = $CFG->dirstorage . DIRECTORY_SEPARATOR . 'user' . DIRECTORY_SEPARATOR . "avatar_" . $user_id . ".png";
+                    if (!move_uploaded_file($_FILES['file']['tmp_name'], $path_image)) {
+                        $status = false;
                         $msg = 'Error! An error occurred while updating the avatar. Please try again later';
-                    }else{
+                    } else {
                         $is_avatar = true;
                     }
                 }
-
-                //regex phone
-                preg_match('/^[0-9\+\.\-\s]*$/i', $phone, $matches, PREG_OFFSET_CAPTURE);
-                if(count($matches) == 0)
-                {
+                //
+                $regexText = "/^[a-zA-Z0-9\-\_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêếìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\.\,\s\!\%\/\@\&\?\#\(\)]*$/i";
+                //validate full name
+                preg_match($regexText, $fullname, $matchesFullname, PREG_OFFSET_CAPTURE);
+                if (strlen($fullname) == 0) {
                     $status = false;
-                    $msg = 'Phone number incorrect format. Please try again later';
-                }else{
-                    if($status){
-                        $sql = "update tms_user_detail set fullname = N'".$fullname."', ".
-                            " address = N'".$address."', ".
-                            " dob = '".$dob."', ".
-                            " email = N'".$email."', ".
-                            " phone = '".$phone."', ".
-                            " sex = ".$sex;
-                        if($is_avatar)
-                            $sql .= ", avatar = "."'/storage/upload/user/avatar_".$user_id.".png'";
-                        $sql .= " where user_id = ".$user_id;
+                    $msg = 'Enter your full name.';
+                } else if (count($matchesFullname) == 0) {
+                    $status = false;
+                    $msg = 'Full name incorrect format. Please try again later';
+                } else {
+                    //
+                    $sql = "update tms_user_detail set fullname = N'" . $fullname . "', " .
+                        " dob = '" . $dob . "', " .
+                        " email = N'" . $email . "', " .
+                        " sex = " . $sex;
+
+                    //regex address
+                    $address = is_null($address) ? '' : $address;
+                    preg_match($regexText, $address, $matchesAdd, PREG_OFFSET_CAPTURE);
+                    if (count($matchesAdd) == 0) {
+                        $status = false;
+                        $msg = 'Address incorrect format. Please try again later';
+                    } else {
+                        $sql .= ", address = N'" . $address . "'";
+                    }
+
+                    //regex phone
+                    if (!is_null($phone)) {
+                        preg_match('/^[0-9\+\.\-\s]*$/i', $phone, $matches, PREG_OFFSET_CAPTURE);
+                        if (count($matches) == 0) {
+                            $status = false;
+                            $msg = 'Phone number incorrect format. Please try again later';
+                        } else {
+                            $sql .= ", phone = '" . $phone . "'";
+                        }
+                    }
+
+                    //if everything oke
+                    if ($status) {
+                        if ($is_avatar)
+                            $sql .= ", avatar = " . "'/storage/upload/user/avatar_" . $user_id . ".png'";
+                        $sql .= " where user_id = " . $user_id;
                         $DB->execute($sql);
                         $msg = 'Update profile successful';
                     }
                 }
-            }catch (Exception $e) {
+            } catch (Exception $e) {
                 $status = false;
                 $msg = 'Error! An error occurred while updating the profile. Please try again later';
             }
@@ -101,11 +124,9 @@ switch ($btnType) {
 }
 
 echo json_encode([
-    'status'=> $status,
+    'status' => $status,
     'msg' => $msg
 ]);
-
-
 
 
 function validate_password_func($password)
