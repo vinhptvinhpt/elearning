@@ -60,8 +60,7 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiGetCourseSampleTrainning($request);
     }
 
-    //api lấy danh sách khóa học phân quyền dữ liệu
-    //DatDT (01/04/2020)
+    //api lấy danh sách khóa học khung năng lực type = 2
     public function apiGetListTrainingCourse(Request $request)
     {
         return $this->trainningRepository->apiGetListTrainingCourse($request);
