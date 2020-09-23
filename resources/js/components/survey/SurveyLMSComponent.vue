@@ -108,13 +108,24 @@
           user_id: user_id
         })
           .then(response => {
-            toastr.options = {
-              "positionClass": "toast-bottom-right"
-            };
+            // toastr.options = {
+            //   "positionClass": "toast-bottom-right"
+            // };
+            var _this = this;
             if (response.data.status) {
-              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+              swal({
+                title: current_pos.trans.get('keys.thong_bao'),
+                text: current_pos.trans.get('keys.thanh_cong'),
+                type: "success",
+                showCancelButton: false,
+                closeOnConfirm: true,
+                showLoaderOnConfirm: true
+              }, function () {
+                _this.$router.push({name: 'SurveyResult', params: {survey_id: current_pos.survey_id}});
+              });
+              // toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
               // window.history.back();
-              this.$router.push({name: 'SurveyResult', params: {survey_id: this.survey_id}});
+              // this.$router.push({name: 'SurveyResult', params: {survey_id: this.survey_id}});
             } else {
               toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
             }

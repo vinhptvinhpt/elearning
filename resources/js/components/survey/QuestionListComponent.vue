@@ -200,15 +200,14 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('questionBack') == '1') {
                   this.current = Number(sessionStorage.getItem('questionPage'));
                   this.row = Number(sessionStorage.getItem('questionPageSize'));
                   this.keyword = sessionStorage.getItem('questionKeyWord');
                   this.survey_id = sessionStorage.getItem('questionSurvey');
                   this.type_question = sessionStorage.getItem('questionSurveyType');
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 this.getQuestions();
             },
@@ -260,8 +259,10 @@
         mounted() {
             this.getSurveys();
             this.getQuestions();
+            sessionStorage.clear();
         },
         destroyed() {
+          sessionStorage.setItem('questionBack', '1');
           sessionStorage.setItem('questionPage', this.current);
           sessionStorage.setItem('questionPageSize', this.row);
           sessionStorage.setItem('questionKeyWord', this.keyword);

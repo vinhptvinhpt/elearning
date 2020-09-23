@@ -339,9 +339,11 @@
             }
         },
         mounted() {
+            sessionStorage.clear();
             this.selectOrganization();
         },
         destroyed() {
+            sessionStorage.setItem('employeeBack', '1');
             sessionStorage.setItem('employeePage', this.current);
             sessionStorage.setItem('employeePageSize', this.row);
             sessionStorage.setItem('employeeKeyWord', this.keyword);
@@ -517,14 +519,12 @@
             //     })
             // },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('employeeBack') == '1') {
                   this.current = Number(sessionStorage.getItem('employeePage'));
                   this.row = Number(sessionStorage.getItem('employeePageSize'));
                   this.keyword = sessionStorage.getItem('employeeKeyWord');
                   this.position = sessionStorage.getItem('employeePosition');
-
-                  sessionStorage.clear();
                   this.$route.params.back_page= null;
                 }
                 let organization_id_string = this.organization_id.toString();

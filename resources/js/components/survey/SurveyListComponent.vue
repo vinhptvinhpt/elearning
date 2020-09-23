@@ -225,14 +225,13 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if (back == '1') {
+                // let back = this.getParamsBackPage();
+                if (sessionStorage.getItem('surveyBack') == '1') {
                     this.current = Number(sessionStorage.getItem('surveyPage'));
                     this.row = Number(sessionStorage.getItem('surveyPageSize'));
                     this.keyword = sessionStorage.getItem('surveyKeyWord');
 
-                    sessionStorage.clear();
-                    this.$route.params.back_page = null;
+                    // this.$route.params.back_page = null;
                 }
                 this.getSurveys();
             },
@@ -296,9 +295,11 @@
             }
         },
         mounted() {
-            // this.getSurveys();
+            sessionStorage.clear();
+          // this.getSurveys();
         },
         destroyed() {
+            sessionStorage.setItem('surveyBack', '1');
             sessionStorage.setItem('surveyPage', this.current);
             sessionStorage.setItem('surveyPageSize', this.row);
             sessionStorage.setItem('surveyKeyWord', this.keyword);
