@@ -1056,6 +1056,7 @@
         "bo_nhan_vien": "Remove employee",
         "bai_kiem_tra": "Test",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Confirm request more attempts",
+        "ban_da_tu_choi_loi_moi_nay": "You have denied this invitation",
         "edit_survey_question": "Edit question"
     },
     "vi.keys": {
@@ -2106,6 +2107,7 @@
         "bo_nhan_vien": "Bỏ nhân viên",
         "bai_kiem_tra": "Bài kiểm tra",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Xác nhận cấp lượt làm bài kiểm tra",
+        "ban_da_tu_choi_loi_moi_nay": "Bạn đã từ chối lời mời này",
         "edit_survey_question": "Chỉnh sửa câu hỏi"
     }
 }
