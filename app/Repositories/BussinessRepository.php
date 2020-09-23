@@ -5604,15 +5604,15 @@ class BussinessRepository implements IBussinessInterface
             return response()->json();
         }
 
-        //fix query of DatDT
+
         $listStudentsDone = DB::table('tms_user_detail as tud')
             ->join('mdl_user as u', 'u.id', '=', 'tud.user_id')
             ->join('student_certificate as sc', 'tud.user_id', '=', 'sc.userid')
-            ->leftJoin('tms_traninning_programs', 'sc.trainning_id', '=', 'tms_traninning_programs.id')
+            ->leftJoin('tms_traninning_programs as ttp', 'sc.trainning_id', '=', 'ttp.id')
             ->select(
                 'u.id as user_id',
-                'tms_traninning_programs.name as training_name',
-                'tms_traninning_programs.auto_badge as badge',
+                'ttp.name as training_name',
+                'ttp.auto_badge as badge',
                 'tud.fullname as fullname',
                 'tud.email as email',
                 'u.username as username',
@@ -5631,14 +5631,14 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
-                    ->orWhere('tms_traninning_programs.name', 'like', "%{$keyword}%")
+                    ->orWhere('ttp.name', 'like', "%{$keyword}%")
                     ->orWhere('sc.code', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
         }
 
         if ($training_id > 0) {
-            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
+            $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
         }
 
 //        $listStudentsDone = $listStudentsDone->groupBy('u.id');
