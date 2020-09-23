@@ -17,7 +17,7 @@ if (strlen($profile->avatar) != 0) {
     }
 }
 $profile->avatar = $avatar;
-$profile->dob = date('Y-m-d',$profile->dob);
+$profile->dob = $profile->dob == 0 ? null : date('Y-m-d',$profile->dob);
 
 $linemanagers = [];
 if (isset($profile->organization_id)) {
