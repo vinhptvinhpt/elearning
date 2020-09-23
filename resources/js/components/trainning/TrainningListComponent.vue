@@ -16,6 +16,7 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
                     <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_theo_thoi_gian')}}</h5>
+                    <h5 class="hk-sec-title" v-else-if="type == 2">{{trans.get('keys.khung_nang_luc_nhom')}}</h5>
                     <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc')}}</h5>
                     <div class="row mb-4" v-if="slug_can('tms-system-administrator-grant')">
                         <div class="col-sm">

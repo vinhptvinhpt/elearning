@@ -281,25 +281,24 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-trainning-view')">
-                                <a class="nav-link has-submenu" id="khung_nang_luc"
-                                   @click="toggleMenu( 'khung_nang_luc','recover_drp')"
-                                   href="javascript:void(0);" data-toggle="collapse">
-                                    {{ trans.get('keys.khung_nang_luc') }}
+                                <a class="nav-link has-submenu" id="khung_nang_luc" @click="toggleMenu( 'khung_nang_luc','recover_drp')" href="javascript:void(0);" data-toggle="collapse">
+                                    {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                                 </a>
                                 <ul id="recover_drp"
                                     class="nav flex-column collapse collapse-level-2">
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link
-                                                :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex', query: { type: '0' } }"
-                                                class="nav-link">
+                                        <router-link :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex', query: { type: '0' } }" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc') }}</span>
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link
-                                                :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }"
-                                                class="nav-link">
+                                        <router-link :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }" class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_theo_thoi_gian') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
+                                        <router-link :to="{ path: '/tms/trainning/list', name: 'TrainningGroupIndex', query: { type: '2' } }" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_nhom') }}</span>
                                         </router-link>
                                     </li>
                                     <!--                                    <li class="nav-item">-->

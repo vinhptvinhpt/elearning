@@ -32,7 +32,7 @@
               </div>
             </div>
 
-            <div class="form-row">
+            <div class="form-row" v-if="parseInt(type) ===  0 || parseInt(type) ===  1">
               <div class="col-sm-6 form-group">
                 <label for="inputRole">{{trans.get('keys.quyen')}}</label>
                 <select v-model="role" class="form-control selectpicker" id="inputRole" autocomplete="false">
@@ -78,7 +78,7 @@
             </div>
 
             <div class="form-row">
-              <div class="col-sm-4 form-group">
+              <div class="col-sm-4 form-group" v-if="parseInt(type) ===  0 || parseInt(type) ===  1">
                 <label>{{trans.get('keys.tu_dong_chay_cron')}}</label>
                 <div class="custom-control custom-switch">
                   <input type="checkbox" class="custom-control-input" id="run_cron" :checked="run_cron==1?true:false"
