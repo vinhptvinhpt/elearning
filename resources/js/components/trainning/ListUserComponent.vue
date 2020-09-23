@@ -699,7 +699,6 @@
                 })
             },
             getDetailTrainning() {
-              alert(this.trainning_id);
               axios.get('/api/trainning/detail/' + this.trainning_id)
                 .then(response => {
                   this.trainning = response.data;
