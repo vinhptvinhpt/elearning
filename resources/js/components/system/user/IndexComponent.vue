@@ -181,7 +181,7 @@
                       <label>
                         <treeselect v-model="organization_id"
                                     :multiple="false" :options="optionsOrganize"
-                                    @input="getUser(1)"/>
+                                    @input="back == '1' ? getUser(current) : getUser(1)"/>
                       </label>
                     </div>
                   </div>
@@ -298,7 +298,7 @@
                     </tfoot>
                   </table>
                   <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
-                    <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
+                    <v-pagination v-model="current" @input="onPageChange()" :page-count="totalPages"
                                   :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                   </div>
                   <div v-if="slug_can('tms-system-user-deleted')" class="text-right">
@@ -364,6 +364,7 @@
           }
         ],
         organization_id: 0,
+        back: ''
       }
     },
     methods: {
@@ -463,6 +464,9 @@
         }
       },
       getUser(paged) {
+        if(paged > 1){
+          this.back = '';
+        }
         if (this.type === 'teacher') {
           this.urlListUser = '/education/user/list_teacher';
         }
@@ -491,18 +495,19 @@
           });
       },
       onPageChange() {
-        let back = this.getParamsBackPage();
-        if(back == '1') {
+        // let back = this.getParamsBackPage();
+        let a = sessionStorage.getItem('userType');
+        this.back = sessionStorage.getItem('userBack');
+        if(this.back == '1' && (a == null || a == this.type)) {
           this.current = Number(sessionStorage.getItem('userPage'));
           this.row = Number(sessionStorage.getItem('userPageSize'));
           this.keyword = sessionStorage.getItem('userKeyWord');
           this.roles = sessionStorage.getItem('userRole');
           this.confirm = sessionStorage.getItem('userConfirm');
-
-          sessionStorage.clear();
+          this.organization_id = sessionStorage.getItem('userOrganization');
           this.$route.params.back_page= null;
         }
-        this.getUser();
+         this.getUser();
 
       },
       getParamsBackPage() {
@@ -678,22 +683,28 @@
       }
     },
     mounted() {
+      sessionStorage.clear();
       //this.getUser();
       this.getListRole();
       this.fetch();
       //this.getUserForFilter();
-      this.getUser();
       this.selectOrganization();
+      // this.getUser(this.current);
+
     },
     updated() {
       // this.setFileInput();
     },
     destroyed() {
+      sessionStorage.setItem('userBack', '1');
+      sessionStorage.setItem('userType', this.type);
       sessionStorage.setItem('userPage', this.current);
       sessionStorage.setItem('userPageSize', this.row);
       sessionStorage.setItem('userKeyWord', this.keyword);
       sessionStorage.setItem('userRole', this.roles);
       sessionStorage.setItem('userConfirm', this.confirm);
+      sessionStorage.setItem('userOrganization', this.organization_id);
+      this.back = '';
     }
 
   }
