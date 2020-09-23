@@ -23,7 +23,7 @@
                                :name="'customRadio-'+ques_data.id+index"
                                :id="'customRadio-'+ans.id"
                                :value="ans.id"
-                               @click="getAnswerChoose(ques_data.id,ques_data.type_question,ans.id,ans.content,question.id)">
+                               @click="getAnswerChoose(ques_data.id,question.type_question,ans.id,ans.content,question.id)">
                     </td>
                 </tr>
 

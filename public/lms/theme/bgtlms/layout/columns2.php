@@ -82,15 +82,17 @@ $viewCoursePage = false;
 $permissions = array_values($check);
 
 if ($pagelayout == 'incourse') {
-    //get role in course is teacher or trainee
-    $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
-    left join mdl_enrol me on mc.id = me.courseid
-    left join mdl_user_enrolments mue on me.id = mue.enrolid
-    where mc.id = ' . $courseid . ' and mue.userid = ' . $USER->id;
-    $getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
-    $roleInCourse = $getRole->roleid;
+    // Case course in library
+    if($COURSE->category != '2'){
+        // get role in course is teacher or trainee
+        $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
+        left join mdl_enrol me on mc.id = me.courseid
+        left join mdl_user_enrolments mue on me.id = mue.enrolid
+        where mc.id = ' . $courseid . ' and mue.userid = ' . $USER->id;
+        $getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
+        $roleInCourse = $getRole->roleid;
+    }
 
-    //
     require_once('courselib.php');
     $params = array('id' => $courseid);
     $units = get_course_contents($PAGE->course->id);
@@ -117,7 +119,7 @@ if ($pagelayout == 'incourse') {
     $pathBadge = $getBadge->path;
     $pathBadge = ltrim($pathBadge, $pathBadge[0]);
     $pathBadge = $CFG->wwwtmsbase . $pathBadge;
-//    $viewCoursePage = true;
+    //    $viewCoursePage = true;
     //get progress learning
     $sqlGetProgress = ' select ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
   ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
@@ -178,6 +180,7 @@ if ($pagelayout == 'incourse') {
         $viewCoursePage = true;
 }
 
+// TODO optimize check permission
 foreach ($permissions as $permission) {
     if (in_array($permission->name, ['admin', 'root'])) {
         $roleInCourse = 0;

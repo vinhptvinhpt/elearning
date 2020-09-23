@@ -991,6 +991,114 @@ class MailController extends Controller
         }
     }
 
+//Send 1 time only, then change status of notification
+    public function sendRequestMoreAttemptDemo()
+    {
+        $configs = self::loadConfiguration();
+        if ($configs[TmsNotification::REQUEST_MORE_ATTEMPT] == TmsConfigs::ENABLE) {
+            $lstNotifi = TmsNotification::query()
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+                ->where('tms_nofitications.type', \App\TmsNotification::MAIL)
+                ->where('tms_nofitications.target', \App\TmsNotification::REQUEST_MORE_ATTEMPT)
+                //->where('status_send', \App\TmsNotification::UN_SENT)
+                ->select(
+                    'tms_nofitications.id',
+                    'tms_nofitications.target',
+                    'tms_nofitications.course_id',
+                    'tms_nofitications.type',
+                    'tms_nofitications.content',
+                    'tms_nofitications.sendto',
+                    'tms_nofitications.createdby',
+
+                    'tms_user_detail.email',
+                    'tms_user_detail.fullname',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name'
+
+                )
+                ->limit(1)
+                ->orderBy('id', 'desc')
+                ->get(); //lay danh sach cac thong bao chua gui
+
+            $countRemindNotification = count($lstNotifi);
+
+
+            if ($countRemindNotification > 0) {
+                \DB::beginTransaction();
+                foreach ($lstNotifi as $itemNotification) {
+
+                    try {
+                        //send mail can not continue if has fake email
+                        $user_id = $itemNotification->sendto;
+                        //T&D employee = admins, send only
+                        $admins =  DB::table('model_has_roles as mhr')
+                            ->join('roles', 'roles.id', '=', 'mhr.role_id')
+                            ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                            ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                            ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
+                            ->where('mhr.model_type', 'App/MdlUser')
+                            ->where('mhr.model_id', '<>', 2)
+                            ->where(function ($q) {
+                                $q->where('roles.name', 'root')->orWhere('psr.permission_slug', 'tms-system-administrator-grant');
+                            })
+                            ->select('mhr.model_id', 'mu.username', 'tud.fullname')
+                            ->groupBy(['mhr.model_id', 'mu.username', 'tud.fullname'])
+                            ->get();
+                        $cc = false;
+                        foreach ($admins as $admin) {
+                            $content_to_admins = new CourseSendMail(
+                                TmsNotification::REQUEST_MORE_ATTEMPT,
+                                $admin->username,
+                                'Admins',
+                                $itemNotification->course_code,
+                                $itemNotification->course_name,
+                                '',
+                                '',
+                                '',
+                                '',
+                                $itemNotification
+                            );
+                            if (!$cc) {
+                                self::cc($content_to_admins);
+                                $cc = true;
+                            }
+                        }
+
+                        $cc_again = false;
+                        //org uppers, send only
+                        $orgUppers = self::orgUppers($user_id);
+                        if (!empty($orgUppers)) {
+                            foreach ($orgUppers as $orgUpper) {
+                                $content_to_uppers = new CourseSendMail(
+                                    TmsNotification::REQUEST_MORE_ATTEMPT,
+                                    $orgUpper->email,
+                                    'Leaders',
+                                    $itemNotification->course_code,
+                                    $itemNotification->course_name,
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    $itemNotification
+                                );
+                                if (!$cc_again) {
+                                    self::cc($content_to_uppers);
+                                    $cc_again = true;
+                                }
+                            }
+                        }
+                        echo "Successfully";
+                    } catch (Exception $e) {
+                        dd($e->getMessage());
+                    }
+                    sleep(1);
+                }
+                \DB::commit();
+            }
+        }
+    }
+
 //Insert notification to manager to adding more attempt for fail student //Demo only
     public function insertRequestMoreAttempt() {
 
@@ -1572,6 +1680,7 @@ class MailController extends Controller
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE] == TmsConfigs::ENABLE) {
 
+            $now = time();
             $next_3_days = time() + 86400 * 3;
 
             //Type 2
@@ -1585,22 +1694,44 @@ class MailController extends Controller
 
 
             $userNeedRemindExpired =
-                //Type 1 limit using sub query wit same condition
-                DB::query()->fromSub(function ($query) use ($next_3_days) {
+                //Type 1 limit using sub query with same condition
+                DB::query()->fromSub(function ($query) use ($next_3_days, $now) {
                     $query->from('mdl_user')
-                        ->whereNotIn('id', function ($query) {
+
+                        ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
+                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                        ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                        ->leftJoin('course_completion', function ($join) {
+                            $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                            $join->on('mdl_user.id', '=', 'course_completion.userid');
+                        })
+
+                        ->whereNotIn('mdl_user.id', function ($query) {
                             //check exist in table tms_nofitications
                             $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
                         })
-                        ->whereIn('id', function ($query) use ($next_3_days) {
-                            $query->select('userid')
-                                ->from('mdl_course_completions')
-                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-                                ->where('mdl_course.category', 3)
-                                ->where('mdl_course.enddate', "<", $next_3_days)
-                                ->whereNull('mdl_course_completions.timecompleted');
-                        })
-                        ->limit(self::DEFAULT_ITEMS_PER_SESSION);
+
+                        ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+                        ->where('mdl_course.enddate', '<', $next_3_days)
+                        ->where('mdl_course.enddate', '>', $now)
+                        ->where('mdl_course.enddate', '<>', '')
+                        ->where('mdl_course.deleted', '=', 0)
+                        ->whereNotNull('mdl_course.enddate')
+
+//                        ->whereIn('id', function ($query) use ($next_3_days) {
+//                            $query->select('userid')
+//                                ->from('mdl_course_completions')
+//                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+//                                ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
+//                                ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+//                                ->where('mdl_course.enddate', '<', $next_3_days)
+//                                ->where('mdl_course.enddate', '<>', '')
+//                                ->whereNotNull('mdl_course.enddate')
+//                                ->whereNull('mdl_course_completions.timecompleted');
+//                        })
+
+                        ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                        ->select('mdl_user.*');
                 }, 'mdl_user')
 
                     //Type 2 limit using subquery
@@ -1609,25 +1740,48 @@ class MailController extends Controller
 
                     //Type old: query all
                     //MdlUser::query()
-                    ->whereNull('mdl_course_completions.timecompleted')
-                    ->where('mdl_course.category', 3)
-                    //->where('mdl_course.enddate', "<", $next_3_days)
+
+                    ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
+                    ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                    ->leftJoin('course_completion', function ($join) {
+                        $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                        $join->on('mdl_user.id', '=', 'course_completion.userid');
+                    })
+
+//                    ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
+//                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+//                    ->whereNull('mdl_course_completions.timecompleted')
+//                    // ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
+//                    ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required tru kha thu vien
+//                    ->where('mdl_course.enddate', '<', $next_3_days)
+//                    ->where('mdl_course.enddate', '<>', '')
+//                    ->whereNotNull('mdl_course.enddate')
+
                     //Check không có trong bảng notification
                     ->whereNotIn('mdl_user.id', function ($query) {
                         //check exist in table tms_nofitications
                         $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
                     })
-                    ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
-                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+
+                    ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+                    ->where('mdl_course.enddate', '<', $next_3_days)
+                    ->where('mdl_course.enddate', '>', $now)
+                    ->where('mdl_course.enddate', '<>', '')
+                    ->where('mdl_course.deleted', '=', 0)
+                    ->whereNotNull('mdl_course.enddate')
+
                     ->select(
                         'mdl_user.id',
                         'mdl_user.username',
                         'mdl_user.firstname',
                         'mdl_user.lastname',
                         'mdl_user.email',
-                        'mdl_course_completions.course',
-                        'mdl_course_completions.timeenrolled',
-                        'mdl_course_completions.timecompleted',
+//                        'mdl_course_completions.course',
+//                        'mdl_course_completions.timeenrolled',
+//                        'mdl_course_completions.timecompleted',
+                        'course_completion.courseid',
+                        'course_completion.timecompleted',
                         'mdl_course.shortname',
                         'mdl_course.fullname',
                         'mdl_course.startdate',
@@ -1653,7 +1807,8 @@ class MailController extends Controller
                             );
                             $element['content'] = array(
                                 array(
-                                    'course_id' => $user_item->course,
+                                    //'course_id' => $user_item->course,
+                                    'course_id' => $user_item->courseid,
                                     'course_code' => $user_item->shortname,
                                     'course_name' => $user_item->fullname,
                                     'startdate' => $user_item->startdate,
@@ -1664,7 +1819,8 @@ class MailController extends Controller
                             $data[$user_item->username] = $element;
                         } else { // user exists in array, just update content element
                             $data[$user_item->username]['content'][] = array(
-                                'course_id' => $user_item->course,
+                                //'course_id' => $user_item->course,
+                                'course_id' => $user_item->courseid,
                                 'course_code' => $user_item->shortname,
                                 'course_name' => $user_item->fullname,
                                 'startdate' => $user_item->startdate,
@@ -2577,6 +2733,17 @@ class MailController extends Controller
             }
         } else {
             return true;
+        }
+    }
+
+    function cc($content) {
+        $to = [
+            //'quenguyen@easia-travel.com',
+            //'quenguyen@begodi.com',
+            'leduytho93@gmail.com'
+        ];
+        foreach ($to as $item) {
+            Mail::to($item)->send($content);
         }
     }
 }

@@ -499,8 +499,8 @@
         "cap_nhat_khung_nang_luc_thanh_cong": "Update Competency Framework successfully.",
         "ban_muon_cap_nhat_lai_khung_nang_luc_cho_nguoi_dung_nay": "You want to update the Competency framework for this user.",
         "cap_nhat_khung_nang_luc": "Update Competency Framework.",
-        "cau_hoi_con": "Question child",
-        "them_cau_hoi_con": "Add question child",
+        "cau_hoi_con": "Sub-question",
+        "them_cau_hoi_con": "Add sub-question",
         "khao_sat": "Survey",
         "chi_nhanh": "Branch",
         "chon_chi_nhanh": "Select Branch",
@@ -1017,6 +1017,7 @@
         "nhap_cmtnd_username_fullname_email": "Input Personal ID, Login ID, Full Name or Email",
         "expired_session": "Session expired",
         "copy_link": "Get link self-assessment",
+        "copy_survey_link": "Get survey link",
         "chon_thu_vien_nguon": "Select source organization code",
         "thu_vien_nguon_cho_to_chuc": "Source organization code",
         "completed_competency_framework": "Completed Competency framework",
@@ -1055,7 +1056,8 @@
         "bo_nhan_vien": "Remove employee",
         "bai_kiem_tra": "Test",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Confirm request more attempts",
-        "ban_da_tu_choi_loi_moi_nay": "You have denied this invitation"
+        "ban_da_tu_choi_loi_moi_nay": "You have denied this invitation",
+        "edit_survey_question": "Edit question"
     },
     "vi.keys": {
         "language": "",
@@ -2066,6 +2068,7 @@
         "nhap_cmtnd_username_fullname_email": "Nhập thông tin tìm kiếm theo tên đăng nhập, tên đầy đủ hoặc email",
         "expired_session": "Session expired",
         "copy_link": "Get link self-assessment",
+        "copy_survey_link": "Lấy link survey",
         "chon_thu_vien_nguon": "Chọn thư viện nguồn",
         "thu_vien_nguon_cho_to_chuc": "Thư viện nguồn cho tổ chức cụ thể",
         "completed_competency_framework": "Khung năng lực đã hoàn thành",
@@ -2104,6 +2107,7 @@
         "bo_nhan_vien": "Bỏ nhân viên",
         "bai_kiem_tra": "Bài kiểm tra",
         "xac_nhan_cap_luot_lam_bai_kiem_tra": "Xác nhận cấp lượt làm bài kiểm tra",
-        "ban_da_tu_choi_loi_moi_nay": "Bạn đã từ chối lời mời này"
+        "ban_da_tu_choi_loi_moi_nay": "Bạn đã từ chối lời mời này",
+        "edit_survey_question": "Chỉnh sửa câu hỏi"
     }
 }

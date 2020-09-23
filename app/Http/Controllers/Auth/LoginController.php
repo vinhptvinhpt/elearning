@@ -203,13 +203,13 @@ class LoginController extends Controller
                 //Nếu có tên - thuộc tổ chức
                 $partOfUrl = "phh";
                 if ($rs) {
-                    if (Str::contains(strtolower($rs), ['easia']) == 1) {
+                    if (Str::contains(strtolower($rs), ['ea']) == 1) {
                         $partOfUrl = "easia";
-                    } else if (Str::contains(strtolower($rs), ['begodi']) == 1) {
+                    } else if (Str::contains(strtolower($rs), ['bg']) == 1) {
                         $partOfUrl = "begodi";
                     } else if (Str::contains(strtolower($rs), ['av']) == 1) {
                         $partOfUrl = "avana";
-                    } else if (Str::contains(strtolower($rs), ['exotic']) == 1) {
+                    } else if (Str::contains(strtolower($rs), ['ev']) == 1) {
                         $partOfUrl = "exotic";
                     }
                 }

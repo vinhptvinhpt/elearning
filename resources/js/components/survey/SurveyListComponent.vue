@@ -140,7 +140,7 @@
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
 
-                                                <button :title="trans.get('keys.copy_link')" data-toggle="modal"
+                                                <button :title="trans.get('keys.copy_survey_link')" data-toggle="modal"
                                                         data-target="#delete-ph-modal1"
                                                         @click="getLink(sur.id)"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2">

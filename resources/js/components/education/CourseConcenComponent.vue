@@ -47,7 +47,19 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-6">
+                                    <div class="col-sm-3">
+                                      <div class="dataTables_length">
+                                        <v-select
+                                          @input="selectCourse()"
+                                          :options="courseSelectOptions"
+                                          :reduce="courseSelectOption => courseSelectOption.id"
+                                          :placeholder="this.trans.get('keys.khoa_hoc')"
+                                          :filter-by="myFilterBy"
+                                          v-model="courseSearch">
+                                        </v-select>
+                                      </div>
+                                    </div>
+                                    <div class="col-sm-3">
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword" type="text" class="form-control"
@@ -249,6 +261,8 @@
                     useCurrent: false,
                 },
                 lms_url: '',
+                courseSearch:'',
+                courseSelectOptions: [],
             }
         },
         filters: {
@@ -262,6 +276,30 @@
             }
         },
         methods: {
+            getCourseSelectOptions(){
+              axios.post(this.urlGetList, {
+                row: 0,
+                sample: 0,
+                category_id: 5, //là khóa học tập trung
+              })
+                .then(response => {
+                  let additionalCities = [];
+                  response.data.forEach(function(cityItem) {
+                    let newCity = {
+                      label: cityItem.shortname + ' - ' + cityItem.fullname,
+                      id: cityItem.id
+                    };
+                    additionalCities.push(newCity);
+                  });
+                  this.courseSelectOptions = additionalCities;
+                })
+                .catch(error => {
+                  //console.log(error.response.data);
+                });
+            },
+            selectCourse() {
+              window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
+            },
             capitalizeFirstLetter(string) {
               return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
             },
@@ -392,6 +430,15 @@
 
                 return false;
             },
+            myFilterBy: (option, label, search) => {
+              if (!label) {
+                label = '';
+              }
+              let new_search = convertUtf8(search);
+              let new_label = convertUtf8(label);
+              //return this.filterBy(option, new_label, new_search); //can not call components function here
+              return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+            },
             fetch() {
                 axios.post('/bridge/fetch', {
                     type: this.type,
@@ -408,6 +455,7 @@
         mounted() {
             // this.getCategories();
             this.getCourses();
+            this.getCourseSelectOptions();
             // this.fetch();
         },
         destroyed() {

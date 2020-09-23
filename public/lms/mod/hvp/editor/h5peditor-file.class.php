@@ -128,11 +128,18 @@ class H5peditorFile
           return FALSE;
         }
 
-        // Resize the image if size is bigger than 5mb
-        $image_size = $_FILES['file']['size'];
-        if ($image_size > 1000000) {
-          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / 10, $image[1] / 10);
-          $image = @getimagesize($_FILES['file']['tmp_name']);
+        // Not resize image when image is a map
+        $identified_word = 'map_';
+        if(strpos($_FILES['file']['name'], $identified_word) !== false){
+        }else{
+          // Resize the image if size of image larger than the limit
+          $image_size = $_FILES['file']['size'];
+          // Set the limit size (1MB)
+          $limit_resize = 1000000;
+          if ($image_size > $limit_resize) {
+            $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / 10, $image[1] / 10);
+            $image = @getimagesize($_FILES['file']['tmp_name']);
+          }
         }
 
         $this->result->width = $image[0];
@@ -242,8 +249,10 @@ class H5peditorFile
    */
   public function resize_image($file, $extension, $w, $h, $crop = FALSE)
   {
+    // Get the original width and height of image
     list($width, $height) = getimagesize($file);
     $r = $width / $height;
+    // Reduce the resolution of the image (keep original ratio)
     if ($crop) {
       if ($width > $height) {
         $width = ceil($width - ($width * abs($r - $w / $h)));
@@ -261,8 +270,8 @@ class H5peditorFile
         $newwidth = $w;
       }
     }
-    // Create image from diffrent kinds of extension
-    switch ($extension) {
+    // Create image from diffrent kinds of extension (Differnt function)
+    switch (strtolower($extension)) {
       case "png":
         $src = imagecreatefrompng($file);
         break;

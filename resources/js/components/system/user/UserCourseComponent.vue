@@ -58,16 +58,18 @@
                     <td>{{ (current-1)*row+(index+1) }}</td>
                     <td>{{ post.shortname }}</td>
                     <td class=" mobile_hide">
-                      <label style="cursor: pointer;color: #3a55b1;"
-                             @click="getGradeCourseDetail(post.course_id)">
+                      <label style="cursor: pointer;color: #3a55b1;" @click="getGradeCourseDetail(post.course_id)">
                         {{post.fullname}}
                       </label>
                     </td>
 
                     <td class="text-center">
-                      <label style="display: block;">
+                      <label style="display: block;" v-if="parseInt(post.user_course_learn) > 0">
                         {{post.user_course_completionstate}} / {{post.user_course_learn}} (
-                        {{ Math.round(post.user_course_completionstate * 100/post.user_course_learn)+"%"}} )
+                        {{Math.round(post.user_course_completionstate * 100/post.user_course_learn)+"%"}} )
+                      </label>
+                      <label style="display: block;" v-else>
+                        0 / 0 ( 0% )
                       </label>
                       <!-- <ul class="devcpt_progress_bar" v-if="post.user_course_learn > 0">
                            <li v-for="index in post.user_course_learn"
@@ -205,18 +207,18 @@
           });
       },
       getGradeCourseDetail(courseid) {
-        this.course_radio = courseid;
-        axios.post('/system/user/course_grade_detail', {
-          course_id: this.course_radio,
-          user_id: this.user_id,
-        })
-          .then(response => {
-            this.course_detail = response.data.detail;
-            this.course_grade = response.data.course_grade;
-          })
-          .catch(error => {
-            console.log(error.response.data);
-          });
+        // this.course_radio = courseid;
+        // axios.post('/system/user/course_grade_detail', {
+        //   course_id: this.course_radio,
+        //   user_id: this.user_id,
+        // })
+        //   .then(response => {
+        //     this.course_detail = response.data.detail;
+        //     this.course_grade = response.data.course_grade;
+        //   })
+        //   .catch(error => {
+        //     console.log(error.response.data);
+        //   });
       },
       getGradeByCourse(paged) {
         axios.post('/system/user/course_total', {
