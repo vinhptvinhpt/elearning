@@ -496,8 +496,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $row = $request->input('row');
         $is_excluded = $request->input('is_excluded');
         $training_id = $request->input('training_id'); //đã gán vào quyền hay chưa
-
-
+        
         $param = [
             'keyword' => 'text',
             'row' => 'number',
@@ -510,7 +509,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
 
         $listCourses = DB::table('mdl_course as c')
-            ->leftJoin('tms_trainning_courses as ttc', 'c.id', '=', 'ttc.course_id')
+            ->leftJoin('tms_trainning_courses as ttc', function($join) use ($training_id)
+            {
+                $join->on('c.id', '=', 'ttc.course_id');
+                $join->where('ttc.trainning_id', $training_id);
+                $join->where('ttc.deleted', 0);
+            })
             ->select(
                 'c.id',
                 'c.fullname',
@@ -523,18 +527,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             );
 
         if (strlen($is_excluded) != 0) {
-            if ($is_excluded == 0) { //List khóa học chưa phân quyền cho role này
-                $listCourses = $listCourses->where(function($query) use ($training_id) {
-                    return $query->whereNotIn('c.id', function ($query) use ($training_id) {
-                        $query->select('course_id')
-                            ->from('tms_trainning_courses')->where('trainning_id', $training_id);
-                    })->orWhere(function($query) use ($training_id) {
-                        return $query->where('ttc.trainning_id', $training_id)->where('ttc.deleted', '=', 0);
-                    });
-                });
-            } else { //List khóa học đã phân quyền cho role này
-                $listCourses->where('ttc.trainning_id', $training_id);
-                $listCourses->where('ttc.deleted', '=', 0);
+            if ($is_excluded == 0) { //List khóa học chưa gán
+                $listCourses->whereNull('ttc.id');
+            } else { //List khóa học đã gán
+                $listCourses->whereNotNull('ttc.id');
             }
         }
 
@@ -936,39 +932,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             \DB::beginTransaction();
             $count_course = count($lstCourseId);
             if ($count_course > 0) {
-
-                $existed_codes = MdlCourse::query()
-                    ->select('id', 'shortname')
-                    ->get();
-
-                $index_existed = array();
-                foreach ($existed_codes as $code) {
-                    $extract = self::extractCode($code->shortname);
-                    if (!empty($extract)) {
-                        if (isset($index_existed[$extract['lib_code']])) {
-                            if (intval($extract['number']) > intval($index_existed[$extract['lib_code']]))  {
-                                $index_existed[$extract['lib_code']] = $extract['number'];
-                            }
-                        } else {
-                            $index_existed[$extract['lib_code']] = $extract['number'];
-                        }
-                    }
-                }
-
                 foreach ($lstCourseId as $course_id) {
-                    $course_sample = DB::table('mdl_course')
-                        ->where('mdl_course.id', '=', $course_id)
-                        ->select(
-                            'mdl_course.id',
-                            'mdl_course.fullname',
-                            'mdl_course.shortname',
-                            'mdl_course.category',
-                            'mdl_course.summary',
-                            'mdl_course.course_avatar',
-                            'mdl_course.startdate',
-                            'mdl_course.enddate',
-                            'mdl_course.visible'
-                        )->first();
+
 
                     $data_trainning = DB::table('tms_trainning_courses as ttc')
                         ->where('ttc.trainning_id', '=', $trainning_id)
@@ -984,7 +949,22 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         DB::table('tms_trainning_courses')
                             ->where('id', '=', $data_trainning->id)
                             ->update(['deleted' => 0, 'order_no' => $next_max]);
-                    } else if ($course_sample) { //Nếu chưa từng thì add mới vào bảng quan hệ
+                    } else { //Nếu chưa từng thì add mới vào bảng quan hệ
+
+                        $course_sample = DB::table('mdl_course')
+                            ->where('mdl_course.id', '=', $course_id)
+                            ->select(
+                                'mdl_course.id',
+                                'mdl_course.fullname',
+                                'mdl_course.shortname',
+                                'mdl_course.category',
+                                'mdl_course.summary',
+                                'mdl_course.course_avatar',
+                                'mdl_course.startdate',
+                                'mdl_course.enddate',
+                                'mdl_course.visible'
+                            )->first();
+
                         //insert du lieu vao bang chua thong tin course trong khung nang luc
                         TmsTrainningCourse::firstOrCreate([
                             'trainning_id' => $trainning_id,
@@ -992,6 +972,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                             'course_id' => $course_id,
                             'order_no' => $next_max
                         ]);
+
                         devcpt_log_system('course', 'lms/course/view.php?id=' . $course_id, 'create', 'Create course: ' . $course_sample->shortname);
                         updateLastModification('create', $course_id);
                         #endregion
