@@ -386,14 +386,12 @@
               })
           },
           onPageChange() {
-            let back = this.getParamsBackPage();
-            if(back == '1') {
+            // let back = this.getParamsBackPage();
+            if(sessionStorage.getItem('organizationBack') == '1') {
               this.current = Number(sessionStorage.getItem('organizationPage'));
               this.row = Number(sessionStorage.getItem('organizationPageSize'));
               this.keyword = sessionStorage.getItem('organizationKeyWord');
               this.level = Number(sessionStorage.getItem('organizationLevel'));
-
-              sessionStorage.clear();
               this.$route.params.back_page= null;
             }
             this.getDataList();
@@ -470,8 +468,10 @@
               }
       },
       mounted() {
+        sessionStorage.clear();
       },
       destroyed() {
+        sessionStorage.setItem('organizationBack', '1');
         sessionStorage.setItem('organizationPage', this.current);
         sessionStorage.setItem('organizationPageSize', this.row);
         sessionStorage.setItem('organizationKeyWord', this.keyword);

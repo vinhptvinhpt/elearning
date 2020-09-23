@@ -209,12 +209,11 @@
                 });
             },
             onPageChange() {
-              let back = this.getParamsBackPage();
-              if(back === '1') {
-                this.current = Number(sessionStorage.getItem('userPage'));
-                this.row = Number(sessionStorage.getItem('userPageSize'));
-                sessionStorage.clear();
-                this.$route.params.back_page= null;
+              // let back = this.getParamsBackPage();
+              if(sessionStorage.getItem('roleBack') === '1') {
+                this.current = Number(sessionStorage.getItem('rolePage'));
+                this.row = Number(sessionStorage.getItem('rolePageSize'));
+                // this.$route.params.back_page= null;
               }
               this.listContentRoles();
             },
@@ -249,11 +248,13 @@
         mounted() {
             this.listRoles();
             this.listContentRoles();
+            sessionStorage.clear();
         },
 
         destroyed() {
-          sessionStorage.setItem('userPage', this.current);
-          sessionStorage.setItem('userPageSize', this.row);
+          sessionStorage.setItem('roleBack', '1');
+          sessionStorage.setItem('rolePage', this.current);
+          sessionStorage.setItem('rolePageSize', this.row);
       }
     }
 </script>

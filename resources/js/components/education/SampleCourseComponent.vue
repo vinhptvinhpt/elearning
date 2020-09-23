@@ -531,13 +531,12 @@
         }
       },
       onPageChange() {
-        let back = this.getParamsBackPage();
-        if (back == '1') {
-          this.current = Number(sessionStorage.getItem('surveyPage'));
-          this.row = Number(sessionStorage.getItem('surveyPageSize'));
-          this.keyword = sessionStorage.getItem('surveyKeyWord');
+        // let back = this.getParamsBackPage();
+        if (sessionStorage.getItem('SampleCourseBack') == '1') {
+          this.current = Number(sessionStorage.getItem('SampleCoursePage'));
+          this.row = Number(sessionStorage.getItem('SampleCoursePageSize'));
+          this.keyword = sessionStorage.getItem('SampleCourseKeyWord');
 
-          sessionStorage.clear();
           this.$route.params.back_page = null;
         }
         this.getCourses();
@@ -607,14 +606,17 @@
       // this.fetch();
       this.getLibraryCodes();
       this.getCourseSelectOptions();
+      sessionStorage.clear();
+
     },
     updated() {
       this.setFileInput();
     },
     destroyed() {
-      sessionStorage.setItem('surveyPage', this.current);
-      sessionStorage.setItem('surveyPageSize', this.row);
-      sessionStorage.setItem('surveyKeyWord', this.keyword);
+      sessionStorage.setItem('SampleCourseBack', '1');
+      sessionStorage.setItem('SampleCoursePage', this.current);
+      sessionStorage.setItem('SampleCoursePageSize', this.row);
+      sessionStorage.setItem('SampleCourseKeyWord', this.keyword);
     }
   }
 
