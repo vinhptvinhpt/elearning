@@ -174,13 +174,12 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('trainingBack') == '1') {
                   this.current = Number(sessionStorage.getItem('trainingPage'));
                   this.row = Number(sessionStorage.getItem('trainingPageSize'));
                   this.keyword = sessionStorage.getItem('trainingKeyWord');
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 this.getTrainnings();
             },
@@ -224,8 +223,10 @@
             }
         },
         mounted() {
+          sessionStorage.clear();
         },
         destroyed() {
+          sessionStorage.setItem('trainingBack', '1');
           sessionStorage.setItem('trainingPage', this.current);
           sessionStorage.setItem('trainingPageSize', this.row);
           sessionStorage.setItem('trainingKeyWord', this.keyword);

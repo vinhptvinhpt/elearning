@@ -338,8 +338,8 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1'){
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('courseConcenBack') == '1'){
                   this.current = Number(sessionStorage.getItem('courseConcenPage'));
                   this.row = Number(sessionStorage.getItem('courseConcenPageSize'));
                   this.category_id = Number(sessionStorage.getItem('courseConcenCategory'));
@@ -348,8 +348,7 @@
                   this.enddate = sessionStorage.getItem('courseConcenEndDate');
                   this.keyword = sessionStorage.getItem('courseConcenKeyWord');
 
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 this.getCourses();
             },
@@ -457,8 +456,10 @@
             this.getCourses();
             this.getCourseSelectOptions();
             // this.fetch();
+            sessionStorage.clear();
         },
         destroyed() {
+          sessionStorage.setItem('courseConcenBack', '1');
           sessionStorage.setItem('courseConcenPage', this.current);
           sessionStorage.setItem('courseConcenPageSize', this.row);
           sessionStorage.setItem('courseConcenCategory', this.category_id);
