@@ -438,6 +438,14 @@
       }
     }
   }
+  function sortArray(a, b) {
+    if (a.order_no === b.order_no) {
+      return 0;
+    }
+    else {
+      return (a.order_no < b.order_no) ? -1 : 1;
+    }
+  }
 </script>
 
 <style scoped>
