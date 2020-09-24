@@ -538,7 +538,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $listCourses = $listCourses->where('c.deleted', '=', 0);
         $listCourses = $listCourses->where('c.category', '<>', 2);
 
-
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
             // code xử lý remove ký tự đầu tiên của keyword đi
@@ -552,7 +551,13 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
         }
 
-        $listCourses = $listCourses->orderBy('c.id', 'desc');
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 0) { //List khóa học chưa gán
+                $listCourses = $listCourses->orderBy('c.id', 'desc');
+            } else { //List khóa học đã gán
+                $listCourses = $listCourses->orderBy('ttc.order_no', 'asc');
+            }
+        }
 
         $lstAllData = $listCourses->get();
         $totalCourse = count($lstAllData); //lấy tổng số khóa học hiện tại
