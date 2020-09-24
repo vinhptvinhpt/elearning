@@ -9,7 +9,22 @@
               <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
             </li>
             <li class="breadcrumb-item">
-              <router-link :to="{ name: 'TrainningIndex' }">
+              <router-link v-if="trainning.style == 1"
+                           :to="{ path: '/tms/trainning/list',
+                                  name: 'TrainningIndex',
+                                  query: { type: trainning.style } }">
+                {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+              </router-link>
+              <router-link v-else-if="trainning.style == 2"
+                           :to="{ path: '/tms/trainning/group',
+                                  name: 'TrainningGroupIndex',
+                                  query: { type: trainning.style } }">
+                {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+              </router-link>
+              <router-link v-else-if="trainning.style == 0"
+                           :to="{ path: '/tms/trainning/certification',
+                                   name: 'TrainningCertificationIndex',
+                                   query: { type: trainning.style } }">
                 {{ trans.get('keys.quan_tri_khung_nang_luc') }}
               </router-link>
             </li>
@@ -426,13 +441,6 @@
           .catch(error => {
             toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), this.trans.get('keys.thong_bao'));
           });
-      },
-      goBack() {
-        if (this.trainning.style === 1) {
-          this.$router.push({name: 'TrainningIndex', query: {type: this.trainning.style}});
-        } else {
-          this.$router.push({name: 'TrainningIndex'});
-        }
       },
       setFileInput() {
         $('.dropify').dropify();
