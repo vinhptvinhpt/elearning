@@ -174,7 +174,7 @@
 <!--                          </td>-->
                           <td class="text-center" v-if="slug_can('tms-system-employee-view')">
                             <router-link :title="trans.get('keys.xem_nhan_vien')"
-                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current}}">
+                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id, view_mode: 'recursive'}, params: {source_page: current, organization_back:'1'}}">
                               {{ item.recusive_employees }}
                             </router-link>
                           </td>
@@ -392,7 +392,7 @@
               this.row = Number(sessionStorage.getItem('organizationPageSize'));
               this.keyword = sessionStorage.getItem('organizationKeyWord');
               this.level = Number(sessionStorage.getItem('organizationLevel'));
-              this.$route.params.back_page= null;
+              // this.$route.params.back_page= null;
             }
             this.getDataList();
             this.selectParent();
