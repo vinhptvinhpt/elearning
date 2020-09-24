@@ -43,23 +43,29 @@ function cus_login($idorusername)
             $organizationCodeGet = "";
             if(strpos(strtolower($organization->code), 'bg') === 0 || strpos(strtolower($organization->code), 'begodi') === 0){
                 $organizationCodeGet = "BG";
+                $companyNameGet = "Begodi";
                 $_SESSION["pathLogo"] = 'images/begodi.png';
             }
             else if(strpos(strtolower($organization->code),'ea') === 0 || strpos(strtolower($organization->code),'easia') === 0){
                 $organizationCodeGet = "EA";
+                $companyNameGet = "Easia Travel";
                 $_SESSION["pathLogo"] = 'images/logo-black.png';
             }
             else if(strpos(strtolower($organization->code), 'ev') === 0 || strpos(strtolower($organization->code), 'exotic') === 0){
                 $organizationCodeGet = "EV";
+                $companyNameGet = "Exotic Voyages";
                 $_SESSION["pathLogo"] = 'images/exoticvoyages.png';
             }else if(strpos(strtolower($organization->code), 'AV') === 0 || strpos(strtolower($organization->code), 'avana') === 0){
                 $organizationCodeGet = "AV";
+                $companyNameGet = "AVANA";
                 $_SESSION["pathLogo"] = 'images/avana.png';
             }else{
                 $organizationCodeGet = "PH";
+                $companyNameGet = "PHH-group";
                 $_SESSION["pathLogo"] = 'images/phh.png';
             }
             $_SESSION["organizationCode"] = $organizationCodeGet;
+            $_SESSION["companyName"] = $companyNameGet;
             return 1;
         }
         return 0;
