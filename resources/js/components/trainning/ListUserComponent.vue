@@ -8,7 +8,22 @@
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                       <li class="breadcrumb-item">
-                        <router-link :to="{ name: 'TrainningIndex',params:{back_page: '1'} }">
+                        <router-link v-if="trainning.style == 1"
+                                     :to="{ path: '/tms/trainning/list',
+                                  name: 'TrainningIndex',
+                                  query: { type: trainning.style } }">
+                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                        </router-link>
+                        <router-link v-else-if="trainning.style == 2"
+                                     :to="{ path: '/tms/trainning/group',
+                                  name: 'TrainningGroupIndex',
+                                  query: { type: trainning.style } }">
+                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                        </router-link>
+                        <router-link v-else-if="trainning.style == 0"
+                                     :to="{ path: '/tms/trainning/certification',
+                                   name: 'TrainningCertificationIndex',
+                                   query: { type: trainning.style } }">
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
