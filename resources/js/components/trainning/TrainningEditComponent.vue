@@ -346,7 +346,7 @@
         for (const [key, item] of Object.entries(list)) {
           let newOption = {
             id: item.id,
-            label: item.name
+            label: item.code
           };
           if (item.children.length > 0) {
             newOption.children = this.setOptions(item.children);
