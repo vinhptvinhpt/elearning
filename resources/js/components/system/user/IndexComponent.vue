@@ -29,9 +29,7 @@
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
                 <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);" v-if="(
-										  (slug_can('tms-system-user-add') && type !== 'teacher' && type !== 'student')
-										  || slug_can('tms-system-administrator-grant')
-										  )
+										  (slug_can('tms-system-user-add') && type !== 'teacher' && type !== 'student') || slug_can('tms-system-administrator-grant'))
 										  && roles_ready === true">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i
@@ -272,10 +270,12 @@
                           :class="slug_can('tms-system-user-edit') ? 'btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
                           <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                         </router-link>
-                        <button @click.prevent="deletePost('/system/user/delete/'+user.user_id)"
-                                :class="slug_can('tms-system-user-deleted') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
-                                class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"><span
-                          class="btn-icon-wrap"><i class="fal fa-trash"></i></span></button>
+                        <a href="javascript(0)"
+                           @click.prevent="deletePost('/system/user/delete/'+user.user_id)"
+                           :title="trans.get('keys.xoa')"
+                           :class="slug_can('tms-system-user-deleted') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
+                          <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                        </a>
                       </td>
                     </tr>
                     </tbody>
