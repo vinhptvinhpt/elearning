@@ -212,7 +212,7 @@ foreach ($courses_training as $courses) {
             array_push($competency_exists, $course->training_id);
             push_course($courses_current, $course);
         } //then complete
-        elseif ($course->numoflearned / $course->numofmodule == 1) {
+        elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             $courses_others_id .= ', ' . $course->id;
             array_push($competency_completed, $course->training_id);
             push_course($courses_completed, $course);

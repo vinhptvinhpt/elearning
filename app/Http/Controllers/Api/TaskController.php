@@ -154,6 +154,7 @@ class TaskController extends Controller
     public function completeCourseForStudent()
     {
         $lstTrainning = TmsTrainningCourse::where('deleted', '=', '0')->select('trainning_id', 'course_id')->get();
+
         foreach ($lstTrainning as $data) {
             $lstUserCourse = DB::table('mdl_user_enrolments as mu')
                 ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
@@ -165,6 +166,7 @@ class TaskController extends Controller
                 ->leftJoin('course_completion as courc', function ($join) {
                     $join->on('courc.userid', '=', 'u.id');
                     $join->on('courc.courseid', '=', 'c.id');
+                    $join->on('courc.training_id', '=', 'ttu.trainning_id');
                 })
                 ->where('ttu.trainning_id', '=', $data->trainning_id)
                 ->where('c.id', '=', $data->course_id)
@@ -185,11 +187,14 @@ class TaskController extends Controller
                 ->groupBy(['u.id'])
                 ->get();
 
+//            Log::info($lstUserCourse);
+//            die;
+
             $arrData = [];
             $data_item = [];
 
             $num = 0;
-            $limit = 200;
+            $limit = 300;
 
             foreach ($lstUserCourse as $course) {
 
@@ -227,12 +232,12 @@ class TaskController extends Controller
                     $arrData = [];
                 }
 
-                usleep(100);
+                usleep(200);
             }
 
             CourseCompletion::insert($arrData);
 
-            sleep(1);
+            usleep(200);
         }
     }
 
