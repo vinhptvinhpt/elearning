@@ -170,6 +170,7 @@ mc.estimate_duration,
   and mc.deleted = 0
    and mc.visible = 1
   and mc.category NOT IN (2,7)
+  and ttp.style not in (2)
   and mue.userid = ' . $USER->id;
 $sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
