@@ -414,7 +414,7 @@
             },
             selectAllEnrol: function () {
                 this.userEnrols = [];
-                this.courseSelected=[];
+                this.courseSelected = [];
                 this.allSelected = !this.allSelected;
                 if (this.allSelected) {
                     var countEnrol = this.sampleCourses.length;
@@ -460,15 +460,14 @@
             }
         }
     }
-  }
-  function sortArray(a, b) {
-    if (a.order_no === b.order_no) {
-      return 0;
+
+    function sortArray(a, b) {
+        if (a.order_no === b.order_no) {
+            return 0;
+        } else {
+            return (a.order_no < b.order_no) ? -1 : 1;
+        }
     }
-    else {
-      return (a.order_no < b.order_no) ? -1 : 1;
-    }
-  }
 </script>
 
 <style scoped>
