@@ -21,8 +21,6 @@ if($type == 'get'){
 
         $total = count($toeicScore);
 
-    }else{
-
     }
 }
 

@@ -59,6 +59,7 @@ mc.estimate_duration,
    and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
+  and ttp.style not in (2)
   and mue.userid = ' . $USER->id;
 
 //    if ($category > 0) {
@@ -103,10 +104,10 @@ mc.estimate_duration,
                     $courses_others_id .= ', ' . $course->id;
                 }
                 //
-                if(!in_array($course->training_id,$getInCourses)){
+                if (!in_array($course->training_id, $getInCourses)) {
                     array_push($getInCourses, $course->training_id);
                     $course->enable = true;
-                }else{
+                } else {
                     $course->enable = false;
                 }
 //            push_course($courses_required, $course);
@@ -142,7 +143,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
    and mc.visible = 1
  and mc.id not in ' . $courses_others_id;
 
-    if($category == 'other'){
+    if ($category == 'other') {
         if ($txtSearch) {
             $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
         }
@@ -181,24 +182,21 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     }
 
     $resultSearch = array();
-    if($txtSearch || $category > 0){
+    if ($txtSearch || $category > 0) {
         foreach ($all_courses as $courseA) {
-            if($txtSearch && $category > 0){
+            if ($txtSearch && $category > 0) {
                 if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && strpos($courseA->category, $category) !== false)
                     $resultSearch[] = $courseA;
-            }
-            else if ($txtSearch) {
+            } else if ($txtSearch) {
 //                echo strtolower($courseA->fullname). '   '.strtolower($txtSearch). '<br/>';
                 if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false)
                     $resultSearch[] = $courseA;
-            }
-            else if ($category > 0) {
+            } else if ($category > 0) {
                 if (strpos($courseA->category, $category) !== false)
                     $resultSearch[] = $courseA;
             }
         }
-    }
-    else{
+    } else {
         $resultSearch = $all_courses;
     }
 
@@ -210,8 +208,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 
     $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
 
-}
-else {
+} else {
     //course available
     //count total
     $sqlCountCoures = 'select mc.id
@@ -263,9 +260,10 @@ left join tms_organization tor on tor.id = toe.organization_id
 
 where me.enrol = \'manual\'
 and mc.deleted = 0
- and mc.visible = 1
+and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
+and ttp.style not in (2)
 and mue.userid = ' . $USER->id;
 
 
@@ -325,8 +323,7 @@ and mue.userid = ' . $USER->id;
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $course->order_learn = 2;
                 array_push($competency_exists, $course->training_id);
-            }
-            elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
+            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
                 $course->order_learn = 1;
                 $course->category_type = 'required';
                 array_push($temp_competency_exists, $course->training_id);
@@ -339,10 +336,9 @@ and mue.userid = ' . $USER->id;
                 }
                 $tempCourse[$course->training_id]['stt'] = $stt_count;
                 $course->stt_count = $tempCourse[$course->training_id]['stt'];
-            }else if($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0)) ){
+            } else if ($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
                 $course->order_learn = 1;
-            }
-            elseif($course->numoflearned / $course->numofmodule == 1){
+            } elseif ($course->numoflearned / $course->numofmodule == 1) {
                 $course->order_learn = 0;
             }
             $stt++;
@@ -350,30 +346,27 @@ and mue.userid = ' . $USER->id;
         }
     }
 
-    if($pageRequest == 'profile'){
+    if ($pageRequest == 'profile') {
         usort($coures_result, 'cmp_order_learn');
     }
 
     $resultSearch = array();
-    if($txtSearch || $category > 0){
+    if ($txtSearch || $category > 0) {
         foreach ($coures_result as $courseR) {
-            if($txtSearch && $category > 0){
+            if ($txtSearch && $category > 0) {
                 strtolower($txtSearch);
                 if (strpos(strtolower($courseR->fullname), $txtSearch) !== false && strpos($courseR->category, $category) !== false)
                     $resultSearch[] = $courseR;
-            }
-            else if ($txtSearch) {
+            } else if ($txtSearch) {
                 strtolower($txtSearch);
                 if (strpos(strtolower($courseR->fullname), $txtSearch) !== false)
                     $resultSearch[] = $courseR;
-            }
-            else if ($category > 0) {
+            } else if ($category > 0) {
                 if (strpos($courseR->category, $category) !== false)
                     $resultSearch[] = $courseR;
             }
         }
-    }
-    else{
+    } else {
         $resultSearch = $coures_result;
     }
 

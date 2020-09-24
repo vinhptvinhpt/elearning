@@ -157,7 +157,7 @@ class api
                     $record->fullmessagehtml .= '</tbody></table>';
                     break;
                 case 'assigned_competency':
-                    $record->subject = 'Assigned competency';
+                    $record->subject = 'Competency Assigned';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -183,7 +183,7 @@ class api
                     $record->fullmessagehtml .= 'Ending time:&nbsp;<strong>' . $enddate . '</strong><br />';
                     break;
                 case 'remind_exam':
-                    $record->subject = 'Remind exam';
+                    $record->subject = 'Remind Exam';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -209,7 +209,7 @@ class api
                     $record->fullmessagehtml .= '<p>Note: This test must be taken continuously for 120 minutes (without pausing or stopping), so please arrange your time &amp; workload to take the test in such a way that you can focus on achieving the best score possible.</p>';
                     break;
                 case 'suggest':
-                    $record->subject = 'Suggest optional coure';
+                    $record->subject = 'Suggested optional courses';
                     $content = json_decode($record->fullmessage);
                     $record->fullmessagehtml = '<p>E-learning system notify you that,</p>';
                     $record->fullmessagehtml .= '<p>There are some relevant (but not compulsory) courses that you may be interested in studying, as listed below: &nbsp;</p>';
@@ -264,7 +264,7 @@ class api
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case 'enrol':
-                    $record->subject = 'Assigned course';
+                    $record->subject = 'Course Assigned';
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
@@ -289,7 +289,7 @@ class api
                     $record->fullmessagehtml .= 'Ending date:&nbsp;<strong>' . $end_date . '</strong></p>';
                     break;
                 case'fail_exam':
-                    $record->subject = 'Fail exam';
+                    $record->subject = 'Did not pass test @100%';
                     $content = json_decode($record->fullmessage);
                     //
                     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
@@ -304,7 +304,7 @@ class api
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case'request_more_attempt':
-                    $record->subject = 'Request more attempt';
+                    $record->subject = 'Request to allow learner to retake final test';
                     $content = json_decode($record->fullmessage);
                     //
                     $protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? "https://" : "http://";
@@ -323,7 +323,7 @@ class api
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case'calculate_toeic_grade':
-                    $record->subject = 'TOEIC Result';
+                    $record->subject = 'TOEIC Test Result';
                     $content = json_decode($record->fullmessage);
                     //
                     $record->fullmessagehtml = '<p>Thank you for your completion of our online TOEIC TEST.<br />Your test result is great input for us to understand the current overall English level of PHH Group staff.<br />Besides that, there is no pass or fail on this test, just your annual score so it can help you understand your current level and check your improvement each year.</p>';
@@ -489,7 +489,7 @@ class api
                     $record->fullmessagehtml .= '<p>Best Regards</p>';
                     break;
                 case 'retake_exam':
-                    $record->subject = 'Retake exam';
+                    $record->subject = 'Retake Final Test';
                     $content = json_decode($record->fullmessage);
                     //
                     $record->fullmessagehtml = '<p>You have been given one more attempt to retake the test of <strong>' . $content->parent_name . '</strong></p>';

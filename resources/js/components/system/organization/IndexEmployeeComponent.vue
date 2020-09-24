@@ -159,7 +159,7 @@
                                                 <label>
                                                     <treeselect v-model="organization_id1"
                                                                 :multiple="false" :options="optionsOrganize"
-                                                                @input="getDataList(1)"/>
+                                                                @input="back == '1' ? getDataList(current) : getDataList(1)"/>
                                                 </label>
                                             </div>
                                         </div>
@@ -200,7 +200,8 @@
                                             <tr v-else v-for="(item,index) in posts">
                                                 <td>{{ (current-1)*row+(index+1) }}</td>
                                                 <td>
-                                                  <template v-if="slug_can('tms-system-user-view')">
+                                                    <!-- [VinhPT][UAT] Manager/Leader cannot view detail information of employees -->
+                                                  <!-- <template v-if="slug_can('tms-system-user-view')">
                                                     <router-link
                                                       :to="{ name: 'EditUserById', params: { user_id: item.user_id }, query: {type: 'system'} }">
                                                       {{ item.user ? item.user.fullname : '' }}
@@ -208,8 +209,13 @@
                                                   </template>
                                                   <template v-else>
                                                     {{ item.user ? item.user.fullname : '' }}
-                                                  </template>
+                                                  </template> -->
+                                                    <router-link
+                                                        :to="{ name: 'EditUserById', params: { user_id: item.user_id }, query: {type: 'system'} }">
+                                                        {{ item.user ? item.user.fullname : '' }}
+                                                    </router-link>
                                                 </td>
+
                                                 <td>{{ item.organization ? item.organization.name : '' }}</td>
                                                 <td v-if="item.position === 'manager'">
                                                     <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
@@ -330,6 +336,7 @@
                   }
                 ],
                 organization_id1: this.organization_id,
+                back:''
             }
         },
         mounted() {
@@ -342,6 +349,7 @@
             sessionStorage.setItem('employeePageSize', this.row);
             sessionStorage.setItem('employeeKeyWord', this.keyword);
             sessionStorage.setItem('employeePosition', this.position);
+            sessionStorage.setItem('employeeOrganization', this.organization_id1);
         },
         methods: {
             slug_can(permissionName) {
@@ -454,6 +462,9 @@
             //     })
             // },
             getDataList(paged) {
+              if(paged > 1){
+                this.back = '';
+              }
               this.$route.params.page = undefined;
               axios.post('/organization-employee/list', {
                     page: paged || this.current,
@@ -533,11 +544,13 @@
             // },
             onPageChange() {
                 // let back = this.getParamsBackPage();
-                if(sessionStorage.getItem('employeeBack') == '1') {
+                this.back = sessionStorage.getItem('employeeBack');
+                if(this.back == '1') {
                   this.current = Number(sessionStorage.getItem('employeePage'));
                   this.row = Number(sessionStorage.getItem('employeePageSize'));
                   this.keyword = sessionStorage.getItem('employeeKeyWord');
                   this.position = sessionStorage.getItem('employeePosition');
+                  this.organization_id1 = sessionStorage.getItem('employeeOrganization');
                   this.$route.params.back_page= null;
                 }
                 let organization_id_string = this.organization_id.toString();
