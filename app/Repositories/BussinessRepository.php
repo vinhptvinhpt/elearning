@@ -5641,7 +5641,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
         }
 
-//        $listStudentsDone = $listStudentsDone->groupBy('u.id');
+        $listStudentsDone = $listStudentsDone->orderBy('sc.id','desc');
 
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
@@ -6019,7 +6019,8 @@ class BussinessRepository implements IBussinessInterface
         $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
+        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email',
+            'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
@@ -7958,15 +7959,11 @@ class BussinessRepository implements IBussinessInterface
             'mdl_user.username as username',
             'tms_user_detail.user_id as user_id',
             'tms_user_detail.cmtnd as cmtnd',
-            'tms_user_detail.working_status as working_status',
-            DB::raw('(select count(mhr.model_id) as user_count from tms_user_detail tud
-                inner join model_has_roles mhr on mhr.model_id = tud.user_id
-                inner join roles r on r.id = mhr.role_id
-                where tud.user_id = mdl_user.id and r.name = "student")
-                as user_count')
+            'tms_user_detail.working_status as working_status'
         )
             ->where('tms_user_detail.deleted', 0)
-            ->whereNotIn('mdl_user.username', ['admin']);
+            ->where('mdl_user.username','!=', 'admin');
+//            ->whereNotIn('mdl_user.username', ['admin']);
         if ($roles != 0) {
             $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
             $listUsers = $listUsers->where('model_has_roles.role_id', $roles);
