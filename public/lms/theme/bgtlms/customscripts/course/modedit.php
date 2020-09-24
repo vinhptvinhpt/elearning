@@ -219,7 +219,7 @@ if ($mform->is_cancelled()) {
 
 ?>
 <ul class="list-click">
-    <li onclick="scrollUp()" class="btnscroll scrollup" title="croll up"><i class="fa fa-angle-double-up" aria-hidden="true"></i></li>
+    <li onclick="scrollUp()" class="btnscroll scrollup" title="scroll up"><i class="fa fa-angle-double-up" aria-hidden="true"></i></li>
     <li onclick="scrollDown()" class="btnscroll scrolldown" title="scroll down"><i class="fa fa-angle-double-down" aria-hidden="true"></i></li>
 </ul>
 <style>
