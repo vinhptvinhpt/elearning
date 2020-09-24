@@ -159,7 +159,7 @@
                                                 <label>
                                                     <treeselect v-model="organization_id1"
                                                                 :multiple="false" :options="optionsOrganize"
-                                                                @input="getDataList(1)"/>
+                                                                @input="back == '1' ? getDataList(current) : getDataList(1)"/>
                                                 </label>
                                             </div>
                                         </div>
@@ -330,6 +330,7 @@
                   }
                 ],
                 organization_id1: this.organization_id,
+                back:''
             }
         },
         mounted() {
@@ -342,6 +343,7 @@
             sessionStorage.setItem('employeePageSize', this.row);
             sessionStorage.setItem('employeeKeyWord', this.keyword);
             sessionStorage.setItem('employeePosition', this.position);
+            sessionStorage.setItem('employeeOrganization', this.organization_id1);
         },
         methods: {
             slug_can(permissionName) {
@@ -435,6 +437,9 @@
             //     })
             // },
             getDataList(paged) {
+              if(paged > 1){
+                this.back = '';
+              }
               this.$route.params.page = undefined;
               axios.post('/organization-employee/list', {
                     page: paged || this.current,
@@ -514,11 +519,13 @@
             // },
             onPageChange() {
                 // let back = this.getParamsBackPage();
-                if(sessionStorage.getItem('employeeBack') == '1') {
+                this.back = sessionStorage.getItem('employeeBack');
+                if(this.back == '1') {
                   this.current = Number(sessionStorage.getItem('employeePage'));
                   this.row = Number(sessionStorage.getItem('employeePageSize'));
                   this.keyword = sessionStorage.getItem('employeeKeyWord');
                   this.position = sessionStorage.getItem('employeePosition');
+                  this.organization_id1 = sessionStorage.getItem('employeeOrganization');
                   this.$route.params.back_page= null;
                 }
                 let organization_id_string = this.organization_id.toString();
