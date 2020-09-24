@@ -224,9 +224,7 @@
                         || slug_can('tms-educate-uncertificate-view')
                         || slug_can('tms-educate-certificate-view')
                         || slug_can('tms-trainning-view')
-                        || slug_can('tms-report-survey-view')"
-
-                    >
+                        || slug_can('tms-report-survey-view')">
                         <a class="nav-link  has-submenu collapse-level-1" id="quan_ly_dao_tao"
                            @click="toggleMenu('quan_ly_dao_tao','pages_drp')"
                            href="javascript:void(0);" data-level="collapse-level-1">
@@ -241,7 +239,7 @@
                                 </router-link>
                             </li>
 
-                            <li class="nav-item" v-if=" slug_can('tms-educate-exam-online-view')
+                            <li class="nav-item" v-if="slug_can('tms-educate-exam-online-view')
                             || slug_can('tms-educate-exam-offline-view')
                             || slug_can('tms-educate-exam-clone-add')
                             || slug_can('tms-educate-exam-restore-view')">
