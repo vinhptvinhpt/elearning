@@ -365,7 +365,7 @@ Log::info('157');
                             $content[] = $employee;
                         }
                         if ($team_id != 0) {
-                            $member = self::createTeamMember($team_id, $user_id);
+                            $member = self::createTeamMember($team_id, $user_id, $organization->id);
                             if (!is_numeric($member)) {
                                 $content[] = $member;
                             }
@@ -697,7 +697,7 @@ Log::info('348');
                             $content[] = $employee;
                         }
                         if ($team_id != 0) {
-                            $member = self::createTeamMember($team_id, $user_id);
+                            $member = self::createTeamMember($team_id, $user_id, $organization->id);
                             if (!is_numeric($member)) {
                                 $content[] = $member;
                             }
@@ -976,7 +976,21 @@ Log::info('348');
         return $check->id;
     }
 
-    function createTeamMember($team_id, $user_id) {
+    /**
+     * @param $team_id
+     * @param $user_id
+     * @param $organization_id
+     * @return \Illuminate\Database\Eloquent\HigherOrderBuilderProxy|mixed
+     */
+    function createTeamMember($team_id, $user_id, $organization_id) {
+        //Out team cũ nếu không thuộc tổ chức hiện tại
+        TmsOrganizationTeamMember::query()
+            ->whereNotIn('team_id', function ($q) use ($organization_id)  {
+                $q->select('id')->from('tms_organization_teams')->where('organization_id', $organization_id);
+            })
+            ->where('user_id', $user_id)
+            ->delete();
+
         $check = TmsOrganizationTeamMember::query()->where('team_id', $team_id)->where('user_id', $user_id)->first();
         if (!isset($check)) {
             //tạo mới nếu chưa có

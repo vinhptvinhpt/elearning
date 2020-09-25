@@ -85,9 +85,9 @@
                         <label for="inputText1-1">{{trans.get('keys.diem_qua_mon')}}</label>
                         <input v-model="course.pass_score" type="number" id="pass_score"
                                :placeholder="trans.get('keys.vi_du')+': 50'"
-                               class="form-control mb-4">
-                        <!--                                                <label v-if="!course.pass_score"-->
-                        <!--                                                       class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+                               class="form-control mb-4" min="0">
+<!--                                                                        <label v-if="!course.pass_score"-->
+<!--                                                                               class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -340,7 +340,6 @@
         let DD = ten(jstimestamp.getDate());
         let HH = ten(jstimestamp.getHours());
         let II = ten(jstimestamp.getMinutes());
-        console.log(DD + '-' + MM + '-' + YYYY);
         return YYYY + '-' + MM + '-' + DD;
         // return MM + '/' + DD + '/' + YYYY;
       },
@@ -367,6 +366,24 @@
 
         if (!this.course.startdate) {
           $('.startdate_required').show();
+          return;
+        }
+
+        //validate positive number
+        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+
+        if(!rePosNum.test(this.course.pass_score)){
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if(!rePosNum.test(this.course.estimate_duration) || this.course.estimate_duration <= 0) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if(!rePosNum.test(this.course.course_budget)) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.course_budget') + ' )', this.trans.get('keys.that_bai'));
           return;
         }
 

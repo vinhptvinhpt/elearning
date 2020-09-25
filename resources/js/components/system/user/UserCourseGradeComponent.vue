@@ -75,8 +75,7 @@
                                         <td>{{ (current-1)*row+(index+1) }}</td>
                                         <td>{{ post.shortname }}</td>
                                         <td class=" mobile_hide">
-                                            <label style="cursor: pointer;color: #3a55b1;"
-                                                   @click="getGradeCourseDetail(post.course_id)">
+                                            <label style="cursor: pointer;color: #3a55b1;" @click="getGradeCourseDetail(post.course_id)">
                                                 {{post.fullname}}
                                             </label>
                                         </td>
@@ -229,18 +228,18 @@
                     });
             },
             getGradeCourseDetail(courseid) {
-                this.course_radio = courseid;
-                axios.post('/system/user/course_grade_detail', {
-                    course_id: this.course_radio,
-                    user_id: this.user_id,
-                })
-                    .then(response => {
-                        this.course_detail = response.data.detail;
-                        this.course_grade = response.data.course_grade;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
+                // this.course_radio = courseid;
+                // axios.post('/system/user/course_grade_detail', {
+                //     course_id: this.course_radio,
+                //     user_id: this.user_id,
+                // })
+                //     .then(response => {
+                //         this.course_detail = response.data.detail;
+                //         this.course_grade = response.data.course_grade;
+                //     })
+                //     .catch(error => {
+                //         console.log(error.response.data);
+                //     });
             },
             getGradeByCourse(paged) {
                 axios.post('/system/user/grade_course_total', {

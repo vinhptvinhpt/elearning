@@ -319,6 +319,29 @@
           return;
         }
 
+        //validate positive number
+        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+
+        if(!rePosNum.test(this.course.pass_score)){
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if(!rePosNum.test(this.course.estimate_duration) || this.course.estimate_duration <= 0) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if(!rePosNum.test(this.course.total_date_course)) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.total_date_course') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if(!rePosNum.test(this.course.course_budget)) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.course_budget') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
         var allow_reg = 0;
         if (this.course.allow_register) {
           allow_reg = 1;

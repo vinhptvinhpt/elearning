@@ -16,6 +16,7 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
                     <h5 class="hk-sec-title" v-if="type == 1">{{trans.get('keys.khung_nang_luc_theo_thoi_gian')}}</h5>
+                    <h5 class="hk-sec-title" v-else-if="type == 2">{{trans.get('keys.khung_nang_luc_nhom')}}</h5>
                     <h5 class="hk-sec-title" v-else>{{trans.get('keys.khung_nang_luc')}}</h5>
                     <div class="row mb-4" v-if="slug_can('tms-system-administrator-grant')">
                         <div class="col-sm">
@@ -174,13 +175,12 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('trainingBack') == '1') {
                   this.current = Number(sessionStorage.getItem('trainingPage'));
                   this.row = Number(sessionStorage.getItem('trainingPageSize'));
                   this.keyword = sessionStorage.getItem('trainingKeyWord');
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 this.getTrainnings();
             },
@@ -224,8 +224,10 @@
             }
         },
         mounted() {
+          sessionStorage.clear();
         },
         destroyed() {
+          sessionStorage.setItem('trainingBack', '1');
           sessionStorage.setItem('trainingPage', this.current);
           sessionStorage.setItem('trainingPageSize', this.row);
           sessionStorage.setItem('trainingKeyWord', this.keyword);

@@ -56,7 +56,7 @@
                       <label>
                         <treeselect v-model="organization_id"
                                     :multiple="false" :options="optionsOrganize"
-                                    @input="getUser(1)"/>
+                                    @input="back == '1' ? getUser(current) : getUser(1)"/>
                       </label>
                     </div>
                   </div>
@@ -155,7 +155,7 @@
                     </tfoot>
                   </table>
                   <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
-                    <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
+                    <v-pagination v-model="current" @input="onPageChange()" :page-count="totalPages"
                                   :classes=$pagination.classes
                                   :labels=$pagination.labels></v-pagination>
                   </div>
@@ -208,6 +208,7 @@
           }
         ],
         organization_id: 0,
+        back:''
       }
     },
     methods: {
@@ -322,6 +323,9 @@
         if(this.type == 'student'){
             this.urlListUser = '/education/user_student/list_trash';
         }*/
+        if(paged > 1){
+          this.back = '';
+        }
         axios.post(this.urlListUser, {
           page: paged || this.current,
           keyword: this.keyword,
@@ -341,6 +345,14 @@
           });
       },
       onPageChange() {
+        this.back = sessionStorage.getItem('userTrashBack');
+        if(this.back == '1') {
+          this.current = Number(sessionStorage.getItem('userTrashPage'));
+          this.row = Number(sessionStorage.getItem('userTrashPageSize'));
+          this.keyword = sessionStorage.getItem('userTrashKeyWord');
+          this.role_name = sessionStorage.getItem('userTrashRole');
+          this.organization_id = sessionStorage.getItem('userTrashOrganization');
+        }
         this.getUser();
       },
       restoreUser(user_id) {
@@ -427,6 +439,15 @@
       //this.getUser();
       this.getListRole();
       this.selectOrganization();
+    },
+    destroyed() {
+      sessionStorage.setItem('userTrashBack', '1');
+      sessionStorage.setItem('userTrashPage', this.current);
+      sessionStorage.setItem('userTrashPageSize', this.row);
+      sessionStorage.setItem('userTrashKeyWord', this.keyword);
+      sessionStorage.setItem('userTrashRole', this.role_name);
+      sessionStorage.setItem('userTrashOrganization', this.organization_id);
+      this.back = '';
     }
   }
 </script>
