@@ -30,7 +30,7 @@
                 <div>
                     <div class="accordion" id="accordion_1">
 
-                        <div v-if="checkPermission(user_role, item.position, 'add')" class="card">
+                        <div v-if="checkPermission(user_role, null, 'add')" class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1"
                                    aria-expanded="true">
@@ -386,6 +386,10 @@
               }
 
               let layer_permission = false;
+              if (row_role === null) {
+                return action_permission;
+              }
+
               if (role === 'manager') {
                 if (row_role === 'leader' || row_role === 'employee') {
                   layer_permission = true
