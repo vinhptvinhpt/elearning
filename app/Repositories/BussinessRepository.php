@@ -2969,7 +2969,18 @@ class BussinessRepository implements IBussinessInterface
         $check->unlocked = 0;
         $notification = TmsNotification::query()
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+            ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
             ->where('tms_nofitications.id', $id)
+            ->select(
+                'tms_nofitications.date_quiz',
+                'tms_nofitications.content',
+                'tms_user_detail.fullname as student_name',
+                'mdl_course.shortname',
+                'mdl_course.fullname',
+                'mdl_course.startdate',
+                'mdl_course.enddate',
+                'mdl_course.course_place'
+            )
             ->first();
         if (isset($notification)) {
             //lưu vào date_quiz trong tms_nofitications làm flag đã approve
@@ -2979,25 +2990,14 @@ class BussinessRepository implements IBussinessInterface
             $check->startdate =  $notification->startdate;
             $check->enddate =  $notification->enddate;
             $check->course_place =  $notification->course_place;
+
             if ($check_unlocked == 1) {
                 $check->unlocked = 1;
             } else {
+                $check->student_name = $notification->student_name;
                 if (strlen($notification->content) != 0) {
                     $content = json_decode($notification->content);
-
-                    $check->student_name = $content->object_name;
                     $check->quiz_name = $content->quiz_name;
-
-//                    if ($content->quiz_id && $content->quiz_id != 0) {
-//                        $attempt_data = MdlQuiz::query()
-//                            ->leftJoin('mdl_quiz_overrides', 'mdl_quiz.id', '=', 'mdl_quiz_overrides.quiz')
-//                            ->select(
-//                                'mdl_quiz.attempts as base_attempt',
-//                                'mdl_quiz_overrides.attempts as updated_attempt'
-//                            )
-//                            ->get();
-//
-//                    }
                 }
             }
         }
