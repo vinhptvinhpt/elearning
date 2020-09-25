@@ -28,6 +28,7 @@
     <link href="/assets/vendors/jquery-toggles/css/toggles.css" rel="stylesheet">
     <link href="/assets/vendors/jquery-toggles/css/themes/toggles-light.css" rel="stylesheet">
     <link href="/assets/dist/css/font-awesome.all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/jquery-ui.min.css">
 
     <link href="/assets/vendors/dropzone/dist/dropzone.css" rel="stylesheet">
     <link href="/assets/vendors/dropify/dist/css/dropify.min.css" rel="stylesheet">
@@ -91,6 +92,7 @@
 <script src="/assets/vendors/dropzone/dist/dropzone.js"></script>
 <script src="/assets/dist/js/form-file-upload-data.js"></script>
 <script src="/assets/vendors/datatables.net/js/jquery.dataTables.min.js"></script>
+<script src="/js/jquery-ui.min.js"></script>
 
 <script src="/assets/vendors/dropify/dist/js/dropify.min.js"></script>
 <script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>
