@@ -1059,7 +1059,11 @@
         "ban_da_tu_choi_khoa_hoc_nay": "You have denied this course",
         "edit_survey_question": "Edit question",
         "khung_nang_luc_nhom": "Competency framework group",
-        "danh_sach_khoa_hoc_kha_dung": "Available courses"
+        "danh_sach_khoa_hoc_kha_dung": "Available courses",
+        "pass_score": "Passing Grade",
+        "estimate_duration": "Estimate time",
+        "course_budget": "Course budget",
+        "total_date_course": "Number of learning session"
     },
     "vi.keys": {
         "language": "",
@@ -2112,6 +2116,10 @@
         "ban_da_tu_choi_khoa_hoc_nay": "Bạn đã từ chối khóa học này",
         "edit_survey_question": "Chỉnh sửa câu hỏi",
         "khung_nang_luc_nhom": "Khung năng lực nhóm",
-        "danh_sach_khoa_hoc_kha_dung": "Danh sách khóa học khả dụng"
+        "danh_sach_khoa_hoc_kha_dung": "Danh sách khóa học khả dụng",
+        "pass_score": "Điểm qua môn",
+        "estimate_duration": "Thời gian dự kiến",
+        "course_budget": "Chi phí",
+        "total_date_course": "Số buổi trong khóa học"
     }
 }

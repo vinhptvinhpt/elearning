@@ -128,15 +128,15 @@ class CourseController extends Controller
                 'shortname' => 'code',
                 'fullname' => 'text',
                 'description' => 'longtext',
-                'pass_score' => 'number',
+                'pass_score' => 'positivenumber',
                 'category_id' => 'number',
                 'sample' => 'number',
                 'course_place' => 'text',
                 'allow_register' => 'number',
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
-                'estimate_duration' => 'number',
-                'course_budget' => 'decimal',
+                'estimate_duration' => 'positivenumber',
+                'course_budget' => 'positivenumber',
                 'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
