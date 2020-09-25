@@ -586,12 +586,13 @@ class MailController extends Controller
                                         'grade' => '',
                                     );
                                     $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                                } else {
+                                    $send = 0;
                                 }
                             }
 
                             if ($send == 1) {
                                 //send mail can not continue if has fake email
-
                                 $startdate = strlen($itemNotif->startdate) != 0 && $itemNotif->startdate != 0 ? date('Y jS F g:iA', $itemNotif->startdate) : 'N/A';
                                 $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->enddate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
 
@@ -607,8 +608,10 @@ class MailController extends Controller
                                     $itemNotif->date_quiz,
                                     $quiz_data
                                 ));
+                                $this->update_notification($itemNotif, \App\TmsNotification::SENT);
+                            } else {
+                                $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
                             }
-                            $this->update_notification($itemNotif, \App\TmsNotification::SENT);
                         } else {
                             $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
                         }
