@@ -639,6 +639,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/trainning/adduserorganizationtotrainning', 'Backend\TrainningController@apiAddUserOrganiToTrainning');
     Route::get('/api/trainning/testapi', 'Backend\TrainningController@testAPI');
     Route::post('/api/trainning/saveorder', 'Backend\TrainningController@apiSaveOrder');
+    Route::post('/api/trainning/api_training_course', 'Backend\TrainningController@apiGetListTrainingCourse');
+    Route::post('/api/trainning/add_course_to_training', 'Backend\TrainningController@apiAddCourseToTraining');
+    Route::post('/api/trainning/remove_course_from_training', 'Backend\TrainningController@apiRemoveCourseFromTraining');
 
     Route::get('/report', 'Backend\ReportController@viewReport')->name('report.view');
     Route::post('/report/get_city_by_district', 'Backend\ReportController@apiGetCityByDistrict');

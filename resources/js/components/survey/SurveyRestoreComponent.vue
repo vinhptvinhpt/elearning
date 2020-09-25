@@ -183,14 +183,13 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
-                  this.current = Number(sessionStorage.getItem('surveyPage'));
-                  this.row = Number(sessionStorage.getItem('surveyPageSize'));
-                  this.keyword = sessionStorage.getItem('surveyKeyWord');
+                // let back = this.getParamsBackPage();
+                if(sessionStorage.getItem('surveyRestoreBack') == '1') {
+                  this.current = Number(sessionStorage.getItem('surveyRestorePage'));
+                  this.row = Number(sessionStorage.getItem('surveyRestorePageSize'));
+                  this.keyword = sessionStorage.getItem('surveyRestoreKeyWord');
 
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 this.getSurveys();
             },
@@ -227,9 +226,9 @@
                 return false;
             },
             deleteSurvey(id) {
-                sessionStorage.setItem('surveyPage', this.current);
-                sessionStorage.setItem('surveyPageSize', this.row);
-                sessionStorage.setItem('surveyKeyWord', this.keyword);
+                sessionStorage.setItem('surveyRestorePage', this.current);
+                sessionStorage.setItem('surveyRestorePageSize', this.row);
+                sessionStorage.setItem('surveyRestoreKeyWord', this.keyword);
                 let current_pos = this;
                 swal({
                     title: this.trans.get('keys.ban_muon_khoi_phuc_survey_nay'),
@@ -264,11 +263,13 @@
         },
         mounted() {
             this.getSurveys();
+            sessionStorage.clear();
         },
         destroyed() {
-          sessionStorage.setItem('surveyPage', this.current);
-          sessionStorage.setItem('surveyPageSize', this.row);
-          sessionStorage.setItem('surveyKeyWord', this.keyword);
+          sessionStorage.setItem('surveyRestoreBack', '1');
+          sessionStorage.setItem('surveyRestorePage', this.current);
+          sessionStorage.setItem('surveyRestorePageSize', this.row);
+          sessionStorage.setItem('surveyRestoreKeyWord', this.keyword);
         }
     }
 </script>

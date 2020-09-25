@@ -20,16 +20,6 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     curl
-	
-RUN apt-get update \
- && apt-get install -y libcurl4-openssl-dev libxml2-dev git \
-  && git clone https://github.com/php/pecl-search_engine-solr.git --depth=1 \
-  && cd pecl-search_engine-solr \
-  && /usr/local/bin/phpize && ./configure && make && make install \
-  && cd .. && rm -rf pecl-search_engine-solr \
-  && apt-get remove --purge -y git \
-  && rm -r /var/lib/apt/lists/* \
-  && docker-php-ext-enable solr
 
 # Clear cache
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -39,8 +29,6 @@ RUN docker-php-ext-install pdo_mysql mbstring zip exif pcntl
 RUN docker-php-ext-configure gd --with-gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ --with-png-dir=/usr/include/
 RUN docker-php-ext-install gd
 RUN docker-php-ext-install mysqli
-
-RUN pecl install solr-2.5.0
 
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer

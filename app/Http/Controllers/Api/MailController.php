@@ -586,12 +586,13 @@ class MailController extends Controller
                                         'grade' => '',
                                     );
                                     $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                                } else {
+                                    $send = 0;
                                 }
                             }
 
                             if ($send == 1) {
                                 //send mail can not continue if has fake email
-
                                 $startdate = strlen($itemNotif->startdate) != 0 && $itemNotif->startdate != 0 ? date('Y jS F g:iA', $itemNotif->startdate) : 'N/A';
                                 $enddate = strlen($itemNotif->enddate) != 0 && $itemNotif->enddate != 0  ? date('Y jS F g:iA', $itemNotif->enddate) : 'N/A';
 
@@ -607,8 +608,10 @@ class MailController extends Controller
                                     $itemNotif->date_quiz,
                                     $quiz_data
                                 ));
+                                $this->update_notification($itemNotif, \App\TmsNotification::SENT);
+                            } else {
+                                $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
                             }
-                            $this->update_notification($itemNotif, \App\TmsNotification::SENT);
                         } else {
                             $this->update_notification($itemNotif, \App\TmsNotification::SEND_FAILED);
                         }
@@ -914,6 +917,14 @@ class MailController extends Controller
                             $tms_notifLog->course_id = $itemNotification->course_id;
                             $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
 
+
+                            //Chế biến log cho loại request_more_attempt
+
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $new_content->object_name = $fullname;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
+
                             //T&D employee = admins, send only
                             $admins =  DB::table('model_has_roles as mhr')
                                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
@@ -969,15 +980,8 @@ class MailController extends Controller
                                     }
                                 }
                             }
-
-                            $new_content = json_decode($itemNotification->content);
-                            $new_content->parent_id = $itemNotification->id;
-                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
-                            $new_content = json_decode($itemNotification->content);
-                            $new_content->parent_id = $itemNotification->id;
-                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
@@ -1680,6 +1684,7 @@ class MailController extends Controller
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE] == TmsConfigs::ENABLE) {
 
+            $now = time();
             $next_3_days = time() + 86400 * 3;
 
             //Type 2
@@ -1693,22 +1698,44 @@ class MailController extends Controller
 
 
             $userNeedRemindExpired =
-                //Type 1 limit using sub query wit same condition
-                DB::query()->fromSub(function ($query) use ($next_3_days) {
+                //Type 1 limit using sub query with same condition
+                DB::query()->fromSub(function ($query) use ($next_3_days, $now) {
                     $query->from('mdl_user')
-                        ->whereNotIn('id', function ($query) {
+
+                        ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
+                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                        ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                        ->leftJoin('course_completion', function ($join) {
+                            $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                            $join->on('mdl_user.id', '=', 'course_completion.userid');
+                        })
+
+                        ->whereNotIn('mdl_user.id', function ($query) {
                             //check exist in table tms_nofitications
                             $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
                         })
-                        ->whereIn('id', function ($query) use ($next_3_days) {
-                            $query->select('userid')
-                                ->from('mdl_course_completions')
-                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-                                ->where('mdl_course.category', 3)
-                                ->where('mdl_course.enddate', "<", $next_3_days)
-                                ->whereNull('mdl_course_completions.timecompleted');
-                        })
-                        ->limit(self::DEFAULT_ITEMS_PER_SESSION);
+
+                        ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+                        ->where('mdl_course.enddate', '<', $next_3_days)
+                        ->where('mdl_course.enddate', '>', $now)
+                        ->where('mdl_course.enddate', '<>', '')
+                        ->where('mdl_course.deleted', '=', 0)
+                        ->whereNotNull('mdl_course.enddate')
+
+//                        ->whereIn('id', function ($query) use ($next_3_days) {
+//                            $query->select('userid')
+//                                ->from('mdl_course_completions')
+//                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+//                                ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
+//                                ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+//                                ->where('mdl_course.enddate', '<', $next_3_days)
+//                                ->where('mdl_course.enddate', '<>', '')
+//                                ->whereNotNull('mdl_course.enddate')
+//                                ->whereNull('mdl_course_completions.timecompleted');
+//                        })
+
+                        ->limit(self::DEFAULT_ITEMS_PER_SESSION)
+                        ->select('mdl_user.*');
                 }, 'mdl_user')
 
                     //Type 2 limit using subquery
@@ -1717,25 +1744,48 @@ class MailController extends Controller
 
                     //Type old: query all
                     //MdlUser::query()
-                    ->whereNull('mdl_course_completions.timecompleted')
-                    ->where('mdl_course.category', 3)
-                    //->where('mdl_course.enddate', "<", $next_3_days)
+
+                    ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
+                    ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
+                    ->leftJoin('course_completion', function ($join) {
+                        $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                        $join->on('mdl_user.id', '=', 'course_completion.userid');
+                    })
+
+//                    ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
+//                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+//                    ->whereNull('mdl_course_completions.timecompleted')
+//                    // ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
+//                    ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required tru kha thu vien
+//                    ->where('mdl_course.enddate', '<', $next_3_days)
+//                    ->where('mdl_course.enddate', '<>', '')
+//                    ->whereNotNull('mdl_course.enddate')
+
                     //Check không có trong bảng notification
                     ->whereNotIn('mdl_user.id', function ($query) {
                         //check exist in table tms_nofitications
                         $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
                     })
-                    ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
-                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
+
+                    ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
+                    ->where('mdl_course.enddate', '<', $next_3_days)
+                    ->where('mdl_course.enddate', '>', $now)
+                    ->where('mdl_course.enddate', '<>', '')
+                    ->where('mdl_course.deleted', '=', 0)
+                    ->whereNotNull('mdl_course.enddate')
+
                     ->select(
                         'mdl_user.id',
                         'mdl_user.username',
                         'mdl_user.firstname',
                         'mdl_user.lastname',
                         'mdl_user.email',
-                        'mdl_course_completions.course',
-                        'mdl_course_completions.timeenrolled',
-                        'mdl_course_completions.timecompleted',
+//                        'mdl_course_completions.course',
+//                        'mdl_course_completions.timeenrolled',
+//                        'mdl_course_completions.timecompleted',
+                        'course_completion.courseid',
+                        'course_completion.timecompleted',
                         'mdl_course.shortname',
                         'mdl_course.fullname',
                         'mdl_course.startdate',
@@ -1761,7 +1811,8 @@ class MailController extends Controller
                             );
                             $element['content'] = array(
                                 array(
-                                    'course_id' => $user_item->course,
+                                    //'course_id' => $user_item->course,
+                                    'course_id' => $user_item->courseid,
                                     'course_code' => $user_item->shortname,
                                     'course_name' => $user_item->fullname,
                                     'startdate' => $user_item->startdate,
@@ -1772,7 +1823,8 @@ class MailController extends Controller
                             $data[$user_item->username] = $element;
                         } else { // user exists in array, just update content element
                             $data[$user_item->username]['content'][] = array(
-                                'course_id' => $user_item->course,
+                                //'course_id' => $user_item->course,
+                                'course_id' => $user_item->courseid,
                                 'course_code' => $user_item->shortname,
                                 'course_name' => $user_item->fullname,
                                 'startdate' => $user_item->startdate,

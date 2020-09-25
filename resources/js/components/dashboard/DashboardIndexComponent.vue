@@ -669,6 +669,7 @@
             },
         },
         mounted() {
+            sessionStorage.clear();
             this.setTimeDefault();
             this.listData();
             this.selectOrganization();

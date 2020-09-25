@@ -30,7 +30,7 @@
                 <div>
                     <div class="accordion" id="accordion_1">
 
-                        <div v-if="slug_can('tms-system-employee-add')" class="card">
+                        <div v-if="checkPermission(user_role, null, 'add')" class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1"
                                    aria-expanded="true">
@@ -159,7 +159,7 @@
                                                 <label>
                                                     <treeselect v-model="organization_id1"
                                                                 :multiple="false" :options="optionsOrganize"
-                                                                @input="getDataList(1)"/>
+                                                                @input="back == '1' ? getDataList(current) : getDataList(1)"/>
                                                 </label>
                                             </div>
                                         </div>
@@ -200,7 +200,8 @@
                                             <tr v-else v-for="(item,index) in posts">
                                                 <td>{{ (current-1)*row+(index+1) }}</td>
                                                 <td>
-                                                  <template v-if="slug_can('tms-system-user-view')">
+                                                    <!-- [VinhPT][UAT] Manager/Leader cannot view detail information of employees -->
+                                                  <!-- <template v-if="slug_can('tms-system-user-view')">
                                                     <router-link
                                                       :to="{ name: 'EditUserById', params: { user_id: item.user_id }, query: {type: 'system'} }">
                                                       {{ item.user ? item.user.fullname : '' }}
@@ -208,8 +209,13 @@
                                                   </template>
                                                   <template v-else>
                                                     {{ item.user ? item.user.fullname : '' }}
-                                                  </template>
+                                                  </template> -->
+                                                    <router-link
+                                                        :to="{ name: 'EditUserById', params: { user_id: item.user_id }, query: {type: 'system'} }">
+                                                        {{ item.user ? item.user.fullname : '' }}
+                                                    </router-link>
                                                 </td>
+
                                                 <td>{{ item.organization ? item.organization.name : '' }}</td>
                                                 <td v-if="item.position === 'manager'">
                                                     <label class="badge badge-dark">{{ trans.get('keys.manager') }}</label>
@@ -227,14 +233,14 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
-                                                                 :class="checkEditPermission(user_role, item.position) ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
-                                                                 :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
+                                                       :class="checkPermission(user_role, item.position, 'update') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
+                                                       :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
                                                     <a href="javascript(0)"
                                                        @click.prevent="deletePost('/organization-employee/delete/'+item.id)"
                                                        :title="trans.get('keys.xoa_nhan_vien')"
-                                                       :class="checkEditPermission(user_role, item.position) ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user'">
+                                                       :class="checkPermission(user_role, item.position, 'delete') ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user'">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </a>
                                                 </td>
@@ -330,35 +336,72 @@
                   }
                 ],
                 organization_id1: this.organization_id,
+                back:''
             }
         },
         mounted() {
+            let organizationBack = this.getParamsBackPage();
+            if(organizationBack == 1){
+                sessionStorage.removeItem('employeeBack');
+                sessionStorage.removeItem('employeePage');
+                sessionStorage.removeItem('employeePageSize');
+                sessionStorage.removeItem('employeeKeyWord');
+                sessionStorage.removeItem('employeePosition');
+                sessionStorage.removeItem('employeeOrganization');
+            }
+            else{
+                sessionStorage.clear();
+            }
             this.selectOrganization();
         },
         destroyed() {
+            sessionStorage.setItem('employeeBack', '1');
             sessionStorage.setItem('employeePage', this.current);
             sessionStorage.setItem('employeePageSize', this.row);
             sessionStorage.setItem('employeeKeyWord', this.keyword);
             sessionStorage.setItem('employeePosition', this.position);
+            sessionStorage.setItem('employeeOrganization', this.organization_id1);
         },
         methods: {
             slug_can(permissionName) {
               return this.slugs.indexOf(permissionName) !== -1;
             },
-            checkEditPermission(role, row_role) {
-                if (role === 'admin' || role === 'root' || this.slug_can('tms-system-administrator-grant')) {
-                  return true
-                }
-                if (role === 'manager') {
-                  if (row_role === 'leader' || row_role === 'employee') {
-                    return true
-                  }
-                } else if (role === 'leader') {
-                  if (row_role === 'employee') {
-                    return true
-                  }
-                }
+            checkPermission(role, row_role, action) {
+
+              if (role === 'admin' || role === 'root' || this.slug_can('tms-system-administrator-grant')) {
+                return true
+              }
+
+              let action_permission = false;
+              if (action === 'update') {
+                action_permission = this.slug_can('tms-system-employee-edit');
+              } else if (action === 'delete') {
+                action_permission = this.slug_can('tms-system-employee-deleted');
+              } else if (action === 'add') {
+                action_permission = this.slug_can('tms-system-employee-add');
+              }
+
+              if (!action_permission) {
                 return false;
+              }
+
+              let layer_permission = false;
+              if (row_role === null) {
+                return action_permission;
+              }
+
+              if (role === 'manager') {
+                if (row_role === 'leader' || row_role === 'employee') {
+                  layer_permission = true
+                }
+              } else if (role === 'leader') {
+                if (row_role === 'employee') {
+                  layer_permission = true
+                }
+              }
+
+              return action_permission && layer_permission;
+
             },
             // selectOrganizationItem(input_id){
             //   this.employee.input_organization_id = input_id;
@@ -433,6 +476,9 @@
             //     })
             // },
             getDataList(paged) {
+              if(paged > 1){
+                this.back = '';
+              }
               this.$route.params.page = undefined;
               axios.post('/organization-employee/list', {
                     page: paged || this.current,
@@ -511,15 +557,15 @@
             //     })
             // },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1') {
+                // let back = this.getParamsBackPage();
+                this.back = sessionStorage.getItem('employeeBack');
+                if(this.back == '1') {
                   this.current = Number(sessionStorage.getItem('employeePage'));
                   this.row = Number(sessionStorage.getItem('employeePageSize'));
                   this.keyword = sessionStorage.getItem('employeeKeyWord');
                   this.position = sessionStorage.getItem('employeePosition');
-
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                  this.organization_id1 = sessionStorage.getItem('employeeOrganization');
+                  // this.$route.params.back_page= null;
                 }
                 let organization_id_string = this.organization_id.toString();
                 if (this.organization_id.length !== 0) {
@@ -534,10 +580,10 @@
                 }
             },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+              return this.$route.params.organization_back;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+              this.$route.params.organization_back = value;
             },
             deletePost(url) {
                 sessionStorage.setItem('employeePage', this.current);

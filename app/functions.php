@@ -2639,6 +2639,21 @@ function validate_fails($request, $param)
                     //array_push($check, $key);
                     break;
 
+                case 'positivenumber':
+                    $validator = Validator::make($request->all(), [
+                        $key => [
+                            "regex:/^([0]{1}\.{1}[0-9]+|[1-9]{1}[0-9]*\.{1}[0-9]+|[0-9]+|0)$/i"
+                        ],
+                    ]);
+                    if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
+                        return [
+                            'key' => $key,
+                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
+                            'message' => $message
+                        ];
+                    //array_push($check, $key);
+                    break;
+
                 case 'decimal':
                     $validator = Validator::make($request->all(), [
                         $key => [

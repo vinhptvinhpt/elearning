@@ -8,7 +8,22 @@
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
                       <li class="breadcrumb-item">
-                        <router-link :to="{ name: 'TrainningIndex',params:{back_page: '1'} }">
+                        <router-link v-if="trainning.style == 1"
+                                     :to="{ path: '/tms/trainning/list',
+                                  name: 'TrainningIndex',
+                                  query: { type: trainning.style } }">
+                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                        </router-link>
+                        <router-link v-else-if="trainning.style == 2"
+                                     :to="{ path: '/tms/trainning/group',
+                                  name: 'TrainningGroupIndex',
+                                  query: { type: trainning.style } }">
+                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                        </router-link>
+                        <router-link v-else-if="trainning.style == 0"
+                                     :to="{ path: '/tms/trainning/certification',
+                                   name: 'TrainningCertificationIndex',
+                                   query: { type: trainning.style } }">
                           {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                         </router-link>
                       </li>
@@ -316,7 +331,38 @@
                                     <v-pagination v-model="current" @input="onPageChange" :page-count="totalPages"
                                                   :classes=$pagination.classes
                                                   :labels=$pagination.labels></v-pagination>
+
                                 </div>
+                              <div class="form-row text-left">
+                                <div class="col-12 form-group">
+                                  <div class="button-list text-right">
+                                    <router-link v-if="trainning.style == 1"
+                                                 :to="{ path: '/tms/trainning/list',
+                                  name: 'TrainningIndex',
+                                  params:{back_page: '1'},
+                                  query: { type: trainning.style } }"
+                                                 class="btn btn-danger btn-sm">
+                                      {{ trans.get('keys.huy') }}
+                                    </router-link>
+                                    <router-link v-else-if="trainning.style == 2"
+                                                 :to="{ path: '/tms/trainning/group',
+                                  name: 'TrainningGroupIndex',
+                                  params:{back_page: '1'},
+                                  query: { type: trainning.style } }"
+                                                 class="btn btn-danger btn-sm">
+                                      {{ trans.get('keys.huy') }}
+                                    </router-link>
+                                    <router-link v-else-if="trainning.style == 0"
+                                                 :to="{ path: '/tms/trainning/certification',
+                                   name: 'TrainningCertificationIndex',
+                                   params:{back_page: '1'},
+                                   query: { type: trainning.style } }"
+                                                 class="btn btn-danger btn-sm">
+                                      {{ trans.get('keys.huy') }}
+                                    </router-link>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                         </div>
                     </div>
@@ -343,7 +389,6 @@
                 totalPages: 0,
                 total_user: 0,
                 row: 10,
-                trainning: 0,
                 users_out_trainning: [],
                 row_out: 10,
                 total_out: 0,
@@ -369,6 +414,20 @@
                   }
                 ],
                 organization_id1: 0,
+                trainning: {
+                  code: '',
+                  name: '',
+                  style: 1,
+                  role_id: 0,
+                  organization_id: 0,
+                  run_cron: 1,
+                  auto_certificate: 1,
+                  auto_badge: 1,
+                  time_start: '',
+                  time_end: '',
+                  logo: '',
+                  description: ''
+                },
             }
         },
         methods: {
@@ -653,12 +712,22 @@
                 .catch(error => {
                   $('.content_search_box').removeClass('loadding');
                 })
-            }
+            },
+            getDetailTrainning() {
+              axios.get('/api/trainning/detail/' + this.trainning_id)
+                .then(response => {
+                  this.trainning = response.data;
+                })
+                .catch(error => {
+                  console.log(error);
+                });
+            },
         },
         mounted() {
             this.listOrganization();
             this.selectOrganization();
             this.selectOrganization1();
+            this.getDetailTrainning();
         },
         destroyed() {
             sessionStorage.setItem('userListPage', this.current);

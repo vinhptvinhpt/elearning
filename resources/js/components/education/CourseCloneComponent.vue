@@ -393,6 +393,26 @@
           $('.startdate_required').show();
           return;
         }
+
+        //validate positive number
+        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+
+        if (!rePosNum.test(this.estimate_duration)|| this.estimate_duration <= 0) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+        if (!rePosNum.test(this.pass_score)) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
+
+        if (!rePosNum.test(this.course_budget)) {
+          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.course_budget') + ' )', this.trans.get('keys.that_bai'));
+          return;
+        }
+
         // if (!this.enddate) {
         //     $('.enddate_required').show();
         //     return;
@@ -436,7 +456,6 @@
         this.formData.append('allow_register', allow_reg);
         this.formData.append('sample', 0);// truyền giá trị để nhận biết đây không phải khóa học mẫu
         this.formData.append('estimate_duration', this.estimate_duration);
-        this.formData.append('course_budget', this.course_budget);
         this.formData.append('course_budget', this.course_budget);
         this.formData.append('access_ip', this.string_ip);
         var is_toeic = this.is_toeic ? 1 : 0;

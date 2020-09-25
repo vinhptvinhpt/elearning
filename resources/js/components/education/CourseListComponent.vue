@@ -57,12 +57,14 @@
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="startdate" :config="options" :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                                            <date-picker v-model="startdate" :config="options"
+                                                         :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                                         </div>
                                     </div>
                                     <div class="col-sm-3">
                                         <div class="dataTables_length">
-                                            <date-picker v-model="enddate" :config="options" :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                                            <date-picker v-model="enddate" :config="options"
+                                                         :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                                         </div>
                                     </div>
                                     <!--                  <div class="fillterConfirm col-sm-3" style="display: inline-block;">-->
@@ -74,10 +76,22 @@
                                     <!--                      v-model="filter_select">-->
                                     <!--                    </v-select>-->
                                     <!--                  </div>-->
+                                    <!--                                    <div class="col-sm-3">-->
+                                    <!--                                        <div class="dataTables_length">-->
+                                    <!--                                            <v-select-->
+                                    <!--                                                    @input="selectCourse()"-->
+                                    <!--                                                    :options="courseSelectOptions"-->
+                                    <!--                                                    :reduce="courseSelectOption => courseSelectOption.id"-->
+                                    <!--                                                    :placeholder="this.trans.get('keys.khoa_hoc')"-->
+                                    <!--                                                    :filter-by="myFilterBy"-->
+                                    <!--                                                    v-model="courseSearch">-->
+                                    <!--                                            </v-select>-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </div>-->
                                     <div class="col-sm-6">
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
-                                                <input v-model="keyword" type="text" class="form-control"
+                                                <input v-model="keyword" type="text" class="form-control" id="tags"
                                                        :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
                                                 <button type="button" id="btnFilter" class="btn btn-primary"
                                                         style="margin-left: 5px" @click="getCourses(1)">
@@ -86,10 +100,10 @@
                                             </div>
                                         </form>
                                     </div>
-<!--                                  <div class="col-sm-6">-->
-<!--                                    <p id="logic-warning" class="text-danger code_error hide">-->
-<!--                                      {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>-->
-<!--                                  </div>-->
+                                    <!--                                  <div class="col-sm-6">-->
+                                    <!--                                    <p id="logic-warning" class="text-danger code_error hide">-->
+                                    <!--                                      {{trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc')}}</p>-->
+                                    <!--                                  </div>-->
                                 </div>
 
                                 <div class="row">
@@ -139,8 +153,10 @@
                                             <th style="width: 19%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.bat_dau')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
-<!--                                            <th class="text-center mobile_hide">{{trans.get('keys.diem_qua_mon')}}</th>-->
-                                            <th class="text-center mobile_hide">{{trans.get('keys.cap_nhat_lan_cuoi')}}</th>
+                                            <!--                                            <th class="text-center mobile_hide">{{trans.get('keys.diem_qua_mon')}}</th>-->
+                                            <th class="text-center mobile_hide">
+                                                {{trans.get('keys.cap_nhat_lan_cuoi')}}
+                                            </th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.trang_thai')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
@@ -159,8 +175,12 @@
                                             </td>
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
-<!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
+                                            <td v-if="course.username && course.username.length > 0"
+                                                class="text-center mobile_hide"><a
+                                                    style="cursor: default; color: #007bff;"
+                                                    :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{
+                                                course.username }}</a></td>
                                             <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible == 1">
@@ -215,7 +235,7 @@
                                                 <router-link :title="trans.get('keys.them_nguoi_dung_ngoai_le')"
                                                              :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'UserCourseExceptionEdit', params: { id: course.id,come_from: 'online',course_name:course.fullname } }">
-                                                  <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>
+                                                    <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>
                                                 </router-link>
 
                                                 <button v-if="slug_can('tms-educate-exam-online-deleted')"
@@ -280,7 +300,9 @@
                 },
                 lms_url: '',
                 filter_select: '',
-                filterSelectOptions: []
+                filterSelectOptions: [],
+                courseSearch: '',
+                courseSelectOptions: []
             }
         },
         filters: {
@@ -293,8 +315,83 @@
             }
         },
         methods: {
+            getCourseSelectOptions() {
+                axios.post(this.urlGetList, {
+                    row: 0,
+                    sample: 0,
+                })
+                    .then(response => {
+                        let additionalCities = [];
+                        response.data.forEach(function (cityItem) {
+                            let newCity = {
+                                label: cityItem.shortname + ' - ' + cityItem.fullname,
+                                data_search: cityItem.fullname,
+                                id: cityItem.id
+                            };
+                            additionalCities.push(newCity);
+                        });
+                        this.courseSelectOptions = additionalCities;
+                        this.loadAutoComplete();
+                    })
+                    .catch(error => {
+                        //console.log(error.response.data);
+                    });
+            },
+            loadAutoComplete() {
+                $("#tags").autocomplete({
+                    source: this.lightWell,
+                    minLength: 2,
+                    select: function (e, ui) {
+                        this.keyword = ui.item.data_search;
+                        window.location.href = '/lms/course/view.php?id=' + ui.item.id;
+                    },
+                    change: function (e, ui) {
+                        // alert(ui.item.value);
+
+                    }
+                });
+            },
+            lightWell(request, response) {
+                function hasMatch(s) {
+                    return s.toLowerCase().indexOf(request.term.toLowerCase()) !== -1;
+                }
+
+                function convertUtf8(str) {
+                    str = str.toLowerCase();
+                    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+                    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+                    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+                    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+                    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+                    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+                    str = str.replace(/đ/g, "d");
+                    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+                    str = str.replace(/ + /g, " ");
+                    str = str.trim();
+                    return str;
+                }
+
+                var i, l, obj, matches = [];
+
+                if (request.term === "") {
+                    response([]);
+                    return;
+                }
+
+                for (i = 0, l = this.courseSelectOptions.length; i < l; i++) {
+                    obj = this.courseSelectOptions[i];
+                    if (hasMatch(obj.label) || hasMatch(convertUtf8(obj.data_search))) {
+                        matches.push(obj);
+                    }
+                }
+                response(matches);
+            },
+            selectCourse() {
+                console.log(this.courseSearch);
+                // window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
+            },
             capitalizeFirstLetter(string) {
-              return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
+                return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
@@ -338,24 +435,24 @@
                 // $('#logic-warning').hide();
                 let has_startdate = false;
                 let has_enddate = false;
-                if(this.startdate !== null && this.startdate !== undefined){
-                  has_startdate = true;
+                if (this.startdate !== null && this.startdate !== undefined) {
+                    has_startdate = true;
                 }
-                if(this.enddate !== null && this.enddate !== undefined){
-                  has_enddate = true;
+                if (this.enddate !== null && this.enddate !== undefined) {
+                    has_enddate = true;
                 }
                 if (has_startdate && has_enddate) {
-                  let startDate_stamp = Date.parse(new Date(this.startdate.split("-").reverse().join("-")));
-                  let endDate_stamp = Date.parse(new Date(this.enddate.split("-").reverse().join("-")));
+                    let startDate_stamp = Date.parse(new Date(this.startdate.split("-").reverse().join("-")));
+                    let endDate_stamp = Date.parse(new Date(this.enddate.split("-").reverse().join("-")));
 
-                  if (startDate_stamp > endDate_stamp) {
-                    toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
-                    // $('#logic-warning').show();
-                    return;
-                  }
-                  // } else {
-                  //   $('#logic-warning').hide();
-                  // }
+                    if (startDate_stamp > endDate_stamp) {
+                        toastr['error'](this.trans.get('keys.vui_long_nhap_ngay_bat_dau_nho_hon_hoac_bang_ngay_ket_thuc'), this.trans.get('keys.thong_bao'));
+                        // $('#logic-warning').show();
+                        return;
+                    }
+                    // } else {
+                    //   $('#logic-warning').hide();
+                    // }
                 }
                 axios.post(this.urlGetList, {
                     page: paged || this.current,
@@ -378,26 +475,25 @@
                     });
             },
             onPageChange() {
-                let back = this.getParamsBackPage();
-                if(back == '1'){
-                  this.current = Number(sessionStorage.getItem('courseListPage'));
-                  this.row = Number(sessionStorage.getItem('courseListPageSize'));
-                  this.category_id = Number(sessionStorage.getItem('courseListCategory'));
-                  this.status_course = Number(sessionStorage.getItem('courseListCourseStatus'));
-                  this.startdate = sessionStorage.getItem('courseListStartDate');
-                  this.enddate = sessionStorage.getItem('courseListEndDate');
-                  this.keyword = sessionStorage.getItem('courseListKeyWord');
+                // let back = this.getParamsBackPage();
+                if (sessionStorage.getItem('courseListBack') == '1') {
+                    this.current = Number(sessionStorage.getItem('courseListPage'));
+                    this.row = Number(sessionStorage.getItem('courseListPageSize'));
+                    this.category_id = Number(sessionStorage.getItem('courseListCategory'));
+                    this.status_course = Number(sessionStorage.getItem('courseListCourseStatus'));
+                    this.startdate = sessionStorage.getItem('courseListStartDate');
+                    this.enddate = sessionStorage.getItem('courseListEndDate');
+                    this.keyword = sessionStorage.getItem('courseListKeyWord');
 
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                    // this.$route.params.back_page= null;
                 }
                 this.getCourses();
             },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+                return this.$route.params.back_page;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+                this.$route.params.back_page = value;
             },
             deletePost(id) {
                 // sessionStorage.setItem('courseListPage', this.current);
@@ -423,8 +519,8 @@
                             loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                if(current_pos.courses.length == 1){
-                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                if (current_pos.courses.length == 1) {
+                                    current_pos.current = current_pos.current > 1 ? current_pos.current - 1 : 1;
                                 }
                                 // current_pos.onPageChange();
                                 current_pos.getCourses(current_pos.current);
@@ -517,17 +613,21 @@
         mounted() {
             this.getCategories();
             this.getCourses();
+            this.getCourseSelectOptions();
+
             // this.fetch();
             //this.getDataForFilter();
+            sessionStorage.clear();
         },
         destroyed() {
-          sessionStorage.setItem('courseListPage', this.current);
-          sessionStorage.setItem('courseListPageSize', this.row);
-          sessionStorage.setItem('courseListCategory', this.category_id);
-          sessionStorage.setItem('courseListCourseStatus', this.status_course);
-          sessionStorage.setItem('courseListStartDate', this.startdate);
-          sessionStorage.setItem('courseListEndDate', this.enddate);
-          sessionStorage.setItem('courseListKeyWord', this.keyword);
+            sessionStorage.setItem('courseListBack', '1');
+            sessionStorage.setItem('courseListPage', this.current);
+            sessionStorage.setItem('courseListPageSize', this.row);
+            sessionStorage.setItem('courseListCategory', this.category_id);
+            sessionStorage.setItem('courseListCourseStatus', this.status_course);
+            sessionStorage.setItem('courseListStartDate', this.startdate);
+            sessionStorage.setItem('courseListEndDate', this.enddate);
+            sessionStorage.setItem('courseListKeyWord', this.keyword);
         }
     }
 

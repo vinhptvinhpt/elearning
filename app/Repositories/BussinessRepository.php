@@ -1465,6 +1465,10 @@ class BussinessRepository implements IBussinessInterface
 
         $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
 
+        if ($row == 0) {
+            return $listCourses->get();
+        }
+
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
         $listCourses = $listCourses->paginate($row);
@@ -2965,7 +2969,18 @@ class BussinessRepository implements IBussinessInterface
         $check->unlocked = 0;
         $notification = TmsNotification::query()
             ->join('mdl_course', 'mdl_course.id', '=', 'tms_nofitications.course_id')
+            ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_nofitications.sendto')
             ->where('tms_nofitications.id', $id)
+            ->select(
+                'tms_nofitications.date_quiz',
+                'tms_nofitications.content',
+                'tms_user_detail.fullname as student_name',
+                'mdl_course.shortname',
+                'mdl_course.fullname',
+                'mdl_course.startdate',
+                'mdl_course.enddate',
+                'mdl_course.course_place'
+            )
             ->first();
         if (isset($notification)) {
             //lưu vào date_quiz trong tms_nofitications làm flag đã approve
@@ -2975,25 +2990,14 @@ class BussinessRepository implements IBussinessInterface
             $check->startdate =  $notification->startdate;
             $check->enddate =  $notification->enddate;
             $check->course_place =  $notification->course_place;
+
             if ($check_unlocked == 1) {
                 $check->unlocked = 1;
             } else {
+                $check->student_name = $notification->student_name;
                 if (strlen($notification->content) != 0) {
                     $content = json_decode($notification->content);
-
-                    $check->student_name = $content->object_name;
                     $check->quiz_name = $content->quiz_name;
-
-//                    if ($content->quiz_id && $content->quiz_id != 0) {
-//                        $attempt_data = MdlQuiz::query()
-//                            ->leftJoin('mdl_quiz_overrides', 'mdl_quiz.id', '=', 'mdl_quiz_overrides.quiz')
-//                            ->select(
-//                                'mdl_quiz.attempts as base_attempt',
-//                                'mdl_quiz_overrides.attempts as updated_attempt'
-//                            )
-//                            ->get();
-//
-//                    }
                 }
             }
         }
@@ -5600,15 +5604,15 @@ class BussinessRepository implements IBussinessInterface
             return response()->json();
         }
 
-        //fix query of DatDT
+
         $listStudentsDone = DB::table('tms_user_detail as tud')
             ->join('mdl_user as u', 'u.id', '=', 'tud.user_id')
             ->join('student_certificate as sc', 'tud.user_id', '=', 'sc.userid')
-            ->leftJoin('tms_traninning_programs', 'sc.trainning_id', '=', 'tms_traninning_programs.id')
+            ->leftJoin('tms_traninning_programs as ttp', 'sc.trainning_id', '=', 'ttp.id')
             ->select(
                 'u.id as user_id',
-                'tms_traninning_programs.name as training_name',
-                'tms_traninning_programs.auto_badge as badge',
+                'ttp.name as training_name',
+                'ttp.auto_badge as badge',
                 'tud.fullname as fullname',
                 'tud.email as email',
                 'u.username as username',
@@ -5627,17 +5631,17 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('tud.email', 'like', "%{$keyword}%")
                     ->orWhere('tud.cmtnd', 'like', "%{$keyword}%")
                     ->orWhere('tud.phone', 'like', "%{$keyword}%")
-                    ->orWhere('tms_traninning_programs.name', 'like', "%{$keyword}%")
+                    ->orWhere('ttp.name', 'like', "%{$keyword}%")
                     ->orWhere('sc.code', 'like', "%{$keyword}%")
                     ->orWhere('u.username', 'like', "%{$keyword}%");
             });
         }
 
         if ($training_id > 0) {
-            $listStudentsDone = $listStudentsDone->where('tms_traninning_programs.id', '=', $training_id);
+            $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
         }
 
-//        $listStudentsDone = $listStudentsDone->groupBy('u.id');
+        $listStudentsDone = $listStudentsDone->orderBy('sc.id','desc');
 
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
@@ -6015,7 +6019,16 @@ class BussinessRepository implements IBussinessInterface
         $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
+        $listUsers = $listUsers
+            ->select(
+                'tms_user_detail.fullname as fullname',
+                'tms_user_detail.email as email',
+                'mdl_user.username as username',
+                'tms_user_detail.user_id as user_id',
+                'tms_user_detail.cmtnd as cmtnd',
+                'tms_user_detail.confirm as confirm',
+                'tms_user_detail.working_status'
+            )
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
@@ -6081,7 +6094,16 @@ class BussinessRepository implements IBussinessInterface
         $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm')
+        $listUsers = $listUsers
+            ->select(
+                'tms_user_detail.fullname as fullname',
+                'tms_user_detail.email as email',
+                'mdl_user.username as username',
+                'tms_user_detail.user_id as user_id',
+                'tms_user_detail.cmtnd as cmtnd',
+                'tms_user_detail.confirm as confirm',
+                'tms_user_detail.working_status'
+            )
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
 
@@ -7954,15 +7976,11 @@ class BussinessRepository implements IBussinessInterface
             'mdl_user.username as username',
             'tms_user_detail.user_id as user_id',
             'tms_user_detail.cmtnd as cmtnd',
-            'tms_user_detail.working_status as working_status',
-            DB::raw('(select count(mhr.model_id) as user_count from tms_user_detail tud
-                inner join model_has_roles mhr on mhr.model_id = tud.user_id
-                inner join roles r on r.id = mhr.role_id
-                where tud.user_id = mdl_user.id and r.name = "student")
-                as user_count')
+            'tms_user_detail.working_status as working_status'
         )
             ->where('tms_user_detail.deleted', 0)
-            ->whereNotIn('mdl_user.username', ['admin']);
+            ->where('mdl_user.username','!=', 'admin');
+//            ->whereNotIn('mdl_user.username', ['admin']);
         if ($roles != 0) {
             $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
             $listUsers = $listUsers->where('model_has_roles.role_id', $roles);

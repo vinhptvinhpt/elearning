@@ -306,6 +306,10 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         $listCourses = $listCourses->orderBy('c.id', 'desc');
 
+        if ($row == 0) {
+            return $listCourses->get();
+        }
+
         $listCourses = $listCourses->paginate($row);
         $total = ceil($listCourses->total() / $row);
         $response = [
@@ -698,7 +702,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $param = [
                 'shortname' => 'code',
                 'description' => 'longtext',
-                'pass_score' => 'number',
+                'pass_score' => 'positivenumber',
                 'category_id' => 'number',
                 'offline' => 'number',
                 'course_place' => 'text',
@@ -706,8 +710,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 'total_date_course' => 'number',
                 'is_end_quiz' => 'number',
                 'fullname' => 'text',
-                'estimate_duration' => 'number',
-                'course_budget' => 'decimal',
+                'estimate_duration' => 'positivenumber',
+                'course_budget' => 'positivenumber',
                 'access_ip' => 'text'
             ];
             $validator = validate_fails($request, $param);
