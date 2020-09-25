@@ -555,7 +555,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
                         </li>
                         <li v-else>Line Manager: <span>Not yet update</span></li>
-                        <li>Company: <span>Easia Travel</span></li>
+                        <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
                 </div>
                 <div><a href="lms/user/edit.php"
