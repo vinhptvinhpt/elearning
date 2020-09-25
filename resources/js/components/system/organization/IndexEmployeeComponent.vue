@@ -30,7 +30,7 @@
                 <div>
                     <div class="accordion" id="accordion_1">
 
-                        <div v-if="slug_can('tms-system-employee-add')" class="card">
+                        <div v-if="checkPermission(user_role, item.position, 'add')" class="card">
                             <div class="card-header d-flex justify-content-between">
                                 <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1"
                                    aria-expanded="true">
@@ -233,14 +233,14 @@
                                                 </td>
                                                 <td class="text-center">
                                                     <router-link :title="trans.get('keys.sua_nhan_vien')"
-                                                       :class="checkEditPermission(user_role, item.position, 'update') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
+                                                       :class="checkPermission(user_role, item.position, 'update') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                        :to="{ name: 'EditEmployee', params: { id: item.id, source_page: current, view_mode: view_mode }, query: {organization_id: query_organization_id}}">
                                                         <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                     </router-link>
                                                     <a href="javascript(0)"
                                                        @click.prevent="deletePost('/organization-employee/delete/'+item.id)"
                                                        :title="trans.get('keys.xoa_nhan_vien')"
-                                                       :class="checkEditPermission(user_role, item.position, 'delete') ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user'">
+                                                       :class="checkPermission(user_role, item.position, 'delete') ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user'">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </a>
                                                 </td>
@@ -366,7 +366,7 @@
             slug_can(permissionName) {
               return this.slugs.indexOf(permissionName) !== -1;
             },
-            checkEditPermission(role, row_role, action) {
+            checkPermission(role, row_role, action) {
 
               if (role === 'admin' || role === 'root' || this.slug_can('tms-system-administrator-grant')) {
                 return true
@@ -377,6 +377,8 @@
                 action_permission = this.slug_can('tms-system-employee-edit');
               } else if (action === 'delete') {
                 action_permission = this.slug_can('tms-system-employee-deleted');
+              } else if (action === 'add') {
+                action_permission = this.slug_can('tms-system-employee-add');
               }
 
               if (!action_permission) {
@@ -394,11 +396,8 @@
                 }
               }
 
-              if (action_permission && layer_permission) {
-                return true;
-              } else {
-                return false;
-              }
+              return action_permission && layer_permission;
+
             },
             // selectOrganizationItem(input_id){
             //   this.employee.input_organization_id = input_id;
