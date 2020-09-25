@@ -22,24 +22,24 @@
     <div class="row">
       <div class="col-xl-12">
         <section class="hk-sec-wrapper">
-          <h5 class="hk-sec-title" v-if="type == 'system'">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
-          <h5 class="hk-sec-title" v-else-if="type == 'teacher'">{{trans.get('keys.danh_sach_giang_vien')}}</h5>
+          <h5 class="hk-sec-title" v-if="type === 'system'">{{trans.get('keys.danh_sach_nguoi_dung')}}</h5>
+          <h5 class="hk-sec-title" v-else-if="type === 'teacher'">{{trans.get('keys.danh_sach_giang_vien')}}</h5>
           <h5 class="hk-sec-title" v-else>{{trans.get('keys.danh_sach_hoc_vien')}}</h5>
-          <div class="row mb-4" v-if="slug_can('tms-system-user-add')">
+          <div class="row mb-4">
             <div class="col-sm">
               <div class="accordion" id="accordion_1">
-                <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);" v-if="(
-										  (slug_can('tms-system-user-add') && type !== 'teacher' && type !== 'student') || slug_can('tms-system-administrator-grant'))
-										  && roles_ready === true">
+                <div class="card" style="border-bottom: 1px solid rgba(0, 0, 0, 0.125);" v-if="permissionCheck('add') && type === 'system'">
                   <div class="card-header d-flex justify-content-between">
                     <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_1" aria-expanded="true"><i
                       class="fal fa-plus mr-3"></i>{{trans.get('keys.them_moi_thu_cong')}}</a>
                   </div>
                   <div id="collapse_1" class="collapse" data-parent="#accordion_1" role="tabpanel">
                     <div class="card-body">
-                      <system-user-create :type="type"
-                                          :current_roles="current_roles"
-                                          :roles_ready="roles_ready"></system-user-create>
+                      <system-user-create
+                        :type="type"
+                        :current_roles="current_roles"
+                        :roles_ready="roles_ready">
+                      </system-user-create>
                     </div>
                   </div>
                 </div>
@@ -70,7 +70,7 @@
                           <h5 class="hk-sec-title mb-3">{{trans.get('keys.thong_tin_tai_len')}}</h5>
                           <ul class="list-group mb-3">
                             <li v-for="user in data_import.userOuput"
-                                :class="'list-group-item '+ (user.status == 'success'? 'list-group-item-success' : 'list-group-item-danger')">
+                                :class="'list-group-item '+ (user.status === 'success'? 'list-group-item-success' : 'list-group-item-danger')">
                               <!--                                                        <span v-if="user.username">{{trans.get('keys.tai_khoan')}}: <strong>{{user.username}}</strong>. </span> {{user.message}}-->
                               <span v-if="user.fullname">{{trans.get('keys.stt')}}: {{user.stt}}. {{trans.get('keys.tai_khoan')}}: <strong>{{user.fullname}}</strong>. </span>
                               {{user.message}}
@@ -186,17 +186,17 @@
                 </div>
 
                 <div class="mt-10 mb-20">
-                  <strong v-if="type == 'student'">
+                  <strong v-if="type === 'student'">
                     {{trans.get('keys.tong_so_hoc_vien_hien_tai')}} : {{ total_user }}
                   </strong>
-                  <strong v-else-if="type == 'teacher'">
+                  <strong v-else-if="type === 'teacher'">
                     {{trans.get('keys.tong_so_giao_vien_hien_tai')}} : {{ total_user }}
                   </strong>
                   <strong v-else>
                     {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{ total_user }}
                   </strong>
                 </div>
-                <div class="table-responsive">
+                <div class="table-responsive" v-if="roles_ready">
                   <table class="table_res">
                     <thead>
                     <tr>
@@ -211,12 +211,12 @@
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
 <!--                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>-->
-                      <th v-if="type != 'student'" class="text-center">{{trans.get('keys.account_status')}}</th>
+                      <th class="text-center mobile_hide">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </thead>
                     <tbody>
-                    <tr v-if="posts.length == 0">
+                    <tr v-if="posts.length === 0">
                       <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>
                     </tr>
                     <tr v-else v-for="(user,index) in posts">
@@ -236,29 +236,32 @@
 
                       <td class="mobile_hide">{{ user.fullname }}</td>
                       <td class="mobile_hide">{{ user.email }}</td>
-<!--                      <td class="mobile_hide" v-if="type == 'student'">{{ (user.confirm && user.confirm == 1) ?-->
-<!--                        trans.get('keys.da_co') : trans.get('keys.chua_co') }}-->
-<!--                      </td>-->
-                      <td class="mobile_hide text-center" v-if="slug_can('tms-system-user-edit') && type != 'student' ">
-                        <span v-if="user.working_status == 0">
+
+<!--                      <td class="mobile_hide text-center">{{ (user.confirm && parseInt(user.confirm) === 1) ? trans.get('keys.da_co') : trans.get('keys.chua_co') }}</td>-->
+
+                      <td class="mobile_hide text-center" v-if="permissionCheck('edit')">
+                        <span v-if="parseInt(user.working_status) === 0">
                            <i class="fa fa-toggle-on text-success"
                               @click="changeStatus(user.user_id,1)"
                               style="cursor: pointer; font-size: 25px;"
                               aria-hidden="true"></i>
                         </span>
-                        <span v-if="user.working_status == 1">
+                        <span v-else-if="parseInt(user.working_status) === 1">
                            <i class="fa fa-toggle-off"
                               @click="changeStatus(user.user_id,0)"
                               style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
                               aria-hidden="true"></i>
                         </span>
+                        <span v-else>N/A</span>
                       </td>
-                      <td v-if="!slug_can('tms-system-user-edit') && type != 'student'"  class="text-center">
-                        <label v-if="user.working_status == 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
-                        <label v-if="user.working_status == 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
+                      <td v-else class="mobile_hide text-center">
+                        <label v-if="parseInt(user.working_status) === 0" class="badge badge-success">{{ trans.get('keys.kich_hoat') }}</label>
+                        <label v-else-if="parseInt(user.working_status) === 1" class="badge badge-grey">{{ trans.get('keys.tai_khoan_bi_khoa') }}</label>
+                        <label v-else class="badge badge-grey">N/A</label>
                       </td>
+
                       <td class="text-center">
-                        <router-link v-if="type == 'student'"
+                        <router-link v-if="type === 'student'"
                           :title="trans.get('keys.xem')"
                           :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }"
                           class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2">
@@ -267,13 +270,13 @@
                         <router-link
                           :title="trans.get('keys.sua')"
                           :to="{ name: 'EditDetailUserById', params: { user_id: user.user_id }, query: {type: type} }"
-                          :class="slug_can('tms-system-user-edit') ? 'btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
+                          :class="permissionCheck('edit') ? 'btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
                           <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                         </router-link>
                         <a href="javascript(0)"
                            @click.prevent="deletePost('/system/user/delete/'+user.user_id)"
                            :title="trans.get('keys.xoa')"
-                           :class="slug_can('tms-system-user-deleted') ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
+                           :class="permissionCheck('delete') ? 'btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'">
                           <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                         </a>
                       </td>
@@ -292,16 +295,16 @@
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
 <!--                      <th v-if="type == 'student'" class="mobile_hide">{{trans.get('keys.giay_chung_nhan')}}</th>-->
-                      <th v-if="type != 'student'" class="text-center">{{trans.get('keys.account_status')}}</th>
+                      <th class="mobile_hide text-center">{{trans.get('keys.account_status')}}</th>
                       <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                     </tr>
                     </tfoot>
                   </table>
-                  <div :style="posts.length == 0 ? 'display:none;' : 'display:block;'">
+                  <div :style="posts.length === 0 ? 'display:none;' : 'display:block;'">
                     <v-pagination v-model="current" @input="onPageChange()" :page-count="totalPages"
                                   :classes=$pagination.classes :labels=$pagination.labels></v-pagination>
                   </div>
-                  <div v-if="slug_can('tms-system-user-deleted')" class="text-right">
+                  <div v-if="permissionCheck('delete')" class="text-right">
                     <button :title="trans.get('keys.xoa_tai_khoan_da_chon')" type="button" style="float: right;"
                             class="btn btn-sm btn-danger mt-3" @click="deleteSelectUser()">
                       {{trans.get('keys.xoa')}}
@@ -327,7 +330,7 @@
     props: {
       type: {
         type: String,
-        default: 'system'
+        default: 'system' //system, student, teacher
       },
       current_roles: Object,
       roles_ready: Boolean,
@@ -368,6 +371,40 @@
       }
     },
     methods: {
+      permissionCheck(action) {
+        if (this.type === 'student') {
+            if (action === 'edit') {
+              return this.slug_can('tms-system-student-edit');
+            }
+            else if (action === 'add'){
+              return this.slug_can('tms-system-student-add');
+            }
+            else if (action === 'delete'){
+              return this.slug_can('tms-system-student-deleted');
+            }
+        } else if (this.type === 'teacher') {
+          if (action === 'edit') {
+            return this.slug_can('tms-system-teacher-edit');
+          }
+          else if (action === 'add'){
+            return this.slug_can('tms-system-teacher-add');
+          }
+          else if (action === 'delete'){
+            return this.slug_can('tms-system-teacher-deleted');
+          }
+        } else {
+          if (action === 'edit') {
+            return this.slug_can('tms-system-user-edit');
+          }
+          else if (action === 'add'){
+            return this.slug_can('tms-system-user-add');
+          }
+          else if (action === 'delete'){
+            return this.slug_can('tms-system-user-deleted');
+          }
+        }
+        return false;
+      },
       slug_can(permissionName) {
         return this.slugs.indexOf(permissionName) !== -1;
       },

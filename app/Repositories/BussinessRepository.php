@@ -6019,8 +6019,16 @@ class BussinessRepository implements IBussinessInterface
         $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email',
-            'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd')
+        $listUsers = $listUsers
+            ->select(
+                'tms_user_detail.fullname as fullname',
+                'tms_user_detail.email as email',
+                'mdl_user.username as username',
+                'tms_user_detail.user_id as user_id',
+                'tms_user_detail.cmtnd as cmtnd',
+                'tms_user_detail.confirm as confirm',
+                'tms_user_detail.working_status'
+            )
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
@@ -6086,7 +6094,16 @@ class BussinessRepository implements IBussinessInterface
         $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
         $listUsers = DB::table('tms_user_detail')
             ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers->select('tms_user_detail.fullname as fullname', 'tms_user_detail.email as email', 'mdl_user.username as username', 'tms_user_detail.user_id as user_id', 'tms_user_detail.cmtnd as cmtnd', 'tms_user_detail.confirm as confirm')
+        $listUsers = $listUsers
+            ->select(
+                'tms_user_detail.fullname as fullname',
+                'tms_user_detail.email as email',
+                'mdl_user.username as username',
+                'tms_user_detail.user_id as user_id',
+                'tms_user_detail.cmtnd as cmtnd',
+                'tms_user_detail.confirm as confirm',
+                'tms_user_detail.working_status'
+            )
             ->where('tms_user_detail.deleted', 0)
             ->whereIn('tms_user_detail.user_id', $userArray);
 
