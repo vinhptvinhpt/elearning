@@ -451,6 +451,16 @@
                     $('.fullname_required').show();
                     return;
                 }
+
+              //validate positive number
+              var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+
+              if(!rePosNum.test(this.pass_score))
+              {
+                toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le')+ '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+                return;
+              }
+
                 // if (this.is_active == 0) {
                 //   if (!this.pass_score) {
                 //     $('.pass_score_required').show();
