@@ -917,6 +917,14 @@ class MailController extends Controller
                             $tms_notifLog->course_id = $itemNotification->course_id;
                             $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
 
+
+                            //Chế biến log cho loại request_more_attempt
+
+                            $new_content = json_decode($itemNotification->content);
+                            $new_content->parent_id = $itemNotification->id;
+                            $new_content->object_name = $fullname;
+                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
+
                             //T&D employee = admins, send only
                             $admins =  DB::table('model_has_roles as mhr')
                                 ->join('roles', 'roles.id', '=', 'mhr.role_id')
@@ -972,15 +980,8 @@ class MailController extends Controller
                                     }
                                 }
                             }
-
-                            $new_content = json_decode($itemNotification->content);
-                            $new_content->parent_id = $itemNotification->id;
-                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SENT);
                         } else {
-                            $new_content = json_decode($itemNotification->content);
-                            $new_content->parent_id = $itemNotification->id;
-                            $itemNotification->content = json_encode($new_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
                     } catch (Exception $e) {
