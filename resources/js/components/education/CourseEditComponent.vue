@@ -377,7 +377,7 @@
           return;
         }
 
-        if(!rePosNum.test(this.course.estimate_duration)) {
+        if(!rePosNum.test(this.course.estimate_duration) || this.course.estimate_duration <= 0) {
           toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
           return;
         }
