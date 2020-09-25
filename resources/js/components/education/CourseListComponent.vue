@@ -76,18 +76,18 @@
                                     <!--                      v-model="filter_select">-->
                                     <!--                    </v-select>-->
                                     <!--                  </div>-->
-<!--                                    <div class="col-sm-3">-->
-<!--                                        <div class="dataTables_length">-->
-<!--                                            <v-select-->
-<!--                                                    @input="selectCourse()"-->
-<!--                                                    :options="courseSelectOptions"-->
-<!--                                                    :reduce="courseSelectOption => courseSelectOption.id"-->
-<!--                                                    :placeholder="this.trans.get('keys.khoa_hoc')"-->
-<!--                                                    :filter-by="myFilterBy"-->
-<!--                                                    v-model="courseSearch">-->
-<!--                                            </v-select>-->
-<!--                                        </div>-->
-<!--                                    </div>-->
+                                    <!--                                    <div class="col-sm-3">-->
+                                    <!--                                        <div class="dataTables_length">-->
+                                    <!--                                            <v-select-->
+                                    <!--                                                    @input="selectCourse()"-->
+                                    <!--                                                    :options="courseSelectOptions"-->
+                                    <!--                                                    :reduce="courseSelectOption => courseSelectOption.id"-->
+                                    <!--                                                    :placeholder="this.trans.get('keys.khoa_hoc')"-->
+                                    <!--                                                    :filter-by="myFilterBy"-->
+                                    <!--                                                    v-model="courseSearch">-->
+                                    <!--                                            </v-select>-->
+                                    <!--                                        </div>-->
+                                    <!--                                    </div>-->
                                     <div class="col-sm-6">
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
@@ -339,7 +339,8 @@
             },
             loadAutoComplete() {
                 $("#tags").autocomplete({
-                    source: this.courseSelectOptions,
+                    source: this.lightWell,
+                    minLength: 2,
                     select: function (e, ui) {
                         this.keyword = ui.item.data_search;
                         window.location.href = '/lms/course/view.php?id=' + ui.item.id;
@@ -349,6 +350,41 @@
 
                     }
                 });
+            },
+            lightWell(request, response) {
+                function hasMatch(s) {
+                    return s.toLowerCase().indexOf(request.term.toLowerCase()) !== -1;
+                }
+
+                function convertUtf8(str) {
+                    str = str.toLowerCase();
+                    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+                    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+                    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+                    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+                    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+                    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+                    str = str.replace(/đ/g, "d");
+                    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+                    str = str.replace(/ + /g, " ");
+                    str = str.trim();
+                    return str;
+                }
+
+                var i, l, obj, matches = [];
+
+                if (request.term === "") {
+                    response([]);
+                    return;
+                }
+
+                for (i = 0, l = this.courseSelectOptions.length; i < l; i++) {
+                    obj = this.courseSelectOptions[i];
+                    if (hasMatch(obj.label) || hasMatch(convertUtf8(obj.data_search))) {
+                        matches.push(obj);
+                    }
+                }
+                response(matches);
             },
             selectCourse() {
                 console.log(this.courseSearch);
