@@ -329,6 +329,7 @@
                         response.data.forEach(function (cityItem) {
                             let newCity = {
                                 label: cityItem.shortname + ' - ' + cityItem.fullname,
+                                data_search: cityItem.fullname,
                                 id: cityItem.id
                             };
                             additionalCities.push(newCity);
