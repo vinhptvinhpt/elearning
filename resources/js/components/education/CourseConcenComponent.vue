@@ -47,22 +47,22 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-sm-3">
-                                      <div class="dataTables_length">
-                                        <v-select
-                                          @input="selectCourse()"
-                                          :options="courseSelectOptions"
-                                          :reduce="courseSelectOption => courseSelectOption.id"
-                                          :placeholder="this.trans.get('keys.khoa_hoc')"
-                                          :filter-by="myFilterBy"
-                                          v-model="courseSearch">
-                                        </v-select>
-                                      </div>
-                                    </div>
-                                    <div class="col-sm-3">
+                                    <!--                                    <div class="col-sm-3">-->
+                                    <!--                                      <div class="dataTables_length">-->
+                                    <!--                                        <v-select-->
+                                    <!--                                          @input="selectCourse()"-->
+                                    <!--                                          :options="courseSelectOptions"-->
+                                    <!--                                          :reduce="courseSelectOption => courseSelectOption.id"-->
+                                    <!--                                          :placeholder="this.trans.get('keys.khoa_hoc')"-->
+                                    <!--                                          :filter-by="myFilterBy"-->
+                                    <!--                                          v-model="courseSearch">-->
+                                    <!--                                        </v-select>-->
+                                    <!--                                      </div>-->
+                                    <!--                                    </div>-->
+                                    <div class="col-sm-6">
                                         <form v-on:submit.prevent="getCourses(1)">
                                             <div class="d-flex flex-row form-group">
-                                                <input v-model="keyword" type="text" class="form-control"
+                                                <input v-model="keyword" type="text" class="form-control" id="tags"
                                                        :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')">
                                                 <button type="button" id="btnFilter" style="margin-left: 5px"
                                                         class="btn btn-primary" @click="getCourses(1)">
@@ -123,8 +123,10 @@
                                             <th style="width: 19%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.bat_dau')}}</th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
-<!--                                            <th class="text-center mobile_hide">{{trans.get('keys.diem_qua_mon')}}</th>-->
-                                            <th class="text-center mobile_hide">{{trans.get('keys.cap_nhat_lan_cuoi')}}</th>
+                                            <!--                                            <th class="text-center mobile_hide">{{trans.get('keys.diem_qua_mon')}}</th>-->
+                                            <th class="text-center mobile_hide">
+                                                {{trans.get('keys.cap_nhat_lan_cuoi')}}
+                                            </th>
                                             <th class="text-center mobile_hide">{{trans.get('keys.trang_thai')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
@@ -143,8 +145,12 @@
                                             </td>
                                             <td class="text-center mobile_hide">{{ course.enddate |convertDateTime}}
                                             </td>
-<!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
-                                            <td v-if="course.username && course.username.length > 0" class="text-center mobile_hide"><a style="cursor: default; color: #007bff;" :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{ course.username }}</a></td>
+                                            <!--                                            <td class="text-center mobile_hide">{{Math.floor(course.pass_score)}}</td>-->
+                                            <td v-if="course.username && course.username.length > 0"
+                                                class="text-center mobile_hide"><a
+                                                    style="cursor: default; color: #007bff;"
+                                                    :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{
+                                                course.username }}</a></td>
                                             <td v-else></td>
                                             <td class="text-center mobile_hide">
                                               <span v-if="course.visible==1">
@@ -261,7 +267,7 @@
                     useCurrent: false,
                 },
                 lms_url: '',
-                courseSearch:'',
+                courseSearch: '',
                 courseSelectOptions: [],
             }
         },
@@ -270,38 +276,52 @@
                 if (value) {
                     var time = new Date(value * 1000);
                     // return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
-                  return time.toLocaleDateString();
+                    return time.toLocaleDateString();
                 }
                 return "";
             }
         },
         methods: {
-            getCourseSelectOptions(){
-              axios.post(this.urlGetList, {
-                row: 0,
-                sample: 0,
-                category_id: 5, //là khóa học tập trung
-              })
-                .then(response => {
-                  let additionalCities = [];
-                  response.data.forEach(function(cityItem) {
-                    let newCity = {
-                      label: cityItem.shortname + ' - ' + cityItem.fullname,
-                      id: cityItem.id
-                    };
-                    additionalCities.push(newCity);
-                  });
-                  this.courseSelectOptions = additionalCities;
+            getCourseSelectOptions() {
+                axios.post(this.urlGetList, {
+                    row: 0,
+                    sample: 0,
+                    category_id: 5, //là khóa học tập trung
                 })
-                .catch(error => {
-                  //console.log(error.response.data);
+                    .then(response => {
+                        let additionalCities = [];
+                        response.data.forEach(function (cityItem) {
+                            let newCity = {
+                                label: cityItem.shortname + ' - ' + cityItem.fullname,
+                                id: cityItem.id
+                            };
+                            additionalCities.push(newCity);
+                        });
+                        this.courseSelectOptions = additionalCities;
+                        this.loadAutoComplete();
+                    })
+                    .catch(error => {
+                        //console.log(error.response.data);
+                    });
+            },
+            loadAutoComplete() {
+                $("#tags").autocomplete({
+                    source: this.courseSelectOptions,
+                    select: function (e, ui) {
+                        this.keyword = ui.item.data_search;
+                        window.location.href = '/lms/course/view.php?id=' + ui.item.id;
+                    },
+                    change: function (e, ui) {
+                        // alert(ui.item.value);
+
+                    }
                 });
             },
             selectCourse() {
-              window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
+                window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
             },
             capitalizeFirstLetter(string) {
-              return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
+                return string.length > 0 && string ? string[0].toUpperCase() + string.slice(1) : '';
             },
             slug_can(permissionName) {
                 return this.slugs.indexOf(permissionName) !== -1;
@@ -339,24 +359,24 @@
             },
             onPageChange() {
                 // let back = this.getParamsBackPage();
-                if(sessionStorage.getItem('courseConcenBack') == '1'){
-                  this.current = Number(sessionStorage.getItem('courseConcenPage'));
-                  this.row = Number(sessionStorage.getItem('courseConcenPageSize'));
-                  this.category_id = Number(sessionStorage.getItem('courseConcenCategory'));
-                  this.status_course = Number(sessionStorage.getItem('courseConcenCourseStatus'));
-                  this.startdate = sessionStorage.getItem('courseConcenStartDate');
-                  this.enddate = sessionStorage.getItem('courseConcenEndDate');
-                  this.keyword = sessionStorage.getItem('courseConcenKeyWord');
+                if (sessionStorage.getItem('courseConcenBack') == '1') {
+                    this.current = Number(sessionStorage.getItem('courseConcenPage'));
+                    this.row = Number(sessionStorage.getItem('courseConcenPageSize'));
+                    this.category_id = Number(sessionStorage.getItem('courseConcenCategory'));
+                    this.status_course = Number(sessionStorage.getItem('courseConcenCourseStatus'));
+                    this.startdate = sessionStorage.getItem('courseConcenStartDate');
+                    this.enddate = sessionStorage.getItem('courseConcenEndDate');
+                    this.keyword = sessionStorage.getItem('courseConcenKeyWord');
 
-                  // this.$route.params.back_page= null;
+                    // this.$route.params.back_page= null;
                 }
                 this.getCourses();
             },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+                return this.$route.params.back_page;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+                this.$route.params.back_page = value;
             },
             deletePost(id) {
                 // sessionStorage.setItem('courseConcenPage', this.current);
@@ -382,8 +402,8 @@
                             loader.fadeOut();
                             if (response.data.status) {
                                 toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                                if(current_pos.courses.length == 1){
-                                  current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                                if (current_pos.courses.length == 1) {
+                                    current_pos.current = current_pos.current > 1 ? current_pos.current - 1 : 1;
                                 }
                                 // current_pos.onPageChange();
                                 current_pos.getCourses(current_pos.current);
@@ -430,13 +450,13 @@
                 return false;
             },
             myFilterBy: (option, label, search) => {
-              if (!label) {
-                label = '';
-              }
-              let new_search = convertUtf8(search);
-              let new_label = convertUtf8(label);
-              //return this.filterBy(option, new_label, new_search); //can not call components function here
-              return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+                if (!label) {
+                    label = '';
+                }
+                let new_search = convertUtf8(search);
+                let new_label = convertUtf8(label);
+                //return this.filterBy(option, new_label, new_search); //can not call components function here
+                return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
             },
             fetch() {
                 axios.post('/bridge/fetch', {
@@ -459,30 +479,30 @@
             sessionStorage.clear();
         },
         destroyed() {
-          sessionStorage.setItem('courseConcenBack', '1');
-          sessionStorage.setItem('courseConcenPage', this.current);
-          sessionStorage.setItem('courseConcenPageSize', this.row);
-          sessionStorage.setItem('courseConcenCategory', this.category_id);
-          sessionStorage.setItem('courseConcenCourseStatus', this.status_course);
-          sessionStorage.setItem('courseConcenStartDate', this.startdate);
-          sessionStorage.setItem('courseConcenEndDate', this.enddate);
-          sessionStorage.setItem('courseConcenKeyWord', this.keyword);
+            sessionStorage.setItem('courseConcenBack', '1');
+            sessionStorage.setItem('courseConcenPage', this.current);
+            sessionStorage.setItem('courseConcenPageSize', this.row);
+            sessionStorage.setItem('courseConcenCategory', this.category_id);
+            sessionStorage.setItem('courseConcenCourseStatus', this.status_course);
+            sessionStorage.setItem('courseConcenStartDate', this.startdate);
+            sessionStorage.setItem('courseConcenEndDate', this.enddate);
+            sessionStorage.setItem('courseConcenKeyWord', this.keyword);
         }
     }
 
     function convertUtf8(str) {
-      str = str.toLowerCase();
-      str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-      str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-      str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-      str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-      str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-      str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-      str = str.replace(/đ/g, "d");
-      str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
-      str = str.replace(/ + /g, " ");
-      str = str.trim();
-      return str;
+        str = str.toLowerCase();
+        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+        str = str.replace(/đ/g, "d");
+        str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+        str = str.replace(/ + /g, " ");
+        str = str.trim();
+        return str;
     }
 
 </script>
