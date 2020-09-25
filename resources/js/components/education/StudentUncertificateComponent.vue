@@ -35,7 +35,7 @@
                                         </select>
 
                                         <select id="training_select" v-model="training_id" autocomplete="false"
-                                                class="form-control" @change="getListStudentsUncertificate(1)">
+                                                class="form-control" @change="back == '1' ? getListStudentsUncertificate(current) : getListStudentsUncertificate(1)">
                                             <option value="0">-- {{trans.get('keys.chon_khung_nang_luc')}} --</option>
                                             <option v-for="training_option in training_options"
                                                     :value="training_option.id">
@@ -154,7 +154,7 @@
 
                                         <select id="training_select_certificate" v-model="training_id_certificate"
                                                 autocomplete="false" class="form-control"
-                                                @change="getListStudentsCertificate(1)">
+                                                @change="back == '1' ? getListStudentsCertificate(currentCt) :getListStudentsCertificate(1)">
                                             <option value="0">-- {{trans.get('keys.chon_khung_nang_luc')}} --</option>
                                             <option v-for="training_option in training_options_certificate"
                                                     :value="training_option.id">
@@ -301,7 +301,8 @@
                 training_options: [],
                 training_id: 0,
                 training_options_certificate: [],
-                training_id_certificate: 0
+                training_id_certificate: 0,
+                back:''
             }
         },
         filters: {
@@ -381,6 +382,9 @@
                 });
             },
             getListStudentsUncertificate(paged) {
+                if(paged > 1){
+                  this.back = '';
+                }
                 axios.post('/student/get/uncertificate', {
                     page: paged || this.current,
                     keyword: this.keyword,
@@ -399,6 +403,9 @@
                     });
             },
             getListStudentsCertificate(paged) {
+                if(paged > 1){
+                  this.back = '';
+                }
                 axios.post('/student/get/certificate', {
                     page: paged || this.currentCt,
                     keyword: this.keywordCt,
@@ -420,6 +427,18 @@
 
             },
             onPageChange() {
+                this.back = sessionStorage.getItem('uncertificateBack');
+                if(this.back == '1') {
+                  this.current = Number(sessionStorage.getItem('uncertificatePage'));
+                  this.row = Number(sessionStorage.getItem('uncertificatePageSize'));
+                  this.keyword = sessionStorage.getItem('uncertificateKeyWord');
+                  this.training_id = sessionStorage.getItem('uncertificateCompetency');
+                  this.currentCt = Number(sessionStorage.getItem('certificatePage'));
+                  this.rowCt = Number(sessionStorage.getItem('certificatePageSize'));
+                  this.keywordCt = sessionStorage.getItem('certificateKeyWord');
+                  this.training_id_certificate = sessionStorage.getItem('certificateCompetency');
+                  // this.$route.params.back_page= null;
+                }
                 this.getListStudentsUncertificate();
                 this.getListStudentsCertificate();
             },
@@ -446,6 +465,18 @@
         },
         mounted() {
             this.fetchTraining();
+            sessionStorage.clear();
+        },
+        destroyed() {
+            sessionStorage.setItem('uncertificateBack', '1');
+            sessionStorage.setItem('uncertificatePage', this.current);
+            sessionStorage.setItem('uncertificatePageSize', this.row);
+            sessionStorage.setItem('uncertificateKeyWord', this.keyword);
+            sessionStorage.setItem('uncertificateCompetency', this.training_id);
+            sessionStorage.setItem('certificatePage', this.currentCt);
+            sessionStorage.setItem('certificatePageSize', this.rowCt);
+            sessionStorage.setItem('certificateKeyWord', this.keywordCt);
+            sessionStorage.setItem('certificateCompetency', this.training_id_certificate);
         }
     }
 </script>

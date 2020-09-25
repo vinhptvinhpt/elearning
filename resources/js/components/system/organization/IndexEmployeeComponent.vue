@@ -340,7 +340,18 @@
             }
         },
         mounted() {
-            sessionStorage.clear();
+            let organizationBack = this.getParamsBackPage();
+            if(organizationBack == 1){
+                sessionStorage.removeItem('employeeBack');
+                sessionStorage.removeItem('employeePage');
+                sessionStorage.removeItem('employeePageSize');
+                sessionStorage.removeItem('employeeKeyWord');
+                sessionStorage.removeItem('employeePosition');
+                sessionStorage.removeItem('employeeOrganization');
+            }
+            else{
+                sessionStorage.clear();
+            }
             this.selectOrganization();
         },
         destroyed() {
@@ -360,7 +371,7 @@
               if (role === 'admin' || role === 'root' || this.slug_can('tms-system-administrator-grant')) {
                 return true
               }
-              
+
               let action_permission = false;
               if (action === 'update') {
                 action_permission = this.slug_can('tms-system-employee-edit');
@@ -551,7 +562,7 @@
                   this.keyword = sessionStorage.getItem('employeeKeyWord');
                   this.position = sessionStorage.getItem('employeePosition');
                   this.organization_id1 = sessionStorage.getItem('employeeOrganization');
-                  this.$route.params.back_page= null;
+                  // this.$route.params.back_page= null;
                 }
                 let organization_id_string = this.organization_id.toString();
                 if (this.organization_id.length !== 0) {
@@ -566,10 +577,10 @@
                 }
             },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+              return this.$route.params.organization_back;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+              this.$route.params.organization_back = value;
             },
             deletePost(url) {
                 sessionStorage.setItem('employeePage', this.current);
