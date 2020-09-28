@@ -18,10 +18,10 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-6 mb-1">
-                            <select v-model="mode_select" class="form-control mb-0" style="height: 40px;">
-                                <option value="certificated">
-                                    {{ trans.get('keys.da_cap_chung_chi')}}
-                                </option>
+                            <select v-model="mode_select" class="form-control mb-0" style="height: 40px;" @change="changeForm">
+<!--                                <option value="certificated">-->
+<!--                                    {{ trans.get('keys.da_cap_chung_chi')}}-->
+<!--                                </option>-->
                                 <option value="completed_training">
                                     {{ trans.get('keys.da_hoan_thanh_khung_nang_luc')}}
                                 </option>
@@ -47,7 +47,7 @@
                             </select>
                         </div>
                         <div class="col-6 mb-1"
-                             v-if="mode_selected === 'completed_course' || mode_selected === 'learning_time'">
+                             v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
                             <select id="course_select" v-model="course_id" class="custom-select">
                                 <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
                                 <option v-for="course in course_list" :value="course.id">
@@ -64,28 +64,26 @@
                             </select>
                         </div>
                         <div class="col-6 form-inline mb-1">
-                            <div style="width: 50%">
-                                <datepicker
-                                        id="inputStart"
-                                        :clear-button=true
-                                        v-model="startdate"
-                                        format="dd-MM-yyyy"
-                                        input-class="form-control"
-                                        :placeholder="trans.get('keys.ngay_bat_dau')"
-                                >
-                                </datepicker>
-                            </div>
-                            <div style="width: 50%">
-                                <datepicker
-                                        id="inputEnd"
-                                        :clear-button=true
-                                        v-model="enddate"
-                                        format="dd-MM-yyyy"
-                                        input-class="form-control"
-                                        :placeholder="trans.get('keys.ngay_ket_thuc')"
-                                >
-                                </datepicker>
-                            </div>
+                                  <datepicker
+                                    id="inputStart"
+                                    :clear-button=true
+                                    v-model="startdate"
+                                    format="dd-MM-yyyy"
+                                    input-class="form-control"
+                                    wrapper-class="half-width"
+                                    :placeholder="trans.get('keys.ngay_bat_dau')"
+                                  >
+                                  </datepicker>
+                                  <datepicker
+                                    id="inputEnd"
+                                    :clear-button=true
+                                    v-model="enddate"
+                                    format="dd-MM-yyyy"
+                                    input-class="form-control"
+                                    wrapper-class="half-width"
+                                    :placeholder="trans.get('keys.ngay_ket_thuc')"
+                                  >
+                                  </datepicker>
                         </div>
                         <div class="col-12 text-right">
                             <button id="buttonReport" class="btn btn-primary btn-sm" @click="listData()"
@@ -110,9 +108,9 @@
                                 <span class="color-box course-color">{{trans.get('keys.khoa_hoc')}}</span>
                             </div>
                             <div class="col-5 text-right">
-                                <!--<a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
+                                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2" v-on:click="expandAll()" :title="trans.get('keys.xem_chi_tiet')" v-if="report_data.selected_level !== 'city'">
                                   <span class="btn-icon-wrap"><i class="fal fa-eye"></i></span>
-                                </a>-->
+                                </a>
 
 <!--                                <a style="color: #fff;" class="btn btn-sm btn-icon btn-primary btn-icon-style-2"-->
 <!--                                   v-on:click="exportExcel(report_data)"-->
@@ -175,7 +173,7 @@
                                     <td style="vertical-align: top;">{{item.column4}}</td>
                                 </tr>
                                 <tr v-else :style="'background:'+ item.color" :id="'student_list_' + item.parent"
-                                    class="hidden" :has-content="mode_selected === 'completed'">
+                                    class="hidden" :has-content="true">
                                     <td>{{item.column1}}</td>
                                     <td v-html="item.column2" style="vertical-align: top;"></td>
                                     <td v-html="item.column3" style="vertical-align: top;"></td>
@@ -212,8 +210,8 @@
                 training_id: 0,
                 course_id: 0,
                 training_options: [],
-                mode_select: 'certificated',
-                mode_selected: 'certificated',
+                mode_select: 'completed_training',
+                mode_selected: 'completed_training',
                 startdate: '',
                 enddate: '',
                 country: '',
@@ -222,6 +220,18 @@
             }
         },
         methods: {
+            changeForm() {
+              //let mode_select = this.mode_select;
+              this.resetForm();
+            },
+            resetForm() {
+              this.organization_id = 0;
+              this.training_id = 0;
+              this.course_id = 0;
+              this.country = '';
+              this.startdate = '';
+              this.enddate = '';
+            },
             getCountries() {
                 axios.post('/system/user/list_country')
                     .then(response => {
@@ -579,5 +589,17 @@
 
     .organization-color {
         background: #E0E3E4;
+    }
+
+    .half-width {
+      width: 50% !important;
+    }
+
+    .half-width >>> input{
+      width: 100% !important;
+    }
+
+    .half-width >>> input[readonly] {
+      background-color: #fff;
     }
 </style>

@@ -4388,7 +4388,7 @@ class BussinessRepository implements IBussinessInterface
             $start_date = $start_date . " 00:00:00";
             if ($mode_select == 'completed_course') {
                 $start_timestamp = strtotime($start_date);
-                $query = $query->where('completed', '>=', $start_timestamp);
+                $query = $query->where('course_completion.timecompleted', '>=', $start_timestamp);
             }
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '>=', $start_date);
@@ -4405,7 +4405,7 @@ class BussinessRepository implements IBussinessInterface
             $end_date = $end_date . " 23:59:59";
             if ($mode_select == 'completed_course') {
                 $end_timestamp = strtotime($end_date);
-                $query = $query->where('completed', '<=', $end_timestamp);
+                $query = $query->where('course_completion.timecompleted', '<=', $end_timestamp);
             }
             if ($mode_select == 'completed_training') {
                 $query = $query->where('tms_trainning_complete.updated_at', '<=', $end_date);

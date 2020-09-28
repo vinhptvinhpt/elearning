@@ -11,6 +11,7 @@ use App\Exports\ReportDetailSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
+use App\TmsUserDetail;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -321,7 +322,7 @@ class ExcelController extends Controller
                                     $certificated['fullname'],
                                     $certificated['email'],
                                     $organization_name,
-                                    $certificated['country'],
+                                    self::getCountryName($certificated['country']),
                                     $certificated['city'],
                                     $training_name,
                                     'Yes'
@@ -338,7 +339,7 @@ class ExcelController extends Controller
                                     $missing['fullname'],
                                     $missing['email'],
                                     $organization_name,
-                                    $missing['country'],
+                                    self::getCountryName($missing['country']),
                                     $missing['city'],
                                     $training_name,
                                     'No'
@@ -375,7 +376,7 @@ class ExcelController extends Controller
                                                 $certificated['fullname'],
                                                 $certificated['email'],
                                                 $organization_name,
-                                                $certificated['country'],
+                                                self::getCountryName($certificated['country']),
                                                 $certificated['city'],
                                                 $training_name,
                                                 $course_name,
@@ -387,7 +388,7 @@ class ExcelController extends Controller
                                                 $certificated['fullname'],
                                                 $certificated['email'],
                                                 $organization_name,
-                                                $certificated['country'],
+                                                self::getCountryName($certificated['country']),
                                                 $certificated['city'],
                                                 $training_name,
                                                 $course_name,
@@ -409,7 +410,7 @@ class ExcelController extends Controller
                                                 $missing['fullname'],
                                                 $missing['email'],
                                                 $organization_name,
-                                                $missing['country'],
+                                                self::getCountryName($missing['country']),
                                                 $missing['city'],
                                                 $training_name,
                                                 $course_name,
@@ -432,6 +433,11 @@ class ExcelController extends Controller
         $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
 
         return response()->json(storage_path($filename));
+    }
+
+    public function getCountryName($code) {
+        $countries = TmsUserDetail::country;
+        return array_key_exists($code, $countries) ? $countries[$code] : 'N/A';
     }
 
     public function exportReportDetail(Request $request)
