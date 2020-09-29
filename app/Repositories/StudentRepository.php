@@ -16,9 +16,8 @@ class StudentRepository implements IStudentInterface
         $reponse = new ResponseModel();
         try {
             $code = $request->input('code');
-            $cer_path = storage_path() . '/upload/certificate/' . $code . '_certificate.jpeg';
-            $badge_path = storage_path() . '/upload/certificate/' . $code . '_badge.jpeg';
-
+            $cer_path = storage_path() . '/app/public/upload/certificate/' . $code . '_certificate.jpeg';
+            $badge_path = storage_path() . '/app/public/upload/certificate/' . $code . '_badge.jpeg';
             if (file_exists($cer_path)) {
                 $reponse->existCertificate = 1;
             }
