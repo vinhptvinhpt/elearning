@@ -201,7 +201,7 @@ if __name__ == '__main__':
                     auto_badge = row[9]
                     auto_run = row[10]
                     try:
-                        if auto_cer == 1 or auto_run == 1:
+                        if auto_cer == 1 or (auto_run == 1 and auto_cer == 0):
 
                             path_cer = path_gen_img + '/certificate/'+code+ '_certificate.png'
 
@@ -419,7 +419,7 @@ if __name__ == '__main__':
                             time.sleep(0.3)
                             #endregion
 
-                        if auto_badge == 1 or auto_run == 1:
+                        if auto_badge == 1 or (auto_run == 1 and auto_badge == 0):
 
                             path_bag = path_gen_img + '/certificate/'+code+ '_badge.png'
 
