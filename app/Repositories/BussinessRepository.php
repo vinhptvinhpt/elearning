@@ -212,8 +212,8 @@ class BussinessRepository implements IBussinessInterface
 
             //Số học viên hoàn thành khóa học
             $completed_student = CourseCompletion::where("course_completion.timecompleted", ">=", $start_time)
-                ->where("course_completion.timecompleted", "<=",  $end_time)
-                ->join("mdl_user","course_completion.userid","=","mdl_user.id");
+                ->where("course_completion.timecompleted", "<=", $end_time)
+                ->join("mdl_user", "course_completion.userid", "=", "mdl_user.id");
 
             //Số học viên đang học
 //            $in_progress_student = MdlUserEnrolments::where("mdl_user_enrolments.timecreated", ">=", $start_time)
@@ -221,33 +221,33 @@ class BussinessRepository implements IBussinessInterface
 //                ->join("mdl_user","mdl_user_enrolments.userid","=","mdl_user.id");
             $in_progress_student = DB::table('tms_learning_activity_logs as tlal')
                 ->where("tlal.created_at", ">=", $full_start_date)
-                ->where("tlal.created_at", "<=",  $full_end_date)
-                ->join("mdl_user","tlal.user_id","=","mdl_user.id")
-                ->whereNotIn("tlal.id",function ($query) use ($full_start_date,$full_end_date,$start_time,$end_time) {
+                ->where("tlal.created_at", "<=", $full_end_date)
+                ->join("mdl_user", "tlal.user_id", "=", "mdl_user.id")
+                ->whereNotIn("tlal.id", function ($query) use ($full_start_date, $full_end_date, $start_time, $end_time) {
                     $query->select('tlal.id')
                         ->from('tms_learning_activity_logs as tlal')
-                        ->join('course_completion as cc',function($join){
-                            $join->on('tlal.user_id','=','cc.userid')
-                                ->on('tlal.course_id','=','cc.courseid');
+                        ->join('course_completion as cc', function ($join) {
+                            $join->on('tlal.user_id', '=', 'cc.userid')
+                                ->on('tlal.course_id', '=', 'cc.courseid');
                         })
-                        ->where('tlal.created_at','>=',$full_start_date)
-                        ->where('tlal.created_at','<=',$full_end_date)
-                        ->where('cc.timecompleted','>=',$start_time)
-                        ->where('cc.timecompleted','<=',$end_time);
+                        ->where('tlal.created_at', '>=', $full_start_date)
+                        ->where('tlal.created_at', '<=', $full_end_date)
+                        ->where('cc.timecompleted', '>=', $start_time)
+                        ->where('cc.timecompleted', '<=', $end_time);
                 });
 
             //Số học viên fail
-            $fail_student =  DB::table('mdl_course_modules_completion as mcmc')
+            $fail_student = DB::table('mdl_course_modules_completion as mcmc')
                 ->where("mcmc.timemodified", ">=", $start_time)
-                ->where("mcmc.timemodified", "<=",  $end_time)
-                ->where("mcmc.completionstate","=",3) //state fail
-                ->join('mdl_course_modules as mcm','mcm.id','=','mcmc.coursemoduleid')
-                ->join("mdl_user","mcmc.userid","=","mdl_user.id")
-                ->where('mcm.module','=',16);//quiz
-            if($organization_id > 0){
+                ->where("mcmc.timemodified", "<=", $end_time)
+                ->where("mcmc.completionstate", "=", 3)//state fail
+                ->join('mdl_course_modules as mcm', 'mcm.id', '=', 'mcmc.coursemoduleid')
+                ->join("mdl_user", "mcmc.userid", "=", "mdl_user.id")
+                ->where('mcm.module', '=', 16);//quiz
+            if ($organization_id > 0) {
                 $completed_student = $completed_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'course_completion.userid')
-                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->join('tms_organization', 'toe.organization_id', '=', 'tms_organization.id')
                     ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                         $q->select('id')->from(DB::raw("
                                 (select id from (select * from tms_organization) torg,
@@ -258,7 +258,7 @@ class BussinessRepository implements IBussinessInterface
                     });
                 $in_progress_student = $in_progress_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mdl_user.id')
-                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->join('tms_organization', 'toe.organization_id', '=', 'tms_organization.id')
                     ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                         $q->select('id')->from(DB::raw("
                                 (select id from (select * from tms_organization) torg,
@@ -270,7 +270,7 @@ class BussinessRepository implements IBussinessInterface
 
                 $fail_student = $fail_student
                     ->join('tms_organization_employee as toe', 'toe.user_id', '=', 'mcmc.userid')
-                    ->join('tms_organization','toe.organization_id','=','tms_organization.id')
+                    ->join('tms_organization', 'toe.organization_id', '=', 'tms_organization.id')
                     ->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                         $q->select('id')->from(DB::raw("
                                 (select id from (select * from tms_organization) torg,
@@ -2985,11 +2985,11 @@ class BussinessRepository implements IBussinessInterface
         if (isset($notification)) {
             //lưu vào date_quiz trong tms_nofitications làm flag đã approve
             $check_unlocked = $notification->date_quiz;
-            $check->fullname =  $notification->fullname;
-            $check->shortname =  $notification->shortname;
-            $check->startdate =  $notification->startdate;
-            $check->enddate =  $notification->enddate;
-            $check->course_place =  $notification->course_place;
+            $check->fullname = $notification->fullname;
+            $check->shortname = $notification->shortname;
+            $check->startdate = $notification->startdate;
+            $check->enddate = $notification->enddate;
+            $check->course_place = $notification->course_place;
 
             if ($check_unlocked == 1) {
                 $check->unlocked = 1;
@@ -3097,8 +3097,8 @@ class BussinessRepository implements IBussinessInterface
                                         ->where('quiz', $content->quiz_id)
                                         ->where('userid', $user_id)
                                         ->update([
-                                                'attempts' => $updated_attempt
-                                            ]);
+                                            'attempts' => $updated_attempt
+                                        ]);
                                 } else {
                                     $new_attempts = $attempt_data->base_attempt + 1;
                                     DB::table('mdl_quiz_overrides')->insert([
@@ -5017,8 +5017,8 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
-            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->join('tms_organization_employee', 'mu.id', '=', 'tms_organization_employee.user_id');
+            $data = $data->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
@@ -5468,6 +5468,7 @@ class BussinessRepository implements IBussinessInterface
                 $data_item['code'] = $certificatecode;
                 $data_item['status'] = 1;
                 $data_item['timecertificate'] = time();
+                $data_item['auto_run'] = 1;
 
                 array_push($arr_data, $data_item);
 
@@ -5641,7 +5642,7 @@ class BussinessRepository implements IBussinessInterface
             $listStudentsDone = $listStudentsDone->where('ttp.id', '=', $training_id);
         }
 
-        $listStudentsDone = $listStudentsDone->orderBy('sc.id','desc');
+        $listStudentsDone = $listStudentsDone->orderBy('sc.id', 'desc');
 
         //paging
         $listStudentsDone = $listStudentsDone->paginate($row);
@@ -6036,8 +6037,8 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
-            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
@@ -6110,8 +6111,8 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
-            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
@@ -7979,7 +7980,7 @@ class BussinessRepository implements IBussinessInterface
             'tms_user_detail.working_status as working_status'
         )
             ->where('tms_user_detail.deleted', 0)
-            ->where('mdl_user.username','!=', 'admin');
+            ->where('mdl_user.username', '!=', 'admin');
 //            ->whereNotIn('mdl_user.username', ['admin']);
         if ($roles != 0) {
             $listUsers = $listUsers->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id');
@@ -7999,8 +8000,8 @@ class BussinessRepository implements IBussinessInterface
         //}
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //đệ quy tổ chức con nếu có
-            $listUsers = $listUsers->join('tms_organization_employee','mdl_user.id','=','tms_organization_employee.user_id');
-            $listUsers = $listUsers->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $listUsers = $listUsers->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
+            $listUsers = $listUsers->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $listUsers = $listUsers->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
@@ -8364,6 +8365,7 @@ class BussinessRepository implements IBussinessInterface
                 $student_certificate = new StudentCertificate();
                 $student_certificate->userid = $mdlUser->id;
                 $student_certificate->code = $certificate_code;
+                $student_certificate->auto_run = 1;
                 if (strlen($certificate_date) != 0) {
                     $student_certificate->timecertificate = strtotime($certificate_date);
                 } else {
@@ -8589,6 +8591,7 @@ class BussinessRepository implements IBussinessInterface
                 $student_certificate = new StudentCertificate();
                 $student_certificate->userid = $mdlUser->id;
                 $student_certificate->code = $certificate_code;
+                $student_certificate->auto_run = 1;
                 if (strlen($certificate_date) != 0) {
                     $student_certificate->timecertificate = strtotime($certificate_date);
                 } else {
@@ -9213,6 +9216,7 @@ class BussinessRepository implements IBussinessInterface
                 }
                 $student_certificate->userid = $mdlUser->id;
                 $student_certificate->code = $certificate_code;
+                $student_certificate->auto_run = 1;
                 if (strlen($certificate_date) != 0) {
                     $student_certificate->timecertificate = strtotime($certificate_date);
                 } else {
@@ -10005,6 +10009,7 @@ class BussinessRepository implements IBussinessInterface
                                                 'userid' => $resultIdUser,
                                                 'code' => $certificateCode,
                                                 'status' => 1,
+                                                'auto_run' => 1,
                                                 'timecertificate' => time()
                                             ]);
                                         }
@@ -10645,8 +10650,8 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
-            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->join('tms_organization_employee', 'mu.id', '=', 'tms_organization_employee.user_id');
+            $data = $data->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
@@ -14085,8 +14090,8 @@ class BussinessRepository implements IBussinessInterface
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
-            $data = $data->join('tms_organization_employee','mu.id','=','tms_organization_employee.user_id');
-            $data = $data->join('tms_organization','tms_organization_employee.organization_id','=','tms_organization.id');
+            $data = $data->join('tms_organization_employee', 'mu.id', '=', 'tms_organization_employee.user_id');
+            $data = $data->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             $data = $data->whereIn('tms_organization.id', function ($q) use ($organization_id) {
                 $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
