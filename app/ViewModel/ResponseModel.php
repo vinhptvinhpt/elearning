@@ -10,4 +10,6 @@ class ResponseModel
     public $message;
     public $error;
     public $otherData;
+    public $existCertificate;
+    public $existBadge;
 }
