@@ -226,7 +226,7 @@
         // }
 
         //validate positive number
-        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+        var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
         if(!rePosNum.test(this.course.pass_score))
         {
