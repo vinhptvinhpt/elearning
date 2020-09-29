@@ -145,14 +145,9 @@
                       <!--                                                <label for="inputText9">{{trans.get('keys.cho_phep_hoc_vien_tu_dang_ky')}}</label>-->
                       <!--                                            </div>-->
 
-                      <div class="col-sm-6 col-md-4 form-group" id="is_end_quiz"
-                           style="display:none;">
-
-                        <div class="pt-40 d-sm-block" style="display: none;">
-                        </div>
-
-                        <input v-model="is_end_quiz" type="checkbox"
-                               style="width:20px; height:20px;">
+                      <div class="col-sm-6 col-md-4 form-group" id="is_end_quiz" style="display:none;">
+                        <div class="pt-40 d-sm-block" style="display: none;"></div>
+                        <input v-model="is_end_quiz" type="checkbox" style="width:20px; height:20px;">
                         <label>{{trans.get('keys.khoa_hoc_lam_bai_kiem_tra')}}</label>
                       </div>
 
@@ -289,18 +284,21 @@
         return string;
       },
       onChangeCate(event) {
-        if (event.target.value == 3) {
-          $('#pass_score').attr("disabled", true);
-          $('#is_end_quiz').show();
-        } else {
+
+        //if (event.target.value == 3) {
+          //$('#pass_score').attr("disabled", true);
+          //$('#is_end_quiz').show();
+        //} else {
+
           // if (this.is_toeic == 1) {
           //   $('#pass_score').attr("disabled", true);
           // } else {
           //   $('#pass_score').attr("disabled", false);
           // }
-          $('#pass_score').attr("disabled", false);
-          $('#is_end_quiz').hide();
-        }
+
+          //$('#pass_score').attr("disabled", false);
+          //$('#is_end_quiz').hide();
+        //}
 
         if (event.target.value == 5) {
           this.is_toeic = false;
@@ -309,18 +307,19 @@
         } else {
           $('#div-is_active').show();
         }
+
       },
-      onChangeToeic() {
-        if (this.is_toeic == 1) {
-          $('#pass_score').attr("disabled", true);
-        } else {
-          if (this.category_id == 3) {
-            $('#pass_score').attr("disabled", true);
-          } else {
-            $('#pass_score').attr("disabled", false);
-          }
-        }
-      },
+      // onChangeToeic() {
+      //   if (this.is_toeic == 1) {
+      //     $('#pass_score').attr("disabled", true);
+      //   } else {
+      //     if (this.category_id == 3) {
+      //       $('#pass_score').attr("disabled", true);
+      //     } else {
+      //       $('#pass_score').attr("disabled", false);
+      //     }
+      //   }
+      // },
       getCourseSamples() {
         axios.get('/api/courses/get_list_sample')
           .then(response => {
@@ -395,7 +394,7 @@
         }
 
         //validate positive number
-        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+        var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
         if (!rePosNum.test(this.estimate_duration)|| this.estimate_duration <= 0) {
           toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
