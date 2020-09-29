@@ -358,8 +358,8 @@ and mue.userid = ' . $USER->id;
                 if (strpos(strtolower($courseR->fullname), $txtSearch) !== false && strpos($courseR->category, $category) !== false)
                     $resultSearch[] = $courseR;
             } else if ($txtSearch) {
-                strtolower($txtSearch);
-                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false)
+//                strtolower($txtSearch);
+                if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false)
                     $resultSearch[] = $courseR;
             } else if ($category > 0) {
                 if (strpos($courseR->category, $category) !== false)
