@@ -161,7 +161,7 @@
             if(lastChar == '/'){
                 $('.name-organization').text('Clever');
                 $('.class-name-organization').text('Elearning');
-                $('.logo'). attr("src", "../images/logo-clerver.png");
+                $('.logo'). attr("src", "../images/logo-clever.png");
                 // $('.main-bg').css("background-image", "url(../images/3a.png) !important");
                 $('.main-bg').css('background-image', 'url(../images/3a.png)');
                 $('.before-main-content .img_fix_bg').css('background-image', 'none');
@@ -170,7 +170,7 @@
                 $('.wrap-content .logo').css('width', '50%');
                 $('.btn-login').css('background', '#007f48 0% 0% no-repeat padding-box');
                 $('.wrap-login100').css('top', '21%');
-                sessionStorage.setItem('img-logo', '/images/logo-clerver.png');
+                sessionStorage.setItem('img-logo', '/images/logo-clever.png.png');
             }
         }
     }
