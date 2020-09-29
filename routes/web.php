@@ -728,7 +728,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
     Route::post('/certificate/generate/multiple', 'Backend\StudentController@apiGenerateSelectedUser');
     Route::get('/certificate/image', 'Backend\StudentController@viewImageCertificate');
-
+    Route::post('/api/certificate/checkexist', 'Backend\StudentController@apiCheckCerExist');
     Route::get('/api/cron_delete_enrol', 'Backend\CourseController@apiDeleteEnrolNotUse');
     //test
     Route::get('/testNotify', 'Api\NotificationController@index');
