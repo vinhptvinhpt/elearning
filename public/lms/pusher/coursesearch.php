@@ -185,7 +185,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     if ($txtSearch || $category > 0) {
         foreach ($all_courses as $courseA) {
             if ($txtSearch && $category > 0) {
-                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && strpos($courseA->category, $category) !== false)
+                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && $courseA->category == $category)
                     $resultSearch[] = $courseA;
             } else if ($txtSearch) {
 //                echo strtolower($courseA->fullname). '   '.strtolower($txtSearch). '<br/>';
@@ -354,8 +354,8 @@ and mue.userid = ' . $USER->id;
     if ($txtSearch || $category > 0) {
         foreach ($coures_result as $courseR) {
             if ($txtSearch && $category > 0) {
-                strtolower($txtSearch);
-                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false && strpos($courseR->category, $category) !== false)
+//                strtolower($txtSearch);
+                if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false && $courseR->category == $category)
                     $resultSearch[] = $courseR;
             } else if ($txtSearch) {
 //                strtolower($txtSearch);
