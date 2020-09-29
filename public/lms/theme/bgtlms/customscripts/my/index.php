@@ -49,6 +49,8 @@ if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi
     $organizationCodeGet = "AV";
 } else if (strpos($organizationLower, 'tve') === 0) {
     $organizationCodeGet = "TVE";
+} else if (strpos($organizationLower, 'edu') === 0) {
+    $organizationCodeGet = "EDU";
 //    $organization_id = 0;
 } else {
     $organizationCodeGet = "PHH";
@@ -117,6 +119,19 @@ switch ($organizationCode) {
             $_SESSION["component"] = 'images/cpn-vnu.png';
             $_SESSION["pathImgAvailableCourse"] = 'images/2a.png';
             $_SESSION["pathBackground"] = 'images/1a.png';
+            $className = 'Elearning';
+            $colorOrganizationText = '#000';
+        }
+        break;
+    case "EDU":
+        {
+            $_SESSION["organizationName"] = 'Clever';
+            $_SESSION["color"] = '#cf3e3e';
+            $_SESSION["pathLogo"] = 'images/phh.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-clever.png';
+            $_SESSION["component"] = 'images/cpn-aic.png';
+            $_SESSION["pathImgAvailableCourse"] = 'images/2c.png';
+            $_SESSION["pathBackground"] = 'images/2b.jpg';
             $className = 'Elearning';
             $colorOrganizationText = '#000';
         }
