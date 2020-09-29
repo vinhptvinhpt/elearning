@@ -49,11 +49,11 @@ if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi
     $organizationCodeGet = "AV";
 } else if (strpos($organizationLower, 'tve') === 0) {
     $organizationCodeGet = "TVE";
-} else if (strpos($organizationLower, 'aic') === 0) {
-    $organizationCodeGet = "AIC";
+} else if (strpos($organizationLower, 'edu') === 0) {
+    $organizationCodeGet = "EDU";
 //    $organization_id = 0;
 } else {
-    $organizationCodeGet = "AIC";
+    $organizationCodeGet = "PHH";
 }
 
 //color for h1 - organization
@@ -123,12 +123,12 @@ switch ($organizationCode) {
             $colorOrganizationText = '#000';
         }
         break;
-    case "AIC":
+    case "EDU":
         {
-            $_SESSION["organizationName"] = 'AIC';
+            $_SESSION["organizationName"] = 'Clever';
             $_SESSION["color"] = '#cf3e3e';
             $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/Logo-AIC.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-clerver.png';
             $_SESSION["component"] = 'images/cpn-aic.png';
             $_SESSION["pathImgAvailableCourse"] = 'images/2c.png';
             $_SESSION["pathBackground"] = 'images/2b.jpg';
