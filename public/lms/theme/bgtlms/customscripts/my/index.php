@@ -128,7 +128,7 @@ switch ($organizationCode) {
             $_SESSION["organizationName"] = 'Clever';
             $_SESSION["color"] = '#cf3e3e';
             $_SESSION["pathLogo"] = 'images/phh.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-clerver.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-clever.png';
             $_SESSION["component"] = 'images/cpn-aic.png';
             $_SESSION["pathImgAvailableCourse"] = 'images/2c.png';
             $_SESSION["pathBackground"] = 'images/2b.jpg';
