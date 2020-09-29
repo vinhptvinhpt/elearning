@@ -159,9 +159,9 @@
         if(url.includes('tinhvan')){
             var lastChar = url.substr(url.length - 1);
             if(lastChar == '/'){
-                $('.name-organization').text('VNU');
+                $('.name-organization').text('Clever');
                 $('.class-name-organization').text('Elearning');
-                $('.logo'). attr("src", "../images/Logo-VNU.png");
+                $('.logo'). attr("src", "../images/logo-clerver.png");
                 // $('.main-bg').css("background-image", "url(../images/3a.png) !important");
                 $('.main-bg').css('background-image', 'url(../images/3a.png)');
                 $('.before-main-content .img_fix_bg').css('background-image', 'none');
