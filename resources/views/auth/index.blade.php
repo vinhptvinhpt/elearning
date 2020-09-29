@@ -170,7 +170,7 @@
                 $('.wrap-content .logo').css('width', '50%');
                 $('.btn-login').css('background', '#007f48 0% 0% no-repeat padding-box');
                 $('.wrap-login100').css('top', '21%');
-                sessionStorage.setItem('img-logo', '/images/Logo-VNU.png');
+                sessionStorage.setItem('img-logo', '/images/logo-clerver.png');
             }
         }
     }
