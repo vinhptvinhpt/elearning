@@ -84,6 +84,9 @@
                                     :placeholder="trans.get('keys.ngay_ket_thuc')"
                                   >
                                   </datepicker>
+                                  <div class="col-12">
+                                    <em>{{ trans.get('keys.tim_kiem_dua_tren_thoi_gian_hoan_thanh') }}</em>
+                                  </div>
                         </div>
                         <div class="col-12 text-right">
                             <button id="buttonReport" class="btn btn-primary btn-sm" @click="listData()"
