@@ -483,7 +483,7 @@ class TaskController extends Controller
             $data_item['code'] = $certificatecode;
             $data_item['status'] = 1;
             $data_item['timecertificate'] = time();
-            $data_item['auto_cron'] = 1;
+            $data_item['auto_run'] = 1;
             $data_item['created_at'] = Carbon::now();
             $data_item['updated_at'] = Carbon::now();
 
