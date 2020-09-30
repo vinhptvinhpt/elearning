@@ -1112,7 +1112,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                 'enrolid' => $enrol_id,
                 'userid' => $user_id,
                 'timestart' => strtotime(Carbon::now()),
-                'modifierid' => Auth::user()->id,
+                'modifierid' => Auth::user() ? Auth::user()->id : 0,
                 'timecreated' => strtotime(Carbon::now()),
                 'timemodified' => strtotime(Carbon::now())
             ];
@@ -1509,7 +1509,7 @@ function insert_single_notification($type, $sendto, $target, $course_id)
         'target' => $target,
         'status_send' => TmsNotification::UN_SENT,
         'course_id' => $course_id,
-        'createdby' => Auth::user()->id
+        'createdby' => Auth::user() ? Auth::user()->id : 0
     ]);
 
     insert_single_notification_log($tms_notif, TmsNotificationLog::CREATE_NOTIF);
