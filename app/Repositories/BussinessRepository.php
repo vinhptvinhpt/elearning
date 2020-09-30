@@ -3024,7 +3024,7 @@ class BussinessRepository implements IBussinessInterface
                     $invitation->accepted = 1;
                 }
                 $invitation->save();
-                if ($accepted == 1) {
+                if ($accepted) {
                     //Enrol user vào khóa
                     enrole_user_to_course_multiple([$invitation->user_id], Role::ROLE_STUDENT, $invitation->course_id, true);
                 }
