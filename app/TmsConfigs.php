@@ -34,7 +34,7 @@ class TmsConfigs extends Model
             TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::REMIND_EXAM => TmsConfigs::EDITOR_CHECKBOX,
             //Not in the list
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::EDITOR_CHECKBOX,
+            //TmsNotification::REMIND_CERTIFICATE => TmsConfigs::EDITOR_CHECKBOX, //Tam thoi khong su dung
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::FAIL_EXAM => TmsConfigs::EDITOR_CHECKBOX,
             TmsNotification::RETAKE_EXAM => TmsConfigs::EDITOR_CHECKBOX,
@@ -59,7 +59,7 @@ class TmsConfigs extends Model
             TmsNotification::ASSIGNED_COMPETENCY => TmsConfigs::ENABLE,
             TmsNotification::REMIND_EXAM => TmsConfigs::ENABLE,
             //Not in the list
-            TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
+            //TmsNotification::REMIND_CERTIFICATE => TmsConfigs::ENABLE,
             TmsNotification::REQUEST_MORE_ATTEMPT => TmsConfigs::ENABLE,
             TmsNotification::FAIL_EXAM => TmsConfigs::ENABLE,
             TmsNotification::RETAKE_EXAM => TmsConfigs::ENABLE,

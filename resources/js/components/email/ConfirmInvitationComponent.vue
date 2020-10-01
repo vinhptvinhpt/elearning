@@ -54,7 +54,7 @@
             </div>
           </div>
           <div v-else class="row mt-20">
-            <div class="col-12" v-if="!deny">
+            <div class="col-12" v-if="accepted === 1">
               {{ trans.get('keys.ban_da_xac_nhan_loi_moi_nay') }}
             </div>
             <div class="col-12" v-else>
@@ -83,7 +83,6 @@
         end_date: 0,
         accepted: false,
         rejected: false,
-        deny: false,
         reason: "",
         replied: 0,
         exist: 0,
@@ -94,9 +93,7 @@
       getInvitation() {
         axios.get('/api/invitation/detail/' + this.invitation_id)
           .then(response => {
-            console.log(response.data.accepted);
-            if (response.data.accepted == 0)
-              this.deny = true;
+            this.accepted = response.data.accepted;
             if (response.data.course) {
               this.course_name = response.data.course.fullname;
               this.course_code = response.data.course.shortname;

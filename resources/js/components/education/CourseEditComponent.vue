@@ -86,8 +86,7 @@
                         <input v-model="course.pass_score" type="number" id="pass_score"
                                :placeholder="trans.get('keys.vi_du')+': 50'"
                                class="form-control mb-4" min="0">
-<!--                                                                        <label v-if="!course.pass_score"-->
-<!--                                                                               class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                        <label v-if="!course.pass_score" class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
 
                       <div class="col-md-4 col-sm-6 form-group">
@@ -244,30 +243,30 @@
       },
       onChangeCate(event) {
         if (event.target.value == 3) {
-          this.pass_score = 0;
-          $('#pass_score').attr("disabled", true);
-          $('#is_end_quiz').show();
+          //this.pass_score = 0;
+          //$('#pass_score').attr("disabled", true);
+          //$('#is_end_quiz').show();
         } else {
           // if (this.course.is_toeic == 1) {
           //   $('#pass_score').attr("disabled", true);
           // } else {
           //   $('#pass_score').attr("disabled", false);
           // }
-          $('#pass_score').attr("disabled", false);
-          $('#is_end_quiz').hide();
+          //$('#pass_score').attr("disabled", false);
+          //$('#is_end_quiz').hide();
         }
       },
-      onChangeToeic() {
-        if (this.course.is_toeic == 1) {
-          $('#pass_score').attr("disabled", true);
-        } else {
-          if (this.course.category == 3) {
-            $('#pass_score').attr("disabled", true);
-          } else {
-            $('#pass_score').attr("disabled", false);
-          }
-        }
-      },
+      // onChangeToeic() {
+      //   if (this.course.is_toeic == 1) {
+      //     $('#pass_score').attr("disabled", true);
+      //   } else {
+      //     if (this.course.category == 3) {
+      //       $('#pass_score').attr("disabled", true);
+      //     } else {
+      //       $('#pass_score').attr("disabled", false);
+      //     }
+      //   }
+      // },
       getCategories() {
         axios.post('/api/courses/get_list_category_edit')
           .then(response => {
@@ -294,19 +293,21 @@
               this.course.enddate = "";
             }
             if (response.data.pass_score)
-              this.course.pass_score = Math.floor(response.data.pass_score);
+              //this.course.pass_score = Math.floor(response.data.pass_score);
+              this.course.pass_score = parseFloat(response.data.pass_score);
 
             if (this.course.category == 3) {
-              $('#pass_score').attr("disabled", true);
-              $('#is_end_quiz').show();
+              //$('#pass_score').attr("disabled", true);
+              //$('#is_end_quiz').show();
             } else {
               // if (this.course.is_toeic == 1) {
               //   $('#pass_score').attr("disabled", true);
               // } else {
               //   $('#pass_score').attr("disabled", false);
               // }
-              $('#pass_score').attr("disabled", false);
-              $('#is_end_quiz').hide();
+
+              //$('#pass_score').attr("disabled", false);
+              //$('#is_end_quiz').hide();
             }
             //Convert text-area to ck editor
             this.setEditor();
@@ -370,9 +371,9 @@
         }
 
         //validate positive number
-        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+        var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
-        if(!rePosNum.test(this.course.pass_score)){
+        if(this.course.pass_score && !rePosNum.test(this.course.pass_score)){
           toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
           return;
         }

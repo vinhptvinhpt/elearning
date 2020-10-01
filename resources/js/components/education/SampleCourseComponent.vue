@@ -437,13 +437,13 @@
                         console.log(error);
                     });
             },
-            onChangeToeic() {
-                if (this.is_toeic == 1) {
-                    $('#pass_score').attr("disabled", true);
-                } else {
-                    $('#pass_score').attr("disabled", false);
-                }
-            },
+            // onChangeToeic() {
+            //     if (this.is_toeic == 1) {
+            //         $('#pass_score').attr("disabled", true);
+            //     } else {
+            //         $('#pass_score').attr("disabled", false);
+            //     }
+            // },
             async setShortName() {
                 if (this.library) {
                     let codesA = await this.getLibrary();
@@ -489,7 +489,7 @@
                 }
 
               //validate positive number
-              var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+              var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
               if(!rePosNum.test(this.pass_score))
               {

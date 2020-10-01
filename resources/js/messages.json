@@ -1063,7 +1063,8 @@
         "pass_score": "Passing Grade",
         "estimate_duration": "Estimate time",
         "course_budget": "Course budget",
-        "total_date_course": "Number of learning session"
+        "total_date_course": "Number of learning session",
+        "tim_kiem_dua_tren_thoi_gian_hoan_thanh": "Search by completed time"
     },
     "vi.keys": {
         "language": "",
@@ -2120,6 +2121,7 @@
         "pass_score": "Điểm qua môn",
         "estimate_duration": "Thời gian dự kiến",
         "course_budget": "Chi phí",
-        "total_date_course": "Số buổi trong khóa học"
+        "total_date_course": "Số buổi trong khóa học",
+        "tim_kiem_dua_tren_thoi_gian_hoan_thanh": "Tìm kiếm dựa trên thời gian hoàn thành"
     }
 }

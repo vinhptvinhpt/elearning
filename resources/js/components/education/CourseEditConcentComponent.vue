@@ -75,7 +75,7 @@
                         <label for="inputText1-2">{{trans.get('keys.diem_qua_mon')}}</label>
                         <input v-model="course.pass_score" type="number" id="inputText1-2"
                                :placeholder="trans.get('keys.vi_du')+': 50'" class="form-control mb-4">
-                        <!--                        <label v-if="!course.pass_score" class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
+<!--                        <label v-if="!course.pass_score" class="required text-danger pass_score_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>-->
                       </div>
                       <div class="col-md-4 col-sm-6 form-group">
                         <label for="estimate_duration">{{trans.get('keys.thoi_gian_du_kien')}} *</label>
@@ -247,7 +247,8 @@
               this.course.enddate = "";
             }
             if (response.data.pass_score)
-              this.course.pass_score = Math.floor(response.data.pass_score);
+              //this.course.pass_score = Math.floor(response.data.pass_score);
+              this.course.pass_score = parseFloat(response.data.pass_score);
 
           })
           .catch(error => {
@@ -320,9 +321,9 @@
         }
 
         //validate positive number
-        var rePosNum = /^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+        var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
-        if(!rePosNum.test(this.course.pass_score)){
+        if(this.course.pass_score && !rePosNum.test(this.course.pass_score)){
           toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
           return;
         }
