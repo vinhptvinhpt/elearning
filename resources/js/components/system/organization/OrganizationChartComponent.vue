@@ -37,14 +37,14 @@
               keys: ['from', 'to'],
               data: [
 
-                ["PHH Group", "Easia"],
-                ["Easia", "Easia-BOM"],
-                ["Easia", "Easia-LEGAL & COMPLIANCE"],
-                ["Easia", "Easia-ACCOUNTING & FINANCE"],
-                ["Easia", "Easia-SALES"],
-                ["Easia", "Easia-OPERATION"],
-                ["Easia", "Easia-RESERVATION"],
-                ["Easia", "Easia-TICKETING & VISA & TRANSPORTATION"],
+                // ["PHH Group", "Easia"],
+                // ["Easia", "Easia-BOM"],
+                // ["Easia", "Easia-LEGAL & COMPLIANCE"],
+                // ["Easia", "Easia-ACCOUNTING & FINANCE"],
+                // ["Easia", "Easia-SALES"],
+                // ["Easia", "Easia-OPERATION"],
+                // ["Easia", "Easia-RESERVATION"],
+                // ["Easia", "Easia-TICKETING & VISA & TRANSPORTATION"],
 
                 // ["Easia", "Easia-IT"],
                 // ["Easia", "Easia-MARKETING & BRANDING"],
@@ -108,13 +108,13 @@
                   },
                   height: 25
                 },
-                // {
-                //   level: 2,
-                //   color: '#9e226d',
-                //   dataLabels: {
-                //     color: 'white',
-                //   },
-                // },
+                {
+                  level: 2,
+                  color: '#9e226d',
+                  dataLabels: {
+                    color: 'white',
+                  },
+                },
                 {
                   level: 3,
                   color: '#3aaa59'
@@ -124,92 +124,7 @@
                   color: '#d46c13'
                 }
               ],
-              nodes: [
-
-                // {
-                //   id: 'Shareholders'
-                // },
-                // {
-                //   id: 'Board'
-                // },
-                // {
-                //   id: 'CEO',
-                //   title: 'CEO',
-                //   name: 'Grethe Hjetland',
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/12132317/Grethe.jpg'
-                // },
-                // {
-                //   id: 'HR',
-                //   title: 'HR/CFO',
-                //   name: 'Anne Jorunn Fjærestad',
-                //   color: '#007ad0',
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/12132314/AnneJorunn.jpg',
-                //   column: 3,
-                //   offset: '75%'
-                // },
-                // {
-                //   id: 'CTO',
-                //   title: 'CTO',
-                //   name: 'Christer Vasseng',
-                //   column: 4,
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/12140620/Christer.jpg',
-                //   layout: 'hanging'
-                // },
-                // {
-                //   id: 'CPO',
-                //   title: 'CPO',
-                //   name: 'Torstein Hønsi',
-                //   column: 4,
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/12131849/Torstein1.jpg'
-                // },
-                // {
-                //   id: 'CSO',
-                //   title: 'CSO',
-                //   name: 'Anita Nesse',
-                //   column: 4,
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/12132313/Anita.jpg',
-                //   layout: 'hanging'
-                // },
-                // {
-                //   id: 'CMO',
-                //   title: 'CMO',
-                //   name: 'Vidar Brekke',
-                //   column: 4,
-                //   image: 'https://wp-assets.highcharts.com/www-highcharts-com/blog/wp-content/uploads/2018/11/13105551/Vidar.jpg',
-                //   layout: 'hanging'
-                // },
-                // {
-                //   id: 'Product',
-                //   name: 'Product developers'
-                // },
-                // {
-                //   id: 'Web',
-                //   name: 'Web devs, sys admin'
-                // },
-                // {
-                //   id: 'Sales',
-                //   name: 'Sales team'
-                // },
-                // {
-                //   id: 'Market',
-                //   name: 'Marketing team'
-                // }
-
-               /* {id: "Easia", layout: "hanging"},
-                {id: "TVE", layout: "hanging"},
-                {id: "Exotic", layout: "hanging"},
-                {id: "Begodi", layout: "hanging"},
-                {id: "2121212c", layout: "hanging"},
-                {id: "2121212c", layout: "hanging"},
-                {
-                  id: "Easia-PRODUCTION RESEARCH & DEVELOPMENT CONSULTANT",
-                  dataLabels: {
-                    style: {
-                      fontSize: "smaller"
-                    },
-                  },
-                },*/
-              ],
+              nodes: [],
               colorByPoint: false,
               color: '#007ad0',
               dataLabels: {
@@ -233,15 +148,19 @@
     methods: {
       fetchTree(list, outputs, nodes) {
         for (const [key, item] of Object.entries(list)) {
-          if (item.level === 1) {
-            outputs.push(['PHH Group', item.name]);
+
+          if (item.level === 1) { //Nếu là level 1 => trực thuộc PHH group
+            outputs.push(['PHH Group', item.code]); //Use code instead of name to avoid auto group item by library
           }
+
           let hasNode = false;
+
+          //Node sử dụng khi muốn set riêng style: layout hanging, font size etc..
           let newNode = {
-            id: item.name
+            id: item.code
           };
-          // console.log(item.name, item.name.length);
-          if (item.name.length > 40) {
+
+          if (item.code.length > 40) { //tên quá dài => chọn font chữ nhỏ
             hasNode = true;
             newNode.dataLabels = {
               style: {
@@ -249,24 +168,26 @@
               }
             };
           }
-          //let newItem = [item.name];
-          if (item.children.length > 0) {
-            newNode.layout = 'hanging';
-            hasNode = true;
-            for (const [key, child] of Object.entries(item.children)) {
-              let newItemHasChild = [item.name, child.name];
-              outputs.push(newItemHasChild);
+
+          if (item.children.length > 0) { //Nếu có con
+            if (item.level <= 1) { //Skip to level 2
+              if (item.level % 2 !== 0) { //chọn layout hanging cho level 1, 3, 5, 7
+                hasNode = true;
+                newNode.layout = 'hanging';
+              }
+              for (const [key, child] of Object.entries(item.children)) {
+                let newItemHasChild = [item.code, child.code];
+                outputs.push(newItemHasChild);
+              }
+              this.fetchTree(item.children, outputs, nodes);
             }
-            this.fetchTree(item.children, outputs, nodes);
           }
-          // else {
-          //   if (item.level === 1) {
-          //     outputs.push(newItem)
-          //   }
-          // }
+
+          //Thêm node nếu có
           if (hasNode === true) {
             nodes.push(newNode);
           }
+
         }
         return outputs;
       }
