@@ -16,7 +16,7 @@
         <div class="row">
           <div class="col-12 col-lg-3">
             <div class="card">
-              <div style="padding: 10px">
+              <div style="padding: 10px" class="text-center">
                 <img :src="users.avatar ? users.avatar : '/images/user.png'" alt="">
               </div>
               <div class="card-body">
@@ -129,77 +129,77 @@
 </template>
 
 <script>
-    import UserSchedule from './ScheduleComponent'
-    import UserCourseGrade from './UserCourseGradeComponent'
-    import Const from '../../../services/const'
+  import UserSchedule from './ScheduleComponent'
+  import UserCourseGrade from './UserCourseGradeComponent'
+  import Const from '../../../services/const'
 
-    export default {
-        props: ['type'],
-        components: {UserSchedule, UserCourseGrade},
-        data() {
-            return {
-                users: {},
-                training_name:'',
-                user_id: 0,
-                countries: {},
+  export default {
+    props: ['type'],
+    components: {UserSchedule, UserCourseGrade},
+    data() {
+      return {
+        users: {},
+        training_name: '',
+        user_id: 0,
+        countries: {},
+      }
+    },
+    methods: {
+      userData() {
+        axios.post('/system/user/profile')
+          .then(response => {
+            this.users = response.data;
+            if (response.data.training) {
+              this.training_name = response.data.training.training_detail.name;
             }
-        },
-        methods:{
-            userData(){
-                axios.post('/system/user/profile')
-                    .then(response => {
-                        this.users = response.data;
-                        if(response.data.training){
-                            this.training_name = response.data.training.training_detail.name;
-                        }
-                    })
-                    .catch(error => {
-                        //console.log(error);
-                    })
-            },
-            restoreUser(user_id){
-                let current_pos = this;
+          })
+          .catch(error => {
+            //console.log(error);
+          })
+      },
+      restoreUser(user_id) {
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/system/user/restore', {user_id: user_id})
+            .then(response => {
+              if (response.data == 'success') {
                 swal({
-                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
-                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    showLoaderOnConfirm: true
+                  title: current_pos.trans.get('keys.thong_bao'),
+                  text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
+                  type: "success",
+                  showCancelButton: false,
+                  closeOnConfirm: false,
+                  showLoaderOnConfirm: true
                 }, function () {
-                    axios.post('/system/user/restore',{user_id:user_id})
-                        .then(response => {
-                            if(response.data == 'success'){
-                                swal({
-                                    title: current_pos.trans.get('keys.thong_bao'),
-                                    text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }, function () {
-                                    location.reload();
-                                });
-                            }else{
-                                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
-                            }
-
-                        })
-                        .catch(error => {
-                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
-                        });
+                  location.reload();
                 });
-                return false;
-            },
-            fetchCountries() {
-              this.countries = Const.data().countries;
-            },
-        },
-        mounted() {
-          this.userData();
-          this.fetchCountries();
-        }
+              } else {
+                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
+              }
+
+            })
+            .catch(error => {
+              swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
+            });
+        });
+        return false;
+      },
+      fetchCountries() {
+        this.countries = Const.data().countries;
+      },
+    },
+    mounted() {
+      this.userData();
+      this.fetchCountries();
     }
+  }
 </script>
 
 <style scoped>
