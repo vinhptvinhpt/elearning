@@ -10861,6 +10861,8 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $now = Carbon::now();
+
+        //Lấy các khóa đã được enrol đang diễn ra
         $mdlUserEnr = DB::table('mdl_user_enrolments as enrolments')
             ->join('mdl_enrol as me', 'me.id', '=', 'enrolments.enrolid')
             ->join('mdl_course as mc', 'mc.id', '=', 'me.courseid')
@@ -10909,7 +10911,7 @@ class BussinessRepository implements IBussinessInterface
 
         if ($this->keyword) {
             if ($this->keyword == 'offline' || $this->keyword == 'Offline') {
-                $mdlUserEnr->whereIn('mc.category', [2, 5]);
+                $mdlUserEnr->whereIn('mc.category', [5]);
             } else if ($this->keyword == 'online' || $this->keyword == 'Online') {
                 $mdlUserEnr->whereNotIn('mc.category', [2, 5]);
             } else {
@@ -10947,48 +10949,39 @@ class BussinessRepository implements IBussinessInterface
         if (!empty($validator)) {
             return response()->json([]);
         }
-//        dd($user_id, $trainning_id);
-        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
+
+//        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
 
         $data = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
+            //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
             ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttc.deleted', '=', 0)
             ->where('c.deleted', '=', 0)
             ->where('u.id', '=', $user_id)
+            ->where('e.roleid', '=', Role::ROLE_STUDENT)
             ->select(
                 'c.id as course_id',
                 'c.shortname',
                 'c.fullname',
-                'c.fullname',
                 'ttp.name as trainning_name',
-                'ccc.gradepass as gradepass',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
-                inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
-                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0)
-                as user_course_completionstate'), //Đã học
-                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm
-                inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
-                where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
-                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc
-                                 where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user'),
-                DB::raw('(select `g`.`finalgrade`
-  				from mdl_grade_items as gi
-				join mdl_grade_grades as g
-				on g.itemid = gi.id
-				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
+                //'ccc.gradepass as gradepass',
+                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'), //Đã học
+                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
+                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
+                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
             );
 
-        $data = $data->orderBy('c.id', 'desc')->distinct();
+        $data = $data->orderBy('c.id', 'desc');
+
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
+
         if ($this->keyword) {
             $data = $data->where(function ($q) {
                 $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
