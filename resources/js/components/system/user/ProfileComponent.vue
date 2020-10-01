@@ -20,7 +20,7 @@
                 <img :src="users.avatar ? users.avatar : '/images/user.png'" alt="">
               </div>
               <div class="card-body">
-                <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
+                <h6 class="mb-5 text-center" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                 </h6>
                 <p>ID: <strong>{{users.username}}</strong></p>
 <!--                <p v-if="users.student_role > 0">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat') }}</strong></p>-->
