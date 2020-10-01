@@ -10869,11 +10869,12 @@ class BussinessRepository implements IBussinessInterface
 //            ->leftJoin('tms_trainning_courses as ttc', 'mc.id', '=', 'ttc.course_id')
 //            ->leftJoin('tms_traninning_programs as ttp', 'ttc.trainning_id', '=', 'ttp.id')
             ->where('enrolments.userid', '=', $user_id)
-//            ->where('ttc.deleted', '<>', 1)
+            //            ->where('ttc.deleted', '<>', 1)
             ->where('mc.deleted', '=', 0)
             ->where('mc.visible', '=', 1)
             ->whereNotIn('mc.category', [2, 7]) //hide
             ->where('mc.deleted', '=', 0)
+            ->where('me.roleid', '=', Role::ROLE_STUDENT)
             ->select(
                 'mc.id',
                 'mc.fullname as course_name',
