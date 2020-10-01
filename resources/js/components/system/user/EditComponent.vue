@@ -54,7 +54,7 @@
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <div class="card">
-                            <div style="padding: 10px;position: relative;" v-if="users.avatar">
+                            <div style="padding: 10px;position: relative;" v-if="users.avatar" class="text-center">
                                 <a class="remove_avatar" @click="removeAvatar()" :title="trans.get('keys.go_avatar')">
                                     <i class="fa fa-times"></i>
                                 </a>
@@ -368,662 +368,675 @@
 </template>
 
 <script>
-    export default {
-        props: ['user_id','type'],
-        data() {
-            return {
-                users: {
-                    role:[],
-                    confirm_address:0,
-                    start_time:'',
-                    certificate: {
-                        code: '',
-                        timecertificate: '',
-                    },
-                    password:'',
-                    saleroom:0,
-                    branch:0,
-                    training: {
-                        trainning_id: 0,
-                    },
-                    employee: {
-                      organization_id: 0,
-                    },
-                    city: '',
-                    country: ''
-                },
-                roles:[],
-                citys:[],
-                countries: [],
-                passwordConf:'',
-                password:'',
-                branch_input:'',
-                saleroom_input:'',
-                branch_active:'',
-                option_work:'',
-                branchs:[],
-                branch_list:[],
-                salerooms:[],
-                saleroom_list:[],
-                branch_select:[],
-                saleroom_select:[],
-                training_list:[],
-                training:0,
-                role_type: '',
-                //Treeselect options
-                options: [
-                  {
-                    id: 0,
-                    label: this.trans.get('keys.chon_to_chuc')
-                  }
-                ],
-                organization_roles: [
-                  'manager',
-                  'employee',
-                  'leader'
-                ]
-            }
+  export default {
+    props: ['user_id', 'type'],
+    data() {
+      return {
+        users: {
+          role: [],
+          confirm_address: 0,
+          start_time: '',
+          certificate: {
+            code: '',
+            timecertificate: '',
+          },
+          password: '',
+          saleroom: 0,
+          branch: 0,
+          training: {
+            trainning_id: 0,
+          },
+          employee: {
+            organization_id: 0,
+          },
+          city: '',
+          country: ''
         },
-        methods:{
-            acceptNumber() {
-                let has_plus = false;
-                if (this.users.phone.indexOf('+') === 0) {
-                  has_plus = true;
-                }
-                let x = this.users.phone.replace(/\D/g,'');
-                if (has_plus === true) {
-                  this.users.phone = '+' + x;
-                }
-            },
-            changeOption(){
-                if(this.option_work === 'pos'){
-                    $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
-                }
-                if(this.option_work === 'age'){
-                    $('.btn_search_box span').html(this.trans.get('keys.chon_dai_ly'));
-                }
-            },
-            selectBranch(id) {
-                this.branch_select.push(id);
-                $('.search_branch span').html(this.trans.get('keys.chon_dai_ly'));
-                axios.post('/system/user/get_list_branch_select', {
-                    branch_select:this.branch_select
-                })
-                    .then(response => {
-                        this.branch_list = response.data;
-                    })
-                    .catch(error => {
-                        this.branch_list = [];
-                    })
-            },
-            removeBranch(id){
-                for( var i = 0; i < this.branch_select.length; i++){
-                    if ( this.branch_select[i] === id) {
-                        this.branch_select.splice(i, 1);
-                    }
-                }
-                axios.post('/system/user/get_list_branch_select', {
-                    branch_select:this.branch_select
-                })
-                    .then(response => {
-                        this.branch_list = response.data;
-                    })
-                    .catch(error => {
-                        this.branch_list = [];
-                    })
-            },
-            get_branch() {
-                $('.content_search_box').addClass('loadding');
-                axios.post('/system/user/get_list_branch', {
-                    keyword: this.branch_input,
-                    branch_select:this.branch_select
-                })
-                    .then(response => {
-                        this.branchs = response.data;
-                        $('.content_search_box').removeClass('loadding');
-                    })
-                    .catch(error => {
-                        $('.content_search_box').removeClass('loadding');
-                        this.branchs = [];
-                    })
-            },
-            get_saleroom() {
-                $('.content_search_box').addClass('loadding');
-                axios.post('/system/user/get_list_saleroom', {
-                    keyword: this.saleroom_input,
-                    saleroom_select: this.saleroom_select,
-                })
-                    .then(response => {
-                        this.salerooms = response.data;
-                        $('.content_search_box').removeClass('loadding');
-                    })
-                    .catch(error => {
-                        $('.content_search_box').removeClass('loadding');
-                        this.salerooms = [];
-                    })
-            },
-            selectSaleRoom(id) {
-                this.saleroom_select.push(id);
-                $('.search_sale_room span').html(this.trans.get('keys.chon_diem_ban'));
-                axios.post('/system/user/get_list_saleroom_select', {
-                    saleroom_select:this.saleroom_select
-                })
-                    .then(response => {
-                        this.saleroom_list = response.data;
-                    })
-                    .catch(error => {
-                        this.saleroom_list = [];
-                    })
-            },
-            removeSaleRoom(id){
-                for( var i = 0; i < this.saleroom_select.length; i++){
-                    if ( this.saleroom_select[i] === id) {
-                        this.saleroom_select.splice(i, 1);
-                    }
-                }
-                axios.post('/system/user/get_list_saleroom_select', {
-                    saleroom_select:this.saleroom_select
-                })
-                    .then(response => {
-                        this.saleroom_list = response.data;
-                    })
-                    .catch(error => {
-                        this.saleroom_list = [];
-                    })
-            },
-            removeAvatar(){
-                var user_id = this.user_id;
-                let current_pos = this;
-                swal({
-                    title: this.trans.get('keys.thong_bao'),
-                    text: this.trans.get('keys.ban_muon_go_avatar'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post('/system/user/remove_avatar',{
-                        user_id:user_id
-                    })
-                        .then(response => {
-                            roam_message(response.data.status,response.data.message);
-                            if(response.data.status === 'success'){
-                                $('.user_avatar').attr('src','');
-                            }
-                        })
-                        .catch(error => {
-                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                        });
-                });
-            },
-            changeRequired(element){
-                $('#'+element).removeClass('notValidate');
-            },
-            viewPassword(){
-                var inputPassword = document.getElementById("inputPassword");
-                var inputPasswordConfirm = document.getElementById("inputPasswordConfirm");
-                if (inputPassword.type === "password") {
-                    inputPassword.type = "text";
-                    inputPasswordConfirm.type = "text";
-                } else {
-                    inputPassword.type = "password";
-                    inputPasswordConfirm.type = "password";
-                }
-            },
-            showChangePass(){
-                if($('.btnShowChangePass').hasClass('active')){
-                    $('.showChangePass').slideUp();
-                    $('.btnShowChangePass').removeClass('active');
-                }else{
-                    $('.showChangePass').slideDown();
-                    $('.btnShowChangePass').addClass('active');
-                }
-                return;
-            },
-            deletePost(url) {
-                let current_pos = this;
-                swal({
-                    title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
-                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post(url)
-                        .then(response => {
-                            roam_message(response.data.status,response.data.message);
-                            location.reload();
-                        })
-                        .catch(error => {
-                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                        });
-                });
-
-                return false;
-            },
-            updatePassword(){
-
-                $('.message.error').hide();
-                if(this.password.length === 0){
-                    $('.passError').show();
-                    return;
-                }
-                if( this.passwordConf.length === 0 ){
-                    $('.passConfError').show();
-                    return;
-                }
-                if( this.password !== this.passwordConf){
-                    $('.passwordError').show();
-                    return;
-                }
-
-                let current_pos = this;
-                axios.post('/system/user/updatePassword', {
-                    user_id:this.user_id,
-                    password:this.password,
-                    passwordConf:this.passwordConf,
-                })
-                    .then(response => {
-                        if(response.data === 'success'){
-                            roam_message('success',current_pos.trans.get('keys.cap_nhat_mat_khau_thanh_cong'));
-                            $('.showChangePass').slideUp();
-                            $('.btnShowChangePass').removeClass('active');
-                        }else if(response.data === 'passwordFail'){
-                            $('.passwordError').show();
-                            roam_message('error',current_pos.trans.get('keys.mat_khau_khong_khop_nhau'));
-                        }else if(response.data === 'passFail'){
-                            $('.passStyleError').show();
-                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
-                        }else if(response.data === 'passConfFail'){
-                            $('.passConfStyleError').show();
-                            roam_message('error',current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
-                        }else if(response.data === 'passwordExist'){
-                            $('.wrap_password').removeClass('success');
-                            $('.wrap_password').addClass('warning');
-                            roam_message('error',current_pos.trans.get('keys.mat_khau_moi_trung_mat_khau_dang_su_dung'));
-                        }else if(response.data === 'validateFail'){
-                            roam_message('error',current_pos.trans.get('keys.loi_dinh_dang_mot_so_truong_nhap_vao_chua_ky_tu_dac_biet'));
-                        }else{
-                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                        }
-                    })
-                    .catch(error => {
-                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                    });
-            },
-            validate_password(){
-                axios.post('/validate_password',{
-                    password:this.password,
-                    passwordConf:this.passwordConf,
-                })
-                    .then(response => {
-                        if(response.data.password === 'password_success'){
-                            $('span.wrap_password.pass').removeClass('warning');
-                            $('span.wrap_password.pass').addClass('success');
-                        }else if(response.data.password === 'password_warning'){
-                            $('span.wrap_password.pass').removeClass('success');
-                            $('span.wrap_password.pass').addClass('warning');
-                        }
-
-                        if(response.data.passwordConf === 'passwordConf_success'){
-                            $('span.wrap_password.pass_conf').removeClass('warning');
-                            $('span.wrap_password.pass_conf').addClass('success');
-                        }else if(response.data.passwordConf === 'passwordConf_warning'){
-                            $('span.wrap_password.pass_conf').removeClass('success');
-                            $('span.wrap_password.pass_conf').addClass('warning');
-                        }
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-            },
-            changeConfirm(){
-                if(this.confirm === 1){
-                    $('#inputConfirmAddress').attr('disabled',false);
-                    $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_ma_chung_nhan'));
-                }else{
-                    $('#inputConfirmAddress').attr('disabled',true);
-                    $('#inputUsername').attr('placeholder',this.trans.get('keys.nhap_tai_khoan_dang_nhap'));
-                }
-
-            },
-            getRoles() {
-                if(this.type === 'system') {
-                    axios.post('/system/user/list_role', {
-                      type: 'role'
-                    })
-                        .then(response => {
-                            this.roles = response.data;
-                            this.$nextTick(function(){
-                                $('.selectpicker').selectpicker('refresh');
-                            });
-                        })
-                        .catch(error => {
-                            console.log(error.response.data);
-                        });
-                }
-            },
-            userData(){
-                axios.post('/system/user/detail',{
-                    user_id:this.user_id
-                })
-                    .then(response => {
-                        this.users = response.data;
-
-                        if (!response.data.training) {
-                            this.users.training = {
-                                trainning_id: 0,
-                            }
-                        }
-                        if (!response.data.certificate) {
-                            this.users.certificate = {
-                                code: '',
-                                timecertificate: '',
-                            }
-                        }
-
-                        if (!this.users.employee) {
-                          this.users.employee = {
-                            organization_id: 0
-                          };
-                        }
-
-                        this.selectOrganization(this.users.employee.organization_id);
-
-                        if (response.data.salerooms.length > 0) {
-                            var workplaces = response.data.salerooms;
-                            var branch_a = [];
-                            var saleroom_a = [];
-                            for (var i=0;i < workplaces.length;i++) {
-                                if(workplaces[i].type === 'agents'){
-                                    branch_a = {
-                                        'id' : workplaces[i].branch_id,
-                                        'name' : workplaces[i].branch_name
-                                    };
-                                    this.branch_list.push(branch_a);
-                                    this.branch_select.push(workplaces[i].branch_id);
-                                }
-                                if(workplaces[i].type === 'pos'){
-                                    saleroom_a = {
-                                        'id' : workplaces[i].id,
-                                        'name' : workplaces[i].name
-                                    };
-                                    this.saleroom_list.push(saleroom_a);
-                                    this.saleroom_select.push(workplaces[i].id);
-                                }
-                            }
-                        }
-                        this.$nextTick(function(){
-                            $('.selectpicker').selectpicker('refresh');
-                        });
-                    })
-                    .catch(error => {
-                    })
-            },
-            getCitys() {
-                axios.post('/system/list/list_city')
-                    .then(response => {
-                        this.citys = response.data;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-            },
-            updateUser(){
-                if(!this.users.username) {
-                    $('.username_required').show();
-                    return;
-                }
-                if(!this.users.email){
-                    $('.email_required').show();
-                    return;
-                }
-                // if(!this.users.cmtnd){
-                //     $('.cmtnd_required').show();
-                //     return;
-                // }
-                if(!this.users.fullname){
-                    $('.fullname_required').show();
-                    return;
-                }
-
-                if(!this.users.city){
-                    $('.city_required').show();
-                    return;
-                }
-                // if(this.users.training.trainning_id === 0){
-                //     $('.training_required').show();
-                //     return;
-                // }
-
-                if (!this.users.role) {
-                  $('.user_role_required').show();
-                  return;
-                }
-
-                if(!this.users.country) {
-                  $('.country_required').show();
-                  return;
-                }
-
-                if(this.users.cmtnd === undefined || this.users.cmtnd === null){
-                  this.users.cmtnd = '';
-                }
-
-                // console.log(this.type);
-                // if (this.type == 'system' && !this.users.employee.organization_id) {
-                //   $('.organization_required').show();
-                //   return;
-                // }
-
-                let validate_organization = true;
-                if (this.type === 'student' || this.type === 'teacher') {
-                  validate_organization = false;
-                }
-
-                if (validate_organization) {
-                  let organization_roles_selected = [];
-                  for (const [key, item] of Object.entries(this.roles)) {
-                    if (this.users.role.indexOf(item.id) !== -1) {
-                      if (this.organization_roles.indexOf(item.name) !== -1) {
-                        organization_roles_selected.push(item.name);
-                      }
-                    }
-                  }
-                  if (organization_roles_selected.length > 1) {
-                    toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                    return;
-                  }
-                  if (organization_roles_selected.length > 0) {
-                    if (!this.users.employee.organization_id) {
-                      toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
-                      $('.organization_required').show();
-                      return;
-                    }
-                  }
-                  if (this.users.employee.organization_id) {
-                    if (organization_roles_selected.length === 0) {
-                      toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
-                      return;
-                    }
-                  }
-
-                  if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
-                    toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
-                  }
-                }
-
-                this.formData = new FormData();
-                this.formData.append('file', this.$refs.file.files[0]);
-                this.formData.append('fullname', this.users.fullname);
-                this.formData.append('dob', this.users.dob);
-                this.formData.append('email', this.users.email);
-                this.formData.append('username', this.users.username);
-                //this.formData.append('password', this.users.password);
-                this.formData.append('phone', this.users.phone);
-                this.formData.append('cmtnd', this.users.cmtnd);
-                this.formData.append('address', this.users.address);
-                this.formData.append('city', this.users.city);
-                this.formData.append('country', this.users.country);
-                this.formData.append('role', this.users.role);
-                //this.formData.append('type', this.type);
-                this.formData.append('user_id', this.user_id);
-                this.formData.append('sex', this.users.sex);
-                this.formData.append('code', this.users.code);
-                this.formData.append('start_time', this.users.start_time);
-                this.formData.append('working_status', this.users.working_status);
-                this.formData.append('confirm_address', this.users.confirm_address);
-                this.formData.append('confirm', this.users.confirm);
-                this.formData.append('certificate_code', this.users.certificate.code);
-                this.formData.append('certificate_date', this.users.certificate.timecertificate);
-                this.formData.append('branch', this.branch);
-                this.formData.append('saleroom', this.saleroom);
-                this.formData.append('branch_select', this.branch_select);
-                this.formData.append('saleroom_select', this.saleroom_select);
-                this.formData.append('trainning_id', this.users.training.trainning_id);
-                this.formData.append('organization_id', this.users.employee.organization_id);
-
-                let current_pos = this;
-
-                axios.post('/system/user/update', this.formData, {
-                    headers: {
-                        'Content-Type': 'multipart/form-data'
-                    },
-                })
-                    .then(response => {
-                        if(response.data.status){
-                          roam_message(response.data.status,response.data.message);
-                          if (response.data.status === 'success') {
-                              this.goBack();
-                          }
-                        } else {
-                            roam_message('error',response.data.message);
-                            $('.form-control').removeClass('notValidate');
-                            $('#'+response.data.id).addClass('notValidate');
-                        }
-                    })
-                    .catch(error => {
-                        roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                    });
-            },
-            goBack(){
-                switch (this.type) {
-                    case "teacher":
-                        this.$router.push({name: 'TeacherIndex', params: {back_page:'1'}});
-//                      location.href = "/tms/education/user_teacher";
-                        break;
-                    case "student":
-                        this.$router.push({name: 'StudentIndex', params: {back_page:'1'}});
-                        // location.href = "/tms/education/user_student";
-                        break;
-                    default:
-                        this.$router.push({name: 'SystemUserList', params: {back_page:'1'}});
-                        // location.href = "/tms/system/user";
-                        break;
-                }
-            },
-            restoreUser(user_id){
-                let current_pos = this;
-                swal({
-                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
-                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: true,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post('/system/user/restore',{user_id:user_id})
-                        .then(response => {
-                            roam_message(response.data.status,response.data.message);
-                            location.reload();
-                        })
-                        .catch(error => {
-                            roam_message('error',current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
-                        });
-                });
-
-                return false;
-            },
-            getTrainingProgram(){
-                axios.post('/system/user/get_training_list')
-                    .then(response => {
-                        this.training_list = response.data;
-                    })
-                    .catch(error => {
-                        this.training_list = [];
-                    })
-            },
-            fetch() {
-              axios.post('/bridge/fetch', {
-                user_id: this.user_id,
-                view: 'EditDetailUserById'
-              })
-              .then(response => {
-                this.role_type = response.data.role_type;
-              })
-              .catch(error => {
-                console.log(error);
-              })
-            },
-            setOptions(list, current_id) {
-              let outPut = [];
-              for (const [key, item] of Object.entries(list)) {
-                let newOption = {
-                  id: item.id,
-                  label: item.code,
-                };
-                if (item.children.length > 0) {
-                  for (const [key, child] of Object.entries(item.children)) {
-                    if (child.id === current_id) {
-                      newOption.isDefaultExpanded = true;
-                      break;
-                    }
-                  }
-                  newOption.children = this.setOptions(item.children, current_id);
-                }
-                outPut.push(newOption);
-              }
-              return outPut;
-            },
-            selectOrganization(current_id) {
-              $('.content_search_box').addClass('loadding');
-              axios.post('/organization/list',{
-                keyword: this.organization_keyword,
-                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
-                paginated: 0 //không phân trang
-              })
-                .then(response => {
-                  this.organization_list = response.data;
-                  //Set options recursive
-                  this.options = this.setOptions(response.data, current_id);
-                  $('.content_search_box').removeClass('loadding');
-                })
-                .catch(error => {
-                  $('.content_search_box').removeClass('loadding');
-                })
-            },
-            getCountries() {
-              // if(this.type === 'system') {
-                axios.post('/system/user/list_country')
-                  .then(response => {
-                    this.countries = response.data;
-                  })
-                  .catch(error => {
-                    console.log(error.response.data);
-                  });
-              // }
-            },
-        },
-        mounted() {
-            this.fetch();
-            //this.getTrainingProgram();
-            this.getRoles();
-            //this.getCitys();
-            this.userData();
-            this.getCountries();
+        roles: [],
+        citys: [],
+        countries: [],
+        passwordConf: '',
+        password: '',
+        branch_input: '',
+        saleroom_input: '',
+        branch_active: '',
+        option_work: '',
+        branchs: [],
+        branch_list: [],
+        salerooms: [],
+        saleroom_list: [],
+        branch_select: [],
+        saleroom_select: [],
+        training_list: [],
+        training: 0,
+        role_type: '',
+        //Treeselect options
+        options: [
+          {
+            id: 0,
+            label: this.trans.get('keys.chon_to_chuc')
+          }
+        ],
+        organization_roles: [
+          'manager',
+          'employee',
+          'leader'
+        ],
+        dropify: false
+      }
+    },
+    methods: {
+      acceptNumber() {
+        let has_plus = false;
+        if (this.users.phone.indexOf('+') === 0) {
+          has_plus = true;
         }
+        let x = this.users.phone.replace(/\D/g, '');
+        if (has_plus === true) {
+          this.users.phone = '+' + x;
+        }
+      },
+      changeOption() {
+        if (this.option_work === 'pos') {
+          $('.btn_search_box span').html(this.trans.get('keys.chon_diem_ban'));
+        }
+        if (this.option_work === 'age') {
+          $('.btn_search_box span').html(this.trans.get('keys.chon_dai_ly'));
+        }
+      },
+      selectBranch(id) {
+        this.branch_select.push(id);
+        $('.search_branch span').html(this.trans.get('keys.chon_dai_ly'));
+        axios.post('/system/user/get_list_branch_select', {
+          branch_select: this.branch_select
+        })
+          .then(response => {
+            this.branch_list = response.data;
+          })
+          .catch(error => {
+            this.branch_list = [];
+          })
+      },
+      removeBranch(id) {
+        for (var i = 0; i < this.branch_select.length; i++) {
+          if (this.branch_select[i] === id) {
+            this.branch_select.splice(i, 1);
+          }
+        }
+        axios.post('/system/user/get_list_branch_select', {
+          branch_select: this.branch_select
+        })
+          .then(response => {
+            this.branch_list = response.data;
+          })
+          .catch(error => {
+            this.branch_list = [];
+          })
+      },
+      get_branch() {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/system/user/get_list_branch', {
+          keyword: this.branch_input,
+          branch_select: this.branch_select
+        })
+          .then(response => {
+            this.branchs = response.data;
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+            this.branchs = [];
+          })
+      },
+      get_saleroom() {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/system/user/get_list_saleroom', {
+          keyword: this.saleroom_input,
+          saleroom_select: this.saleroom_select,
+        })
+          .then(response => {
+            this.salerooms = response.data;
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+            this.salerooms = [];
+          })
+      },
+      selectSaleRoom(id) {
+        this.saleroom_select.push(id);
+        $('.search_sale_room span').html(this.trans.get('keys.chon_diem_ban'));
+        axios.post('/system/user/get_list_saleroom_select', {
+          saleroom_select: this.saleroom_select
+        })
+          .then(response => {
+            this.saleroom_list = response.data;
+          })
+          .catch(error => {
+            this.saleroom_list = [];
+          })
+      },
+      removeSaleRoom(id) {
+        for (var i = 0; i < this.saleroom_select.length; i++) {
+          if (this.saleroom_select[i] === id) {
+            this.saleroom_select.splice(i, 1);
+          }
+        }
+        axios.post('/system/user/get_list_saleroom_select', {
+          saleroom_select: this.saleroom_select
+        })
+          .then(response => {
+            this.saleroom_list = response.data;
+          })
+          .catch(error => {
+            this.saleroom_list = [];
+          })
+      },
+      removeAvatar() {
+        var user_id = this.user_id;
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.thong_bao'),
+          text: this.trans.get('keys.ban_muon_go_avatar'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/system/user/remove_avatar', {
+            user_id: user_id
+          })
+            .then(response => {
+              roam_message(response.data.status, response.data.message);
+              if (response.data.status === 'success') {
+                $('.user_avatar').attr('src', '');
+              }
+            })
+            .catch(error => {
+              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            });
+        });
+      },
+      changeRequired(element) {
+        $('#' + element).removeClass('notValidate');
+      },
+      viewPassword() {
+        var inputPassword = document.getElementById("inputPassword");
+        var inputPasswordConfirm = document.getElementById("inputPasswordConfirm");
+        if (inputPassword.type === "password") {
+          inputPassword.type = "text";
+          inputPasswordConfirm.type = "text";
+        } else {
+          inputPassword.type = "password";
+          inputPasswordConfirm.type = "password";
+        }
+      },
+      showChangePass() {
+        if ($('.btnShowChangePass').hasClass('active')) {
+          $('.showChangePass').slideUp();
+          $('.btnShowChangePass').removeClass('active');
+        } else {
+          $('.showChangePass').slideDown();
+          $('.btnShowChangePass').addClass('active');
+        }
+        return;
+      },
+      deletePost(url) {
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.ban_muon_xoa_muc_da_chon'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post(url)
+            .then(response => {
+              roam_message(response.data.status, response.data.message);
+              location.reload();
+            })
+            .catch(error => {
+              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            });
+        });
+
+        return false;
+      },
+      updatePassword() {
+
+        $('.message.error').hide();
+        if (this.password.length === 0) {
+          $('.passError').show();
+          return;
+        }
+        if (this.passwordConf.length === 0) {
+          $('.passConfError').show();
+          return;
+        }
+        if (this.password !== this.passwordConf) {
+          $('.passwordError').show();
+          return;
+        }
+
+        let current_pos = this;
+        axios.post('/system/user/updatePassword', {
+          user_id: this.user_id,
+          password: this.password,
+          passwordConf: this.passwordConf,
+        })
+          .then(response => {
+            if (response.data === 'success') {
+              roam_message('success', current_pos.trans.get('keys.cap_nhat_mat_khau_thanh_cong'));
+              $('.showChangePass').slideUp();
+              $('.btnShowChangePass').removeClass('active');
+            } else if (response.data === 'passwordFail') {
+              $('.passwordError').show();
+              roam_message('error', current_pos.trans.get('keys.mat_khau_khong_khop_nhau'));
+            } else if (response.data === 'passFail') {
+              $('.passStyleError').show();
+              roam_message('error', current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
+            } else if (response.data === 'passConfFail') {
+              $('.passConfStyleError').show();
+              roam_message('error', current_pos.trans.get('keys.mat_khau_chua_dap_ung_mat_khau_can_bao_gom_chu_in_hoa_so_va_ky_tu_dac_biet'));
+            } else if (response.data === 'passwordExist') {
+              $('.wrap_password').removeClass('success');
+              $('.wrap_password').addClass('warning');
+              roam_message('error', current_pos.trans.get('keys.mat_khau_moi_trung_mat_khau_dang_su_dung'));
+            } else if (response.data === 'validateFail') {
+              roam_message('error', current_pos.trans.get('keys.loi_dinh_dang_mot_so_truong_nhap_vao_chua_ky_tu_dac_biet'));
+            } else {
+              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            }
+          })
+          .catch(error => {
+            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+          });
+      },
+      validate_password() {
+        axios.post('/validate_password', {
+          password: this.password,
+          passwordConf: this.passwordConf,
+        })
+          .then(response => {
+            if (response.data.password === 'password_success') {
+              $('span.wrap_password.pass').removeClass('warning');
+              $('span.wrap_password.pass').addClass('success');
+            } else if (response.data.password === 'password_warning') {
+              $('span.wrap_password.pass').removeClass('success');
+              $('span.wrap_password.pass').addClass('warning');
+            }
+
+            if (response.data.passwordConf === 'passwordConf_success') {
+              $('span.wrap_password.pass_conf').removeClass('warning');
+              $('span.wrap_password.pass_conf').addClass('success');
+            } else if (response.data.passwordConf === 'passwordConf_warning') {
+              $('span.wrap_password.pass_conf').removeClass('success');
+              $('span.wrap_password.pass_conf').addClass('warning');
+            }
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+      },
+      changeConfirm() {
+        if (this.confirm === 1) {
+          $('#inputConfirmAddress').attr('disabled', false);
+          $('#inputUsername').attr('placeholder', this.trans.get('keys.nhap_ma_chung_nhan'));
+        } else {
+          $('#inputConfirmAddress').attr('disabled', true);
+          $('#inputUsername').attr('placeholder', this.trans.get('keys.nhap_tai_khoan_dang_nhap'));
+        }
+
+      },
+      getRoles() {
+        if (this.type === 'system') {
+          axios.post('/system/user/list_role', {
+            type: 'role'
+          })
+            .then(response => {
+              this.roles = response.data;
+              this.$nextTick(function () {
+                $('.selectpicker').selectpicker('refresh');
+              });
+            })
+            .catch(error => {
+              console.log(error.response.data);
+            });
+        }
+      },
+      userData() {
+        axios.post('/system/user/detail', {
+          user_id: this.user_id
+        })
+          .then(response => {
+            this.users = response.data;
+
+            if (!response.data.training) {
+              this.users.training = {
+                trainning_id: 0,
+              }
+            }
+            if (!response.data.certificate) {
+              this.users.certificate = {
+                code: '',
+                timecertificate: '',
+              }
+            }
+
+            if (!this.users.employee) {
+              this.users.employee = {
+                organization_id: 0
+              };
+            }
+
+            this.selectOrganization(this.users.employee.organization_id);
+
+            if (response.data.salerooms.length > 0) {
+              var workplaces = response.data.salerooms;
+              var branch_a = [];
+              var saleroom_a = [];
+              for (var i = 0; i < workplaces.length; i++) {
+                if (workplaces[i].type === 'agents') {
+                  branch_a = {
+                    'id': workplaces[i].branch_id,
+                    'name': workplaces[i].branch_name
+                  };
+                  this.branch_list.push(branch_a);
+                  this.branch_select.push(workplaces[i].branch_id);
+                }
+                if (workplaces[i].type === 'pos') {
+                  saleroom_a = {
+                    'id': workplaces[i].id,
+                    'name': workplaces[i].name
+                  };
+                  this.saleroom_list.push(saleroom_a);
+                  this.saleroom_select.push(workplaces[i].id);
+                }
+              }
+            }
+            this.$nextTick(function () {
+              $('.selectpicker').selectpicker('refresh');
+            });
+          })
+          .catch(error => {
+          })
+      },
+      getCitys() {
+        axios.post('/system/list/list_city')
+          .then(response => {
+            this.citys = response.data;
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+      },
+      updateUser() {
+        if (!this.users.username) {
+          $('.username_required').show();
+          return;
+        }
+        if (!this.users.email) {
+          $('.email_required').show();
+          return;
+        }
+        // if(!this.users.cmtnd){
+        //     $('.cmtnd_required').show();
+        //     return;
+        // }
+        if (!this.users.fullname) {
+          $('.fullname_required').show();
+          return;
+        }
+
+        if (!this.users.city) {
+          $('.city_required').show();
+          return;
+        }
+        // if(this.users.training.trainning_id === 0){
+        //     $('.training_required').show();
+        //     return;
+        // }
+
+        if (!this.users.role) {
+          $('.user_role_required').show();
+          return;
+        }
+
+        if (!this.users.country) {
+          $('.country_required').show();
+          return;
+        }
+
+        if (this.users.cmtnd === undefined || this.users.cmtnd === null) {
+          this.users.cmtnd = '';
+        }
+
+        // console.log(this.type);
+        // if (this.type == 'system' && !this.users.employee.organization_id) {
+        //   $('.organization_required').show();
+        //   return;
+        // }
+
+        let validate_organization = true;
+        if (this.type === 'student' || this.type === 'teacher') {
+          validate_organization = false;
+        }
+
+        if (validate_organization) {
+          let organization_roles_selected = [];
+          for (const [key, item] of Object.entries(this.roles)) {
+            if (this.users.role.indexOf(item.id) !== -1) {
+              if (this.organization_roles.indexOf(item.name) !== -1) {
+                organization_roles_selected.push(item.name);
+              }
+            }
+          }
+          if (organization_roles_selected.length > 1) {
+            toastr['error'](this.trans.get('keys.ban_chi_duoc_chon_1_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+            return;
+          }
+          if (organization_roles_selected.length > 0) {
+            if (!this.users.employee.organization_id) {
+              toastr['error'](this.trans.get('keys.ban_phai_chon_noi_lam_viec_neu_da_chon_quyen_trong_nhom'), this.trans.get('keys.that_bai'));
+              $('.organization_required').show();
+              return;
+            }
+          }
+          if (this.users.employee.organization_id) {
+            if (organization_roles_selected.length === 0) {
+              toastr['error'](this.trans.get('keys.ban_phai_chon_quyen_trong_nhom_neu_muon_chon_noi_lam_viec'), this.trans.get('keys.that_bai'));
+              return;
+            }
+          }
+
+          if (organization_roles_selected.length === 0 && this.users.employee.organization_id) {
+            toastr['warning'](this.trans.get('keys.neu_khong_chon_quyen_trong_nhom_nguoi_dung_tu_dong_bi_loai_khoi_to_chuc'), this.trans.get('keys.canh_bao'));
+          }
+        }
+
+        this.formData = new FormData();
+        this.formData.append('file', this.$refs.file.files[0]);
+        this.formData.append('fullname', this.users.fullname);
+        this.formData.append('dob', this.users.dob);
+        this.formData.append('email', this.users.email);
+        this.formData.append('username', this.users.username);
+        //this.formData.append('password', this.users.password);
+        this.formData.append('phone', this.users.phone);
+        this.formData.append('cmtnd', this.users.cmtnd);
+        this.formData.append('address', this.users.address);
+        this.formData.append('city', this.users.city);
+        this.formData.append('country', this.users.country);
+        this.formData.append('role', this.users.role);
+        //this.formData.append('type', this.type);
+        this.formData.append('user_id', this.user_id);
+        this.formData.append('sex', this.users.sex);
+        this.formData.append('code', this.users.code);
+        this.formData.append('start_time', this.users.start_time);
+        this.formData.append('working_status', this.users.working_status);
+        this.formData.append('confirm_address', this.users.confirm_address);
+        this.formData.append('confirm', this.users.confirm);
+        this.formData.append('certificate_code', this.users.certificate.code);
+        this.formData.append('certificate_date', this.users.certificate.timecertificate);
+        this.formData.append('branch', this.branch);
+        this.formData.append('saleroom', this.saleroom);
+        this.formData.append('branch_select', this.branch_select);
+        this.formData.append('saleroom_select', this.saleroom_select);
+        this.formData.append('trainning_id', this.users.training.trainning_id);
+        this.formData.append('organization_id', this.users.employee.organization_id);
+
+        let current_pos = this;
+
+        axios.post('/system/user/update', this.formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+        })
+          .then(response => {
+            if (response.data.status) {
+              roam_message(response.data.status, response.data.message);
+              if (response.data.status === 'success') {
+                this.clearFileInput();
+                this.goBack();
+              }
+            } else {
+              roam_message('error', response.data.message);
+              $('.form-control').removeClass('notValidate');
+              $('#' + response.data.id).addClass('notValidate');
+            }
+          })
+          .catch(error => {
+            roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+          });
+      },
+      goBack() {
+        switch (this.type) {
+          case "teacher":
+            this.$router.push({name: 'TeacherIndex', params: {back_page: '1'}});
+//                      location.href = "/tms/education/user_teacher";
+            break;
+          case "student":
+            this.$router.push({name: 'StudentIndex', params: {back_page: '1'}});
+            // location.href = "/tms/education/user_student";
+            break;
+          default:
+            this.$router.push({name: 'SystemUserList', params: {back_page: '1'}});
+            // location.href = "/tms/system/user";
+            break;
+        }
+      },
+      restoreUser(user_id) {
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: true,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/system/user/restore', {user_id: user_id})
+            .then(response => {
+              roam_message(response.data.status, response.data.message);
+              location.reload();
+            })
+            .catch(error => {
+              roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+            });
+        });
+
+        return false;
+      },
+      getTrainingProgram() {
+        axios.post('/system/user/get_training_list')
+          .then(response => {
+            this.training_list = response.data;
+          })
+          .catch(error => {
+            this.training_list = [];
+          })
+      },
+      fetch() {
+        axios.post('/bridge/fetch', {
+          user_id: this.user_id,
+          view: 'EditDetailUserById'
+        })
+          .then(response => {
+            this.role_type = response.data.role_type;
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      },
+      setOptions(list, current_id) {
+        let outPut = [];
+        for (const [key, item] of Object.entries(list)) {
+          let newOption = {
+            id: item.id,
+            label: item.code,
+          };
+          if (item.children.length > 0) {
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          outPut.push(newOption);
+        }
+        return outPut;
+      },
+      selectOrganization(current_id) {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/organization/list', {
+          keyword: this.organization_keyword,
+          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+          paginated: 0 //không phân trang
+        })
+          .then(response => {
+            this.organization_list = response.data;
+            //Set options recursive
+            this.options = this.setOptions(response.data, current_id);
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+          })
+      },
+      getCountries() {
+        // if(this.type === 'system') {
+        axios.post('/system/user/list_country')
+          .then(response => {
+            this.countries = response.data;
+          })
+          .catch(error => {
+            console.log(error.response.data);
+          });
+        // }
+      },
+      clearFileInput() {
+        $('.dropify-clear').click();
+      },
+      setFileInput() {
+        $('.dropify').dropify();
+      }
+    },
+    mounted() {
+      this.fetch();
+      //this.getTrainingProgram();
+      this.getRoles();
+      //this.getCitys();
+      this.userData();
+      this.getCountries();
+    },
+    updated() {
+      if (!this.dropify) {
+        this.setFileInput();
+      }
     }
+  }
 </script>
 
 <style scoped>
