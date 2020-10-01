@@ -52,11 +52,11 @@
                 <div class="row">
                     <div class="col-12 col-lg-3">
                         <div class="card">
-                            <div style="padding: 10px">
+                            <div style="padding: 10px" class="text-center">
                                 <img :src="users.avatar ? users.avatar : '/images/user.png'" alt="">
                             </div>
                             <div class="card-body">
-                                <h6 class="mb-5" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
+                                <h6 class="mb-5 text-center" style="text-transform: uppercase"><strong>{{users.fullname}}</strong>
                                 </h6>
                                 <p>ID: <strong>{{users.username}}</strong></p>
 <!--                                <p v-if="role_type != 'market'">{{trans.get('keys.ma_so_nhan_vien_ban_hang')}}: <strong>{{users.code ? users.code : trans.get('keys.chua_cap_nhat')}}</strong></p>-->
@@ -320,163 +320,163 @@
 </template>
 
 <script>
-    import UserSchedule from './ScheduleComponent'
-    import UserCourseGrade from './UserCourseGradeComponent'
-    import LearnerHistory from './LearnerHistoryComponent'
-    import Const from '../../../services/const'
-    import UserCourse from './UserCourseComponent'
+  import UserSchedule from './ScheduleComponent'
+  import UserCourseGrade from './UserCourseGradeComponent'
+  import LearnerHistory from './LearnerHistoryComponent'
+  import Const from '../../../services/const'
+  import UserCourse from './UserCourseComponent'
 
-    export default {
-        components: {UserSchedule, UserCourseGrade, LearnerHistory, UserCourse},
-        props: ['user_id', 'type', 'slugs'],
-        data() {
-            return {
-                users: {
-                    salerooms: []
-                },
-                word_place_list: [],
-                word_place: 0,
-                word_place_search: '',
-                training_name: '',
-                role_type: '',
-                has_student: '',
-                countries: {},
-            }
+  export default {
+    components: {UserSchedule, UserCourseGrade, LearnerHistory, UserCourse},
+    props: ['user_id', 'type', 'slugs'],
+    data() {
+      return {
+        users: {
+          salerooms: []
         },
-        methods: {
-            slug_can(permissionName) {
-              return this.slugs.indexOf(permissionName) !== -1;
-            },
-            removeWordPlace(word_place_id) {
-                var user_id = this.user_id;
-                swal({
-                    title: this.trans.get('keys.thong_bao'),
-                    text: this.trans.get('keys.ban_chac_chan_muon_xoa_noi_lam_viec_nay'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post('/system/user/word_place_remove', {
-                        word_place: word_place_id,
-                        user_id: user_id,
-                    })
-                        .then(response => {
-                            location.reload();
-                        })
-                        .catch(error => {
-                            location.reload();
-                        });
-                });
+        word_place_list: [],
+        word_place: 0,
+        word_place_search: '',
+        training_name: '',
+        role_type: '',
+        has_student: '',
+        countries: {},
+      }
+    },
+    methods: {
+      slug_can(permissionName) {
+        return this.slugs.indexOf(permissionName) !== -1;
+      },
+      removeWordPlace(word_place_id) {
+        var user_id = this.user_id;
+        swal({
+          title: this.trans.get('keys.thong_bao'),
+          text: this.trans.get('keys.ban_chac_chan_muon_xoa_noi_lam_viec_nay'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/system/user/word_place_remove', {
+            word_place: word_place_id,
+            user_id: user_id,
+          })
+            .then(response => {
+              location.reload();
+            })
+            .catch(error => {
+              location.reload();
+            });
+        });
 
-                return false;
-            },
-            addWordPlace() {
-                if (this.word_place == 0) {
-                    $('.word_place.error').html(this.trans.get('keys.ban_can_chon_noi_lam_viec'));
-                    $('.word_place.error').show();
-                }
-                axios.post('/system/user/word_place_add', {
-                    word_place: this.word_place,
-                    user_id: this.user_id,
-                })
-                    .then(response => {
-                        location.reload();
-                    })
-                    .catch(error => {
-                        location.reload();
-                    })
-            },
-            selectWordPlace(word_place_id) {
-                this.word_place = word_place_id;
-            },
-            listWordPlace() {
-                $('.content_search_box').addClass('loadding');
-                axios.post('/system/user/word_place_list', {
-                    keyword: this.word_place_search,
-                    user_id: this.user_id,
-                })
-                    .then(response => {
-                        this.word_place_list = response.data;
-                        $('.content_search_box').removeClass('loadding');
-                    })
-                    .catch(error => {
-                        $('.content_search_box').removeClass('loadding');
-                        console.log(error.response.data);
-                    })
-            },
-            userData() {
-                axios.post('/system/user/detail', {
-                    user_id: this.user_id
-                })
-                    .then(response => {
-                        this.users = response.data;
-                        if (response.data.training) {
-                            this.training_name = response.data.training.training_detail.name;
-                        }
-                    })
-                    .catch(error => {
-
-                    })
-            },
-            fetch() {
-                axios.post('/bridge/fetch', {
-                    user_id: this.user_id,
-                    view: 'EditUserById'
-                })
-                    .then(response => {
-                        this.role_type = response.data.role_type;
-                        this.has_student = response.data.has_student;
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    })
-            },
-            restoreUser(user_id) {
-                let current_pos = this;
-                swal({
-                    title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
-                    text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
-                    type: "warning",
-                    showCancelButton: true,
-                    closeOnConfirm: false,
-                    showLoaderOnConfirm: true
-                }, function () {
-                    axios.post('/system/user/restore', {user_id: user_id})
-                        .then(response => {
-                            if (response.data == 'success') {
-                                swal({
-                                    title: current_pos.trans.get('keys.thong_bao'),
-                                    text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
-                                    type: "success",
-                                    showCancelButton: false,
-                                    closeOnConfirm: false,
-                                    showLoaderOnConfirm: true
-                                }, function () {
-                                    location.reload();
-                                });
-                            } else {
-                                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
-                            }
-
-                        })
-                        .catch(error => {
-                            swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
-                        });
-                });
-                return false;
-            },
-            fetchCountries() {
-                this.countries = Const.data().countries;
-            }
-        },
-        mounted() {
-            this.userData();
-            this.listWordPlace();
-            this.fetch();
-            this.fetchCountries();
+        return false;
+      },
+      addWordPlace() {
+        if (this.word_place == 0) {
+          $('.word_place.error').html(this.trans.get('keys.ban_can_chon_noi_lam_viec'));
+          $('.word_place.error').show();
         }
+        axios.post('/system/user/word_place_add', {
+          word_place: this.word_place,
+          user_id: this.user_id,
+        })
+          .then(response => {
+            location.reload();
+          })
+          .catch(error => {
+            location.reload();
+          })
+      },
+      selectWordPlace(word_place_id) {
+        this.word_place = word_place_id;
+      },
+      listWordPlace() {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/system/user/word_place_list', {
+          keyword: this.word_place_search,
+          user_id: this.user_id,
+        })
+          .then(response => {
+            this.word_place_list = response.data;
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+            console.log(error.response.data);
+          })
+      },
+      userData() {
+        axios.post('/system/user/detail', {
+          user_id: this.user_id
+        })
+          .then(response => {
+            this.users = response.data;
+            if (response.data.training) {
+              this.training_name = response.data.training.training_detail.name;
+            }
+          })
+          .catch(error => {
+
+          })
+      },
+      fetch() {
+        axios.post('/bridge/fetch', {
+          user_id: this.user_id,
+          view: 'EditUserById'
+        })
+          .then(response => {
+            this.role_type = response.data.role_type;
+            this.has_student = response.data.has_student;
+          })
+          .catch(error => {
+            console.log(error);
+          })
+      },
+      restoreUser(user_id) {
+        let current_pos = this;
+        swal({
+          title: this.trans.get('keys.ban_muon_khoi_phuc_lai_tai_khoan_nay'),
+          text: this.trans.get('keys.chon_ok_de_thuc_hien_thao_tac'),
+          type: "warning",
+          showCancelButton: true,
+          closeOnConfirm: false,
+          showLoaderOnConfirm: true
+        }, function () {
+          axios.post('/system/user/restore', {user_id: user_id})
+            .then(response => {
+              if (response.data == 'success') {
+                swal({
+                  title: current_pos.trans.get('keys.thong_bao'),
+                  text: current_pos.trans.get('keys.khoi_phuc_thanh_cong'),
+                  type: "success",
+                  showCancelButton: false,
+                  closeOnConfirm: false,
+                  showLoaderOnConfirm: true
+                }, function () {
+                  location.reload();
+                });
+              } else {
+                swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
+              }
+
+            })
+            .catch(error => {
+              swal(current_pos.trans.get('keys.thong_bao'), current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), "error");
+            });
+        });
+        return false;
+      },
+      fetchCountries() {
+        this.countries = Const.data().countries;
+      }
+    },
+    mounted() {
+      this.userData();
+      this.listWordPlace();
+      this.fetch();
+      this.fetchCountries();
     }
+  }
 </script>
 
 <style scoped>
