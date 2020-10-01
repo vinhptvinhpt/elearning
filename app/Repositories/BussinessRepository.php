@@ -10865,14 +10865,14 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_enrol as me', 'me.id', '=', 'enrolments.enrolid')
             ->join('mdl_course as mc', 'mc.id', '=', 'me.courseid')
 //            ->join('mdl_role as mr', 'mr.id', '=', 'me.roleid')
-            ->join('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mc.id')
-            ->leftJoin('tms_trainning_courses as ttc', 'mc.id', '=', 'ttc.course_id')
-            ->leftJoin('tms_traninning_programs as ttp', 'ttc.trainning_id', '=', 'ttp.id')
+//            ->join('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mc.id')
+//            ->leftJoin('tms_trainning_courses as ttc', 'mc.id', '=', 'ttc.course_id')
+//            ->leftJoin('tms_traninning_programs as ttp', 'ttc.trainning_id', '=', 'ttp.id')
             ->where('enrolments.userid', '=', $user_id)
-            ->where('ttc.deleted', '<>', 1)
+//            ->where('ttc.deleted', '<>', 1)
             ->where('mc.deleted', '=', 0)
             ->where('mc.visible', '=', 1)
-            ->whereNotIn('mc.category', [2, 7])
+            ->whereNotIn('mc.category', [2, 7]) //hide
             ->where('mc.deleted', '=', 0)
             ->select(
                 'mc.id',
@@ -10900,12 +10900,10 @@ class BussinessRepository implements IBussinessInterface
         $mdlUserEnr = $mdlUserEnr->orderBy('mc.startdate', 'desc');
 
         if ($start_date) {
-            //            $mdlUserEnr->where('mdl_course.enddate','>',strtotime($start_date));
             $mdlUserEnr->where('mc.startdate', '>', strtotime($start_date));
         }
         if ($end_date) {
             $mdlUserEnr->where('mc.enddate', '<', strtotime($end_date));
-            //            $mdlUserEnr->where('mdl_course.startdate','<',strtotime($end_date));
         }
 
         if ($this->keyword) {
