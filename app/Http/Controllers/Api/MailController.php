@@ -1334,13 +1334,13 @@ class MailController extends Controller
                         ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
                 })
                 //Là học viên
-                ->where('roles.id', '=', 5)
+                ->where('roles.id', '=', Role::ROLE_STUDENT)
                 //check not exist in table tms_nofitications
                 ->whereNotIn('mdl_user.id', function ($query) {
                     $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
                 });
 
-            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', 5)
+            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', Role::ROLE_STUDENT)
                 //Giới hạn số lượng bản ghi
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->orderBy('mdl_user.id', 'desc')
@@ -1952,7 +1952,7 @@ class MailController extends Controller
                             ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
                             ->where("mdl_course.category", 3) //khóa bắt buộc
                             ->whereNull('mdl_course_completions.timecompleted') //Chưa hoàn thành khóa học
-                            ->where('roles.id', '=', 5) //là học viên
+                            ->where('roles.id', '=', Role::ROLE_STUDENT) //là học viên
                             ->where('mdl_course.startdate', '<', $now); //Khóa học đã diễn ra
                     })
                     ->limit(self::DEFAULT_ITEMS_PER_SESSION);
@@ -1960,7 +1960,7 @@ class MailController extends Controller
                 //MdlUser::query()
                 ->where("mdl_course.category", 3)
                 ->whereNull('mdl_course_completions.timecompleted')
-                ->where('roles.id', '=', 5)
+                ->where('roles.id', '=', Role::ROLE_STUDENT)
                 ->where('mdl_course.startdate', '<', $now)
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
@@ -2142,7 +2142,7 @@ class MailController extends Controller
                     $q->where('lastlogin', '<>', 0)
                         ->orWhere('currentlogin', '<>', 0);
                 })
-                ->where('roles.id', '=', 5)//Role hoc vien
+                ->where('roles.id', '=', Role::ROLE_STUDENT)//Role hoc vien
                 ->whereExists(function ($query) { // User da dang ki khoa hoc
                     $query->select(DB::raw(1))
                         ->from('mdl_user_enrolments')
@@ -2252,7 +2252,7 @@ class MailController extends Controller
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
-            $userNeedRemindUpcoming = MdlUser::where('roles.id', '=', 5)//Role hoc vien
+            $userNeedRemindUpcoming = MdlUser::where('roles.id', '=', Role::ROLE_STUDENT)//Role hoc vien
             ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->whereNotIn('mdl_user.id', function ($query) {
