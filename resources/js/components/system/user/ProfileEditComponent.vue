@@ -25,7 +25,7 @@
           <div class="row">
             <div class="col-12 col-lg-3">
               <div class="card">
-                <div style="padding: 10px">
+                <div style="padding: 10px" class="text-center">
                   <img :src="users.avatar" alt="">
                 </div>
                 <div class="card-body">
