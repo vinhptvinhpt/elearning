@@ -378,11 +378,11 @@
     "thong_bao_hoc_vien_duoc_ghi_danh_vao_khoa_hoc": "Notice student is enrolled in the course",
     "completed_competency_framework": "Completed competency framework",
     "development": "Development",
-    "request_more_attempt": "Request more attempt",
+    "request_more_attempt": "Request to allow learner to retake final test",
     "calculate_toeic_grade": "TOEIC Result",
     "them_moi_team_thanh_cong": "Add team successfully",
     "team_da_ton_tai": "Team existed",
     "xoa_thanh_cong": "Successfully deleted",
-    "fail_exam": "Fail exam",
-    "retake_exam": "Retake exam"
+    "fail_exam": "Did not pass test @100%",
+    "retake_exam": "Retake Final Test"
 }
