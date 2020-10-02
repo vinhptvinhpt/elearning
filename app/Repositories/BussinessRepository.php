@@ -4357,10 +4357,16 @@ class BussinessRepository implements IBussinessInterface
     function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $in_training)
     {
         //Thêm các điều kiện lọc bỏ các item bị xóa
+
+        //Loại bỏ user đã bị xóa
+        $query = $query->where('tms_user_detail.deleted', '=', 0);
+
+        //Trong query chứa khung năng lực => check khung năng lực chưa bị xóa
         if ($in_training) {
             $query = $query->where('tms_traninning_programs.deleted', '=', 0);
         }
 
+        //Query liên quan đến khóa học => check khóa học chưa bị xóa
         if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
             $query = $query->where('mdl_course.deleted', '=', 0);
         }
