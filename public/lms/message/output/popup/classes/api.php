@@ -128,11 +128,12 @@ class api
                             </tr>
                         </thead>
                         <tbody>';
-                    foreach ($content as $contents) {
+                    foreach ($content as $contents) { //Loop khóa trong content cua log
+
                         //convert startdate
                         $startdate = $contents->start_date;
                         if ($startdate > 0) {
-                            $startdate = date('m/d/Y', $contents->startdate);
+                            $startdate = date('m/d/Y', $startdate);
                         } else {
                             $startdate = '';
                         }
@@ -140,11 +141,10 @@ class api
                         //convert enddate
                         $enddate = $contents->end_date;
                         if ($enddate > 0) {
-                            $enddate = date('m/d/Y', $contents->enddate);
+                            $enddate = date('m/d/Y', $enddate);
                         } else {
                             $enddate = '';
                         }
-
 
                         $record->fullmessagehtml .= '<tr class="tr-notification">
                             <td><p>' . $contents->code . '</p></td>

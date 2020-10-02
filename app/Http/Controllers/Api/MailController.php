@@ -1701,9 +1701,12 @@ class MailController extends Controller
                 //Type 1 limit using sub query with same condition
                 DB::query()->fromSub(function ($query) use ($next_3_days, $now) {
                     $query->from('mdl_user')
-
                         ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
-                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                        //->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id') //ra cả giáo viên, chỉ lấy học viên
+                        ->join('mdl_enrol', function ($join) {
+                            $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                            $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                        })
                         ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
                         ->leftJoin('course_completion', function ($join) {
                             $join->on('mdl_course.id', '=', 'course_completion.courseid');
@@ -1781,11 +1784,15 @@ class MailController extends Controller
                         'mdl_user.firstname',
                         'mdl_user.lastname',
                         'mdl_user.email',
-//                        'mdl_course_completions.course',
+
+//                        'mdl_course_completions.course as course_id',
 //                        'mdl_course_completions.timeenrolled',
 //                        'mdl_course_completions.timecompleted',
-                        'course_completion.courseid',
+
+                        //'course_completion.courseid as course_id',
                         'course_completion.timecompleted',
+
+                        'mdl_course.id as course_id',
                         'mdl_course.shortname',
                         'mdl_course.fullname',
                         'mdl_course.startdate',
@@ -1794,6 +1801,7 @@ class MailController extends Controller
                         'mdl_course.category'
                     )
                     ->get();
+
             if (count($userNeedRemindExpired) > 0) {
                 $data = array();
                 foreach ($userNeedRemindExpired as $user_item) {
@@ -1812,12 +1820,12 @@ class MailController extends Controller
                             $element['content'] = array(
                                 array(
                                     //'course_id' => $user_item->course,
-                                    'course_id' => $user_item->courseid,
+                                    'course_id' => $user_item->course_id,
                                     'course_code' => $user_item->shortname,
                                     'course_name' => $user_item->fullname,
                                     'startdate' => $user_item->startdate,
                                     'enddate' => $user_item->enddate,
-                                    'course_place' => $user_item->course_place,
+                                    'course_place' => $user_item->course_place ? $user_item->course_place : '',
                                 )
                             );
                             $data[$user_item->username] = $element;
