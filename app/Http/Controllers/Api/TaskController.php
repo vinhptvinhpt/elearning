@@ -499,12 +499,22 @@ class TaskController extends Controller
             usleep(100); //sleep tranh tinh trang query db lien tiep
 
             //insert du lieu lich su hoc tap
+            $user_id = $st->user_id;
+            $training_id = $st->training_id;
+
             $lstHistory = DB::table('course_completion as cc')
                 ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
                 ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
-                ->where('cc.userid', '=', $st->user_id)
-                ->where('cc.training_id', '=', $st->training_id)
+                ->where('cc.userid', '=', $user_id)
+                ->where('cc.training_id', '=', $training_id)
                 ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->whereNotExists(function ($query) use ($training_id, $user_id) { //Check chưa tồn tại tr
+                    $query->select(DB::raw(1))
+                        ->from('tms_learner_histories as tlh')
+                        ->where('tlh.trainning_id', '=', $training_id)
+                        ->where('tlh.user_id', '=', $user_id)
+                        ->where('tlh.course_id', '=', 'c.id');
+                })
                 ->get();
 
             $arr_data_his = [];
