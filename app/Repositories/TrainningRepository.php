@@ -403,7 +403,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
-            ->orderBy('id', 'desc')->get();
+            ->orderBy('name', 'asc')
+            ->get();
         return response()->json($response);
     }
 
