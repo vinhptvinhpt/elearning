@@ -4226,14 +4226,14 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $query->select($select_array);
-        self::finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select);
+        self::finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, true);
         $list = $query->get()->toArray();
 
         //Merge array results
         if ($show_courses) {
             if ($training_id == 0) {
                 $query_per->select($select_array_per);
-                self::finishQuery($query_per, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select);
+                self::finishQuery($query_per, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, false);
                 $list2 = $query_per->get()->toArray();
                 $list = array_merge($list, $list2);
             }
@@ -4354,8 +4354,17 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
-    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select)
+    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $in_training)
     {
+        //Thêm các điều kiện lọc bỏ các item bị xóa
+        if ($in_training) {
+            $query = $query->where('tms_traninning_programs.deleted', '=', 0);
+        }
+
+        if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
+            $query = $query->where('mdl_course.deleted', '=', 0);
+        }
+
         if (strlen($organization_id) != 0 && $organization_id != 0) {
             //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
             //đệ quy tổ chức con nếu có
@@ -4545,22 +4554,27 @@ class BussinessRepository implements IBussinessInterface
     {
         if ($mode_select == 'learning_time') {
             if ($key == 'col1') {
-                if ($user['category'] == 5) {
+                $add_to_total = true;
+                if ($user['category'] == 5) {//Khóa offline => thời gian học = thời gian dự kiến
                     $duration = $user['estimate_duration'] * 3600;
                 } else {
                     $duration = $user['duration'];
                 }
-
                 //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration
                 if (isset($object[$key][$id]) && isset($object[$key][$id]['duration'])) {
-                    $object[$key][$id]['duration'] += $duration;
+                    if ($user['category'] != 5) { //Khóa offline không cộng dồn
+                        $object[$key][$id]['duration'] += $duration;
+                    } else { //Khóa offline không cộng dồn vào tổng nếu đã có
+                        $add_to_total = false;
+                    }
                 } else { //Khởi tạo
                     $object[$key][$id] = $user;
                     $object[$key][$id]['duration'] = $duration;
                 }
-
-                //Cộng vào tổng ủa pảent
-                $object['col1_counter'] += $duration;
+                //Cộng vào tổng của parent
+                if ($add_to_total) {
+                    $object['col1_counter'] += $duration;
+                }
             } else { //nếu không gom user bình thường
                 $object[$key][$id] = $user;
             }
