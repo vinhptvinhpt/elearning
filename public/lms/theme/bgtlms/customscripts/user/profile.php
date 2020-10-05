@@ -657,7 +657,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         </select>
                                     </th>
                                     <th scope="col" style="text-align: center">Percent</th>
-                                    <th scope="col" class="width10">Qualified</th>
+                                    <th scope="col" class="width10" style="text-align: center">Qualified</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -668,10 +668,10 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                             <span class="numberget" v-if="course.numofmodule == 0">0</span>
                                             <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
                                         </td>
-                                        <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                        <td class="icon-circle" style="text-align: center" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
                                             <i class="fa fa-check-circle" aria-hidden="true"></i>
                                         </td>
-                                        <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
+                                        <td class="icon-circle" style="text-align: center" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
                                     </tr>
                                 </template>
                                 <template v-else>
@@ -711,7 +711,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         </select>
                                     </th>
                                     <th scope="col" style="text-align: center">Percent</th>
-                                    <th scope="col" class="width10">Qualified</th>
+                                    <th scope="col" class="width10" style="text-align: center">Qualified</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -723,10 +723,10 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                             <span class="numberget" v-if="course.numofmodule == 0">0</span>
                                             <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
                                         </td>
-                                        <td class="icon-circle"
+                                        <td class="icon-circle" style="text-align: center"
                                             v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
                                             <i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                                        <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
+                                        <td class="icon-circle" style="text-align: center" v-else><i class="fa fa-check-circle icon-circle-green"
                                                                           aria-hidden="true"></i></td>
                                     </tr>
                                 </template>
@@ -1010,7 +1010,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 .then(response => {
                     this.coursesTraining = response.data.courses;
                     this.currentCoursesTotalTraining = this.courses.length;
-                    this.totalPage = response.data.totalPage;
+                    this.totalPageTraining = response.data.totalPage;
                 })
                 .catch(error => {
                     console.log(error);
