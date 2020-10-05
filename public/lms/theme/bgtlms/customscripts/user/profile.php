@@ -640,7 +640,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         </div>
                     </div>
                     <div class="block courses">
-                        <div class="title"><p>your courses</p></div>
+                        <div class="title"><p>Your courses</p></div>
                         <div class="block-content table-responsive">
                             <table class="table borderless table-keep">
                                 <thead>
@@ -687,6 +687,55 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             </div>
                         </div>
                     </div>
+
+                    <div class="block courses">
+                        <div class="title"><p>Your competency courses</p></div>
+                        <div class="block-content table-responsive">
+                            <table class="table borderless table-keep">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="table-select">
+                                        <select name="category" id="category" class="course-select"
+                                                @change="searchCourseTraining(training, 1)"
+                                                v-model="training">
+                                            <option value="0">All competency</option>
+                                            <template v-for="(training, index) in trainingList">
+                                                <option :value="training.id">{{ training.name }}</option>
+                                            </template>
+                                        </select>
+                                    </th>
+                                    <th scope="col" style="text-align: center">Percent</th>
+                                    <th scope="col" class="width10">Qualified</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr v-for="(course,index) in coursesTraining">
+                                    <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
+                                                            :title="course.fullname">{{ course.fullname }}</a></th>
+                                    <td style="text-align: center">
+                                        <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                        <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                    </td>
+                                    <td class="icon-circle"
+                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                        <i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                    <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
+                                                                      aria-hidden="true"></i></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div class="pagination" v-if="totalPageTraining > 1">
+                                <v-pagination
+                                    v-model="currentTraining"
+                                    :page-count="totalPageTraining"
+                                    :classes="bootstrapPaginationClasses"
+                                    :labels="customLabels"
+                                    @input="onPageChange"
+                                ></v-pagination>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="block certificate-badge">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
@@ -818,23 +867,40 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         el: '#app',
         data: {
             category: 0,
+            training: 0,
+
             txtSearch: '',
+            txtSearchTraining: '',
+
             courses: [],
+            coursesTraining: [],
+
             totalCourse: 0,
             requiredCourse: 0,
             currentCourse: 0,
+
             linemanagers: [],
             linemanagersStr: '',
+
+            trainingList: [],
+
             user: {},
             clctgr: true,
             progressRequiredCourse: '0/0',
             progressCurrentCourse: '0/0',
             url: '<?php echo $CFG->wwwroot; ?>',
             user_id: <?php echo $user_id ?>,
+
             current: 1,
             totalPage: 0,
             recordPerPage: 5,
             currentCoursesTotal: 0,
+
+            currentTraining: 1,
+            totalPageTraining: 0,
+            recordPerPageTraining: 5,
+            currentCoursesTotalTraining: 0,
+
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
                 li: 'page-item',
@@ -852,6 +918,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         methods: {
             onPageChange: function () {
                 this.searchCourse(this.category, this.current);
+                this.searchCourseTraining(this.training, this.currentTraining);
             },
             searchCourse: function (category, page) {
                 this.category = category || this.category;
@@ -881,6 +948,44 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .catch(error => {
                         console.log("Error");
                     });
+            },
+            getListUserTraining: function () {
+                axios({
+                    method: 'get',
+                    url: this.url + '/pusher/user_training.php',
+                })
+                .then(response => {
+                    this.trainingList = response.data.list;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            },
+            searchCourseTraining: function (traning, page) {
+                if (page === 1)
+                    this.currentTraining = 1;
+                const params = new URLSearchParams();
+                params.append('training', this.training);
+                params.append('txtSearch', this.txtSearchTraining);
+                params.append('current', page || this.currentTraining);
+                // params.append('pageCount', this.total);
+                params.append('recordPerPage', this.recordPerPageTraining);
+                axios({
+                    method: 'post',
+                    url: this.url + '/pusher/user_course_training.php',
+                    data: params,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                .then(response => {
+                    this.coursesTraining = response.data.courses;
+                    this.currentCoursesTotalTraining = this.courses.length;
+                    this.totalPage = response.data.totalPage;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
             },
             getProfile: function () {
                 const params = new URLSearchParams();
@@ -925,10 +1030,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .catch(error => {
                         console.log("Error ", error);
                     });
-            }
+            },
         },
         mounted() {
             this.searchCourse();
+            this.searchCourseTraining();
+            this.getListUserTraining();
             this.getProfile();
         }
     })
