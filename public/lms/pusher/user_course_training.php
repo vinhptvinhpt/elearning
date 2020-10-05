@@ -25,7 +25,7 @@ and ttp.deleted = 0
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
-and ttc.deleted <> 1
+and ttc.deleted = 0
 and ttp.deleted = 0
 and mue.userid = ' . $USER->id;
 

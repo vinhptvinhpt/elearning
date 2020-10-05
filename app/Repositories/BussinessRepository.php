@@ -10975,15 +10975,22 @@ class BussinessRepository implements IBussinessInterface
 
         $data = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            //->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_enrol as e', function ($join) {
+                $join->on('e.id', '=', 'mu.enrolid');
+                $join->where('e.roleid', '=', Role::ROLE_STUDENT);
+            })
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
             ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttc.deleted', '=', 0)
             ->where('c.deleted', '=', 0)
+            ->where('c.visible', '=', 1)
             ->where('u.id', '=', $user_id)
-            ->where('e.roleid', '=', Role::ROLE_STUDENT)
+            //->where('e.roleid', '=', Role::ROLE_STUDENT)
+            ->whereNotIn('c.category',  [2,7])
+            ->where('e.enrol', '=', 'manual')
             ->select(
                 'c.id as course_id',
                 'c.shortname',
