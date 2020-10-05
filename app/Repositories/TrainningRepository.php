@@ -699,6 +699,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $response = new ResponseModel();
         try {
             $trainning_id = $request->input('trainning_id');
+            $trainning_code = $request->input('trainning_code');
             $lstCourseId = $request->input('lst_course');
 
             \DB::beginTransaction();
@@ -773,7 +774,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         $next_number = $number + 1;
                         $append = self::composeAppend($next_number);
                         $prefix = '_ONL';
-                        $course->shortname = $item['shortname'] . $prefix . $append;
+                        $course->shortname = $trainning_code . '_' . $item['shortname'] . $prefix . $append;
 
 
                         //$course->shortname = $course_sample->shortname . $course_sample->id . $trainning_id;
