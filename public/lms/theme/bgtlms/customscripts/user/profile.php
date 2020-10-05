@@ -661,19 +661,26 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(course,index) in courses">
-                                    <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
-                                                            :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td style="text-align: center">
-                                        <span class="numberget" v-if="course.numofmodule == 0">0</span>
-                                        <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
-                                    </td>
-                                    <td class="icon-circle"
-                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
-                                        <i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                                    <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
-                                                                      aria-hidden="true"></i></td>
-                                </tr>
+                                <template v-if="courses.length !== 0">
+                                    <tr v-for="(course,index) in courses">
+                                        <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
+                                        <td style="text-align: center">
+                                            <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                            <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                        </td>
+                                        <td class="icon-circle" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                            <i class="fa fa-check-circle" aria-hidden="true"></i>
+                                        </td>
+                                        <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="3">
+                                            No course found
+                                        </td>
+                                    </tr>
+                                </template>
                                 </tbody>
                             </table>
                             <div class="pagination" v-if="totalPage > 1">
@@ -687,7 +694,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             </div>
                         </div>
                     </div>
-
                     <div class="block courses">
                         <div class="title"><p>Your competency courses</p></div>
                         <div class="block-content table-responsive">
@@ -709,19 +715,28 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(course,index) in coursesTraining">
-                                    <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
-                                                            :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td style="text-align: center">
-                                        <span class="numberget" v-if="course.numofmodule == 0">0</span>
-                                        <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
-                                    </td>
-                                    <td class="icon-circle"
-                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
-                                        <i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                                    <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
-                                                                      aria-hidden="true"></i></td>
-                                </tr>
+                                <template v-if="coursesTraining.length !== 0">
+                                    <tr v-for="(course,index) in coursesTraining">
+                                        <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
+                                                                :title="course.fullname">{{ course.fullname }}</a></th>
+                                        <td style="text-align: center">
+                                            <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                            <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                        </td>
+                                        <td class="icon-circle"
+                                            v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                            <i class="fa fa-check-circle" aria-hidden="true"></i></td>
+                                        <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
+                                                                          aria-hidden="true"></i></td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="3">
+                                            No course found
+                                        </td>
+                                    </tr>
+                                </template>
                                 </tbody>
                             </table>
                             <div class="pagination" v-if="totalPageTraining > 1">
@@ -735,7 +750,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             </div>
                         </div>
                     </div>
-
                     <div class="block certificate-badge">
                         <!-- Nav tabs -->
                         <ul class="nav nav-tabs justify-content-center">
@@ -750,14 +764,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div id="certificate" class="tab-pane active">
-                                <br/>
-                                <div class="row col-lg-12 pb-3">
+
+                            <?php if (count($certificates) != 0) { ?>
+                                <div id="certificate" class="tab-pane active">
+                                    <br/>
+                                    <div class="row col-lg-12 pb-3">
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3 mb-3">
                                             <div class="item-image">
                                                 <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
-                                                    alt="">
+                                                     alt="">
                                             </div>
                                             <div class="item-content mt-2">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
@@ -769,17 +785,26 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                             </div>
                                         </div>
                                     <?php } ?>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="badge" class="container tab-pane fade">
-                                <div id="certificate" class="tab-pane active">
+                            <?php } else { ?>
+                                <div id="certificate" class="container tab-pane active">
                                     <br/>
                                     <div class="row col-lg-12 pb-3">
-                                        <?php foreach ($badges as $badge) { ?>
+                                        No certificate found
+                                    </div>
+                                </div>
+                            <?php } ?>
+                            <div id="badge" class="container tab-pane fade">
+                                <br/>
+                                <div class="row col-lg-12 pb-3">
+                                    <?php
+                                    if (count($badges) != 0) {
+                                        foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3 mb-3">
                                                 <div class="item-image">
                                                     <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
-                                                        alt="">
+                                                         alt="">
                                                 </div>
                                                 <div class="item-content mt-2">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
@@ -790,12 +815,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                     <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg')">Copy link</a>
                                                 </div>
                                             </div>
-                                        <?php } ?>
-                                    </div>
+                                        <?php }
+                                    } else {
+                                        echo "No badge found";
+                                    }
+                                    ?>
                                 </div>
                             </div>
-                        </div>
 
+
+                        </div>
                     </div>
                 </div>
             </div>
