@@ -10989,7 +10989,7 @@ class BussinessRepository implements IBussinessInterface
             ->where('c.visible', '=', 1)
             ->where('u.id', '=', $user_id)
             //->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->whereNotIn('mc.category',  [2,7])
+            ->whereNotIn('c.category',  [2,7])
             ->where('e.enrol', '=', 'manual')
             ->select(
                 'c.id as course_id',
