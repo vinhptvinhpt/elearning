@@ -5250,12 +5250,26 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
+//            foreach ($lstUserIDs as $course_id) {
+//                $assign = new TmsRoleCourse();
+//                $assign->course_id = $course_id;
+//                $assign->role_id = $role_id;
+//                $assign->save();
+//            }
+
+            $arrData = [];
+            $data_item = [];
+
             foreach ($lstUserIDs as $course_id) {
-                $assign = new TmsRoleCourse();
-                $assign->course_id = $course_id;
-                $assign->role_id = $role_id;
-                $assign->save();
+                $data_item['course_id'] = $course_id;
+                $data_item['role_id'] = $role_id;
+                $data_item['created_at'] = Carbon::now();
+                $data_item['updated_at'] = Carbon::now();
+
+                array_push($arrData, $data_item);
             }
+
+            TmsRoleCourse::insert($arrData);
 
             $response->status = true;
             $response->message = __('phan_quyen_thanh_cong');
@@ -7918,6 +7932,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $type = $request->input('type');
         $row = $request->input('row');
+        $keyword = $request->input('keyword');
 
         $special_role = Role::arr_role_special;
         $default_role = Role::arr_role_default;
@@ -7946,6 +7961,11 @@ class BussinessRepository implements IBussinessInterface
             $roles = $roles->whereNull('tms_role_organization.organization_id');
         } elseif ($type == 'content_permission') {
             $roles = $roles->whereNotNull('tms_role_organization.organization_id');
+
+            if ($keyword) {
+                $roles = $roles->whereRaw('( roles.name like "%' . $keyword . '%" OR roles.description like "%' . $keyword . '%" )');
+            }
+
             $roles = $roles->paginate($row);
             $total_item = $roles->total();
             $total = ceil($total_item / $row);
@@ -10894,7 +10914,7 @@ class BussinessRepository implements IBussinessInterface
             //            ->where('ttc.deleted', '<>', 1)
             ->where('mc.deleted', '=', 0)
             ->where('mc.visible', '=', 1)
-            ->whereNotIn('mc.category', [2, 7]) //hide
+            ->whereNotIn('mc.category', [2, 7])//hide
             ->where('mc.deleted', '=', 0)
             ->where('me.roleid', '=', Role::ROLE_STUDENT)
             ->select(

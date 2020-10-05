@@ -516,6 +516,10 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_library_codes', 'Backend\CourseController@apiGetListLibraryCodes');
     Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
 
+    Route::post('/api/courses/optional_courses', 'Backend\CourseController@apiGetOptionalCourses');
+    Route::post('/api/courses/assign_optional_course', 'Backend\CourseController@apiAssignOptionalCourse');
+    Route::post('/api/courses/remove_assign_optional_course', 'Backend\CourseController@apiRemoveAssignOptionalCourse');
+
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
     Route::post('/api/course/user_need_invite_to_exception', 'Backend\CourseController@apiUserNeedInviteToException');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
