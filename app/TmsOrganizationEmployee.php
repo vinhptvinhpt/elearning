@@ -12,6 +12,10 @@ class TmsOrganizationEmployee extends Model
 
     protected $table = 'tms_organization_employee';
 
+    protected $fillable = [
+        'organization_id', 'user_id', 'position', 'enabled'
+    ];
+
     /**
      * Get user detail.
      */
