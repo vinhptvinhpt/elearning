@@ -282,6 +282,21 @@ class BackgroundController extends Controller
 
                 $skype = $user[32];
 
+                $line_manager_email = $user[33];
+                $line_manager = '';
+                if (strlen($line_manager_email) != 0) {
+                    if (filter_var($line_manager_email, FILTER_VALIDATE_EMAIL) === false) {
+                        $content[] = "Line manger email is wrong format";
+                    } else {
+                        $checkLineManager = MdlUser::query()->where('username', $line_manager_email)->first();
+                        if (isset($checkLineManager)) {
+                            $line_manager = $checkLineManager->id;
+                        } else {
+                            $content[] = "Line manger email does not exist in system";
+                        }
+                    }
+                }
+
                 $gender = $user[17];
                 if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
                     $gender = 1;
@@ -360,7 +375,7 @@ class BackgroundController extends Controller
 
                     if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
                         $user_id = $createEmployeeResponse['id'];
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -669,6 +684,21 @@ class BackgroundController extends Controller
                 $middle_name = self::prepareName($middle_name);
                 $last_name = self::prepareName($last_name);
 
+                $line_manager_email = $user[23];
+                $line_manager = '';
+                if (strlen($line_manager_email) != 0) {
+                    if (filter_var($line_manager_email, FILTER_VALIDATE_EMAIL) === false) {
+                        $content[] = "Line manger email is wrong format";
+                    } else {
+                        $checkLineManager = MdlUser::query()->where('username', $line_manager_email)->first();
+                        if (isset($checkLineManager)) {
+                            $line_manager = $checkLineManager->id;
+                        } else {
+                            $content[] = "Line manger email does not exist in system";
+                        }
+                    }
+                }
+
                 if (empty($content)) {
                     $createEmployeeResponse = self::createEmployee(
                         $role,
@@ -692,7 +722,7 @@ class BackgroundController extends Controller
 
                     if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
                         $user_id = $createEmployeeResponse['id'];
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name);
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -954,7 +984,7 @@ class BackgroundController extends Controller
         }
     }
 
-    function createOrganizationEmployee($organization_id, $user_id, $role, $description) {
+    function createOrganizationEmployee($organization_id, $user_id, $role, $description, $line_manager) {
         $check = TmsOrganizationEmployee::with('organization')->where('user_id', $user_id)->first();
         if (isset($check)) {
 //            if ($check->organization_id != $organization_id) {
@@ -963,6 +993,7 @@ class BackgroundController extends Controller
             //overwrite chức vụ
             $check->position = $role;
             $check->organization_id = $organization_id;
+            $check->line_manager_id = $line_manager;
             $check->save();
         } else {
             //tạo mới nếu chưa có
@@ -971,6 +1002,7 @@ class BackgroundController extends Controller
             $check->organization_id = $organization_id;
             $check->position = $role;
             $check->description = $description;
+            $check->line_manager_id = $line_manager;
             $check->save();
         }
         return $check->id;
