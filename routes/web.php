@@ -796,7 +796,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/team/remove_member', 'Backend\OrganizationController@apiRemoveMember');
 
 
-
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 
     //Attendance
@@ -826,4 +825,8 @@ Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController
 
 //send mail hoàn thành KNL
 Route::get('/api/sendMailCompetencyFramework', 'Api\MailController@sendCompetencyCompleted');
+
+//sync data histaff
+Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization');
+Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
 
