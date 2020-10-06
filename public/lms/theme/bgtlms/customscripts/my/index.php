@@ -26,17 +26,49 @@ $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
 $sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, toe.position, toe.description as exactlypostion from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id where tud.user_id = ' . $USER->id;
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
 
-$sqlGetOrganization = 'SELECT f.id, f.level, f.code
-            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
-            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . ')) tmp1
-            JOIN tms_organization ON @id IS NOT NULL) tmp2
-            JOIN tms_organization f ON tmp2._id = f.id
-            where f.level = 1 limit 1';
-$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
-$organization_id = $organization->id;
 
+//Get organization level 1
+//$sqlGetOrganization = 'SELECT f.id, f.level, f.code
+//            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
+//            FROM (SELECT @id := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . ')) tmp1
+//            JOIN tms_organization ON @id IS NOT NULL) tmp2
+//            JOIN tms_organization f ON tmp2._id = f.id
+//            where f.level = 1 limit 1';
+//$organization = array_values($DB->get_records_sql($sqlGetOrganization))[0];
+//$organization_id = $organization->id;
+
+
+//Get direct organization and recursive parent
+
+$sqlGetOrganization = 'SELECT T2.id, T2.`name`, T2.`code`, T2.`parent_id`, T2.`level`
+FROM (
+    SELECT
+        @r AS _id,
+        (SELECT @r := parent_id FROM tms_organization WHERE id = _id) AS parent_id,
+        @l := @l + 1 AS lvl
+    FROM
+        (SELECT @r := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . '), @l := 0) vars,
+        tms_organization m
+    WHERE @r <> 0) T1
+JOIN tms_organization T2
+ON T1._id = T2.id
+ORDER BY T1.lvl DESC';
+
+$organizations = array_values($DB->get_records_sql($sqlGetOrganization));
+$reverse_recursive_org_ids = [];
+$organization_id = 0;
+$organization_code = '';
+if (!empty($organizations)) {
+    foreach ($organizations as $organization_item) {
+        $reverse_recursive_org_ids[] = $organization_item->id;
+    }
+    //level 1
+    $organization = $organizations[0];
+    $organization_id = $organization->id;
+    $organization_code = $organization->code;
+}
 $organizationCodeGet = "";
-$organizationLower = strtolower($organization->code);
+$organizationLower = strtolower($organization_code);
 //echo $organizationLower;
 //die;
 if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0) {
@@ -148,7 +180,6 @@ switch ($organizationCode) {
         break;
 }
 
-//  left join mdl_user_enrolments muet on met.id = muet.enrolid
 //get course list
 $sql = 'select @s:=@s+1 stt,
 mc.id,
@@ -288,60 +319,90 @@ if ($sttTotalCourse > 0) {
     $percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
 }
 
+//Optional courses
 
-//get course can not enrol
-
-$sqlCourseNotEnrol = '';
 //Lấy theo cơ cấu tổ chức
-if ($organizationCodeGet != 'PHH') {
-    $sqlCourseNotEnrol = 'select mc.id,
-mc.fullname,
-mc.category,
-mc.course_avatar,
-mc.estimate_duration,
- muet.userid as teacher_id,
-tud.fullname as teacher_name,
-toe.position as teacher_position,
-tor.name as teacher_organization,
-muet.timecreated as teacher_created
-from `mdl_course` as `mc`
-left join tms_trainning_courses ttc on mc.id = ttc.course_id
-  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = 4
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
-  left join tms_organization tor on tor.id = toe.organization_id
-left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `mc`.`id`
-where (`mc`.`id` in (select `mdl_course`.`id` from `tms_organization_employee` inner join `tms_role_organization` on `tms_organization_employee`.`organization_id` = `tms_role_organization`.`organization_id` inner join `tms_role_course` on `tms_role_organization`.`role_id` = `tms_role_course`.`role_id` inner join `mdl_course` on `tms_role_course`.`course_id` = `mdl_course`.`id` where `tms_organization_employee`.`user_id` = ' . $USER->id . ') or `mc`.`id` in (select `mdl_course`.`id` from `mdl_user_enrolments` as `mue` inner join `mdl_enrol` as `e` on `mue`.`enrolid` = `e`.`id` and `e`.`roleid` = 4 inner join `mdl_course` on `e`.`courseid` = `mdl_course`.`id` where `mue`.`userid` = ' . $USER->id . '))
-and mc.deleted = 0
- and mc.visible = 1
-and mc.category NOT IN (2,7)
- and mc.id not in ' . $courses_others_id;
-} //Nếu không thuộc cơ cấu tổ chức thì gợi ý tất
-else {
-    $sqlCourseNotEnrol = 'select mc.id,
-mc.fullname,
-mc.category,
-mc.course_avatar,
-mc.estimate_duration,
-muet.userid as teacher_id,
-tud.fullname as teacher_name,
-toe.position as teacher_position,
-tor.name as teacher_organization,
-muet.timecreated as teacher_created
-from mdl_course mc
-inner join tms_trainning_courses ttc on mc.id = ttc.course_id
-  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
-  left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id where ttp.deleted = 2   and mc.deleted = 0
-  and mc.category NOT IN (2,7) and mc.visible = 1 and mc.id not in ' . $courses_others_id;
+//if ($organizationCodeGet != 'PHH') {
+//    $sqlCourseNotEnrol = 'select mc.id,
+//mc.fullname,
+//mc.category,
+//mc.course_avatar,
+//mc.estimate_duration,
+// muet.userid as teacher_id,
+//tud.fullname as teacher_name,
+//toe.position as teacher_position,
+//tor.name as teacher_organization,
+//muet.timecreated as teacher_created
+//from `mdl_course` as `mc`
+//left join tms_trainning_courses ttc on mc.id = ttc.course_id
+//left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+//left join mdl_user_enrolments muet on met.id = muet.enrolid
+//left join tms_user_detail tud on tud.user_id = muet.userid
+//left join tms_organization_employee toe on toe.user_id = muet.userid
+//left join tms_organization tor on tor.id = toe.organization_id
+//left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `mc`.`id`
+//where (`mc`.`id` in (select `mdl_course`.`id` from `tms_organization_employee` inner join `tms_role_organization` on `tms_organization_employee`.`organization_id` = `tms_role_organization`.`organization_id` inner join `tms_role_course` on `tms_role_organization`.`role_id` = `tms_role_course`.`role_id` inner join `mdl_course` on `tms_role_course`.`course_id` = `mdl_course`.`id` where `tms_organization_employee`.`user_id` = ' . $USER->id . ') or `mc`.`id` in (select `mdl_course`.`id` from `mdl_user_enrolments` as `mue` inner join `mdl_enrol` as `e` on `mue`.`enrolid` = `e`.`id` and `e`.`roleid` = 4 inner join `mdl_course` on `e`.`courseid` = `mdl_course`.`id` where `mue`.`userid` = ' . $USER->id . '))
+//and mc.deleted = 0
+// and mc.visible = 1
+//and mc.category NOT IN (2,7)
+// and mc.id not in ' . $courses_others_id;
+//} //Nếu không thuộc cơ cấu tổ chức thì gợi ý tất
+//else {
+//    $sqlCourseNotEnrol = 'select mc.id,
+//mc.fullname,
+//mc.category,
+//mc.course_avatar,
+//mc.estimate_duration,
+//muet.userid as teacher_id,
+//tud.fullname as teacher_name,
+//toe.position as teacher_position,
+//tor.name as teacher_organization,
+//muet.timecreated as teacher_created
+//from mdl_course mc
+//inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+//left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+//left join mdl_user_enrolments muet on met.id = muet.enrolid
+//left join tms_user_detail tud on tud.user_id = muet.userid
+//left join tms_organization_employee toe on toe.user_id = muet.userid
+//left join tms_organization tor on tor.id = toe.organization_id
+//inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+//where ttp.deleted = 2   and mc.deleted = 0 and mc.category NOT IN (2,7) and mc.visible = 1 and mc.id not in ' . $courses_others_id;
+//}
+
+$coursesSuggest = [];
+
+if (!empty($reverse_recursive_org_ids)) {
+
+    $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
+
+    $sqlCourseNotEnrol = '
+        select mc.id,
+        mc.fullname,
+        mc.category,
+        mc.course_avatar,
+        mc.estimate_duration,
+        muet.userid as teacher_id,
+        tud.fullname as teacher_name,
+        toe.position as teacher_position,
+        tor.name as teacher_organization,
+        muet.timecreated as teacher_created
+        from mdl_course mc
+        inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+        left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+        left join mdl_user_enrolments muet on met.id = muet.enrolid
+        left join tms_user_detail tud on tud.user_id = muet.userid
+        left join tms_organization_employee toe on toe.user_id = muet.userid
+        left join tms_organization tor on tor.id = toe.organization_id
+        inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+        where
+        mc.deleted = 0
+        and mc.category NOT IN (2,7)
+        and mc.visible = 1
+        and met.enrol = "manual"
+        and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))
+        and mc.id NOT IN ' . $courses_others_id;
+        $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 }
-//echo $sqlCourseNotEnrol;
-//die;
-$coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
 $_SESSION["coursesSuggest"] = $coursesSuggest;
 //get image badge
