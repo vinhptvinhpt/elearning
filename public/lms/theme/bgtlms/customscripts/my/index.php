@@ -83,7 +83,6 @@ if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi
     $organizationCodeGet = "TVE";
 } else if (strpos($organizationLower, 'edu') === 0) {
     $organizationCodeGet = "EDU";
-//    $organization_id = 0;
 } else {
     $organizationCodeGet = "PHH";
 }
@@ -93,7 +92,6 @@ $colorOrganizationText = '#ffffff';
 
 //set for full page
 $className = 'Academy';
-//$organization_id = is_null($organization) ? 0 : $organization->id;
 //$organizationCodeGet
 $organizationCode = is_null($organizationCodeGet) ? strtoupper($_SESSION["organizationCode"]) : $organizationCodeGet;
 //$organizationCode = "BG";
@@ -200,7 +198,7 @@ mc.estimate_duration,
     ttp.name as training_name,
     ttp.deleted as training_deleted,
     ttc.order_no,
-    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
+    GROUP_CONCAT(CONCAT(tud.fullname, " created_at ",  muet.timecreated)) as teachers
   from mdl_course mc
   inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
   inner join mdl_user_enrolments mue on me.id = mue.enrolid
@@ -211,10 +209,10 @@ mc.estimate_duration,
   left join tms_trainning_courses ttc on mc.id = ttc.course_id
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
-  where me.enrol = \'manual\'
+  where me.enrol = "manual"
   and ttc.deleted <> 1
   and mc.deleted = 0
-   and mc.visible = 1
+  and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttp.style not in (2)
   and mue.userid = ' . $USER->id;
@@ -228,16 +226,12 @@ $courses_completed = array();
 $courses_others = array();
 $courses_others_id = '(0';
 $courses_soft_skills = array();
-//
 $courses_training = array();
-//
 $courses_required_list = array();
-//
 $competency_exists = array();
 $competency_completed = array();
 $countRequiredCourses = 0;
 $sttTotalCourse = 0;
-//
 $couresIdAllow = array();
 
 foreach ($courses as $course) {
@@ -409,9 +403,6 @@ $_SESSION["coursesSuggest"] = $coursesSuggest;
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
 
-$organization_id = is_null($organization_id) ? 0 : $organization->id;
-
-//$organization_id = 0;
 //get footer address
 $sqlGetFooterAddresses = "select id, organization_id, country, name, address, tel, fax from tms_organization_addresses where organization_id = " . $organization_id . " group by id";
 $getFooterAddresses = array_values($DB->get_records_sql($sqlGetFooterAddresses));
@@ -425,7 +416,6 @@ foreach ($getFooterAddresses as $footerAddress) {
 $_SESSION["OrganizationID"] = $organization_id;
 $_SESSION["footerAddressesTab"] = $footerAddressesTab;
 $_SESSION["footerAddresses"] = $footerAddresses;
-
 
 //get permission
 $sqlCheckPermission = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
@@ -1244,6 +1234,7 @@ $_SESSION["allowCms"] = $allowCms;
     }
 
 </style>
+
 <body>
 <div class="wrapper"><!-- wrapper -->
     <!--    --><?php //echo $OUTPUT->header(); ?>
