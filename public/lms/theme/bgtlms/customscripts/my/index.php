@@ -1643,7 +1643,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
-                                                                <a href="lms/course/view.php?id=<?php echo $course->id; ?>"
+                                                                <a href="lms/course/view.php?id=<?php echo $course->id; ?>&from=home.other"
                                                                    title="<?php echo $course->fullname; ?>"><p
                                                                         class="title-course">
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
@@ -1660,10 +1660,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <p class="units" title="Estimate time"><i
-                                                                            class="fa fa-clock-o"
-                                                                            aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                        hours</p>
+                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>hours</p>
                                                                 </div>
                                                             </div>
                                                             <p class="number-order number-order-hide"></p>

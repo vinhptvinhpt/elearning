@@ -1076,9 +1076,8 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
             ->select('mdl_enrol.id', 'mdl_user_enrolments.userid')
             ->get()
             ->toArray();
+
         //Insert missing
-
-
         if (empty($check_enrol)) {
             $new_enrol = MdlEnrol::create(
                 [
