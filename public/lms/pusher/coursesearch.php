@@ -286,7 +286,7 @@ and mue.userid = ' . $USER->id;
 
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
-    $sqlGetCoures = 'select
+$sqlGetCoures = 'select
 mc.id,
 mc.fullname,
 mc.category,
