@@ -19,6 +19,7 @@ inner join mdl_user mu on mu.id = mue.userid
 inner join mdl_enrol me on me.id = mue.enrolid AND me.roleid = 5
 inner join mdl_course mc on mc.id = me.courseid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+inner join tms_traninning_users ttu on mue.userid = ttu.user_id AND ttc.trainning_id = ttu.trainning_id
 inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 where me.enrol = "manual"
 and mc.deleted = 0

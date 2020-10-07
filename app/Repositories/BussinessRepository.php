@@ -11013,6 +11013,10 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
             ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+            ->join('tms_traninning_users as ttu', function ($join) {
+                $join->on('mu.userid', '=', 'ttu.user_id');
+                $join->on('ttc.trainning_id', '=', 'ttu.trainning_id');
+            })
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
             ->where('ttp.deleted', '=', 0)
             ->where('ttc.deleted', '=', 0)
