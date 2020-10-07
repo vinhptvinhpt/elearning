@@ -552,7 +552,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
                         <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
-                        <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
+                        <li v-if="linemanagers && linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
                         <li v-else>Line Manager: <span>Not yet update</span></li>
                         <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
@@ -660,7 +660,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template v-if="courses.length !== 0">
+                                <template v-if="courses && courses.length !== 0">
                                     <tr v-for="(course,index) in courses">
                                         <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
                                         <td style="text-align: center">
@@ -714,7 +714,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <template v-if="coursesTraining.length !== 0">
+                                <template v-if="coursesTraining && coursesTraining.length !== 0">
                                     <tr v-for="(course,index) in coursesTraining">
                                         <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
                                                                 :title="course.fullname">{{ course.fullname }}</a></th>
@@ -1008,7 +1008,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 })
                 .then(response => {
                     this.coursesTraining = response.data.courses;
-                    this.currentCoursesTotalTraining = this.courses.length;
+                    this.currentCoursesTotalTraining = this.coursesTraining.length;
                     this.totalPageTraining = response.data.totalPage;
                 })
                 .catch(error => {
