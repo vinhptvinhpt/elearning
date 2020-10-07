@@ -11014,10 +11014,11 @@ class BussinessRepository implements IBussinessInterface
             //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
             ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->where('ttp.deleted', '=', 0)
             ->where('ttc.deleted', '=', 0)
             ->where('c.deleted', '=', 0)
             ->where('c.visible', '=', 1)
-            ->where('u.id', '=', $user_id)
+            ->where('mu.userid', '=', $user_id)
             //->where('e.roleid', '=', Role::ROLE_STUDENT)
             ->whereNotIn('c.category',  [2,7])
             ->where('e.enrol', '=', 'manual')
