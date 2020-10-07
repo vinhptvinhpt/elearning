@@ -2535,26 +2535,21 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'code':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            //"regex:/^[a-zA-Z0-9\-\_\.\/]*$/i", //username without @
                             "regex:/^[a-zA-Z0-9\-\_\.\@\/]*$/i", //use email as username
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'password': //Min 8, 1 chu hoa, 1 ki tu dac biet @$!%*?#&
@@ -2566,10 +2561,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'token':
@@ -2581,10 +2574,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'longtext':
@@ -2617,10 +2608,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'number':
@@ -2632,10 +2621,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'positivenumber':
@@ -2647,10 +2634,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'decimal':
@@ -2662,10 +2647,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) != 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'phone':
@@ -2680,10 +2663,8 @@ function validate_fails($request, $param)
                     )
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'date':
@@ -2698,10 +2679,8 @@ function validate_fails($request, $param)
                     )
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'email':
@@ -2714,10 +2693,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'boolean':
@@ -2729,10 +2706,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'image':
@@ -2744,7 +2719,6 @@ function validate_fails($request, $param)
                             'key' => $key,
                             'message' => __('format_image')
                         ];
-                    //array_push($check, $key);
                     break;
             }
         }

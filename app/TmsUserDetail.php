@@ -48,7 +48,9 @@ class TmsUserDetail extends Model
      */
     public function employee()
     {
-        return $this->belongsTo('App\TmsOrganizationEmployee', 'user_id', 'user_id')->with('organization');
+        return $this->belongsTo('App\TmsOrganizationEmployee', 'user_id', 'user_id')
+            ->with('organization')
+            ->with('lineManager');
     }
 
 
