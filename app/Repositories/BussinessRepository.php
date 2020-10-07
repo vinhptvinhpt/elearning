@@ -11052,7 +11052,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
         if ($trainning_id) {
-            $data = $data->where('ttp.id', '=', $trainning_id);
+            $data = $data->where('ttc.trainning_id', '=', $trainning_id);
         }
 
         $data = $data->paginate($row);
