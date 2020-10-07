@@ -21,7 +21,6 @@ inner join mdl_course mc on mc.id = me.courseid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
 inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 where me.enrol = "manual"
-and ttp.deleted = 0
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
