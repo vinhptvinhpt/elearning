@@ -2409,7 +2409,8 @@ class TaskController extends Controller
 
                 $blob_name = $arr_name[0];
 
-                $end_date = Carbon::now()->addHour(23)->addMinute(58);
+//                $end_date = Carbon::now()->addHour(23)->addMinute(58);
+                $end_date = Carbon::now()->addSecond(10);
 
                 $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2449,7 +2450,8 @@ class TaskController extends Controller
                         $arr_name = explode('?', $file_name_rp);
 
                         $blob_name = $arr_name[0];
-                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2481,7 +2483,8 @@ class TaskController extends Controller
                         $arr_name = explode('?', $file_name_rp);
 
                         $blob_name = $arr_name[0];
-                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 

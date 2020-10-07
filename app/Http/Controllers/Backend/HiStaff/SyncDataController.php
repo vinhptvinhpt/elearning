@@ -25,6 +25,7 @@ class SyncDataController
         $result = new ResultModel();
         try {
             $header = $request->header('X-App-Token');
+            $token = $request->header('Authorization');
 
             $json = $request->input('data');
 
@@ -48,6 +49,22 @@ class SyncDataController
                 $result->message = 'Data value is empty';
                 return response()->json($result);
             }
+
+
+            if (empty($token)) {
+                $result->code = 'ERR04';
+                $result->status = false;
+                $result->message = 'User token not found';
+                return response()->json($result);
+            }
+
+            $token = str_replace('', 'Bearer ', $token);
+
+            $url = '';
+            $data_post = array(
+                'Token' => $token,
+            );
+//            $result_api = callAPI('POST', $url, $data_post, false, '');
 
             $data = json_decode($json, true);
 
@@ -118,6 +135,8 @@ class SyncDataController
         try {
             $header = $request->header('X-App-Token');
 
+            $token = $request->header('Authorization');
+
             $json = $request->input('data');
 
             if (!$header) {
@@ -133,6 +152,22 @@ class SyncDataController
                 $result->message = 'Application token invalid';
                 return response()->json($result);
             }
+
+            if (empty($token)) {
+                $result->code = 'ERR04';
+                $result->status = false;
+                $result->message = 'User token not found';
+                return response()->json($result);
+            }
+
+
+            $token = str_replace('', 'Bearer ', $token);
+
+            $url = '';
+            $data_post = array(
+                'Token' => $token,
+            );
+//            $result_api = callAPI('POST', $url, $data_post, false, '');
 
             if (!$json) {
                 $result->code = 'ERR03';
