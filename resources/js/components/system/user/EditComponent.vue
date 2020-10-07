@@ -250,6 +250,19 @@
 
                                 </div>
 
+                              <div v-if="roles && type == 'system'" class="col-md-4 col-sm-6 form-group">
+                                <label>{{trans.get('keys.quan_ly_truc_tiep')}} </label>
+                                <v-select
+                                  :options="lineManagerSelectOptions"
+                                  :reduce="lineManagerSelectOption => lineManagerSelectOption.id"
+                                  :placeholder="this.trans.get('keys.chon_quan_ly_truc_tiep')"
+                                  :filter-by="myFilterBy"
+                                  v-model="users.employee.line_manager_id">
+                                </v-select>
+
+                              </div>
+
+
                                 <!--                            <div class="col-md-4 col-sm-6 form-group">-->
                                 <!--                                <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>-->
                                 <!--                                <select id="inputTraining" class="form-control custom-select" v-model="users.training.trainning_id">-->
@@ -430,9 +443,10 @@
                     },
                     employee: {
                         organization_id: 0,
+                        line_manager_id: 0
                     },
                     city: '',
-                    country: ''
+                    country: '',
                 },
                 roles: [],
                 citys: [],
@@ -464,7 +478,8 @@
                     'employee',
                     'leader'
                 ],
-                dropify: false
+                dropify: false,
+                lineManagerSelectOptions: [],
             }
         },
         methods: {
@@ -926,6 +941,7 @@
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('trainning_id', this.users.training.trainning_id);
                 this.formData.append('organization_id', this.users.employee.organization_id);
+                this.formData.append('line_manager_id', this.users.employee.line_manager_id);
 
                 let current_pos = this;
 
@@ -1063,6 +1079,35 @@
             },
             setFileInput() {
                 $('.dropify').dropify();
+            },
+            myFilterBy: (option, label, search) => {
+              if (!label) {
+                label = '';
+              }
+              let new_search = convertUtf8(search);
+              let new_label = convertUtf8(label);
+              //return this.filterBy(option, new_label, new_search); //can not call components function here
+              return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+            },
+            getDataForLineManagerFilter() {
+              this.lineManagerSelectOptions = []; //reset after search again
+              axios.post('/system/filter/fetch', {
+                type: 'user'
+              })
+                .then(response => {
+                  let additionalSelections = [];
+                  response.data.forEach(function (selectItem) {
+                    let newItem = {
+                      label: selectItem.label,
+                      id: selectItem.id
+                    };
+                    additionalSelections.push(newItem);
+                  });
+                  this.lineManagerSelectOptions = additionalSelections;
+                })
+                .catch(error => {
+                  console.log(error);
+                });
             }
         },
         mounted() {
@@ -1072,6 +1117,7 @@
             //this.getCitys();
             this.userData();
             this.getCountries();
+            this.getDataForLineManagerFilter();
         },
         updated() {
             if (!this.dropify) {

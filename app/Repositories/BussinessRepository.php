@@ -8083,17 +8083,23 @@ class BussinessRepository implements IBussinessInterface
     {
         $response = [];
         $type = $request->input('type');
+        $size = $request->input('size');
 
         if ($type == 'user') {
-            $response = TmsUserDetail::where('deleted', 0)->select('user_id as id', 'fullname as label')->limit(20)->get()->toArray();
+            $response = TmsUserDetail::query()->where('deleted', 0)->select('user_id as id', 'email as label');
+            if ($size == 'limit') {
+                $response = $response->limit(20);
+            }
+            $response = $response->get()->toArray();
         } elseif ($type == 'course-online') {
             $response = DB::table('mdl_course as c')
-                ->select(
-                    'c.id',
-                    'c.fullname as label'
-                )
+                ->select('c.id', 'c.fullname as label')
                 ->where('c.category', '!=', 2)
-                ->where('c.category', '!=', 5)->limit(20)->get()->toArray();
+                ->where('c.category', '!=', 5);
+            if ($size == 'limit') {
+                $response = $response->limit(20);
+            }
+            $response = $response->get()->toArray();
         }
         return response()->json($response);
     }
@@ -8129,6 +8135,7 @@ class BussinessRepository implements IBussinessInterface
             $saleroom_select = $request->input('saleroom_select');
             $training_id = $request->input('training_id');
             $organization_id = $request->input('organization_id');
+            $line_manager_id = $request->input('line_manager_id');
 
             $param = [
                 'fullname' => 'text',
@@ -8258,6 +8265,7 @@ class BussinessRepository implements IBussinessInterface
                         $employee->user_id = $mdlUser->id;
                         $employee->organization_id = $organization_id;
                         $employee->position = $selected_role->name;
+                        $employee->line_manager_id = $line_manager_id;
                         $employee->save();
                     }
                 }
@@ -8818,22 +8826,22 @@ class BussinessRepository implements IBussinessInterface
         $users['role'] = $roles;
         $users['roles'] = $roless;
         $users['student_role'] = $studentRoleCount;
-        $salerooms = DB::table('tms_sale_room_user as tsru')
-            ->select(
-                'tb.id as branch_id',
-                'tb.name as branch_name',
-                'tb.code as branch_code',
-                'tsr.id',
-                'tsr.name',
-                'tsr.code',
-                'tsru.type'
-            )
-            ->leftJoin('tms_branch as tb', 'tb.id', '=', 'tsru.sale_room_id')
-            ->leftJoin('tms_sale_rooms as tsr', 'tsr.id', '=', 'tsru.sale_room_id')
-            ->where('tsru.user_id', '=', $user_id)
-            ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
-            ->get();
-        $users['salerooms'] = $salerooms;
+//        $salerooms = DB::table('tms_sale_room_user as tsru')
+//            ->select(
+//                'tb.id as branch_id',
+//                'tb.name as branch_name',
+//                'tb.code as branch_code',
+//                'tsr.id',
+//                'tsr.name',
+//                'tsr.code',
+//                'tsru.type'
+//            )
+//            ->leftJoin('tms_branch as tb', 'tb.id', '=', 'tsru.sale_room_id')
+//            ->leftJoin('tms_sale_rooms as tsr', 'tsr.id', '=', 'tsru.sale_room_id')
+//            ->where('tsru.user_id', '=', $user_id)
+//            ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
+//            ->get();
+//        $users['salerooms'] = $salerooms;
 
         return response()->json($users);
     }
@@ -8900,22 +8908,22 @@ class BussinessRepository implements IBussinessInterface
         $users['role'] = $roles;
         $users['roles'] = $roless;
         $users['student_role'] = $studentRoleCount;
-        $salerooms = DB::table('tms_sale_room_user as tsru')
-            ->select(
-                'tb.id as branch_id',
-                'tb.name as branch_name',
-                'tb.code as branch_code',
-                'tsr.id',
-                'tsr.name',
-                'tsr.code',
-                'tsru.type'
-            )
-            ->leftJoin('tms_branch as tb', 'tb.id', '=', 'tsru.sale_room_id')
-            ->leftJoin('tms_sale_rooms as tsr', 'tsr.id', '=', 'tsru.sale_room_id')
-            ->where('tsru.user_id', '=', $user_id)
-            ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
-            ->get();
-        $users['salerooms'] = $salerooms;
+//        $salerooms = DB::table('tms_sale_room_user as tsru')
+//            ->select(
+//                'tb.id as branch_id',
+//                'tb.name as branch_name',
+//                'tb.code as branch_code',
+//                'tsr.id',
+//                'tsr.name',
+//                'tsr.code',
+//                'tsru.type'
+//            )
+//            ->leftJoin('tms_branch as tb', 'tb.id', '=', 'tsru.sale_room_id')
+//            ->leftJoin('tms_sale_rooms as tsr', 'tsr.id', '=', 'tsru.sale_room_id')
+//            ->where('tsru.user_id', '=', $user_id)
+//            ->whereIn('tsru.type', [TmsSaleRoomUser::AGENTS, TmsSaleRoomUser::POS])
+//            ->get();
+//        $users['salerooms'] = $salerooms;
         return response()->json($users);
     }
 
@@ -8951,6 +8959,7 @@ class BussinessRepository implements IBussinessInterface
             $saleroom_select = $request->input('saleroom_select');
             $trainning_id = $request->input('trainning_id');
             $organization_id = $request->input('organization_id');
+            $line_manager_id = $request->input('line_manager_id');
 
             $param = [
                 'fullname' => 'text',
@@ -9111,6 +9120,7 @@ class BussinessRepository implements IBussinessInterface
                         $employee->user_id = $user_id;
                         $employee->organization_id = $organization_id;
                         $employee->position = $selected_role->name;
+                        $employee->line_manager_id = $line_manager_id;
                         $employee->save();
                     }
                 } else {

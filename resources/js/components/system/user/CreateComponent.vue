@@ -178,6 +178,17 @@
                     <label v-if="!last_organization_id" class="text-danger organization_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                 </div>
 
+                <div class="col-md-4 col-sm-6 form-group" v-if="type == 'system'">
+                  <label>{{trans.get('keys.quan_ly_truc_tiep')}} </label>
+                  <v-select
+                    :options="lineManagerSelectOptions"
+                    :reduce="lineManagerSelectOption => lineManagerSelectOption.id"
+                    :placeholder="this.trans.get('keys.chon_quan_ly_truc_tiep')"
+                    :filter-by="myFilterBy"
+                    v-model="line_manager_id">
+                  </v-select>
+                </div>
+
                 <!--Training-->
                 <!--                <div class="col-sm-6 form-group">-->
                 <!--                    <label for="inputTraining">{{trans.get('keys.vi_tri')}} *</label>-->
@@ -363,7 +374,9 @@
                 role_selected: 'user',
                 roleSelectOptions: [],
                 last_organization_id: 0,
-                organization_loaded: 0
+                organization_loaded: 0,
+                lineManagerSelectOptions: [],
+                line_manager_id: 0
             }
         },
         methods: {
@@ -692,6 +705,7 @@
                 this.formData.append('saleroom_select', this.saleroom_select);
                 this.formData.append('training_id', this.training);
                 this.formData.append('organization_id', this.last_organization_id);
+                this.formData.append('line_manager_id', this.line_manager_id);
 
                 let current_pos = this;
                 let loader = $('.preloader-it');
@@ -850,7 +864,28 @@
                 if (this.role_selected !== 'leader' && this.role_selected !== 'manager') {
                     this.last_organization_id = 0;
                 }
-            }
+                this.line_manager_id = 0;
+            },
+            getDataForLineManagerFilter() {
+            this.lineManagerSelectOptions = []; //reset after search again
+            axios.post('/system/filter/fetch', {
+              type: 'user'
+            })
+              .then(response => {
+                let additionalSelections = [];
+                response.data.forEach(function (selectItem) {
+                  let newItem = {
+                    label: selectItem.label,
+                    id: selectItem.id
+                  };
+                  additionalSelections.push(newItem);
+                });
+                this.lineManagerSelectOptions = additionalSelections;
+              })
+              .catch(error => {
+                console.log(error);
+              });
+          }
         },
         mounted() {
             //this.getCitys();
@@ -860,6 +895,7 @@
             this.selectOrganization(this.organization_id);
             this.getRoles();
             this.getCountries();
+            this.getDataForLineManagerFilter();
             if (this.organization_id !== 0) {
                 this.last_organization_id = this.organization_id;
                 this.organization_loaded = 1;

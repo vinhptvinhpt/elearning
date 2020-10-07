@@ -13,7 +13,7 @@ class TmsOrganizationEmployee extends Model
     protected $table = 'tms_organization_employee';
 
     protected $fillable = [
-        'organization_id', 'user_id', 'position', 'enabled'
+        'organization_id', 'user_id', 'position', 'enabled', 'line_manager_id'
     ];
 
     /**
@@ -22,6 +22,14 @@ class TmsOrganizationEmployee extends Model
     public function user()
     {
         return $this->hasOne('App\TmsUserDetail', 'user_id', 'user_id');
+    }
+
+    /**
+     * Get line manager detail.
+     */
+    public function lineManager()
+    {
+        return $this->hasOne('App\TmsUserDetail', 'user_id', 'line_manager_id');
     }
 
     /**

@@ -552,8 +552,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
                         <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
-                        <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
-                        </li>
+                        <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
                         <li v-else>Line Manager: <span>Not yet update</span></li>
                         <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
@@ -1029,15 +1028,17 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 })
                     .then(response => {
                         this.user = response.data.profile;
+
                         this.linemanagers = response.data.linemanagers;
-                        if(response.data.linemanagers.length > 0){
-                            var lineStr = '';
-                            $.each(response.data.linemanagers, function(key, value) {
-                                lineStr += value.fullname+', ';
-                            });
-                            lineStr = lineStr.substring(0, lineStr.length - 2);
-                            this.linemanagersStr = lineStr;
-                        }
+                        // if(response.data.linemanagers.length > 0){
+                        //     var lineStr = '';
+                        //     $.each(response.data.linemanagers, function(key, value) {
+                        //         lineStr += value.fullname+', ';
+                        //     });
+                        //     lineStr = lineStr.substring(0, lineStr.length - 2);
+                        //     this.linemanagersStr = lineStr;
+                        // }
+                        this.linemanagersStr = this.linemanagers;
 
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;
