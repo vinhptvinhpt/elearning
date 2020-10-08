@@ -178,7 +178,55 @@ switch ($organizationCode) {
         break;
 }
 
-//get course list
+//Optional courses
+
+$coursesSuggest = [];
+
+if (!empty($reverse_recursive_org_ids)) {
+
+    $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
+
+    $sqlCourseNotEnrol = '
+        select mc.id,
+        mc.fullname,
+        mc.category,
+        mc.course_avatar,
+        mc.estimate_duration,
+        muet.userid as teacher_id,
+        tud.fullname as teacher_name,
+        toe.position as teacher_position,
+        tor.name as teacher_organization,
+        muet.timecreated as teacher_created
+        from mdl_course mc
+        inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+        left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+        left join mdl_user_enrolments muet on met.id = muet.enrolid
+        left join tms_user_detail tud on tud.user_id = muet.userid
+        left join tms_organization_employee toe on toe.user_id = muet.userid
+        left join tms_organization tor on tor.id = toe.organization_id
+        inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+        where
+        mc.deleted = 0
+        and mc.category NOT IN (2,7)
+        and mc.visible = 1
+        and met.enrol = "manual"
+        and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))';
+
+    $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
+}
+
+$_SESSION["coursesSuggest"] = $coursesSuggest;
+$optionalCourses = [];
+if (!empty($coursesSuggest)) {
+    foreach ($coursesSuggest as $optionalItem) {
+        $optionalCourses[] = intval($optionalItem->id);
+    }
+} else {
+    $optionalCourses[] = 0;
+}
+$optionalCoursesIdString = implode(',', $optionalCourses);
+
+//Get course list, excludes optional courses
 $sql = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
@@ -214,6 +262,7 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
+  and mc.id NOT IN (' . $optionalCoursesIdString . ')
   and ttp.style not in (2)
   and mue.userid = ' . $USER->id;
 $sql .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
@@ -313,7 +362,7 @@ if ($sttTotalCourse > 0) {
     $percentStudying = round(count($courses_current) * 100 / $sttTotalCourse);
 }
 
-//Optional courses
+//Optional courses old
 
 //Lấy theo cơ cấu tổ chức
 //if ($organizationCodeGet != 'PHH') {
@@ -363,42 +412,6 @@ if ($sttTotalCourse > 0) {
 //where ttp.deleted = 2   and mc.deleted = 0 and mc.category NOT IN (2,7) and mc.visible = 1 and mc.id not in ' . $courses_others_id;
 //}
 
-$coursesSuggest = [];
-
-if (!empty($reverse_recursive_org_ids)) {
-
-    $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
-
-    $sqlCourseNotEnrol = '
-        select mc.id,
-        mc.fullname,
-        mc.category,
-        mc.course_avatar,
-        mc.estimate_duration,
-        muet.userid as teacher_id,
-        tud.fullname as teacher_name,
-        toe.position as teacher_position,
-        tor.name as teacher_organization,
-        muet.timecreated as teacher_created
-        from mdl_course mc
-        inner join tms_trainning_courses ttc on mc.id = ttc.course_id
-        left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-        left join mdl_user_enrolments muet on met.id = muet.enrolid
-        left join tms_user_detail tud on tud.user_id = muet.userid
-        left join tms_organization_employee toe on toe.user_id = muet.userid
-        left join tms_organization tor on tor.id = toe.organization_id
-        inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-        where
-        mc.deleted = 0
-        and mc.category NOT IN (2,7)
-        and mc.visible = 1
-        and met.enrol = "manual"
-        and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))
-        and mc.id NOT IN ' . $courses_others_id;
-        $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
-}
-
-$_SESSION["coursesSuggest"] = $coursesSuggest;
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
