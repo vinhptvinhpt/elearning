@@ -207,6 +207,7 @@
           .then(response => {
             this.employee = response.data;
             this.selectOrganization(this.employee.organization_id);
+            this.getDataForLineManagerFilter();
           })
           .catch(error => {
             console.log(error.response.data);
@@ -268,7 +269,8 @@
       getDataForLineManagerFilter() {
         this.lineManagerSelectOptions = []; //reset after search again
         axios.post('/system/filter/fetch', {
-          type: 'user'
+          type: 'user',
+          exclude: this.employee.user_id
         })
           .then(response => {
             let additionalSelections = [];
@@ -336,7 +338,6 @@
     },
     mounted() {
       this.getData();
-      this.getDataForLineManagerFilter();
     }
   }
 </script>
