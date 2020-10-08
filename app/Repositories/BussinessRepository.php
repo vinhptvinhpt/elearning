@@ -8084,11 +8084,14 @@ class BussinessRepository implements IBussinessInterface
         $response = [];
         $type = $request->input('type');
         $size = $request->input('size');
-
+        $exclude = $request->input('exclude');
         if ($type == 'user') {
             $response = TmsUserDetail::query()->where('deleted', 0)->select('user_id as id', 'email as label');
             if ($size == 'limit') {
                 $response = $response->limit(20);
+            }
+            if (is_numeric($exclude)) {
+                $response = $response->where('user_id', '<>', $exclude);
             }
             $response = $response->get()->toArray();
         } elseif ($type == 'course-online') {

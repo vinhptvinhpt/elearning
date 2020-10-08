@@ -375,6 +375,10 @@ class BackgroundController extends Controller
 
                     if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
                         $user_id = $createEmployeeResponse['id'];
+                        if ($line_manager == $user_id) {
+                            $line_manager = '';
+                            $content[] = "Line manager need to be different with current user";
+                        }
                         $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
@@ -722,6 +726,10 @@ class BackgroundController extends Controller
 
                     if ($createEmployeeResponse['id'] != 0) { //tạo user thành công
                         $user_id = $createEmployeeResponse['id'];
+                        if ($line_manager == $user_id) {
+                            $line_manager = '';
+                            $content[] = "Line manager need to be different with current user";
+                        }
                         $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;

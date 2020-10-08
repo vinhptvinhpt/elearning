@@ -1092,7 +1092,8 @@
             getDataForLineManagerFilter() {
               this.lineManagerSelectOptions = []; //reset after search again
               axios.post('/system/filter/fetch', {
-                type: 'user'
+                type: 'user',
+                exclude: this.user_id
               })
                 .then(response => {
                   let additionalSelections = [];
