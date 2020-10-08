@@ -134,9 +134,13 @@ class H5peditorFile
         }else{
           // Resize the image if size of image larger than the limit
           $image_size = $_FILES['file']['size'];
-          // Set the limit size (1MB)
-          $limit_resize = 1000000;
-          if ($image_size > $limit_resize) {
+          // Set the limit size (1MB)/(2MB)
+          $limit_resize_1mb = 1000000;
+          $limit_resize_2mb = 2000000;
+          if ($image_size > $limit_resize_1mb && $image_size < $limit_resize_2mb) {
+            $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / 5, $image[1] / 5);
+            $image = @getimagesize($_FILES['file']['tmp_name']);
+          }elseif ($image_size >= $limit_resize_2mb){
             $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / 10, $image[1] / 10);
             $image = @getimagesize($_FILES['file']['tmp_name']);
           }
