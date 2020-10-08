@@ -91,7 +91,7 @@
                         <label for="branch-select-all"></label>
                       </th>
                       <!--                                            <th class="mobile_hide">{{trans.get('keys.cmtnd')}}</th>-->
-                      <th class="mobile_hide text-center">{{trans.get('keys.id')}}</th>
+                      <!-- <th class="mobile_hide text-center">{{trans.get('keys.id')}}</th> -->
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th>{{trans.get('keys.ho_va_ten')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
@@ -110,7 +110,7 @@
                         :for="'restore_user'+user.user_id"></label>
                       </td>
                       <!--                                            <td class="mobile_hide">{{ user.cmtnd }}</td>-->
-                      <td class="mobile_hide text-center">{{ user.user_id }}</td>
+                      <!-- <td class="mobile_hide text-center">{{ user.user_id }}</td> -->
 
                       <td>
 
@@ -146,7 +146,7 @@
                         <label for="branch-select-all2"></label>
                       </th>
                       <!--                                            <th class="mobile_hide">{{trans.get('keys.cmtnd')}}</th>-->
-                      <th class="mobile_hide  text-center">{{trans.get('keys.id')}}</th>
+                      <!-- <th class="mobile_hide  text-center">{{trans.get('keys.id')}}</th> -->
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th>{{trans.get('keys.ho_va_ten')}}</th>
                       <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
