@@ -5,15 +5,21 @@
     Example context (json): {}
 }}
 <div id="nav-drawer" data-region="drawer" class="d-print-none moodle-has-zindex {{^navdraweropen}}closed{{/navdraweropen}}" aria-hidden="{{#navdraweropen}}false{{/navdraweropen}}{{^navdraweropen}}true{{/navdraweropen}}" tabindex="-1">
+    <div class="text-center progress-bar-timeline">Progress <span id="learned-module-count">77</span>/<span id="total-module-count">99</span> units</div>
     {{> theme_bgtlms/flat_navigation_timeline }}
 </div>
 
 <style>
     #nav-drawer {
-        padding-top: 6rem;
+        padding-top: 4rem;
         width: 300px;
     }
     #nav-drawer.closed {
         left: -300px;
+    }
+
+    .progress-bar-timeline {
+        font-weight: bold;
+        margin-bottom: 20px;
     }
 </style>

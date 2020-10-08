@@ -121,8 +121,7 @@
 
         <mapping-course v-if="roles.role_organization" :role_id="role_id"></mapping-course>
 
-        <optional-course v-if="roles.role_organization" :role_id="role_id"
-                         :org_id="roles.role_organization.organization_id"></optional-course>
+        <optional-course v-if="roles.role_organization" :role_id="role_id" :org_id="roles.role_organization.organization_id"></optional-course>
     </div>
 </template>
 
