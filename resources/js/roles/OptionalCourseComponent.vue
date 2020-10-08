@@ -234,7 +234,7 @@
                 axios.post('/api/courses/optional_courses', {
                     page: paged || this.current,
                     keyword: this.keyword,
-                    row: this.row_crr,
+                    row: this.row,
                     is_excluded: 1,
                     org_id: this.org_id
                 })
