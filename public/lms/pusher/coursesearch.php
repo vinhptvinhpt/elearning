@@ -18,13 +18,98 @@ $pageRequest = isset($_POST['pageRequest']) ? $_POST['pageRequest'] : '';
 
 if ($progress == 1) { //List from home
 
+    $all_courses = array();
     $courses_current = array();
     $courses_required = array();
     $courses_completed = array();
     $courses_others = array();
     $courses_others_id = '(0';
 
-    $sql = 'select @s:=@s+1 stt,
+//Optional courses
+
+    $coursesSuggest = [];
+    $coursesSuggestIds = [];
+
+    $sqlGetOrganization = 'SELECT T2.id, T2.`name`, T2.`code`, T2.`parent_id`, T2.`level`
+    FROM (
+        SELECT
+            @r AS _id,
+            (SELECT @r := parent_id FROM tms_organization WHERE id = _id) AS parent_id,
+            @l := @l + 1 AS lvl
+        FROM
+            (SELECT @r := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . '), @l := 0) vars,
+            tms_organization m
+        WHERE @r <> 0) T1
+    JOIN tms_organization T2
+    ON T1._id = T2.id
+    ORDER BY T1.lvl DESC';
+
+    $organizations = array_values($DB->get_records_sql($sqlGetOrganization));
+    $reverse_recursive_org_ids = [];
+    $organization_id = 0;
+    $organization_code = '';
+    if (!empty($organizations)) {
+        foreach ($organizations as $organization_item) {
+            $reverse_recursive_org_ids[] = $organization_item->id;
+        }
+        //level 1
+        $organization = $organizations[0];
+        $organization_id = $organization->id;
+        $organization_code = $organization->code;
+    }
+
+    if (!empty($reverse_recursive_org_ids)) {
+        $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
+        $sqlCourseNotEnrol = '
+        select mc.id,
+        mc.fullname,
+        mc.category,
+        mc.course_avatar,
+        mc.estimate_duration,
+        muet.userid as teacher_id,
+        tud.fullname as teacher_name,
+        toe.position as teacher_position,
+        tor.name as teacher_organization,
+        muet.timecreated as teacher_created,
+        ttp.id as training_id
+        from mdl_course mc
+        inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+        left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+        left join mdl_user_enrolments muet on met.id = muet.enrolid
+        left join tms_user_detail tud on tud.user_id = muet.userid
+        left join tms_organization_employee toe on toe.user_id = muet.userid
+        left join tms_organization tor on tor.id = toe.organization_id
+        inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+        where
+        mc.deleted = 0
+        and mc.category NOT IN (2,7)
+        and mc.visible = 1
+        and met.enrol = "manual"
+        and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))';
+
+        if ($txtSearch) {
+            $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+        }
+    }
+
+    $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
+
+
+    if ($category == 'other') { //khóa optional
+        $all_courses = $coursesSuggest; //Trả về luôn k query nữa
+    } else {
+        if (!empty($coursesSuggest)) {
+            foreach ($coursesSuggest as $optionalItem) {
+                $coursesSuggestIds[] = intval($optionalItem->id);
+            }
+        } else {
+            $coursesSuggestIds[] = 0;
+        }
+
+        $coursesSuggestIdsString = implode(',', $coursesSuggestIds);
+        //All courses: required, complete, current
+
+        $sql = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
 mc.category,
@@ -58,67 +143,65 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
+  and mc.id NOT IN (' . $coursesSuggestIdsString . ')
   and ttc.deleted <> 1
   and ttp.style not in (2)
   and mue.userid = ' . $USER->id;
 
-//    if ($category > 0) {
-//        $sql .= ' and mc.category = ' . $category;
-//    }
-//    if ($txtSearch) {
-//        $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
-//    }
-
-    $sql .= ' group by mc.id ORDER BY ttp.deleted, ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
-
-    $courses = array_values($DB->get_records_sql($sql));
-
-    $competency_exists = array();
-    $courses_training = array();
-    //
-    $getInCourses = array();
-    //
-    foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->id] = $course;
-    }
-
-    foreach ($courses_training as $courses) {
-        $stt = 1;
-        foreach ($courses as &$course) {
-            $course->sttShow = $stt;
-//            $course->sttShow = $course->order_no;
-            //current first
-            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-                $courses_others_id .= ', ' . $course->id;
-                array_push($competency_exists, $course->training_id);
-                push_course($courses_current, $course);
-            } //then complete
-            elseif ($course->numoflearned / $course->numofmodule == 1) {
-                push_course($courses_completed, $course);
-                $courses_others_id .= ', ' . $course->id;
-            } //then required = khoa hoc trong khung nang luc
-            elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-                $courses_required[$course->training_id][$course->id] = $course;
-                $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                if ($course->training_deleted == 2) {
-                    $courses_others_id .= ', ' . $course->id;
-                }
-                //
-                if (!in_array($course->training_id, $getInCourses)) {
-                    array_push($getInCourses, $course->training_id);
-                    $course->enable = true;
-                } else {
-                    $course->enable = false;
-                }
-//            push_course($courses_required, $course);
-            }
-            $stt++;
+        if ($txtSearch) {
+            $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
         }
-    }
 
-    $courses_others_id .= ')';
+        $sql .= ' group by mc.id ORDER BY ttp.deleted, ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
 
-//Optional courses
+        $courses = array_values($DB->get_records_sql($sql));
+
+        $competency_exists = array();
+        $courses_training = array();
+        //
+        $getInCourses = array();
+        //
+        foreach ($courses as $course) {
+            $courses_training[$course->training_id][$course->id] = $course;
+        }
+
+        foreach ($courses_training as $courses) {
+            $stt = 1;
+            foreach ($courses as &$course) {
+                $course->sttShow = $stt;
+//            $course->sttShow = $course->order_no;
+                //current first
+                if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                    $courses_others_id .= ', ' . $course->id;
+                    array_push($competency_exists, $course->training_id);
+                    push_course($courses_current, $course);
+                } //then complete
+                elseif ($course->numoflearned / $course->numofmodule == 1) {
+                    push_course($courses_completed, $course);
+                    $courses_others_id .= ', ' . $course->id;
+                } //then required = khoa hoc trong khung nang luc
+                elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
+                    $courses_required[$course->training_id][$course->id] = $course;
+                    $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
+                    if ($course->training_deleted == 2) {
+                        $courses_others_id .= ', ' . $course->id;
+                    }
+                    //
+                    if (!in_array($course->training_id, $getInCourses)) {
+                        array_push($getInCourses, $course->training_id);
+                        $course->enable = true;
+                    } else {
+                        $course->enable = false;
+                    }
+//            push_course($courses_required, $course);
+                }
+                $stt++;
+            }
+        }
+
+        $courses_others_id .= ')';
+
+//Optional courses old
 
 //$sqlCourseNotEnrol = 'select mc.id,
 //mc.fullname,
@@ -143,100 +226,32 @@ mc.estimate_duration,
 //and mc.deleted = 0
 //and mc.visible = 1
 //and mc.id not in ' . $courses_others_id;
-    $coursesSuggest = [];
-    if ($category == 'other') {
-        $sqlGetOrganization = 'SELECT T2.id, T2.`name`, T2.`code`, T2.`parent_id`, T2.`level`
-        FROM (
-            SELECT
-                @r AS _id,
-                (SELECT @r := parent_id FROM tms_organization WHERE id = _id) AS parent_id,
-                @l := @l + 1 AS lvl
-            FROM
-                (SELECT @r := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . '), @l := 0) vars,
-                tms_organization m
-            WHERE @r <> 0) T1
-        JOIN tms_organization T2
-        ON T1._id = T2.id
-        ORDER BY T1.lvl DESC';
 
-        $organizations = array_values($DB->get_records_sql($sqlGetOrganization));
-        $reverse_recursive_org_ids = [];
-        $organization_id = 0;
-        $organization_code = '';
-        if (!empty($organizations)) {
-            foreach ($organizations as $organization_item) {
-                $reverse_recursive_org_ids[] = $organization_item->id;
-            }
-            //level 1
-            $organization = $organizations[0];
-            $organization_id = $organization->id;
-            $organization_code = $organization->code;
-        }
+        $course_list = array();
 
-        if (!empty($reverse_recursive_org_ids)) {
-            $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
-            $sqlCourseNotEnrol = '
-            select mc.id,
-            mc.fullname,
-            mc.category,
-            mc.course_avatar,
-            mc.estimate_duration,
-            muet.userid as teacher_id,
-            tud.fullname as teacher_name,
-            toe.position as teacher_position,
-            tor.name as teacher_organization,
-            muet.timecreated as teacher_created,
-            ttp.id as training_id
-            from mdl_course mc
-            inner join tms_trainning_courses ttc on mc.id = ttc.course_id
-            left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-            left join mdl_user_enrolments muet on met.id = muet.enrolid
-            left join tms_user_detail tud on tud.user_id = muet.userid
-            left join tms_organization_employee toe on toe.user_id = muet.userid
-            left join tms_organization tor on tor.id = toe.organization_id
-            inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-            where
-            mc.deleted = 0
-            and mc.category NOT IN (2,7)
-            and mc.visible = 1
-            and met.enrol = "manual"
-            and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))
-            and mc.id NOT IN ' . $courses_others_id;
+        $courses_required_sort = [];
 
-            if ($txtSearch) {
-                $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
-            }
-        }
-        $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
-    }
-
-
-    $course_list = array();
-
-    $courses_required_sort = [];
-
-    if ($category == 'current') {
-        $all_courses = $courses_current;
-    } elseif ($category == 'required') {
-        foreach ($courses_required as $training_courses) {
-            $sttNew = 1;
-            foreach ($training_courses as $course) {
-                $newCourse = $course;
-                if ($course->training_deleted == 2)
-                    $newCourse->sttShow = 99999;
+        if ($category == 'current') {
+            $all_courses = $courses_current;
+        } elseif ($category == 'required') {
+            foreach ($courses_required as $training_courses) {
+                $sttNew = 1;
+                foreach ($training_courses as $course) {
+                    $newCourse = $course;
+                    if ($course->training_deleted == 2)
+                        $newCourse->sttShow = 99999;
 //                else
 //                    $newCourse->sttShow = $sttNew;
-                $courses_required_sort[] = $newCourse;
-                $sttNew++;
+                    $courses_required_sort[] = $newCourse;
+                    $sttNew++;
+                }
             }
-        }
-        usort($courses_required_sort, 'cmp_stt');
+            usort($courses_required_sort, 'cmp_stt');
 
-        $all_courses = array_values($courses_required_sort);
-    } elseif ($category == 'completed') {
-        $all_courses = $courses_completed;
-    } else {
-        $all_courses = $coursesSuggest;
+            $all_courses = array_values($courses_required_sort);
+        } elseif ($category == 'completed') {
+            $all_courses = $courses_completed;
+        }
     }
 
     $resultSearch = array();
@@ -263,7 +278,15 @@ mc.estimate_duration,
 
     $total = count($resultSearch);
 
-    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
+    $response = json_encode(
+        [
+        'courses' => $course_list,
+        'totalPage' => ceil($total / $recordPerPage),
+        'totalRecords' => $total,
+        'competency_exists' => $competency_exists,
+        'coursesSuggest' => $coursesSuggest
+        ]
+    );
 
 } else {
     //course available
