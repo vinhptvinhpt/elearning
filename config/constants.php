@@ -45,6 +45,10 @@ return [
 
         'TMS_NAME' => 'Easia Academy',
 
-        'APP-TOKEN-SYSTEM' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUVkUtVFZDIn0.8d61LFSiugnJp72Vdd3BqFCuOsMS8up7kif5bMQvYjM'
+        'APP-TOKEN-SYSTEM' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUVkUtVFZDIn0.8d61LFSiugnJp72Vdd3BqFCuOsMS8up7kif5bMQvYjM',
+
+        'HISTAFF-API' => 'http://222.252.30.92:2001/CommonBusinessToken.svc?wsdl',
+
+        'HISTAFF-KEY' => 'G6rikv0U0eQUIRak7owtmw==',
     ],
 ];
