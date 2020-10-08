@@ -400,7 +400,11 @@ class BackgroundController extends Controller
                 if ($status ==  false) {
                     $response_item[2] = 'error';
                 } else {
-                    $response_item[2] = 'success';
+                    if (!empty($content)) {
+                        $response_item[2] = 'warning';
+                    } else {
+                        $response_item[2] = 'success';
+                    }
                 }
                 $response_item[3] = implode("\n", $content);
 
@@ -751,7 +755,11 @@ class BackgroundController extends Controller
                 if ($status ==  false) {
                     $response_item[2] = 'error';
                 } else {
-                    $response_item[2] = 'success';
+                    if (!empty($content)) {
+                        $response_item[2] = 'warning';
+                    } else {
+                        $response_item[2] = 'success';
+                    }
                 }
                 $response_item[3] = implode("\n", $content);
 
