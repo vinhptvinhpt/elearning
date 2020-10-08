@@ -194,14 +194,17 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             \DB::beginTransaction();
-            $trainning = TmsTrainningProgram::findOrFail($id);
 
-            $trainningInfo = TmsTrainningProgram::select('id')->whereNotIn('id', [$trainning->id])->where('code', $code)->first();
+
+            $trainningInfo = TmsTrainningProgram::select('id')->whereNotIn('id', [$id])->where('code', $code)->first();
             if ($trainningInfo) {
                 $response->status = false;
                 $response->message = __('ma_trainning_da_ton_tai');
                 return response()->json($response);
             }
+
+            $trainning = TmsTrainningProgram::findOrFail($id);
+
 
             if ($style == 1) {
                 $time_start = strtotime($time_start);

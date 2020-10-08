@@ -104,7 +104,9 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-system-employee-view')">
-                                <router-link :to="{ path: '/tms/organization-employee', query: { view_mode: 'recursive' } }" class="nav-link">
+                                <router-link
+                                        :to="{ path: '/tms/organization-employee', query: { view_mode: 'recursive' } }"
+                                        class="nav-link">
                                     <span class="nav-link-text"> {{ trans.get('keys.quan_ly_nhan_vien') }}</span>
                                 </router-link>
                             </li>
@@ -279,24 +281,39 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-trainning-view')">
-                                <a class="nav-link has-submenu" id="khung_nang_luc" @click="toggleMenu( 'khung_nang_luc','recover_drp')" href="javascript:void(0);" data-toggle="collapse">
+                                <a class="nav-link has-submenu" id="khung_nang_luc"
+                                   @click="toggleMenu( 'khung_nang_luc','recover_drp')" href="javascript:void(0);"
+                                   data-toggle="collapse">
                                     {{ trans.get('keys.quan_tri_khung_nang_luc') }}
                                 </a>
                                 <ul id="recover_drp"
                                     class="nav flex-column collapse collapse-level-2">
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex', query: { type: '0' } }" class="nav-link">
+                                        <router-link
+                                                :to="{ path: '/tms/trainning/certification', name: 'TrainningCertificationIndex', query: { type: '0' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc') }}</span>
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }" class="nav-link">
+                                        <router-link
+                                                :to="{ path: '/tms/trainning/list', name: 'TrainningIndex', query: { type: '1' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_theo_thoi_gian') }}</span>
                                         </router-link>
                                     </li>
                                     <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link :to="{ path: '/tms/trainning/list', name: 'TrainningGroupIndex', query: { type: '2' } }" class="nav-link">
+                                        <router-link
+                                                :to="{ path: '/tms/trainning/list', name: 'TrainningGroupIndex', query: { type: '2' } }"
+                                                class="nav-link">
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_nhom') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
+                                        <router-link
+                                                :to="{ path: '/tms/competency/list', name: 'CompetencyListComponent'}"
+                                                class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_effect') }}</span>
                                         </router-link>
                                     </li>
                                     <!--                                    <li class="nav-item">-->
@@ -336,57 +353,57 @@
                                             <span class="nav-link-text"> {{ trans.get('keys.huy_hieu_mau') }}</span>
                                         </router-link>
                                     </li>
-<!--                                    <li class="nav-item" v-if="slug_can('tms-educate-resetexam-view')">-->
-<!--                                        <router-link to="/tms/education/resetexam" class="nav-link">-->
-<!--                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung_thi_lai') }}</span>-->
-<!--                                        </router-link>-->
-<!--                                    </li>-->
+                                    <!--                                    <li class="nav-item" v-if="slug_can('tms-educate-resetexam-view')">-->
+                                    <!--                                        <router-link to="/tms/education/resetexam" class="nav-link">-->
+                                    <!--                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung_thi_lai') }}</span>-->
+                                    <!--                                        </router-link>-->
+                                    <!--                                    </li>-->
                                 </ul>
                             </li>
 
-                          <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
-                            <a class="nav-link has-submenu" id="quan_ly_survey"
-                               @click="toggleMenu( 'quan_ly_survey','recover_drp1')"
-                               href="javascript:void(0);" data-toggle="collapse"
-                            >{{ trans.get('keys.quan_ly_survey') }}</a>
-                            <ul id="recover_drp1"
-                                class="nav flex-column collapse collapse-level-2 ">
-                              <li class="nav-item">
-                                <router-link to="/tms/survey/list" class="nav-link">
-                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_survey') }}</span>
-                                </router-link>
-                              </li>
-                              <li class="nav-item">
-                                <router-link to="/tms/question/list" class="nav-link">
-                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi') }}</span>
-                                </router-link>
-                              </li>
-                              <li class="nav-item">
-                                <router-link to="/tms/survey/restore" class="nav-link">
-                                  <span class="nav-link-text"> {{ trans.get('keys.khoi_phuc_survey') }}</span>
-                                </router-link>
-                              </li>
-                            </ul>
-                          </li>
-                          <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
-                            <a class="nav-link has-submenu" id="quan_ly_self"
-                               @click="toggleMenu( 'quan_ly_self','recover_drp_self')"
-                               href="javascript:void(0);" data-toggle="collapse"
-                            >{{ trans.get('keys.quan_tri_self') }}</a>
-                            <ul id="recover_drp_self"
-                                class="nav flex-column collapse collapse-level-2 ">
-                              <li class="nav-item">
-                                <router-link to="/tms/self/list" class="nav-link">
-                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_self') }}</span>
-                                </router-link>
-                              </li>
-                              <li class="nav-item">
-                                <router-link to="/tms/selfquestion/list" class="nav-link">
-                                  <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi_self') }}</span>
-                                </router-link>
-                              </li>
-                            </ul>
-                          </li>
+                            <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
+                                <a class="nav-link has-submenu" id="quan_ly_survey"
+                                   @click="toggleMenu( 'quan_ly_survey','recover_drp1')"
+                                   href="javascript:void(0);" data-toggle="collapse"
+                                >{{ trans.get('keys.quan_ly_survey') }}</a>
+                                <ul id="recover_drp1"
+                                    class="nav flex-column collapse collapse-level-2 ">
+                                    <li class="nav-item">
+                                        <router-link to="/tms/survey/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_survey') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/tms/question/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/tms/survey/restore" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.khoi_phuc_survey') }}</span>
+                                        </router-link>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="nav-item" v-if="slug_can('tms-report-survey-view')">
+                                <a class="nav-link has-submenu" id="quan_ly_self"
+                                   @click="toggleMenu( 'quan_ly_self','recover_drp_self')"
+                                   href="javascript:void(0);" data-toggle="collapse"
+                                >{{ trans.get('keys.quan_tri_self') }}</a>
+                                <ul id="recover_drp_self"
+                                    class="nav flex-column collapse collapse-level-2 ">
+                                    <li class="nav-item">
+                                        <router-link to="/tms/self/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_self') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/tms/selfquestion/list" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_cau_hoi_self') }}</span>
+                                        </router-link>
+                                    </li>
+                                </ul>
+                            </li>
                         </ul>
                     </li>
 
@@ -441,11 +458,11 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.cau_hinh_template_email') }}</span>
                                 </router-link>
                             </li>
-<!--                            <li class="nav-item" v-if="slug_can('tms-setting-notification-view')">-->
-<!--                                <router-link to="/tms/notification" class="nav-link">-->
-<!--                                    <span class="nav-link-text"> {{ trans.get('keys.gui_notification') }}</span>-->
-<!--                                </router-link>-->
-<!--                            </li>-->
+                            <!--                            <li class="nav-item" v-if="slug_can('tms-setting-notification-view')">-->
+                            <!--                                <router-link to="/tms/notification" class="nav-link">-->
+                            <!--                                    <span class="nav-link-text"> {{ trans.get('keys.gui_notification') }}</span>-->
+                            <!--                                </router-link>-->
+                            <!--                            </li>-->
                         </ul>
                     </li>
 
@@ -521,19 +538,19 @@
                 return this.slugs.indexOf(permissionName) !== -1;
             },
             toggleMenu(parent_id, child_id) {
-              var x = document.getElementById(parent_id);
-              if (x) {
-                var y = document.getElementById(child_id);
+                var x = document.getElementById(parent_id);
+                if (x) {
+                    var y = document.getElementById(child_id);
 
-                if (y.style.display === "none" || y.style.display === '') {
-                  x.classList.toggle("active");
-                  y.style.display = "block";
-                } else {
-                  $('#' + parent_id).removeClass("active");
-                  y.style.display = "none";
+                    if (y.style.display === "none" || y.style.display === '') {
+                        x.classList.toggle("active");
+                        y.style.display = "block";
+                    } else {
+                        $('#' + parent_id).removeClass("active");
+                        y.style.display = "none";
+                    }
+
                 }
-
-              }
             }
         },
         mounted() {
