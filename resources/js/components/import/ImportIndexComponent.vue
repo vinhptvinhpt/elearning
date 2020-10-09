@@ -5,7 +5,7 @@
       <nav class="breadcrumb" aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent px-0">
           <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-          <li class="breadcrumb-item active">{{ trans.get('keys.test_import_excel') }}</li>
+          <li class="breadcrumb-item active">{{ trans.get('keys.nhap_du_lieu_nguoi_dung') }}</li>
         </ol>
       </nav>
     </div>

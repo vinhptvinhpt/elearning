@@ -14,6 +14,7 @@ use App\MdlGradeItem;
 use App\MdlRole;
 use App\MdlUser;
 use App\Role;
+use App\TmsOptionalCourse;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
@@ -136,7 +137,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                                 $q1->select('mdl_course.id')
                                     ->from('mdl_user_enrolments as mue')
                                     //->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-                                    ->join('mdl_enrol as e', function($join) {
+                                    ->join('mdl_enrol as e', function ($join) {
                                         $join->on('mue.enrolid', '=', 'e.id');
                                         $join->where('e.roleid', '=', Role::ROLE_TEACHER); //role teacher
                                     })
@@ -196,29 +197,29 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 //        $select[] = 'mdl_logstore_standard_log.timecreated';
 //        $select[] = 'mdl_logstore_standard_log.userid';
         //Get last modify query raw
-/*        select
-        `c`.`id`,
-        `c`.`fullname`,
-        `c`.`shortname`,
-        `c`.`startdate`,
-        `c`.`enddate`,
-        `c`.`visible`,
-        `c`.`category`,
-        `c`.`deleted`,
-        `mccc`.`gradepass` as `pass_score`,
-        `mdl_logstore_standard_log`.`timecreated`,
-        `mdl_logstore_standard_log`.`userid`
-        from `mdl_course` as `c`
-        left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `c`.`id`
-        inner join `mdl_course_categories` as `mc` on `mc`.`id` = `c`.`category`
-        left join `mdl_logstore_standard_log` on `c`.`id` = `mdl_logstore_standard_log`.`contextinstanceid` and `mdl_logstore_standard_log`.`id` in (
-                select MAX(mlsl.id)
-        from `mdl_logstore_standard_log` as `mlsl`
-        inner join `mdl_course` as `mc` on `mlsl`.`contextinstanceid` = `mc`.`id`
-        where `mlsl`.`action` <> 'viewed'
-        group by `mc`.`id`
-        )
-        limit 10*/
+        /*        select
+                `c`.`id`,
+                `c`.`fullname`,
+                `c`.`shortname`,
+                `c`.`startdate`,
+                `c`.`enddate`,
+                `c`.`visible`,
+                `c`.`category`,
+                `c`.`deleted`,
+                `mccc`.`gradepass` as `pass_score`,
+                `mdl_logstore_standard_log`.`timecreated`,
+                `mdl_logstore_standard_log`.`userid`
+                from `mdl_course` as `c`
+                left join `mdl_course_completion_criteria` as `mccc` on `mccc`.`course` = `c`.`id`
+                inner join `mdl_course_categories` as `mc` on `mc`.`id` = `c`.`category`
+                left join `mdl_logstore_standard_log` on `c`.`id` = `mdl_logstore_standard_log`.`contextinstanceid` and `mdl_logstore_standard_log`.`id` in (
+                        select MAX(mlsl.id)
+                from `mdl_logstore_standard_log` as `mlsl`
+                inner join `mdl_course` as `mc` on `mlsl`.`contextinstanceid` = `mc`.`id`
+                where `mlsl`.`action` <> 'viewed'
+                group by `mc`.`id`
+                )
+                limit 10*/
 
         //Get last modification info by trigger
         $listCourses->leftJoin('mdl_user', 'c.last_modify_user', '=', 'mdl_user.id');
@@ -853,32 +854,32 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             }
 
             //write log to mdl_logstore_standard_log
-/*            $app_name = Config::get('constants.domain.APP_NAME');
+            /*            $app_name = Config::get('constants.domain.APP_NAME');
 
-            $key_app = encrypt_key($app_name);
-            $user_id = Auth::id();
-            $dataLog = array(
-                'app_key' => $key_app,
-                'courseid' => $course->id,
-                'action' => 'edit',
-                'description' => json_encode($course),
-                'userid' => $user_id
-            );
+                        $key_app = encrypt_key($app_name);
+                        $user_id = Auth::id();
+                        $dataLog = array(
+                            'app_key' => $key_app,
+                            'courseid' => $course->id,
+                            'action' => 'edit',
+                            'description' => json_encode($course),
+                            'userid' => $user_id
+                        );
 
-            $dataLog = createJWT($dataLog, 'data');
+                        $dataLog = createJWT($dataLog, 'data');
 
-            $data_write = array(
-                'data' => $dataLog,
-            );
+                        $data_write = array(
+                            'data' => $dataLog,
+                        );
 
-            $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-            $checkUser = MdlUser::where('id', $user_id)->first();
-            $token = '';
-            if (isset($checkUser)) {
-                $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
-            }
-            //call api write log
-            callAPI('POST', $url, $data_write, false, $token);*/
+                        $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
+                        $checkUser = MdlUser::where('id', $user_id)->first();
+                        $token = '';
+                        if (isset($checkUser)) {
+                            $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
+                        }
+                        //call api write log
+                        callAPI('POST', $url, $data_write, false, $token);*/
             devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'update', 'Update course: ' . $course->shortname);
             updateLastModification('update', $course->id);
 
@@ -1158,9 +1159,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             //lsl.other is a json => encode string input
             $encodeKeyword = json_encode($keyword);
             //replace " to remove " in string
-            $encodeKeyword = str_replace('"','', $encodeKeyword);
+            $encodeKeyword = str_replace('"', '', $encodeKeyword);
             //string input take the form 'v\u1ecb' so replace \ -> \\\\ will search in mysql right
-            $encodeKeyword = str_replace('\\','\\\\\\\\', $encodeKeyword);
+            $encodeKeyword = str_replace('\\', '\\\\\\\\', $encodeKeyword);
             //
             $docDel = $docDel->whereRaw('( lsl.other like "%' . $keyword . '%" OR lsl.other like "%' . $encodeKeyword . '%" OR mtrc.name like "%' . $keyword . '%" OR u.username like "%' . $keyword . '%" OR lsl.action like "%' . $keyword . '%" )');
             //
@@ -1308,7 +1309,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
      * @param $num
      * @return string
      */
-    public function composeAppend($num) {
+    public function composeAppend($num)
+    {
         $length = 3;
         if (strlen($num) >= $length) {
             return $num;
@@ -1316,4 +1318,155 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             return str_repeat('0', $length - strlen($num)) . $num;
         }
     }
+
+    //#region optonal courses
+    public function getOptionalCourses(Request $request)
+    {
+        // TODO: Implement getOptionalCourses() method.
+        $org_id = $request->input('org_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $is_excluded = $request->input('is_excluded'); //đã gán vào quyền hay chưa
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number'
+        ];
+
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $listCourses = DB::table('mdl_course as c')
+            ->where('c.category', '!=', 2)
+            ->select(
+                'c.id',
+                'c.fullname',
+                'c.shortname'
+            );
+
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 1) { //List khóa học chưa phân quyền cho role này
+                $listCourses = $listCourses->whereNotIn('c.id', function ($query) use ($org_id) {
+                    $query->select('course_id')
+                        ->from('tms_optional_courses')
+                        ->where('organization_id', $org_id);
+                });
+            } else { //List khóa học đã phân quyền cho role này
+                $listCourses = $listCourses->whereIn('c.id', function ($query) use ($org_id) {
+                    $query->select('course_id')
+                        ->from('tms_optional_courses')
+                        ->where('organization_id', $org_id);
+                });
+            }
+        }
+
+
+        $listCourses = $listCourses->where('c.deleted', '=', 0);
+
+        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
+        }
+
+        $listCourses = $listCourses->orderBy('c.id', 'desc');
+
+        $listCourses = $listCourses->paginate($row);
+        $total = ceil($listCourses->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $listCourses->currentPage(),
+            ],
+            'data' => $listCourses,
+            'total_course' => $totalCourse
+        ];
+
+
+        return response()->json($response);
+    }
+
+    public function assignOptionalCourse(Request $request)
+    {
+        // TODO: Implement assignOptionalCourse() method.
+        $response = new ResponseModel();
+        try {
+            $lstCourseId = $request->input('lstCourse');
+            $org_id = $request->input('org_id');
+
+            $param = [
+                'org_id' => 'number'
+            ];
+
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            $arrData = [];
+            $data_item = [];
+
+            foreach ($lstCourseId as $course_id) {
+                $data_item['course_id'] = $course_id;
+                $data_item['organization_id'] = $org_id;
+                $data_item['created_at'] = Carbon::now();
+                $data_item['updated_at'] = Carbon::now();
+
+                array_push($arrData, $data_item);
+            }
+
+            TmsOptionalCourse::insert($arrData);
+
+            $response->status = true;
+            $response->message = __('thao_tac_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = __('loi_he_thong_thao_tac_that_bai');;
+        }
+        return response()->json($response);
+    }
+
+    public function removeAssignOptionalCourse(Request $request)
+    {
+        // TODO: Implement removeAssignOptionalCourse() method.
+        $response = new ResponseModel();
+        try {
+            $lstCourseId = $request->input('lstCourse');
+            $org_id = $request->input('org_id');
+
+            $param = [
+                'org_id' => 'number'
+            ];
+
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                return json_encode($response);
+            }
+
+            TmsOptionalCourse::where('organization_id', '=', $org_id)->whereIn('course_id', $lstCourseId)->delete();
+
+            $response->status = true;
+            $response->message = __('thao_tac_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            $response->message = __('loi_he_thong_thao_tac_that_bai');;
+        }
+        return response()->json($response);
+    }
+    //#endregion
 }

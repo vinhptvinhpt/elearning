@@ -254,7 +254,7 @@
     import draggable from 'vuedraggable'
 
     export default {
-        props: ['id', 'type'],
+        props: ['id', 'type', 'trainning_code'],
         components: {
             draggable
         },
@@ -336,7 +336,8 @@
                 loader.fadeIn();
                 axios.post('/api/trainning/addcoursetotrainning', {
                     lst_course: this.userEnrols,
-                    trainning_id: this.id
+                    trainning_id: this.id,
+                    trainning_code: this.trainning_code
                 })
                     .then(response => {
                         loader.fadeOut();

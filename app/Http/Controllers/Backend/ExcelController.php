@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Exports\AttendanceSheet;
+use App\Exports\ImportResultSheet;
 use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
 use App\Exports\LoginSheet;
@@ -11,10 +12,17 @@ use App\Exports\ReportDetailSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
+use App\Imports\DataImport;
+use App\MdlUser;
+use App\TmsTdCompetency;
+use App\TmsTdCompetencyMark;
+use App\TmsTdUserMark;
 use App\TmsUserDetail;
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 use Symfony\Component\HttpFoundation\Request;
 
 class ExcelController extends Controller
@@ -856,5 +864,190 @@ class ExcelController extends Controller
     {
         $filename = "statistic_login_report.xlsx";
         return Storage::download($filename);
+    }
+
+    public function importMark(Request $request)
+    {
+
+        set_time_limit(0);
+
+
+        $year = $request->input('year');
+
+
+        if (!$request->file('file')) {
+            return response()->json(self::status_message('error', "File missing"));
+        } else {
+            //check file is xlsx, xls
+            $extension = $request->file('file')->getClientOriginalExtension();
+            if ($extension != 'xls' && $extension != 'xlsx') {
+                return response()->json(self::status_message('error', "File type mismatch. Allow XLS, XLSX file only"));
+            }
+            $files = array($request->file('file'));
+        }
+
+        foreach ($files as $file_path) {
+
+            /* @var $file_path UploadedFile */
+            $full_file_name = $file_path->getClientOriginalName();
+            $file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
+
+            $list_uploaded = (new DataImport())->toArray($file_path, '', '');
+
+            $response = array();
+            //Lấy dữ liệu từ tab Mark <= Required
+            $list_data = $list_uploaded['Mark'];
+            $title = '';
+            $competencies = array();
+            $competencies_ids = array();
+
+            foreach ($list_data as $row_no => $item) {
+
+                $content = array();
+                $status = true;
+
+                //Row 0 Title
+                if ($row_no == 0) {
+                    for ($i = 0; $i <= 30; $i++) {
+                        if (isset($item[$i])) {
+                            if (strlen($item[$i]) > 0) {
+                                $title = $item[$i];
+                            }
+                        } else {
+                            break;
+                        }
+
+                    }
+                }
+                //Row 1 competency code
+                if ($row_no == 1) {
+                    for ($i = 0; $i <= 30; $i++) {
+                        if (isset($item[$i])) {
+                            if (strlen($item[$i]) > 0) {
+                                $competencies[$i] = $item[$i];
+                            }
+                        } else {
+                            continue;
+                        }
+                    }
+                    if (count($competencies) > 0) {
+                        $checkCompetency = TmsTdCompetency::query()->whereIn('code', $competencies)->get();
+                        if (count($checkCompetency) != count($competencies)) {
+                            return response()->json(self::status_message('error', "Competency code is not valid, please check and try again"));
+                        } else {
+                            $competencies_ids = $competencies;
+                            foreach ($checkCompetency as $competency) {
+                                $key = array_search($competency->code, $competencies);
+                                $competencies_ids[$key] = $competency->id;
+                            }
+                        }
+                    } else {
+                        return response()->json(self::status_message('error', "Competency code is not valid, please check and try again"));
+                    }
+
+                }
+                //Row 2 competency average mark
+                if ($row_no == 2) {
+                    $email = 'AVG MARK';
+                    $max = max(array_keys($competencies));
+                    for ($i = 1; $i <= $max; $i++) {
+                        $mark = $item[$i];
+                        if (!isset($mark) || strlen($mark) == 0) {
+                            $content[] = "Missing average mark for competency";
+                        } else {
+                            TmsTdCompetencyMark::updateOrCreate(
+                                [
+                                    'competency_id' => $competencies_ids[$i],
+                                    'year' => $year
+                                ],
+                                ['mark' => $mark] //Update
+                            );
+                        }
+                    }
+                }
+
+                //From row 3 => data row
+                if($row_no > 2) {
+                    $email = $item[0];
+                    if (strlen($email) != 0) {
+                        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                            $content[] = "Email is wrong format";
+                            $status = false;
+                        } else {//Continue
+                            $checkUser = MdlUser::query()->where('username', $email)->first();
+                            if (!isset($checkUser)) {
+                                $status = false;
+                                $content[] = "User does not exist";
+                            } else {//Continue
+                                $max = max(array_keys($competencies));
+                                for ($i = 1; $i <= $max; $i++) {
+                                    $mark = $item[$i];
+                                    if (!isset($mark) || strlen($mark) == 0) {
+                                        $content[] = "Missing mark for competency";
+                                    } else {
+                                        TmsTdUserMark::updateOrCreate(
+                                            [
+                                                'user_id' => $checkUser->id,
+                                                'competency_id' => $competencies_ids[$i],
+                                                'year' => $year
+                                            ],
+                                            ['mark' => $mark] //Update
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //dừng code k duyệt tiếp
+                        break;
+                    }
+                }
+
+                if ($row_no > 1) {
+                    $response_item = array(
+                        '',
+                        $email,
+                        '',
+                        ''
+                    );
+
+                    if ($status ==  false) {
+                        $response_item[2] = 'error';
+                    } else {
+                        if (!empty($content)) {
+                            $response_item[2] = 'warning';
+                        } else {
+                            $response_item[2] = 'success';
+                        }
+                    }
+                    $response_item[3] = implode("\n", $content);
+
+                    $response[] = $response_item;
+                }
+            }
+
+            $result_file_name = "import_error_" . $file_name . ".xlsx";
+
+            //xóa file cũ
+            if (Storage::exists($result_file_name)) {
+                Storage::delete($result_file_name);
+            }
+
+            //ghi file vào thư mục storage, không được mở file khi đang lưu nếu k sẽ lỗi k lưu được
+            $exportExcel = new ImportResultSheet('Import Result', $response);
+            $exportExcel->store($result_file_name, '', Excel::XLSX);
+
+            return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+
+        }
+    }
+
+    function status_message($status, $message, $additional_data = [])
+    {
+        $data = [];
+        $data['status'] = $status;
+        $data['message'] = $message;
+        $data['data'] = $additional_data;
+        return $data;
     }
 }

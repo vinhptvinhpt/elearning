@@ -14,9 +14,11 @@ $home_selection = [
 ];
 
 $category_params = 0;
+$params_to_view_course = '';
 
 if (strlen($type) != 0) {
     $category_params = $type;
+    $params_to_view_course = '&from=courses.' . $type;
 }
 
 //Hide course library, client course
@@ -560,6 +562,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .footer-logo {
         height: auto;
         width: auto;
+        max-width: 200px;
     }
 
     /*.footer-logo img {*/
@@ -921,7 +924,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="block-item__content col-7">
                                     <div class="course-info">
                                         <div class="info-text">
-                                            <a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">
+                                            <a :href="'lms/course/view.php?id=' + course.id + '<?php echo $params_to_view_course ?>'" :title="course.fullname">
                                                 <p class="title-course"><i></i>{{course.fullname}}</p></a>
                                             <div class="course-info__detail">
                                                 <ul>

@@ -284,6 +284,19 @@
                                         </div>
                                     </div>
                                 </li>
+
+                                <li v-if="users.employee">
+                                  <div class="row">
+                                    <div class="col-sm-6">{{trans.get('keys.quan_ly_truc_tiep')}}</div>
+                                    <div class="col-sm-6 pl-30 pl-sm-15">
+                                      <p v-if="users.employee.line_manager">
+                                        {{ users.employee.line_manager.fullname }}
+                                      </p>
+                                      <p v-else>N/A</p>
+                                    </div>
+                                  </div>
+                                </li>
+
                             </ul>
                             <div class="text-right">
                                 <router-link v-if="slug_can('tms-system-user-edit')" :title="trans.get('keys.sua')"

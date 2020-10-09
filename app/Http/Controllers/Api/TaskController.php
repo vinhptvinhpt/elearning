@@ -181,8 +181,8 @@ class TaskController extends Controller
                 cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                     DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
 	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
-                    //,DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
-				//where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
+                //,DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
+                //where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
                 )
                 ->groupBy(['u.id'])
                 ->get();
@@ -315,8 +315,8 @@ class TaskController extends Controller
         //Lấy ra số khóa học theo khung năng lực deleted = 0
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)') //khung nang lcu thong thuong, chua bi xoa
-            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
+            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)')//khung nang lcu thong thuong, chua bi xoa
+            ->where('ttc.deleted', '=', '0')//Khoa hoc trong khung nang luc
             ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
             ->groupBy(['ttc.trainning_id'])
             ->get();
@@ -337,7 +337,7 @@ class TaskController extends Controller
                         $join->on('ttc.user_id', '=', 'cc.userid');
                         $join->on('ttc.trainning_id', '=', 'cc.training_id');
                     })
-                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->whereNull('ttc.id')//record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
                     ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
                     ->where('cc.training_id', '=', $training->trainning_id)
                     ->groupBy(['cc.training_id', 'cc.userid'])
@@ -499,12 +499,22 @@ class TaskController extends Controller
             usleep(100); //sleep tranh tinh trang query db lien tiep
 
             //insert du lieu lich su hoc tap
+            $user_id = $st->user_id;
+            $training_id = $st->training_id;
+
             $lstHistory = DB::table('course_completion as cc')
                 ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
                 ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
-                ->where('cc.userid', '=', $st->user_id)
-                ->where('cc.training_id', '=', $st->training_id)
+                ->where('cc.userid', '=', $user_id)
+                ->where('cc.training_id', '=', $training_id)
                 ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->whereNotExists(function ($query) use ($training_id, $user_id) { //Check chưa tồn tại tr
+                    $query->select(DB::raw(1))
+                        ->from('tms_learner_histories as tlh')
+                        ->where('tlh.trainning_id', '=', $training_id)
+                        ->where('tlh.user_id', '=', $user_id)
+                        ->where('tlh.course_id', '=', 'c.id');
+                })
                 ->get();
 
             $arr_data_his = [];
@@ -1139,7 +1149,7 @@ class TaskController extends Controller
         if (!empty($receiver)) {
             if (is_array($receiver)) {
                 $send_to = $receiver;
-            } elseif(is_int($receiver)) {
+            } elseif (is_int($receiver)) {
                 $send_to[] = $receiver;
             }
 
@@ -1654,7 +1664,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
-            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
+            ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
@@ -1951,7 +1961,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
-            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
+            ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
@@ -2399,7 +2409,8 @@ class TaskController extends Controller
 
                 $blob_name = $arr_name[0];
 
-                $end_date = Carbon::now()->addHour(23)->addMinute(58);
+//                $end_date = Carbon::now()->addHour(23)->addMinute(58);
+                $end_date = Carbon::now()->addSecond(10);
 
                 $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2439,7 +2450,8 @@ class TaskController extends Controller
                         $arr_name = explode('?', $file_name_rp);
 
                         $blob_name = $arr_name[0];
-                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2471,7 +2483,8 @@ class TaskController extends Controller
                         $arr_name = explode('?', $file_name_rp);
 
                         $blob_name = $arr_name[0];
-                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
+                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2539,6 +2552,27 @@ class TaskController extends Controller
             . implode('&', $_parts);
 
         return $_url;
+    }
+
+    public function apiGenerateSASUrlAzureTest()
+    {
+        $arrMainId = [33, 140];
+        $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->where('id', 1016)->select('id', 'main_library_id', 'json_content')->get();
+
+        foreach ($lstData as $data) {
+            $jsonData = json_decode($data->json_content, true);
+
+            switch ($data->main_library_id) {
+                case 33:
+                    $this->processInteractive33($jsonData, $data->id);
+                    break;
+                case 140:
+                    $this->processInteractive140($jsonData, $data->id);
+                    break;
+            }
+
+        }
+
     }
 
     //endregion

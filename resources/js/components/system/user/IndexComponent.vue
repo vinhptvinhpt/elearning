@@ -206,7 +206,7 @@
                         <label for="branch-select-all"></label>
                       </th>
 <!--                      <th>{{trans.get('keys.so_cmtnd')}}</th>-->
-                      <th class="text-center">{{trans.get('keys.id')}}</th>
+                      <!-- <th class="text-center">{{trans.get('keys.id')}}</th> -->
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>
@@ -226,7 +226,7 @@
                         <label :for="'delete_user'+user.user_id"></label>
                       </td>
 <!--                      <td>{{ user.cmtnd }}</td>-->
-                      <th class="text-center">{{user.user_id}}</th>
+                      <!-- <th class="text-center">{{user.user_id}}</th> -->
                       <td>
                         <router-link
                           :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }">
@@ -290,7 +290,7 @@
                         <label for="branch-select-all2"></label>
                       </th>
 <!--                      <th>{{trans.get('keys.so_cmtnd')}}</th>-->
-                      <th class="text-center">{{trans.get('keys.id')}}</th>
+                      <!-- <th class="text-center">{{trans.get('keys.id')}}</th> -->
                       <th>{{trans.get('keys.tai_khoan')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                       <th class="mobile_hide">{{trans.get('keys.email')}}</th>

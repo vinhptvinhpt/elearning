@@ -63,11 +63,12 @@ $permission_tms = false;
 $getPathPublic = '';
 $imgCongra = '';
 $roleInCourse = 0;
-//
 $finishCourse = false;
 $pathBadge = 'images/default_badge.png';
 $course_name = '';
-//
+$numOfModule = 0;
+$numOfLearned = 0;
+
 global $DB;
 $sqlCheck = 'SELECT permission_slug, roles.name from `model_has_roles` as `mhr`
 inner join `roles` on `roles`.`id` = `mhr`.`role_id`
@@ -113,13 +114,13 @@ if ($pagelayout == 'incourse') {
             }
         }
     }
-    //
+
     $sqlGetBadge = 'select path from image_certificate where type = 2 and is_active = 1';
     $getBadge = array_values($DB->get_records_sql($sqlGetBadge))[0];
     $pathBadge = $getBadge->path;
     $pathBadge = ltrim($pathBadge, $pathBadge[0]);
     $pathBadge = $CFG->wwwtmsbase . $pathBadge;
-    //    $viewCoursePage = true;
+    //$viewCoursePage = true;
     //get progress learning
     $sqlGetProgress = ' select ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
   ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
@@ -146,7 +147,7 @@ if ($pagelayout == 'incourse') {
     } else {
         $finishCourse = false;
     }
-    //
+
     $incourse = true;
     if (!empty($modules)) {
         $modulesidsstring = implode(',', array_column($modules, 'id'));
@@ -255,7 +256,9 @@ $templatecontext = [
     'finishCourse' => $finishCourse,
     'pathBadge' => $pathBadge,
     'courseName' => $course_name,
-    'roleInCourse' => $roleInCourse
+    'roleInCourse' => $roleInCourse,
+    'numOfLearned' => $numOfLearned,
+    'numOfModule' => $numOfModule
 ];
 
 $nav = $PAGE->flatnav;

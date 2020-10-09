@@ -1,4 +1,3 @@
-
 <nav class="list-group">
     <h3>Table of content</h3>
     <ol class="flat-nav-list">
@@ -14,19 +13,28 @@
 $(document).ready(function() {
    let cmid = parseInt({{cmid}});
    let modulesidsstring = '{{ modulesidsstring}}';
+   let learned_module_count = 0;
+   let total_module_count = 0;
+
    if(modulesidsstring.length !== 0) {
        let modules = modulesidsstring.split(",");
        $.each(modules, function( index, value ) {
+           total_module_count++;
            let module_id = parseInt(value);
            if (module_id < cmid) {
                $('.module-id-' + module_id).toggleClass('flat-nav-item-learned');
+               learned_module_count ++;
            } else if (module_id > cmid) {
                $('.module-id-' + module_id).toggleClass('flat-nav-item-unlearn');
            } else {
+               learned_module_count ++;
                $('.module-id-' + module_id).toggleClass('flat-nav-item-learning');
            }
        });
    }
+   //Use data from column2 passed
+   //$("#learned-module-count").text(learned_module_count.toString());
+   //$("#total-module-count").text(total_module_count.toString());
 });
 </script>
 

@@ -89,6 +89,8 @@ class ImportResultSheet implements WithTitle, WithHeadings, FromArray, WithMappi
                         $color = '99ff99';
                     } elseif ($line[2] == 'error') {
                         $color = 'ffcc66';
+                    } elseif ($line[2] == 'warning') {
+                        $color = 'f2de10';
                     }
 
                     //Set màu cho các row
