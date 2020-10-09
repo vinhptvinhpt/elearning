@@ -69,8 +69,7 @@ if (!empty($organizations)) {
 }
 $organizationCodeGet = "";
 $organizationLower = strtolower($organization_code);
-//echo $organizationLower;
-//die;
+
 if (strpos($organizationLower, 'bg') === 0 || strpos($organizationLower, 'begodi') === 0) {
     $organizationCodeGet = "BG";
 } else if (strpos($organizationLower, 'ea') === 0 || strpos($organizationLower, 'easia') === 0) {
@@ -325,6 +324,8 @@ foreach ($courses_training as $courses) {
             $countRequiredCourses++;
             $courses_required_list[] = $course;
 
+        } else {
+            $courses_others_id .= ', ' . $course->id;
         }
         $stt++;
     }
