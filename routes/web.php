@@ -813,6 +813,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/tnd-report/update', 'Backend\TNDReportController@apiUpdate');
     Route::post('/api/tnd-report/delete', 'Backend\TNDReportController@apiDelete');
     Route::get('/api/tnd-report/detail/{id}', 'Backend\TNDReportController@apiGetDetail');
+    Route::post('/api/tnd-report/get-courses', 'Backend\TNDReportController@apiGetCompetencyCourse');
+    Route::post('/api/tnd-report/assign-course', 'Backend\TNDReportController@apiAssignCourseToCompetency');
+    Route::post('/api/tnd-report/remove-assign-course', 'Backend\TNDReportController@apiRemoveAssignCourseToCompetency');
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020

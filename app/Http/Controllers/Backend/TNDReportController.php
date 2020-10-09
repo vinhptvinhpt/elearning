@@ -40,4 +40,19 @@ class TNDReportController extends Controller
         $id = $request->input('id');
         return $this->tndRepository->delete($id);
     }
+
+    public function apiGetCompetencyCourse(Request $request)
+    {
+        return $this->tndRepository->getCompetencyCourse($request);
+    }
+
+    public function apiAssignCourseToCompetency(Request $request)
+    {
+        return $this->tndRepository->assignCourseCompetency($request);
+    }
+
+    public function apiRemoveAssignCourseToCompetency(Request $request)
+    {
+        return $this->tndRepository->removeAssignCourseCompetency($request);
+    }
 }
