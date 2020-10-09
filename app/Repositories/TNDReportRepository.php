@@ -8,9 +8,12 @@ use App\MdlCourse;
 use App\TmsTdCompetency;
 use App\TmsTdCompetencyCourse;
 use App\TmsTdCompetencyMark;
+use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TNDReportRepository implements ITNDReportInteface, ICommonInterface
 {
@@ -164,5 +167,144 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         // TODO: Implement detail() method.
         $competency = TmsTdCompetency::findOrFail($id);
         return response()->json($competency);
+    }
+
+    public function getCompetencyCourse(Request $request)
+    {
+        // TODO: Implement getCompetencyCourse() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $is_excluded = $request->input('is_excluded');
+        $training_id = $request->input('training_id'); //đã gán vào quyền hay chưa
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number',
+            'is_excluded' => 'number',
+            'training_id' => 'number',
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $listCourses = DB::table('mdl_course as c')
+            ->leftJoin('tms_td_competency_courses as ttc', function ($join) use ($training_id) {
+                $join->on('c.id', '=', 'ttc.course_id');
+                $join->where('ttc.competency_id', $training_id);
+            })
+            ->select(
+                'c.id',
+                'c.fullname',
+                'c.shortname'
+            );
+
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 0) { //List khóa học chưa gán
+                $listCourses->whereNull('ttc.id');
+            } else { //List khóa học đã gán
+                $listCourses->whereNotNull('ttc.id');
+            }
+        }
+
+        $listCourses = $listCourses->where('c.deleted', '=', 0);
+        $listCourses = $listCourses->where('c.category', '<>', 2);
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+
+            $listCourses = $listCourses->whereRaw('( c.fullname like "%' . $keyword . '%" OR c.shortname like "%' . $keyword . '%" )');
+        }
+
+        if (strlen($is_excluded) != 0) {
+            if ($is_excluded == 0) { //List khóa học chưa gán
+                $listCourses = $listCourses->orderBy('c.id', 'desc');
+            } else { //List khóa học đã gán
+                $listCourses = $listCourses->orderBy('ttc.id', 'desc');
+            }
+        }
+
+        $lstAllData = $listCourses->get();
+        $totalCourse = count($lstAllData); //lấy tổng số khóa học hiện tại
+        $listCourses = $listCourses->paginate($row);
+        $total = ceil($listCourses->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $listCourses->currentPage(),
+            ],
+            'data' => $listCourses,
+            'total_course' => $totalCourse,
+            'allData' => $lstAllData
+        ];
+
+
+        return response()->json($response);
+    }
+
+    public function assignCourseCompetency(Request $request)
+    {
+        // TODO: Implement assignCourseCompetency() method.
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
+
+            \DB::beginTransaction();
+            $count_course = count($lstCourseId);
+            if ($count_course > 0) {
+                foreach ($lstCourseId as $item) {
+                    //insert du lieu vao bang chua thong tin course trong khung nang luc
+                    TmsTdCompetencyCourse::firstOrCreate([
+                        'competency_id' => $trainning_id,
+                        'course_id' => $item['id'],
+                    ]);
+
+                    devcpt_log_system('course', 'lms/course/view.php?id=' . $item['id'], 'create', 'Create course: ' . $item['shortname']);
+                    updateLastModification('create', $item['id']);
+                    #endregion
+
+                    usleep(50);
+                }
+            }
+            \DB::commit();
+            $response->status = true;
+            $response->message = __('them_khoa_hoc_vao_knl_thanh_cong');
+        } catch (\Exception $e) {
+            Log::info($e);
+            \DB::rollBack();
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return response()->json($response);
+    }
+
+    public function removeAssignCourseCompetency(Request $request)
+    {
+        // TODO: Implement removeAssignCourseCompetency() method.
+        $response = new ResponseModel();
+        try {
+            $trainning_id = $request->input('trainning_id');
+            $lstCourseId = $request->input('lst_course');
+
+            TmsTdCompetencyCourse::whereIn('course_id', $lstCourseId)->where('competency_id', $trainning_id)->delete();
+
+            $response->status = true;
+            $response->message = __('xoa_khoa_hoc_vao_knl_thanh_cong');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return response()->json($response);
     }
 }

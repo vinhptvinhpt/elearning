@@ -96,7 +96,9 @@
                                         </form>
                                     </div>
                                 </div>
+                                <br/>
 
+                                <assign-course :id="id"></assign-course>
                             </div>
                         </div>
                     </div>
@@ -110,10 +112,11 @@
 
 <script>
 
+    import AssignCourse from './AssignCourseComponent';
 
     export default {
         props: ['id', 'slugs'],
-        components: {},
+        components: {AssignCourse},
         data() {
             return {
                 trainning: {
