@@ -806,6 +806,13 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
+
+    //T&D report effect
+    Route::post('/api/tnd-report/getall', 'Backend\TNDReportController@apiGetAll');
+    Route::post('/api/tnd-report/store', 'Backend\TNDReportController@apiStore');
+    Route::post('/api/tnd-report/update', 'Backend\TNDReportController@apiUpdate');
+    Route::post('/api/tnd-report/delete', 'Backend\TNDReportController@apiDelete');
+    Route::get('/api/tnd-report/detail/{id}', 'Backend\TNDReportController@apiGetDetail');
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020
@@ -829,4 +836,4 @@ Route::get('/api/sendMailCompetencyFramework', 'Api\MailController@sendCompetenc
 //sync data histaff
 Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization');
 Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
-
+Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');

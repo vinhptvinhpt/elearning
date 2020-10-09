@@ -8,6 +8,7 @@ use App\MdlRoleAssignments;
 use App\MdlUser;
 use App\ModelHasRole;
 use App\Role;
+use App\SoapClientCurl;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
@@ -15,7 +16,8 @@ use App\ViewModel\ResultModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Validator;
+use SoapClient;
+use SoapHeader;
 
 class SyncDataController
 {
@@ -28,6 +30,7 @@ class SyncDataController
             $token = $request->header('Authorization');
 
             $json = $request->input('data');
+            $username = $request->input('username');
 
             if (empty($header)) {
                 $result->code = 'ERR01';
@@ -60,9 +63,13 @@ class SyncDataController
 
             $token = str_replace('', 'Bearer ', $token);
 
-            $url = '';
+            //xac thuc token voi histaff
+            $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
+
             $data_post = array(
+                'username' => $username,
                 'Token' => $token,
+                'key' => ''
             );
 //            $result_api = callAPI('POST', $url, $data_post, false, '');
 
@@ -138,6 +145,7 @@ class SyncDataController
             $token = $request->header('Authorization');
 
             $json = $request->input('data');
+            $username = $request->input('username');
 
             if (!$header) {
                 $result->code = 'ERR01';
@@ -160,12 +168,15 @@ class SyncDataController
                 return response()->json($result);
             }
 
-
+            //xac thuc token voi histaff
             $token = str_replace('', 'Bearer ', $token);
 
-            $url = '';
+            $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
+
             $data_post = array(
+                'username' => $username,
                 'Token' => $token,
+                'key' => ''
             );
 //            $result_api = callAPI('POST', $url, $data_post, false, '');
 
@@ -331,6 +342,44 @@ class SyncDataController
             $result->code = 'ERR04';
             $result->message = $e->getMessage();
         }
+        return response()->json($result);
+    }
+
+    public function testAPI()
+    {
+        $result = new ResultModel();
+        try {
+            $url = Config::get('constants.domain.HISTAFF-API') . 'GenerateToken';
+
+
+            $data_post = array(
+                'Username' => 'NHUNGHT',
+                'Password' => '123456',
+                'Key' => 'G6rikv0U0eQUIRak7owtmw=='
+            );
+
+            $ctx_opts = array(
+                'http' => array(
+                    'method' => "POST",
+                    'header' => 'Content-Type: application/soap+xml'
+                ),
+                'cache_wsdl' => 0,
+            );
+
+            $ctx = stream_context_create($ctx_opts);
+
+            $client = new SoapClient(Config::get('constants.domain.HISTAFF-API'), $ctx_opts);
+
+            // Invoke WS method (Function1) with the request params
+            $rs = $client->__soapCall("GenerateToken", $data_post);
+
+            $result->status = true;
+            $result->message = json_encode($rs);
+        } catch (\Exception $e) {
+            $result->status = false;
+            $result->message = $e->getMessage();
+        }
+
         return response()->json($result);
     }
 }

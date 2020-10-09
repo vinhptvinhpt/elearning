@@ -20,6 +20,7 @@ class VerifyCsrfToken extends Middleware
         '/bgtdoadmin',
         '/loginfirst/executelogin',
         '/elearning/v1/sync-organization',
-        '/elearning/v1/sync-user'
+        '/elearning/v1/sync-user',
+        '/elearning/v1/test-user'
     ];
 }

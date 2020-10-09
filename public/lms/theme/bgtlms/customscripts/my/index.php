@@ -433,6 +433,37 @@ if (!empty($reverse_recursive_org_ids)) {
         mc.fullname,
         mc.category,
         mc.course_avatar,
+        (
+        select
+            count(cm.id) as num
+        from
+            mdl_course_modules cm
+        inner join mdl_course_sections cs on
+            cm.course = cs.course
+            and cm.section = cs.id
+        where
+            cs.section <> 0
+            and cm.completion <> 0
+            and cm.course = mc.id) as numofmodule,
+        (
+        select
+            count(cmc.coursemoduleid) as num
+        from
+            mdl_course_modules cm
+        inner join mdl_course_modules_completion cmc on
+            cm.id = cmc.coursemoduleid
+        inner join mdl_course_sections cs on
+            cm.course = cs.course
+            and cm.section = cs.id
+        inner join mdl_course c on
+            cm.course = c.id
+        where
+            cs.section <> 0
+            and cmc.completionstate in (1,
+            2)
+            and cm.completion <> 0
+            and cm.course = mc.id
+            and cmc.userid = tud.user_id) as numoflearned,
         mc.estimate_duration,
         muet.userid as teacher_id,
         tud.fullname as teacher_name,
@@ -1694,13 +1725,20 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($coursesSuggest) > 0) { ?>
                                             <?php $countBlock = 1;
-                                            foreach ($coursesSuggest as $course) { ?>
+                                            foreach ($coursesSuggest as $course) { 
+                                                $optional_progress = 0;
+                                                if ($course->numofmodule){
+                                                    $optional_progress = round($course->numoflearned * 100 / $course->numofmodule);
+                                                }else{
+                                                    $optional_progress = 0;
+                                                }
+                                                ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
                                                     <div class="block-items__item">
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
                                                              <img src="<?php echo $_SESSION['component'] ?>"
-                                                                 alt=""><span><?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                 alt=""><span><?php echo $optional_progress; ?>%</span>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
