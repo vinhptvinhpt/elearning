@@ -5,7 +5,7 @@
     Example context (json): {}
 }}
 <div id="nav-drawer" data-region="drawer" class="d-print-none moodle-has-zindex {{^navdraweropen}}closed{{/navdraweropen}}" aria-hidden="{{#navdraweropen}}false{{/navdraweropen}}{{^navdraweropen}}true{{/navdraweropen}}" tabindex="-1">
-    <div class="text-center progress-bar-timeline">Progress <span id="learned-module-count">77</span>/<span id="total-module-count">99</span> units</div>
+    <div class="text-center progress-bar-timeline">Progress <span id="learned-module-count">{{{ numOfLearned }}}</span>/<span id="total-module-count">{{{ numOfModule }}}</span> units</div>
     {{> theme_bgtlms/flat_navigation_timeline }}
 </div>
 
