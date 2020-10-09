@@ -129,9 +129,8 @@ mc.estimate_duration,
 
     $competency_exists = array();
     $courses_training = array();
-    //
     $getInCourses = array();
-    //
+
     foreach ($courses as $course) {
         $courses_training[$course->training_id][$course->id] = $course;
     }
@@ -154,10 +153,9 @@ mc.estimate_duration,
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
                 $courses_required[$course->training_id][$course->id] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                if ($course->training_deleted == 2) {
+                //if ($course->training_deleted == 2) {
                     $courses_others_id .= ', ' . $course->id;
-                }
-                //
+                //}
                 if (!in_array($course->training_id, $getInCourses)) {
                     array_push($getInCourses, $course->training_id);
                     $course->enable = true;
@@ -165,6 +163,8 @@ mc.estimate_duration,
                     $course->enable = false;
                 }
 //            push_course($courses_required, $course);
+            } else {
+                $courses_others_id .= ', ' . $course->id;
             }
             $stt++;
         }
@@ -394,9 +394,7 @@ and mue.userid = ' . $USER->id;
     $competency_exists = array();
     $temp_competency_exists = array();
 
-    //
     $tempCourse = [];
-    //
     $courses_training = array();
 
     foreach ($courses as $course) {
@@ -404,9 +402,8 @@ and mue.userid = ' . $USER->id;
     }
 
     $coures_result = array();
-    //
     $getInCourses = array();
-    //
+
     foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
@@ -465,11 +462,9 @@ and mue.userid = ' . $USER->id;
     if ($txtSearch || $category > 0) {
         foreach ($coures_result as $courseR) {
             if ($txtSearch && $category > 0) {
-//                strtolower($txtSearch);
                 if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false && $courseR->category == $category)
                     $resultSearch[] = $courseR;
             } else if ($txtSearch) {
-//                strtolower($txtSearch);
                 if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false)
                     $resultSearch[] = $courseR;
             } else if ($category > 0) {
@@ -490,8 +485,6 @@ and mue.userid = ' . $USER->id;
 //        $coures_result = $coures_result[$key];
 //    }
 
-//    var_dump($coures_result);
-//    die;
     $start_index = $current * $recordPerPage - $recordPerPage;
 
     $course_list = array_slice($resultSearch, $start_index, $recordPerPage);
