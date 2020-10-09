@@ -323,13 +323,13 @@
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_nhom') }}</span>
                                         </router-link>
                                     </li>
-                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
-                                        <router-link
-                                                :to="{ path: '/tms/competency/list', name: 'CompetencyListComponent'}"
-                                                class="nav-link">
-                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_effect') }}</span>
-                                        </router-link>
-                                    </li>
+<!--                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">-->
+<!--                                        <router-link-->
+<!--                                                :to="{ path: '/tms/competency/list', name: 'CompetencyListComponent'}"-->
+<!--                                                class="nav-link">-->
+<!--                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_effect') }}</span>-->
+<!--                                        </router-link>-->
+<!--                                    </li>-->
                                     <!--                                    <li class="nav-item">-->
                                     <!--                                        <router-link to="/tms/trainning/list_user" class="nav-link">-->
                                     <!--                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung') }}</span>-->
