@@ -86,6 +86,10 @@ class BridgeController extends Controller
             $response['file_url_lite'] = asset('files/import_data_lite.xlsx');
         }
 
+        if ($view == 'ImportMark') {
+            $response['file_url'] = asset('files/import_mark.xlsx');
+        }
+
         if ($view == 'UserMarketIndex') {
             $response['file_url'] = asset('files/import_user_market_bgt.xlsx');
         }

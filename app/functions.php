@@ -204,7 +204,7 @@ function permission_cat_name()
         'tms-system-organize' => __('quan_ly_khung_co_cau_to_chuc'),
         'tms-system-administrator' => __('quyen_quan_tri_he_thong'),
         'tms-system-role' => __('quan_ly_phan_quyen'),
-        'tms-system-import-user' => __('them_du_lieu_bang_excel'),
+        'tms-system-import-user' => __('nhap_du_lieu_bang_excel'),
         'tms-system-trash' => __('khoi_phuc_thung_rac'),
         'tms-educate-exam' => __('quan_ly_khoa_hoc'),
         'tms-educate-exam-online' => __('khoa_dao_tao_online'),

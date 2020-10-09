@@ -63,6 +63,7 @@ import RoleIndexComponent from "./roles/RoleIndexComponent";
 import RoleEditComponent from "./roles/RoleEditComponent";
 import RoleListUserComponent from "./roles/RoleListUserComponent";
 import ImportIndexComponent from "./components/import/ImportIndexComponent";
+import ImportMarkComponent from "./components/import/ImportMarkComponent";
 import SurveyListComponent from "./components/survey/SurveyListComponent";
 import SurveyCreateComponent from "./components/survey/SurveyCreateComponent";
 import SurveyStatisticComponent from "./components/survey/SurveyStatisticComponent";
@@ -463,6 +464,11 @@ const routes = [
                 component: ImportIndexComponent,
                 name: 'ImportIndex',
                 props: (route) => ({query: route.params.type ? route.params.type : 'system'})
+            },
+            {
+                path: 'excel/import/user_mark',
+                component: ImportMarkComponent,
+                name: 'ImportMark',
             },
             //Roles
             {

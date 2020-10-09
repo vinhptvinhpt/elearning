@@ -744,6 +744,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/excel/import/user', 'Backend\EmailTemplateController@viewTestIndex');
     Route::post('/api/excel/import/user', 'Api\BackgroundController@importEmployee');
     Route::post('/api/excel/import/user/lite', 'Api\BackgroundController@importEmployeeMinimum');
+    Route::post('/api/excel/import/user_mark', 'Backend\ExcelController@importMark');
     Route::get('/api/excel/download/{file_name}', 'Backend\ExcelController@download');
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');

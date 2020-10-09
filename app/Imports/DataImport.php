@@ -46,6 +46,7 @@ class DataImport implements ToModel, WithCalculatedFormulas, WithColumnFormattin
             'DS tạo tk' => new FirstSheetImport(),
             'Sheet1' => new FirstSheetImport(),
             'Staff List' => new FirstSheetImport(),
+            'Mark' => new FirstSheetImport(),
         ];
     }
 
