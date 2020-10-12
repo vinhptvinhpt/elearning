@@ -993,12 +993,13 @@ const routes = [
                 })
             },
             {
-                path: 'result/:survey_id/:user_id',
+                path: 'result/:survey_id/:user_id/:course_id',
                 component: SurveyResultUser,
                 name: 'SurveyResultUser',
                 props: (route) => ({
                     survey_id: route.params.survey_id,
-                    user_id: route.params.user_id
+                    user_id: route.params.user_id,
+                    course_id: route.params.course_id
                 })
             },
         ]

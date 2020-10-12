@@ -1072,7 +1072,8 @@
         "nhap_du_lieu_nguoi_dung": "Import user data",
         "nhap_du_lieu_diem_co_san": "Import user mark",
         "chon_nam": "Select year",
-        "nam_sai_dinh_dang": "Year mismatch"
+        "nam_sai_dinh_dang": "Year mismatch",
+        "paste_link": "Please select course, cannot paste link to doing survey"
     },
     "vi.keys": {
         "language": "",
@@ -2138,6 +2139,7 @@
         "nhap_du_lieu_nguoi_dung": "Nhập dữ liệu người dùng",
         "nhap_du_lieu_diem_co_san": "Nhập dữ liệu có sẵn",
         "chon_nam": "Chọn năm",
-        "nam_sai_dinh_dang": "Year mismatch"
+        "nam_sai_dinh_dang": "Năm sai định dạng",
+        "paste_link": "Vui lòng chọn khóa học, không thể dán liên kết để thực hiện khảo sát"
     }
 }
