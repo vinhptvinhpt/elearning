@@ -46,6 +46,13 @@
     <link rel="stylesheet" type="text/css" href="/lms/theme/bgtlms/style/bootstrap-datetimepicker.css">
     <script>
         $(document).ready(function () {
+
+            //set courseid to localStorage
+            let courseid = parseInt({{{ courseid }}});
+            if (parseInt(courseid) > 1) {
+                localStorage.setItem("courseid", courseid);
+            }
+
             var currentUrl = window.location.href;
             var getAuthUser = localStorage.getItem('auth.user');
             //if null -> required login
