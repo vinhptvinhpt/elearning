@@ -9,6 +9,7 @@ use App\Exports\ListMismatchSaleroom;
 use App\Exports\LoginSheet;
 use App\Exports\ReportDetailRawSheet;
 use App\Exports\ReportDetailSheet;
+use App\Exports\ReportMarkSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
@@ -161,7 +162,7 @@ class ExcelController extends Controller
             }
         }
 
-        if($selected_level == "city") {
+        if ($selected_level == "city") {
             $first_row_label = __('tinh_thanh');
 
             $parent_total = $data['user_count'];
@@ -260,10 +261,10 @@ class ExcelController extends Controller
                 $saleroom_data = array(
                     $stt,
                     $saleroom['name'],
-                    count($saleroom['user_incomplete']) == 0 ? "0" :  count($saleroom['user_incomplete']),
-                    count($saleroom['user_completed']) == 0 ? "0" :  count($saleroom['user_completed']),
-                    count($saleroom['user_confirm']) == 0 ? "0" :  count($saleroom['user_confirm']),
-                    count($saleroom['user']) == 0 ? "0" :  count($saleroom['user']),
+                    count($saleroom['user_incomplete']) == 0 ? "0" : count($saleroom['user_incomplete']),
+                    count($saleroom['user_completed']) == 0 ? "0" : count($saleroom['user_completed']),
+                    count($saleroom['user_confirm']) == 0 ? "0" : count($saleroom['user_confirm']),
+                    count($saleroom['user']) == 0 ? "0" : count($saleroom['user']),
                 );
                 $export_data[] = $saleroom_data;
 
@@ -443,7 +444,8 @@ class ExcelController extends Controller
         return response()->json(storage_path($filename));
     }
 
-    public function getCountryName($code) {
+    public function getCountryName($code)
+    {
         $countries = TmsUserDetail::country;
         return array_key_exists($code, $countries) ? $countries[$code] : 'N/A';
     }
@@ -567,7 +569,7 @@ class ExcelController extends Controller
                 'tms_invitation.reason'
             );
         if ($keyword) {
-            $currentUserEnrol->where(function($q) use ($keyword) {
+            $currentUserEnrol->where(function ($q) use ($keyword) {
                 $q->where('mdl_user.username', 'like', '%' . $keyword . '%')
                     ->orWhere('tms_user_detail.fullname', 'like', '%' . $keyword . '%');
             });
@@ -739,7 +741,7 @@ class ExcelController extends Controller
 
         //search
         if ($keyword) {
-            $lstUserAttendance->where(function($q) use ($keyword) {
+            $lstUserAttendance->where(function ($q) use ($keyword) {
                 $q->where('u.username', 'like', '%' . $keyword . '%')
                     ->orWhere('tud.fullname', 'like', '%' . $keyword . '%');
             });
@@ -777,11 +779,13 @@ class ExcelController extends Controller
         return response()->json($filename);
     }
 
-    public function apiDownloadExport($file_name) {
+    public function apiDownloadExport($file_name)
+    {
         return Storage::download($file_name);
     }
 
-    public function download($file_name) {
+    public function download($file_name)
+    {
         return Storage::download($file_name);
     }
 
@@ -967,7 +971,7 @@ class ExcelController extends Controller
                 }
 
                 //From row 3 => data row
-                if($row_no > 2) {
+                if ($row_no > 2) {
                     $email = $item[0];
                     if (strlen($email) != 0) {
                         if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
@@ -1011,7 +1015,7 @@ class ExcelController extends Controller
                         ''
                     );
 
-                    if ($status ==  false) {
+                    if ($status == false) {
                         $response_item[2] = 'error';
                     } else {
                         if (!empty($content)) {
@@ -1040,6 +1044,129 @@ class ExcelController extends Controller
             return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
 
         }
+    }
+
+    public function apiExportMark() { //Request $request
+
+        set_time_limit(0);
+        $years = [2019,2020,2018]; //$request->input('year');
+        $countries = TmsUserDetail::country;
+        asort($years);
+
+        $competencies = DB::table('tms_td_competencies')->get();
+
+
+        $marks = DB::table('tms_td_user_marks')
+
+            ->join('tms_user_detail', 'tms_td_user_marks.user_id', '=', 'tms_user_detail.user_id')
+            ->join('tms_td_competencies', 'tms_td_user_marks.competency_id', '=', 'tms_td_competencies.id')
+            ->join('tms_td_competency_marks', function ($join) {
+                $join->on('tms_td_competency_marks.competency_id', '=', 'tms_td_user_marks.competency_id');
+                $join->on('tms_td_competency_marks.year', '=', 'tms_td_user_marks.year');
+            })
+
+            ->join('tms_td_competency_courses', 'tms_td_user_marks.competency_id', '=', 'tms_td_competency_courses.competency_id')
+            ->join('mdl_course as org_course', 'tms_td_competency_courses.course_id', '=', 'org_course.id')
+            ->leftJoin('course_completion', function ($join) {
+                $join->on('tms_td_competency_courses.course_id', '=', 'course_completion.courseid');
+                $join->on('tms_td_user_marks.user_id', '=', 'course_completion.userid');
+            })
+            ->leftJoin('mdl_course as learned_course', 'course_completion.courseid', '=', 'learned_course.id')
+            ->join('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+            ->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
+
+            ->select(
+                'tms_td_user_marks.user_id',
+                'tms_td_user_marks.year',
+                'tms_td_user_marks.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country',
+                'tms_organization.code as organization_code',
+                'tms_organization_employee.description as employee_title',
+                'tms_td_competencies.name as competency_name',
+                'tms_td_competencies.code as competency_code',
+                DB::raw("CONCAT(tms_td_user_marks.mark, '/', tms_td_competency_marks.mark) AS result"),
+                DB::raw("GROUP_CONCAT(org_course.shortname) AS org_courses"),
+                DB::raw("GROUP_CONCAT(learned_course.shortname) AS learned_courses")
+            )
+
+            ->whereIn('tms_td_user_marks.year', $years)
+
+            ->groupBy([
+                'tms_td_user_marks.user_id',
+                'tms_td_user_marks.mark',
+                'tms_td_user_marks.year',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country',
+                'organization_code',
+                'employee_title',
+                'tms_td_user_marks.competency_id',
+                'competency_name',
+                'competency_code',
+                'tms_td_competency_marks.mark'
+            ])
+            ->get();
+
+        $response = [];
+
+        $headings = [
+            'Email',
+            'Title',
+            'Department',
+            'City',
+            'Country',
+        ];
+
+        $dynamic_heading = [];
+
+        foreach ($competencies as $competency) {
+            $dynamic_heading[$competency->code] = $competency->name;
+            //$dynamic_heading[$competency->code . "_all"] = $competency->name;
+            foreach ($years as $year) {
+                $dynamic_heading[$competency->code . $year] = $year;
+            }
+        }
+
+        $headings = array_merge($headings, $dynamic_heading);
+
+        foreach ($marks as $mark) {
+            //khởi tạo
+            if (!array_key_exists($mark->user_id, $response)) {
+                $country_name = array_key_exists($mark->country, $countries) ? $countries[$mark->country] : '';
+                $mark_item = array(
+                    $mark->email,
+                    $mark->employee_title,
+                    $mark->organization_code,
+                    $mark->city,
+                    $country_name,
+                );
+                foreach ($dynamic_heading as $key => $heading) {
+                    $mark_item[$key] = '';
+                }
+                $response[$mark->user_id] = $mark_item;
+            }
+            //check row, nếu có điểm thì add vào
+            $response[$mark->user_id][$mark->competency_code . $mark->year] = $mark->result;
+            //$response[$mark->user_id][$mark->competency_code . "_all"] = $mark->org_courses;
+            $response[$mark->user_id][$mark->competency_code] = $mark->learned_courses;
+        }
+
+
+        $result_file_name = "training_effect.xlsx";
+
+        //xóa file cũ
+        if (Storage::exists($result_file_name)) {
+            Storage::delete($result_file_name);
+        }
+
+        $exportExcel = new ReportMarkSheet('Training Effect', $response, $headings);
+        $exportExcel->store($result_file_name, '', Excel::XLSX);
+
+        return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
     }
 
     function status_message($status, $message, $additional_data = [])
