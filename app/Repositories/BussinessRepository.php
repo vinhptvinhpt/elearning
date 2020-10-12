@@ -7169,25 +7169,31 @@ class BussinessRepository implements IBussinessInterface
 
             $count_multi = count($question_answers);
 
+            $arr_data = [];
+            $data = [];
+
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
                 for ($i = 0; $i < $count_multi; $i++) {
-                    $tms_survey_user = new TmsSurveyUser();
-                    $tms_survey_user->survey_id = $id;
-                    $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
-                    $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
-                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
+
+                    $data['survey_id'] = $id;
+                    $data['question_id'] = $question_answers[$i]['ques_id'];
+                    $data['answer_id'] = $question_answers[$i]['ans_id'];
+                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
+
+
                     if (!empty(Auth::user())) {
-                        $tms_survey_user->user_id = Auth::user()->id;
+                        $data['user_id'] = Auth::user()->id;
                     } else {
-                        $tms_survey_user->user_id = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
+                        $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
                     }
 
-                    $tms_survey_user->type_question = $question_answers[$i]['type_ques'];
-                    $tms_survey_user->content_answer = $question_answers[$i]['ans_content'];
 
-                    $tms_survey_user->save();
+                    $data['type_question'] = $question_answers[$i]['type_ques'];
+                    $data['content_answer'] = $question_answers[$i]['ans_content'];
+                    $data['created_at'] = Carbon::now();
+                    $data['updated_at'] = Carbon::now();
 
-                    sleep(0.01);
+                    array_push($arr_data, $data);
                 }
             }
 
@@ -7197,22 +7203,26 @@ class BussinessRepository implements IBussinessInterface
 
                     if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
 
-                        $tms_survey_user = new TmsSurveyUser();
-                        $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
-                        if (!empty(Auth::user())) {
-                            $tms_survey_user->user_id = Auth::user()->id;
-                        } else {
-                            $tms_survey_user->user_id = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
-                        }
-                        $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
-                        $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['survey_id'] = $id;
+                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
 
-                        $tms_survey_user->save();
-                        sleep(0.01);
+                        if (!empty(Auth::user())) {
+                            $data['user_id'] = Auth::user()->id;
+                        } else {
+                            $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
+                        }
+                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
+                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['created_at'] = Carbon::now();
+                        $data['updated_at'] = Carbon::now();
+
+                        array_push($arr_data, $data);
                     }
                 }
             }
+
+            TmsSurveyUser::insert($arr_data);
+
 
             \DB::commit();
 
@@ -7250,29 +7260,32 @@ class BussinessRepository implements IBussinessInterface
             $question_answers = $request->input('question_answers');
             $ddtotext = $request->input('ddtotext');
             $user_id = $request->input('user_id');
+            $course_id = $request->input('course_id');
 
             \DB::beginTransaction();
 
-            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->delete();
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->where('course_id', $course_id)->delete();
 
             $count_multi = count($question_answers);
 
+            $arr_data = [];
+            $data = [];
+
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
                 for ($i = 0; $i < $count_multi; $i++) {
-                    $tms_survey_user = new TmsSurveyUser();
-                    $tms_survey_user->survey_id = $id;
-                    $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
-                    $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
-                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
-                    $tms_survey_user->user_id = $user_id;
 
+                    $data['survey_id'] = $id;
+                    $data['question_id'] = $question_answers[$i]['ques_id'];
+                    $data['answer_id'] = $question_answers[$i]['ans_id'];
+                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
+                    $data['user_id'] = $user_id;
+                    $data['course_id'] = $course_id;
+                    $data['type_question'] = $question_answers[$i]['type_ques'];
+                    $data['content_answer'] = $question_answers[$i]['ans_content'];
+                    $data['created_at'] = Carbon::now();
+                    $data['updated_at'] = Carbon::now();
 
-                    $tms_survey_user->type_question = $question_answers[$i]['type_ques'];
-                    $tms_survey_user->content_answer = $question_answers[$i]['ans_content'];
-
-                    $tms_survey_user->save();
-
-                    sleep(0.01);
+                    array_push($arr_data, $data);
                 }
             }
 
@@ -7282,20 +7295,22 @@ class BussinessRepository implements IBussinessInterface
 
                     if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
 
-                        $tms_survey_user = new TmsSurveyUser();
-                        $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
+                        $data['survey_id'] = $id;
+                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
 
-                        $tms_survey_user->user_id = $user_id;
+                        $data['user_id'] = $user_id;
+                        $data['course_id'] = $course_id;
+                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
+                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['created_at'] = Carbon::now();
+                        $data['updated_at'] = Carbon::now();
 
-                        $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
-                        $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
-
-                        $tms_survey_user->save();
-                        sleep(0.01);
+                        array_push($arr_data, $data);
                     }
                 }
             }
+
+            TmsSurveyUser::insert($arr_data);
 
             \DB::commit();
 
@@ -7316,6 +7331,7 @@ class BussinessRepository implements IBussinessInterface
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
         $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
 
         $param = [
             'survey_id' => 'number',
@@ -7328,6 +7344,7 @@ class BussinessRepository implements IBussinessInterface
 
         $data = DB::table('tms_survey_users as uv')
             ->join('mdl_user as u', 'u.id', '=', 'uv.user_id')
+            ->join('mdl_course as mc', 'mc.id', '=', 'uv.course_id')
             ->where('uv.survey_id', '=', $survey_id)
             ->select('u.id as user_id');
 
@@ -7335,6 +7352,10 @@ class BussinessRepository implements IBussinessInterface
             $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'u.id')
                 ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
                 ->where('tor.id', '=', $organization_id);
+        }
+
+        if ($course_id) {
+            $data = $data->where('uv.course_id', '=', $course_id);
         }
 
         if ($startdate) {
@@ -7362,7 +7383,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $survey_id = $request->input('survey_id');
         $organization_id = $request->input('organization_id');
-
+        $course_id = $request->input('course_id');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
@@ -7387,16 +7408,39 @@ class BussinessRepository implements IBussinessInterface
                     on s.id = q.survey_id) as ques_a';
 
 
-        $join_tables = 'tms_survey_users as su';
+//        $join_tables = 'tms_survey_users as su';
 
-        if ($organization_id) {
-            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                ) as su';
+
+
+        if ($course_id || $organization_id) {
+            if ($organization_id && $course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                join tms_organization_employee toe
+                                on toe.user_id = su.user_id
+                                join tms_organization tor
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ') as su';
+
+            } else if ($course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                where mc.id = ' . $course_id . ') as su';
+            }else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
                                 on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
-            $join_tables = DB::raw($join_tables);
+            }
         }
+
+        $join_tables = DB::raw($join_tables);
 
         $dataStatisctics = DB::table(DB::raw($main_tables))
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
@@ -7637,6 +7681,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $survey_id = $request->input('survey_id');
         $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
         $type_file = $request->input('type_file');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
@@ -7654,16 +7699,37 @@ class BussinessRepository implements IBussinessInterface
                     on s.id = q.survey_id) as ques_a';
 
 
-        $join_tables = 'tms_survey_users as su';
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                ) as su';
 
-        if ($organization_id) {
-            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+
+        if ($course_id || $organization_id) {
+            if ($organization_id && $course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                join tms_organization_employee toe
+                                on toe.user_id = su.user_id
+                                join tms_organization tor
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ') as su';
+
+            } else if ($course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                where mc.id = ' . $course_id . ') as su';
+            }else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
                                 on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
-            $join_tables = DB::raw($join_tables);
+            }
         }
+
+        $join_tables = DB::raw($join_tables);
 
         $dataStatisctics = DB::table(DB::raw($main_tables))
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
@@ -11027,7 +11093,7 @@ class BussinessRepository implements IBussinessInterface
             ->where('c.visible', '=', 1)
             ->where('mu.userid', '=', $user_id)
             //->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->whereNotIn('c.category',  [2,7])
+            ->whereNotIn('c.category', [2, 7])
             ->where('e.enrol', '=', 'manual')
             ->select(
                 'c.id as course_id',

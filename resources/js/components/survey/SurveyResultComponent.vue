@@ -80,11 +80,15 @@
                     user_id = user_info.id;
                 }
 
+                let course_id = Ls.get('courseid');
+
+
                 this.getLeanerInfo(user_id);
 
                 axios.post('/api/survey/view_result', {
                     survey_id: this.survey_id,
-                    user_id: user_id
+                    user_id: user_id,
+                    course_id: course_id
                 })
                     .then(response => {
                         this.survey = response.data.survey;
