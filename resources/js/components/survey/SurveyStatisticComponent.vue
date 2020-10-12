@@ -50,13 +50,19 @@
                                     {{trans.get('keys.thong_ke_ket_qua_khao_sat_so_nguoi_chon_dap_an_tong_so')}}</h5>
 
                                 <div class="row">
-                                    <div class="col-6 form-group">
+                                    <div class="col-sm-4 form-group">
                                         <div class="d-flex flex-row form-group">
                                             <treeselect v-model="organization.parent_id" :multiple="false"
                                                         :options="options" id="organization_parent_id"/>
                                         </div>
                                     </div>
-                                    <div class="col-3 form-group">
+                                    <div class="col-sm-4">
+                                        <div class="d-flex flex-row form-group">
+                                            <input v-model="keyword" type="text" class="form-control" id="tags"
+                                                   :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-3 form-group">
 
                                         <div class="d-flex flex-row form-group">
                                             <button type="button" id="btnFilter"
@@ -178,7 +184,14 @@
                                     <h6 class="hk-sec-title">
                                         {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
                                     <div class="row">
-                                        <div class="col-6">
+                                        <div class="col-sm-4">
+                                            <div class="d-flex flex-row form-group">
+                                                <input v-model="keyword_us" type="text" class="form-control"
+                                                       id="tag-users"
+                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
                                             <form v-on:submit.prevent="getUserSurvey(1)">
                                                 <div class="d-flex flex-row form-group">
                                                     <input v-model="keyword_rs" type="text"
@@ -223,6 +236,7 @@
                                                 {{trans.get('keys.ho_ten')}}
                                             </th>
                                             <th>{{trans.get('keys.email')}}</th>
+                                            <th style="width: 19%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -235,13 +249,14 @@
                                                     {{ user.username }}
                                                 </router-link>
                                             </td>
-                                            <td class=" mobile_hide">{{ user.fullname }}
+                                            <td style="width: 19%;">{{ user.fullname }}
                                             </td>
-                                            <td>{{ user.email }}</td>
+                                            <td style="width: 19%;">{{ user.email }}</td>
+                                            <td style="width: 25%;">{{ user.course_code }} - {{ user.course_name }}</td>
                                             <td class="text-center">
                                                 <router-link :title="trans.get('keys.chi_tiet_ks')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                             :to="{ name: 'SurveyResultUser', params: { survey_id: survey_id,user_id: user.id } }">
+                                                             :to="{ name: 'SurveyResultUser', params: { survey_id: survey_id,user_id: user.id,course_id: user.course_id } }">
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
@@ -272,10 +287,11 @@
     import GroupQuestionStatistic from "./template/StatisticsGroupQuesComponent";
     import MinMaxQuestionStatistic from "./template/StatisticMinMaxQuesComponent"
     import CheckboxStatistic from "./template/StatisticCheckboxComponent"
+    import Ls from './../../services/ls'
 
     export default {
         props: ['survey_id'],
-        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic, CheckboxStatistic},
+        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic, CheckboxStatistic, Ls},
         data() {
             return {
                 organization: {
@@ -296,11 +312,14 @@
                 organization_id_1: 0,
 
                 keyword: '',
+                keyword_us: '',
                 row: 5,
                 current: 1,
                 total_view: 0,
                 totalPages: 1,
                 survey_exam: [],
+
+                course_id: '',
 
                 startdate: '',
                 enddate: '',
@@ -316,6 +335,100 @@
             }
         },
         methods: {
+            getCourseSelectOptions() {
+                axios.post('/api/courses/list', {
+                    row: 0,
+                    sample: 0,
+                })
+                    .then(response => {
+                        let additionalCities = [];
+                        response.data.forEach(function (cityItem) {
+                            let newCity = {
+                                label: cityItem.shortname + ' - ' + cityItem.fullname,
+                                data_search: cityItem.fullname,
+                                id: cityItem.id
+                            };
+                            additionalCities.push(newCity);
+                        });
+                        this.courseSelectOptions = additionalCities;
+                        this.loadAutoComplete();
+                        this.loadAutoCompleteUser();
+                    })
+                    .catch(error => {
+                        //console.log(error.response.data);
+                    });
+            },
+            loadAutoComplete() {
+                $("#tags").autocomplete({
+                    source: this.lightWell,
+                    minLength: 2,
+                    select: function (e, ui) {
+                        this.keyword = ui.item.label;
+
+                        this.course_id = ui.item.id;
+
+                        Ls.set('course', this.course_id);
+                    },
+                    change: function (e, ui) {
+                        // alert(ui.item.value);
+
+                    }
+                });
+            },
+            loadAutoCompleteUser() {
+                $("#tag-users").autocomplete({
+                    source: this.lightWell,
+                    minLength: 2,
+                    select: function (e, ui) {
+                        this.keyword_us = ui.item.label;
+
+                        this.course_id = ui.item.id;
+
+                        Ls.set('course', this.course_id);
+                    },
+                    change: function (e, ui) {
+                        // alert(ui.item.value);
+
+                    }
+                });
+            },
+            lightWell(request, response) {
+                function hasMatch(s) {
+                    return s.toLowerCase().indexOf(request.term.toLowerCase()) !== -1;
+                }
+
+                function convertUtf8(str) {
+                    str = str.toLowerCase();
+                    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+                    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+                    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+                    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+                    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+                    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+                    str = str.replace(/đ/g, "d");
+                    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+                    str = str.replace(/ + /g, " ");
+                    str = str.trim();
+                    return str;
+                }
+
+                var i, l, obj, matches = [];
+
+                if (request.term === "") {
+                    response([]);
+                    return;
+                }
+
+                for (i = 0, l = this.courseSelectOptions.length; i < l; i++) {
+                    obj = this.courseSelectOptions[i];
+                    if (hasMatch(obj.label) || hasMatch(convertUtf8(obj.data_search))) {
+                        matches.push(obj);
+                    }
+                }
+                response(matches);
+            },
+
+
             changeChartFormat(type) {
                 this.chart_type = type;
                 this.survey_exam = [];
@@ -377,9 +490,15 @@
                 this.getStatictisSurveyExam();
             },
             getStatictisSurveyExam() {
+                if (this.keyword === '' || this.keyword === null || this.keyword === undefined) {
+                    Ls.set('course', '');
+                }
+                this.course_id = Ls.get('course');
+
                 axios.post('/api/survey/statistic_exam', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
+                    course_id: this.course_id,
                     startdate: this.startdate,
                     enddate: this.enddate
                 })
@@ -401,9 +520,15 @@
 
             },
             getStatictisSurveyView() {
+                if (this.keyword === '' || this.keyword === null || this.keyword === undefined) {
+                    Ls.set('course', '');
+                }
+                this.course_id = Ls.get('course');
+
                 axios.post('/api/survey/statistic_view', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
+                    course_id: this.course_id,
                     startdate: this.startdate,
                     enddate: this.enddate
                 }).then(response => {
@@ -418,10 +543,15 @@
                 this.getUserSurvey();
             },
             getUserSurvey(paged) {
+                if (this.keyword_us === '' || this.keyword_us === null || this.keyword_us === undefined) {
+                    Ls.set('course', '');
+                }
+                this.course_id = Ls.get('course');
                 axios.post('/api/survey/list_user_result', {
                     page: paged || this.current_rs,
                     survey_id: this.survey_id,
                     org_id: this.organization_id_1,
+                    course_id: this.course_id,
                     keyword: this.keyword_rs,
                     row: this.row_rs
                 }).then(response => {
@@ -443,6 +573,7 @@
                 axios.post('/api/survey/export_file', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
+                    course_id: this.course_id,
                     type_file: type_file,
                     startdate: this.startdate,
                     enddate: this.enddate
@@ -476,6 +607,7 @@
             this.getStatictisSurveyExam();
             this.getStatictisSurveyView();
             this.fetch();
+            this.getCourseSelectOptions();
             this.getUserSurvey();
         }
     }

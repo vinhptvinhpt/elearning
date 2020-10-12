@@ -66,7 +66,7 @@
     import CheckboxQuestion from "./result/CheckboxQuestionComponent"
 
     export default {
-        props: ['survey_id', 'user_id'],
+        props: ['survey_id', 'user_id', 'course_id'],
         components: {
             MultipleChoice,
             DDToText,
@@ -85,7 +85,8 @@
             getSurvey() {
                 axios.post('/api/survey/view_result', {
                     survey_id: this.survey_id,
-                    user_id: this.user_id
+                    user_id: this.user_id,
+                    course_id: this.course_id
                 })
                     .then(response => {
                         this.survey = response.data.survey;
