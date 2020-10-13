@@ -1046,11 +1046,14 @@ class ExcelController extends Controller
         }
     }
 
-    public function apiExportMark() { //Request $request
+    public function apiExportMark(Request $request) {
 
         set_time_limit(0);
-        $years = [2019,2020,2018]; //$request->input('year');
+        $years = $request->input('years');
+        $organization_id = $request->input('organization_id');
         $countries = TmsUserDetail::country;
+
+        $years = explode(',', $years);
         asort($years);
 
         $competencies = DB::table('tms_td_competencies')->get();
@@ -1108,8 +1111,27 @@ class ExcelController extends Controller
                 'competency_name',
                 'competency_code',
                 'tms_td_competency_marks.mark'
-            ])
-            ->get();
+            ]);
+
+        $view_mode = 'recursive';
+        if (is_numeric($organization_id) && $organization_id != 0) {
+            //$marks->where('tms_organization_employee.organization_id', $organization_id);
+            if ($view_mode == 'recursive') {
+                $marks->whereIn('tms_organization_employee.user_id', function ($q2) use ($organization_id) {
+                    $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                            from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
+            } else {
+                $marks->where('organization_id', $organization_id);
+            }
+
+        }
+
+        $marks = $marks->get();
 
         $response = [];
 
@@ -1166,7 +1188,7 @@ class ExcelController extends Controller
         $exportExcel = new ReportMarkSheet('Training Effect', $response, $headings);
         $exportExcel->store($result_file_name, '', Excel::XLSX);
 
-        return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+        return response()->json(self::status_message('success', __('xuat_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
     }
 
     function status_message($status, $message, $additional_data = [])

@@ -64,6 +64,7 @@ import RoleEditComponent from "./roles/RoleEditComponent";
 import RoleListUserComponent from "./roles/RoleListUserComponent";
 import ImportIndexComponent from "./components/import/ImportIndexComponent";
 import ImportMarkComponent from "./components/import/ImportMarkComponent";
+import ExportMarkComponent from "./components/tnd-report/ExportMarkComponent";
 import SurveyListComponent from "./components/survey/SurveyListComponent";
 import SurveyCreateComponent from "./components/survey/SurveyCreateComponent";
 import SurveyStatisticComponent from "./components/survey/SurveyStatisticComponent";
@@ -469,6 +470,11 @@ const routes = [
                 path: 'excel/import/user_mark',
                 component: ImportMarkComponent,
                 name: 'ImportMark',
+            },
+            {
+                path: 'excel/export/user_mark',
+                component: ExportMarkComponent,
+                name: 'ExportMark',
             },
             //Roles
             {
