@@ -1228,7 +1228,7 @@ class MailController extends Controller
     function getLinemanager($user_id)
     {
         return DB::table('tms_organization_employee as toe')
-            ->join('tms_user_detail as tud', 'toe.user_id', '=', 'tud.user_id')->where('tud.user_id', '=', $user_id)
+            ->join('tms_user_detail as tud', 'toe.line_manager_id', '=', 'tud.user_id')->where('toe.user_id', '=', $user_id)
             ->select('tud.email', 'tud.fullname', 'tud.user_id')
             ->get()
             ->toArray();
