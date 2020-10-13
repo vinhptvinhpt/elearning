@@ -382,5 +382,6 @@
     "team_da_ton_tai": "Team existed",
     "xoa_thanh_cong": "Successfully deleted",
     "fail_exam": "Did not pass test @100%",
-    "retake_exam": "Retake Final Test"
+    "retake_exam": "Retake Final Test",
+    "xuat_du_lieu_thanh_cong": "Export successfully"
 }
