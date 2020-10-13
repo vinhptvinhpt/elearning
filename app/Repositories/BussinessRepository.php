@@ -7348,10 +7348,23 @@ class BussinessRepository implements IBussinessInterface
             ->where('uv.survey_id', '=', $survey_id)
             ->select('u.id as user_id');
 
-        if ($organization_id) {
-            $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'u.id')
-                ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
-                ->where('tor.id', '=', $organization_id);
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $data = $data->join($org_query, 'org_tp.org_uid', '=', 'u.id');
         }
 
         if ($course_id) {

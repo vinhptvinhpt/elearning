@@ -53,7 +53,8 @@
                                     <div class="col-sm-4 form-group">
                                         <div class="d-flex flex-row form-group">
                                             <treeselect v-model="organization.parent_id" :multiple="false"
-                                                        :options="options" id="organization_parent_id"/>
+                                                        :options="options" id="organization_parent_id"
+                                                        @input="search()"/>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
