@@ -919,7 +919,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                              v-for="(course,index) in courses">
                             <div class="row course-block">
                                 <div class="col-5 course-block__image"
-                                     v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                        v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                    <template v-if="course.numofmodule == 0"><img
+                                            src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
+                                    </template>
+                                    <template v-else><img src="<?php echo $_SESSION['component'] ?>" alt=""><span>{{ Math.round(course.numoflearned*100/course.numofmodule) }}%</span>
+                                    </template>
                                 </div>
                                 <div class="block-item__content col-7">
                                     <div class="course-info">
