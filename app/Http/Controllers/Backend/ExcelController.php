@@ -925,7 +925,7 @@ class ExcelController extends Controller
                 }
                 //Row 1 competency code
                 if ($row_no == 1) {
-                    for ($i = 0; $i <= 30; $i++) {
+                    for ($i = 1; $i <= 30; $i++) {
                         if (isset($item[$i])) {
                             if (strlen($item[$i]) > 0) {
                                 $competencies[$i] = $item[$i];
