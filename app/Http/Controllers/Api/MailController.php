@@ -960,7 +960,7 @@ class MailController extends Controller
                             }
 
                             //org uppers, send only
-                            $orgUppers = self::orgUppers($user_id);
+                            $orgUppers = self::getLinemanager($user_id);
                             if (!empty($orgUppers)) {
                                 foreach ($orgUppers as $orgUpper) {
                                     $upper_email = $orgUpper->email;
@@ -1213,6 +1213,22 @@ class MailController extends Controller
                 //TmsOrganizationEmployee::POSITION_MANAGER,
                 TmsOrganizationEmployee::POSITION_LEADER
             ])
+            ->select('tud.email', 'tud.fullname', 'tud.user_id')
+            ->get()
+            ->toArray();
+    }
+
+
+    /**
+     * Get line manager of user  
+     * 
+     * @param $user_id
+     * @return array
+     */
+    function getLinemanager($user_id)
+    {
+        return DB::table('tms_organization_employee as toe')
+            ->join('tms_user_detail as tud', 'toe.user_id', '=', 'tud.user_id')->where('tud.user_id', '=', $user_id)
             ->select('tud.email', 'tud.fullname', 'tud.user_id')
             ->get()
             ->toArray();
