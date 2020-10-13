@@ -80,8 +80,10 @@
                                         <label>{{trans.get('keys.ngay_bat_dau')}}</label>
                                         <form v-on:submit.prevent="search()">
                                             <div class="d-flex flex-row form-group">
-                                                <input type="date" id="inputStart" v-model="startdate"
-                                                       class="form-control">&nbsp;
+                                                <!--                                                <input type="date" id="inputStart" v-model="startdate"-->
+                                                <!--                                                       class="form-control">&nbsp;-->
+                                                <date-picker v-model="startdate" :config="date_options"
+                                                             :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                                             </div>
                                         </form>
                                     </div>
@@ -89,9 +91,10 @@
                                         <label>{{trans.get('keys.ngay_ket_thuc')}} </label>
                                         <form v-on:submit.prevent="search()">
                                             <div class="d-flex flex-row form-group">
-                                                <input
-                                                        type="date" id="inputEnd" v-model="enddate"
-                                                        class="form-control">
+                                                <!--                                                <input type="date" id="inputEnd" v-model="enddate"-->
+                                                <!--                                                        class="form-control">-->
+                                                <date-picker v-model="enddate" :config="date_options"
+                                                             :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                                             </div>
                                         </form>
                                     </div>
@@ -289,10 +292,18 @@
     import MinMaxQuestionStatistic from "./template/StatisticMinMaxQuesComponent"
     import CheckboxStatistic from "./template/StatisticCheckboxComponent"
     import Ls from './../../services/ls'
+    import datePicker from 'vue-bootstrap-datetimepicker'
 
     export default {
         props: ['survey_id'],
-        components: {QuestionStatistic, GroupQuestionStatistic, MinMaxQuestionStatistic, CheckboxStatistic, Ls},
+        components: {
+            QuestionStatistic,
+            GroupQuestionStatistic,
+            MinMaxQuestionStatistic,
+            CheckboxStatistic,
+            Ls,
+            datePicker
+        },
         data() {
             return {
                 organization: {
@@ -332,7 +343,15 @@
                 lstUsers: [],
                 current_rs: 1,
                 totalPages_rs: 1,
-                type: ''
+                type: '',
+
+                date: new Date(),
+                date_options: {
+                    format: 'DD-MM-YYYY',
+                    useCurrent: false,
+                    showClear: true,
+                    showClose: true,
+                },
             }
         },
         methods: {
