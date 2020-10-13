@@ -204,23 +204,24 @@
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-system-import-user-view')">
-                              <a class="nav-link  has-submenu collapse-level-2" id="nhap_du_lieu_bang_excel"
-                                 @click="toggleMenu('nhap_du_lieu_bang_excel','nhap_du_lieu_bang_excel_menu')"
-                                 href="javascript:void(0);" data-level="collapse-level-2">
-                                {{ trans.get('keys.nhap_du_lieu_bang_excel') }}
-                              </a>
-                              <ul id="nhap_du_lieu_bang_excel_menu" class="nav flex-column collapse collapse-level-2 ">
-                                <li class="nav-item" v-if="slug_can('tms-system-user-view')">
-                                  <router-link to="/tms/excel/import/user" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.nhap_du_lieu_nguoi_dung') }}</span>
-                                  </router-link>
-                                </li>
-                                <li class="nav-item">
-                                  <router-link to="/tms/excel/import/user_mark" class="nav-link">
-                                    <span class="nav-link-text"> {{ trans.get('keys.nhap_du_lieu_diem_co_san') }}</span>
-                                  </router-link>
-                                </li>
-                              </ul>
+                                <a class="nav-link  has-submenu collapse-level-2" id="nhap_du_lieu_bang_excel"
+                                   @click="toggleMenu('nhap_du_lieu_bang_excel','nhap_du_lieu_bang_excel_menu')"
+                                   href="javascript:void(0);" data-level="collapse-level-2">
+                                    {{ trans.get('keys.nhap_du_lieu_bang_excel') }}
+                                </a>
+                                <ul id="nhap_du_lieu_bang_excel_menu"
+                                    class="nav flex-column collapse collapse-level-2 ">
+                                    <li class="nav-item" v-if="slug_can('tms-system-user-view')">
+                                        <router-link to="/tms/excel/import/user" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.nhap_du_lieu_nguoi_dung') }}</span>
+                                        </router-link>
+                                    </li>
+                                    <li class="nav-item">
+                                        <router-link to="/tms/excel/import/user_mark" class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.nhap_du_lieu_diem_co_san') }}</span>
+                                        </router-link>
+                                    </li>
+                                </ul>
                             </li>
 
                             <li class="nav-item" v-if="slug_can('tms-system-activity-log-view')">
@@ -323,13 +324,13 @@
                                             <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_nhom') }}</span>
                                         </router-link>
                                     </li>
-<!--                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">-->
-<!--                                        <router-link-->
-<!--                                                :to="{ path: '/tms/competency/list', name: 'CompetencyListComponent'}"-->
-<!--                                                class="nav-link">-->
-<!--                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_effect') }}</span>-->
-<!--                                        </router-link>-->
-<!--                                    </li>-->
+                                    <li class="nav-item" v-if=" slug_can('tms-trainning-view')">
+                                        <router-link
+                                                :to="{ path: '/tms/competency/list', name: 'CompetencyListComponent'}"
+                                                class="nav-link">
+                                            <span class="nav-link-text"> {{ trans.get('keys.khung_nang_luc_effect') }}</span>
+                                        </router-link>
+                                    </li>
                                     <!--                                    <li class="nav-item">-->
                                     <!--                                        <router-link to="/tms/trainning/list_user" class="nav-link">-->
                                     <!--                                            <span class="nav-link-text"> {{ trans.get('keys.danh_sach_nguoi_dung') }}</span>-->

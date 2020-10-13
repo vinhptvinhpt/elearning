@@ -234,6 +234,37 @@ mc.estimate_duration,
             mc.fullname,
             mc.category,
             mc.course_avatar,
+            (
+                select
+                    count(cm.id) as num
+                from
+                    mdl_course_modules cm
+                inner join mdl_course_sections cs on
+                    cm.course = cs.course
+                    and cm.section = cs.id
+                where
+                    cs.section <> 0
+                    and cm.completion <> 0
+                    and cm.course = mc.id) as numofmodule,
+            (
+            select
+                count(cmc.coursemoduleid) as num
+            from
+                mdl_course_modules cm
+            inner join mdl_course_modules_completion cmc on
+                cm.id = cmc.coursemoduleid
+            inner join mdl_course_sections cs on
+                cm.course = cs.course
+                and cm.section = cs.id
+            inner join mdl_course c on
+                cm.course = c.id
+            where
+                cs.section <> 0
+                and cmc.completionstate in (1,
+                2)
+                and cm.completion <> 0
+                and cm.course = mc.id
+                and cmc.userid = tud.user_id) as numoflearned,
             mc.estimate_duration,
             muet.userid as teacher_id,
             tud.fullname as teacher_name,
