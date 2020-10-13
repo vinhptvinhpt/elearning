@@ -446,6 +446,11 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.thong_ke_truy_cap') }}</span>
                                 </router-link>
                             </li>
+                            <li class="nav-item">
+                              <router-link to="/tms/excel/export/user_mark" class="nav-link">
+                                <span class="nav-link-text"> {{ trans.get('keys.training_effect_report') }}</span>
+                              </router-link>
+                            </li>
                         </ul>
                     </li>
 
