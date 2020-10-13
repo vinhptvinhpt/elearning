@@ -71,6 +71,7 @@ class ReportMarkSheet implements WithTitle, WithHeadings, FromArray, WithMapping
                 $this->column_count = count($this->headings);
 
                 $endingCol = $event->sheet->getDelegate()->getHighestColumn();
+                $endingRow = $event->sheet->getDelegate()->getHighestRow();
 
                 //Set Width
                 for ($i = 1; $i <= $this->column_count; $i++) {
@@ -92,9 +93,9 @@ class ReportMarkSheet implements WithTitle, WithHeadings, FromArray, WithMapping
                     ],
                 ];
 
-                $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . '1')
-                    ->applyFromArray($styleArray);
+                $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . '1')->applyFromArray($styleArray);
 
+                $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . $endingRow)->getAlignment()->setVertical(Alignment::VERTICAL_TOP)->setWrapText(true);
             },
         ];
     }

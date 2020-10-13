@@ -41,6 +41,7 @@
                                                                     placeholder="Select year(s)"
                                                                     :allow-empty="false"
                                                                     :multiple="true"
+                                                                    @input="selectYears"
                                                             >
                                                             </multiselect>
                                                         </div>
@@ -52,8 +53,43 @@
                                                 </div>
                                             </div>
                                             <div class="button-list">
-                                                <button type="button" class="btn btn-primary btn-sm hasLoading" @click="exportExcel()">{{trans.get('keys.export_excel')}}<i class="fa fa-spinner" aria-hidden="true"></i></button>
+                                                <button type="button" class="btn btn-primary btn-sm hasLoading btn-view" @click="viewTrainingEffect()">
+                                                    {{trans.get('keys.xem')}}<i class="fa fa-spinner" aria-hidden="true"></i>
+                                                </button>
+                                                <button type="button" class="btn btn-primary btn-sm hasLoading btn-export" @click="exportExcel()">
+                                                    {{trans.get('keys.export_excel')}}<i class="fa fa-spinner" aria-hidden="true"></i>
+                                                </button>
                                             </div>
+
+                                            <div class="table-responsive mt-20">
+                                                <table>
+                                                    <thead>
+                                                    <tr>
+                                                        <th>{{trans.get('keys.email')}}</th>
+                                                        <th v-for="(year, index) in years">{{ year }}</th>
+                                                        <th>{{trans.get('keys.hoan_thanh_khoa_hoc')}}</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <template v-for="(item, competency_code) in list_data">
+                                                            <tr>
+                                                                <td style="background-color: #5BBFDE;" :colspan="years.length + 2"><strong>{{ item.name }}</strong></td>
+                                                            </tr>
+                                                            <tr v-for="(data_item, email) in item.users">
+                                                                <td>{{ email }}</td>
+                                                                <td style="word-wrap:break-word" v-for="mark in data_item.marks">{{ mark }}</td>
+                                                                <td>
+                                                                    <template v-for="(course, index) in data_item.courses">
+                                                                        {{ course }}
+                                                                        <br v-if="index < data_item.courses.length">
+                                                                    </template>
+                                                                </td>
+                                                            </tr>
+                                                        </template>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+
                                         </div>
                                     </div>
                                 </div>
@@ -84,6 +120,7 @@
                         label: this.trans.get('keys.chon_to_chuc')
                     }
                 ],
+                list_data: []
             }
         },
         components: {
@@ -98,8 +135,11 @@
                 }
                 this.years.push(currYear);
             },
+            selectYears() {
+              this.years.sort();
+            },
             exportExcel() {
-                let hasLoading = $('button.hasLoading');
+                let hasLoading = $('button.btn-export');
                 let loader = $('.preloader-it');
                 loader.fadeIn();
                 if (!hasLoading.hasClass('loadding')) {
@@ -107,6 +147,7 @@
                     this.formData = new FormData();
                     this.formData.append('organization_id', this.organization_id);
                     this.formData.append('years', this.years);
+                    this.formData.append('flow', 'export');
                     axios.post(this.urlImport, this.formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -126,13 +167,42 @@
                                     a[0].click();
                                     a.remove();
                                 }
-                                $('button.hasLoading').removeClass('loadding');
+                                hasLoading.removeClass('loadding');
                             }
                         })
                         .catch(error => {
                             loader.fadeOut();
-                            $('button.hasLoading').removeClass('loadding');
-                            $('.logUpload').show();
+                            hasLoading.removeClass('loadding');
+                            console.log(error);
+                            roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
+                        });
+                }
+            },
+            viewTrainingEffect() {
+                let hasLoading = $('button.btn-view');
+                let loader = $('.preloader-it');
+                loader.fadeIn();
+                if (!hasLoading.hasClass('loadding')) {
+                    hasLoading.addClass('loadding');
+                    this.formData = new FormData();
+                    this.formData.append('organization_id', this.organization_id);
+                    this.formData.append('years', this.years);
+                    this.formData.append('flow', 'show');
+                    axios.post(this.urlImport, this.formData, {
+                        headers: {
+                            'Content-Type': 'multipart/form-data'
+                        }
+                    })
+                        .then(response => {
+                            loader.fadeOut();
+                            if (response.data) {
+                                this.list_data = response.data.data;
+                                hasLoading.removeClass('loadding');
+                            }
+                        })
+                        .catch(error => {
+                            loader.fadeOut();
+                            hasLoading.removeClass('loadding');
                             console.log(error);
                             roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                         });
@@ -182,6 +252,7 @@
         mounted() {
             this.setYearInput();
             this.selectOrganization(this.organization_id);
+            this.viewTrainingEffect();
         }
     }
 </script>

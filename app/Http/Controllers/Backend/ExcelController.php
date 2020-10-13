@@ -1052,6 +1052,7 @@ class ExcelController extends Controller
         $years = $request->input('years');
         $organization_id = $request->input('organization_id');
         $countries = TmsUserDetail::country;
+        $flow = $request->input('flow');
 
         $years = explode(',', $years);
         asort($years);
@@ -1133,7 +1134,8 @@ class ExcelController extends Controller
 
         $marks = $marks->get();
 
-        $response = [];
+        $response = []; //Export vertical
+        $flip_response = []; //Show to page horizontal
 
         $headings = [
             'Email',
@@ -1151,11 +1153,19 @@ class ExcelController extends Controller
             foreach ($years as $year) {
                 $dynamic_heading[$competency->code . $year] = $year;
             }
+            //Flow show to page
+
+            if (!array_key_exists($competency->code, $flip_response)) { //Khởi tạo object cho từng competency
+                $flip_response[$competency->code]['name'] = $competency->name;
+                $flip_response[$competency->code]['users'] = [];
+            }
         }
 
         $headings = array_merge($headings, $dynamic_heading);
 
         foreach ($marks as $mark) {
+
+            //Flow Export
             //khởi tạo
             if (!array_key_exists($mark->user_id, $response)) {
                 $country_name = array_key_exists($mark->country, $countries) ? $countries[$mark->country] : '';
@@ -1174,12 +1184,33 @@ class ExcelController extends Controller
             //check row, nếu có điểm thì add vào
             $response[$mark->user_id][$mark->competency_code . $mark->year] = $mark->result;
             //$response[$mark->user_id][$mark->competency_code . "_all"] = $mark->org_courses;
-            $response[$mark->user_id][$mark->competency_code] = $mark->learned_courses;
+            $response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $mark->learned_courses);
+
+
+            //Flow show to page
+            if (!array_key_exists($mark->email, $flip_response[$mark->competency_code]['users'])) {
+                $flip_response[$mark->competency_code]['users'][$mark->email] = [
+                    'marks' => [intval($mark->year) => $mark->result],
+                    'courses' => explode(',', $mark->learned_courses)
+                ];
+                foreach ($years as $year) { //Thêm unit year empty
+                    if (!array_key_exists(intval($year), $flip_response[$mark->competency_code]['users'][$mark->email]['marks'])) {
+                        $flip_response[$mark->competency_code]['users'][$mark->email]['marks'][intval($year)] = '';
+                    }
+                }
+
+            } else {
+                $flip_response[$mark->competency_code]['users'][$mark->email]['marks'][intval($mark->year)] = $mark->result;
+            }
         }
 
 
-        $result_file_name = "training_effect.xlsx";
+        if ($flow == 'show') { //Flow show to page
+            return response()->json(self::status_message('success', __('thanh_cong'), $flip_response));
+        }
 
+        //continue flow export
+        $result_file_name = "training_effect.xlsx";
         //xóa file cũ
         if (Storage::exists($result_file_name)) {
             Storage::delete($result_file_name);
