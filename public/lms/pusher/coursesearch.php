@@ -264,7 +264,7 @@ mc.estimate_duration,
                 2)
                 and cm.completion <> 0
                 and cm.course = mc.id
-                and cmc.userid = tud.user_id) as numoflearned,
+                and cmc.userid = '.$USER->id.') as numoflearned,
             mc.estimate_duration,
             muet.userid as teacher_id,
             tud.fullname as teacher_name,
