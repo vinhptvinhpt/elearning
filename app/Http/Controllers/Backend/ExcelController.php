@@ -1044,7 +1044,7 @@ class ExcelController extends Controller
                 }
             }
 
-            $result_file_name = "import_error_" . $file_name . ".xlsx";
+            $result_file_name = "import_result_" . $file_name . ".xlsx";
 
             //xóa file cũ
             if (Storage::exists($result_file_name)) {
