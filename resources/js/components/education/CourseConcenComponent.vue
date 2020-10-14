@@ -152,18 +152,18 @@
                                                     :title="capitalizeFirstLetter(course.last_modify_action) + ' at ' + course.last_modify_time">{{
                                                 course.username }}</a></td>
                                             <td v-else></td>
-                                            <td class="text-center mobile_hide">
-                                              <span v-if="course.visible==1">
-                                             <i class="fa fa-toggle-on" @click="approveCourse(course.id,course.visible)"
-                                                style="color:#3a55b1; cursor: pointer; font-size: 25px;"
-                                                aria-hidden="true"></i>
-                                                 </span>
-                                                <span v-if="course.visible==0">
-                                             <i class="fa fa-toggle-off"
-                                                @click="approveCourse(course.id,course.visible)"
-                                                style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
-                                                aria-hidden="true"></i>
-                                                </span>
+
+                                            <td class="text-center mobile_hide" v-if="slug_can('tms-educate-exam-offline-approve')">
+                                                   <span v-if="course.visible == 1">
+                                                    <i class="fa fa-toggle-on" @click="approveCourse(course.id,course.visible)" style="color:#3a55b1; cursor: pointer; font-size: 25px;" aria-hidden="true"></i>
+                                                  </span>
+                                              <span v-if="course.visible == 0">
+                                                    <i class="fa fa-toggle-off" @click="approveCourse(course.id,course.visible)" style="color:#6f7a7f; cursor: pointer; font-size: 25px;" aria-hidden="true"></i>
+                                                  </span>
+                                            </td>
+                                            <td class="text-center mobile_hide" v-else>
+                                              <span v-if="course.visible == 1" class="badge badge-success">Active</span>
+                                              <span v-if="course.visible == 0" class="badge badge-grey">Inactive</span>
                                             </td>
                                             <td class="text-center">
 

@@ -107,7 +107,7 @@
                     hasLoading.addClass('loadding');
                     this.formData = new FormData();
                     this.formData.append('file', this.$refs.file.files[0]);
-                    this.formData.append('year', parseInt(this.year)); //removed
+                    this.formData.append('year', parseInt(this.year));
                     axios.post(this.urlImport, this.formData, {
                         headers: {
                             'Content-Type': 'multipart/form-data'
@@ -129,14 +129,12 @@
                             }
                             $('button.hasLoading').removeClass('loadding');
                             $('.logUpload').show();
-                            $('#btnFilter').trigger('click');
                           }
                         })
                     .catch(error => {
                         loader.fadeOut();
                         $('button.hasLoading').removeClass('loadding');
                         $('.logUpload').show();
-                        $('#btnFilter').trigger('click');
                         console.log(error);
                         roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });

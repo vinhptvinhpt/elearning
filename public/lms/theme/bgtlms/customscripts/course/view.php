@@ -1754,6 +1754,12 @@ $_SESSION["displayPopup"] = 2; ?>
     //Notify tiếp tục module đang học dở
     $(document).ready(function () {
 
+        //set courseid to localStorage
+        let courseid = parseInt(<?php echo $id ?>);
+        if (parseInt(courseid) > 0) {
+            localStorage.setItem("courseid", courseid);
+        }
+
         $.getJSON("https://api.ipify.org?format=json",
             function (data) {
                 var result_ip =  <?php echo $result_ip;  ?>;

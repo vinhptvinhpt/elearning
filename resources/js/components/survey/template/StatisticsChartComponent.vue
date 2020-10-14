@@ -42,10 +42,18 @@
                 },
             }
         },
+        watch: {
+            answerOptions: function(val) {
+                console.log('47');
+                //do something when the data changes.
+                if (val) {
+                    this.getDataChartQuestion();
+                }
+            }
+        },
         methods: {
 
             getDataChartQuestion() {
-
                 var count_ans = this.question.lstAnswers.length;
                 var data_ans = [];
                 if (count_ans > 0) {

@@ -120,7 +120,7 @@
   "tao_moi_khoa_hoc_thanh_cong": "Tạo mới khóa học thành công",
   "sua_khoa_hoc_thanh_cong": "Sửa thông tin khóa học thành công",
   "khong_tim_thay_khoa_hoc": "Không tìm thấy khóa học trong hệ thống",
-  "phe_duyet_khoa_hoc": "Phê duyệt khóa học thành công",
+  "phe_duyet_khoa_hoc_thanh_cong": "Phê duyệt khóa học thành công",
   "xoa_khoa_hoc": "Xóa khóa học thành công",
   "xoa_khoa_hoc_khong_thanh_cong": "Xóa khóa học không thành công",
   "dang_trong_thoi_gian_hoc": "Đang trong thời gian học nên không xóa được",
@@ -334,5 +334,7 @@
     "team_da_ton_tai": "Team đã tồn tại",
     "xoa_thanh_cong": "Xóa thành công",
     "fail_exam": "Trượt bài kiểm tra",
-    "retake_exam": "Làm lại bài kiểm tra"
+    "retake_exam": "Làm lại bài kiểm tra",
+    "xuat_du_lieu_thanh_cong": "Xuất thành công",
+    "duyet": "Duyệt"
 }
