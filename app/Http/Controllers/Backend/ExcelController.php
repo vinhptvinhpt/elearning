@@ -1085,11 +1085,14 @@ class ExcelController extends Controller
 
             ->join('tms_td_competency_courses', 'tms_td_user_marks.competency_id', '=', 'tms_td_competency_courses.competency_id')
             ->join('mdl_course as org_course', 'tms_td_competency_courses.course_id', '=', 'org_course.id')
-            ->leftJoin('course_completion', function ($join) {
+
+            ->leftJoin('course_completion', function ($join) use ($years) {
                 $join->on('tms_td_competency_courses.course_id', '=', 'course_completion.courseid');
                 $join->on('tms_td_user_marks.user_id', '=', 'course_completion.userid');
-            })
+                $join->whereIn(DB::raw('year(course_completion.updated_at)'), $years);
+            }) //Will be duplicates => removes when execute data later
             ->leftJoin('mdl_course as learned_course', 'course_completion.courseid', '=', 'learned_course.id')
+
             ->join('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
             ->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
 
@@ -1198,14 +1201,17 @@ class ExcelController extends Controller
             //check row, nếu có điểm thì add vào
             $response[$mark->user_id][$mark->competency_code . $mark->year] = $mark->result;
             //$response[$mark->user_id][$mark->competency_code . "_all"] = $mark->org_courses;
-            $response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $mark->learned_courses);
+            //$response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $mark->learned_courses);
+            $learned_courses = array_unique(explode(',', $mark->learned_courses));
+            $export_learned_courses = implode(',',$learned_courses);
+            $response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $export_learned_courses);
 
 
             //Flow show to page
             if (!array_key_exists($mark->email, $flip_response[$mark->competency_code]['users'])) {
                 $flip_response[$mark->competency_code]['users'][$mark->email] = [
                     'marks' => [intval($mark->year) => $mark->result],
-                    'courses' => explode(',', $mark->learned_courses)
+                    'courses' => $learned_courses
                 ];
                 foreach ($years as $year) { //Thêm unit year empty
                     if (!array_key_exists(intval($year), $flip_response[$mark->competency_code]['users'][$mark->email]['marks'])) {
