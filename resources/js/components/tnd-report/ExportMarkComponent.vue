@@ -66,7 +66,7 @@
                                                     <thead>
                                                     <tr>
                                                         <th>{{trans.get('keys.email')}}</th>
-                                                        <th v-for="(year, index) in years">{{ year }}</th>
+                                                        <th v-for="(year, index) in display_years">{{ year }}</th>
                                                         <th>{{trans.get('keys.hoan_thanh_khoa_hoc')}}</th>
                                                     </tr>
                                                     </thead>
@@ -120,13 +120,17 @@
                         label: this.trans.get('keys.chon_to_chuc')
                     }
                 ],
-                list_data: []
+                list_data: [],
+                display_years: []
             }
         },
         components: {
             Multiselect
         },
         methods: {
+            setLayout() {
+                this.display_years = this.years;
+            },
             setYearInput() {
                 let currYear = new Date().getFullYear();
                 let startYear = currYear - 5;
@@ -139,6 +143,7 @@
               this.years.sort();
             },
             exportExcel() {
+                this.setLayout();
                 let hasLoading = $('button.btn-export');
                 let loader = $('.preloader-it');
                 loader.fadeIn();
@@ -251,6 +256,7 @@
         },
         mounted() {
             this.setYearInput();
+            this.setLayout();
             this.selectOrganization(this.organization_id);
             this.viewTrainingEffect();
         }
