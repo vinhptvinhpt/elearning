@@ -19,7 +19,6 @@ use App\TmsTdCompetency;
 use App\TmsTdCompetencyMark;
 use App\TmsTdUserMark;
 use App\TmsUserDetail;
-use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -904,6 +903,7 @@ class ExcelController extends Controller
             $title = '';
             $competencies = array();
             $competencies_ids = array();
+            $competencies_marks = array();
 
             foreach ($list_data as $row_no => $item) {
 
@@ -930,16 +930,17 @@ class ExcelController extends Controller
                             if (strlen($item[$i]) > 0) {
                                 $competencies[$i] = $item[$i];
                             }
-                        } else {
+                        } else { //duyệt đến hết cột thì thôi
                             continue;
                         }
                     }
                     if (count($competencies) > 0) {
                         $checkCompetency = TmsTdCompetency::query()->whereIn('code', $competencies)->get();
-                        if (count($checkCompetency) != count($competencies)) {
+                        if (count($checkCompetency) != count($competencies)) { //Lệch data, có code không thuộc bảng competencies
                             return response()->json(self::status_message('error', "Competency code is not valid, please check and try again"));
                         } else {
                             $competencies_ids = $competencies;
+                            $competencies_marks = $competencies;
                             foreach ($checkCompetency as $competency) {
                                 $key = array_search($competency->code, $competencies);
                                 $competencies_ids[$key] = $competency->id;
@@ -952,20 +953,25 @@ class ExcelController extends Controller
                 }
                 //Row 2 competency average mark
                 if ($row_no == 2) {
-                    $email = 'AVG MARK';
+                    $email = 'MAXIMUM MARK';
                     $max = max(array_keys($competencies));
                     for ($i = 1; $i <= $max; $i++) {
                         $mark = $item[$i];
                         if (!isset($mark) || strlen($mark) == 0) {
-                            $content[] = "Missing average mark for competency";
+                            $content[] = "Missing maximum mark for competency";
                         } else {
-                            TmsTdCompetencyMark::updateOrCreate(
-                                [
-                                    'competency_id' => $competencies_ids[$i],
-                                    'year' => $year
-                                ],
-                                ['mark' => $mark] //Update
-                            );
+                            if (self::validateRawData($mark, 'number')) {
+                                $competencies_marks[$i] = $mark;
+                                TmsTdCompetencyMark::updateOrCreate(
+                                    [
+                                        'competency_id' => $competencies_ids[$i],
+                                        'year' => $year
+                                    ],
+                                    ['mark' => $mark] //Update
+                                );
+                            } else { //check by validation function
+                                $content[] = 'Maximum mark is not valid';
+                            }
                         }
                     }
                 }
@@ -987,16 +993,24 @@ class ExcelController extends Controller
                                 for ($i = 1; $i <= $max; $i++) {
                                     $mark = $item[$i];
                                     if (!isset($mark) || strlen($mark) == 0) {
-                                        $content[] = "Missing mark for competency";
+                                        $content[] = "Missing user mark";
                                     } else {
-                                        TmsTdUserMark::updateOrCreate(
-                                            [
-                                                'user_id' => $checkUser->id,
-                                                'competency_id' => $competencies_ids[$i],
-                                                'year' => $year
-                                            ],
-                                            ['mark' => $mark] //Update
-                                        );
+                                        if (self::validateRawData($mark, 'number')) {
+                                            if ($mark > $competencies_marks[$i]) {
+                                                $content[] = "User's mark is greater than competency maximum mark";
+                                            } else {
+                                                TmsTdUserMark::updateOrCreate(
+                                                    [
+                                                        'user_id' => $checkUser->id,
+                                                        'competency_id' => $competencies_ids[$i],
+                                                        'year' => $year
+                                                    ],
+                                                    ['mark' => $mark] //Update
+                                                );
+                                            }
+                                        } else {
+                                            $content[] = "User's mark is not valid";
+                                        }
                                     }
                                 }
                             }
@@ -1229,5 +1243,24 @@ class ExcelController extends Controller
         $data['message'] = $message;
         $data['data'] = $additional_data;
         return $data;
+    }
+
+    /**
+     * @param $val
+     * @param $type
+     * @return bool
+     */
+    public function validateRawData($val, $type) {
+        $need_to_validate = new \Illuminate\Http\Request();
+        $need_to_validate['input'] = $val;
+        $param = [
+            'input' => $type
+        ];
+        $validator = validate_fails($need_to_validate, $param);
+        if (!empty($validator)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }
