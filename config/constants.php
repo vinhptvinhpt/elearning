@@ -37,12 +37,20 @@ return [
         'ENROLL_USER' => 'enroll_user.json', //enroll hoc vien vao KNL
 
         //azure blob storage account info
-        'ACCOUNT_NAME'=>'elearningdata',
+        'ACCOUNT_NAME' => 'elearningdata',
 
-        'CONTAINER_NAME'=>'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6',
+        'CONTAINER_NAME' => 'asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6',
 
-        'ACCOUNT_KEY'=>'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==',
+        'ACCOUNT_KEY' => 'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==',
+
 
         'TMS_NAME' => 'PHH Academy',
+
+        'APP-TOKEN-SYSTEM' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUVkUtVFZDIn0.8d61LFSiugnJp72Vdd3BqFCuOsMS8up7kif5bMQvYjM',
+
+        'HISTAFF-API' => 'http://222.252.30.92:2001/CommonBusinessToken.svc?wsdl',
+
+        'HISTAFF-KEY' => 'G6rikv0U0eQUIRak7owtmw==',
+
     ],
 ];

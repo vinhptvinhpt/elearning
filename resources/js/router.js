@@ -63,6 +63,7 @@ import RoleIndexComponent from "./roles/RoleIndexComponent";
 import RoleEditComponent from "./roles/RoleEditComponent";
 import RoleListUserComponent from "./roles/RoleListUserComponent";
 import ImportIndexComponent from "./components/import/ImportIndexComponent";
+import ImportMarkComponent from "./components/import/ImportMarkComponent";
 import SurveyListComponent from "./components/survey/SurveyListComponent";
 import SurveyCreateComponent from "./components/survey/SurveyCreateComponent";
 import SurveyStatisticComponent from "./components/survey/SurveyStatisticComponent";
@@ -127,6 +128,9 @@ import ReportLogin from "./components/system/report/ReportLoginComponent";
 import UserCourseException from "./components/education/UserCourseException";
 import SurveyResult from "./components/survey/SurveyResultComponent";
 import SurveyResultUser from "./components/survey/SurveyResultUserComponent";
+import CompetencyListComponent from "./components/tnd-report/CompetencyListComponent";
+import CompetencyCreateComponent from "./components/tnd-report/CompetencyCreateComponent";
+import CompetencyEditComponent from "./components/tnd-report/CompetencyEditComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -461,6 +465,11 @@ const routes = [
                 name: 'ImportIndex',
                 props: (route) => ({query: route.params.type ? route.params.type : 'system'})
             },
+            {
+                path: 'excel/import/user_mark',
+                component: ImportMarkComponent,
+                name: 'ImportMark',
+            },
             //Roles
             {
                 path: 'role',
@@ -647,14 +656,14 @@ const routes = [
                 props: (route) => ({course_id: route.params.id})
             },
             {
-              path: 'education/user_course_exception/detail/:id',
-              component: UserCourseException,
-              name: 'UserCourseExceptionEdit',
-              props: (route) => ({
-                  course_id: route.params.id,
-                  come_from: route.params.come_from,
-                  course_name: route.params.course_name
-              })
+                path: 'education/user_course_exception/detail/:id',
+                component: UserCourseException,
+                name: 'UserCourseExceptionEdit',
+                props: (route) => ({
+                    course_id: route.params.id,
+                    come_from: route.params.come_from,
+                    course_name: route.params.course_name
+                })
             },
             {
                 path: 'education/course/detail_concentrate/:id',
@@ -833,27 +842,27 @@ const routes = [
                 })
             },
             {
-              path: 'organization-team',
-              component: IndexTeamComponent,
-              name: 'IndexTeam',
-              props: (route) => ({
-                organization_id: route.query.organization_id ? route.query.organization_id : 0,
-                //back to org list
-                source_page: route.params.source_page ? route.params.source_page : 0,
-                view_mode: route.query.view_mode ? route.query.view_mode : '',
-              })
+                path: 'organization-team',
+                component: IndexTeamComponent,
+                name: 'IndexTeam',
+                props: (route) => ({
+                    organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                    //back to org list
+                    source_page: route.params.source_page ? route.params.source_page : 0,
+                    view_mode: route.query.view_mode ? route.query.view_mode : '',
+                })
             },
             {
-              path: 'organization-team/edit/:id',
-              component: EditTeamComponent,
-              name: 'EditTeam',
-              props: (route) => ({
-                id: route.params.id,
-                //Back to employee list
-                source_page: route.params.source_page ? route.params.source_page : 0,
-                organization_id: route.query.organization_id ? route.query.organization_id : 0,
-                view_mode: route.params.view_mode ? route.params.view_mode : '',
-              })
+                path: 'organization-team/edit/:id',
+                component: EditTeamComponent,
+                name: 'EditTeam',
+                props: (route) => ({
+                    id: route.params.id,
+                    //Back to employee list
+                    source_page: route.params.source_page ? route.params.source_page : 0,
+                    organization_id: route.query.organization_id ? route.query.organization_id : 0,
+                    view_mode: route.params.view_mode ? route.params.view_mode : '',
+                })
             },
             // Trainning
             {
@@ -873,12 +882,12 @@ const routes = [
                 })
             },
             {
-              path: 'trainning/group',
-              component: TrainningListComponent,
-              name: 'TrainningGroupIndex',
-              props: (route) => ({
-                type: route.query.type ? route.query.type : 2
-              })
+                path: 'trainning/group',
+                component: TrainningListComponent,
+                name: 'TrainningGroupIndex',
+                props: (route) => ({
+                    type: route.query.type ? route.query.type : 2
+                })
             },
             {
                 path: 'trainning/detail/:id',
@@ -901,6 +910,20 @@ const routes = [
                 component: ReportLogin,
                 name: 'ReportLogin'
             },
+            {
+                path: 'competency/list',
+                component: CompetencyListComponent,
+                name: 'CompetencyListComponent',
+                props: (route) => ({})
+            },
+            {
+                path: 'competency/detail/:id',
+                component: CompetencyEditComponent,
+                name: 'CompetencyEditComponent',
+                props: (route) => ({
+                    id: route.params.id,
+                })
+            },
         ]
     },
     /*
@@ -922,12 +945,12 @@ const routes = [
                 })
             },
             {
-              path: 'notification/unlock/:notification_id',
-              component: UnlockAttemptComponent,
-              name: 'UnlockAttempt',
-              props: (route) => ({
-                notification_id: route.params.notification_id ? route.params.notification_id : 0
-              })
+                path: 'notification/unlock/:notification_id',
+                component: UnlockAttemptComponent,
+                name: 'UnlockAttempt',
+                props: (route) => ({
+                    notification_id: route.params.notification_id ? route.params.notification_id : 0
+                })
             },
             {
                 path: 'email/confirm/:no_id/:email',

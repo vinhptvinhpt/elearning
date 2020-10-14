@@ -31,7 +31,9 @@ class MdlUserRepository implements IMdlUserInterface
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')
             ->where('ttp.deleted', '=', 0)
             ->where('ttu.user_id', '=', $user_id)
-            ->select('ttp.id', 'ttp.name')->groupBy('ttp.id')->get();
+            ->select('ttp.id', 'ttp.name')
+            ->groupBy('ttp.id')
+            ->get();
 
         return response()->json($lstData);
     }

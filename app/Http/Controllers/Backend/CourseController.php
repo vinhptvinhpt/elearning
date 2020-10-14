@@ -3,9 +3,8 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
-use App\MdlContext;
 use App\MdlCourse;
-use App\MdlUser;
+use App\Repositories\BussinessRepository;
 use App\Repositories\MdlCourseRepository;
 use App\Role;
 use App\TmsOrganization;
@@ -14,14 +13,8 @@ use App\TmsRoleOrganization;
 use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
-use Horde\Socket\Client\Exception;
 use Illuminate\Http\Request;
-use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Config;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use mod_lti\local\ltiservice\response;
 
 //Quản lý thông tin khóa học
 //ThoLD (21/08/2019)
@@ -567,4 +560,21 @@ class CourseController extends Controller
     {
         return $this->mdlCourseRepository->apiGetExistedCodes();
     }
+
+    //#region api optional courses
+    public function apiAssignOptionalCourse(Request $request)
+    {
+        return $this->mdlCourseRepository->assignOptionalCourse($request);
+    }
+
+    public function apiRemoveAssignOptionalCourse(Request $request)
+    {
+        return $this->mdlCourseRepository->removeAssignOptionalCourse($request);
+    }
+
+    public function apiGetOptionalCourses(Request $request)
+    {
+        return $this->mdlCourseRepository->getOptionalCourses($request);
+    }
+    //#endregion
 }

@@ -3,7 +3,26 @@ require_once(__DIR__ . '/../config.php');
 
 $user_id = isset($_REQUEST['user_id']) ? $_REQUEST['user_id'] : $USER->id;
 
-$sqlGetInfoUser = 'select tud.fullname as fullname, SUBSTR(tud.avatar, 2) as avatar, tud.address, toe.position, toe.description as exactlypostion , tmso.name as departmentname, IF(start_time IS NULL or start_time = \'\', \'-1\', (YEAR(NOW())-YEAR(FROM_UNIXTIME(tud.start_time)))) as yearworking, tmso.id as organization_id, dob, email, phone, sex from tms_user_detail tud left join tms_organization_employee toe on tud.user_id = toe.user_id left join tms_organization tmso on toe.organization_id = tmso.id where tud.user_id = ' . $user_id;
+$sqlGetInfoUser = 'select
+tud.fullname as fullname,
+SUBSTR(tud.avatar, 2) as avatar,
+tud.address,
+toe.position,
+toe.description as exactlypostion ,
+tmso.name as departmentname,
+IF(tud.start_time IS NULL or tud.start_time = \'\', \'-1\', (YEAR(NOW())-YEAR(FROM_UNIXTIME(tud.start_time)))) as yearworking,
+tmso.id as organization_id,
+tud.dob,
+tud.email,
+tud.phone,
+tud.sex,
+tudlm.fullname as line_manager
+from tms_user_detail tud
+left join tms_organization_employee toe on tud.user_id = toe.user_id
+left join tms_organization tmso on toe.organization_id = tmso.id
+left join tms_user_detail tudlm on toe.line_manager_id = tudlm.user_id
+where tud.user_id = ' . $user_id;
+
 $profile = array_values($DB->get_records_sql($sqlGetInfoUser))[0];
 //get list name of line manager
 
@@ -20,12 +39,13 @@ $profile->avatar = $avatar;
 $profile->dob = $profile->dob == 0 ? null : date('Y-m-d', $profile->dob);
 $profile->company = $_SESSION["companyName"];
 
-$linemanagers = [];
-if (isset($profile->organization_id)) {
-    $sqlGetLineManagers = "select fullname from tms_user_detail where user_id in (select user_id from tms_organization_employee where position='manager' and organization_id = $profile->organization_id)";
-    $linemanagers = array_values($DB->get_records_sql($sqlGetLineManagers));
-}
+//$linemanagers = [];
+//if (isset($profile->organization_id)) {
+//    $sqlGetLineManagers = "select fullname from tms_user_detail where user_id in (select user_id from tms_organization_employee where position='manager' and organization_id = $profile->organization_id)";
+//    $linemanagers = array_values($DB->get_records_sql($sqlGetLineManagers));
+//}
 
+$linemanagers = $profile->line_manager;
 
 session_start();
 $currentcourses = $_SESSION["courses_current"];

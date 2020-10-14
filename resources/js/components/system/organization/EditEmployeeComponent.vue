@@ -82,6 +82,19 @@
                     <label for="employee_enabled">{{trans.get('keys.kich_hoat')}}</label>
                   </div>
 
+                  <div class="col-sm-6">
+                    <div class="form-group">
+                      <label><strong>{{trans.get('keys.quan_ly_truc_tiep')}}</strong></label>
+                      <v-select
+                        :options="lineManagerSelectOptions"
+                        :reduce="lineManagerSelectOption => lineManagerSelectOption.id"
+                        :placeholder="this.trans.get('keys.chon_quan_ly_truc_tiep')"
+                        :filter-by="myFilterBy"
+                        v-model="employee.line_manager_id">
+                      </v-select>
+                    </div>
+                  </div>
+
                 </div>
                 <div class="row">
                   <div class="col-12">
@@ -124,12 +137,14 @@
           organization: {
             id: 0,
             name: ''
-          }
+          },
+          line_manager_id: 0,
         },
         organization_list: [],
         organization_keyword: '',
         //Treeselect options
-        options: []
+        options: [],
+        lineManagerSelectOptions: [],
       }
     },
     methods: {
@@ -192,6 +207,7 @@
           .then(response => {
             this.employee = response.data;
             this.selectOrganization(this.employee.organization_id);
+            this.getDataForLineManagerFilter();
           })
           .catch(error => {
             console.log(error.response.data);
@@ -212,7 +228,8 @@
           organization_id: this.employee.organization_id,
           user_id: this.employee.user_id,
           position: this.employee.position,
-          enabled: this.employee.enabled
+          enabled: this.employee.enabled,
+          line_manager_id: this.employee.line_manager_id
         })
           .then(response => {
             if(response.data.key) {
@@ -240,6 +257,36 @@
             toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
           })
       },
+      myFilterBy: (option, label, search) => {
+        if (!label) {
+          label = '';
+        }
+        let new_search = convertUtf8(search);
+        let new_label = convertUtf8(label);
+        //return this.filterBy(option, new_label, new_search); //can not call components function here
+        return (new_label || '').toLowerCase().indexOf(new_search) > -1; // "" not working
+      },
+      getDataForLineManagerFilter() {
+        this.lineManagerSelectOptions = []; //reset after search again
+        axios.post('/system/filter/fetch', {
+          type: 'user',
+          exclude: this.employee.user_id
+        })
+          .then(response => {
+            let additionalSelections = [];
+            response.data.forEach(function (selectItem) {
+              let newItem = {
+                label: selectItem.label,
+                id: selectItem.id
+              };
+              additionalSelections.push(newItem);
+            });
+            this.lineManagerSelectOptions = additionalSelections;
+          })
+          .catch(error => {
+            console.log(error);
+          });
+      }
     },
     computed: { //Phải gọi trên html nó mới trigger computed value
       filterPosition: function() {

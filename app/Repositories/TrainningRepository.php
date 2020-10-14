@@ -194,14 +194,17 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             \DB::beginTransaction();
-            $trainning = TmsTrainningProgram::findOrFail($id);
 
-            $trainningInfo = TmsTrainningProgram::select('id')->whereNotIn('id', [$trainning->id])->where('code', $code)->first();
+
+            $trainningInfo = TmsTrainningProgram::select('id')->whereNotIn('id', [$id])->where('code', $code)->first();
             if ($trainningInfo) {
                 $response->status = false;
                 $response->message = __('ma_trainning_da_ton_tai');
                 return response()->json($response);
             }
+
+            $trainning = TmsTrainningProgram::findOrFail($id);
+
 
             if ($style == 1) {
                 $time_start = strtotime($time_start);
@@ -403,7 +406,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
             ->where('deleted', '=', 0)
-            ->orderBy('id', 'desc')->get();
+            ->orderBy('name', 'asc')
+            ->get();
         return response()->json($response);
     }
 
@@ -698,6 +702,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $response = new ResponseModel();
         try {
             $trainning_id = $request->input('trainning_id');
+            $trainning_code = $request->input('trainning_code');
             $lstCourseId = $request->input('lst_course');
 
             \DB::beginTransaction();
@@ -772,7 +777,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                         $next_number = $number + 1;
                         $append = self::composeAppend($next_number);
                         $prefix = '_ONL';
-                        $course->shortname = $item['shortname'] . $prefix . $append;
+                        $course->shortname = $trainning_code . '_' . $item['shortname'] . $prefix . $append;
 
 
                         //$course->shortname = $course_sample->shortname . $course_sample->id . $trainning_id;

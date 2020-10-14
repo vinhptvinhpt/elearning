@@ -15,4 +15,10 @@ interface IMdlCourseInterface
 
     public function importExcelEnrol(Request $request);
 
+    public function getOptionalCourses(Request $request);
+
+    public function assignOptionalCourse(Request $request);
+
+    public function removeAssignOptionalCourse(Request $request);
+
 }

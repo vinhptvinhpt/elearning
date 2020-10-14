@@ -1,9 +1,13 @@
 <?php
 // Bypass login to test performance
-$test_mode        = optional_param('test', 0, PARAM_BOOL);
+$test_mode = optional_param('test', 0, PARAM_BOOL);
+$from = optional_param('from', '', PARAM_TEXT);
+$id = optional_param('id', 0, PARAM_INT);
+
+global $SESSION, $DB, $USER;
+
 if($test_mode){
     // Bypass require login by login as admin
-    global $SESSION, $DB;
     $fake_user = $DB->get_record('user', ['id' => 2]);
     if (!empty($fake_user)) {
         $fake_id = $fake_user->id;
@@ -15,7 +19,78 @@ if($test_mode){
     $result = complete_user_login($_user);
     $SESSION->userkey = true;
 }
-// end
+
+$user_id =  $USER->id;
+$course_id = $id;
+
+
+if (strlen($from) != 0) {
+    $passover = explode('.', $from);
+    $passover_type = $passover[1];
+    if ($passover_type == 'other') {
+        //check and enrol user to course here
+        //Check mdl_context
+        $context = $DB->get_record('context', ['instanceid' => $course_id, 'contextlevel' => CONTEXT_COURSE]);
+        if (!empty($context)) {
+            $context_id = $context->id;
+        } else {
+            $context_id = 0;
+        }
+        //Check mdl_enrol
+        $checkEnrol = $DB->get_record('enrol', ['enrol' => 'manual', 'courseid' => $course_id, 'roleid' => 5]);
+        if (empty($checkEnrol)) { //Chua co ban ghi enrol thi gan vao day
+            $record = new \stdClass();
+            $record->enrol = 'manual';
+            $record->courseid = $course_id;
+            $record->roleid = 5;
+            $record->sortorder = 0;
+            $record->status = 0;
+            $record->expirythreshold = 86400;
+            $record->timecreated = time();
+            $record->timemodified = time();
+
+            $enrol_id = $DB->insert_record('enrol', $record);
+            $need_to_insert_users = [$user_id];
+
+        } else {
+            $enrol_id = $checkEnrol->id;
+        }
+        //Check mdl_user_enrolments
+        $checkEnrolment = $DB->get_record('user_enrolments', ['enrolid' => $enrol_id, 'userid' => $user_id]);
+        if (empty($checkEnrolment)) {
+            $record_enrolment = new \stdClass();
+            $record_enrolment->enrolid = $enrol_id;
+            $record_enrolment->userid = $user_id;
+            $record_enrolment->timestart = time();
+            $record_enrolment->modifierid = $user_id;
+            $record_enrolment->timecreated = time();
+            $record_enrolment->timemodified = time();
+
+            $enrolment_id = $DB->insert_record('user_enrolments', $record_enrolment);
+        }
+        //Check mdl_role_assignments
+        $checkAssignment = $DB->get_record('role_assignments', ['roleid' => 5, 'contextid' => $context_id, 'userid' => $user_id]);
+        if (empty($checkAssignment)) {
+            $record_assignment = new \stdClass();
+            $record_assignment->roleid = 5;
+            $record_assignment->userid = $user_id;
+            $record_assignment->contextid = $context_id;
+            $enrolment_id = $DB->insert_record('role_assignments', $record_assignment);
+        }
+        //Check mdl_grade_items
+        $checkGradeItem = $DB->get_record('grade_items', ['courseid' => $course_id]);
+        if (!empty($checkGradeItem)) {
+            //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+            $checkGradeGrade = $DB->get_record('grade_grades', ['itemid' => $checkGradeItem->id, 'userid' => $user_id]);
+            if (empty($checkGradeGrade)) {
+                $record_grade_grade = new \stdClass();
+                $record_grade_grade->itemid = $checkGradeItem->id;
+                $record_grade_grade->userid = $user_id;
+                $enrolment_id = $DB->insert_record('grade_grades', $record_grade_grade);
+            }
+        }
+    }
+}
 
 if (!isloggedin()) {
     require_login();
@@ -846,7 +921,6 @@ require_once("courselib.php");
 session_start();
 $edit = optional_param('edit', -1, PARAM_BOOL);
 $notifyeditingon = optional_param('notifyeditingon', -1, PARAM_BOOL);
-$id = optional_param('id', 0, PARAM_INT);
 
 // Set $USER->editing = 0 to switch to normal view in course
 if ($edit == 0) {
