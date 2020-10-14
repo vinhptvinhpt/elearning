@@ -181,6 +181,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $position = $request->input('position');
             $enabled = $request->input('enabled');
             $user_id = $request->input('user_id');
+            $line_manager_id = $request->input('line_manager_id');
 
             $param = [
                 'id' => 'number',
@@ -216,6 +217,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $item->organization_id = $organization_id;
             $item->position = $position;
             $item->enabled = $enabled;
+            $item->line_manager_id = $line_manager_id;
             $item->save();
 
             if ($position != $old_pos) { //Có sự thay đổi role => cập nhật role hệ thống

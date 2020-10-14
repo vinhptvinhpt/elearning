@@ -65,95 +65,74 @@ class TaskController extends Controller
     }
 
     #region insert student to course_completion courses certificate
-    public function completeCourseForStudent_bk()
+    //insert hoc vien da hoan thanh khoa hoc vao bang course_completion
+    // fix cho TH hoc vien duoc enrol doc lap vao khoa, ko lien quan den KNL
+    public function completeCourseSingle()
     {
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
-            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
-            //->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', function ($join) {
-                $join->on('ttc.course_id', '=', 'c.id');
-                $join->on('e.courseid', '=', 'c.id');
-            })
-            //->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
-            ->join('mdl_grade_items as gri', 'gri.courseid', '=', 'c.id')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('course_completion as courc', function ($join) {
                 $join->on('courc.userid', '=', 'u.id');
                 $join->on('courc.courseid', '=', 'c.id');
             })
-            //->where('c.category', '=', 3)
-            ->whereNull('courc.userid')
-            ->whereNull('courc.courseid')
-            ->select('u.id as user_id', 'c.id as course_id', 'ccc.gradepass', 'gri.itemmodule', 'courc.courseid as courcID', 'courc.userid as courscUID', 'c.is_certificate'
-                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+            ->where('c.category', '!=', 2) //ko phai thu vien khoa hoc
+            ->whereNull('courc.id')
+            ->select('u.id as user_id',
+                'c.id as course_id',
+                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
                 cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                 DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
-	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module'),
-                DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
-				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
+            )
+            ->groupBy(['u.id'])
+            ->get();
+//        Log::info($lstUserCourse);
+//        die;
 
-        $count_course = count($lstUserCourse);
+        $arrData = [];
+        $data_item = [];
 
-        if ($count_course > 0) {
-            $arrData = [];
-            $data_item = [];
+        $num = 0;
+        $limit = 300;
 
-            $num = 0;
-            $limit = 300;
+        foreach ($lstUserCourse as $course) {
 
-            foreach ($lstUserCourse as $course) {
-//                if ($course->is_certificate == 0) { //khóa học cấp chứng chỉ không có bài thi, không cần set điểm pass
-                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
-                    $data_item['userid'] = $course->user_id;
-                    $data_item['courseid'] = $course->course_id;
-                    $data_item['finalgrade'] = $course->finalgrade;
-                    $data_item['timecompleted'] = strtotime(Carbon::now());
-                    $data_item['timeenrolled'] = strtotime(Carbon::now());
-                    $data_item['created_at'] = Carbon::now();
-                    $data_item['updated_at'] = Carbon::now();
+            if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
+                $data_item['userid'] = $course->user_id;
+                $data_item['courseid'] = $course->course_id;
+                $data_item['timecompleted'] = strtotime(Carbon::now());
+                $data_item['timeenrolled'] = strtotime(Carbon::now());
+                $data_item['created_at'] = Carbon::now();
+                $data_item['updated_at'] = Carbon::now();
 
-                    array_push($arrData, $data_item);
-                    $num++;
-                }
-//                } else {
-//                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
-//                        && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
-//
-//                        $data_item['userid'] = $course->user_id;
-//                        $data_item['courseid'] = $course->course_id;
-//                        $data_item['finalgrade'] = $course->finalgrade;
-//                        $data_item['timecompleted'] = strtotime(Carbon::now());
-//                        $data_item['timeenrolled'] = strtotime(Carbon::now());
-//
-//                        array_push($arrData, $data_item);
-//                        $num++;
-//
-//                    }
-//                }
-
-                if ($num >= $limit) {
-                    CourseCompletion::insert($arrData);
-                    $num = 0;
-                    $arrData = [];
-                }
-
+                array_push($arrData, $data_item);
+                $num++;
             }
 
-            CourseCompletion::insert($arrData);
+            if ($num >= $limit) {
+                CourseCompletion::insert($arrData);
+                $num = 0;
+                $arrData = [];
+            }
 
+            usleep(200);
         }
+
+        CourseCompletion::insert($arrData);
+
+        usleep(200);
+
     }
 
     /* 20200909 Cuonghq hide join for gradepass and finalgrade */
 
     public function completeCourseForStudent()
     {
-        $lstTrainning = TmsTrainningCourse::where('deleted', '=', '0')->select('trainning_id', 'course_id')->get();
+        $lstTrainning = TmsTrainningCourse::where('deleted', '=', 0)->select('trainning_id', 'course_id')->get();
 
         foreach ($lstTrainning as $data) {
             $lstUserCourse = DB::table('mdl_user_enrolments as mu')
@@ -181,8 +160,8 @@ class TaskController extends Controller
                 cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                     DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
 	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
-                    //,DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
-				//where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
+                //,DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
+                //where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
                 )
                 ->groupBy(['u.id'])
                 ->get();
@@ -315,8 +294,8 @@ class TaskController extends Controller
         //Lấy ra số khóa học theo khung năng lực deleted = 0
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)') //khung nang lcu thong thuong, chua bi xoa
-            ->where('ttc.deleted', '=', '0') //Khoa hoc trong khung nang luc
+            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)')//khung nang lcu thong thuong, chua bi xoa
+            ->where('ttc.deleted', '=', '0')//Khoa hoc trong khung nang luc
             ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
             ->groupBy(['ttc.trainning_id'])
             ->get();
@@ -337,7 +316,7 @@ class TaskController extends Controller
                         $join->on('ttc.user_id', '=', 'cc.userid');
                         $join->on('ttc.trainning_id', '=', 'cc.training_id');
                     })
-                    ->whereNull('ttc.id') //record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
+                    ->whereNull('ttc.id')//record không tồn tại trong bảng ttc, user chưa hoàn thành knl trước đó
                     ->select('cc.training_id', 'cc.userid', DB::raw('GROUP_CONCAT(`cc`.`courseid`) as `completed_courses`'))
                     ->where('cc.training_id', '=', $training->trainning_id)
                     ->groupBy(['cc.training_id', 'cc.userid'])
@@ -483,6 +462,7 @@ class TaskController extends Controller
             $data_item['code'] = $certificatecode;
             $data_item['status'] = 1;
             $data_item['timecertificate'] = time();
+            $data_item['auto_run'] = 1;
             $data_item['created_at'] = Carbon::now();
             $data_item['updated_at'] = Carbon::now();
 
@@ -498,12 +478,22 @@ class TaskController extends Controller
             usleep(100); //sleep tranh tinh trang query db lien tiep
 
             //insert du lieu lich su hoc tap
+            $user_id = $st->user_id;
+            $training_id = $st->training_id;
+
             $lstHistory = DB::table('course_completion as cc')
                 ->join('mdl_course as c', 'c.id', '=', 'cc.courseid')
                 ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'cc.training_id')
-                ->where('cc.userid', '=', $st->user_id)
-                ->where('cc.training_id', '=', $st->training_id)
+                ->where('cc.userid', '=', $user_id)
+                ->where('cc.training_id', '=', $training_id)
                 ->select('c.id as course_id', 'c.shortname as course_code', 'c.fullname as course_name', 'ttp.name as trainning_name')
+                ->whereNotExists(function ($query) use ($training_id, $user_id) { //Check chưa tồn tại tr
+                    $query->select(DB::raw(1))
+                        ->from('tms_learner_histories as tlh')
+                        ->where('tlh.trainning_id', '=', $training_id)
+                        ->where('tlh.user_id', '=', $user_id)
+                        ->where('tlh.course_id', '=', 'c.id');
+                })
                 ->get();
 
             $arr_data_his = [];
@@ -1138,7 +1128,7 @@ class TaskController extends Controller
         if (!empty($receiver)) {
             if (is_array($receiver)) {
                 $send_to = $receiver;
-            } elseif(is_int($receiver)) {
+            } elseif (is_int($receiver)) {
                 $send_to[] = $receiver;
             }
 
@@ -1653,7 +1643,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
-            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
+            ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
@@ -1950,7 +1940,7 @@ class TaskController extends Controller
             ->select('ttp.id', 'ttg.id as ttg_id')
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
-            ->where('ttp.style', '!=', 2) //ko quet cac KNL group course da hoan thanh
+            ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->pluck('ttp.id');
 
@@ -2399,6 +2389,7 @@ class TaskController extends Controller
                 $blob_name = $arr_name[0];
 
                 $end_date = Carbon::now()->addHour(23)->addMinute(58);
+//                $end_date = Carbon::now()->addSecond(10);
 
                 $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2439,6 +2430,7 @@ class TaskController extends Controller
 
                         $blob_name = $arr_name[0];
                         $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2471,6 +2463,7 @@ class TaskController extends Controller
 
                         $blob_name = $arr_name[0];
                         $end_date = Carbon::now()->addHour(23)->addMinute(59);
+//                        $end_date = Carbon::now()->addSecond(10);
 
                         $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2538,6 +2531,27 @@ class TaskController extends Controller
             . implode('&', $_parts);
 
         return $_url;
+    }
+
+    public function apiGenerateSASUrlAzureTest()
+    {
+        $arrMainId = [33, 140];
+        $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->where('id', 1016)->select('id', 'main_library_id', 'json_content')->get();
+
+        foreach ($lstData as $data) {
+            $jsonData = json_decode($data->json_content, true);
+
+            switch ($data->main_library_id) {
+                case 33:
+                    $this->processInteractive33($jsonData, $data->id);
+                    break;
+                case 140:
+                    $this->processInteractive140($jsonData, $data->id);
+                    break;
+            }
+
+        }
+
     }
 
     //endregion

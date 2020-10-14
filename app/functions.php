@@ -204,7 +204,7 @@ function permission_cat_name()
         'tms-system-organize' => __('quan_ly_khung_co_cau_to_chuc'),
         'tms-system-administrator' => __('quyen_quan_tri_he_thong'),
         'tms-system-role' => __('quan_ly_phan_quyen'),
-        'tms-system-import-user' => __('them_du_lieu_bang_excel'),
+        'tms-system-import-user' => __('nhap_du_lieu_bang_excel'),
         'tms-system-trash' => __('khoi_phuc_thung_rac'),
         'tms-educate-exam' => __('quan_ly_khoa_hoc'),
         'tms-educate-exam-online' => __('khoa_dao_tao_online'),
@@ -350,12 +350,14 @@ function permission_slug()
                 'tms-educate-exam-online-add' => __('them'),
                 'tms-educate-exam-online-edit' => __('sua'),
                 'tms-educate-exam-online-deleted' => __('xoa'),
+                'tms-educate-exam-online-approve' => __('duyet'),
             ],
             'tms-educate-exam-offline' => [
                 'tms-educate-exam-offline-view' => __('xem'),
                 'tms-educate-exam-offline-add' => __('them'),
                 'tms-educate-exam-offline-edit' => __('sua'),
                 'tms-educate-exam-offline-deleted' => __('xoa'),
+                'tms-educate-exam-offline-approve' => __('duyet'),
             ],
             'tms-educate-exam-clone' => [
                 'tms-educate-exam-clone-add' => __('them'),
@@ -1076,9 +1078,8 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
             ->select('mdl_enrol.id', 'mdl_user_enrolments.userid')
             ->get()
             ->toArray();
+
         //Insert missing
-
-
         if (empty($check_enrol)) {
             $new_enrol = MdlEnrol::create(
                 [
@@ -1112,7 +1113,7 @@ function enrole_user_to_course_multiple($user_ids, $role_id, $course_id, $notify
                 'enrolid' => $enrol_id,
                 'userid' => $user_id,
                 'timestart' => strtotime(Carbon::now()),
-                'modifierid' => Auth::user()->id,
+                'modifierid' => Auth::user() ? Auth::user()->id : 0,
                 'timecreated' => strtotime(Carbon::now()),
                 'timemodified' => strtotime(Carbon::now())
             ];
@@ -1509,7 +1510,7 @@ function insert_single_notification($type, $sendto, $target, $course_id)
         'target' => $target,
         'status_send' => TmsNotification::UN_SENT,
         'course_id' => $course_id,
-        'createdby' => Auth::user()->id
+        'createdby' => Auth::user() ? Auth::user()->id : 0
     ]);
 
     insert_single_notification_log($tms_notif, TmsNotificationLog::CREATE_NOTIF);
@@ -2536,26 +2537,21 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'code':
                     $validator = Validator::make($request->all(), [
                         $key => [
-                            //"regex:/^[a-zA-Z0-9\-\_\.\/]*$/i", //username without @
                             "regex:/^[a-zA-Z0-9\-\_\.\@\/]*$/i", //use email as username
                         ],
                     ]);
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'password': //Min 8, 1 chu hoa, 1 ki tu dac biet @$!%*?#&
@@ -2567,10 +2563,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'token':
@@ -2582,10 +2576,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'longtext':
@@ -2618,10 +2610,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'number':
@@ -2633,10 +2623,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'positivenumber':
@@ -2648,10 +2636,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) > 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'decimal':
@@ -2663,10 +2649,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key) && strlen($request->input($key)) != 0)
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'phone':
@@ -2681,10 +2665,8 @@ function validate_fails($request, $param)
                     )
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'date':
@@ -2699,10 +2681,8 @@ function validate_fails($request, $param)
                     )
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'email':
@@ -2715,10 +2695,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'boolean':
@@ -2730,10 +2708,8 @@ function validate_fails($request, $param)
                     if ($validator->fails() && $request->input($key))
                         return [
                             'key' => $key,
-                            //'message' => __('loi_dinh_dang_truong_nhap_vao_co_chua_ky_tu_khong_cho_phep')
                             'message' => $message
                         ];
-                    //array_push($check, $key);
                     break;
 
                 case 'image':
@@ -2745,7 +2721,6 @@ function validate_fails($request, $param)
                             'key' => $key,
                             'message' => __('format_image')
                         ];
-                    //array_push($check, $key);
                     break;
             }
         }

@@ -55,7 +55,7 @@
                     <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
                     <th class="text-center">{{trans.get('keys.tien_do')}}</th>
-<!--                    <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
+                    <!--                    <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
                     <th>{{trans.get('keys.trang_thai')}}</th>
                   </tr>
                   </thead>
@@ -67,7 +67,8 @@
                     <td>{{ (current-1)*row+(index+1) }}</td>
                     <td>{{ post.shortname }}</td>
                     <td class=" mobile_hide">
-                      <label style="cursor: pointer;color: #3a55b1;" @click="getGradeCourseDetail(post.course_id)">
+                      <label style="cursor: pointer;color: #3a55b1;"
+                             @click="getGradeCourseDetail(post.course_id)">
                         {{post.fullname}}
                       </label>
                     </td>
@@ -75,7 +76,8 @@
                     <td class="text-center">
                       <label style="display: block;" v-if="parseInt(post.user_course_learn) > 0">
                         {{post.user_course_completionstate}} / {{post.user_course_learn}} (
-                        {{Math.round(post.user_course_completionstate * 100/post.user_course_learn)+"%"}} )
+                        {{Math.round(post.user_course_completionstate *
+                        100/post.user_course_learn)+"%"}} )
                       </label>
                       <label style="display: block;" v-else>
                         0 / 0 ( 0% )
@@ -88,14 +90,14 @@
                            </li>
                        </ul>-->
                     </td>
-<!--                    <td class=" mobile_hide">-->
-<!--                      <div v-if="post.finalgrade!=undefined">-->
-<!--                        {{parseFloat(post.finalgrade).toFixed(2)}}-->
-<!--                      </div>-->
-<!--                      <div v-else>-->
-<!--                        0-->
-<!--                      </div>-->
-<!--                    </td>-->
+                    <!--                    <td class=" mobile_hide">-->
+                    <!--                      <div v-if="post.finalgrade!=undefined">-->
+                    <!--                        {{parseFloat(post.finalgrade).toFixed(2)}}-->
+                    <!--                      </div>-->
+                    <!--                      <div v-else>-->
+                    <!--                        0-->
+                    <!--                      </div>-->
+                    <!--                    </td>-->
                     <td>
                       <div v-if="
                                             //parseInt(post.status_user) === 1 &&
@@ -119,7 +121,7 @@
                     <th>{{trans.get('keys.ma_khoa_hoc')}}</th>
                     <th class=" mobile_hide">{{trans.get('keys.ten_khoa_hoc')}}</th>
                     <th class="text-center">{{trans.get('keys.tien_do')}}</th>
-<!--                    <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
+                    <!--                    <th class=" mobile_hide">{{trans.get('keys.diem')}}</th>-->
                     <th>{{trans.get('keys.trang_thai')}}</th>
                   </tr>
                   </tfoot>
@@ -280,7 +282,7 @@
       },
       checkGradepass(finalgrade, gradepass) {
         let check = false;
-        if ( finalgrade == null ) { //check both undefined and null
+        if (finalgrade == null) { //check both undefined and null
           finalgrade = 0
         } else {
           check = true;

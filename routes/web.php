@@ -516,6 +516,10 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_library_codes', 'Backend\CourseController@apiGetListLibraryCodes');
     Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
 
+    Route::post('/api/courses/optional_courses', 'Backend\CourseController@apiGetOptionalCourses');
+    Route::post('/api/courses/assign_optional_course', 'Backend\CourseController@apiAssignOptionalCourse');
+    Route::post('/api/courses/remove_assign_optional_course', 'Backend\CourseController@apiRemoveAssignOptionalCourse');
+
     Route::post('/api/course/user_need_invite', 'Backend\CourseController@apiUserNeedInvite');
     Route::post('/api/course/user_need_invite_to_exception', 'Backend\CourseController@apiUserNeedInviteToException');
     Route::post('/api/course/current_user_invite', 'Backend\CourseController@apiUserCurrentInvite');
@@ -728,7 +732,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/certificate/generate/test', 'Backend\StudentController@autoGenCertificate');
     Route::post('/certificate/generate/multiple', 'Backend\StudentController@apiGenerateSelectedUser');
     Route::get('/certificate/image', 'Backend\StudentController@viewImageCertificate');
-
+    Route::post('/api/certificate/checkexist', 'Backend\StudentController@apiCheckCerExist');
     Route::get('/api/cron_delete_enrol', 'Backend\CourseController@apiDeleteEnrolNotUse');
     //test
     Route::get('/testNotify', 'Api\NotificationController@index');
@@ -740,6 +744,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/excel/import/user', 'Backend\EmailTemplateController@viewTestIndex');
     Route::post('/api/excel/import/user', 'Api\BackgroundController@importEmployee');
     Route::post('/api/excel/import/user/lite', 'Api\BackgroundController@importEmployeeMinimum');
+    Route::post('/api/excel/import/user_mark', 'Backend\ExcelController@importMark');
     Route::get('/api/excel/download/{file_name}', 'Backend\ExcelController@download');
     Route::get('/exportMismatchSaleroom', 'Backend\ExcelController@exportMismatchSaleroom');
     Route::post('/exportReport', 'Backend\ExcelController@exportReport');
@@ -750,6 +755,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/exportUserException', 'Backend\ExcelController@apiExportUserException');
     Route::post('/api/exportAttendance', 'Backend\ExcelController@apiExportAttendance');
     Route::get('/api/downloadExport/{file_name}', 'Backend\ExcelController@apiDownloadExport');
+    Route::post('/api/excel/export/user_mark', 'Backend\ExcelController@apiExportMark');
 
 
     Route::get('/support/manage-market', 'Backend\BackendController@viewSupportMarket');
@@ -792,7 +798,6 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/team/remove_member', 'Backend\OrganizationController@apiRemoveMember');
 
 
-
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 
     //Attendance
@@ -803,6 +808,16 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
 
 
     Route::post('/system/filter/fetch', 'Backend\SystemController@apiFilterFetch');
+
+    //T&D report effect
+    Route::post('/api/tnd-report/getall', 'Backend\TNDReportController@apiGetAll');
+    Route::post('/api/tnd-report/store', 'Backend\TNDReportController@apiStore');
+    Route::post('/api/tnd-report/update', 'Backend\TNDReportController@apiUpdate');
+    Route::post('/api/tnd-report/delete', 'Backend\TNDReportController@apiDelete');
+    Route::get('/api/tnd-report/detail/{id}', 'Backend\TNDReportController@apiGetDetail');
+    Route::post('/api/tnd-report/get-courses', 'Backend\TNDReportController@apiGetCompetencyCourse');
+    Route::post('/api/tnd-report/assign-course', 'Backend\TNDReportController@apiAssignCourseToCompetency');
+    Route::post('/api/tnd-report/remove-assign-course', 'Backend\TNDReportController@apiRemoveAssignCourseToCompetency');
 });
 
 //Cuonghq new API Brigde for Vue-route Feb 6, 2020
@@ -823,3 +838,7 @@ Route::get('/api/users/email/confirm/{no_id}/{email}', 'Backend\SystemController
 //send mail hoàn thành KNL
 Route::get('/api/sendMailCompetencyFramework', 'Api\MailController@sendCompetencyCompleted');
 
+//sync data histaff
+Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization');
+Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
+Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');

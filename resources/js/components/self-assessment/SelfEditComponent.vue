@@ -39,7 +39,7 @@
                                             <div class="col-4 form-group">
                                                 <label for="inputText1-1">{{trans.get('keys.ten_self')}} *</label>
                                                 <input v-model="survey.name" type="text" id="inputText1-1"
-                                                       :placeholder="trans.get('keys.nhap_ten')"
+                                                       :placeholder="trans.get('keys.nhap_ten_self')"
                                                        class="form-control mb-4">
                                                 <label v-if="!survey.name"
                                                        class="required text-danger sur_name_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>

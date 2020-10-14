@@ -552,8 +552,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
                         <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
-                        <li v-if="linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p>
-                        </li>
+                        <li v-if="linemanagers && linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
                         <li v-else>Line Manager: <span>Not yet update</span></li>
                         <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
@@ -640,7 +639,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         </div>
                     </div>
                     <div class="block courses">
-                        <div class="title"><p>your courses</p></div>
+                        <div class="title"><p>Your courses</p></div>
                         <div class="block-content table-responsive">
                             <table class="table borderless table-keep">
                                 <thead>
@@ -657,29 +656,92 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         </select>
                                     </th>
                                     <th scope="col" style="text-align: center">Percent</th>
-                                    <th scope="col" class="width10">Qualified</th>
+                                    <th scope="col" class="width10" style="text-align: center">Qualified</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr v-for="(course,index) in courses">
-                                    <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
-                                                            :title="course.fullname">{{ course.fullname }}</a></th>
-                                    <td style="text-align: center">
-                                        <span class="numberget" v-if="course.numofmodule == 0">0</span>
-                                        <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
-                                    </td>
-                                    <td class="icon-circle"
-                                        v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
-                                        <i class="fa fa-check-circle" aria-hidden="true"></i></td>
-                                    <td class="icon-circle" v-else><i class="fa fa-check-circle icon-circle-green"
-                                                                      aria-hidden="true"></i></td>
-                                </tr>
+                                <template v-if="courses && courses.length !== 0">
+                                    <tr v-for="(course,index) in courses">
+                                        <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id" :title="course.fullname">{{ course.fullname }}</a></th>
+                                        <td style="text-align: center">
+                                            <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                            <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                        </td>
+                                        <td class="icon-circle" style="text-align: center" v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                            <i class="fa fa-circle-o" aria-hidden="true"></i>
+                                        </td>
+                                        <td class="icon-circle" style="text-align: center" v-else><i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i></td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="3">
+                                            No course found
+                                        </td>
+                                    </tr>
+                                </template>
                                 </tbody>
                             </table>
                             <div class="pagination" v-if="totalPage > 1">
                                 <v-pagination
                                     v-model="current"
                                     :page-count="totalPage"
+                                    :classes="bootstrapPaginationClasses"
+                                    :labels="customLabels"
+                                    @input="onPageChange"
+                                ></v-pagination>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block courses">
+                        <div class="title"><p>Your competency courses</p></div>
+                        <div class="block-content table-responsive">
+                            <table class="table borderless table-keep">
+                                <thead>
+                                <tr>
+                                    <th scope="col" class="table-select">
+                                        <select name="category" id="category" class="course-select"
+                                                @change="searchCourseTraining(training, 1)"
+                                                v-model="training">
+                                            <option value="0">All competency</option>
+                                            <template v-for="(training, index) in trainingList">
+                                                <option :value="training.id">{{ training.name }}</option>
+                                            </template>
+                                        </select>
+                                    </th>
+                                    <th scope="col" style="text-align: center">Percent</th>
+                                    <th scope="col" class="width10" style="text-align: center">Qualified</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <template v-if="coursesTraining && coursesTraining.length !== 0">
+                                    <tr v-for="(course,index) in coursesTraining">
+                                        <th class="tr-title"><a :href="'lms/course/view.php?id='+course.id"
+                                                                :title="course.fullname">{{ course.fullname }}</a></th>
+                                        <td style="text-align: center">
+                                            <span class="numberget" v-if="course.numofmodule == 0">0</span>
+                                            <span class="numberget" v-else>{{ Math.round(course.numoflearned*100/course.numofmodule) }}</span>
+                                        </td>
+                                        <td class="icon-circle" style="text-align: center"
+                                            v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
+                                            <i class="fa fa-circle-o" aria-hidden="true"></i></td>
+                                        <td class="icon-circle" style="text-align: center" v-else><i class="fa fa-check-circle icon-circle-green"
+                                                                          aria-hidden="true"></i></td>
+                                    </tr>
+                                </template>
+                                <template v-else>
+                                    <tr>
+                                        <td colspan="3">
+                                            No course found
+                                        </td>
+                                    </tr>
+                                </template>
+                                </tbody>
+                            </table>
+                            <div class="pagination" v-if="totalPageTraining > 1">
+                                <v-pagination
+                                    v-model="currentTraining"
+                                    :page-count="totalPageTraining"
                                     :classes="bootstrapPaginationClasses"
                                     :labels="customLabels"
                                     @input="onPageChange"
@@ -701,14 +763,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
 
                         <!-- Tab panes -->
                         <div class="tab-content">
-                            <div id="certificate" class="tab-pane active">
-                                <br/>
-                                <div class="row col-lg-12 pb-3">
+
+                            <?php if (count($certificates) != 0) { ?>
+                                <div id="certificate" class="tab-pane active">
+                                    <br/>
+                                    <div class="row col-lg-12 pb-3">
                                     <?php foreach ($certificates as $certificate) { ?>
                                         <div class="col-lg-3 mb-3">
                                             <div class="item-image">
                                                 <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
-                                                    alt="">
+                                                     alt="">
                                             </div>
                                             <div class="item-content mt-2">
                                                 <p class="item-content__name"><?php echo $certificate->name; ?></p>
@@ -720,17 +784,26 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                             </div>
                                         </div>
                                     <?php } ?>
+                                    </div>
                                 </div>
-                            </div>
-                            <div id="badge" class="container tab-pane fade">
-                                <div id="certificate" class="tab-pane active">
+                            <?php } else { ?>
+                                <div id="certificate" class="container tab-pane active">
                                     <br/>
                                     <div class="row col-lg-12 pb-3">
-                                        <?php foreach ($badges as $badge) { ?>
+                                        No certificate found
+                                    </div>
+                                </div>
+                            <?php } ?>
+                            <div id="badge" class="container tab-pane fade">
+                                <br/>
+                                <div class="row col-lg-12 pb-3">
+                                    <?php
+                                    if (count($badges) != 0) {
+                                        foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3 mb-3">
                                                 <div class="item-image">
                                                     <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
-                                                        alt="">
+                                                         alt="">
                                                 </div>
                                                 <div class="item-content mt-2">
                                                     <p class="item-content__name"><?php echo $badge->name; ?></p>
@@ -741,12 +814,16 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                     <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg')">Copy link</a>
                                                 </div>
                                             </div>
-                                        <?php } ?>
-                                    </div>
+                                        <?php }
+                                    } else {
+                                        echo "No badge found";
+                                    }
+                                    ?>
                                 </div>
                             </div>
-                        </div>
 
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -818,23 +895,40 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         el: '#app',
         data: {
             category: 0,
+            training: 0,
+
             txtSearch: '',
+            txtSearchTraining: '',
+
             courses: [],
+            coursesTraining: [],
+
             totalCourse: 0,
             requiredCourse: 0,
             currentCourse: 0,
+
             linemanagers: [],
             linemanagersStr: '',
+
+            trainingList: [],
+
             user: {},
             clctgr: true,
             progressRequiredCourse: '0/0',
             progressCurrentCourse: '0/0',
             url: '<?php echo $CFG->wwwroot; ?>',
             user_id: <?php echo $user_id ?>,
+
             current: 1,
             totalPage: 0,
             recordPerPage: 5,
             currentCoursesTotal: 0,
+
+            currentTraining: 1,
+            totalPageTraining: 0,
+            recordPerPageTraining: 5,
+            currentCoursesTotalTraining: 0,
+
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
                 li: 'page-item',
@@ -852,6 +946,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         methods: {
             onPageChange: function () {
                 this.searchCourse(this.category, this.current);
+                this.searchCourseTraining(this.training, this.currentTraining);
             },
             searchCourse: function (category, page) {
                 this.category = category || this.category;
@@ -882,6 +977,44 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         console.log("Error");
                     });
             },
+            getListUserTraining: function () {
+                axios({
+                    method: 'get',
+                    url: this.url + '/pusher/user_training.php',
+                })
+                .then(response => {
+                    this.trainingList = response.data.list;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            },
+            searchCourseTraining: function (traning, page) {
+                if (page === 1)
+                    this.currentTraining = 1;
+                const params = new URLSearchParams();
+                params.append('training', this.training);
+                params.append('txtSearch', this.txtSearchTraining);
+                params.append('current', page || this.currentTraining);
+                // params.append('pageCount', this.total);
+                params.append('recordPerPage', this.recordPerPageTraining);
+                axios({
+                    method: 'post',
+                    url: this.url + '/pusher/user_course_training.php',
+                    data: params,
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    }
+                })
+                .then(response => {
+                    this.coursesTraining = response.data.courses;
+                    this.currentCoursesTotalTraining = this.coursesTraining.length;
+                    this.totalPageTraining = response.data.totalPage;
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            },
             getProfile: function () {
                 const params = new URLSearchParams();
                 params.append('user_id', this.user_id);
@@ -895,15 +1028,17 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 })
                     .then(response => {
                         this.user = response.data.profile;
+
                         this.linemanagers = response.data.linemanagers;
-                        if(response.data.linemanagers.length > 0){
-                            var lineStr = '';
-                            $.each(response.data.linemanagers, function(key, value) {
-                                lineStr += value.fullname+', ';
-                            });
-                            lineStr = lineStr.substring(0, lineStr.length - 2);
-                            this.linemanagersStr = lineStr;
-                        }
+                        // if(response.data.linemanagers.length > 0){
+                        //     var lineStr = '';
+                        //     $.each(response.data.linemanagers, function(key, value) {
+                        //         lineStr += value.fullname+', ';
+                        //     });
+                        //     lineStr = lineStr.substring(0, lineStr.length - 2);
+                        //     this.linemanagersStr = lineStr;
+                        // }
+                        this.linemanagersStr = this.linemanagers;
 
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;
@@ -925,10 +1060,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .catch(error => {
                         console.log("Error ", error);
                     });
-            }
+            },
         },
         mounted() {
             this.searchCourse();
+            this.searchCourseTraining();
+            this.getListUserTraining();
             this.getProfile();
         }
     })

@@ -35,6 +35,8 @@ Route::get('/cron/task/autoCertificate', 'Api\TaskController@autoCertificate')->
 Route::get('/cron/task/completeTrainning', 'Api\TaskController@userCompleteTrainning')->middleware(['App\Http\Middleware\CheckToken']); //Tạo records cho bảng tms_trainning_complete & tạo notifications (insert mail) thông báo hoàn thành KNL
 Route::get('/cron/task/autogenerateSASAzure', 'Api\TaskController@apiGenerateSASUrlAzure')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/addSingleUserToTrainning', 'Api\TaskController@addSingleUserToTrainningUser')->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/autogenerateSASAzureTest', 'Api\TaskController@apiGenerateSASUrlAzureTest');
+Route::get('/cron/task/completeCourseSingle', 'Api\TaskController@completeCourseSingle')->middleware(['App\Http\Middleware\CheckToken']);
 
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');

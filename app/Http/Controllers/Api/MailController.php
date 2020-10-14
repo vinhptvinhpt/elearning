@@ -960,7 +960,7 @@ class MailController extends Controller
                             }
 
                             //org uppers, send only
-                            $orgUppers = self::orgUppers($user_id);
+                            $orgUppers = self::getLinemanager($user_id);
                             if (!empty($orgUppers)) {
                                 foreach ($orgUppers as $orgUpper) {
                                     $upper_email = $orgUpper->email;
@@ -1218,6 +1218,22 @@ class MailController extends Controller
             ->toArray();
     }
 
+
+    /**
+     * Get line manager of user
+     *
+     * @param $user_id
+     * @return array
+     */
+    function getLinemanager($user_id)
+    {
+        return DB::table('tms_organization_employee as toe')
+            ->join('tms_user_detail as tud', 'toe.line_manager_id', '=', 'tud.user_id')->where('toe.user_id', '=', $user_id)
+            ->select('tud.email', 'tud.fullname', 'tud.user_id')
+            ->get()
+            ->toArray();
+    }
+
 //Send email remind certificate
 //Notification record created by Tho
 //Checked ok 2020 March 24
@@ -1334,13 +1350,13 @@ class MailController extends Controller
                         ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
                 })
                 //Là học viên
-                ->where('roles.id', '=', 5)
+                ->where('roles.id', '=', Role::ROLE_STUDENT)
                 //check not exist in table tms_nofitications
                 ->whereNotIn('mdl_user.id', function ($query) {
                     $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
                 });
 
-            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', 5)
+            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', Role::ROLE_STUDENT)
                 //Giới hạn số lượng bản ghi
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->orderBy('mdl_user.id', 'desc')
@@ -1701,9 +1717,12 @@ class MailController extends Controller
                 //Type 1 limit using sub query with same condition
                 DB::query()->fromSub(function ($query) use ($next_3_days, $now) {
                     $query->from('mdl_user')
-
                         ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
-                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
+                        //->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id') //ra cả giáo viên, chỉ lấy học viên
+                        ->join('mdl_enrol', function ($join) {
+                            $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                            $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                        })
                         ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
                         ->leftJoin('course_completion', function ($join) {
                             $join->on('mdl_course.id', '=', 'course_completion.courseid');
@@ -1781,11 +1800,15 @@ class MailController extends Controller
                         'mdl_user.firstname',
                         'mdl_user.lastname',
                         'mdl_user.email',
-//                        'mdl_course_completions.course',
+
+//                        'mdl_course_completions.course as course_id',
 //                        'mdl_course_completions.timeenrolled',
 //                        'mdl_course_completions.timecompleted',
-                        'course_completion.courseid',
+
+                        //'course_completion.courseid as course_id',
                         'course_completion.timecompleted',
+
+                        'mdl_course.id as course_id',
                         'mdl_course.shortname',
                         'mdl_course.fullname',
                         'mdl_course.startdate',
@@ -1794,6 +1817,7 @@ class MailController extends Controller
                         'mdl_course.category'
                     )
                     ->get();
+
             if (count($userNeedRemindExpired) > 0) {
                 $data = array();
                 foreach ($userNeedRemindExpired as $user_item) {
@@ -1812,12 +1836,12 @@ class MailController extends Controller
                             $element['content'] = array(
                                 array(
                                     //'course_id' => $user_item->course,
-                                    'course_id' => $user_item->courseid,
+                                    'course_id' => $user_item->course_id,
                                     'course_code' => $user_item->shortname,
                                     'course_name' => $user_item->fullname,
                                     'startdate' => $user_item->startdate,
                                     'enddate' => $user_item->enddate,
-                                    'course_place' => $user_item->course_place,
+                                    'course_place' => $user_item->course_place ? $user_item->course_place : '',
                                 )
                             );
                             $data[$user_item->username] = $element;
@@ -1952,7 +1976,7 @@ class MailController extends Controller
                             ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
                             ->where("mdl_course.category", 3) //khóa bắt buộc
                             ->whereNull('mdl_course_completions.timecompleted') //Chưa hoàn thành khóa học
-                            ->where('roles.id', '=', 5) //là học viên
+                            ->where('roles.id', '=', Role::ROLE_STUDENT) //là học viên
                             ->where('mdl_course.startdate', '<', $now); //Khóa học đã diễn ra
                     })
                     ->limit(self::DEFAULT_ITEMS_PER_SESSION);
@@ -1960,7 +1984,7 @@ class MailController extends Controller
                 //MdlUser::query()
                 ->where("mdl_course.category", 3)
                 ->whereNull('mdl_course_completions.timecompleted')
-                ->where('roles.id', '=', 5)
+                ->where('roles.id', '=', Role::ROLE_STUDENT)
                 ->where('mdl_course.startdate', '<', $now)
                 ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
@@ -2142,7 +2166,7 @@ class MailController extends Controller
                     $q->where('lastlogin', '<>', 0)
                         ->orWhere('currentlogin', '<>', 0);
                 })
-                ->where('roles.id', '=', 5)//Role hoc vien
+                ->where('roles.id', '=', Role::ROLE_STUDENT)//Role hoc vien
                 ->whereExists(function ($query) { // User da dang ki khoa hoc
                     $query->select(DB::raw(1))
                         ->from('mdl_user_enrolments')
@@ -2252,7 +2276,7 @@ class MailController extends Controller
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::REMIND_UPCOMING_COURSE] == TmsConfigs::ENABLE) {
-            $userNeedRemindUpcoming = MdlUser::where('roles.id', '=', 5)//Role hoc vien
+            $userNeedRemindUpcoming = MdlUser::where('roles.id', '=', Role::ROLE_STUDENT)//Role hoc vien
             ->join('model_has_roles', 'mdl_user.id', '=', 'model_has_roles.model_id')
                 ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
                 ->whereNotIn('mdl_user.id', function ($query) {
@@ -2672,7 +2696,11 @@ class MailController extends Controller
                 'linhnt@tinhvan.com',
                 'nguyenlinhcksl@gmail.com',
                 'leduytho93@gmail.com',
-                'duongtiendat.it@gmail.com'
+                'duongtiendat.it@gmail.com',
+                'zerozeralot004@gmail.com',
+                'zerozeralot003@gmail.com',
+                'zerozeralot002@gmail.com',
+                'zerozeralot001@gmail.com'
             ];
             $tester_email = [
                 'dieuly@easia-travel.com',
@@ -2728,6 +2756,8 @@ class MailController extends Controller
                 'myvan@easia-travel.com',
                 'ngochien@easia-travel.com',
                 'quockhanh@easia-travel.com',
+                'dean@easia-travel.com',
+                'ngongoc@phh-group.com',
             ];
             $filter_email = array_merge($dev_email, $tester_email);
             if (in_array($email, $filter_email)) {

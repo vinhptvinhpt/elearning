@@ -24,7 +24,7 @@ if ($progress == 1) { //List from home
     $courses_others = array();
     $courses_others_id = '(0';
 
-    $sql = 'select @s:=@s+1 stt,
+    $sql_training = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
 mc.category,
@@ -32,52 +32,105 @@ mc.course_avatar,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
-  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 AND cm.completion <> 0  and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 AND cm.completion <> 0  and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = tud.user_id) as numoflearned,
     muet.userid as teacher_id,
-    tud.fullname as teacher_name,
+    tudt.fullname as teacher_name,
     tor.name as teacher_organization,
     muet.timecreated as teacher_created,
     toe.position as teacher_position,
     toe.description as teacher_description,
-    ttp.name as training_name,
-    ttc.order_no,
     ttp.id as training_id,
+    ttp.name as training_name,
     ttp.deleted as training_deleted,
-    GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
-  from mdl_course mc
-  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
-  inner join mdl_user_enrolments mue on me.id = mue.enrolid
+    ttc.order_no,
+    GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
+
+
+  from tms_user_detail tud
+
+  inner join tms_traninning_users ttu on ttu.user_id = tud.user_id
+  inner join tms_trainning_courses ttc on ttu.trainning_id = ttc.trainning_id
+  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+  inner join mdl_course mc on ttc.course_id = mc.id
+
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
-  left join tms_user_detail tud on tud.user_id = muet.userid
+  left join tms_user_detail tudt on tudt.user_id = muet.userid
   left join tms_organization_employee toe on toe.user_id = muet.userid
-  left join tms_trainning_courses ttc on mc.id = ttc.course_id
-  left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
-  where me.enrol = \'manual\'
-  and mc.deleted = 0
-   and mc.visible = 1
+
+  where mc.deleted = 0
+  and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
   and ttp.style not in (2)
-  and mue.userid = ' . $USER->id;
+  and tud.user_id = ' . $USER->id;
 
-//    if ($category > 0) {
-//        $sql .= ' and mc.category = ' . $category;
-//    }
-//    if ($txtSearch) {
-//        $sql .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
-//    }
 
-    $sql .= ' group by mc.id ORDER BY ttp.deleted, ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
+    if ($txtSearch) {
+        $sql_training .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+    }
+
+    $sql_training .= ' group by mc.id'; //cần để tạo tên giáo viên => remove when use union
+
+    //$sql_training .= ' ORDER BY ttp.deleted, ttp.id, ttc.order_no'; // Remove when union
+
+    //Lấy khóa học pqdl
+    $sql_pqdl = 'select @s:=@s+1 stt,
+mc.id,
+mc.fullname,
+mc.category,
+mc.course_avatar,
+mc.estimate_duration,
+( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
+ ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
+  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) AND cm.completion <> 0 and  cm.course = mc.id and cmc.userid = tud.user_id) as numoflearned,
+    muet.userid as teacher_id,
+    tudt.fullname as teacher_name,
+    tort.name as teacher_organization,
+    muet.timecreated as teacher_created,
+    toet.position as teacher_position,
+    toet.description as teacher_description,
+    ttp.id as training_id,
+    ttp.name as training_name,
+    ttp.deleted as training_deleted,
+    ttc.order_no,
+    GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
+
+  from tms_user_detail tud
+
+  inner join tms_organization_employee toe on toe.user_id = tud.user_id
+  inner join tms_role_organization tro on tro.organization_id = toe.organization_id
+  inner join tms_role_course trc on tro.role_id = trc.role_id
+  inner join mdl_course mc on trc.course_id = mc.id
+
+  left join tms_trainning_courses ttc on ttc.course_id = mc.id
+  left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+
+  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+  left join mdl_user_enrolments muet on met.id = muet.enrolid
+  left join tms_user_detail tudt on tudt.user_id = muet.userid
+  left join tms_organization_employee toet on toet.user_id = muet.userid
+  left join tms_organization tort on tort.id = toet.organization_id, (SELECT @s:= 0) AS s
+
+  where mc.deleted = 0
+  and mc.visible = 1
+  and mc.category NOT IN (2,7)
+  and ttc.deleted <> 1
+  and ttp.style not in (2)
+  and tud.user_id = ' . $USER->id;
+
+    $sql_pqdl .= ' group by mc.id'; //cần để tạo tên giáo viên
+    $sql_pqdl .= ' ORDER BY ttp.deleted, ttp.id, ttc.order_no';
+
+    $sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
 
     $courses = array_values($DB->get_records_sql($sql));
 
     $competency_exists = array();
     $courses_training = array();
-    //
     $getInCourses = array();
-    //
+
     foreach ($courses as $course) {
         $courses_training[$course->training_id][$course->id] = $course;
     }
@@ -100,10 +153,9 @@ mc.estimate_duration,
             elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
                 $courses_required[$course->training_id][$course->id] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                if ($course->training_deleted == 2) {
+                //if ($course->training_deleted == 2) {
                     $courses_others_id .= ', ' . $course->id;
-                }
-                //
+                //}
                 if (!in_array($course->training_id, $getInCourses)) {
                     array_push($getInCourses, $course->training_id);
                     $course->enable = true;
@@ -111,6 +163,8 @@ mc.estimate_duration,
                     $course->enable = false;
                 }
 //            push_course($courses_required, $course);
+            } else {
+                $courses_others_id .= ', ' . $course->id;
             }
             $stt++;
         }
@@ -118,44 +172,133 @@ mc.estimate_duration,
 
     $courses_others_id .= ')';
 
-    //get course can not enrol
-    $sqlCourseNotEnrol = 'select mc.id,
-mc.fullname,
-mc.category,
-mc.course_avatar,
-mc.estimate_duration,
-muet.userid as teacher_id,
-tud.fullname as teacher_name,
-toe.position as teacher_position,
-tor.name as teacher_organization,
-ttp.id as training_id,
-muet.timecreated as teacher_created
-from mdl_course mc
-inner join tms_trainning_courses ttc on mc.id = ttc.course_id
-  left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
-  left join mdl_user_enrolments muet on met.id = muet.enrolid
-left join tms_user_detail tud on tud.user_id = muet.userid
-  left join tms_organization_employee toe on toe.user_id = muet.userid
-  left join tms_organization tor on tor.id = toe.organization_id
-  inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-  and ttp.deleted = 2
-  and mc.deleted = 0
-   and mc.visible = 1
- and mc.id not in ' . $courses_others_id;
+//Optional courses
 
+//$sqlCourseNotEnrol = 'select mc.id,
+//mc.fullname,
+//mc.category,
+//mc.course_avatar,
+//mc.estimate_duration,
+//muet.userid as teacher_id,
+//tud.fullname as teacher_name,
+//toe.position as teacher_position,
+//tor.name as teacher_organization,
+//ttp.id as training_id,
+//muet.timecreated as teacher_created
+//from mdl_course mc
+//inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+//left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+//left join mdl_user_enrolments muet on met.id = muet.enrolid
+//left join tms_user_detail tud on tud.user_id = muet.userid
+//left join tms_organization_employee toe on toe.user_id = muet.userid
+//left join tms_organization tor on tor.id = toe.organization_id
+//inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+//and ttp.deleted = 2
+//and mc.deleted = 0
+//and mc.visible = 1
+//and mc.id not in ' . $courses_others_id;
+    $coursesSuggest = [];
     if ($category == 'other') {
-        if ($txtSearch) {
-            $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+        $sqlGetOrganization = 'SELECT T2.id, T2.`name`, T2.`code`, T2.`parent_id`, T2.`level`
+        FROM (
+            SELECT
+                @r AS _id,
+                (SELECT @r := parent_id FROM tms_organization WHERE id = _id) AS parent_id,
+                @l := @l + 1 AS lvl
+            FROM
+                (SELECT @r := (select organization_id from tms_organization_employee where user_id= ' . $USER->id . '), @l := 0) vars,
+                tms_organization m
+            WHERE @r <> 0) T1
+        JOIN tms_organization T2
+        ON T1._id = T2.id
+        ORDER BY T1.lvl DESC';
+
+        $organizations = array_values($DB->get_records_sql($sqlGetOrganization));
+        $reverse_recursive_org_ids = [];
+        $organization_id = 0;
+        $organization_code = '';
+        if (!empty($organizations)) {
+            foreach ($organizations as $organization_item) {
+                $reverse_recursive_org_ids[] = $organization_item->id;
+            }
+            //level 1
+            $organization = $organizations[0];
+            $organization_id = $organization->id;
+            $organization_code = $organization->code;
         }
+
+        if (!empty($reverse_recursive_org_ids)) {
+            $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
+            $sqlCourseNotEnrol = '
+            select mc.id,
+            mc.fullname,
+            mc.category,
+            mc.course_avatar,
+            (
+                select
+                    count(cm.id) as num
+                from
+                    mdl_course_modules cm
+                inner join mdl_course_sections cs on
+                    cm.course = cs.course
+                    and cm.section = cs.id
+                where
+                    cs.section <> 0
+                    and cm.completion <> 0
+                    and cm.course = mc.id) as numofmodule,
+            (
+            select
+                count(cmc.coursemoduleid) as num
+            from
+                mdl_course_modules cm
+            inner join mdl_course_modules_completion cmc on
+                cm.id = cmc.coursemoduleid
+            inner join mdl_course_sections cs on
+                cm.course = cs.course
+                and cm.section = cs.id
+            inner join mdl_course c on
+                cm.course = c.id
+            where
+                cs.section <> 0
+                and cmc.completionstate in (1,
+                2)
+                and cm.completion <> 0
+                and cm.course = mc.id
+                and cmc.userid = '.$USER->id.') as numoflearned,
+            mc.estimate_duration,
+            muet.userid as teacher_id,
+            tud.fullname as teacher_name,
+            toe.position as teacher_position,
+            tor.name as teacher_organization,
+            muet.timecreated as teacher_created,
+            ttp.id as training_id
+            from mdl_course mc
+            inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+            left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
+            left join mdl_user_enrolments muet on met.id = muet.enrolid
+            left join tms_user_detail tud on tud.user_id = muet.userid
+            left join tms_organization_employee toe on toe.user_id = muet.userid
+            left join tms_organization tor on tor.id = toe.organization_id
+            inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+            where
+            mc.deleted = 0
+            and mc.category NOT IN (2,7)
+            and mc.visible = 1
+            and met.enrol = "manual"
+            and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))
+            and mc.id NOT IN ' . $courses_others_id;
+
+            if ($txtSearch) {
+                $sqlCourseNotEnrol .= ' and mc.fullname like N\'%' . $txtSearch . '%\'';
+            }
+        }
+        $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
     }
 
-    $coursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
-    //
 
     $course_list = array();
-    //
+
     $courses_required_sort = [];
-//    $courses_completed
 
     if ($category == 'current') {
         $all_courses = $courses_current;
@@ -185,10 +328,9 @@ left join tms_user_detail tud on tud.user_id = muet.userid
     if ($txtSearch || $category > 0) {
         foreach ($all_courses as $courseA) {
             if ($txtSearch && $category > 0) {
-                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && strpos($courseA->category, $category) !== false)
+                if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false && $courseA->category == $category)
                     $resultSearch[] = $courseA;
             } else if ($txtSearch) {
-//                echo strtolower($courseA->fullname). '   '.strtolower($txtSearch). '<br/>';
                 if (strpos(strtolower($courseA->fullname), strtolower($txtSearch)) !== false)
                     $resultSearch[] = $courseA;
             } else if ($category > 0) {
@@ -211,14 +353,14 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 } else {
     //course available
     //count total
-    $sqlCountCoures = 'select mc.id
+$sqlCountCoures = 'select mc.id
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
-where me.enrol = \'manual\'
+where me.enrol = "manual"
 and mc.deleted = 0
- and mc.visible = 1
+and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and mue.userid = ' . $USER->id;
@@ -229,7 +371,7 @@ and mue.userid = ' . $USER->id;
 
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
-    $sqlGetCoures = 'select
+$sqlGetCoures = 'select
 mc.id,
 mc.fullname,
 mc.category,
@@ -244,7 +386,7 @@ ttp.name as training_name,
 ttc.order_no,
 ttp.id as training_id,
 ttp.deleted as training_deleted,
-GROUP_CONCAT(CONCAT(tud.fullname, \' created_at \',  muet.timecreated)) as teachers
+GROUP_CONCAT(CONCAT(tud.fullname, " created_at ",  muet.timecreated)) as teachers
 
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
@@ -258,7 +400,7 @@ left join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 left join tms_organization tor on tor.id = toe.organization_id
 
-where me.enrol = \'manual\'
+where me.enrol = "manual"
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
@@ -283,9 +425,7 @@ and mue.userid = ' . $USER->id;
     $competency_exists = array();
     $temp_competency_exists = array();
 
-    //
     $tempCourse = [];
-    //
     $courses_training = array();
 
     foreach ($courses as $course) {
@@ -293,9 +433,8 @@ and mue.userid = ' . $USER->id;
     }
 
     $coures_result = array();
-    //
     $getInCourses = array();
-    //
+
     foreach ($courses_training as $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
@@ -354,12 +493,10 @@ and mue.userid = ' . $USER->id;
     if ($txtSearch || $category > 0) {
         foreach ($coures_result as $courseR) {
             if ($txtSearch && $category > 0) {
-                strtolower($txtSearch);
-                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false && strpos($courseR->category, $category) !== false)
+                if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false && $courseR->category == $category)
                     $resultSearch[] = $courseR;
             } else if ($txtSearch) {
-                strtolower($txtSearch);
-                if (strpos(strtolower($courseR->fullname), $txtSearch) !== false)
+                if (strpos(strtolower($courseR->fullname), strtolower($txtSearch)) !== false)
                     $resultSearch[] = $courseR;
             } else if ($category > 0) {
                 if (strpos($courseR->category, $category) !== false)
@@ -379,8 +516,6 @@ and mue.userid = ' . $USER->id;
 //        $coures_result = $coures_result[$key];
 //    }
 
-//    var_dump($coures_result);
-//    die;
     $start_index = $current * $recordPerPage - $recordPerPage;
 
     $course_list = array_slice($resultSearch, $start_index, $recordPerPage);

@@ -3,17 +3,26 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Exports\AttendanceSheet;
+use App\Exports\ImportResultSheet;
 use App\Exports\InvitationSheet;
 use App\Exports\ListMismatchSaleroom;
 use App\Exports\LoginSheet;
 use App\Exports\ReportDetailRawSheet;
 use App\Exports\ReportDetailSheet;
+use App\Exports\ReportMarkSheet;
 use App\Exports\ReportSheet;
 use App\Exports\ResultSheet;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
+use App\Imports\DataImport;
+use App\MdlUser;
+use App\TmsTdCompetency;
+use App\TmsTdCompetencyMark;
+use App\TmsTdUserMark;
+use App\TmsUserDetail;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Maatwebsite\Excel\Excel;
 use Symfony\Component\HttpFoundation\Request;
 
 class ExcelController extends Controller
@@ -152,7 +161,7 @@ class ExcelController extends Controller
             }
         }
 
-        if($selected_level == "city") {
+        if ($selected_level == "city") {
             $first_row_label = __('tinh_thanh');
 
             $parent_total = $data['user_count'];
@@ -251,10 +260,10 @@ class ExcelController extends Controller
                 $saleroom_data = array(
                     $stt,
                     $saleroom['name'],
-                    count($saleroom['user_incomplete']) == 0 ? "0" :  count($saleroom['user_incomplete']),
-                    count($saleroom['user_completed']) == 0 ? "0" :  count($saleroom['user_completed']),
-                    count($saleroom['user_confirm']) == 0 ? "0" :  count($saleroom['user_confirm']),
-                    count($saleroom['user']) == 0 ? "0" :  count($saleroom['user']),
+                    count($saleroom['user_incomplete']) == 0 ? "0" : count($saleroom['user_incomplete']),
+                    count($saleroom['user_completed']) == 0 ? "0" : count($saleroom['user_completed']),
+                    count($saleroom['user_confirm']) == 0 ? "0" : count($saleroom['user_confirm']),
+                    count($saleroom['user']) == 0 ? "0" : count($saleroom['user']),
                 );
                 $export_data[] = $saleroom_data;
 
@@ -321,7 +330,7 @@ class ExcelController extends Controller
                                     $certificated['fullname'],
                                     $certificated['email'],
                                     $organization_name,
-                                    $certificated['country'],
+                                    self::getCountryName($certificated['country']),
                                     $certificated['city'],
                                     $training_name,
                                     'Yes'
@@ -338,7 +347,7 @@ class ExcelController extends Controller
                                     $missing['fullname'],
                                     $missing['email'],
                                     $organization_name,
-                                    $missing['country'],
+                                    self::getCountryName($missing['country']),
                                     $missing['city'],
                                     $training_name,
                                     'No'
@@ -375,7 +384,7 @@ class ExcelController extends Controller
                                                 $certificated['fullname'],
                                                 $certificated['email'],
                                                 $organization_name,
-                                                $certificated['country'],
+                                                self::getCountryName($certificated['country']),
                                                 $certificated['city'],
                                                 $training_name,
                                                 $course_name,
@@ -387,7 +396,7 @@ class ExcelController extends Controller
                                                 $certificated['fullname'],
                                                 $certificated['email'],
                                                 $organization_name,
-                                                $certificated['country'],
+                                                self::getCountryName($certificated['country']),
                                                 $certificated['city'],
                                                 $training_name,
                                                 $course_name,
@@ -409,7 +418,7 @@ class ExcelController extends Controller
                                                 $missing['fullname'],
                                                 $missing['email'],
                                                 $organization_name,
-                                                $missing['country'],
+                                                self::getCountryName($missing['country']),
                                                 $missing['city'],
                                                 $training_name,
                                                 $course_name,
@@ -432,6 +441,12 @@ class ExcelController extends Controller
         $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
 
         return response()->json(storage_path($filename));
+    }
+
+    public function getCountryName($code)
+    {
+        $countries = TmsUserDetail::country;
+        return array_key_exists($code, $countries) ? $countries[$code] : 'N/A';
     }
 
     public function exportReportDetail(Request $request)
@@ -553,7 +568,7 @@ class ExcelController extends Controller
                 'tms_invitation.reason'
             );
         if ($keyword) {
-            $currentUserEnrol->where(function($q) use ($keyword) {
+            $currentUserEnrol->where(function ($q) use ($keyword) {
                 $q->where('mdl_user.username', 'like', '%' . $keyword . '%')
                     ->orWhere('tms_user_detail.fullname', 'like', '%' . $keyword . '%');
             });
@@ -725,7 +740,7 @@ class ExcelController extends Controller
 
         //search
         if ($keyword) {
-            $lstUserAttendance->where(function($q) use ($keyword) {
+            $lstUserAttendance->where(function ($q) use ($keyword) {
                 $q->where('u.username', 'like', '%' . $keyword . '%')
                     ->orWhere('tud.fullname', 'like', '%' . $keyword . '%');
             });
@@ -763,11 +778,13 @@ class ExcelController extends Controller
         return response()->json($filename);
     }
 
-    public function apiDownloadExport($file_name) {
+    public function apiDownloadExport($file_name)
+    {
         return Storage::download($file_name);
     }
 
-    public function download($file_name) {
+    public function download($file_name)
+    {
         return Storage::download($file_name);
     }
 
@@ -850,5 +867,400 @@ class ExcelController extends Controller
     {
         $filename = "statistic_login_report.xlsx";
         return Storage::download($filename);
+    }
+
+    public function importMark(Request $request)
+    {
+
+        set_time_limit(0);
+
+
+        $year = $request->input('year');
+
+
+        if (!$request->file('file')) {
+            return response()->json(self::status_message('error', "File missing"));
+        } else {
+            //check file is xlsx, xls
+            $extension = $request->file('file')->getClientOriginalExtension();
+            if ($extension != 'xls' && $extension != 'xlsx') {
+                return response()->json(self::status_message('error', "File type mismatch. Allow XLS, XLSX file only"));
+            }
+            $files = array($request->file('file'));
+        }
+
+        foreach ($files as $file_path) {
+
+            /* @var $file_path UploadedFile */
+            $full_file_name = $file_path->getClientOriginalName();
+            $file_name = pathinfo($full_file_name, PATHINFO_FILENAME);
+
+            $list_uploaded = (new DataImport())->toArray($file_path, '', '');
+
+            $response = array();
+            //Lấy dữ liệu từ tab Mark <= Required
+            $list_data = $list_uploaded['Mark'];
+            $title = '';
+            $competencies = array();
+            $competencies_ids = array();
+            $competencies_marks = array();
+
+            foreach ($list_data as $row_no => $item) {
+
+                $content = array();
+                $status = true;
+
+                //Row 0 Title
+                if ($row_no == 0) {
+                    for ($i = 0; $i <= 30; $i++) {
+                        if (isset($item[$i])) {
+                            if (strlen($item[$i]) > 0) {
+                                $title = $item[$i];
+                            }
+                        } else {
+                            break;
+                        }
+
+                    }
+                }
+                //Row 1 competency code
+                if ($row_no == 1) {
+                    for ($i = 1; $i <= 30; $i++) {
+                        if (isset($item[$i])) {
+                            if (strlen($item[$i]) > 0) {
+                                $competencies[$i] = $item[$i];
+                            }
+                        } else { //duyệt đến hết cột thì thôi
+                            continue;
+                        }
+                    }
+                    if (count($competencies) > 0) {
+                        $checkCompetency = TmsTdCompetency::query()->whereIn('code', $competencies)->get();
+                        if (count($checkCompetency) != count($competencies)) { //Lệch data, có code không thuộc bảng competencies
+                            return response()->json(self::status_message('error', "Competency code is not valid, please check and try again"));
+                        } else {
+                            $competencies_ids = $competencies;
+                            $competencies_marks = $competencies;
+                            foreach ($checkCompetency as $competency) {
+                                $key = array_search($competency->code, $competencies);
+                                $competencies_ids[$key] = $competency->id;
+                            }
+                        }
+                    } else {
+                        return response()->json(self::status_message('error', "Competency code is not valid, please check and try again"));
+                    }
+
+                }
+                //Row 2 competency average mark
+                if ($row_no == 2) {
+                    $email = 'MAXIMUM MARK';
+                    $max = max(array_keys($competencies));
+                    for ($i = 1; $i <= $max; $i++) {
+                        $mark = $item[$i];
+                        if (!isset($mark) || strlen($mark) == 0) {
+                            $content[] = "Missing maximum mark for competency";
+                        } else {
+                            if (self::validateRawData($mark, 'number')) {
+                                $competencies_marks[$i] = $mark;
+                                TmsTdCompetencyMark::updateOrCreate(
+                                    [
+                                        'competency_id' => $competencies_ids[$i],
+                                        'year' => $year
+                                    ],
+                                    ['mark' => $mark] //Update
+                                );
+                            } else { //check by validation function
+                                $content[] = 'Maximum mark is not valid';
+                            }
+                        }
+                    }
+                }
+
+                //From row 3 => data row
+                if ($row_no > 2) {
+                    $email = $item[0];
+                    if (strlen($email) != 0) {
+                        if (filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
+                            $content[] = "Email is wrong format";
+                            $status = false;
+                        } else {//Continue
+                            $checkUser = MdlUser::query()->where('username', $email)->first();
+                            if (!isset($checkUser)) {
+                                $status = false;
+                                $content[] = "User does not exist";
+                            } else {//Continue
+                                $max = max(array_keys($competencies));
+                                for ($i = 1; $i <= $max; $i++) {
+                                    $mark = $item[$i];
+                                    if (!isset($mark) || strlen($mark) == 0) {
+                                        $content[] = "Missing user mark";
+                                    } else {
+                                        if (self::validateRawData($mark, 'number')) {
+                                            if ($mark > $competencies_marks[$i]) {
+                                                $content[] = "User's mark is greater than competency maximum mark";
+                                            } else {
+                                                TmsTdUserMark::updateOrCreate(
+                                                    [
+                                                        'user_id' => $checkUser->id,
+                                                        'competency_id' => $competencies_ids[$i],
+                                                        'year' => $year
+                                                    ],
+                                                    ['mark' => $mark] //Update
+                                                );
+                                            }
+                                        } else {
+                                            $content[] = "User's mark is not valid";
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        //dừng code k duyệt tiếp
+                        break;
+                    }
+                }
+
+                if ($row_no > 1) {
+                    $response_item = array(
+                        '',
+                        $email,
+                        '',
+                        ''
+                    );
+
+                    if ($status == false) {
+                        $response_item[2] = 'error';
+                    } else {
+                        if (!empty($content)) {
+                            $response_item[2] = 'warning';
+                        } else {
+                            $response_item[2] = 'success';
+                        }
+                    }
+                    $response_item[3] = implode("\n", $content);
+
+                    $response[] = $response_item;
+                }
+            }
+
+            $result_file_name = "import_result_" . $file_name . ".xlsx";
+
+            //xóa file cũ
+            if (Storage::exists($result_file_name)) {
+                Storage::delete($result_file_name);
+            }
+
+            //ghi file vào thư mục storage, không được mở file khi đang lưu nếu k sẽ lỗi k lưu được
+            $exportExcel = new ImportResultSheet('Import Result', $response);
+            $exportExcel->store($result_file_name, '', Excel::XLSX);
+
+            return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+
+        }
+    }
+
+    public function apiExportMark(Request $request) {
+
+        set_time_limit(0);
+        $years = $request->input('years');
+        $organization_id = $request->input('organization_id');
+        $countries = TmsUserDetail::country;
+        $flow = $request->input('flow');
+
+        $years = explode(',', $years);
+        asort($years);
+
+        $competencies = DB::table('tms_td_competencies')->get();
+
+
+        $marks = DB::table('tms_td_user_marks')
+
+            ->join('tms_user_detail', 'tms_td_user_marks.user_id', '=', 'tms_user_detail.user_id')
+            ->join('tms_td_competencies', 'tms_td_user_marks.competency_id', '=', 'tms_td_competencies.id')
+            ->join('tms_td_competency_marks', function ($join) {
+                $join->on('tms_td_competency_marks.competency_id', '=', 'tms_td_user_marks.competency_id');
+                $join->on('tms_td_competency_marks.year', '=', 'tms_td_user_marks.year');
+            })
+
+            ->join('tms_td_competency_courses', 'tms_td_user_marks.competency_id', '=', 'tms_td_competency_courses.competency_id')
+            ->join('mdl_course as org_course', 'tms_td_competency_courses.course_id', '=', 'org_course.id')
+            ->leftJoin('course_completion', function ($join) {
+                $join->on('tms_td_competency_courses.course_id', '=', 'course_completion.courseid');
+                $join->on('tms_td_user_marks.user_id', '=', 'course_completion.userid');
+            })
+            ->leftJoin('mdl_course as learned_course', 'course_completion.courseid', '=', 'learned_course.id')
+            ->join('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+            ->join('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
+
+            ->select(
+                'tms_td_user_marks.user_id',
+                'tms_td_user_marks.year',
+                'tms_td_user_marks.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country',
+                'tms_organization.code as organization_code',
+                'tms_organization_employee.description as employee_title',
+                'tms_td_competencies.name as competency_name',
+                'tms_td_competencies.code as competency_code',
+                DB::raw("CONCAT(tms_td_user_marks.mark, '/', tms_td_competency_marks.mark) AS result"),
+                DB::raw("GROUP_CONCAT(org_course.shortname) AS org_courses"),
+                DB::raw("GROUP_CONCAT(learned_course.shortname) AS learned_courses")
+            )
+
+            ->whereIn('tms_td_user_marks.year', $years)
+
+            ->groupBy([
+                'tms_td_user_marks.user_id',
+                'tms_td_user_marks.mark',
+                'tms_td_user_marks.year',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country',
+                'organization_code',
+                'employee_title',
+                'tms_td_user_marks.competency_id',
+                'competency_name',
+                'competency_code',
+                'tms_td_competency_marks.mark'
+            ]);
+
+        $view_mode = 'recursive';
+        if (is_numeric($organization_id) && $organization_id != 0) {
+            //$marks->where('tms_organization_employee.organization_id', $organization_id);
+            if ($view_mode == 'recursive') {
+                $marks->whereIn('tms_organization_employee.user_id', function ($q2) use ($organization_id) {
+                    $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                            from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                            (select @pv := $organization_id) initialisation
+                            where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
+            } else {
+                $marks->where('organization_id', $organization_id);
+            }
+
+        }
+
+        $marks = $marks->get();
+
+        $response = []; //Export vertical
+        $flip_response = []; //Show to page horizontal
+
+        $headings = [
+            'Email',
+            'Title',
+            'Department',
+            'City',
+            'Country',
+        ];
+
+        $dynamic_heading = [];
+
+        foreach ($competencies as $competency) {
+            $dynamic_heading[$competency->code] = $competency->name;
+            //$dynamic_heading[$competency->code . "_all"] = $competency->name;
+            foreach ($years as $year) {
+                $dynamic_heading[$competency->code . $year] = $year;
+            }
+            //Flow show to page
+
+            if (!array_key_exists($competency->code, $flip_response)) { //Khởi tạo object cho từng competency
+                $flip_response[$competency->code]['name'] = $competency->name;
+                $flip_response[$competency->code]['users'] = [];
+            }
+        }
+
+        $headings = array_merge($headings, $dynamic_heading);
+
+        foreach ($marks as $mark) {
+
+            //Flow Export
+            //khởi tạo
+            if (!array_key_exists($mark->user_id, $response)) {
+                $country_name = array_key_exists($mark->country, $countries) ? $countries[$mark->country] : '';
+                $mark_item = array(
+                    $mark->email,
+                    $mark->employee_title,
+                    $mark->organization_code,
+                    $mark->city,
+                    $country_name,
+                );
+                foreach ($dynamic_heading as $key => $heading) {
+                    $mark_item[$key] = '';
+                }
+                $response[$mark->user_id] = $mark_item;
+            }
+            //check row, nếu có điểm thì add vào
+            $response[$mark->user_id][$mark->competency_code . $mark->year] = $mark->result;
+            //$response[$mark->user_id][$mark->competency_code . "_all"] = $mark->org_courses;
+            $response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $mark->learned_courses);
+
+
+            //Flow show to page
+            if (!array_key_exists($mark->email, $flip_response[$mark->competency_code]['users'])) {
+                $flip_response[$mark->competency_code]['users'][$mark->email] = [
+                    'marks' => [intval($mark->year) => $mark->result],
+                    'courses' => explode(',', $mark->learned_courses)
+                ];
+                foreach ($years as $year) { //Thêm unit year empty
+                    if (!array_key_exists(intval($year), $flip_response[$mark->competency_code]['users'][$mark->email]['marks'])) {
+                        $flip_response[$mark->competency_code]['users'][$mark->email]['marks'][intval($year)] = '';
+                    }
+                }
+
+            } else {
+                $flip_response[$mark->competency_code]['users'][$mark->email]['marks'][intval($mark->year)] = $mark->result;
+            }
+        }
+
+
+        if ($flow == 'show') { //Flow show to page
+            return response()->json(self::status_message('success', __('thanh_cong'), $flip_response));
+        }
+
+        //continue flow export
+        $result_file_name = "training_effect.xlsx";
+        //xóa file cũ
+        if (Storage::exists($result_file_name)) {
+            Storage::delete($result_file_name);
+        }
+
+        $exportExcel = new ReportMarkSheet('Training Effect', $response, $headings);
+        $exportExcel->store($result_file_name, '', Excel::XLSX);
+
+        return response()->json(self::status_message('success', __('xuat_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
+    }
+
+    function status_message($status, $message, $additional_data = [])
+    {
+        $data = [];
+        $data['status'] = $status;
+        $data['message'] = $message;
+        $data['data'] = $additional_data;
+        return $data;
+    }
+
+    /**
+     * @param $val
+     * @param $type
+     * @return bool
+     */
+    public function validateRawData($val, $type) {
+        $need_to_validate = new \Illuminate\Http\Request();
+        $need_to_validate['input'] = $val;
+        $param = [
+            'input' => $type
+        ];
+        $validator = validate_fails($need_to_validate, $param);
+        if (!empty($validator)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

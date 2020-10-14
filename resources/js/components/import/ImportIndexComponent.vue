@@ -5,7 +5,7 @@
       <nav class="breadcrumb" aria-label="breadcrumb">
         <ol class="breadcrumb bg-transparent px-0">
           <li class="breadcrumb-item"><router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link></li>
-          <li class="breadcrumb-item active">{{ trans.get('keys.test_import_excel') }}</li>
+          <li class="breadcrumb-item active">{{ trans.get('keys.nhap_du_lieu_nguoi_dung') }}</li>
         </ol>
       </nav>
     </div>
@@ -99,38 +99,7 @@
                     roam_message("error",this.trans.get('keys.dinh_dang_file_khong_hop_le'));
                 }
             },
-            listDepartment(){
-                axios.post('/system/organize/city/get_department_list')
-                    .then(response => {
-                        //this.data = response.data;
-                        let additionalDepartments = [];
-                        response.data.forEach(function(departmentItem) {
-                            let newDepartment = {
-                                label: departmentItem.name,
-                                id: departmentItem.id
-                            };
-                            additionalDepartments.push(newDepartment);
-                        });
-                        this.departmentSelectOptions = additionalDepartments;
-                        this.$nextTick(function () {
-                            $('.selectpicker').selectpicker('refresh');
-                        });
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    })
-            },
             importExcel(){
-                // if(this.city_id == 0){
-                //     $('.city_required').show();
-                //     return;
-                // }
-
-                // if(!this.department_id || this.department_id === 0){
-                //     $('.department_required').show();
-                //     return;
-                // }
-
                 if(this.$refs.file.files[0] === undefined){
                     $('.file_required').show();
                     return;
@@ -172,7 +141,6 @@
                             }
                             $('button.hasLoading').removeClass('loadding');
                             $('.logUpload').show();
-                            $('#btnFilter').trigger('click');
                             //roam_message('success','Lỗi hệ thống. Thao tác thất bại');
                           }
                         })
@@ -180,7 +148,6 @@
                         loader.fadeOut();
                         $('button.hasLoading').removeClass('loadding');
                         $('.logUpload').show();
-                        $('#btnFilter').trigger('click');
                         console.log(error);
                         roam_message('error', this.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
                     });
@@ -206,9 +173,6 @@
           }
         },
         mounted() {
-            //this.listData();
-            //this.listDepartment();
-            //this.getUser();
             this.fetch();
         },
       updated() {

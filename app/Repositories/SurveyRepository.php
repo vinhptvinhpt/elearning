@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class SurveyRepository implements ISurveyInterface
 {
-    public function resultSurvey($survey_id, $user_id)
+    public function resultSurvey($survey_id, $user_id, $course_id)
     {
         // TODO: Implement resultSurvey() method.
         $preview = new PreviewSurveyModel();
@@ -20,7 +20,7 @@ class SurveyRepository implements ISurveyInterface
 
         $resultSurvey = TmsSurveyUser::select('question_id as ques_id', 'answer_id as ans_id', 'type_question as type_ques',
             'content_answer as ans_content', 'ques_parent as ques_pr')
-            ->where('survey_id', '=', $survey_id)->where('user_id', '=', $user_id)->get();
+            ->where('survey_id', '=', $survey_id)->where('user_id', '=', $user_id)->where('course_id', '=', $course_id)->get();
 
         $preview->survey = $dataSurvey;
         $preview->result = $resultSurvey;
@@ -28,13 +28,15 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($preview);
     }
 
-    public function getListUserSurvey($keyword, $row, $survey_id, $org_id)
+    public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id)
     {
         // TODO: Implement getListUserSurvey() method.
         $lstData = DB::table('mdl_user as u')
             ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
             ->join('tms_survey_users as tsu', 'tsu.user_id', '=', 'u.id')
-            ->select('u.id', 'u.username', 'u.email', 'tud.fullname');
+            ->join('mdl_course as mc', 'mc.id', '=', 'tsu.course_id')
+            ->select('u.id', 'u.username', 'u.email', 'tud.fullname',
+                'mc.fullname as course_name', 'mc.shortname as course_code', 'mc.id as course_id');
 
         if ($keyword) {
             $lstData = $lstData->where(function ($query) use ($keyword) {
@@ -45,6 +47,10 @@ class SurveyRepository implements ISurveyInterface
 
         if ($survey_id) {
             $lstData = $lstData->where('tsu.survey_id', '=', $survey_id);
+        }
+
+        if ($course_id) {
+            $lstData = $lstData->where('tsu.course_id', '=', $course_id);
         }
 
         if (strlen($org_id) != 0 && $org_id != 0) {
@@ -64,7 +70,8 @@ class SurveyRepository implements ISurveyInterface
 
             $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'u.id');
         }
-        $lstData = $lstData->groupBy('u.id');
+
+        $lstData = $lstData->groupBy(['u.id', 'tsu.course_id']);
 
         $lstData = $lstData->orderBy('u.id', 'desc');
 
