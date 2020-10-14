@@ -77,7 +77,7 @@ class TaskController extends Controller
                 $join->on('courc.userid', '=', 'u.id');
                 $join->on('courc.courseid', '=', 'c.id');
             })
-            ->where('c.category', '!=', 2) //ko phai thu vien khoa hoc
+            ->where('c.category', '!=', 2)//ko phai thu vien khoa hoc
             ->whereNull('courc.id')
             ->select('u.id as user_id',
                 'c.id as course_id',
@@ -88,16 +88,16 @@ class TaskController extends Controller
                 DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
 	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
             )
-            ->groupBy(['u.id'])
-            ->get();
-//        Log::info($lstUserCourse);
-//        die;
+            ->groupBy(['u.id', 'c.id'])
+            ->toSql();
+        Log::info($lstUserCourse);
+        die;
 
         $arrData = [];
         $data_item = [];
 
         $num = 0;
-        $limit = 300;
+        $limit = 500;
 
         foreach ($lstUserCourse as $course) {
 
@@ -119,12 +119,12 @@ class TaskController extends Controller
                 $arrData = [];
             }
 
-            usleep(200);
+            usleep(100);
         }
 
         CourseCompletion::insert($arrData);
 
-        usleep(200);
+        usleep(100);
 
     }
 
