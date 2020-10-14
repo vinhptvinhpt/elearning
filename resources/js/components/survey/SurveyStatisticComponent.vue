@@ -148,17 +148,17 @@
                                         <div class="table-wrap">
                                             <!--                                    <div v-if="survey_exam.length>0">-->
                                             <div v-for="(question,index) in survey_exam">
-                                                <div v-if="question.type_question=='multiplechoice'">
+                                                <div v-if="question.type_question==='multiplechoice'">
                                                     <question-statistic :question="question.lstQuesChild[0]"
                                                                         :index_question="index" :chart_type="chart_type"
                                                     ></question-statistic>
                                                 </div>
-                                                <div v-else-if="question.type_question=='checkbox'">
+                                                <div v-else-if="question.type_question==='checkbox'">
                                                     <checkbox-statistic :question="question.lstQuesChild[0]"
                                                                         :index_question="index" :chart_type="chart_type"
                                                     ></checkbox-statistic>
                                                 </div>
-                                                <div v-else-if="question.type_question=='minmax'">
+                                                <div v-else-if="question.type_question==='minmax'">
                                                     <min-max-question-statistic :question="question"
                                                                                 :index_question="index"
                                                                                 :chart_type="chart_type"
@@ -533,6 +533,7 @@
                                 this.survey_exam.push(objData);
                             }
                         }
+
                     })
                     .catch(error => {
                         console.log(error.response.data);
