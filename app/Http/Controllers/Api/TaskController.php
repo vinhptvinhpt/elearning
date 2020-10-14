@@ -65,95 +65,74 @@ class TaskController extends Controller
     }
 
     #region insert student to course_completion courses certificate
-    public function completeCourseForStudent_bk()
+    //insert hoc vien da hoan thanh khoa hoc vao bang course_completion
+    // fix cho TH hoc vien duoc enrol doc lap vao khoa, ko lien quan den KNL
+    public function completeCourseSingle()
     {
         $lstUserCourse = DB::table('mdl_user_enrolments as mu')
             ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('tms_traninning_users as ttu', 'ttu.user_id', '=', 'u.id')
-            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
-            //->join('tms_trainning_categories as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
             ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', function ($join) {
-                $join->on('ttc.course_id', '=', 'c.id');
-                $join->on('e.courseid', '=', 'c.id');
-            })
-            //->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id')
-            ->join('mdl_grade_items as gri', 'gri.courseid', '=', 'c.id')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
             ->leftJoin('course_completion as courc', function ($join) {
                 $join->on('courc.userid', '=', 'u.id');
                 $join->on('courc.courseid', '=', 'c.id');
             })
-            //->where('c.category', '=', 3)
-            ->whereNull('courc.userid')
-            ->whereNull('courc.courseid')
-            ->select('u.id as user_id', 'c.id as course_id', 'ccc.gradepass', 'gri.itemmodule', 'courc.courseid as courcID', 'courc.userid as courscUID', 'c.is_certificate'
-                , DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+            ->where('c.category', '!=', 2) //ko phai thu vien khoa hoc
+            ->whereNull('courc.id')
+            ->select('u.id as user_id',
+                'c.id as course_id',
+                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
                 mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
                 cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
                 cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id) as user_course_learn'),
                 DB::raw('(select count(cm.id) as number_modules_of_course from mdl_course_modules cm inner join mdl_course_sections cs on
-	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module'),
-                DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id
-				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'))->groupBy('u.id')->get();
+	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
+            )
+            ->groupBy(['u.id'])
+            ->get();
+//        Log::info($lstUserCourse);
+//        die;
 
-        $count_course = count($lstUserCourse);
+        $arrData = [];
+        $data_item = [];
 
-        if ($count_course > 0) {
-            $arrData = [];
-            $data_item = [];
+        $num = 0;
+        $limit = 300;
 
-            $num = 0;
-            $limit = 300;
+        foreach ($lstUserCourse as $course) {
 
-            foreach ($lstUserCourse as $course) {
-//                if ($course->is_certificate == 0) { //khóa học cấp chứng chỉ không có bài thi, không cần set điểm pass
-                if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
-                    $data_item['userid'] = $course->user_id;
-                    $data_item['courseid'] = $course->course_id;
-                    $data_item['finalgrade'] = $course->finalgrade;
-                    $data_item['timecompleted'] = strtotime(Carbon::now());
-                    $data_item['timeenrolled'] = strtotime(Carbon::now());
-                    $data_item['created_at'] = Carbon::now();
-                    $data_item['updated_at'] = Carbon::now();
+            if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module) {
+                $data_item['userid'] = $course->user_id;
+                $data_item['courseid'] = $course->course_id;
+                $data_item['timecompleted'] = strtotime(Carbon::now());
+                $data_item['timeenrolled'] = strtotime(Carbon::now());
+                $data_item['created_at'] = Carbon::now();
+                $data_item['updated_at'] = Carbon::now();
 
-                    array_push($arrData, $data_item);
-                    $num++;
-                }
-//                } else {
-//                    if ($course->total_module > 0 && $course->user_course_learn >= $course->total_module
-//                        && !empty($course->finalgrade) && $course->finalgrade >= $course->gradepass) {
-//
-//                        $data_item['userid'] = $course->user_id;
-//                        $data_item['courseid'] = $course->course_id;
-//                        $data_item['finalgrade'] = $course->finalgrade;
-//                        $data_item['timecompleted'] = strtotime(Carbon::now());
-//                        $data_item['timeenrolled'] = strtotime(Carbon::now());
-//
-//                        array_push($arrData, $data_item);
-//                        $num++;
-//
-//                    }
-//                }
-
-                if ($num >= $limit) {
-                    CourseCompletion::insert($arrData);
-                    $num = 0;
-                    $arrData = [];
-                }
-
+                array_push($arrData, $data_item);
+                $num++;
             }
 
-            CourseCompletion::insert($arrData);
+            if ($num >= $limit) {
+                CourseCompletion::insert($arrData);
+                $num = 0;
+                $arrData = [];
+            }
 
+            usleep(200);
         }
+
+        CourseCompletion::insert($arrData);
+
+        usleep(200);
+
     }
 
     /* 20200909 Cuonghq hide join for gradepass and finalgrade */
 
     public function completeCourseForStudent()
     {
-        $lstTrainning = TmsTrainningCourse::where('deleted', '=', '0')->select('trainning_id', 'course_id')->get();
+        $lstTrainning = TmsTrainningCourse::where('deleted', '=', 0)->select('trainning_id', 'course_id')->get();
 
         foreach ($lstTrainning as $data) {
             $lstUserCourse = DB::table('mdl_user_enrolments as mu')
