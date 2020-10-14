@@ -1070,6 +1070,7 @@ class ExcelController extends Controller
 
         $years = explode(',', $years);
         asort($years);
+        $max_year = max($years);
 
         $competencies = DB::table('tms_td_competencies')->get();
 
@@ -1086,10 +1087,11 @@ class ExcelController extends Controller
             ->join('tms_td_competency_courses', 'tms_td_user_marks.competency_id', '=', 'tms_td_competency_courses.competency_id')
             ->join('mdl_course as org_course', 'tms_td_competency_courses.course_id', '=', 'org_course.id')
 
-            ->leftJoin('course_completion', function ($join) use ($years) {
+            ->leftJoin('course_completion', function ($join) use ($max_year) {
                 $join->on('tms_td_competency_courses.course_id', '=', 'course_completion.courseid');
                 $join->on('tms_td_user_marks.user_id', '=', 'course_completion.userid');
-                $join->whereIn(DB::raw('year(course_completion.updated_at)'), $years);
+                //$join->whereIn(DB::raw('year(course_completion.updated_at)'), $years);
+                $join->whereRaw('year(course_completion.updated_at) <= ' . $max_year);
             }) //Will be duplicates => removes when execute data later
             ->leftJoin('mdl_course as learned_course', 'course_completion.courseid', '=', 'learned_course.id')
 
