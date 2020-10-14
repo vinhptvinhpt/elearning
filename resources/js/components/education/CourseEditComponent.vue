@@ -416,6 +416,9 @@
         if(this.course.pass_score == null)
           this.course.pass_score = '';
 
+        if(this.course.enddate == null)
+          this.course.enddate = '';
+
         //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
 
         this.formData = new FormData();
