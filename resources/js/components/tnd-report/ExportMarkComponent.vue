@@ -143,7 +143,6 @@
               this.years.sort();
             },
             exportExcel() {
-                this.setLayout();
                 let hasLoading = $('button.btn-export');
                 let loader = $('.preloader-it');
                 loader.fadeIn();
@@ -184,6 +183,7 @@
                 }
             },
             viewTrainingEffect() {
+                this.setLayout();
                 let hasLoading = $('button.btn-view');
                 let loader = $('.preloader-it');
                 loader.fadeIn();
