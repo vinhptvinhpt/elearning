@@ -7418,44 +7418,46 @@ class BussinessRepository implements IBussinessInterface
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) as ques_a';
+                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
 
-
+        $main_tables = DB::raw($main_tables);
 //        $join_tables = 'tms_survey_users as su';
 
-        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
-                                on mc.id = su.course_id
+                                on mc.id = su.course_id group by su.question_id,su.answer_id
                                 ) as su';
 
 
         if ($course_id || $organization_id) {
             if ($organization_id && $course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ') as su';
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
 
             } else if ($course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                where mc.id = ' . $course_id . ') as su';
-            }else if ($organization_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+            } else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
             }
         }
 
         $join_tables = DB::raw($join_tables);
 
-        $dataStatisctics = DB::table(DB::raw($main_tables))
+        $dataStatisctics = DB::table($main_tables)
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
             ->where('ques_a.survey_id', '=', $survey_id)
             ->select(
@@ -7465,7 +7467,8 @@ class BussinessRepository implements IBussinessInterface
                 'ques_a.ques_id',
                 'ques_a.content',
                 'ques_a.an_id', 'ques_a.ans_content',
-                DB::raw('(count(su.answer_id)) as total_choice')
+                'su.total_choice'
+//                DB::raw('(count(su.answer_id)) as total_choice')
             );
 
         if ($startdate) {
@@ -7482,6 +7485,8 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
+//        Log::info($lstData);
+//        die;
 
         $datas = array();
         $count_data = count($lstData);
@@ -7510,7 +7515,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
+
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7545,7 +7555,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7581,7 +7596,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7618,7 +7638,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7709,42 +7734,46 @@ class BussinessRepository implements IBussinessInterface
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) as ques_a';
+                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
 
+        $main_tables = DB::raw($main_tables);
+//        $join_tables = 'tms_survey_users as su';
 
-        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
-                                on mc.id = su.course_id
+                                on mc.id = su.course_id group by su.question_id,su.answer_id
                                 ) as su';
 
 
         if ($course_id || $organization_id) {
             if ($organization_id && $course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ') as su';
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
 
             } else if ($course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                where mc.id = ' . $course_id . ') as su';
-            }else if ($organization_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+            } else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
             }
         }
 
         $join_tables = DB::raw($join_tables);
 
-        $dataStatisctics = DB::table(DB::raw($main_tables))
+        $dataStatisctics = DB::table($main_tables)
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
             ->where('ques_a.survey_id', '=', $survey_id)
             ->select(
@@ -7754,7 +7783,8 @@ class BussinessRepository implements IBussinessInterface
                 'ques_a.ques_id',
                 'ques_a.content',
                 'ques_a.an_id', 'ques_a.ans_content',
-                DB::raw('(count(su.answer_id)) as total_choice')
+                'su.total_choice'
+//                DB::raw('(count(su.answer_id)) as total_choice')
             );
 
         if ($startdate) {
@@ -7769,7 +7799,6 @@ class BussinessRepository implements IBussinessInterface
 
             $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
         }
-
 
         $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
 
@@ -7803,7 +7832,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7839,7 +7872,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7876,7 +7913,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7914,7 +7955,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
