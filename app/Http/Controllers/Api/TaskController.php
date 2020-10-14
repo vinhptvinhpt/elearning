@@ -89,9 +89,9 @@ class TaskController extends Controller
 	                   cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as total_module')
             )
             ->groupBy(['u.id', 'c.id'])
-            ->toSql();
-        Log::info($lstUserCourse);
-        die;
+            ->get();
+//        Log::info($lstUserCourse);
+//        die;
 
         $arrData = [];
         $data_item = [];
