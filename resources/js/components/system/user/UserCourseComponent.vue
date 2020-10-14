@@ -7,7 +7,7 @@
           <div class="col-sm">
             <div class="table-wrap">
               <div class="row">
-                <div class="col-sm-6 dataTables_wrapper">
+                <div class="col-sm-2 dataTables_wrapper">
                   <div class="dataTables_length">
                     <label>{{trans.get('keys.hien_thi')}}
                       <select @change="getGradeByCourse(1)" v-model="row"
@@ -19,6 +19,15 @@
                       </select>
                     </label>
                   </div>
+                </div>
+                <div class="col-sm-4">
+                  <select v-model="status" @change="getGradeByCourse(1)"
+                          class="form-control" id="status">
+                    <option value="all">{{trans.get('keys.lms_tat_ca_khoa_hoc')}}</option>
+                    <option value="required">{{trans.get('keys.lms_cac_khoa_hoc_bat_buoc')}}</option>
+                    <option value="current">{{trans.get('keys.lms_dang_hoc_khoa_hoc')}}</option>
+                    <option value="completed">{{trans.get('keys.lms_hoan_thanh_khoa_hoc')}}</option>
+                  </select>
                 </div>
                 <div class="col-sm-6">
                   <form v-on:submit.prevent="getGradeByCourse(1)">
@@ -190,6 +199,7 @@
         course_detail: {},
         course_grade: {},
         trainningUser: [],
+        status: "all"
       }
     },
     methods: {
@@ -226,7 +236,8 @@
           keyword: this.keyword,
           row: this.row,
           user_id: this.user_id,
-          category: this.category
+          category: this.category,
+          status: this.status
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];

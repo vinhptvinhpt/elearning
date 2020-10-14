@@ -1063,7 +1063,11 @@
         "pass_score": "Passing Grade",
         "estimate_duration": "Estimate time",
         "course_budget": "Course budget",
-        "total_date_course": "Number of learning session"
+        "total_date_course": "Number of learning session",
+        "lms_tat_ca_khoa_hoc": "All Courses",
+        "lms_cac_khoa_hoc_bat_buoc": "Required Courses",
+        "lms_dang_hoc_khoa_hoc": "Current Courses",
+        "lms_hoan_thanh_khoa_hoc": "Completed Courses"
     },
     "vi.keys": {
         "language": "",
@@ -2120,6 +2124,10 @@
         "pass_score": "Điểm qua môn",
         "estimate_duration": "Thời gian dự kiến",
         "course_budget": "Chi phí",
-        "total_date_course": "Số buổi trong khóa học"
+        "total_date_course": "Số buổi trong khóa học",
+        "lms_tat_ca_khoa_hoc": "Tất cả khóa học",
+        "lms_cac_khoa_hoc_bat_buoc": "Các khóa học bắt buộc",
+        "lms_dang_hoc_khoa_hoc": "Các khóa học đang học",
+        "lms_hoan_thanh_khoa_hoc": "Các khóa học hoàn thành"
     }
 }
