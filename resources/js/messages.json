@@ -1077,7 +1077,11 @@
         "export_report_excel": "Export excel report",
         "training_effect_report": "Training effect report",
         "chon_phong_ban": "Select organization",
-        "export_excel": "Export excel"
+        "export_excel": "Export excel",
+        "lms_tat_ca_khoa_hoc": "All Courses",
+        "lms_cac_khoa_hoc_bat_buoc": "Required Courses",
+        "lms_dang_hoc_khoa_hoc": "Current Courses",
+        "lms_hoan_thanh_khoa_hoc": "Completed Courses"
     },
     "vi.keys": {
         "language": "",
@@ -2148,6 +2152,10 @@
         "export_report_excel": "Export báo cáo excel",
         "training_effect_report": "Báo cáo hiệu quả học",
         "chon_phong_ban": "Chọn phòng ban",
-        "export_excel": "Xuất excel"
+        "export_excel": "Xuất excel",
+        "lms_tat_ca_khoa_hoc": "Tất cả khóa học",
+        "lms_cac_khoa_hoc_bat_buoc": "Các khóa học bắt buộc",
+        "lms_dang_hoc_khoa_hoc": "Các khóa học đang học",
+        "lms_hoan_thanh_khoa_hoc": "Các khóa học hoàn thành"
     }
 }

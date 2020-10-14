@@ -7444,7 +7444,7 @@ class BussinessRepository implements IBussinessInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id
                                 where mc.id = ' . $course_id . ') as su';
-            }else if ($organization_id) {
+            } else if ($organization_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at FROM tms_survey_users su
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
@@ -7733,7 +7733,7 @@ class BussinessRepository implements IBussinessInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id
                                 where mc.id = ' . $course_id . ') as su';
-            }else if ($organization_id) {
+            } else if ($organization_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
@@ -11071,9 +11071,11 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $user_id = $request->input('user_id');
         $trainning_id = $request->input('trainning_id');
+        $status = $request->input('status');
 
         $param = [
             'keyword' => 'text',
+            'status' => 'status',
             'row' => 'number',
             'user_id' => 'number',
         ];
@@ -11085,57 +11087,102 @@ class BussinessRepository implements IBussinessInterface
 //        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
 
-        $data = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            //->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_enrol as e', function ($join) {
-                $join->on('e.id', '=', 'mu.enrolid');
-                $join->where('e.roleid', '=', Role::ROLE_STUDENT);
-            })
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
-            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
-            ->join('tms_traninning_users as ttu', function ($join) {
-                $join->on('mu.userid', '=', 'ttu.user_id');
-                $join->on('ttc.trainning_id', '=', 'ttu.trainning_id');
-            })
-            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->where('ttp.deleted', '=', 0)
-            ->where('ttc.deleted', '=', 0)
-            ->where('c.deleted', '=', 0)
-            ->where('c.visible', '=', 1)
-            ->where('mu.userid', '=', $user_id)
-            //->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->whereNotIn('c.category', [2, 7])
-            ->where('e.enrol', '=', 'manual')
-            ->select(
-                'c.id as course_id',
-                'c.shortname',
-                'c.fullname',
-                'ttp.name as trainning_name',
-                //'ccc.gradepass as gradepass',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'), //Đã học
-                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
-                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
-                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
-            );
+//        $data = DB::table('mdl_user_enrolments as mu')
+//            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            //->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+//            ->join('mdl_enrol as e', function ($join) {
+//                $join->on('e.id', '=', 'mu.enrolid');
+//                $join->where('e.roleid', '=', Role::ROLE_STUDENT);
+//            })
+//            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+//            //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
+//            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+//            ->join('tms_traninning_users as ttu', function ($join) {
+//                $join->on('mu.userid', '=', 'ttu.user_id');
+//                $join->on('ttc.trainning_id', '=', 'ttu.trainning_id');
+//            })
+//            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+//            ->where('ttp.deleted', '=', 0)
+//            ->where('ttc.deleted', '=', 0)
+//            ->where('c.deleted', '=', 0)
+//            ->where('c.visible', '=', 1)
+//            ->where('mu.userid', '=', $user_id)
+//            //->where('e.roleid', '=', Role::ROLE_STUDENT)
+//            ->whereNotIn('c.category', [2, 7])
+//            ->where('e.enrol', '=', 'manual')
+//            ->select(
+//                'c.id as course_id',
+//                'c.shortname',
+//                'c.fullname',
+//                'ttp.name as trainning_name',
+//                //'ccc.gradepass as gradepass',
+//                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'), //Đã học
+//                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
+//                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
+//                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
+//            );
+//
+//        $data = $data->orderBy('c.id', 'desc');//->distinct();;
 
-        $data = $data->orderBy('c.id', 'desc');//->distinct();;
+
+        $sqlData = '(select c.id as course_id, c.shortname, c.fullname, ttp.name as trainning_name,
+        (select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+        inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+        inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+        where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+        (select count(cm.id) as course_learn from mdl_course_modules cm
+        inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+        where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
+         where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), 1, 0) as status_user
+         from mdl_user_enrolments as mu
+         inner join mdl_user as u on u.id = mu.userid
+         inner join mdl_enrol as e on e.id = mu.enrolid and e.roleid = ' . Role::ROLE_STUDENT . '
+         inner join mdl_course as c on c.id = e.courseid
+         inner join tms_trainning_courses as ttc on ttc.course_id = c.id
+         inner join tms_traninning_users as ttu on mu.userid = ttu.user_id and ttc.trainning_id = ttu.trainning_id
+         inner join tms_traninning_programs as ttp on ttp.id = ttc.trainning_id
+        where ttc.deleted = 0 and c.deleted = 0 and ttp.deleted = 0 and c.visible = 1 and c.category not in (2,7) and e.enrol = "manual" and mu.userid = ' . $user_id;
+
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
 
         if ($this->keyword) {
-            $data = $data->where(function ($q) {
-                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
-                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
-            });
+            $sqlData .= ' and ( c.fullname like N\'%' . $this->keyword . '%\' or c.shortname like N\'%' . $this->keyword . '%\') ';
+//            $data = $data->where(function ($q) {
+//                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
+//                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
+//            });
         }
 
         if ($trainning_id) {
-            $data = $data->where('ttc.trainning_id', '=', $trainning_id);
+//            $data = $data->where('ttc.trainning_id', '=', $trainning_id);
+            $sqlData .= ' and ttp.id = ' . $trainning_id;
         }
+
+
+        $sqlData .= ' group by c.id, ttp.id order by c.id desc) as r';
+
+        switch ($status) {
+            case "current":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate < r.user_course_learn';
+                break;
+            case "completed":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate = r.user_course_learn';
+                break;
+            case "required":
+                $sqlData .= ' where r.user_course_completionstate = 0 or r.user_course_learn = 0';
+                break;
+            default:
+                break;
+        }
+
+        //convert to stament in laravel
+        $data = DB::table(DB::raw($sqlData))
+            ->select(
+                DB::raw('*')
+            );
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -11154,10 +11201,12 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $user_id = $request->input('user_id');
+        $status = $request->input('status');
 //        $trainning_id = $request->input('trainning_id');
 
         $param = [
             'keyword' => 'text',
+            'status' => 'text',
             'row' => 'number',
             'user_id' => 'number',
         ];
@@ -11168,41 +11217,56 @@ class BussinessRepository implements IBussinessInterface
 //        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
 
-        $data = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-//            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause dupplicate
-//            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
-//            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-//            ->where('ttc.deleted', '=', 0)
-            ->where('c.deleted', '=', 0)
-            ->where('u.id', '=', $user_id)
-            ->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->select(
-                'c.id as course_id',
-                'c.shortname',
-                'c.fullname',
-//                'ttp.name as trainning_name',
-//                'ccc.gradepass as gradepass',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'),
-                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),
-                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade'),
-                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
-            );
-
-        $data = $data->orderBy('c.id', 'desc');//->distinct();
+        $sqlData = '(select c.id as course_id, c.shortname, c.fullname, ttp.name as trainning_name, ccc.gradepass as gradepass,
+                    (select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+                    inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+                    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                    where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+                    (select count(cm.id) as course_learn from mdl_course_modules cm
+                    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                    where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
+                     where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), 1, 0) as status_user,
+                     (select g.finalgrade from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade
+                     from mdl_user_enrolments as mu
+					 inner join mdl_user as u on u.id = mu.userid
+                     inner join mdl_enrol as e on e.id = mu.enrolid and e.roleid = ' . Role::ROLE_STUDENT . '
+                     inner join mdl_course as c on c.id = e.courseid
+                     inner join mdl_course_completion_criteria as ccc on ccc.course = c.id
+                     inner join tms_trainning_courses as ttc on ttc.course_id = c.id
+					 inner join tms_traninning_users as ttu on mu.userid = ttu.user_id and ttc.trainning_id = ttu.trainning_id
+                     inner join tms_traninning_programs as ttp on ttp.id = ttc.trainning_id
+                     where ttc.deleted = 0 and c.deleted = 0 and ttp.deleted = 0 and c.visible = 1 and c.category not in (2,7) and e.enrol = "manual" and mu.userid = ' . $user_id;
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
-
         if ($this->keyword) {
-            $data = $data->where(function ($q) {
-                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
-                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
-            });
+            $sqlData .= ' and ( c.fullname like N\'%' . $this->keyword . '%\' or c.shortname like N\'%' . $this->keyword . '%\') ';
         }
+
+        $sqlData .= ' group by c.id order by `c`.`id` desc) as r';
+
+        switch ($status) {
+            case "current":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate < r.user_course_learn';
+                break;
+            case "completed":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate = r.user_course_learn';
+                break;
+            case "required":
+                $sqlData .= ' where r.user_course_completionstate = 0 or r.user_course_learn = 0';
+                break;
+            default:
+                break;
+        }
+
+
+        //convert to stament in laravel
+        $data = DB::table(DB::raw($sqlData))
+            ->select(
+                DB::raw('*')
+            );
+
 
 //        if ($trainning_id) {
 //            $data = $data->where('ttp.id', '=', $trainning_id);
