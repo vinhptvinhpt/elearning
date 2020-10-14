@@ -1220,8 +1220,8 @@ class MailController extends Controller
 
 
     /**
-     * Get line manager of user  
-     * 
+     * Get line manager of user
+     *
      * @param $user_id
      * @return array
      */
@@ -2696,7 +2696,11 @@ class MailController extends Controller
                 'linhnt@tinhvan.com',
                 'nguyenlinhcksl@gmail.com',
                 'leduytho93@gmail.com',
-                'duongtiendat.it@gmail.com'
+                'duongtiendat.it@gmail.com',
+                'zerozeralot004@gmail.com',
+                'zerozeralot003@gmail.com',
+                'zerozeralot002@gmail.com',
+                'zerozeralot001@gmail.com'
             ];
             $tester_email = [
                 'dieuly@easia-travel.com',
