@@ -148,6 +148,13 @@
 
     var confirm = 2;
 
+    // $(document).ready(function () {
+    //     var isFirefox = typeof InstallTrigger !== 'undefined';
+    //     if (isFirefox) {
+    //         alert('We recommend you do not use firefox browser for security');
+    //     }
+    // });
+
     //for test
     modeChangeOrganization();
 
