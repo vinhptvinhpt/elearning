@@ -185,9 +185,13 @@
                         <div class="col-12">
                             <section class="hk-sec-wrapper">
                                 <div class="col-lg-12 col-sm-12 mb-3">
-                                    <h6 class="hk-sec-title">
-                                        {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
+
                                     <div class="row">
+                                        <div class="col-4">
+                                            <treeselect v-model="organization_id_1"
+                                                        :multiple="false" :options="options"
+                                                        @input="searchUser()"/>
+                                        </div>
                                         <div class="col-sm-4">
                                             <div class="d-flex flex-row form-group">
                                                 <input v-model="keyword_us" type="text" class="form-control"
@@ -196,20 +200,25 @@
                                             </div>
                                         </div>
                                         <div class="col-4">
-                                            <form v-on:submit.prevent="getUserSurvey(1)">
+                                            <form v-on:submit.prevent="searchUser()">
                                                 <div class="d-flex flex-row form-group">
                                                     <input v-model="keyword_rs" type="text"
                                                            class="form-control search_text"
                                                            :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
                                                     <button type="button" id="btnFilter1"
                                                             class="btn btn-primary btn-sm"
-                                                            @click="getUserSurvey(1)">
+                                                            @click="searchUser()">
                                                         {{trans.get('keys.tim')}}
                                                     </button>
                                                 </div>
                                             </form>
                                         </div>
                                     </div>
+
+                                    <br/>
+
+                                    <h6 class="hk-sec-title">
+                                        {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
                                     <div class="row mb-3">
                                         <div class="col-2 dataTables_wrapper">
                                             <div class="dataTables_length"
@@ -225,22 +234,18 @@
                                                 </label>
                                             </div>
                                         </div>
-                                        <div class="col-4">
-                                            <treeselect v-model="organization_id_1"
-                                                        :multiple="false" :options="options"
-                                                        @input="getUserSurvey(1)"/>
-                                        </div>
+
                                     </div>
                                     <table id="datable_1" class="table_res">
                                         <thead>
                                         <tr>
                                             <th>{{trans.get('keys.stt')}}</th>
                                             <th>{{trans.get('keys.username')}}</th>
-                                            <th class=" mobile_hide" style="width: 30%;">
+                                            <th class=" mobile_hide">
                                                 {{trans.get('keys.ho_ten')}}
                                             </th>
                                             <th>{{trans.get('keys.email')}}</th>
-                                            <th style="width: 19%;">{{trans.get('keys.ten_khoa_hoc')}}</th>
+                                            <th>{{trans.get('keys.ten_khoa_hoc')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                         </tr>
                                         </thead>
@@ -253,10 +258,10 @@
                                                     {{ user.username }}
                                                 </router-link>
                                             </td>
-                                            <td style="width: 19%;">{{ user.fullname }}
+                                            <td>{{ user.fullname }}
                                             </td>
-                                            <td style="width: 19%;">{{ user.email }}</td>
-                                            <td style="width: 25%;">{{ user.course_code }} - {{ user.course_name }}</td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.course_code }} - {{ user.course_name }}</td>
                                             <td class="text-center">
                                                 <router-link :title="trans.get('keys.chi_tiet_ks')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
@@ -273,6 +278,65 @@
                                     </table>
                                     <v-pagination v-model="current_rs" @input="onPageChange"
                                                   :page-count="totalPages_rs"
+                                                  :classes=$pagination.classes></v-pagination>
+
+
+                                    <br/>
+                                    <h6 class="hk-sec-title">
+                                        {{trans.get('keys.danh_sach_nguoi_dung_xem_ks')}}</h6>
+                                    <div class="row mb-3">
+                                        <div class="col-2 dataTables_wrapper">
+                                            <div class="dataTables_length"
+                                                 style="display:block;">
+                                                <label>{{trans.get('keys.hien_thi')}}
+                                                    <select v-model="row_vs"
+                                                            class="custom-select custom-select-sm form-control form-control-sm"
+                                                            @change="getUserViewSurvey(1)">
+                                                        <option value="5">5</option>
+                                                        <option value="10">10</option>
+                                                        <option value="50">50</option>
+                                                    </select>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <table id="datable_2" class="table_res">
+                                        <thead>
+                                        <tr>
+                                            <th>{{trans.get('keys.stt')}}</th>
+                                            <th>{{trans.get('keys.username')}}</th>
+                                            <th class=" mobile_hide">
+                                                {{trans.get('keys.ho_ten')}}
+                                            </th>
+                                            <th>{{trans.get('keys.email')}}</th>
+                                            <th>{{trans.get('keys.total_view')}}</th>
+                                            <th>{{trans.get('keys.ten_khoa_hoc')}}</th>
+
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(user,index) in lstUserViews">
+                                            <td>{{ (current_rs-1)*row_rs+(index+1) }}</td>
+                                            <td>
+                                                <router-link
+                                                        :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.id }, query: {type: type} }">
+                                                    {{ user.username }}
+                                                </router-link>
+                                            </td>
+                                            <td>{{ user.fullname }}
+                                            </td>
+                                            <td>{{ user.email }}</td>
+                                            <td>{{ user.total_view }}</td>
+                                            <td>{{ user.course_code }} - {{ user.course_name }}</td>
+
+                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+
+                                        </tfoot>
+                                    </table>
+                                    <v-pagination v-model="current_vs" @input="onPageChangeVS"
+                                                  :page-count="totalPages_vs"
                                                   :classes=$pagination.classes></v-pagination>
                                 </div>
                             </section>
@@ -344,6 +408,11 @@
                 current_rs: 1,
                 totalPages_rs: 1,
                 type: '',
+
+                lstUserViews: [],
+                current_vs: 1,
+                totalPages_vs: 1,
+                row_vs: 10,
 
                 date: new Date(),
                 date_options: {
@@ -560,6 +629,10 @@
                     });
 
             },
+            searchUser() {
+                this.getUserSurvey();
+                this.getUserViewSurvey();
+            },
             onPageChange() {
                 this.getUserSurvey();
             },
@@ -579,6 +652,31 @@
                     this.lstUsers = response.data.data.data;
                     this.current_rs = response.data.pagination.current_page;
                     this.totalPages_rs = response.data.pagination.total;
+                })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+
+            },
+            onPageChangeVS() {
+                this.getUserViewSurvey();
+            },
+            getUserViewSurvey(paged) {
+                if (this.keyword_us === '' || this.keyword_us === null || this.keyword_us === undefined) {
+                    Ls.set('course', '');
+                }
+                this.course_id = Ls.get('course');
+                axios.post('/api/survey/user-view', {
+                    page: paged || this.current_vs,
+                    survey_id: this.survey_id,
+                    org_id: this.organization_id_1,
+                    course_id: this.course_id,
+                    keyword: this.keyword_rs,
+                    row: this.row_vs
+                }).then(response => {
+                    this.lstUserViews = response.data.data.data;
+                    this.current_vs = response.data.pagination.current_page;
+                    this.totalPages_vs = response.data.pagination.total;
                 })
                     .catch(error => {
                         console.log(error.response.data);
@@ -630,6 +728,7 @@
             this.fetch();
             this.getCourseSelectOptions();
             this.getUserSurvey();
+            this.getUserViewSurvey();
         }
     }
 </script>

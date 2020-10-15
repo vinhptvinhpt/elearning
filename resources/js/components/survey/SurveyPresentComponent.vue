@@ -37,11 +37,11 @@
                                     </div>
                                     <div v-else-if="question.type_question==='group'">
                                         <group-question :question="question" :index_question="index"
-                                                        :question_answers="question_answers" ></group-question>
+                                                        :question_answers="question_answers"></group-question>
                                     </div>
                                     <div v-else-if="question.type_question==='minmax'">
                                         <min-max-question :question="question" :index_question="index"
-                                                          :question_answers="question_answers" ></min-max-question>
+                                                          :question_answers="question_answers"></min-max-question>
                                     </div>
                                     <div v-else-if="question.type_question==='checkbox'">
                                         <checkbox-question :question="question" :index_question="index"
@@ -123,22 +123,11 @@
                     .catch(error => {
                         toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
                     });
-            },
-            viewSurvey() {
-                axios.post('/bridge/bonus', {
-                    survey_id: this.survey_id,
-                    view: 'SurveyPresent'
-                })
-                    .then(response => {
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-            },
+            }
         },
         mounted() {
             this.getSurvey();
-            this.viewSurvey();
+            // this.viewSurvey();
         }
     }
 </script>
