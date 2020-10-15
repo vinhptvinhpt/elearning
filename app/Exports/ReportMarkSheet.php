@@ -70,13 +70,18 @@ class ReportMarkSheet implements WithTitle, WithHeadings, FromArray, WithMapping
 
                 $this->column_count = count($this->headings);
 
+                $heading_grey = array();
+                $stt = 1;
+
+                foreach (array_keys($this->headings) as $heading) {
+                    if (strpos($heading, '_GREY_') !== false) {
+                        $heading_grey[] = $stt;
+                    }
+                    $stt++;
+                }
+
                 $endingCol = $event->sheet->getDelegate()->getHighestColumn();
                 $endingRow = $event->sheet->getDelegate()->getHighestRow();
-
-                //Set Width
-                for ($i = 1; $i <= $this->column_count; $i++) {
-                    $event->sheet->getDelegate()->getColumnDimensionByColumn($i)->setWidth(20);
-                }
 
                 //Set color heading row
                 $event->sheet->getDelegate()
@@ -86,16 +91,44 @@ class ReportMarkSheet implements WithTitle, WithHeadings, FromArray, WithMapping
                     ->getStartColor()
                     ->setARGB('E0E3E4');
 
+                //Set Width
+                for ($i = 1; $i <= $this->column_count; $i++) {
+                    $event->sheet->getDelegate()->getColumnDimensionByColumn($i)->setWidth(20);
+
+                    //Fil màu xám cho block số lẻ 1, 3, 5, 7...
+                    if (in_array($i, $heading_grey)) {
+                        $event->sheet->getDelegate()
+                            ->getStyleByColumnAndRow($i, 1, $i, $endingRow)
+                            ->getFill()
+                            ->setFillType(Fill::FILL_SOLID)
+                            ->getStartColor()
+                            ->setARGB('5BBFDE');
+
+                    }
+                }
+
+                //https://phpspreadsheet.readthedocs.io/en/latest/topics/recipes/#valid-array-keys-for-style-applyfromarray
+
                 //Set font bold row heading
                 $styleArray = [
                     'font' => [
                         'bold' => true
-                    ],
+                    ]
                 ];
-
                 $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . '1')->applyFromArray($styleArray);
 
+                //Wrap text, alignment
                 $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . $endingRow)->getAlignment()->setVertical(Alignment::VERTICAL_TOP)->setWrapText(true);
+
+                //Border all thin
+                $styleArray = [
+                    'borders' => [
+                        'allBorders' => [
+                            'borderStyle' => \PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN,
+                        ],
+                    ],
+                ];
+                $event->sheet->getDelegate()->getStyle('A1:' . $endingCol . $endingRow)->applyFromArray($styleArray);;
             },
         ];
     }
