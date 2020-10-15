@@ -1166,14 +1166,23 @@ class ExcelController extends Controller
 
         $dynamic_heading = [];
 
-        foreach ($competencies as $competency) {
-            $dynamic_heading[$competency->code] = $competency->name;
-            //$dynamic_heading[$competency->code . "_all"] = $competency->name;
-            foreach ($years as $year) {
-                $dynamic_heading[$competency->code . $year] = $year;
-            }
-            //Flow show to page
+        $code_grey = [];
 
+        foreach ($competencies as $key => $competency) {
+            $code = $competency->code;
+            if ($key%2 == 0) {
+                $code = $competency->code . '_GREY_';
+                $code_grey[] = $competency->code;
+            }
+
+            //FLow export
+            foreach ($years as $year) {
+                $dynamic_heading[$code. $year] = $year;
+            }
+            $dynamic_heading[$code] = $competency->name;
+            //$dynamic_heading[$competency->code . "_all"] = $competency->name;
+
+            //Flow show to page
             if (!array_key_exists($competency->code, $flip_response)) { //Khởi tạo object cho từng competency
                 $flip_response[$competency->code]['name'] = $competency->name;
                 $flip_response[$competency->code]['users'] = [];
@@ -1184,7 +1193,7 @@ class ExcelController extends Controller
 
         foreach ($marks as $mark) {
 
-            //Flow Export
+            //Flow export
             //khởi tạo
             if (!array_key_exists($mark->user_id, $response)) {
                 $country_name = array_key_exists($mark->country, $countries) ? $countries[$mark->country] : '';
@@ -1200,20 +1209,26 @@ class ExcelController extends Controller
                 }
                 $response[$mark->user_id] = $mark_item;
             }
+
+            $new_code = $mark->competency_code;
+            if (in_array($mark->competency_code, $code_grey)) {
+                $new_code = $mark->competency_code . '_GREY_';
+            }
+
             //check row, nếu có điểm thì add vào
-            $response[$mark->user_id][$mark->competency_code . $mark->year] = $mark->result;
+            $response[$mark->user_id][ $new_code . $mark->year] = $mark->result;
             //$response[$mark->user_id][$mark->competency_code . "_all"] = $mark->org_courses;
             //$response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $mark->learned_courses);
             $learned_courses = array_unique(explode(',', $mark->learned_courses));
             $export_learned_courses = implode(',',$learned_courses);
-            $response[$mark->user_id][$mark->competency_code] = str_replace(',', PHP_EOL, $export_learned_courses);
+            $response[$mark->user_id][$new_code] = str_replace(',', PHP_EOL, $export_learned_courses);
 
 
             //Flow show to page
             if (!array_key_exists($mark->email, $flip_response[$mark->competency_code]['users'])) {
                 $flip_response[$mark->competency_code]['users'][$mark->email] = [
                     'marks' => [intval($mark->year) => $mark->result],
-                    'courses' => $learned_courses
+                    'courses' => array_values($learned_courses)
                 ];
                 foreach ($years as $year) { //Thêm unit year empty
                     if (!array_key_exists(intval($year), $flip_response[$mark->competency_code]['users'][$mark->email]['marks'])) {
@@ -1225,7 +1240,6 @@ class ExcelController extends Controller
                 $flip_response[$mark->competency_code]['users'][$mark->email]['marks'][intval($mark->year)] = $mark->result;
             }
         }
-
 
         if ($flow == 'show') { //Flow show to page
             return response()->json(self::status_message('success', __('thanh_cong'), $flip_response));
