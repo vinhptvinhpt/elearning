@@ -264,8 +264,10 @@ class SurveyController extends Controller
         $survey_id = $request->input('survey_id');
         $org_id = $request->input('org_id');
         $course_id = $request->input('course_id');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
 
-        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id);
+        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id,$startdate,$enddate);
     }
 
     public function apiSaveUserViewSurvey(Request $request)
@@ -282,8 +284,10 @@ class SurveyController extends Controller
         $survey_id = $request->input('survey_id');
         $org_id = $request->input('org_id');
         $course_id = $request->input('course_id');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
 
-        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id);
+        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id,$startdate,$enddate);
     }
 
 }
