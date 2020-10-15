@@ -972,12 +972,12 @@ AND cm.course = mc.id
 AND cm.completion <> 0
 AND cmc.userid = $curent_user_id) AS numoflearned,
 
-mp.display,
+tcc.display,
 mue.userid
 FROM mdl_course mc
 LEFT JOIN mdl_enrol me ON mc.id = me.courseid AND me.roleid = 5 AND `me`.`enrol` <> 'self'
 LEFT JOIN mdl_user_enrolments mue ON me.id = mue.enrolid AND mue.userid = $curent_user_id
-LEFT JOIN tms_course_congratulations mp ON mc.id = mp.course_id AND mp.user_id = $curent_user_id
+LEFT JOIN tms_course_congratulations tcc ON mc.id = tcc.course_id AND tcc.user_id = $curent_user_id
 WHERE mc.id = $id";
 
 $course = array_values($DB->get_records_sql($sql))[0];
