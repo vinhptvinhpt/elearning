@@ -50,6 +50,13 @@
                 },
             }
         },
+        watch: {
+            question: {
+                handler(n, o) {
+                    this.getDataChartQuestion();
+                },
+            },
+        },
         methods: {
             getDataChartQuestion() {
                 var count_ans = this.question.lstAnswers.length;
