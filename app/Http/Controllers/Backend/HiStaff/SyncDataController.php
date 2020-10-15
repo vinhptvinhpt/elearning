@@ -8,7 +8,6 @@ use App\MdlRoleAssignments;
 use App\MdlUser;
 use App\ModelHasRole;
 use App\Role;
-use App\SoapClientCurl;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
@@ -16,8 +15,6 @@ use App\ViewModel\ResultModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use SoapClient;
-use SoapHeader;
 
 class SyncDataController
 {
@@ -55,24 +52,33 @@ class SyncDataController
 
 
             if (empty($token)) {
-                $result->code = 'ERR04';
+                $result->code = 'ERR05';
                 $result->status = false;
                 $result->message = 'User token not found';
                 return response()->json($result);
             }
 
+            //xac thuc token voi histaff
             $token = str_replace('', 'Bearer ', $token);
 
-            //xac thuc token voi histaff
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $data_post = array(
                 'username' => $username,
-                'Token' => $token,
-                'key' => ''
+                'token' => $token,
+                'key' => Config::get('constants.domain.HISTAFF-KEY')
             );
-//            $result_api = callAPI('POST', $url, $data_post, false, '');
+            $result_api = callAPI('POST', $url, $data_post, false, '');
+            $result_api = json_decode($result_api, true);
 
+            if ($result_api->Code != '200') {
+                $result->code = 'ERR06';
+                $result->status = false;
+                $result->message = $result_api->Message;
+                return response()->json($result);
+            }
+
+            ////// xu ly flow insert vao elearning
             $data = json_decode($json, true);
 
             if (empty($data['code']) || empty($data['name'])) {
@@ -161,24 +167,19 @@ class SyncDataController
                 return response()->json($result);
             }
 
+            if (empty($json)) {
+                $result->code = 'ERR03';
+                $result->status = false;
+                $result->message = 'Data value is empty';
+                return response()->json($result);
+            }
+
             if (empty($token)) {
-                $result->code = 'ERR04';
+                $result->code = 'ERR05';
                 $result->status = false;
                 $result->message = 'User token not found';
                 return response()->json($result);
             }
-
-            //xac thuc token voi histaff
-            $token = str_replace('', 'Bearer ', $token);
-
-            $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
-
-            $data_post = array(
-                'username' => $username,
-                'Token' => $token,
-                'key' => ''
-            );
-//            $result_api = callAPI('POST', $url, $data_post, false, '');
 
             if (!$json) {
                 $result->code = 'ERR03';
@@ -214,6 +215,28 @@ class SyncDataController
                 return response()->json($result);
             }
 
+            //xac thuc token voi histaff
+            $token = str_replace('', 'Bearer ', $token);
+
+            $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
+
+            $data_post = array(
+                'username' => $username,
+                'token' => $token,
+                'key' => Config::get('constants.domain.HISTAFF-KEY')
+            );
+            $result_api = callAPI('POST', $url, $data_post, false, '');
+            $result_api = json_decode($result_api, true);
+
+            if ($result_api->Code != '200') {
+                $result->code = 'ERR06';
+                $result->status = false;
+                $result->message = $result_api->Message;
+                return response()->json($result);
+            }
+
+            ////// xu ly flow insert vao elearning
+            //region flow insert or update data vao elearning
             $org_check = TmsOrganization::where('code', $data['organization_code'])->first();
 
             if (empty($org_check)) {
@@ -223,12 +246,13 @@ class SyncDataController
                 return response()->json($result);
             }
 
+            //hard code, default user sync tu histaff co quyen student va excutive
             $inputRole = array(
-                array(
+                array(//student
                     "id" => 5,
                     "mdl_role_id" => 5
                 ),
-                array(
+                array(//excutive
                     "id" => 29,
                     "mdl_role_id" => 80
                 )
@@ -332,6 +356,7 @@ class SyncDataController
 
             }
             DB::commit();
+            //endregion
 
             $result->code = 'US01';
             $result->status = true;
@@ -342,44 +367,6 @@ class SyncDataController
             $result->code = 'ERR04';
             $result->message = $e->getMessage();
         }
-        return response()->json($result);
-    }
-
-    public function testAPI()
-    {
-        $result = new ResultModel();
-        try {
-            $url = Config::get('constants.domain.HISTAFF-API') . 'GenerateToken';
-
-
-            $data_post = array(
-                'Username' => 'NHUNGHT',
-                'Password' => '123456',
-                'Key' => 'G6rikv0U0eQUIRak7owtmw=='
-            );
-
-            $ctx_opts = array(
-                'http' => array(
-                    'method' => "POST",
-                    'header' => 'Content-Type: application/soap+xml'
-                ),
-                'cache_wsdl' => 0,
-            );
-
-            $ctx = stream_context_create($ctx_opts);
-
-            $client = new SoapClient(Config::get('constants.domain.HISTAFF-API'), $ctx_opts);
-
-            // Invoke WS method (Function1) with the request params
-            $rs = $client->__soapCall("GenerateToken", $data_post);
-
-            $result->status = true;
-            $result->message = json_encode($rs);
-        } catch (\Exception $e) {
-            $result->status = false;
-            $result->message = $e->getMessage();
-        }
-
         return response()->json($result);
     }
 }
