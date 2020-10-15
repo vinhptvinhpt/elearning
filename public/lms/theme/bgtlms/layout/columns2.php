@@ -90,8 +90,14 @@ if ($pagelayout == 'incourse') {
         left join mdl_enrol me on mc.id = me.courseid
         left join mdl_user_enrolments mue on me.id = mue.enrolid
         where mc.id = ' . $courseid . ' and mue.userid = ' . $USER->id;
-        $getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
-        $roleInCourse = $getRole->roleid;
+
+        $resultGetRole = $DB->get_records_sql($sqlGetRole);
+        if(!empty($resultGetRole)) {
+            $getRole = array_values()[0];
+            $roleInCourse = $getRole->roleid;
+        } else {
+            $roleInCourse = 5;
+        }
     }
 
     require_once('courselib.php');
@@ -140,10 +146,8 @@ if ($pagelayout == 'incourse') {
     and cm.course = mc.id
     and cm.completion <> 0
     and cmc.userid = ' . $USER->id . ') as numoflearned,
-
   	tcc.display,
-  	mc.fullname,
-  	mcc.completion, mcc.completiongradeitemnumber
+  	mc.fullname
 	from mdl_course mc
     left join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5 AND `me`.`enrol` <> "self"
 	left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = ' . $USER->id . '
