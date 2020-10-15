@@ -58,9 +58,9 @@ class SyncDataController
                 return response()->json($result);
             }
 
+            //xac thuc token voi histaff
             $token = str_replace('', 'Bearer ', $token);
 
-            //xac thuc token voi histaff
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $data_post = array(
@@ -216,6 +216,8 @@ class SyncDataController
             }
 
             //xac thuc token voi histaff
+            $token = str_replace('', 'Bearer ', $token);
+
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $data_post = array(
