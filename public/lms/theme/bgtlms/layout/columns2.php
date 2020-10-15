@@ -122,17 +122,34 @@ if ($pagelayout == 'incourse') {
     $pathBadge = $CFG->wwwtmsbase . $pathBadge;
     //$viewCoursePage = true;
     //get progress learning
-    $sqlGetProgress = ' select ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = mc.id) as numofmodule,
-  ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned,
+    $sqlGetProgress = 'select
+    (select count(cm.id) as num
+    from mdl_course_modules cm
+    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+    where cs.section <> 0
+    and cm.completion <> 0
+    and cm.course = mc.id) as numofmodule,
+
+    (select count(cmc.coursemoduleid) as num
+    from mdl_course_modules cm
+    inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+    inner join mdl_course c on cm.course = c.id
+    where cs.section <> 0
+    and cmc.completionstate in (1, 2)
+    and cm.course = mc.id
+    and cm.completion <> 0
+    and cmc.userid = mue.userid) as numoflearned,
+
   	tcc.display,
   	mc.fullname,
   	mcc.completion, mcc.completiongradeitemnumber
-	  from mdl_course mc
-		  inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
-		  inner join mdl_user_enrolments mue on me.id = mue.enrolid
-		  LEFT JOIN tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
-		  inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = ' . $cmid . '
-		where mue.userid = ' . $USER->id . ' and mc.id = ' . $courseid;
+	from mdl_course mc
+    inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
+	inner join mdl_user_enrolments mue on me.id = mue.enrolid
+    left join tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
+	inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = ' . $cmid . '
+	where mue.userid = ' . $USER->id . ' and mc.id = ' . $courseid;
 
     $progress = array_values($DB->get_records_sql($sqlGetProgress))[0];
     $course_name = $progress->fullname;

@@ -953,8 +953,25 @@ mc.course_avatar,
 mc.estimate_duration,
 mc.summary, mc.is_toeic,
 ( SELECT COUNT(mcs.id) FROM mdl_course_sections mcs WHERE mcs.course = mc.id AND mcs.section <> 0) AS numofsections,
-( SELECT COUNT(cm.id) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id WHERE cs.section <> 0 AND cm.completion <> 0 AND cm.course = mc.id) AS numofmodule,
-( SELECT COUNT(cmc.coursemoduleid) AS num FROM mdl_course_modules cm INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id INNER JOIN mdl_course c ON cm.course = c.id WHERE cs.section <> 0 AND cmc.completionstate in (1, 2) AND cm.course = mc.id  AND cm.completion <> 0 AND cmc.userid = $curent_user_id) AS numoflearned,
+
+( SELECT COUNT(cm.id) AS num
+FROM mdl_course_modules cm
+INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id
+WHERE cs.section <> 0
+AND cm.completion <> 0
+AND cm.course = mc.id) AS numofmodule,
+
+( SELECT COUNT(cmc.coursemoduleid) AS num
+FROM mdl_course_modules cm
+INNER JOIN mdl_course_modules_completion cmc ON cm.id = cmc.coursemoduleid
+INNER JOIN mdl_course_sections cs ON cm.course = cs.course AND cm.section = cs.id
+INNER JOIN mdl_course c ON cm.course = c.id
+WHERE cs.section <> 0
+AND cmc.completionstate in (1, 2)
+AND cm.course = mc.id
+AND cm.completion <> 0
+AND cmc.userid = $curent_user_id) AS numoflearned,
+
 mp.display,
 mue.userid
 FROM mdl_course mc
