@@ -215,6 +215,25 @@
                                         </div>
                                     </div>
 
+                                    <div class="row">
+                                        <div class="col-3 form-group">
+                                            <form v-on:submit.prevent="searchUser()">
+                                                <div class="d-flex flex-row form-group">
+                                                    <date-picker v-model="startdate_us" :config="date_options"
+                                                                 :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-3 form-group">
+                                            <form v-on:submit.prevent="searchUser()">
+                                                <div class="d-flex flex-row form-group">
+                                                    <date-picker v-model="enddate_us" :config="date_options"
+                                                                 :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+
                                     <br/>
 
                                     <h6 class="hk-sec-title">
@@ -413,6 +432,9 @@
                 current_vs: 1,
                 totalPages_vs: 1,
                 row_vs: 10,
+
+                startdate_us: '',
+                enddate_us: '',
 
                 date: new Date(),
                 date_options: {
@@ -647,7 +669,9 @@
                     org_id: this.organization_id_1,
                     course_id: this.course_id,
                     keyword: this.keyword_rs,
-                    row: this.row_rs
+                    row: this.row_rs,
+                    startdate: this.startdate_us,
+                    enddate: this.enddate_us
                 }).then(response => {
                     this.lstUsers = response.data.data.data;
                     this.current_rs = response.data.pagination.current_page;
@@ -672,7 +696,9 @@
                     org_id: this.organization_id_1,
                     course_id: this.course_id,
                     keyword: this.keyword_rs,
-                    row: this.row_vs
+                    row: this.row_vs,
+                    startdate: this.startdate_us,
+                    enddate: this.enddate_us
                 }).then(response => {
                     this.lstUserViews = response.data.data.data;
                     this.current_vs = response.data.pagination.current_page;
