@@ -139,17 +139,16 @@ if ($pagelayout == 'incourse') {
     and cmc.completionstate in (1, 2)
     and cm.course = mc.id
     and cm.completion <> 0
-    and cmc.userid = mue.userid) as numoflearned,
+    and cmc.userid = ' . $USER->id . ') as numoflearned,
 
   	tcc.display,
   	mc.fullname,
   	mcc.completion, mcc.completiongradeitemnumber
 	from mdl_course mc
-    inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
-	inner join mdl_user_enrolments mue on me.id = mue.enrolid
-    left join tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = mue.userid
-	inner join mdl_course_modules mcc on mcc.course = ' . $courseid . ' and mcc.id = ' . $cmid . '
-	where mue.userid = ' . $USER->id . ' and mc.id = ' . $courseid;
+    left join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5 AND `me`.`enrol` <> "self"
+	left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = ' . $USER->id . '
+    left join tms_course_congratulations tcc on tcc.course_id = mc.id AND tcc.user_id = ' . $USER->id . '
+	where mc.id = ' . $courseid;
 
     $progress = array_values($DB->get_records_sql($sqlGetProgress))[0];
     $course_name = $progress->fullname;
