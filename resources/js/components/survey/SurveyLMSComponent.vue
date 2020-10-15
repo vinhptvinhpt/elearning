@@ -142,9 +142,16 @@
                     });
             },
             viewSurvey() {
-                axios.post('/bridge/bonus', {
+                let course_id = Ls.get('courseid');
+
+                if (course_id === '' || course_id === null || course_id === undefined) {
+                    toastr['error'](current_pos.trans.get('keys.paste_link'), current_pos.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                axios.post('/api/survey/store-user-view', {
                     survey_id: this.survey_id,
-                    view: 'SurveyPresent'
+                    course_id: course_id
                 })
                     .then(response => {
                     })
