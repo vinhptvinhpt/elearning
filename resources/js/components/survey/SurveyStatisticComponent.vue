@@ -16,17 +16,6 @@
             </div>
         </div>
 
-        <!--        <div class="row">-->
-        <!--            <div class="col-sm">-->
-        <!--                <div class="button-list">-->
-        <!--                    <router-link :to="{name: 'SurveyIndex', params: {survey_id: survey_id}}"-->
-        <!--                                 class="btn-sm btn-danger">-->
-        <!--                        {{trans.get('keys.quay_lai')}}-->
-        <!--                    </router-link>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-
         <div class="row mx-0">
             <ul class="col-12 nav nav-tabs nav-light" id="myTab" role="tablist">
                 <li class="nav-item">
@@ -77,22 +66,16 @@
 
                                 <div class="row">
                                     <div class="col-3 form-group">
-                                        <label>{{trans.get('keys.ngay_bat_dau')}}</label>
                                         <form v-on:submit.prevent="search()">
                                             <div class="d-flex flex-row form-group">
-                                                <!--                                                <input type="date" id="inputStart" v-model="startdate"-->
-                                                <!--                                                       class="form-control">&nbsp;-->
                                                 <date-picker v-model="startdate" :config="date_options"
                                                              :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
                                             </div>
                                         </form>
                                     </div>
                                     <div class="col-3 form-group">
-                                        <label>{{trans.get('keys.ngay_ket_thuc')}} </label>
                                         <form v-on:submit.prevent="search()">
                                             <div class="d-flex flex-row form-group">
-                                                <!--                                                <input type="date" id="inputEnd" v-model="enddate"-->
-                                                <!--                                                        class="form-control">-->
                                                 <date-picker v-model="enddate" :config="date_options"
                                                              :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
                                             </div>
@@ -101,30 +84,22 @@
                                 </div>
                                 <div class="row">
                                     <div class="col-2 form-group">
-
-                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/pdf'">-->
                                         <button type="button" id="btnExportPdf"
                                                 class="btn-sm btn-pdf btn-primary d-none d-lg-block"
                                                 @click="exportFileData('pdf')">
                                             {{trans.get('keys.xuat_file_pdf')}} <i class="fa fa-spinner"
                                                                                    aria-hidden="true"></i>
                                         </button>
-                                        <!--                                </a>-->
-
                                     </div>
                                     <div class="col-2 form-group">
-                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
                                         <button type="button" id="btnExportExcel"
                                                 class="btn-sm btn-excel btn-primary d-none d-lg-block"
                                                 @click="exportFileData('excel')">
                                             {{trans.get('keys.xuat_file_excel')}} <i class="fa fa-spinner"
                                                                                      aria-hidden="true"></i>
                                         </button>
-                                        <!--                                </a>-->
                                     </div>
                                     <div class="col-2 form-group">
-                                        <!--                                <a :href="'/survey/export_file/'+survey_id+'/'+branch_id+'/'+saleroom_id+'/excel'">-->
-
                                         <button type="button" v-if="chart_type==='bar'"
                                                 class="btn-sm btn-excel btn-primary d-none d-lg-block"
                                                 @click="changeChartFormat('pie')">
@@ -137,16 +112,12 @@
                                             {{trans.get('keys.bar_chart')}} <i class="fa fa-spinner"
                                                                                aria-hidden="true"></i>
                                         </button>
-
-
-                                        <!--                                </a>-->
                                     </div>
                                 </div>
                                 <br/>
                                 <div class="row">
                                     <div class="col-sm">
                                         <div class="table-wrap">
-                                            <!--                                    <div v-if="survey_exam.length>0">-->
                                             <div v-for="(question,index) in survey_exam">
                                                 <div v-if="question.type_question==='multiplechoice'">
                                                     <question-statistic :question="question.lstQuesChild[0]"
@@ -171,8 +142,6 @@
                                                     ></group-question-statistic>
                                                 </div>
                                             </div>
-                                            <!--                                    </div>-->
-
                                         </div>
                                     </div>
                                 </div>
@@ -215,8 +184,25 @@
                                         </div>
                                     </div>
 
-                                    <br/>
-
+                                    <div class="row">
+                                        <div class="col-3 form-group">
+                                            <form v-on:submit.prevent="searchUser()">
+                                                <div class="d-flex flex-row form-group">
+                                                    <date-picker v-model="startdate_us" :config="date_options"
+                                                                 :placeholder="trans.get('keys.ngay_bat_dau')"></date-picker>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-3 form-group">
+                                            <form v-on:submit.prevent="searchUser()">
+                                                <div class="d-flex flex-row form-group">
+                                                    <date-picker v-model="enddate_us" :config="date_options"
+                                                                 :placeholder="trans.get('keys.ngay_ket_thuc')"></date-picker>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    
                                     <h6 class="hk-sec-title">
                                         {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
                                     <div class="row mb-3">
@@ -414,6 +400,9 @@
                 totalPages_vs: 1,
                 row_vs: 10,
 
+                startdate_us: '',
+                enddate_us: '',
+
                 date: new Date(),
                 date_options: {
                     format: 'DD-MM-YYYY',
@@ -598,8 +587,8 @@
                         var count_key = keys.length;
                         if (count_key > 0) {
                             for (var i = 0; i < count_key; i++) {
-                                var objData = data_result[keys[i]];
-                                this.survey_exam.push(objData);
+                                // var objData = data_result[keys[i]];
+                                this.survey_exam.push(data_result[keys[i]]);
                             }
                         }
 
@@ -647,7 +636,9 @@
                     org_id: this.organization_id_1,
                     course_id: this.course_id,
                     keyword: this.keyword_rs,
-                    row: this.row_rs
+                    row: this.row_rs,
+                    startdate: this.startdate_us,
+                    enddate: this.enddate_us
                 }).then(response => {
                     this.lstUsers = response.data.data.data;
                     this.current_rs = response.data.pagination.current_page;
@@ -672,7 +663,9 @@
                     org_id: this.organization_id_1,
                     course_id: this.course_id,
                     keyword: this.keyword_rs,
-                    row: this.row_vs
+                    row: this.row_vs,
+                    startdate: this.startdate_us,
+                    enddate: this.enddate_us
                 }).then(response => {
                     this.lstUserViews = response.data.data.data;
                     this.current_vs = response.data.pagination.current_page;

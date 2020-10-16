@@ -43,13 +43,11 @@
             }
         },
         watch: {
-            answerOptions: function(val) {
-                console.log('47');
-                //do something when the data changes.
-                if (val) {
+            question: {
+                handler(n, o) {
                     this.getDataChartQuestion();
-                }
-            }
+                },
+            },
         },
         methods: {
 
@@ -72,7 +70,6 @@
                     colorByPoint: true,
                     data: data_ans
                 }];
-
             }
         },
         mounted() {

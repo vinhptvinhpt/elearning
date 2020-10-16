@@ -31,7 +31,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($preview);
     }
 
-    public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id)
+    public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
     {
         // TODO: Implement getListUserSurvey() method.
         $lstData = DB::table('mdl_user as u')
@@ -74,6 +74,19 @@ class SurveyRepository implements ISurveyInterface
             $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'u.id');
         }
 
+        if ($startdate) {
+            $full_start_date = $startdate . " 00:00:00";
+            $start_time = strtotime($full_start_date);
+
+            $lstData = $lstData->where('tsu.created_at', ">=", date("Y-m-d H:i:s", $start_time));
+        }
+        if ($enddate) {
+            $full_end_date = $enddate . " 23:59:59";
+            $end_time = strtotime($full_end_date);
+
+            $lstData = $lstData->where('tsu.created_at', "<=", date("Y-m-d H:i:s", $end_time));
+        }
+
         $lstData = $lstData->groupBy(['u.id', 'tsu.course_id']);
 
         $lstData = $lstData->orderBy('u.id', 'desc');
@@ -91,7 +104,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-    public function getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id)
+    public function getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
     {
         // TODO: Implement getUserViewSurvey() method.
         $lstData = DB::table('mdl_user as u')
@@ -132,6 +145,19 @@ class SurveyRepository implements ISurveyInterface
             $org_query = DB::raw($org_query);
 
             $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'u.id');
+        }
+
+        if ($startdate) {
+            $full_start_date = $startdate . " 00:00:00";
+            $start_time = strtotime($full_start_date);
+
+            $lstData = $lstData->where('tsuv.created_at', ">=", date("Y-m-d H:i:s", $start_time));
+        }
+        if ($enddate) {
+            $full_end_date = $enddate . " 23:59:59";
+            $end_time = strtotime($full_end_date);
+
+            $lstData = $lstData->where('tsuv.created_at', "<=", date("Y-m-d H:i:s", $end_time));
         }
 
         $lstData = $lstData->groupBy(['u.id', 'tsuv.course_id']);
