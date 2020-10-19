@@ -560,8 +560,9 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     }
 
     .footer-logo {
+        height: auto;
+        width: auto;
         max-width: 200px;
-        background-color: #ffffff;
     }
 
     /*.footer-logo img {*/
