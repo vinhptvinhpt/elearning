@@ -988,6 +988,47 @@ class TaskController extends Controller
         }
     }
 
+    //cron enrol user to course in organization
+    public function enrolUserOrganization()
+    {
+        //lay danh sach khoa hoc duoc gan cho cctc
+        $lstData = DB::table('tms_role_course as trc')
+            ->join('mdl_course as c', 'c.id', '=', 'trc.course_id')
+            ->join('tms_role_organization as tro', 'tro.role_id', '=', 'trc.role_id')
+            ->join('tms_organization as tor', 'tor.id', '=', 'tro.organization_id')
+            ->where('c.deleted', '=', 0)
+            ->where('c.category', '!=', 2)
+            ->select('tor.id as org_id', 'trc.course_id')->groupBy(['tor.id', 'trc.course_id'])
+            ->get();
+
+        if ($lstData) {
+            foreach ($lstData as $data) {
+                $leftJoin = '(SELECT mue.userid, mue.enrolid FROM mdl_user_enrolments mue
+                            join mdl_enrol me on me.id = mue.enrolid join mdl_course mc on mc.id = me.courseid
+                            where mc.id = ' . $data->course_id . ') as ue';
+
+                $leftJoin = DB::raw($leftJoin);
+
+                //lay danh sach hoc vien nam trong cctc chua dc enroll vao khoa hoc
+                $users = DB::table('tms_organization_employee as toe')
+                    ->leftJoin($leftJoin, 'ue.userid', '=', 'toe.user_id')
+                    ->where('toe.organization_id', '=', $data->org_id)
+                    ->whereNull('ue.enrolid')->groupBy('toe.user_id')->pluck('toe.user_id')->toArray();
+
+                if (count($users) > 0) {
+                    // enroll user to course in competency framework
+                    // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
+                    // he thong dang set mac dinh user tao ra deu co quyen student
+                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, false);
+                }
+
+                usleep(100);
+            }
+        }
+
+        usleep(100);
+    }
+
     //cron enroll user to competency framework
     public function autoEnrolTrainning()
     {

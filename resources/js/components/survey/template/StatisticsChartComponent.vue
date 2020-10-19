@@ -42,10 +42,16 @@
                 },
             }
         },
+        watch: {
+            question: {
+                handler(n, o) {
+                    this.getDataChartQuestion();
+                },
+            },
+        },
         methods: {
 
             getDataChartQuestion() {
-
                 var count_ans = this.question.lstAnswers.length;
                 var data_ans = [];
                 if (count_ans > 0) {
@@ -64,7 +70,6 @@
                     colorByPoint: true,
                     data: data_ans
                 }];
-
             }
         },
         mounted() {

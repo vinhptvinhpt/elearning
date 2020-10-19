@@ -79,9 +79,8 @@
                                                                 <td>{{ email }}</td>
                                                                 <td style="word-wrap:break-word" v-for="mark in data_item.marks">{{ mark }}</td>
                                                                 <td>
-                                                                    <template v-for="(course, index) in data_item.courses">
-                                                                        {{ course }}
-                                                                        <br v-if="index < data_item.courses.length">
+                                                                    <template v-if="data_item.courses.length > 0" v-for="(course, index) in data_item.courses">
+                                                                      {{ course }}<br v-if="index < data_item.courses.length">
                                                                     </template>
                                                                 </td>
                                                             </tr>

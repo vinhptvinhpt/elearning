@@ -569,6 +569,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::get('/downloadexcelsurvey/{type_file}', 'Backend\SurveyController@downloadExportSurvey');
     Route::post('/api/survey/view_result', 'Backend\SurveyController@apiViewResultSurvey');
     Route::post('/api/survey/list_user_result', 'Backend\SurveyController@apiGetListUserSurvey');
+    Route::post('/api/survey/store-user-view', 'Backend\SurveyController@apiSaveUserViewSurvey');
+    Route::post('/api/survey/user-view', 'Backend\SurveyController@apiGetUserViewSurvey');
 
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');
