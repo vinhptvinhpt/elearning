@@ -1083,7 +1083,8 @@
     "lms_dang_hoc_khoa_hoc": "Current Courses",
     "lms_hoan_thanh_khoa_hoc": "Completed Courses",
     "danh_sach_nguoi_dung_xem_ks": "List user view survey",
-    "total_view": "Total view"
+    "total_view": "Total view",
+    "print": "Print result"
   },
   "vi.keys": {
     "language": "",
@@ -2160,6 +2161,7 @@
     "lms_dang_hoc_khoa_hoc": "Các khóa học đang học",
     "lms_hoan_thanh_khoa_hoc": "Các khóa học hoàn thành",
     "danh_sach_nguoi_dung_xem_ks": "Danh sách người dùng xem khảo sát",
-    "total_view": "Tổng lượt xem"
+    "total_view": "Tổng lượt xem",
+    "print": "In kết quả"
   }
 }
