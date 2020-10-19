@@ -23,6 +23,7 @@ if ($progress == 1) { //List from home
     $courses_completed = array();
     $courses_others = array();
     $courses_others_id = '(0';
+    $student_role_id = 5;
 
     $sql_training = 'select @s:=@s+1 stt,
 mc.id,
@@ -53,9 +54,14 @@ mc.estimate_duration,
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   inner join mdl_course mc on ttc.course_id = mc.id
 
+
+  left join mdl_enrol me on mc.id = me.courseid AND me.roleid = ' . $student_role_id . '
+  left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = '. $USER->id . '
+
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
   left join tms_user_detail tudt on tudt.user_id = muet.userid
+
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
 
@@ -63,7 +69,8 @@ mc.estimate_duration,
   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
-  and ttp.style not in (2)
+  and ttp.style NOT IN (2)
+  and mue.id IS NOT NULL
   and tud.user_id = ' . $USER->id;
 
 
@@ -107,9 +114,13 @@ mc.estimate_duration,
   left join tms_trainning_courses ttc on ttc.course_id = mc.id
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 
+  left join mdl_enrol me on mc.id = me.courseid AND me.roleid = ' . $student_role_id . '
+  left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = '. $USER->id . '
+
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
   left join tms_user_detail tudt on tudt.user_id = muet.userid
+
   left join tms_organization_employee toet on toet.user_id = muet.userid
   left join tms_organization tort on tort.id = toet.organization_id, (SELECT @s:= 0) AS s
 
@@ -117,7 +128,8 @@ mc.estimate_duration,
   and mc.visible = 1
   and mc.category NOT IN (2,7)
   and ttc.deleted <> 1
-  and ttp.style not in (2)
+  and ttp.style NOT IN (2)
+  and mue.id IS NOT NULL
   and tud.user_id = ' . $USER->id;
 
     $sql_pqdl .= ' group by mc.id'; //cần để tạo tên giáo viên
