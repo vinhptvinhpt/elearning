@@ -261,7 +261,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         background: #E4E4E4 0% 0% no-repeat padding-box;
         border-radius: 4px;
         padding: .375em;
-        width: 100%;
+        width: 90%;
         border: none;
         font-size: 13px;
     }
@@ -728,8 +728,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                         <td class="icon-circle" style="text-align: center"
                                             v-if="course.numofmodule == 0 || course.numoflearned/course.numofmodule == 0 || (course.numoflearned/course.numofmodule > 0 && course.numoflearned/course.numofmodule < 1)">
                                             <i class="fa fa-circle-o" aria-hidden="true"></i></td>
-                                        <td class="icon-circle" style="text-align: center" v-else><i class="fa fa-check-circle icon-circle-green"
-                                                                          aria-hidden="true"></i></td>
+                                        <td class="icon-circle" style="text-align: center" v-else>
+                                            <i class="fa fa-check-circle icon-circle-green" aria-hidden="true"></i>
+                                        </td>
                                     </tr>
                                 </template>
                                 <template v-else>
@@ -771,22 +772,22 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                 <div id="certificate" class="tab-pane active">
                                     <br/>
                                     <div class="row col-lg-12 pb-3">
-                                    <?php foreach ($certificates as $certificate) { ?>
-                                        <div class="col-lg-3 mb-3">
-                                            <div class="item-image">
-                                                <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
-                                                     alt="">
+                                        <?php foreach ($certificates as $certificate) { ?>
+                                            <div class="col-lg-3 mb-3">
+                                                <div class="item-image">
+                                                    <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
+                                                         alt="">
+                                                </div>
+                                                <div class="item-content mt-2">
+                                                    <p class="item-content__name"><?php echo $certificate->name; ?></p>
+                                                    <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+                                                </div>
+                                                <div class="item-btn" style="text-align: center;color: #fff;">
+                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
+                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg')">Copy link</a>
+                                                </div>
                                             </div>
-                                            <div class="item-content mt-2">
-                                                <p class="item-content__name"><?php echo $certificate->name; ?></p>
-                                                <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
-                                            </div>
-                                            <div class="item-btn" style="text-align: center;color: #fff;">
-                                                <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
-                                                <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg')">Copy link</a>
-                                            </div>
-                                        </div>
-                                    <?php } ?>
+                                        <?php } ?>
                                     </div>
                                 </div>
                             <?php } else { ?>
@@ -977,7 +978,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         this.courses = response.data.courses;
                         this.currentCoursesTotal = this.courses.length;
                         this.totalPage = response.data.totalPage;
-                        this.trainingDescription = response.data.trainingDescription;
                     })
                     .catch(error => {
                         console.log("Error");
@@ -988,12 +988,12 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     method: 'get',
                     url: this.url + '/pusher/user_training.php',
                 })
-                .then(response => {
-                    this.trainingList = response.data.list;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+                    .then(response => {
+                        this.trainingList = response.data.list;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             },
             searchCourseTraining: function (traning, page) {
                 if (page === 1)
@@ -1012,14 +1012,15 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         'Content-Type': 'application/x-www-form-urlencoded',
                     }
                 })
-                .then(response => {
-                    this.coursesTraining = response.data.courses;
-                    this.currentCoursesTotalTraining = this.coursesTraining.length;
-                    this.totalPageTraining = response.data.totalPage;
-                })
-                .catch(error => {
-                    console.log(error);
-                });
+                    .then(response => {
+                        this.coursesTraining = response.data.courses;
+                        this.currentCoursesTotalTraining = this.coursesTraining.length;
+                        this.totalPageTraining = response.data.totalPage;
+                        this.trainingDescription = response.data.trainingDescription;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             },
             getProfile: function () {
                 const params = new URLSearchParams();
