@@ -101,16 +101,14 @@
                                     </div>
                                     <div class="col-2 form-group">
                                         <button type="button" v-if="chart_type==='bar'"
-                                                class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                                class="btn-sm btn-primary d-none d-lg-block"
                                                 @click="changeChartFormat('pie')">
-                                            {{trans.get('keys.pie_chart')}} <i class="fa fa-spinner"
-                                                                               aria-hidden="true"></i>
+                                            {{trans.get('keys.pie_chart')}}
                                         </button>
                                         <button type="button" v-else
-                                                class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                                class="btn-sm btn-primary d-none d-lg-block"
                                                 @click="changeChartFormat('bar')">
-                                            {{trans.get('keys.bar_chart')}} <i class="fa fa-spinner"
-                                                                               aria-hidden="true"></i>
+                                            {{trans.get('keys.bar_chart')}}
                                         </button>
                                     </div>
                                 </div>
@@ -202,7 +200,7 @@
                                             </form>
                                         </div>
                                     </div>
-                                    
+
                                     <h6 class="hk-sec-title">
                                         {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_ks')}}</h6>
                                     <div class="row mb-3">

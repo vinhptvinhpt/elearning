@@ -7429,15 +7429,27 @@ class BussinessRepository implements IBussinessInterface
                                 ) as su';
 
 
+        $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+
         if ($course_id || $organization_id) {
             if ($organization_id && $course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join tms_organization_employee toe
-                                on toe.user_id = su.user_id
-                                join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+                                join ' . $org_query . '
+                                on org_tp.org_uid = su.user_id
+                                and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
 
             } else if ($course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
@@ -7448,10 +7460,11 @@ class BussinessRepository implements IBussinessInterface
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join tms_organization_employee toe
-                                on toe.user_id = su.user_id
-                                join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
+                                join ' . $org_query . '
+                                on org_tp.org_uid = su.user_id
+                                group by su.question_id,su.answer_id) as su';
+
+
             }
         }
 
@@ -7737,7 +7750,6 @@ class BussinessRepository implements IBussinessInterface
                     on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
 
         $main_tables = DB::raw($main_tables);
-//        $join_tables = 'tms_survey_users as su';
 
         $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
@@ -7745,15 +7757,27 @@ class BussinessRepository implements IBussinessInterface
                                 ) as su';
 
 
+        $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+
         if ($course_id || $organization_id) {
             if ($organization_id && $course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join tms_organization_employee toe
-                                on toe.user_id = su.user_id
-                                join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+                                join ' . $org_query . '
+                                on org_tp.org_uid = su.user_id
+                                and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
 
             } else if ($course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
@@ -7764,13 +7788,13 @@ class BussinessRepository implements IBussinessInterface
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join tms_organization_employee toe
-                                on toe.user_id = su.user_id
-                                join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
+                                join ' . $org_query . '
+                                on org_tp.org_uid = su.user_id
+                                group by su.question_id,su.answer_id) as su';
+
+
             }
         }
-
         $join_tables = DB::raw($join_tables);
 
         $dataStatisctics = DB::table($main_tables)
