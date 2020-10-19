@@ -104,7 +104,6 @@ if (!isloggedin()) {
 <link rel="shortcut icon" href="images/favicon.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="js/popper.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
 
@@ -914,6 +913,25 @@ if (!isloggedin()) {
         }
     }
 
+    /* .show-setting {
+        will-change: transform;
+        position: absolute !important;
+        transform: translate3d(1091px, 220px, 0px);
+        top: 0px !important;
+        left: 0px;
+        display: block !important;
+        }
+    */
+    .show-setting {
+        will-change: transform;
+        position: absolute !important;
+        /* transform: translate3d(1518px, 244px, 0px); */
+        top: 0px !important;
+        left: 0px !important;
+        display: block !important;
+    }
+
+
 </style>
 
 <?php
@@ -1617,7 +1635,7 @@ where ttc.course_id = ' . $id . ')';
         <!--        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>-->
         <!--    --><?php //} ?>
     </div>
-
+    <?php echo $OUTPUT->footer(); ?>
 </div>
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
@@ -1650,6 +1668,20 @@ where ttc.course_id = ' . $id . ')';
 $_SESSION["displayPopup"] = 2; ?>
 <script>
     $(document).ready(function () {
+        //
+        $("#menu-edit").click(function () {
+            var getMenuSetting = $(".dropdown-menu").get(1);
+            $(getMenuSetting).toggleClass('show-setting');
+        });
+
+        //Cần click này vì xảy ra trường hợp: click vào body nhưng k phải dropmenu thì sẽ hidden
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('.dropdown-menu').length) {
+                var getMenuSetting = $(".dropdown-menu").get(1);
+                $(getMenuSetting).removeClass('show-setting');
+            }
+        });
+
         //get active li to show content
         $(".nav-click").each(function () {
             var getClasses = $(this).attr('class');
@@ -1766,7 +1798,7 @@ $_SESSION["displayPopup"] = 2; ?>
         $("#myModal").modal('show');
     });
 </script>
-
+<script src="js/popper.min.js"></script>
 <script>
     //Notify tiếp tục module đang học dở
     $(document).ready(function () {
@@ -1795,8 +1827,6 @@ $_SESSION["displayPopup"] = 2; ?>
                 } else {
                     continue_learning();
                 }
-
-
             });
     });
 
