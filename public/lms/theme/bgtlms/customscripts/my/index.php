@@ -1495,9 +1495,8 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
-                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1588,9 +1587,8 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                data-toggle="modal"
                                                                                data-target="#exampleModal"
                                                                                data-teacher-name="<?php echo $course->teacher_name; ?>"
-                                                                               data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                                data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                               data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                               data-teacher-position="<?php echo $course->teacher_description ?>">
                                                                                 <i class="fa fa-user"
                                                                                    aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                             </a>
@@ -1668,9 +1666,8 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
-                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1752,9 +1749,8 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
-                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1945,11 +1941,9 @@ $_SESSION["allowCms"] = $allowCms;
         let teacher_name = button.data('teacher-name');// Extract info from data-* attributes
         let teacher_position = button.data('teacher-position').length > 0 ? button.data('teacher-position') : 'N/A';
         let teacher_organization = button.data('teacher-organization').length > 0 ? button.data('teacher-organization') : 'PHH Group';
-        let teacher_description = button.data('teacher-description').length > 0 ? button.data('teacher-description') : 'N/A';
         $("span.teacher-name").html(teacher_name);
         $("span.teacher-position").html(teacher_position);
         $("span.teacher-organization").html(teacher_organization);
-        $("span.teacher-description").html(teacher_description);
     })
 </script>
 
@@ -1967,7 +1961,6 @@ $_SESSION["allowCms"] = $allowCms;
             <div class="modal-body">
                 Name: <span class="teacher-name" style="font-weight: bold"></span><br>
                 Position: <span class="teacher-position" style="font-weight: bold"></span><br>
-                Description: <span class="teacher-description" style="font-weight: bold"></span><br>
                 Organization: <span class="teacher-organization" style="font-weight: bold"></span>
             </div>
             <div class="modal-footer">
