@@ -120,7 +120,7 @@
   "tao_moi_khoa_hoc_thanh_cong": "Create new courses successfully",
   "sua_khoa_hoc_thanh_cong": "Edit course successfully",
   "khong_tim_thay_khoa_hoc": "Not found course",
-  "phe_duyet_khoa_hoc": "Approval course successful",
+  "phe_duyet_khoa_hoc_thanh_cong": "Approval course successful",
   "xoa_khoa_hoc": "Successfully deleted the course",
   "xoa_khoa_hoc_khong_thanh_cong": "Course delete failed",
   "dang_trong_thoi_gian_hoc": "Cannot delete course while studying",
@@ -382,5 +382,7 @@
     "team_da_ton_tai": "Team existed",
     "xoa_thanh_cong": "Successfully deleted",
     "fail_exam": "Did not pass test @100%",
-    "retake_exam": "Retake Final Test"
+    "retake_exam": "Retake Final Test",
+    "xuat_du_lieu_thanh_cong": "Export successfully",
+    "duyet": "Approve"
 }

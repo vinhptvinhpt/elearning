@@ -7169,25 +7169,31 @@ class BussinessRepository implements IBussinessInterface
 
             $count_multi = count($question_answers);
 
+            $arr_data = [];
+            $data = [];
+
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
                 for ($i = 0; $i < $count_multi; $i++) {
-                    $tms_survey_user = new TmsSurveyUser();
-                    $tms_survey_user->survey_id = $id;
-                    $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
-                    $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
-                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
+
+                    $data['survey_id'] = $id;
+                    $data['question_id'] = $question_answers[$i]['ques_id'];
+                    $data['answer_id'] = $question_answers[$i]['ans_id'];
+                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
+
+
                     if (!empty(Auth::user())) {
-                        $tms_survey_user->user_id = Auth::user()->id;
+                        $data['user_id'] = Auth::user()->id;
                     } else {
-                        $tms_survey_user->user_id = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
+                        $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
                     }
 
-                    $tms_survey_user->type_question = $question_answers[$i]['type_ques'];
-                    $tms_survey_user->content_answer = $question_answers[$i]['ans_content'];
 
-                    $tms_survey_user->save();
+                    $data['type_question'] = $question_answers[$i]['type_ques'];
+                    $data['content_answer'] = $question_answers[$i]['ans_content'];
+                    $data['created_at'] = Carbon::now();
+                    $data['updated_at'] = Carbon::now();
 
-                    sleep(0.01);
+                    array_push($arr_data, $data);
                 }
             }
 
@@ -7197,22 +7203,26 @@ class BussinessRepository implements IBussinessInterface
 
                     if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
 
-                        $tms_survey_user = new TmsSurveyUser();
-                        $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
-                        if (!empty(Auth::user())) {
-                            $tms_survey_user->user_id = Auth::user()->id;
-                        } else {
-                            $tms_survey_user->user_id = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
-                        }
-                        $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
-                        $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['survey_id'] = $id;
+                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
 
-                        $tms_survey_user->save();
-                        sleep(0.01);
+                        if (!empty(Auth::user())) {
+                            $data['user_id'] = Auth::user()->id;
+                        } else {
+                            $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
+                        }
+                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
+                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['created_at'] = Carbon::now();
+                        $data['updated_at'] = Carbon::now();
+
+                        array_push($arr_data, $data);
                     }
                 }
             }
+
+            TmsSurveyUser::insert($arr_data);
+
 
             \DB::commit();
 
@@ -7250,29 +7260,32 @@ class BussinessRepository implements IBussinessInterface
             $question_answers = $request->input('question_answers');
             $ddtotext = $request->input('ddtotext');
             $user_id = $request->input('user_id');
+            $course_id = $request->input('course_id');
 
             \DB::beginTransaction();
 
-            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->delete();
+            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->where('course_id', $course_id)->delete();
 
             $count_multi = count($question_answers);
 
+            $arr_data = [];
+            $data = [];
+
             if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
                 for ($i = 0; $i < $count_multi; $i++) {
-                    $tms_survey_user = new TmsSurveyUser();
-                    $tms_survey_user->survey_id = $id;
-                    $tms_survey_user->question_id = $question_answers[$i]['ques_id'];
-                    $tms_survey_user->answer_id = $question_answers[$i]['ans_id'];
-                    $tms_survey_user->ques_parent = $question_answers[$i]['ques_pr'];
-                    $tms_survey_user->user_id = $user_id;
 
+                    $data['survey_id'] = $id;
+                    $data['question_id'] = $question_answers[$i]['ques_id'];
+                    $data['answer_id'] = $question_answers[$i]['ans_id'];
+                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
+                    $data['user_id'] = $user_id;
+                    $data['course_id'] = $course_id;
+                    $data['type_question'] = $question_answers[$i]['type_ques'];
+                    $data['content_answer'] = $question_answers[$i]['ans_content'];
+                    $data['created_at'] = Carbon::now();
+                    $data['updated_at'] = Carbon::now();
 
-                    $tms_survey_user->type_question = $question_answers[$i]['type_ques'];
-                    $tms_survey_user->content_answer = $question_answers[$i]['ans_content'];
-
-                    $tms_survey_user->save();
-
-                    sleep(0.01);
+                    array_push($arr_data, $data);
                 }
             }
 
@@ -7282,20 +7295,22 @@ class BussinessRepository implements IBussinessInterface
 
                     if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
 
-                        $tms_survey_user = new TmsSurveyUser();
-                        $tms_survey_user->survey_id = $id;
-                        $tms_survey_user->question_id = $ddtotext['questions'][$j]['question_data'][0]['id'];
+                        $data['survey_id'] = $id;
+                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
 
-                        $tms_survey_user->user_id = $user_id;
+                        $data['user_id'] = $user_id;
+                        $data['course_id'] = $course_id;
+                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
+                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
+                        $data['created_at'] = Carbon::now();
+                        $data['updated_at'] = Carbon::now();
 
-                        $tms_survey_user->type_question = $ddtotext['questions'][$j]['type_question'];
-                        $tms_survey_user->content_answer = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
-
-                        $tms_survey_user->save();
-                        sleep(0.01);
+                        array_push($arr_data, $data);
                     }
                 }
             }
+
+            TmsSurveyUser::insert($arr_data);
 
             \DB::commit();
 
@@ -7316,6 +7331,7 @@ class BussinessRepository implements IBussinessInterface
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
         $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
 
         $param = [
             'survey_id' => 'number',
@@ -7328,13 +7344,31 @@ class BussinessRepository implements IBussinessInterface
 
         $data = DB::table('tms_survey_users as uv')
             ->join('mdl_user as u', 'u.id', '=', 'uv.user_id')
+            ->join('mdl_course as mc', 'mc.id', '=', 'uv.course_id')
             ->where('uv.survey_id', '=', $survey_id)
             ->select('u.id as user_id');
 
-        if ($organization_id) {
-            $data = $data->join('tms_organization_employee as toe', 'toe.user_id', '=', 'u.id')
-                ->join('tms_organization as tor', 'tor.id', '=', 'toe.organization_id')
-                ->where('tor.id', '=', $organization_id);
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $data = $data->join($org_query, 'org_tp.org_uid', '=', 'u.id');
+        }
+
+        if ($course_id) {
+            $data = $data->where('uv.course_id', '=', $course_id);
         }
 
         if ($startdate) {
@@ -7362,7 +7396,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $survey_id = $request->input('survey_id');
         $organization_id = $request->input('organization_id');
-
+        $course_id = $request->input('course_id');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
@@ -7384,21 +7418,46 @@ class BussinessRepository implements IBussinessInterface
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) as ques_a';
+                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
+
+        $main_tables = DB::raw($main_tables);
+//        $join_tables = 'tms_survey_users as su';
+
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id group by su.question_id,su.answer_id
+                                ) as su';
 
 
-        $join_tables = 'tms_survey_users as su';
-
-        if ($organization_id) {
-            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+        if ($course_id || $organization_id) {
+            if ($organization_id && $course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
-            $join_tables = DB::raw($join_tables);
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+
+            } else if ($course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+            } else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                join tms_organization_employee toe
+                                on toe.user_id = su.user_id
+                                join tms_organization tor
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
+            }
         }
 
-        $dataStatisctics = DB::table(DB::raw($main_tables))
+        $join_tables = DB::raw($join_tables);
+
+        $dataStatisctics = DB::table($main_tables)
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
             ->where('ques_a.survey_id', '=', $survey_id)
             ->select(
@@ -7408,7 +7467,8 @@ class BussinessRepository implements IBussinessInterface
                 'ques_a.ques_id',
                 'ques_a.content',
                 'ques_a.an_id', 'ques_a.ans_content',
-                DB::raw('(count(su.answer_id)) as total_choice')
+                'su.total_choice'
+//                DB::raw('(count(su.answer_id)) as total_choice')
             );
 
         if ($startdate) {
@@ -7425,6 +7485,8 @@ class BussinessRepository implements IBussinessInterface
         }
 
         $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
+//        Log::info($lstData);
+//        die;
 
         $datas = array();
         $count_data = count($lstData);
@@ -7453,7 +7515,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
+
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7488,7 +7555,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7524,7 +7596,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7561,7 +7638,12 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel = new AnswerModel();
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7637,6 +7719,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $survey_id = $request->input('survey_id');
         $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
         $type_file = $request->input('type_file');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
@@ -7651,21 +7734,46 @@ class BussinessRepository implements IBussinessInterface
                     join tms_questions q
                     on q.id = qd.question_id
                     join tms_surveys s
-                    on s.id = q.survey_id) as ques_a';
+                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
+
+        $main_tables = DB::raw($main_tables);
+//        $join_tables = 'tms_survey_users as su';
+
+        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id group by su.question_id,su.answer_id
+                                ) as su';
 
 
-        $join_tables = 'tms_survey_users as su';
-
-        if ($organization_id) {
-            $join_tables = '(SELECT su.survey_id, su.user_id, tor.id, su.answer_id, su.created_at FROM tms_survey_users su
+        if ($course_id || $organization_id) {
+            if ($organization_id && $course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
                                 join tms_organization_employee toe
                                 on toe.user_id = su.user_id
                                 join tms_organization tor
-                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ') as su';
-            $join_tables = DB::raw($join_tables);
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+
+            } else if ($course_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+            } else if ($organization_id) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                join tms_organization_employee toe
+                                on toe.user_id = su.user_id
+                                join tms_organization tor
+                                on tor.id = toe.organization_id where tor.id = ' . $organization_id . ' group by su.question_id,su.answer_id) as su';
+            }
         }
 
-        $dataStatisctics = DB::table(DB::raw($main_tables))
+        $join_tables = DB::raw($join_tables);
+
+        $dataStatisctics = DB::table($main_tables)
             ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
             ->where('ques_a.survey_id', '=', $survey_id)
             ->select(
@@ -7675,7 +7783,8 @@ class BussinessRepository implements IBussinessInterface
                 'ques_a.ques_id',
                 'ques_a.content',
                 'ques_a.an_id', 'ques_a.ans_content',
-                DB::raw('(count(su.answer_id)) as total_choice')
+                'su.total_choice'
+//                DB::raw('(count(su.answer_id)) as total_choice')
             );
 
         if ($startdate) {
@@ -7690,7 +7799,6 @@ class BussinessRepository implements IBussinessInterface
 
             $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
         }
-
 
         $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
 
@@ -7724,7 +7832,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7760,7 +7872,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7797,7 +7913,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -7835,7 +7955,11 @@ class BussinessRepository implements IBussinessInterface
                                             $ansModel->indexAns = 'Đáp án ' . $k;
                                             $ansModel->answerid = $lstData[$k]->an_id;
                                             $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            if ($lstData[$k]->total_choice) {
+                                                $ansModel->total_choice = $lstData[$k]->total_choice;
+                                            } else {
+                                                $ansModel->total_choice = 0;
+                                            }
                                             $total_ques += $ansModel->total_choice;
                                             array_push($answers, $ansModel);
                                         }
@@ -10992,9 +11116,11 @@ class BussinessRepository implements IBussinessInterface
         $row = $request->input('row');
         $user_id = $request->input('user_id');
         $trainning_id = $request->input('trainning_id');
+        $status = $request->input('status');
 
         $param = [
             'keyword' => 'text',
+            'status' => 'status',
             'row' => 'number',
             'user_id' => 'number',
         ];
@@ -11006,57 +11132,102 @@ class BussinessRepository implements IBussinessInterface
 //        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
 
-        $data = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            //->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_enrol as e', function ($join) {
-                $join->on('e.id', '=', 'mu.enrolid');
-                $join->where('e.roleid', '=', Role::ROLE_STUDENT);
-            })
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
-            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
-            ->join('tms_traninning_users as ttu', function ($join) {
-                $join->on('mu.userid', '=', 'ttu.user_id');
-                $join->on('ttc.trainning_id', '=', 'ttu.trainning_id');
-            })
-            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->where('ttp.deleted', '=', 0)
-            ->where('ttc.deleted', '=', 0)
-            ->where('c.deleted', '=', 0)
-            ->where('c.visible', '=', 1)
-            ->where('mu.userid', '=', $user_id)
-            //->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->whereNotIn('c.category',  [2,7])
-            ->where('e.enrol', '=', 'manual')
-            ->select(
-                'c.id as course_id',
-                'c.shortname',
-                'c.fullname',
-                'ttp.name as trainning_name',
-                //'ccc.gradepass as gradepass',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'), //Đã học
-                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
-                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
-                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
-            );
+//        $data = DB::table('mdl_user_enrolments as mu')
+//            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            //->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+//            ->join('mdl_enrol as e', function ($join) {
+//                $join->on('e.id', '=', 'mu.enrolid');
+//                $join->where('e.roleid', '=', Role::ROLE_STUDENT);
+//            })
+//            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+//            //->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause duplicate
+//            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+//            ->join('tms_traninning_users as ttu', function ($join) {
+//                $join->on('mu.userid', '=', 'ttu.user_id');
+//                $join->on('ttc.trainning_id', '=', 'ttu.trainning_id');
+//            })
+//            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+//            ->where('ttp.deleted', '=', 0)
+//            ->where('ttc.deleted', '=', 0)
+//            ->where('c.deleted', '=', 0)
+//            ->where('c.visible', '=', 1)
+//            ->where('mu.userid', '=', $user_id)
+//            //->where('e.roleid', '=', Role::ROLE_STUDENT)
+//            ->whereNotIn('c.category', [2, 7])
+//            ->where('e.enrol', '=', 'manual')
+//            ->select(
+//                'c.id as course_id',
+//                'c.shortname',
+//                'c.fullname',
+//                'ttp.name as trainning_name',
+//                //'ccc.gradepass as gradepass',
+//                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'), //Đã học
+//                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),//Tổng số module trong khóa
+//                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade')
+//                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
+//            );
+//
+//        $data = $data->orderBy('c.id', 'desc');//->distinct();;
 
-        $data = $data->orderBy('c.id', 'desc');//->distinct();;
+
+        $sqlData = '(select c.id as course_id, c.shortname, c.fullname, ttp.name as trainning_name,
+        (select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+        inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+        inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+        where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+        (select count(cm.id) as course_learn from mdl_course_modules cm
+        inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+        where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
+         where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), 1, 0) as status_user
+         from mdl_user_enrolments as mu
+         inner join mdl_user as u on u.id = mu.userid
+         inner join mdl_enrol as e on e.id = mu.enrolid and e.roleid = ' . Role::ROLE_STUDENT . '
+         inner join mdl_course as c on c.id = e.courseid
+         inner join tms_trainning_courses as ttc on ttc.course_id = c.id
+         inner join tms_traninning_users as ttu on mu.userid = ttu.user_id and ttc.trainning_id = ttu.trainning_id
+         inner join tms_traninning_programs as ttp on ttp.id = ttc.trainning_id
+        where ttc.deleted = 0 and c.deleted = 0 and ttp.deleted = 0 and c.visible = 1 and c.category not in (2,7) and e.enrol = "manual" and mu.userid = ' . $user_id;
+
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
 
         if ($this->keyword) {
-            $data = $data->where(function ($q) {
-                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
-                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
-            });
+            $sqlData .= ' and ( c.fullname like N\'%' . $this->keyword . '%\' or c.shortname like N\'%' . $this->keyword . '%\') ';
+//            $data = $data->where(function ($q) {
+//                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
+//                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
+//            });
         }
 
         if ($trainning_id) {
-            $data = $data->where('ttc.trainning_id', '=', $trainning_id);
+//            $data = $data->where('ttc.trainning_id', '=', $trainning_id);
+            $sqlData .= ' and ttp.id = ' . $trainning_id;
         }
+
+
+        $sqlData .= ' order by c.id desc) as r';
+
+        switch ($status) {
+            case "current":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate < r.user_course_learn';
+                break;
+            case "completed":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate = r.user_course_learn';
+                break;
+            case "required":
+                $sqlData .= ' where r.user_course_completionstate = 0 or r.user_course_learn = 0';
+                break;
+            default:
+                break;
+        }
+
+        //convert to stament in laravel
+        $data = DB::table(DB::raw($sqlData))
+            ->select(
+                DB::raw('*')
+            );
 
         $data = $data->paginate($row);
         $total = ceil($data->total() / $row);
@@ -11075,10 +11246,12 @@ class BussinessRepository implements IBussinessInterface
         $this->keyword = $request->input('keyword');
         $row = $request->input('row');
         $user_id = $request->input('user_id');
+        $status = $request->input('status');
 //        $trainning_id = $request->input('trainning_id');
 
         $param = [
             'keyword' => 'text',
+            'status' => 'text',
             'row' => 'number',
             'user_id' => 'number',
         ];
@@ -11088,42 +11261,74 @@ class BussinessRepository implements IBussinessInterface
         }
 //        $category_id = TmsTrainningUser::with('category')->where('user_id', $user_id)->first();
 //        $category = $category_id['category']['category_id'];
+//        $data = DB::table('mdl_user_enrolments as mu')
+//            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+//            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+//            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+////            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause dupplicate
+////            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+////            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+////            ->where('ttc.deleted', '=', 0)
+//            ->where('c.deleted', '=', 0)
+//            ->where('u.id', '=', $user_id)
+//            ->where('e.roleid', '=', Role::ROLE_STUDENT)
+//            ->select(
+//                'c.id as course_id',
+//                'c.shortname',
+//                'c.fullname',
+////                'ttp.name as trainning_name',
+////                'ccc.gradepass as gradepass',
+//                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'),
+//                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),
+//                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade'),
+//                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
+//            );
 
-        $data = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-//            ->join('mdl_course_completion_criteria as ccc', 'ccc.course', '=', 'c.id') //cause dupplicate
-//            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
-//            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-//            ->where('ttc.deleted', '=', 0)
-            ->where('c.deleted', '=', 0)
-            ->where('u.id', '=', $user_id)
-            ->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->select(
-                'c.id as course_id',
-                'c.shortname',
-                'c.fullname',
-//                'ttp.name as trainning_name',
-//                'ccc.gradepass as gradepass',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0) as user_course_completionstate'),
-                DB::raw('(select count(cm.id) as course_learn from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn'),
-                //DB::raw('(select `g`.`finalgrade` from mdl_grade_items as gi join mdl_grade_grades as g on g.itemid = gi.id where gi.courseid = c.id and gi.itemtype = "course" and g.userid = ' . $user_id . ' ) as finalgrade'),
-                DB::raw('IF( EXISTS(select cc.id from mdl_course_completions as cc where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), "1", "0") as status_user')
-            );
 
-        $data = $data->orderBy('c.id', 'desc');//->distinct();
+        $sqlData = '(select c.id as course_id, c.shortname, c.fullname,
+                    (select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm
+                    inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
+                    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                    where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+                    (select count(cm.id) as course_learn from mdl_course_modules cm
+                    inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
+                    where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
+                     where cc.userid = ' . $user_id . ' and cc.course = c.id and cc.timecompleted is not null ), 1, 0) as status_user
+                     from mdl_user_enrolments as mu
+					 inner join mdl_user as u on u.id = mu.userid
+                     inner join mdl_enrol as e on e.id = mu.enrolid
+                     inner join mdl_course as c on c.id = e.courseid
+                     where c.deleted = 0 and e.roleid = ' . Role::ROLE_STUDENT . ' and u.id =  ' . $user_id;
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
 //        }
-
         if ($this->keyword) {
-            $data = $data->where(function ($q) {
-                $q->orWhere('c.fullname', 'like', "%{$this->keyword}%")
-                    ->orWhere('c.shortname', 'like', "%{$this->keyword}%");
-            });
+            $sqlData .= ' and ( c.fullname like N\'%' . $this->keyword . '%\' or c.shortname like N\'%' . $this->keyword . '%\') ';
         }
+
+        $sqlData .= ' order by `c`.`id` desc) as r';
+
+        switch ($status) {
+            case "current":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate < r.user_course_learn';
+                break;
+            case "completed":
+                $sqlData .= ' where r.user_course_completionstate > 0 and r.user_course_completionstate = r.user_course_learn';
+                break;
+            case "required":
+                $sqlData .= ' where r.user_course_completionstate = 0 or r.user_course_learn = 0';
+                break;
+            default:
+                break;
+        }
+
+        //convert to stament in laravel
+        $data = DB::table(DB::raw($sqlData))
+            ->select(
+                DB::raw('*')
+            );
+
 
 //        if ($trainning_id) {
 //            $data = $data->where('ttp.id', '=', $trainning_id);

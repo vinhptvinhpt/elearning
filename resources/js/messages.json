@@ -605,7 +605,7 @@
         "tao_moi_khoa_hoc_thanh_cong": "Create new courses successfully",
         "sua_khoa_hoc_thanh_cong": "Edit course successfully",
         "khong_tim_thay_khoa_hoc": "Not found course",
-        "phe_duyet_khoa_hoc": "Approval course successful",
+        "phe_duyet_khoa_hoc_thanh_cong": "Approval course successful",
         "xoa_khoa_hoc_khong_thanh_cong": "Course delete failed",
         "dang_trong_thoi_gian_hoc": "Cannot delete course while studying",
         "nhan_ban_khoa_hoc": "Clone course successfully",
@@ -1070,9 +1070,18 @@
         "chon_quan_ly_truc_tiep": "Select line manager",
         "khung_nang_luc_effect": "Competency framework effect",
         "nhap_du_lieu_nguoi_dung": "Import user data",
-        "nhap_du_lieu_diem_co_san": "Import user mark",
+        "nhap_du_lieu_diem_co_san": "Import training effect",
         "chon_nam": "Select year",
-        "nam_sai_dinh_dang": "Year mismatch"
+        "nam_sai_dinh_dang": "Year mismatch",
+        "paste_link": "Please select course, cannot paste link to doing survey",
+        "export_report_excel": "Export excel report",
+        "training_effect_report": "Training effect report",
+        "chon_phong_ban": "Select organization",
+        "export_excel": "Export excel",
+        "lms_tat_ca_khoa_hoc": "All Courses",
+        "lms_cac_khoa_hoc_bat_buoc": "Required Courses",
+        "lms_dang_hoc_khoa_hoc": "Current Courses",
+        "lms_hoan_thanh_khoa_hoc": "Completed Courses"
     },
     "vi.keys": {
         "language": "",
@@ -1681,7 +1690,7 @@
         "tao_moi_khoa_hoc_thanh_cong": "Tạo mới khóa học thành công",
         "sua_khoa_hoc_thanh_cong": "Sửa thông tin khóa học thành công",
         "khong_tim_thay_khoa_hoc": "Không tìm thấy khóa học trong hệ thống",
-        "phe_duyet_khoa_hoc": "Phê duyệt khóa học thành công",
+        "phe_duyet_khoa_hoc_thanh_cong": "Phê duyệt khóa học thành công",
         "xoa_khoa_hoc_khong_thanh_cong": "Xóa khóa học không thành công",
         "dang_trong_thoi_gian_hoc": "Đang trong thời gian học nên không xóa được",
         "nhan_ban_khoa_hoc": "Nhân bản khóa học thành công",
@@ -2138,6 +2147,15 @@
         "nhap_du_lieu_nguoi_dung": "Nhập dữ liệu người dùng",
         "nhap_du_lieu_diem_co_san": "Nhập dữ liệu có sẵn",
         "chon_nam": "Chọn năm",
-        "nam_sai_dinh_dang": "Year mismatch"
+        "nam_sai_dinh_dang": "Năm sai định dạng",
+        "paste_link": "Vui lòng chọn khóa học, không thể dán liên kết để thực hiện khảo sát",
+        "export_report_excel": "Export báo cáo excel",
+        "training_effect_report": "Báo cáo hiệu quả học",
+        "chon_phong_ban": "Chọn phòng ban",
+        "export_excel": "Xuất excel",
+        "lms_tat_ca_khoa_hoc": "Tất cả khóa học",
+        "lms_cac_khoa_hoc_bat_buoc": "Các khóa học bắt buộc",
+        "lms_dang_hoc_khoa_hoc": "Các khóa học đang học",
+        "lms_hoan_thanh_khoa_hoc": "Các khóa học hoàn thành"
     }
 }

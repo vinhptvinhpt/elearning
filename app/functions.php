@@ -350,12 +350,14 @@ function permission_slug()
                 'tms-educate-exam-online-add' => __('them'),
                 'tms-educate-exam-online-edit' => __('sua'),
                 'tms-educate-exam-online-deleted' => __('xoa'),
+                'tms-educate-exam-online-approve' => __('duyet'),
             ],
             'tms-educate-exam-offline' => [
                 'tms-educate-exam-offline-view' => __('xem'),
                 'tms-educate-exam-offline-add' => __('them'),
                 'tms-educate-exam-offline-edit' => __('sua'),
                 'tms-educate-exam-offline-deleted' => __('xoa'),
+                'tms-educate-exam-offline-approve' => __('duyet'),
             ],
             'tms-educate-exam-clone' => [
                 'tms-educate-exam-clone-add' => __('them'),

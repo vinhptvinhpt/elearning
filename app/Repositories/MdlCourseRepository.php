@@ -938,7 +938,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ));
 
             $response->status = true;
-            $response->message = __('phe_duyet_khoa_hoc');
+            $response->message = __('phe_duyet_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             $response->status = false;
             //$response->message = $e->getMessage();
