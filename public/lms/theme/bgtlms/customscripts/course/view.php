@@ -1241,13 +1241,18 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
     }
 
 //
-    $tab_introduction = '';
-    $tab_competency = '';
-    if (!is_null($getContentCompetency->id)) {
-        $tab_competency = 'nav-first-tab';
-    } else {
-        $tab_introduction = 'nav-first-tab';
-    }
+
+//    $tab_introduction = '';
+//    $tab_competency = '';
+//    if (!is_null($getContentCompetency->id)) {
+//        $tab_competency = 'nav-first-tab';
+//    } else {
+//        $tab_introduction = 'nav-first-tab';
+//    }
+
+    $tab_introduction = 'nav-first-tab';
+
+
 //check if is toeic course and is admin => toeic result is last tab
 //else unit list is last tab
 
@@ -1353,11 +1358,11 @@ where ttc.course_id = ' . $id . ')';
                 <!--                click tab - nav-->
                 <div class="nav-course">
                     <ul class="nav nav-tabs-courses">
-<!--                        --><?php //if (!is_null($getContentCompetency->id)) { ?>
-<!--                            <li class="nav-item nav-click --><?php //echo $tab_competency; ?><!--">-->
-<!--                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">General Competency Description</a>-->
-<!--                            </li>-->
-<!--                        --><?php //} ?>
+                        <?php if (!is_null($getContentCompetency->id)) { ?>
+                            <li class="nav-item nav-click <?php echo $tab_competency; ?>">
+                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">General Competency Description</a>
+                            </li>
+                        <?php } ?>
                         <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
                             <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                 introduction</a>
