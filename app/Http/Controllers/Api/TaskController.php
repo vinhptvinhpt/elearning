@@ -1260,6 +1260,9 @@ class TaskController extends Controller
                     'timecreated' => strtotime(Carbon::now()),
                     'timemodified' => strtotime(Carbon::now())
                 ];
+                if ($notify) {
+                    self::insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+                }
             }
             if (!empty($insert_enrolment_data)) {
                 MdlUserEnrolments::insert($insert_enrolment_data);
