@@ -1353,13 +1353,11 @@ where ttc.course_id = ' . $id . ')';
                 <!--                click tab - nav-->
                 <div class="nav-course">
                     <ul class="nav nav-tabs-courses">
-                        <?php if (!is_null($getContentCompetency->id)) { ?>
-                            <li class="nav-item nav-click <?php echo $tab_competency; ?>">
-                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency"
-                                   role="tab">General
-                                    Competency Description</a>
-                            </li>
-                        <?php } ?>
+<!--                        --><?php //if (!is_null($getContentCompetency->id)) { ?>
+<!--                            <li class="nav-item nav-click --><?php //echo $tab_competency; ?><!--">-->
+<!--                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">General Competency Description</a>-->
+<!--                            </li>-->
+<!--                        --><?php //} ?>
                         <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
                             <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                 introduction</a>
