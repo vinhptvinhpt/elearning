@@ -708,7 +708,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                 <option :value="training.id">{{ training.name }}</option>
                                             </template>
                                         </select>
-                                        <a class="nav-link d-inline-block position-relative" style="max-width: 50px" title="{{ trainingDescription }}">
+                                        <a class="nav-link d-inline-block position-relative" style="max-width: 50px" :title="trainingDescription">
                                             <i class="fa fa-info-circle"></i>
                                         </a>
                                     </th>
