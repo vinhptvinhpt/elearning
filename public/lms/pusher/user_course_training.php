@@ -12,6 +12,7 @@ $sql = 'select
 mc.id,
 mc.shortname,
 mc.fullname,
+ttp.description,
 ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
 ( select count(cmc.coursemoduleid) as num from mdl_course_modules cm inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id inner join mdl_course c on cm.course = c.id where cs.section <> 0 AND cm.completion <> 0  and cmc.completionstate in (1, 2) and cm.course = mc.id and cmc.userid = mue.userid) as numoflearned
 from mdl_user_enrolments mue
@@ -41,9 +42,11 @@ $sql .= ' limit ' . $recordPerPage;
 $sql .= ' offset ' . $start_index;
 
 $list = array_values($DB->get_records_sql($sql)); //Auto group by moodle
+$trainingDescription = isset($list[0]) ? $list[0]->description : '';
 
 $response = json_encode([
     'courses' => $list,
+    'trainingDescription' => $trainingDescription,
     'totalPage' => ceil($total / $recordPerPage),
     'totalRecords' => $total
 ]);
