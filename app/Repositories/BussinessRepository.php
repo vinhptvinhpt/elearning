@@ -745,8 +745,8 @@ class BussinessRepository implements IBussinessInterface
     {
         $listCategories = DB::table('mdl_course_categories')
             ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->where('mdl_course_categories.id', '!=', 2)
-            //->where('mdl_course_categories.id', '!=', 3)
+            ->whereNotIn('mdl_course_categories.id', [2, 5])
+//            ->where('mdl_course_categories.id', '!=', 5) //ko lay danh muc khoa
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
     }
@@ -771,6 +771,7 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
             ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
             //->join('mdl_logstore_standard_log', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id')
             ->select(
                 'mdl_course.id as id',
                 'mdl_course.fullname as fullname',
@@ -789,7 +790,11 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.estimate_duration',
                 'mdl_course.course_budget',
                 'mdl_course.is_toeic',
-                'mdl_course.access_ip'
+                'mdl_course.access_ip',
+                'mdl_user.username',
+                DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time"),
+                'mdl_course.last_modify_action',
+                'mdl_course.last_modify_user'
             )
             ->where('mdl_course.id', '=', $id)->first();
 
@@ -2209,9 +2214,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Update performance 02/03/2020 by cuonghq
-            if ($role_id == Role::ROLE_STUDENT) {
-                enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
-            }
+            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
 
 //            $count_user = count($lstUserIDs);
 //            if ($count_user > 0) {
@@ -15802,9 +15805,7 @@ class BussinessRepository implements IBussinessInterface
             }
 //            }
 
-            if ($role_id == Role::ROLE_STUDENT) {
-                enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
-            }
+            enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
 
             $response->otherData = $ids_error;
             $response->status = true;

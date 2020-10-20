@@ -185,25 +185,30 @@
             if (response.data.pass_score)
               //this.course.pass_score = Math.floor(response.data.pass_score);
               this.course.pass_score = parseFloat(response.data.pass_score);
+
+            //Set last update
+            this.last_update.user_id = response.data.last_modify_user;
+            this.last_update.user_fullname = response.data.username;
+            this.last_update.updated_at = response.data.last_modify_time;
           })
           .catch(error => {
             console.log(error.response.data);
           });
 
       },
-      getLastUpdated() {
-        axios.get('/api/courses/get_last_update/' + this.course_id)
-          .then(response => {
-            if (response.data.last) {
-              this.last_update.user_id = response.data.last.userid;
-              this.last_update.user_fullname = response.data.last.user_detail.fullname;
-              this.last_update.updated_at = response.data.last.created_at;
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      },
+      // getLastUpdated() {
+      //   axios.get('/api/courses/get_last_update/' + this.course_id)
+      //     .then(response => {
+      //       if (response.data.last) {
+      //         this.last_update.user_id = response.data.last.userid;
+      //         this.last_update.user_fullname = response.data.last.user_detail.fullname;
+      //         this.last_update.updated_at = response.data.last.created_at;
+      //       }
+      //     })
+      //     .catch(error => {
+      //       console.log(error);
+      //     });
+      // },
       editCourse() {
         if (!this.course.shortname) {
           $('.shortname_required').show();
@@ -285,7 +290,7 @@
     },
     mounted() {
       this.getCourseDetail();
-      this.getLastUpdated();
+      //this.getLastUpdated();
     },
     updated() {
       this.setFileInput();
