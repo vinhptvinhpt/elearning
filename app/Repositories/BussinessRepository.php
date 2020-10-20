@@ -2209,9 +2209,7 @@ class BussinessRepository implements IBussinessInterface
             }
 
             //Update performance 02/03/2020 by cuonghq
-            if ($role_id == Role::ROLE_STUDENT) {
-                enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
-            }
+            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
 
 //            $count_user = count($lstUserIDs);
 //            if ($count_user > 0) {
@@ -15802,9 +15800,7 @@ class BussinessRepository implements IBussinessInterface
             }
 //            }
 
-            if ($role_id == Role::ROLE_STUDENT) {
-                enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
-            }
+            enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
 
             $response->otherData = $ids_error;
             $response->status = true;
