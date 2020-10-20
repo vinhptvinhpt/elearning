@@ -545,7 +545,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 </div>
                 <div class="info-detail">
                     <ul>
-                        <li v-if="user.position">Position: <span>{{ user.position }}</span></li>
+                        <li v-if="user.position">Position: <span>{{ user.exactlypostion }}</span></li>
                         <li v-else>Position: <span>Not yet update</span></li>
                         <li v-if="user.departmentname">Department: <span>{{ user.departmentname }}</span></li>
                         <li v-else>Department: <span>Not yet update</span></li>
