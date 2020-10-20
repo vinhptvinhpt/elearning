@@ -246,216 +246,266 @@
                     date: 'moment'
                 }
             }
-            this.course.startdate = this.parseDateFromTimestamp(response.data.startdate);
-            if (response.data.enddate) {
-              this.course.enddate = this.parseDateFromTimestamp(response.data.enddate);
-            } else {
-              this.course.enddate = "";
+        },
+        methods: {
+            slug_can(permissionName) {
+                return this.slugs.indexOf(permissionName) !== -1;
+            },
+            onChangeCate(event) {
+                if (event.target.value == 3) {
+                    //this.pass_score = 0;
+                    //$('#pass_score').attr("disabled", true);
+                    //$('#is_end_quiz').show();
+                } else {
+                    // if (this.course.is_toeic == 1) {
+                    //   $('#pass_score').attr("disabled", true);
+                    // } else {
+                    //   $('#pass_score').attr("disabled", false);
+                    // }
+                    //$('#pass_score').attr("disabled", false);
+                    //$('#is_end_quiz').hide();
+                }
+            },
+            // onChangeToeic() {
+            //   if (this.course.is_toeic == 1) {
+            //     $('#pass_score').attr("disabled", true);
+            //   } else {
+            //     if (this.course.category == 3) {
+            //       $('#pass_score').attr("disabled", true);
+            //     } else {
+            //       $('#pass_score').attr("disabled", false);
+            //     }
+            //   }
+            // },
+            getCategories() {
+                axios.post('/api/courses/get_list_category_edit')
+                    .then(response => {
+                        this.categories = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+
+            },
+            getCourseDetail() {
+                axios.get('/api/courses/get_course_detail/' + this.course_id)
+                    .then(response => {
+                        this.course = response.data;
+                        if (response.data.access_ip) {
+                            var js_ip = JSON.parse(response.data.access_ip);
+                            js_ip['list_access_ip'].forEach(item => this.string_ip += item + ', ');
+                            this.string_ip = this.string_ip.substr(0, this.string_ip.length - 2);
+                        }
+                        this.course.startdate = this.parseDateFromTimestamp(response.data.startdate);
+                        if (response.data.enddate) {
+                            this.course.enddate = this.parseDateFromTimestamp(response.data.enddate);
+                        } else {
+                            this.course.enddate = "";
+                        }
+                        if (response.data.pass_score)
+                        //this.course.pass_score = Math.floor(response.data.pass_score);
+                            this.course.pass_score = parseFloat(response.data.pass_score);
+
+                        if (this.course.category === 3) {
+                            //$('#pass_score').attr("disabled", true);
+                            //$('#is_end_quiz').show();
+                        } else {
+                            // if (this.course.is_toeic === 1) {
+                            //   $('#pass_score').attr("disabled", true);
+                            // } else {
+                            //   $('#pass_score').attr("disabled", false);
+                            // }
+
+                            //$('#pass_score').attr("disabled", false);
+                            //$('#is_end_quiz').hide();
+                        }
+                        //Convert text-area to ck editor
+                        this.setEditor();
+
+                        //Set last update
+                        this.last_update.user_id = response.data.last_modify_user;
+                        this.last_update.user_fullname = response.data.username;
+                        this.last_update.updated_at = response.data.last_modify_time;
+
+                    })
+                    .catch(error => {
+                        console.log(error.response.data);
+                    });
+
+            },
+            // getLastUpdated() {
+            //   axios.get('/api/courses/get_last_update/' + this.course_id)
+            //     .then(response => {
+            //       if (response.data.last) {
+            //         this.last_update.user_id = response.data.last.userid;
+            //         this.last_update.user_fullname = response.data.last.user_detail.fullname;
+            //         this.last_update.updated_at = response.data.last.created_at;
+            //       }
+            //     })
+            //     .catch(error => {
+            //       console.log(error);
+            //     });
+            // },
+            parseDateFromTimestamp(timestamp) {
+                let ten = function (i) {
+                    return (i < 10 ? '0' : '') + i;
+                };
+                let jstimestamp = new Date(timestamp * 1000);
+                let YYYY = jstimestamp.getFullYear();
+                let MM = ten(jstimestamp.getMonth() + 1);
+                let DD = ten(jstimestamp.getDate());
+                let HH = ten(jstimestamp.getHours());
+                let II = ten(jstimestamp.getMinutes());
+                return YYYY + '-' + MM + '-' + DD;
+                // return MM + '/' + DD + '/' + YYYY;
+            },
+            editCourse() {
+
+                if (!this.course.shortname) {
+                    $('.shortname_required').show();
+                    return;
+                }
+                if (!this.course.fullname) {
+                    $('.fullname_required').show();
+                    return;
+                }
+
+                if (!this.course.category) {
+                    $('.category_id_required').show();
+                    return;
+                }
+
+                if (!this.course.estimate_duration) {
+                    $('.estimate_duration_required').show();
+                    return;
+                }
+
+                if (!this.course.startdate) {
+                    $('.startdate_required').show();
+                    return;
+                }
+
+                //validate positive number
+                var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+
+                if (this.course.pass_score && !rePosNum.test(this.course.pass_score)) {
+                    toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                if (!rePosNum.test(this.course.estimate_duration) || this.course.estimate_duration <= 0) {
+                    toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                if (!rePosNum.test(this.course.course_budget)) {
+                    toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.course_budget') + ' )', this.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                // if (!this.course.course_budget) {
+                //   $('.course_budget_required').show();
+                //   return;
+                // }
+
+                // if (!this.course.enddate) {
+                //     $('.enddate_required').show();
+                //     return;
+                // }
+
+                // if (!this.course.pass_score && this.course.category != 3) {
+                //     $('.pass_score_required').show();
+                //     return;
+                // }
+
+                var allow_reg = 0;
+                if (this.course.allow_register) {
+                    allow_reg = 1;
+                }
+
+                var quiz_test = 0;
+                if (this.course.is_end_quiz) {
+                    quiz_test = 1;
+                }
+
+                if (this.course.pass_score == null)
+                    this.course.pass_score = '';
+
+                if (this.course.enddate == null)
+                    this.course.enddate = '';
+
+                //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
+
+                this.formData = new FormData();
+                this.formData.append('file', this.$refs.file.files[0]);
+                this.formData.append('fullname', this.course.fullname);
+                this.formData.append('shortname', this.course.shortname);
+                this.formData.append('estimate_duration', this.course.estimate_duration);
+                this.formData.append('startdate', this.course.startdate);
+                this.formData.append('enddate', this.course.enddate);
+                this.formData.append('pass_score', this.course.pass_score);
+                //this.formData.append('description', editor_data);
+                this.formData.append('description', this.course.summary == null ? '' : this.course.summary);
+                this.formData.append('category_id', this.course.category);
+                this.formData.append('course_place', '');
+                this.formData.append('is_end_quiz', quiz_test);
+                this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
+                this.formData.append('allow_register', allow_reg);
+                this.formData.append('offline', 0); //ko phai khoa hoc tap trung
+                this.formData.append('course_budget', this.course.course_budget ? this.course.course_budget : '');
+                this.formData.append('access_ip', this.string_ip);
+                var is_toeic = this.course.is_toeic ? 1 : 0;
+                this.formData.append('is_toeic', is_toeic);
+
+                let current_pos = this;
+                axios.post('/api/courses/update/' + this.course_id, this.formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    },
+                })
+                    .then(response => {
+                        var language = this.language;
+                        if (response.data.status) {
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
+                        } else {
+                            if (response.data.otherData) {
+                                toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));
+                            } else {
+                                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                    });
+            },
+            goBack() {
+                this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
+            },
+            setEditor() {
+                // var CSRFToken = $('meta[name="csrf-token"]').attr('content');
+                // var options = {
+                //   filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
+                //   filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=' + CSRFToken,
+                //   filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
+                //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
+                // };
+                // CKEDITOR.replace('article_ckeditor', options);
+            },
+            setFileInput() {
+                $('.dropify').dropify();
             }
-            if (response.data.pass_score)
-              //this.course.pass_score = Math.floor(response.data.pass_score);
-              this.course.pass_score = parseFloat(response.data.pass_score);
-
-            if (this.course.category === 3) {
-              //$('#pass_score').attr("disabled", true);
-              //$('#is_end_quiz').show();
-            } else {
-              // if (this.course.is_toeic === 1) {
-              //   $('#pass_score').attr("disabled", true);
-              // } else {
-              //   $('#pass_score').attr("disabled", false);
-              // }
-
-              //$('#pass_score').attr("disabled", false);
-              //$('#is_end_quiz').hide();
-            }
-            //Convert text-area to ck editor
-            this.setEditor();
-
-            //Set last update
-            this.last_update.user_id = response.data.last_modify_user;
-            this.last_update.user_fullname = response.data.username;
-            this.last_update.updated_at = response.data.last_modify_time;
-
-          })
-          .catch(error => {
-            console.log(error.response.data);
-          });
-
-      },
-      // getLastUpdated() {
-      //   axios.get('/api/courses/get_last_update/' + this.course_id)
-      //     .then(response => {
-      //       if (response.data.last) {
-      //         this.last_update.user_id = response.data.last.userid;
-      //         this.last_update.user_fullname = response.data.last.user_detail.fullname;
-      //         this.last_update.updated_at = response.data.last.created_at;
-      //       }
-      //     })
-      //     .catch(error => {
-      //       console.log(error);
-      //     });
-      // },
-      parseDateFromTimestamp(timestamp) {
-        let ten = function (i) {
-          return (i < 10 ? '0' : '') + i;
-        };
-        let jstimestamp = new Date(timestamp * 1000);
-        let YYYY = jstimestamp.getFullYear();
-        let MM = ten(jstimestamp.getMonth() + 1);
-        let DD = ten(jstimestamp.getDate());
-        let HH = ten(jstimestamp.getHours());
-        let II = ten(jstimestamp.getMinutes());
-        return YYYY + '-' + MM + '-' + DD;
-        // return MM + '/' + DD + '/' + YYYY;
-      },
-      editCourse() {
-
-        if (!this.course.shortname) {
-          $('.shortname_required').show();
-          return;
+        },
+        mounted() {
+            this.getCategories();
+            this.getCourseDetail();
+            //this.getLastUpdated();
+        },
+        updated() {
+            this.setFileInput();
         }
-        if (!this.course.fullname) {
-          $('.fullname_required').show();
-          return;
-        }
-
-        if (!this.course.category) {
-          $('.category_id_required').show();
-          return;
-        }
-
-        if (!this.course.estimate_duration) {
-          $('.estimate_duration_required').show();
-          return;
-        }
-
-        if (!this.course.startdate) {
-          $('.startdate_required').show();
-          return;
-        }
-
-        //validate positive number
-        var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
-
-        if(this.course.pass_score && !rePosNum.test(this.course.pass_score)){
-          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
-          return;
-        }
-
-        if(!rePosNum.test(this.course.estimate_duration) || this.course.estimate_duration <= 0) {
-          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.estimate_duration') + ' )', this.trans.get('keys.that_bai'));
-          return;
-        }
-
-        if(!rePosNum.test(this.course.course_budget)) {
-          toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.course_budget') + ' )', this.trans.get('keys.that_bai'));
-          return;
-        }
-
-        // if (!this.course.course_budget) {
-        //   $('.course_budget_required').show();
-        //   return;
-        // }
-
-        // if (!this.course.enddate) {
-        //     $('.enddate_required').show();
-        //     return;
-        // }
-
-        // if (!this.course.pass_score && this.course.category != 3) {
-        //     $('.pass_score_required').show();
-        //     return;
-        // }
-
-        var allow_reg = 0;
-        if (this.course.allow_register) {
-          allow_reg = 1;
-        }
-
-        var quiz_test = 0;
-        if (this.course.is_end_quiz) {
-          quiz_test = 1;
-        }
-
-        if(this.course.pass_score == null)
-          this.course.pass_score = '';
-
-        if(this.course.enddate == null)
-          this.course.enddate = '';
-
-        //var editor_data = CKEDITOR.instances.article_ckeditor.getData();
-
-        this.formData = new FormData();
-        this.formData.append('file', this.$refs.file.files[0]);
-        this.formData.append('fullname', this.course.fullname);
-        this.formData.append('shortname', this.course.shortname);
-        this.formData.append('estimate_duration', this.course.estimate_duration);
-        this.formData.append('startdate', this.course.startdate);
-        this.formData.append('enddate', this.course.enddate);
-        this.formData.append('pass_score', this.course.pass_score);
-        //this.formData.append('description', editor_data);
-        this.formData.append('description', this.course.summary == null ? '' : this.course.summary);
-        this.formData.append('category_id', this.course.category);
-        this.formData.append('course_place', '');
-        this.formData.append('is_end_quiz', quiz_test);
-        this.formData.append('total_date_course', 0);// truyền giá trị để nhận biết đây không phải khóa học tập trung
-        this.formData.append('allow_register', allow_reg);
-        this.formData.append('offline', 0); //ko phai khoa hoc tap trung
-        this.formData.append('course_budget', this.course.course_budget ? this.course.course_budget : '');
-        this.formData.append('access_ip', this.string_ip);
-        var is_toeic = this.course.is_toeic ? 1 : 0;
-        this.formData.append('is_toeic', is_toeic);
-
-        let current_pos = this;
-        axios.post('/api/courses/update/' + this.course_id, this.formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          },
-        })
-          .then(response => {
-            var language = this.language;
-            if (response.data.status) {
-              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-              this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
-            } else {
-              if (response.data.otherData) {
-                toastr['error'](response.data.otherData.message, current_pos.trans.get('keys.that_bai'));
-              } else {
-                toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
-              }
-            }
-          })
-          .catch(error => {
-            toastr['error'](this.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
-          });
-      },
-      goBack() {
-        this.$router.push({name: 'CourseIndex', params: {back_page: '1'}});
-      },
-      setEditor() {
-        // var CSRFToken = $('meta[name="csrf-token"]').attr('content');
-        // var options = {
-        //   filebrowserImageBrowseUrl: '/laravel-filemanager?type=Images',
-        //   filebrowserImageUploadUrl: '/laravel-filemanager/upload?type=Images&_token=' + CSRFToken,
-        //   filebrowserBrowseUrl: '/laravel-filemanager?type=Files',
-        //   filebrowserUploadUrl: '/laravel-filemanager/upload?type=Files&_token=' + CSRFToken
-        // };
-        // CKEDITOR.replace('article_ckeditor', options);
-      },
-      setFileInput() {
-        $('.dropify').dropify();
-      }
-    },
-    mounted() {
-      this.getCategories();
-      this.getCourseDetail();
-      //this.getLastUpdated();
-    },
-    updated() {
-      this.setFileInput();
     }
-  }
 </script>
 
 <style scoped>
