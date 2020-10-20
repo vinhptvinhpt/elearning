@@ -214,7 +214,7 @@
                                 <!--                                <input v-model="users.code" type="text" id="inputCode" placeholder="" class="form-control mb-4">-->
                                 <!--                            </div>-->
 
-                                <div v-if="roles && type === 'system'" class="col-12 form-group">
+                                <div v-if="roles.length > 0 && type === 'system'" class="col-12 form-group">
                                     <label for="inputRole">{{trans.get('keys.quyen')}} *</label>
                                     <select v-model="users.role" class="form-control selectpicker" id="inputRole"
                                             multiple>
@@ -241,7 +241,7 @@
                                     </select>
                                 </div>
 
-                                <div v-if="roles && type == 'system'" class="col-md-4 col-sm-6 form-group">
+                                <div v-if="type === 'system'" class="col-md-4 col-sm-6 form-group">
                                     <label for="employee_organization_id">{{trans.get('keys.noi_lam_viec')}} </label>
                                     <treeselect v-model="users.employee.organization_id" :multiple="false"
                                                 :options="options" id="employee_organization_id"/>
@@ -250,7 +250,7 @@
 
                                 </div>
 
-                              <div v-if="roles && type == 'system'" class="col-md-4 col-sm-6 form-group">
+                              <div v-if="type === 'system'" class="col-md-4 col-sm-6 form-group">
                                 <label>{{trans.get('keys.quan_ly_truc_tiep')}} </label>
                                 <v-select
                                   :options="lineManagerSelectOptions"
@@ -766,58 +766,58 @@
                 axios.post('/system/user/detail', {
                     user_id: this.user_id
                 })
-                    .then(response => {
-                        this.users = response.data;
-
-                        if (!response.data.training) {
-                            this.users.training = {
-                                trainning_id: 0,
-                            }
+                .then(response => {
+                    this.users = response.data;
+                    if (!response.data.training) {
+                        this.users.training = {
+                            trainning_id: 0,
                         }
-                        if (!response.data.certificate) {
-                            this.users.certificate = {
-                                code: '',
-                                timecertificate: '',
-                            }
+                    }
+                    if (!response.data.certificate) {
+                        this.users.certificate = {
+                            code: '',
+                            timecertificate: '',
                         }
+                    }
 
-                        if (!this.users.employee) {
-                            this.users.employee = {
-                                organization_id: 0
-                            };
-                        }
+                    if (!this.users.employee) {
+                        this.users.employee = {
+                            organization_id: 0
+                        };
+                    }
 
-                        this.selectOrganization(this.users.employee.organization_id);
+                    this.selectOrganization(this.users.employee.organization_id);
 
-                        if (response.data.salerooms.length > 0) {
-                            var workplaces = response.data.salerooms;
-                            var branch_a = [];
-                            var saleroom_a = [];
-                            for (var i = 0; i < workplaces.length; i++) {
-                                if (workplaces[i].type === 'agents') {
-                                    branch_a = {
-                                        'id': workplaces[i].branch_id,
-                                        'name': workplaces[i].branch_name
-                                    };
-                                    this.branch_list.push(branch_a);
-                                    this.branch_select.push(workplaces[i].branch_id);
-                                }
-                                if (workplaces[i].type === 'pos') {
-                                    saleroom_a = {
-                                        'id': workplaces[i].id,
-                                        'name': workplaces[i].name
-                                    };
-                                    this.saleroom_list.push(saleroom_a);
-                                    this.saleroom_select.push(workplaces[i].id);
-                                }
-                            }
-                        }
-                        this.$nextTick(function () {
-                            $('.selectpicker').selectpicker('refresh');
-                        });
-                    })
-                    .catch(error => {
-                    })
+                    // if (response.data.salerooms.length > 0) {
+                    //     var workplaces = response.data.salerooms;
+                    //     var branch_a = [];
+                    //     var saleroom_a = [];
+                    //     for (var i = 0; i < workplaces.length; i++) {
+                    //         if (workplaces[i].type === 'agents') {
+                    //             branch_a = {
+                    //                 'id': workplaces[i].branch_id,
+                    //                 'name': workplaces[i].branch_name
+                    //             };
+                    //             this.branch_list.push(branch_a);
+                    //             this.branch_select.push(workplaces[i].branch_id);
+                    //         }
+                    //         if (workplaces[i].type === 'pos') {
+                    //             saleroom_a = {
+                    //                 'id': workplaces[i].id,
+                    //                 'name': workplaces[i].name
+                    //             };
+                    //             this.saleroom_list.push(saleroom_a);
+                    //             this.saleroom_select.push(workplaces[i].id);
+                    //         }
+                    //     }
+                    // }
+
+                    this.$nextTick(function () {
+                        $('.selectpicker').selectpicker('refresh');
+                    });
+                })
+                .catch(error => {
+                })
             },
             getCitys() {
                 axios.post('/system/list/list_city')

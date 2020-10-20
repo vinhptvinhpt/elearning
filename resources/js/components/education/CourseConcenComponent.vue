@@ -153,17 +153,26 @@
                                                 course.username }}</a></td>
                                             <td v-else></td>
 
-                                            <td class="text-center mobile_hide" v-if="slug_can('tms-educate-exam-offline-approve')">
+                                            <td class="text-center mobile_hide"
+                                                v-if="slug_can('tms-educate-exam-offline-approve')">
                                                    <span v-if="course.visible == 1">
-                                                    <i class="fa fa-toggle-on" @click="approveCourse(course.id,course.visible)" style="color:#3a55b1; cursor: pointer; font-size: 25px;" aria-hidden="true"></i>
+                                                    <i class="fa fa-toggle-on"
+                                                       @click="approveCourse(course.id,course.visible)"
+                                                       style="color:#3a55b1; cursor: pointer; font-size: 25px;"
+                                                       aria-hidden="true"></i>
                                                   </span>
-                                              <span v-if="course.visible == 0">
-                                                    <i class="fa fa-toggle-off" @click="approveCourse(course.id,course.visible)" style="color:#6f7a7f; cursor: pointer; font-size: 25px;" aria-hidden="true"></i>
+                                                <span v-if="course.visible == 0">
+                                                    <i class="fa fa-toggle-off"
+                                                       @click="approveCourse(course.id,course.visible)"
+                                                       style="color:#6f7a7f; cursor: pointer; font-size: 25px;"
+                                                       aria-hidden="true"></i>
                                                   </span>
                                             </td>
                                             <td class="text-center mobile_hide" v-else>
-                                              <span v-if="course.visible == 1" class="badge badge-success">Active</span>
-                                              <span v-if="course.visible == 0" class="badge badge-grey">Inactive</span>
+                                                <span v-if="course.visible == 1"
+                                                      class="badge badge-success">Active</span>
+                                                <span v-if="course.visible == 0"
+                                                      class="badge badge-grey">Inactive</span>
                                             </td>
                                             <td class="text-center">
 
@@ -275,8 +284,20 @@
             convertDateTime(value) {
                 if (value) {
                     var time = new Date(value * 1000);
-                    // return time.toLocaleDateString() + ' ' + time.getHours() + ':' + time.getMinutes();
-                    return time.toLocaleDateString();
+                    var hour = '0', minute = '0';
+                    if (time.getHours() < 10) {
+                        hour += time.getHours();
+                    } else {
+                        hour = time.getHours();
+                    }
+
+                    if (time.getMinutes() < 10) {
+                        minute += time.getMinutes();
+                    } else {
+                        minute = time.getMinutes();
+                    }
+                    return time.toLocaleDateString() + ' ' + hour + ':' + minute;
+                    // return time.toLocaleDateString();
                 }
                 return "";
             }

@@ -23,7 +23,9 @@ try {
         $excelObj = $excelReader->load($tmpfname);
         $worksheet = $excelObj->getSheet(0);
         $lastRow = $worksheet->getHighestRow();
-        $highestColumn = $worksheet->getHighestDataColumn();
+        // Get highest column as the last column of valid data table to avoid exception when read formula
+        // $highestColumn = $worksheet->getHighestDataColumn();
+        $highestColumn = "G";
         $listGrade = [];
         for ($row = 2; $row <= $lastRow; $row++) {
             // Skip empty row data

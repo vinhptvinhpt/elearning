@@ -20,7 +20,7 @@
             <div class="col-xl-12">
                 <section class="hk-sec-wrapper">
                     <h5 class="hk-sec-title">{{trans.get('keys.danh_sach_thu_vien_khoa_hoc')}}</h5>
-                    <div class="row mb-4">
+                    <div class="row mb-4" v-if="slug_can('tms-educate-libraly-add')">
                         <div class="col-sm">
                             <div class="accordion" id="accordion_1">
                                 <div class="card" style="border-bottom: 1px solid rgba(0,0,0,.125);">
@@ -153,14 +153,14 @@
                                     </div>
                                     <div class="col-4">
                                         <div class="dataTables_length">
-<!--                                            <v-select-->
-<!--                                                    @input="selectCourse()"-->
-<!--                                                    :options="courseSelectOptions"-->
-<!--                                                    :reduce="courseSelectOption => courseSelectOption.id"-->
-<!--                                                    :placeholder="this.trans.get('keys.khoa_hoc')"-->
-<!--                                                    :filter-by="myFilterBy"-->
-<!--                                                    v-model="courseSearch">-->
-<!--                                            </v-select>-->
+                                            <!--                                            <v-select-->
+                                            <!--                                                    @input="selectCourse()"-->
+                                            <!--                                                    :options="courseSelectOptions"-->
+                                            <!--                                                    :reduce="courseSelectOption => courseSelectOption.id"-->
+                                            <!--                                                    :placeholder="this.trans.get('keys.khoa_hoc')"-->
+                                            <!--                                                    :filter-by="myFilterBy"-->
+                                            <!--                                                    v-model="courseSearch">-->
+                                            <!--                                            </v-select>-->
                                         </div>
                                     </div>
                                     <div class="col-4">
@@ -221,26 +221,28 @@
                                                 <!--                                                ><span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span></a>-->
 
                                                 <a :title="trans.get('keys.sua_noi_dung')"
+                                                   v-if="slug_can('tms-educate-libraly-edit')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
                                                    :href="'/lms/course/view.php?id='+course.id">
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
 
-                                                <router-link
-                                                        :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
-                                                        class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                        :to="{ name: 'SampleCourseDetail', params: { id: course.id } }">
+                                                <router-link v-if="slug_can('tms-educate-libraly-edit')"
+                                                             :title="trans.get('keys.sua_thong_tin_khoa_hoc')"
+                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                             :to="{ name: 'SampleCourseDetail', params: { id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
 
-                                                <router-link
-                                                        :title="trans.get('keys.tao_moi_khoa_hoc_tu_thu_vien')"
-                                                        class="btn btn-sm btn-icon btn-icon-circle btn-outline-success btn-icon-style-2"
-                                                        :to="{ name: 'CourseClone', params: { course_id: course.id } }">
+                                                <router-link v-if="slug_can('tms-educate-exam-clone-add')"
+                                                             :title="trans.get('keys.tao_moi_khoa_hoc_tu_thu_vien')"
+                                                             class="btn btn-sm btn-icon btn-icon-circle btn-outline-success btn-icon-style-2"
+                                                             :to="{ name: 'CourseClone', params: { course_id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-clone"></i></span>
                                                 </router-link>
 
                                                 <button :title="trans.get('keys.xoa')" data-toggle="modal"
+                                                        v-if="slug_can('tms-educate-libraly-deleted')"
                                                         data-target="#delete-ph-modal"
                                                         @click="deletePost(course.id)"
                                                         class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2">
@@ -488,14 +490,13 @@
                     return;
                 }
 
-              //validate positive number
-              var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
+                //validate positive number
+                var rePosNum = /^$|^([0]{1}.{1}[0-9]+|[1-9]{1}[0-9]*.{1}[0-9]+|[0-9]+|0)$/;
 
-              if(!rePosNum.test(this.pass_score))
-              {
-                toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le')+ '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
-                return;
-              }
+                if (!rePosNum.test(this.pass_score)) {
+                    toastr['error'](this.trans.get('keys.dinh_dang_du_lieu_khong_hop_le') + '( ' + this.trans.get('keys.pass_score') + ' )', this.trans.get('keys.that_bai'));
+                    return;
+                }
 
                 // if (this.is_active == 0) {
                 //   if (!this.pass_score) {
