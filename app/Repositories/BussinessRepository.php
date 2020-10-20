@@ -745,8 +745,8 @@ class BussinessRepository implements IBussinessInterface
     {
         $listCategories = DB::table('mdl_course_categories')
             ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->where('mdl_course_categories.id', '!=', 2)
-            //->where('mdl_course_categories.id', '!=', 3)
+            ->whereNotIn('mdl_course_categories.id', [2, 5])
+//            ->where('mdl_course_categories.id', '!=', 5) //ko lay danh muc khoa
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
     }
