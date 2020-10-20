@@ -1364,6 +1364,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
 
         $listCourses = $listCourses->where('c.deleted', '=', 0);
+        $listCourses = $listCourses->where('c.visible', '=', 1);
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
 
