@@ -386,7 +386,6 @@
                 response(matches);
             },
             selectCourse() {
-                console.log(this.courseSearch);
                 // window.location.href = '/lms/course/view.php?id=' + this.courseSearch;
             },
             capitalizeFirstLetter(string) {
