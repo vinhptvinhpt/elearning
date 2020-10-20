@@ -1231,14 +1231,16 @@ where ttp.deleted = 0 and  user_id = ' . $USER->id . ' and course_id = ' . $cour
         $tab_unit = 'nav-tab-last';
     }
 
-    //
+
     $tab_introduction = '';
-    $tab_competency = '';
-    if (!is_null($getContentCompetency->id)) {
-        $tab_competency = 'nav-first-tab';
-    } else {
-        $tab_introduction = 'nav-first-tab';
-    }
+//    $tab_competency = '';
+//    if (!is_null($getContentCompetency->id)) {
+//        $tab_competency = 'nav-first-tab';
+//    } else {
+//        $tab_introduction = 'nav-first-tab';
+//    }
+    $tab_introduction = 'nav-first-tab';
+
     $tab_attendance = '';
     if ($course->category == "5") {
         $tab_attendance = 'nav-tab-last';
@@ -1289,7 +1291,7 @@ where ttc.course_id = ' . $id . ')';
         <?php echo $OUTPUT->header(); ?>
 
         <div id="app">
-            <!--        --><?php //if ($checkExist) { 
+            <!--        --><?php //if ($checkExist) {
                             ?>
             <section class="section section--header">
                 <!-- section -->
@@ -1337,12 +1339,12 @@ where ttc.course_id = ' . $id . ')';
                     <!--                click tab - nav-->
                     <div class="nav-course">
                         <ul class="nav nav-tabs-courses">
-                            <?php if (!is_null($getContentCompetency->id)) { ?>
-                                <li class="nav-item nav-click <?php echo $tab_competency; ?>">
-                                    <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">General
-                                        Competency Description</a>
-                                </li>
-                            <?php } ?>
+<!--                            --><?php //if (!is_null($getContentCompetency->id)) { ?>
+<!--                                <li class="nav-item nav-click --><?php //echo $tab_competency; ?><!--">-->
+<!--                                    <a id="unit-link" class="nav-link" data-toggle="tab" href="#contentcompetency" role="tab">General-->
+<!--                                        Competency Description</a>-->
+<!--                                </li>-->
+<!--                            --><?php //} ?>
                             <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
                                 <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
                                     introduction</a>
@@ -1599,11 +1601,11 @@ where ttc.course_id = ' . $id . ')';
                     </div>
                 </div>
             </section>
-            <!--    --><?php //} else { 
+            <!--    --><?php //} else {
                         ?>
             <!--        <p>You do not have access to this course</p>-->
             <!--        <a class="btn btn-primary btn-back" href="lms/my">Back to Home</a>-->
-            <!--    --><?php //} 
+            <!--    --><?php //}
                         ?>
         </div>
 
