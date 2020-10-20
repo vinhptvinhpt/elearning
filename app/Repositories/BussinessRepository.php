@@ -771,6 +771,7 @@ class BussinessRepository implements IBussinessInterface
             ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
             ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
             //->join('mdl_logstore_standard_log', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id')
             ->select(
                 'mdl_course.id as id',
                 'mdl_course.fullname as fullname',
@@ -789,7 +790,11 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.estimate_duration',
                 'mdl_course.course_budget',
                 'mdl_course.is_toeic',
-                'mdl_course.access_ip'
+                'mdl_course.access_ip',
+                'mdl_user.username',
+                DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time"),
+                'mdl_course.last_modify_action',
+                'mdl_course.last_modify_user'
             )
             ->where('mdl_course.id', '=', $id)->first();
 

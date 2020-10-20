@@ -296,11 +296,11 @@
               //this.course.pass_score = Math.floor(response.data.pass_score);
               this.course.pass_score = parseFloat(response.data.pass_score);
 
-            if (this.course.category == 3) {
+            if (this.course.category === 3) {
               //$('#pass_score').attr("disabled", true);
               //$('#is_end_quiz').show();
             } else {
-              // if (this.course.is_toeic == 1) {
+              // if (this.course.is_toeic === 1) {
               //   $('#pass_score').attr("disabled", true);
               // } else {
               //   $('#pass_score').attr("disabled", false);
@@ -312,25 +312,30 @@
             //Convert text-area to ck editor
             this.setEditor();
 
+            //Set last update
+            this.last_update.user_id = response.data.last_modify_user;
+            this.last_update.user_fullname = response.data.username;
+            this.last_update.updated_at = response.data.last_modify_time;
+
           })
           .catch(error => {
             console.log(error.response.data);
           });
 
       },
-      getLastUpdated() {
-        axios.get('/api/courses/get_last_update/' + this.course_id)
-          .then(response => {
-            if (response.data.last) {
-              this.last_update.user_id = response.data.last.userid;
-              this.last_update.user_fullname = response.data.last.user_detail.fullname;
-              this.last_update.updated_at = response.data.last.created_at;
-            }
-          })
-          .catch(error => {
-            console.log(error);
-          });
-      },
+      // getLastUpdated() {
+      //   axios.get('/api/courses/get_last_update/' + this.course_id)
+      //     .then(response => {
+      //       if (response.data.last) {
+      //         this.last_update.user_id = response.data.last.userid;
+      //         this.last_update.user_fullname = response.data.last.user_detail.fullname;
+      //         this.last_update.updated_at = response.data.last.created_at;
+      //       }
+      //     })
+      //     .catch(error => {
+      //       console.log(error);
+      //     });
+      // },
       parseDateFromTimestamp(timestamp) {
         let ten = function (i) {
           return (i < 10 ? '0' : '') + i;
@@ -478,7 +483,6 @@
         // };
         // CKEDITOR.replace('article_ckeditor', options);
       },
-
       setFileInput() {
         $('.dropify').dropify();
       }
@@ -486,7 +490,7 @@
     mounted() {
       this.getCategories();
       this.getCourseDetail();
-      this.getLastUpdated();
+      //this.getLastUpdated();
     },
     updated() {
       this.setFileInput();
