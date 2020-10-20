@@ -708,6 +708,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                                 <option :value="training.id">{{ training.name }}</option>
                                             </template>
                                         </select>
+                                        <a class="nav-link d-inline-block position-relative" style="max-width: 50px" :title="trainingDescription">
+                                            <i class="fa fa-info-circle"></i>
+                                        </a>
                                     </th>
                                     <th scope="col" style="text-align: center">Percent</th>
                                     <th scope="col" class="width10" style="text-align: center">Qualified</th>
@@ -929,6 +932,8 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             totalPageTraining: 0,
             recordPerPageTraining: 5,
             currentCoursesTotalTraining: 0,
+
+            trainingDescription: '',
 
             bootstrapPaginationClasses: { // http://getbootstrap.com/docs/4.1/components/pagination/
                 ul: 'pagination',
