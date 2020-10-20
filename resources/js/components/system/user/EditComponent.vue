@@ -753,9 +753,10 @@
                     })
                         .then(response => {
                             this.roles = response.data;
-                            this.$nextTick(function () {
-                                $('.selectpicker').selectpicker('refresh');
-                            });
+                            this.userData();
+                            // this.$nextTick(function () {
+                            //     $('.selectpicker').selectpicker('refresh');
+                            // });
                         })
                         .catch(error => {
                             console.log(error.response.data);
@@ -1116,7 +1117,7 @@
             //this.getTrainingProgram();
             this.getRoles();
             //this.getCitys();
-            this.userData();
+            //this.userData();
             this.getCountries();
             this.getDataForLineManagerFilter();
         },
