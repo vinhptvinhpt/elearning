@@ -8071,7 +8071,7 @@ class BussinessRepository implements IBussinessInterface
             $filename = 'report_survey.xlsx';
             // $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
 
-            Excel::store(new SurveyExportView($this->dataResult), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
+//            Excel::store(new SurveyExportView($this->dataResult), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
 
         }
         return response()->json(storage_path($filename));
