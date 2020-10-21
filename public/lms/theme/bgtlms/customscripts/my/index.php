@@ -18,6 +18,8 @@ if ($first_login_info->firstaccess == $first_login_info->lastaccess) {
     redirect(new moodle_url('guideline.php'));
 }
 
+$student_role_id = 5;
+
 $sql_teacher = "select id, name, mdl_role_id, status from roles where name = 'teacher'";
 $teacher = $DB->get_record_sql($sql_teacher);
 $teacher_role_id = $teacher->mdl_role_id ? $teacher->mdl_role_id : 4;
@@ -209,9 +211,13 @@ mc.estimate_duration,
   inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
   inner join mdl_course mc on ttc.course_id = mc.id
 
+  left join mdl_enrol me on mc.id = me.courseid AND me.roleid = ' . $student_role_id . '
+  left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = '. $USER->id . '
+
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
   left join tms_user_detail tudt on tudt.user_id = muet.userid
+
   left join tms_organization_employee toe on toe.user_id = muet.userid
   left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
 
@@ -219,7 +225,8 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
-  and ttp.style not in (2)
+  and ttp.style NOT IN (2)
+  and mue.id IS NOT NULL
   and tud.user_id = ' . $USER->id;
 
 $sql_training .= ' group by mc.id'; //cần để tạo tên giáo viên
@@ -257,8 +264,12 @@ mc.estimate_duration,
   left join tms_trainning_courses ttc on ttc.course_id = mc.id
   left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 
+  left join mdl_enrol me on mc.id = me.courseid AND me.roleid = ' . $student_role_id . '
+  left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = '. $USER->id . '
+
   left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
   left join mdl_user_enrolments muet on met.id = muet.enrolid
+
   left join tms_user_detail tudt on tudt.user_id = muet.userid
   left join tms_organization_employee toet on toet.user_id = muet.userid
   left join tms_organization tort on tort.id = toet.organization_id, (SELECT @s:= 0) AS s
@@ -267,7 +278,8 @@ mc.estimate_duration,
   and mc.deleted = 0
   and mc.visible = 1
   and mc.category NOT IN (2,7)
-  and ttp.style not in (2)
+  and ttp.style NOT IN (2)
+  and mue.id IS NOT NULL
   and tud.user_id = ' . $USER->id;
 
 $sql_pqdl .= ' group by mc.id'; //cần để tạo tên giáo viên
@@ -1100,6 +1112,9 @@ $_SESSION["allowCms"] = $allowCms;
         width: auto;
         height: auto;
         max-width: 200px;
+        background-color: #ffffff;
+        width: 200px;
+        height: 90px;
     }
 
     .block-note {
@@ -1495,8 +1510,9 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1587,8 +1603,9 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                data-toggle="modal"
                                                                                data-target="#exampleModal"
                                                                                data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                               data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                                data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                               data-teacher-position="<?php echo $course->teacher_description ?>">
+                                                                               data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                                 <i class="fa fa-user"
                                                                                    aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                             </a>
@@ -1666,8 +1683,9 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1722,7 +1740,7 @@ $_SESSION["allowCms"] = $allowCms;
                                     <div class="courses-block__content__item row course-row-mx-5">
                                         <?php if (count($coursesSuggest) > 0) { ?>
                                             <?php $countBlock = 1;
-                                            foreach ($coursesSuggest as $course) { 
+                                            foreach ($coursesSuggest as $course) {
                                                 $optional_progress = 0;
                                                 if ($course->numofmodule){
                                                     $optional_progress = round($course->numoflearned * 100 / $course->numofmodule);
@@ -1749,8 +1767,9 @@ $_SESSION["allowCms"] = $allowCms;
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
+                                                                           data-teacher-position="<?php echo ucfirst($course->teacher_position) ?>"
                                                                            data-teacher-organization="<?php echo $course->teacher_organization ?>"
-                                                                           data-teacher-position="<?php echo $course->teacher_description ?>">
+                                                                           data-teacher-description="<?php echo $course->teacher_description ?>">
                                                                             <i class="fa fa-user"
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
@@ -1941,9 +1960,11 @@ $_SESSION["allowCms"] = $allowCms;
         let teacher_name = button.data('teacher-name');// Extract info from data-* attributes
         let teacher_position = button.data('teacher-position').length > 0 ? button.data('teacher-position') : 'N/A';
         let teacher_organization = button.data('teacher-organization').length > 0 ? button.data('teacher-organization') : 'PHH Group';
+        let teacher_description = button.data('teacher-description').length > 0 ? button.data('teacher-description') : 'N/A';
         $("span.teacher-name").html(teacher_name);
         $("span.teacher-position").html(teacher_position);
         $("span.teacher-organization").html(teacher_organization);
+        $("span.teacher-description").html(teacher_description);
     })
 </script>
 
@@ -1961,6 +1982,7 @@ $_SESSION["allowCms"] = $allowCms;
             <div class="modal-body">
                 Name: <span class="teacher-name" style="font-weight: bold"></span><br>
                 Position: <span class="teacher-position" style="font-weight: bold"></span><br>
+                Description: <span class="teacher-description" style="font-weight: bold"></span><br>
                 Organization: <span class="teacher-organization" style="font-weight: bold"></span>
             </div>
             <div class="modal-footer">
