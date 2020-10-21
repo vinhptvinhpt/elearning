@@ -236,7 +236,23 @@ class SurveyController extends Controller
 
     public function apiExportFile(Request $request)
     {
-        return $this->bussinessRepository->apiExportFile($request);
+        $survey_id = $request->input('survey_id');
+        $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
+        $type_file = $request->input('type_file');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file);
+    }
+
+    public function viewExport(){
+        $survey_id = 8;
+        $organization_id = '';
+        $course_id = '';
+        $type_file = 'excel';
+        $startdate = '';
+        $enddate = '';
+        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file);
     }
 
     public function downloadExportSurvey($type_file)
@@ -267,7 +283,7 @@ class SurveyController extends Controller
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
-        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id,$startdate,$enddate);
+        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate);
     }
 
     public function apiSaveUserViewSurvey(Request $request)
@@ -278,7 +294,8 @@ class SurveyController extends Controller
         return $this->surveyRepository->saveUserViewSurvey($survey_id, $course_id);
     }
 
-    public function apiGetUserViewSurvey(Request $request){
+    public function apiGetUserViewSurvey(Request $request)
+    {
         $keyword = $request->input('keyword');
         $row = $request->input('row');
         $survey_id = $request->input('survey_id');
@@ -287,7 +304,7 @@ class SurveyController extends Controller
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
-        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id,$startdate,$enddate);
+        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate);
     }
 
 }
