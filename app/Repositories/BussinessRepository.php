@@ -11204,6 +11204,14 @@ class BussinessRepository implements IBussinessInterface
         inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
         inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
         where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+        (select
+            sum(tlal.duration) as duration
+        from
+            tms_learning_activity_logs as tlal
+        where
+            tlal.course_id = c.id 
+            and tlal.user_id = ' . $user_id . '
+        ) as duration,
         (select count(cm.id) as course_learn from mdl_course_modules cm
         inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
         where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
@@ -11319,6 +11327,14 @@ class BussinessRepository implements IBussinessInterface
                     inner join mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid
                     inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
                     where cs.section <> 0 and cmc.completionstate in (1,2) and cmc.userid = ' . $user_id . ' and cm.course = c.id and cm.completion <> 0 ) as user_course_completionstate,
+                    (select
+                        sum(tlal.duration) as duration
+                    from
+                        tms_learning_activity_logs as tlal
+                    where
+                        tlal.course_id = c.id 
+                        and tlal.user_id = ' . $user_id . '
+                    ) as duration,
                     (select count(cm.id) as course_learn from mdl_course_modules cm
                     inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id
                     where cs.section <> 0 and cm.course = c.id and cm.completion <> 0) as user_course_learn, IF( EXISTS(select cc.id from mdl_course_completions as cc
