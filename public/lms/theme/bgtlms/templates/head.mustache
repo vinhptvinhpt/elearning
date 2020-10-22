@@ -50,6 +50,7 @@
 
             var isFirefox = typeof InstallTrigger !== 'undefined';
             if (isFirefox) {
+                alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
                 localStorage.clear();
                 $.ajax({
                     url: '/lms/login/index.php',
