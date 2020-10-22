@@ -421,7 +421,7 @@ class SurveyRepository implements ISurveyInterface
             $responseModel->info = $couse_info;
             if ($type_file == 'pdf') {
                 $filename = 'report_survey.pdf';
-                $pdf = PDF::loadView('survey.survey_export', compact('responseModel'))->setPaper('a4', 'landscape');
+                $pdf = PDF::loadView('survey.survey_export', compact('responseModel'))->setPaper('a0', 'landscape');
                 Storage::put($filename, $pdf->output());
             } else {
                 $filename = 'report_survey.xlsx';

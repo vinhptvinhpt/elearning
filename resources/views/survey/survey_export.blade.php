@@ -35,22 +35,22 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th></th>
+        <th colspan="3" rowspan="2"></th>
         @foreach($responseModel->message as $hd)
-            <th scope="col" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
+            <th scope="col" colspan="2" rowspan="2" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
         @endforeach
 
     </tr>
     </thead>
     <tbody>
-
+    <tr></tr>
     @foreach($responseModel->otherData as $data)
         <tr>
-            <th scope="row">{{$data['email']}}</th>
+            <th colspan="3" scope="row">{{$data['email']}}</th>
             @foreach($responseModel->message as $hd)
                 @foreach($data['lstData'] as $dt)
                     @if($dt['ques_id'] == $hd->ques_id)
-                        <td>{!!$dt['ans_content']!!}</td>
+                        <td colspan="2">{!!$dt['ans_content']!!}</td>
                     @endif
                 @endforeach
             @endforeach
