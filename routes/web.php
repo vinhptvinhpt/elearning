@@ -844,3 +844,4 @@ Route::get('/api/sendMailCompetencyFramework', 'Api\MailController@sendCompetenc
 Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataController@apiSaveOrganization');
 Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
 Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');
+Route::get('/show-survey', 'Backend\SurveyController@viewExport');
