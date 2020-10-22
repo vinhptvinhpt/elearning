@@ -136,12 +136,14 @@ class H5peditorFile
           $image_size = $_FILES['file']['size'];
           // Set the limit size (1MB)/(2MB)
           $limit_resize_1mb = 1000000;
-          $limit_resize_2mb = 2000000;
-          if ($image_size > $limit_resize_1mb) {
-            $ratio = round($image_size / $limit_resize_1mb) + 1; 
-            $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / $ratio, $image[1] / $ratio);
-            $image = @getimagesize($_FILES['file']['tmp_name']);
+          $limit_resize_5mb = 5000000;
+          if ($image_size > $limit_resize_5mb) {
+            $ratio = 6;  
+          } else if ($image_size > $limit_resize_1mb) {
+            $ratio = round($image_size / $limit_resize_1mb) + 1;
           }
+          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / $ratio, $image[1] / $ratio);
+          $image = @getimagesize($_FILES['file']['tmp_name']);
         }
 
         $this->result->width = $image[0];
