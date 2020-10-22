@@ -12,4 +12,5 @@ class ResponseModel
     public $otherData;
     public $existCertificate;
     public $existBadge;
+    public $survey;
 }

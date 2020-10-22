@@ -144,7 +144,8 @@ function devcpt_log_system($type, $url, $action, $info)
     ]);
 }
 
-function updateLastModification($action, $course_id) {
+function updateLastModification($action, $course_id)
+{
     $course = MdlCourse::query()->where('id', $course_id)->first();
     if (isset($course)) {
         $course->last_modify_action = $action;
@@ -1753,7 +1754,7 @@ function callAPI($method, $url, $data, $hasHeader, $user_token)
             'Authorization: Bearer ' . $user_token,
             'X-App-Token: ' . Config::get('constants.domain.DIVA-TOKEN-SYSTEM')
         ));
-    }else{
+    } else {
         curl_setopt($curl, CURLOPT_HTTPHEADER, array(
             'Content-Type: application/x-www-form-urlencoded'
         ));
@@ -3421,6 +3422,17 @@ function checkRole()
     }
 }
 
-function removeCourseFromTraining($course_id) {
+function removeCourseFromTraining($course_id)
+{
     \App\TmsTrainningCourse::query()->where('course_id', $course_id)->delete();
+}
+
+function myArrayContainsWord(array $myArray, $word,$attr)
+{
+    foreach ($myArray as $key => $element) {
+        if (!empty($element[$attr]) && $element[$attr] == $word) {
+            return $key;
+        }
+    }
+    return -1;
 }

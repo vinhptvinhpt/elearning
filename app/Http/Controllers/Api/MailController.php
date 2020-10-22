@@ -2716,10 +2716,10 @@ class MailController extends Controller
                 'nguyenlinhcksl@gmail.com',
                 'leduytho93@gmail.com',
                 'duongtiendat.it@gmail.com',
-                'zerozeralot004@gmail.com',
-                'zerozeralot003@gmail.com',
+                'zerozeralot001@gmail.com',
                 'zerozeralot002@gmail.com',
-                'zerozeralot001@gmail.com'
+                'zerozeralot003@gmail.com',
+                'zerozeralot004@gmail.com'
             ];
             $tester_email = [
                 'dieuly@easia-travel.com',
