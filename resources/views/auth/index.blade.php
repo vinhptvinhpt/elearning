@@ -149,11 +149,33 @@
     var confirm = 2;
 
     $(document).ready(function () {
+        let warning = 'We recommend you do not use firefox browser for security';
+        checkFirefox(warning);
+    });
+
+    function checkFirefox(warning) {
+
         var isFirefox = typeof InstallTrigger !== 'undefined';
         if (isFirefox) {
-            alert('We recommend you do not use firefox browser for security');
+            alert(warning);
+            $('button.btn.btn-login').removeClass('loadding');
+            return;
         }
-    });
+
+        var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+        //Iphone use safari core for firefox app, so we need to check mozilla text
+        var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+
+        var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+
+        var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+
+        if((is_firefox || is_mozilla) && (is_android || is_iphone)){
+            alert(warning);
+            $('button.btn.btn-login').removeClass('loadding');
+            return;
+        }
+    }
 
     //for test
     modeChangeOrganization();
@@ -291,12 +313,8 @@
 
     function loginSso(order) {
 
-        var isFirefox = typeof InstallTrigger !== 'undefined';
-        if (isFirefox) {
-            alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
-            $('button.btn.btn-login').removeClass('loadding');
-            return;
-        }
+        let warning = 'We recommend you do not use firefox browser for security, please switch to another browser and try again';
+        checkFirefox(warning);
 
         var user = $('#username').val();
         var pass = $('#pass').val();
