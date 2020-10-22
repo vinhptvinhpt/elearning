@@ -148,12 +148,12 @@
 
     var confirm = 2;
 
-    // $(document).ready(function () {
-    //     var isFirefox = typeof InstallTrigger !== 'undefined';
-    //     if (isFirefox) {
-    //         alert('We recommend you do not use firefox browser for security');
-    //     }
-    // });
+    $(document).ready(function () {
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+        if (isFirefox) {
+            alert('We recommend you do not use firefox browser for security');
+        }
+    });
 
     //for test
     modeChangeOrganization();
@@ -291,12 +291,12 @@
 
     function loginSso(order) {
 
-        // var isFirefox = typeof InstallTrigger !== 'undefined';
-        // if (isFirefox) {
-        //     alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
-        //     $('button.btn.btn-login').removeClass('loadding');
-        //     return;
-        // }
+        var isFirefox = typeof InstallTrigger !== 'undefined';
+        if (isFirefox) {
+            alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
+            $('button.btn.btn-login').removeClass('loadding');
+            return;
+        }
 
         var user = $('#username').val();
         var pass = $('#pass').val();

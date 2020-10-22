@@ -47,6 +47,23 @@
     <script>
         $(document).ready(function () {
 
+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            if (isFirefox) {
+                localStorage.clear();
+                $.ajax({
+                    url: '/lms/login/index.php',
+                    data: {action: 'sso.logout'},
+                    type: 'POST',
+                    //dataType: 'json',
+                    success: function (data) {
+                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        //}
+                    }
+                });
+            }
+
             //set courseid to localStorage
             let courseid = parseInt({{{ courseid }}});
             if (parseInt(courseid) > 1) {
