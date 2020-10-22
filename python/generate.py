@@ -469,8 +469,12 @@ if __name__ == '__main__':
                             # if programSize_badge >=40:
                             #     programSize_badge = 36
                             
-                            
-                            if (length_text >= 46):
+                            if (length_text >= 62):
+                                programSize_badge = 24
+                                distance_2way_max = 360
+                                distance_2way = 240
+                                distance_line = 80
+                            elif (length_text >= 46 and length_text < 62):
                                 programSize_badge = 28
                                 distance_2way_max = 360
                                 distance_2way = 240
