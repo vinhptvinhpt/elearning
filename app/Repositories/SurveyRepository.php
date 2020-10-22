@@ -11,6 +11,7 @@ use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use App\ViewModel\PreviewSurveyModel;
 use App\ViewModel\ResponseModel;
+use core_question\bank\view;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -200,7 +201,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($responseModel);
     }
 
-    public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file)
+    public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file, $couse_info)
     {
         // TODO: Implement exportSurveyResult() method.
         $responseModel = new ResponseModel();
@@ -412,17 +413,19 @@ class SurveyRepository implements ISurveyInterface
                 }
 
             }
+//            return view('survey.export_excel', ['dataModel' => $arrData, 'header' => $lstQues, 'survey' => $survey, 'course_info' => $couse_info]);
 
             $responseModel->survey = $survey;
             $responseModel->message = $lstQues;
             $responseModel->otherData = $arrData;
+            $responseModel->info = $couse_info;
             if ($type_file == 'pdf') {
                 $filename = 'report_survey.pdf';
                 $pdf = PDF::loadView('survey.survey_export', compact('responseModel'))->setPaper('a4', 'landscape');
                 Storage::put($filename, $pdf->output());
             } else {
                 $filename = 'report_survey.xlsx';
-                Excel::store(new SurveyExportView($arrData, $lstQues, $survey), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
+                Excel::store(new SurveyExportView($arrData, $lstQues, $survey,$couse_info), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
             }
 
             $responseModel->status = true;
