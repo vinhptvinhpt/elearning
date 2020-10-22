@@ -8,6 +8,16 @@
     <title>{{$responseModel->survey->code}}
         - {{$responseModel->survey->name}}</title>
     <link href="/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+
+        table td {
+            border: 1px solid gray;
+        }
+
+    </style>
 </head>
 <body style="font-family: DejaVu Sans;">
 <div class="container">
@@ -16,14 +26,18 @@
              style="text-align: center; font-size: 20px; font-weight: bold;">{{$responseModel->survey->code}}
             - {{$responseModel->survey->name}}</div>
     </div>
+    <div class="row">
+        <div class="col-sm-12"
+             style="text-align: center; font-size: 16px; font-weight: bold;">Course: {{$responseModel->info}}</div>
+    </div>
 </div>
 <br/>
-<table id="datable_2" class="table_res" border="1">
+<table class="table table-bordered">
     <thead>
     <tr>
         <th></th>
         @foreach($responseModel->message as $hd)
-            <th style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
+            <th scope="col" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
         @endforeach
 
     </tr>
@@ -32,7 +46,7 @@
 
     @foreach($responseModel->otherData as $data)
         <tr>
-            <td>{{$data['email']}}</td>
+            <th scope="row">{{$data['email']}}</th>
             @foreach($responseModel->message as $hd)
                 @foreach($data['lstData'] as $dt)
                     @if($dt['ques_id'] == $hd->ques_id)

@@ -47,23 +47,7 @@
     <script>
         $(document).ready(function () {
 
-
-            var isFirefox = typeof InstallTrigger !== 'undefined';
-            if (isFirefox) {
-                alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
-                localStorage.clear();
-                $.ajax({
-                    url: '/lms/login/index.php',
-                    data: {action: 'sso.logout'},
-                    type: 'POST',
-                    //dataType: 'json',
-                    success: function (data) {
-                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
-                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
-                        //}
-                    }
-                });
-            }
+            checkFirefox();
 
             //set courseid to localStorage
             let courseid = parseInt({{{ courseid }}});
@@ -120,6 +104,50 @@
                 });
             }
         });
+
+        function checkFirefox() {
+
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            if (isFirefox) {
+                alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
+                localStorage.clear();
+                $.ajax({
+                    url: '/lms/login/index.php',
+                    data: {action: 'sso.logout'},
+                    type: 'POST',
+                    //dataType: 'json',
+                    success: function (data) {
+                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        //}
+                    }
+                });
+            }
+
+            var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            //Iphone use safari core for firefox app, so we need to check mozilla text
+            var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+
+            var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+
+            var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+
+            if((is_firefox || is_mozilla) && (is_android || is_iphone)){
+                alert('We recommend you do not use firefox browser for security, please switch to another browser and try again');
+                localStorage.clear();
+                $.ajax({
+                    url: '/lms/login/index.php',
+                    data: {action: 'sso.logout'},
+                    type: 'POST',
+                    //dataType: 'json',
+                    success: function (data) {
+                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        //}
+                    }
+                });
+            }
+        }
 
         function getCookieByName(o) {
             var e;

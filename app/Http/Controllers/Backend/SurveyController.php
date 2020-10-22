@@ -242,17 +242,19 @@ class SurveyController extends Controller
         $type_file = $request->input('type_file');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
-        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file);
+        $couse_info = $request->input('course_info');
+        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file, $couse_info);
     }
 
-    public function viewExport(){
+    public function viewExport()
+    {
         $survey_id = 8;
         $organization_id = '';
         $course_id = '';
         $type_file = 'excel';
         $startdate = '';
         $enddate = '';
-        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file);
+        return $this->surveyRepository->exportSurveyResult($survey_id, $organization_id, $course_id, $startdate, $enddate, $type_file, '');
     }
 
     public function downloadExportSurvey($type_file)
