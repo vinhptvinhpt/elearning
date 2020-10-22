@@ -19,5 +19,5 @@ interface ISurveyInterface
     public function saveUserViewSurvey($survey_id, $course_id);
 
     //export survey result
-    public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file);
+    public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file, $couse_info);
 }

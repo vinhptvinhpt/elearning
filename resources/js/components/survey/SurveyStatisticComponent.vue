@@ -444,6 +444,7 @@
                         this.course_id = ui.item.id;
 
                         Ls.set('course', this.course_id);
+                        Ls.set('course_data', ui.item.label);
                     },
                     change: function (e, ui) {
                         // alert(ui.item.value);
@@ -568,6 +569,7 @@
             getStatictisSurveyExam() {
                 if (this.keyword === '' || this.keyword === null || this.keyword === undefined) {
                     Ls.set('course', '');
+                    Ls.set('course_data', '');
                 }
                 this.course_id = Ls.get('course');
 
@@ -599,6 +601,7 @@
             getStatictisSurveyView() {
                 if (this.keyword === '' || this.keyword === null || this.keyword === undefined) {
                     Ls.set('course', '');
+                    Ls.set('course_data', '');
                 }
                 this.course_id = Ls.get('course');
 
@@ -675,6 +678,14 @@
 
             },
             exportFileData(type_file) {
+                this.course_id = Ls.get('course');
+                if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
+                    toastr['warning'](this.trans.get('keys.chon_khoa_hoc'), this.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                var course_info = Ls.get('course_data');
+
                 if (type_file === 'pdf') {
                     $('button.btn-pdf i').css("display", "inline-block");
                 } else {
@@ -684,6 +695,7 @@
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
                     course_id: this.course_id,
+                    course_info: course_info,
                     type_file: type_file,
                     startdate: this.startdate,
                     enddate: this.enddate
