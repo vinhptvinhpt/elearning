@@ -422,9 +422,6 @@ if (!empty($reverse_recursive_org_ids)) {
 		ttp.deleted as training_deleted,
 		ttp.style as training_style,
 
-        ttc.order_no,
-        GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
-
         from tms_user_detail tud
         inner join tms_organization_employee toe on toe.user_id = tud.user_id
         inner join tms_optional_courses toc on toe.organization_id = toc.organization_id AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
