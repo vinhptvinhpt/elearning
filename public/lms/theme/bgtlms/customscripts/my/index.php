@@ -373,8 +373,8 @@ if (!empty($reverse_recursive_org_ids)) {
 
     $reverse_recursive_org_ids_string = implode(',', $reverse_recursive_org_ids);
 
-    $sqlCourseNotEnrol = '
-        select mc.id,
+    $sqlCourseNotEnrol = 'select @s:=@s+1 stt,
+        mc.id,
         mc.fullname,
         mc.category,
         mc.course_avatar,
@@ -421,6 +421,8 @@ if (!empty($reverse_recursive_org_ids)) {
 		ttp.name as training_name,
 		ttp.deleted as training_deleted,
 		ttp.style as training_style,
+        ttc.order_no,
+        GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
 
         from tms_user_detail tud
         inner join tms_organization_employee toe on toe.user_id = tud.user_id
@@ -433,7 +435,7 @@ if (!empty($reverse_recursive_org_ids)) {
 		left join mdl_user_enrolments muet on met.id = muet.enrolid
 		left join tms_user_detail tudt on tudt.user_id = muet.userid
 		left join tms_organization_employee toet on toet.user_id = muet.userid
-		left join tms_organization tort on tort.id = toet.organization_id
+		left join tms_organization tort on tort.id = toet.organization_id, (SELECT @s:= 0) AS s
 
         where
         mc.deleted = 0
@@ -444,6 +446,8 @@ if (!empty($reverse_recursive_org_ids)) {
 		and tud.user_id = ' . $USER->id . '
         and mc.id NOT IN ' . $courses_others_id;
 
+    $sqlCourseNotEnrol .= ' group by mc.id'; //cần để tạo tên giáo viên
+    $sqlCourseNotEnrol .= ' ORDER BY ttp.id, ttc.order_no';
 
     $allCoursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
