@@ -23,10 +23,13 @@ if ($test_mode) {
 $user_id =  $USER->id;
 $course_id = $id;
 
+//Auto enrol optional courses => Now click button to enrol
 
 if (strlen($from) != 0) {
     $passover = explode('.', $from);
     $passover_type = $passover[1];
+
+    /*
     if ($passover_type == 'other') {
         //check and enrol user to course here
         //Check mdl_context
@@ -89,6 +92,7 @@ if (strlen($from) != 0) {
             }
         }
     }
+    */
 }
 
 if (!isloggedin()) {
@@ -1325,10 +1329,15 @@ where ttc.course_id = ' . $id . ')';
                                         </div>
                                     </div>
                                 </div>
+
                                 <div class="col-2 info-course-btn">
-                                    <a href="<?php echo $start_course_link ?>" <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()" <?php } ?> class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start
-                                        course</a>
+                                <?php if ($passover_type == 'other') { ?>
+                                    <a class="btn btn-start-course btn-click" @click="enrolManual">enrol course</a>
+                                <?php } else { ?>
+                                    <a href="<?php echo $start_course_link ?>" <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()" <?php } ?> class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start course</a>
+                                <?php } ?>
                                 </div>
+
                             </div>
                         </div>
                     </div>
@@ -1346,8 +1355,7 @@ where ttc.course_id = ' . $id . ')';
 <!--                                </li>-->
 <!--                            --><?php //} ?>
                             <li class="nav-item nav-click nav-introduction <?php echo $tab_introduction; ?>">
-                                <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course
-                                    introduction</a>
+                                <a class="nav-link" data-toggle="tab" href="#courseintroduction" role="tab">Course introduction</a>
                             </li>
                             <?php if ($course->category == "5") { ?>
                                 <li class="nav-item nav-click ">
@@ -1355,33 +1363,24 @@ where ttc.course_id = ' . $id . ')';
                                 </li>
                             <?php } ?>
                             <li class="nav-item nav-click <?php echo $tab_unit; ?>">
-                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit
-                                    List</a>
+                                <a id="unit-link" class="nav-link" data-toggle="tab" href="#courseunit" role="tab">Unit List</a>
                             </li>
                             <?php if ($course->is_toeic == 1 && $permission_admin) { ?>
                                 <li class="nav-item nav-click <?php echo $tab_toeic_admin; ?>">
-                                    <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin" role="tab">List
-                                        Toeic Result</a>
+                                    <a id="toeic-result-link" class="nav-link" data-toggle="tab" href="#toeicadmin" role="tab">List Toeic Result</a>
                                 </li>
                             <?php } else if ($course->is_toeic == 1) { ?>
                                 <li class="nav-item nav-click <?php echo $tab_toeic_result; ?>">
-                                    <a id="toeic-admin-link" class="nav-link" data-toggle="tab" href="#toeicresult" role="tab">Toeic
-                                        Result</a>
+                                    <a id="toeic-admin-link" class="nav-link" data-toggle="tab" href="#toeicresult" role="tab">Toeic Result</a>
                                 </li>
                             <?php } ?>
                             <?php if ($permission_edit) { ?>
                                 <li class="nav-item nav-setting">
-                                    <a class="dropdown-toggle setting-link" id="menu-edit" data-toggle="dropdown">
-                                        <i class="fa fa-cog" aria-hidden="true"></i>
-                                        Edit course
-                                    </a>
+                                    <a class="dropdown-toggle setting-link" id="menu-edit" data-toggle="dropdown"><i class="fa fa-cog" aria-hidden="true"></i>Edit course</a>
                                     <ul class="dropdown-menu" role="menu" aria-labelledby="menu-edit">
-                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a>
-                                        </li>
-                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course
-                                                completion</a></li>
-                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a>
-                                        </li>
+                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/view.php?id=" . $id ?>&edit=on"><i class="icon fa fa-pencil fa-fw " aria-hidden="true"></i>Edit</a></li>
+                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/completion.php?id=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>Course completion</a></li>
+                                        <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/backup/import.php?id=" . $id ?>"><i class="icon fa fa-level-up fa-fw" aria-hidden="true"></i>Import</a></li>
                                         <li role="presentation"><a class="setting-option" role="menuitem" tabindex="-1" href="<?php echo $root_url . "/course/admin.php?courseid=" . $id ?>"><i class="icon fa fa-cog fa-fw" aria-hidden="true"></i>More</a></li>
                                     </ul>
                                 </li>
@@ -1558,15 +1557,11 @@ where ttc.course_id = ' . $id . ')';
                                         <div class="invalid-feedback">Example invalid custom file feedback</div>
                                     </div>
                                     <div class="custom-file custom-file-btn" style="width: 10%; margin: inherit;">
-                                        <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">
-                                            Upload
-                                            file
-                                        </button>
+                                        <button type="button" class="btn btn-primary btn-up-file" @click="uploadFile">Upload file</button>
                                     </div>
                                 </div>
                                 <div class="file-import mt-3">
-                                    <a :href="file_url" class="btn px-0 not_shadow"><i aria-hidden="true" class="fa fa-file"></i> Download
-                                        Excel Form</a>
+                                    <a :href="file_url" class="btn px-0 not_shadow"><i aria-hidden="true" class="fa fa-file"></i> Download Excel Form</a>
                                 </div>
                             </div>
                         </div>
@@ -1906,7 +1901,6 @@ where ttc.course_id = ' . $id . ')';
                                 }
                             })
                             .then(response => {
-                                console.log(response.data);
                                 if (response.data.status) {
                                     alert(response.data.msg);
                                     location.reload();
@@ -1917,6 +1911,28 @@ where ttc.course_id = ' . $id . ')';
                                 console.log("Error ", error);
                             });
                     }
+                },
+                enrolManual: function() {
+                    let url = '<?php echo $CFG->wwwroot; ?>';
+                    let formData = new FormData();
+                    formData.append('courseid', <?php echo $course->id; ?>);
+                    axios({
+                        method: 'post',
+                        url: url + '/pusher/enrol.php',
+                        data: formData,
+                        headers: {
+                            'Content-Type': 'multipart/form-data',
+                        }
+                    })
+                        .then(response => {
+                            if (response.data.status) {
+                                location.reload();
+                            } else
+                                alert(response.data.msg);
+                        })
+                        .catch(error => {
+                            console.log("Error ", error);
+                        });
                 },
                 validateFile: function(file) {
                     //not selected file
