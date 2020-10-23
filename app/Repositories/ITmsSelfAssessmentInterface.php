@@ -51,4 +51,13 @@ interface ITmsSelfAssessmentInterface
     //statistic result self assessment
     public function statisticSelfAssessment(Request $request);
 
+    //view result self
+    public function viewResult($self_id, $user_id, $course_id);
+
+    //check has self result
+    public function checkSelfResult($self_id, $user_id, $course_id);
+
+    //get list user in self
+    public function getUserSelf(Request $request);
+
 }
