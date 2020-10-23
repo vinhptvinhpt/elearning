@@ -291,9 +291,9 @@ mc.estimate_duration,
             mc.estimate_duration,
 
             muet.userid as teacher_id,
-            tud.fullname as teacher_name,
-            toe.position as teacher_position,
-            tor.name as teacher_organization,
+            tudt.fullname as teacher_name,
+            toet.position as teacher_position,
+            tort.name as teacher_organization,
             muet.timecreated as teacher_created,
 
 			ttp.id as training_id,
@@ -303,18 +303,17 @@ mc.estimate_duration,
 
 
             from tms_user_detail tud
-
-			left join tms_traninning_users ttu on ttu.user_id = tud.user_id
-			left join tms_trainning_courses ttc on ttu.trainning_id = ttc.trainning_id
-			left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-			left join mdl_course mc on ttc.course_id = mc.id
+            inner join tms_organization_employee toe on toe.user_id = tud.user_id
+            inner join tms_optional_courses toc on toe.organization_id = toc.organization_id AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
+            inner join mdl_course mc on toc.course_id = mc.id
+            left join tms_trainning_courses ttc on mc.id = ttc.course_id
+            left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 
 			left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . ' AND met.enrol = "manual"
 			left join mdl_user_enrolments muet on met.id = muet.enrolid
 			left join tms_user_detail tudt on tudt.user_id = muet.userid
-
-			left join tms_organization_employee toe on toe.user_id = muet.userid
-			left join tms_organization tor on tor.id = toe.organization_id
+			left join tms_organization_employee toet on toet.user_id = muet.userid
+			left join tms_organization tor on tort.id = toet.organization_id
 
             where
             mc.deleted = 0
@@ -322,7 +321,6 @@ mc.estimate_duration,
             and mc.visible = 1
 			and ttc.deleted <> 1
 			and ttp.style <> 2
-            and mc.id IN (select course_id from tms_optional_courses where organization_id IN (' . $reverse_recursive_org_ids_string . '))
 			and tud.user_id = ' . $USER->id . '
             and mc.id NOT IN ' . $courses_others_id;
 
