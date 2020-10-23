@@ -130,8 +130,9 @@ import UserCourseException from "./components/education/UserCourseException";
 import SurveyResult from "./components/survey/SurveyResultComponent";
 import SurveyResultUser from "./components/survey/SurveyResultUserComponent";
 import CompetencyListComponent from "./components/tnd-report/CompetencyListComponent";
-import CompetencyCreateComponent from "./components/tnd-report/CompetencyCreateComponent";
 import CompetencyEditComponent from "./components/tnd-report/CompetencyEditComponent";
+import SelfResult from "./components/self-assessment/SelfResultComponent";
+import SelfResultUser from "./components/self-assessment/SelfResultUserComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -1004,6 +1005,24 @@ const routes = [
                 name: 'SurveyResultUser',
                 props: (route) => ({
                     survey_id: route.params.survey_id,
+                    user_id: route.params.user_id,
+                    course_id: route.params.course_id
+                })
+            },
+            {
+                path: 'self-viewresult/:self_id',
+                component: SelfResult,
+                name: 'SelfResult',
+                props: (route) => ({
+                    self_id: route.params.self_id
+                })
+            },
+            {
+                path: 'self-result/:self_id/:user_id/:course_id',
+                component: SelfResultUser,
+                name: 'SelfResultUser',
+                props: (route) => ({
+                    self_id: route.params.self_id,
                     user_id: route.params.user_id,
                     course_id: route.params.course_id
                 })
