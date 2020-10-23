@@ -2,7 +2,7 @@
 require_once(__DIR__ . '/../config.php');
 
 $course_id = $_REQUEST['course_id'] ? $_REQUEST['course_id'] : 0;
-$userid = $USER->id ? $USER->id : 0;
+$user_id = $_REQUEST['user_id'] ? $_REQUEST['user_id'] : 0;
 
 try {
     if (is_numeric($user_id) && $user_id != 0 && is_numeric($course_id) && $course_id != 0) {
@@ -67,12 +67,17 @@ try {
             }
         }
 //Log to tms_manual_enrol_log
-        $log = new \stdClass();
-        $log->user_id = $user_id;
-        $log->course_id = $course_id;
-        $log->created_at = date('Y-m-d H:i:s', time());
-        $log->updated_at = date('Y-m-d H:i:s', time());
-        $DB->insert_record('tms_manual_enrol_log', $log);
+
+        $servername = $CFG->dbhost;
+        $dbname = $CFG->dbname;
+        $username = $CFG->dbuser;
+        $password = $CFG->dbpass;
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        $now = date('Y-m-d H:i:s', time());
+
+        $insert_query = "INSERT INTO `tms_manual_enrol_log`(user_id, course_id, created_at, updated_at) VALUES ($user_id, $course_id, '$now', '$now')";
+
+        $conn->query($insert_query);
     }
 
     $status = true;
@@ -83,7 +88,5 @@ try {
 }
 echo json_encode([
     'status' => $status,
-    'msg' => $msg
+    'msg' => $message
 ]);
-
-
