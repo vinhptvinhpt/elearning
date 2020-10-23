@@ -451,7 +451,7 @@ if (!empty($reverse_recursive_org_ids)) {
     $allCoursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
     foreach ($allCoursesSuggest as $course_optional) {
-        $courses_training_optional[$course_optional->training_id][$course_optional->id] = $course;
+        $courses_training_optional[$course_optional->training_id][$course_optional->id] = $course_optional;
     }
 
     foreach ($courses_training_optional as $training_courses) {
