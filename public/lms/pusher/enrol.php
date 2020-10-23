@@ -1,67 +1,92 @@
 <?php
 require_once(__DIR__ . '/../config.php');
 
-$servername = $CFG->dbhost;
-$dbname = $CFG->dbname;
-$username = $CFG->dbuser;
-$password = $CFG->dbpass;
+$course_id = $_REQUEST['course_id'] ? $_REQUEST['course_id'] : 0;
+$user_id = $_REQUEST['user_id'] ? $_REQUEST['user_id'] : 0;
 
-// Create connection
-$conn = new mysqli($servername, $username, $password, $dbname);
-// Check connection
-
-
-if (!isguestuser()) {     // Guests can never edit their profile.
-
-
-    $userid = $USER->id ? $USER->id : 0;       // Owner of the page.
-    $course_id = $_REQUEST['course_id'] ? $_REQUEST['course_id'] : 0;
-    $activity_id = $_REQUEST['activity_id'] ? $_REQUEST['activity_id'] : 0;
-    $module_id = $_REQUEST['module_id'] ? $_REQUEST['module_id'] : 0;
-    $url = $_REQUEST['url'] ? $_REQUEST['url'] : '';
-    $type = $_REQUEST['type'] ? $_REQUEST['type'] : ''; //final, init
-
-    if ($userid != 0 && $course_id != 0 && $activity_id != 0 && $module_id != 0) {
-        $now = time();
-        $sql = "SELECT * from tms_learning_activity_logs WHERE user_id = $userid AND course_id = $course_id AND activity_id = $activity_id AND module_id = $module_id ORDER BY id desc LIMIT 1";
-        $log = $DB->get_records_sql($sql);
-
-        $today = date('Y-m-d H:i:s', $now);
-
-        $insert_query = "INSERT INTO `tms_learning_activity_logs`(user_id, course_id, activity_id, module_id, start_time, studying, url, created_at, updated_at) VALUES ($userid, $course_id, $activity_id, $module_id, $now, 1, '$url', '$today', '$today')";
-
-        if (empty($log)) { //Start learning
-
-//            $sql = "INSERT INTO {tms_learning_activity_logs} (user_id, course_id, activity, start_time, studying, url, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-//            $params = array($userid, $course_id, $module_id, $now, 1, $url, $today, $today);
-//            $DB->execute($sql, $params);
-
-            //$DB->execute("INSERT INTO `tms_learning_activity_logs`(user_id, course_id, activity, start_time, studying, url, created_at, updated_at) VALUES ($userid, $course_id, $module_id, $now, 1, '$url', '$today', '$today')");
-
-            //can not save url => use raw query
-            $conn->query($insert_query);
+try {
+    if (is_numeric($user_id) && $user_id != 0 && is_numeric($course_id) && $course_id != 0) {
+        //check and enrol user to course here
+//Check mdl_context
+        $context = $DB->get_record('context', ['instanceid' => $course_id, 'contextlevel' => CONTEXT_COURSE]);
+        if (!empty($context)) {
+            $context_id = $context->id;
+        } else {
+            $context_id = 0;
         }
-        else {
-            if ($type == 'init') { //create new log and change studying of other log to 0
-                $conn->query($insert_query);
-                $log = $DB->get_records_sql($sql);
-                $last_record = array_values($log)[0];
-                $last_id = $last_record->id;
-                $DB->execute("UPDATE `tms_learning_activity_logs` SET studying = 0 WHERE user_id = $userid AND course_id = $course_id AND id <> $last_id");
-            } elseif ($type == 'final') { //Update end_time to latest log
-                $log = $DB->get_records_sql($sql);
-                $last_record = array_values($log)[0];
-                $last_id = $last_record->id;
-                $last_start = $last_record->start_time;
-                $duration = $now - $last_start;
-                $DB->execute("UPDATE `tms_learning_activity_logs` SET end_time = $now, duration = $duration WHERE user_id = $userid AND course_id = $course_id AND activity_id = $activity_id AND module_id = $module_id AND id = $last_id");
+//Check mdl_enrol
+        $checkEnrol = $DB->get_record('enrol', ['enrol' => 'manual', 'courseid' => $course_id, 'roleid' => 5]);
+        if (empty($checkEnrol)) { //Chua co ban ghi enrol thi gan vao day
+            $record = new \stdClass();
+            $record->enrol = 'manual';
+            $record->courseid = $course_id;
+            $record->roleid = 5;
+            $record->sortorder = 0;
+            $record->status = 0;
+            $record->expirythreshold = 86400;
+            $record->timecreated = time();
+            $record->timemodified = time();
+
+            $enrol_id = $DB->insert_record('enrol', $record);
+            $need_to_insert_users = [$user_id];
+        } else {
+            $enrol_id = $checkEnrol->id;
+        }
+//Check mdl_user_enrolments
+        $checkEnrolment = $DB->get_record('user_enrolments', ['enrolid' => $enrol_id, 'userid' => $user_id]);
+        if (empty($checkEnrolment)) {
+            $record_enrolment = new \stdClass();
+            $record_enrolment->enrolid = $enrol_id;
+            $record_enrolment->userid = $user_id;
+            $record_enrolment->timestart = time();
+            $record_enrolment->modifierid = $user_id;
+            $record_enrolment->timecreated = time();
+            $record_enrolment->timemodified = time();
+
+            $enrolment_id = $DB->insert_record('user_enrolments', $record_enrolment);
+        }
+//Check mdl_role_assignments
+        $checkAssignment = $DB->get_record('role_assignments', ['roleid' => 5, 'contextid' => $context_id, 'userid' => $user_id]);
+        if (empty($checkAssignment)) {
+            $record_assignment = new \stdClass();
+            $record_assignment->roleid = 5;
+            $record_assignment->userid = $user_id;
+            $record_assignment->contextid = $context_id;
+            $enrolment_id = $DB->insert_record('role_assignments', $record_assignment);
+        }
+//Check mdl_grade_items
+        $checkGradeItem = $DB->get_record('grade_items', ['courseid' => $course_id]);
+        if (!empty($checkGradeItem)) {
+            //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
+            $checkGradeGrade = $DB->get_record('grade_grades', ['itemid' => $checkGradeItem->id, 'userid' => $user_id]);
+            if (empty($checkGradeGrade)) {
+                $record_grade_grade = new \stdClass();
+                $record_grade_grade->itemid = $checkGradeItem->id;
+                $record_grade_grade->userid = $user_id;
+                $enrolment_id = $DB->insert_record('grade_grades', $record_grade_grade);
             }
         }
+//Log to tms_manual_enrol_log
+
+        $servername = $CFG->dbhost;
+        $dbname = $CFG->dbname;
+        $username = $CFG->dbuser;
+        $password = $CFG->dbpass;
+        $conn = new mysqli($servername, $username, $password, $dbname);
+        $now = date('Y-m-d H:i:s', time());
+
+        $insert_query = "INSERT INTO `tms_manual_enrol_log`(user_id, course_id, created_at, updated_at) VALUES ($user_id, $course_id, '$now', '$now')";
+
+        $conn->query($insert_query);
     }
+
+    $status = true;
+    $message = "Enrol successfully";
+} catch (Exception $e) {
+    $status = false;
+    $message = "Enrol fail";
 }
-
-
-
-
-
-
+echo json_encode([
+    'status' => $status,
+    'msg' => $message
+]);

@@ -5,21 +5,20 @@ namespace App\Repositories;
 
 
 use App\TmsLog;
-use App\TmsQuestion;
 use App\TmsSelfAssessment;
 use App\TmsSelfQuestion;
 use App\TmsSelfQuestionAnswer;
 use App\TmsSelfQuestionData;
 use App\TmsSelfSection;
+use App\TmsSelfStatiscticTotal;
 use App\TmsSelfStatisticUser;
 use App\TmsSelfUser;
-use App\TmsSurvey;
+use App\ViewModel\PreviewSurveyModel;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use mod_lti\local\ltiservice\response;
 
 class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommonInterface
 {
@@ -653,7 +652,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $num = 0;
             $limit = 100;
 
-            TmsSelfUser::where('user_id', '=', Auth::user()->id)->delete();
+            TmsSelfUser::where('self_id', $self_id)->where('user_id', '=', Auth::user()->id)->delete();
 
             foreach ($question_answers as $qa) {
                 //lay du lieu insert vao bang tms_self_users
@@ -666,6 +665,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 $data_item_user['answer_content'] = $qa['ans_content'];
                 $data_item_user['answer_point'] = $qa['point'];
                 $data_item_user['user_id'] = Auth::user()->id;
+                $data_item_user['created_at'] = Carbon::now();
+                $data_item_user['updated_at'] = Carbon::now();
 
                 array_push($arr_self_user, $data_item_user);
 
@@ -680,7 +681,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             }
             TmsSelfUser::insert($arr_self_user);
 
-            TmsSelfStatisticUser::where('user_id', '=', Auth::user()->id)->delete();
+            TmsSelfStatisticUser::where('self_id', $self_id)->where('user_id', '=', Auth::user()->id)->delete();
             foreach ($group_ques as $gr) {
                 if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
                     $lstData = TmsSelfUser::where('type_question', '=', TmsSelfQuestion::GROUP)
@@ -778,7 +779,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 $response->message = __('khong_tim_thay_survey');
                 return response()->json($response);
             }
-
+            $course_id = $request->input('course_id');
             $user_id = $request->input('user_id');
             $question_answers = $request->input('question_answers');
             $group_ques = $request->input('group_ques');
@@ -790,7 +791,9 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $num = 0;
             $limit = 100;
 
-            TmsSelfUser::where('user_id', '=', $user_id)->delete();
+            DB::beginTransaction();
+
+            TmsSelfUser::where('self_id', $self_id)->where('user_id', '=', $user_id)->where('course_id', '=', $course_id)->delete();
 
             foreach ($question_answers as $qa) {
                 //lay du lieu insert vao bang tms_self_users
@@ -803,6 +806,9 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                 $data_item_user['answer_content'] = $qa['ans_content'];
                 $data_item_user['answer_point'] = $qa['point'];
                 $data_item_user['user_id'] = $user_id;
+                $data_item_user['course_id'] = $course_id;
+                $data_item_user['created_at'] = Carbon::now();
+                $data_item_user['updated_at'] = Carbon::now();
 
                 array_push($arr_self_user, $data_item_user);
 
@@ -817,7 +823,8 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             }
             TmsSelfUser::insert($arr_self_user);
 
-            TmsSelfStatisticUser::where('user_id', '=', $user_id)->delete();
+            TmsSelfStatisticUser::where('self_id', $self_id)->where('user_id', '=', $user_id)->where('course_id', '=', $course_id)->delete();
+
 
             foreach ($group_ques as $gr) {
                 if ($gr['type_ques'] === TmsSelfQuestion::GROUP) {
@@ -847,6 +854,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                     $tms_self_statis->total_point = $total_point;
                     $tms_self_statis->avg_point = $avg_point;
                     $tms_self_statis->user_id = $user_id;
+                    $tms_self_statis->course_id = $course_id;
                     $tms_self_statis->save();
 
                     usleep(2);
@@ -881,17 +889,50 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
                     $tms_self_statis->total_point = $total_point;
                     $tms_self_statis->avg_point = $avg_point;
                     $tms_self_statis->user_id = $user_id;
+                    $tms_self_statis->course_id = $course_id;
                     $tms_self_statis->save();
                     usleep(2);
                 }
             }
 
+            //thong ke du lieu tong
+            TmsSelfStatiscticTotal::where('self_id', $self_id)->where('user_id', '=', $user_id)->delete();
+
+            $lstTotal = DB::table('tms_self_statistic_users as tssu')
+                ->where('tssu.self_id', '=', $self_id)
+                ->where('tssu.user_id', '=', $user_id)
+                ->whereNotNull('tssu.course_id')
+                ->select('tssu.type_question', DB::raw('count(tssu.id) as total'),
+                    DB::raw('sum(tssu.total_point) as total_point'), DB::raw('sum(tssu.avg_point) as avg_point'),
+                    'tssu.question_parent_id', 'tssu.section_id'
+                )
+                ->groupBy(['tssu.question_parent_id', 'tssu.section_id'])->get();
+
+            $arr_data = [];
+            $data = [];
+            foreach ($lstTotal as $item) {
+                $data['type_question'] = $item->type_question;
+                $data['self_id'] = $self_id;
+                $data['user_id'] = $user_id;
+                $data['question_parent_id'] = $item->question_parent_id;
+                $data['section_id'] = $item->section_id;
+                $data['total_point'] = $item->total_point;
+                $data['avg_point'] = $item->avg_point / $item->total;
+                $data['created_at'] = Carbon::now();
+                $data['updated_at'] = Carbon::now();
+
+                array_push($arr_data, $data);
+            }
+
+            TmsSelfStatiscticTotal::insert($arr_data);
+
+            DB::commit();
 
             $response->status = true;
             $response->message = __('gui_ket_qua_thanh_cong');
         } catch (\Exception $e) {
+            DB::rollBack();
             $response->status = false;
-            //$response->message = $e->getMessage();
             $response->message = __('loi_he_thong_thao_tac_that_bai');
         }
         return response()->json($response);
@@ -903,14 +944,14 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
     public function statisticSelfAssessment(Request $request)
     {
         // TODO: Implement statisticSelfAssessment() method.
-
         $self_id = $request->input('self_id');
         $organization_id = $request->input('organization_id');
         $keyword = $request->input('keyword');
         $row = $request->input('row');
+        $course_id = $request->input('course_id');
 
         $param = [
-            'survey_id' => 'number',
+            'self_id' => 'number',
             'organization_id' => 'number'
         ];
         $validator = validate_fails($request, $param);
@@ -918,7 +959,14 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             return response()->json([]);
         }
 
-        $lstData = DB::table('tms_self_statistic_users as tsu')
+        $lstData = DB::table('tms_self_statisctic_totals as tsu');
+        if ($course_id) {
+            $lstData = DB::table('tms_self_statistic_users as tsu')
+                ->where('tsu.course_id', '=', $course_id);
+        }
+
+
+        $lstData = $lstData
             ->join('tms_self_questions as tsq', 'tsq.id', '=', 'tsu.question_parent_id')
             ->join('tms_self_sections as tss', 'tss.id', '=', 'tsu.section_id')
             ->join('mdl_user as mu', 'mu.id', '=', 'tsu.user_id')
@@ -937,7 +985,23 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             });
         }
 
-//        $lstData = $lstData->orderBy('id', 'desc');
+        if ($organization_id) {
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'mu.id');
+        }
 
         $lstData = $lstData->paginate($row);
         $total = ceil($lstData->total() / $row);
@@ -952,5 +1016,117 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($response);
 
     }
+
     //endregion
+
+
+    public function viewResult($self_id, $user_id, $course_id)
+    {
+        // TODO: Implement viewResult() method.
+        $preview = new PreviewSurveyModel();
+
+        $dataSurvey = TmsSelfAssessment::with(['questions', 'questions.sections', 'questions.sections.lstChildQuestion', 'questions.sections.lstChildQuestion.answers'])->findOrFail($self_id)->toArray();
+
+        $resultSurvey = TmsSelfUser::select('question_id as ques_id', 'answer_id as ans_id', 'type_question as type_ques',
+            'answer_content as ans_content', 'question_parent_id as ques_pr', 'section_id as section_id')
+            ->where('self_id', '=', $self_id)->where('user_id', '=', $user_id)->where('course_id', '=', $course_id)->get();
+
+        $preview->survey = $dataSurvey;
+        $preview->result = $resultSurvey;
+
+        return response()->json($preview);
+    }
+
+    public function checkSelfResult($self_id, $user_id, $course_id)
+    {
+        // TODO: Implement checkSelfResult() method.
+        $response = new ResponseModel();
+        $response->status = false;
+        try {
+            $checkSelf = TmsSelfUser::select('id')->where('self_id', '=', $self_id)->where('user_id', '=', $user_id)->where('course_id', '=', $course_id)->get();
+
+            if (count($checkSelf) > 0)
+                $response->status = true;
+
+        } catch (\Exception $e) {
+            $response->status = false;
+        }
+        return response()->json($response);
+    }
+
+    public function getUserSelf(Request $request)
+    {
+        // TODO: Implement getUserSelf() method.
+        $self_id = $request->input('self_id');
+        $organization_id = $request->input('organization_id');
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $course_id = $request->input('course_id');
+
+        $param = [
+            'self_id' => 'number',
+            'organization_id' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $lstData = DB::table('tms_self_users as tsu')
+            ->join('mdl_user as u', 'u.id', '=', 'tsu.user_id')
+            ->join('tms_user_detail as tud', 'u.id', '=', 'tud.user_id')
+            ->join('mdl_course as c', 'c.id', '=', 'tsu.course_id')
+            ->where('tsu.self_id', '=', $self_id)
+            ->select('tsu.user_id', 'u.username', 'tud.fullname', 'u.email',
+                'c.shortname as course_code', 'c.fullname as course_name', 'c.id as course_id');
+
+        if ($keyword) {
+            $lstData = $lstData->where(function ($query) use ($keyword) {
+                $query->orWhere('u.username', 'like', "%{$keyword}%")
+                    ->orWhere('tud.fullname', 'like', "%{$keyword}%")
+                    ->orWhere('c.shortname', 'like', "%{$keyword}%")
+                    ->orWhere('c.fullname', 'like', "%{$keyword}%");
+            });
+        }
+
+        if ($course_id) {
+            $lstData = $lstData->where('tsu.course_id', '=', $course_id);
+        }
+
+        if ($organization_id) {
+            $org_query = '( SELECT toe.organization_id, toe.user_id FROM tms_organization_employee toe
+
+                        where toe.organization_id in (
+                          (select  tto.id
+                           from    (select * from tms_organization
+                             order by parent_id, id) tto,
+                            (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(parent_id, @pv) >0
+                                and     @pv := concat(@pv, \',\', id))
+                        )
+                         UNION
+                          select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $lstData = $lstData->join($org_query, 'org_tp.user_id', '=', 'u.id');
+        }
+
+        $lstData = $lstData->groupBy(['u.id']);
+
+
+        $lstData = $lstData->paginate($row);
+        $total = ceil($lstData->total() / $row);
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $lstData->currentPage(),
+            ],
+            'data' => $lstData
+        ];
+
+        return response()->json($response);
+
+    }
 }
