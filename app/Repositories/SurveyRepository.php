@@ -11,7 +11,6 @@ use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use App\ViewModel\PreviewSurveyModel;
 use App\ViewModel\ResponseModel;
-use core_question\bank\view;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -63,21 +62,23 @@ class SurveyRepository implements ISurveyInterface
         }
 
         if (strlen($org_id) != 0 && $org_id != 0) {
-            $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $org_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
+            $org_query = '( SELECT toe.organization_id, toe.user_id FROM tms_organization_employee toe
+
+                        where toe.organization_id in (
+                          (select  tto.id
+                           from    (select * from tms_organization
+                             order by parent_id, id) tto,
+                            (select @pv := ' . $org_id . ') initialisation
+                            where   find_in_set(parent_id, @pv) >0
+                                and     @pv := concat(@pv, \',\', id))
+                        )
+                         UNION
+                          select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . '
                             ) as org_tp';
 
             $org_query = DB::raw($org_query);
 
-            $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'u.id');
+            $lstData = $lstData->join($org_query, 'org_tp.user_id', '=', 'u.id');
         }
 
         if ($startdate) {
@@ -425,7 +426,7 @@ class SurveyRepository implements ISurveyInterface
                 Storage::put($filename, $pdf->output());
             } else {
                 $filename = 'report_survey.xlsx';
-                Excel::store(new SurveyExportView($arrData, $lstQues, $survey,$couse_info), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
+                Excel::store(new SurveyExportView($arrData, $lstQues, $survey, $couse_info), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
             }
 
             $responseModel->status = true;

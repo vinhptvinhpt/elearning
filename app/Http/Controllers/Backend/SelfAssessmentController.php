@@ -117,4 +117,28 @@ class SelfAssessmentController
         return $this->tmsSelfAssessmentRepository->statisticSelfAssessment($request);
     }
     //endregion
+
+    //region view result self assessment
+    public function apiViewResultSelf(Request $request)
+    {
+        $self_id = $request->input('self_id');
+        $user_id = $request->input('user_id');
+        $course_id = $request->input('course_id');
+        return $this->tmsSelfAssessmentRepository->viewResult($self_id, $user_id, $course_id);
+    }
+
+    //endregion
+
+    public function apiCheckResultSelf(Request $request)
+    {
+        $self_id = $request->input('self_id');
+        $user_id = $request->input('user_id');
+        $course_id = $request->input('course_id');
+        return $this->tmsSelfAssessmentRepository->checkSelfResult($self_id, $user_id, $course_id);
+    }
+
+    public function apiGetUserSelf(Request $request)
+    {
+        return $this->tmsSelfAssessmentRepository->getUserSelf($request);
+    }
 }
