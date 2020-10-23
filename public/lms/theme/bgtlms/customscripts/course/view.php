@@ -1554,7 +1554,10 @@ where ttc.course_id = ' . $id . ')';
 
                 <div class="row col-12 course-content course-main" id="toeicresult">
                     <div class="container">
-                        <ul class="list-style list-point-toeic">
+                        <?php if ($toeicScore){?>
+                            <p style="text-align: center"> Congratulations, here are the results of your efforts: </p>
+                        <?php } ?>
+                    <ul class="list-style list-point-toeic">
                             <li><span class="title-part">Listening:</span><span
                                     class="score-part"> <?php if (is_null($toeicScore)) echo 0;
                                     else echo $toeicScore->listening; ?></span>
