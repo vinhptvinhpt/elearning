@@ -139,9 +139,13 @@
                 var pre_title = $('.activity-navigation a#prev-activity-link').attr('title');
                 $('.activity-navigation a#prev-activity-link').append('<span class="title">' + pre_title + '</span>');
 
-                $('.activity-navigation a#next-activity-link').html('Next');
-                var next_title = $('.activity-navigation a#next-activity-link').attr('title');
-                $('.activity-navigation a#next-activity-link').append('<span class="title">' + next_title + '</span>');
+                if (($(".activity-navigation a#next-activity-link").length > 0)) {
+                    $('.activity-navigation a#next-activity-link').html('Next');
+                    var next_title = $('.activity-navigation a#next-activity-link').attr('title');
+                    $('.activity-navigation a#next-activity-link').append('<span class="title">' + next_title + '</span>');
+                }else{
+                    $('.float-right').append('<a href="/lms" id="next-activity-link" class="btn btn-link" title="Return to Homepage">Return to Homepage<span class="title">Return to Homepage</span></a>');
+                }
             }
         }
 
