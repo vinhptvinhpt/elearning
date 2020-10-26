@@ -42,7 +42,9 @@ $sql .= ' limit ' . $recordPerPage;
 $sql .= ' offset ' . $start_index;
 
 $list = array_values($DB->get_records_sql($sql)); //Auto group by moodle
-$trainingDescription = isset($list[0]) ? $list[0]->description : '';
+if (count($list) == 1) {
+    $trainingDescription = isset($list[0]) ? $list[0]->description : '';
+}
 
 $response = json_encode([
     'courses' => $list,
