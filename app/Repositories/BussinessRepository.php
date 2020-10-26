@@ -3015,21 +3015,21 @@ class BussinessRepository implements IBussinessInterface
         $id = $request->input('id');
         $accepted = $request->input('accepted');
         $reason = $request->input('reason');
-
         DB::beginTransaction();
         try {
             $invitation = TmsInvitation::query()->where('id', $id)->first();
             if (isset($invitation)) {
                 $invitation->replied = 1;
-                $invitation->accepted = $accepted;
                 if ($accepted == 'false') {
                     $invitation->accepted = 0;
                     $invitation->reason = $reason;
+                    $accepted_bool = false;
                 } else {
                     $invitation->accepted = 1;
+                    $accepted_bool = true;
                 }
                 $invitation->save();
-                if ($accepted) {
+                if ($accepted_bool) {
                     //Enrol user vào khóa
                     enrole_user_to_course_multiple([$invitation->user_id], Role::ROLE_STUDENT, $invitation->course_id, true);
                 }
@@ -3038,7 +3038,6 @@ class BussinessRepository implements IBussinessInterface
             $data['status'] = 'success';
             $data['message'] = __('xac_nhan_thanh_cong');
         } catch (\Exception $e) {
-            //dd($e);
             DB::rollBack();
             $data['status'] = 'error';
             $data['message'] = __('xac_nhan_that_bai');
@@ -11209,7 +11208,7 @@ class BussinessRepository implements IBussinessInterface
         from
             tms_learning_activity_logs as tlal
         where
-            tlal.course_id = c.id 
+            tlal.course_id = c.id
             and tlal.user_id = ' . $user_id . '
         ) as duration,
         (select count(cm.id) as course_learn from mdl_course_modules cm
@@ -11332,7 +11331,7 @@ class BussinessRepository implements IBussinessInterface
                     from
                         tms_learning_activity_logs as tlal
                     where
-                        tlal.course_id = c.id 
+                        tlal.course_id = c.id
                         and tlal.user_id = ' . $user_id . '
                     ) as duration,
                     (select count(cm.id) as course_learn from mdl_course_modules cm

@@ -111,8 +111,8 @@
                                             <td>{{ (current-1)*row+(index+1) }}</td>
                                             <td>{{ ques.name }}</td>
                                             <td>
-                                                <span v-if="ques.type_question=='group'">{{trans.get('keys.cau_hoi_nhom')}}</span>
-                                                <span v-if="ques.type_question=='minmax'">{{trans.get('keys.cau_hoi_min_max')}}</span>
+                                                <span v-if="ques.type_question==='group'">{{trans.get('keys.cau_hoi_nhom')}}</span>
+                                                <span v-if="ques.type_question==='minmax'">{{trans.get('keys.cau_hoi_min_max')}}</span>
                                             </td>
                                             <td>{{ ques.survey_code }} - {{ ques.survey_name }}</td>
                                             <td class="text-center">

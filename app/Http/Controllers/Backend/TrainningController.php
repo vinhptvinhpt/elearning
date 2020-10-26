@@ -185,6 +185,12 @@ class TrainningController extends Controller
         return $this->trainningRepository->apiAddUserOrganiToTrainning($request);
     }
 
+    public function apiRemoveMultiUser(Request $request)
+    {
+        return $this->trainningRepository->removeMultiUser($request);
+    }
+
+
     public function testAPI()
     {
 //        $tbl1 = '(select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe

@@ -1491,4 +1491,33 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
+    public function removeMultiUser(Request $request)
+    {
+        // TODO: Implement removeMultiUser() method.
+        try {
+            $lstUser = $request->input('Users');
+            $trainning_id = $request->input('trainning_id');
+
+            //lay danh sach course_id trong KNL
+            $courses = TmsTrainningCourse::where('trainning_id', $trainning_id)->where('deleted', 0)->pluck('course_id');
+
+            DB::beginTransaction();
+            //remove enrol hoc vien khoi KNL
+            //remove quyen student cua hoc vien
+            foreach ($courses as $course) {
+                foreach ($lstUser as $user_id) {
+                    remove_enrole_user_to_course($user_id, Role::ROLE_STUDENT, $course);
+                }
+            }
+
+            TmsTrainningUser::where('trainning_id', $trainning_id)->whereIn('user_id', $lstUser)->delete();
+
+            DB::commit();
+            return response()->json(status_message('success', __('cap_nhat_khung_nang_luc_thanh_cong')));
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
 }

@@ -1084,7 +1084,9 @@
     "lms_hoan_thanh_khoa_hoc": "Completed Courses",
     "danh_sach_nguoi_dung_xem_ks": "List user view survey",
     "total_view": "Total view",
-    "print": "Print result"
+    "print": "Print result",
+    "danh_sach_nguoi_dung_tham_gia_self": "List user in self assessment",
+    "xoa_khoi_knl": "Remove all user"
   },
   "vi.keys": {
     "language": "",
@@ -2162,6 +2164,8 @@
     "lms_hoan_thanh_khoa_hoc": "Các khóa học hoàn thành",
     "danh_sach_nguoi_dung_xem_ks": "Danh sách người dùng xem khảo sát",
     "total_view": "Tổng lượt xem",
-    "print": "In kết quả"
+    "print": "In kết quả",
+    "danh_sach_nguoi_dung_tham_gia_self": "Danh sách người dùng tham gia",
+    "xoa_khoi_knl": "Xóa người dùng"
   }
 }

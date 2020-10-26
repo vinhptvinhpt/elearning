@@ -598,6 +598,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/self/submit_result/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessment');
     Route::post('/api/self/submit_resultlms/{self_id}', 'Backend\SelfAssessmentController@apiSubmitSelfAssessmentLMS');
     Route::post('/api/self/statistic', 'Backend\SelfAssessmentController@apiStatisticSelfAssessment');
+    Route::post('/api/self/view-result', 'Backend\SelfAssessmentController@apiViewResultSelf');
+    Route::post('/api/self/check-result', 'Backend\SelfAssessmentController@apiCheckResultSelf');
+    Route::post('/api/self/users', 'Backend\SelfAssessmentController@apiGetUserSelf');
 
     Route::post('/api/selfquestion/list', 'Backend\SelfAssessmentController@apiGetListQuestion');
     Route::get('/api/selfquestion/listself', 'Backend\SelfAssessmentController@apiGetListSelfAssessment');
@@ -633,6 +636,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/trainning/api_trainning_list', 'Backend\TrainningController@apiTrainningList');
     Route::post('/trainning/api_trainning_change', 'Backend\TrainningController@apiTrainningChange');
     Route::post('/trainning/api_remove_trainning', 'Backend\TrainningController@apiTrainningRemove');
+    Route::post('/api/trainning/remove-user-to-training', 'Backend\TrainningController@apiRemoveMultiUser');
 //    Route::get('/api/trainning/update_user_trainning/{trainning_id}', 'Backend\TrainningController@apiUpdateUserTrainning');
 //    Route::get('/api/trainning/update_user_market/{trainning_id}', 'Backend\TrainningController@apiUpdateUserMarket');
 //    Route::get('/api/trainning/update_user_course/{course_id}', 'Backend\TrainningController@apiUpdateUserMarketCourse');

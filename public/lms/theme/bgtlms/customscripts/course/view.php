@@ -108,10 +108,8 @@ if (!isloggedin()) {
 <link rel="shortcut icon" href="images/favicon.png">
 <link rel="stylesheet" href="css/bootstrap.min.css">
 <link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="js/popper.min.js"></script>
 <script src="js/jquery.min.js"></script>
 <script src="js/bootstrap.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 
@@ -930,6 +928,25 @@ if (!isloggedin()) {
             margin-bottom: 15px;
         }
     }
+
+    /* .show-setting {
+    will-change: transform;
+    position: absolute !important;
+    transform: translate3d(1091px, 220px, 0px);
+    top: 0px !important;
+    left: 0px;
+    display: block !important;
+    }
+*/
+    .show-setting {
+        will-change: transform;
+        position: absolute !important;
+        /* transform: translate3d(1518px, 244px, 0px); */
+        top: 0px !important;
+        left: 0px !important;
+        display: block !important;
+    }
+
 </style>
 
 <?php
@@ -1647,6 +1664,8 @@ where ttc.course_id = ' . $id . ')';
         ?>
     </div>
 
+    <?php echo $OUTPUT->footer(); ?>
+
 </div>
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
@@ -1679,6 +1698,20 @@ where ttc.course_id = ' . $id . ')';
 $_SESSION["displayPopup"] = 2; ?>
 <script>
     $(document).ready(function () {
+
+        $("#menu-edit").click(function () {
+            var getMenuSetting = $(".dropdown-menu").get(1);
+            $(getMenuSetting).toggleClass('show-setting');
+        });
+
+        //Cần click này vì xảy ra trường hợp: click vào body nhưng k phải dropmenu thì sẽ hidden
+        $(document).on('click', function (event) {
+            if (!$(event.target).closest('.dropdown-menu').length) {
+                var getMenuSetting = $(".dropdown-menu").get(1);
+                $(getMenuSetting).removeClass('show-setting');
+            }
+        });
+
         //get active li to show content
         $(".nav-click").each(function () {
             var getClasses = $(this).attr('class');
@@ -1789,6 +1822,9 @@ $_SESSION["displayPopup"] = 2; ?>
     $("#myModal").on('hide.bs.modal', function () {
     });
 </script>
+
+<script src="js/popper.min.js"></script>
+
 <script>
     $(document).ready(function () {
         // Show modal on page load
