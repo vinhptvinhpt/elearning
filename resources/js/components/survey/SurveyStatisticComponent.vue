@@ -769,7 +769,6 @@
                     this.results = [];
                     return;
                 }
-                console.log('764');
                 axios.post('/api/survey/result-filltext', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
@@ -779,7 +778,6 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                            console.log('776');
                             this.headers = response.data.message;
                             this.results = response.data.otherData;
                         }
