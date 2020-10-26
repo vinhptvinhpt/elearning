@@ -284,7 +284,7 @@ mc.estimate_duration,
             left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 
             left join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
-            left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = 23974
+            left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = ' . $USER->id . '
 
 			left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . ' AND met.enrol = "manual"
 			left join mdl_user_enrolments muet on met.id = muet.enrolid
