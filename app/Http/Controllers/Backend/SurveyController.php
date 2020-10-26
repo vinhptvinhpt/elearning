@@ -309,4 +309,15 @@ class SurveyController extends Controller
         return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate);
     }
 
+    public function apiShowResultInputText(Request $request)
+    {
+        $survey_id = $request->input('survey_id');
+        $organization_id = $request->input('organization_id');
+        $course_id = $request->input('course_id');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+
+        return $this->surveyRepository->showSurveyResultFillText($survey_id, $organization_id, $course_id, $startdate, $enddate);
+    }
+
 }
