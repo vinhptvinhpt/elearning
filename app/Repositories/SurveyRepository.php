@@ -397,7 +397,7 @@ class SurveyRepository implements ISurveyInterface
                 ->join('tms_questions as q', 'q.id', '=', 'qd.question_id')
                 ->where('q.survey_id', '=', $survey_id)
                 ->where('q.isdeleted', '=', 0)
-                ->select('qd.id as ques_id', 'qd.content as ques_content')->orderBy('qd.id')->orderBy('qd.id')->get();
+                ->select('qd.id as ques_id', 'qd.content as ques_content')->orderBy('q.id')->orderBy('qd.id')->get();
 
             $count_ques = count($lstQues);
 
@@ -633,7 +633,7 @@ class SurveyRepository implements ISurveyInterface
                 ->where('q.survey_id', '=', $survey_id)
                 ->where('q.isdeleted', '=', 0)
                 ->where('q.type_question', '=', TmsQuestion::FILL_TEXT)
-                ->select('qd.id as ques_id', 'qd.content as ques_content')->orderBy('qd.id')->get();
+                ->select('qd.id as ques_id', 'qd.content as ques_content')->orderBy('q.id')->orderBy('qd.id')->get();
 
             $count_ques = count($lstQues);
 
