@@ -6,7 +6,7 @@ $txtSearch = isset($_POST['txtSearch']) ? $_POST['txtSearch'] : null;
 $current = isset($_POST['current']) ? $_POST['current'] : 1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage'] : 5;
 $txtSearch = trim($txtSearch);
-
+$trainingDescription = '';
 
 $sql = 'select
 mc.id,
@@ -42,7 +42,7 @@ $sql .= ' limit ' . $recordPerPage;
 $sql .= ' offset ' . $start_index;
 
 $list = array_values($DB->get_records_sql($sql)); //Auto group by moodle
-if (count($list) == 1) {
+if ($training > 0) {
     $trainingDescription = isset($list[0]) ? $list[0]->description : '';
 }
 
