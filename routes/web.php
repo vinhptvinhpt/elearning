@@ -571,6 +571,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/survey/list_user_result', 'Backend\SurveyController@apiGetListUserSurvey');
     Route::post('/api/survey/store-user-view', 'Backend\SurveyController@apiSaveUserViewSurvey');
     Route::post('/api/survey/user-view', 'Backend\SurveyController@apiGetUserViewSurvey');
+    Route::post('/api/survey/result-filltext', 'Backend\SurveyController@apiShowResultInputText');
 
 
     Route::get('/education/user_teacher', 'Backend\EducationController@viewIndexTeacher')->name('education.user_teacher');

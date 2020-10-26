@@ -20,4 +20,7 @@ interface ISurveyInterface
 
     //export survey result
     public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file, $couse_info);
+
+    //export survey result
+    public function showSurveyResultFillText($survey_id, $org_id, $course_id, $startdate, $enddate);
 }
