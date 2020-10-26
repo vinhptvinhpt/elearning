@@ -478,7 +478,7 @@ class SurveyRepository implements ISurveyInterface
                 ->where('su.survey_id', '=', $survey_id)
                 ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                 ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
-                    'su.answer_id', 'su.user_id as user_id', 'mu.email as email')->groupBy(['mu.id','su.question_id', 'su.answer_id']);
+                    'su.answer_id', 'su.user_id as user_id', 'mu.email as email')->groupBy(['mu.id', 'su.question_id', 'su.answer_id']);
 
             $org_query = '(select ttoe.organization_id,
                                    ttoe.user_id as org_uid
@@ -628,6 +628,7 @@ class SurveyRepository implements ISurveyInterface
             $lstQues = DB::table('tms_question_datas as qd')
                 ->join('tms_questions as q', 'q.id', '=', 'qd.question_id')
                 ->where('q.survey_id', '=', $survey_id)
+                ->where('q.type_question', '=', TmsQuestion::FILL_TEXT)
                 ->select('qd.id as ques_id', 'qd.content as ques_content')->orderBy('qd.id')->get();
 
             $count_ques = count($lstQues);
