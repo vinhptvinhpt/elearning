@@ -410,6 +410,7 @@ if (!empty($reverse_recursive_org_ids)) {
             and cm.course = mc.id
             and cmc.userid = '.$USER->id.') as numoflearned,
         mc.estimate_duration,
+        mue.id as mue_id,
 
         muet.userid as teacher_id,
         tudt.fullname as teacher_name,
@@ -430,6 +431,9 @@ if (!empty($reverse_recursive_org_ids)) {
         inner join mdl_course mc on toc.course_id = mc.id
         left join tms_trainning_courses ttc on mc.id = ttc.course_id
         left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+
+        left join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
+        left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = 23974
 
 		left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . ' AND met.enrol = "manual"
 		left join mdl_user_enrolments muet on met.id = muet.enrolid
@@ -473,7 +477,14 @@ if (!empty($reverse_recursive_org_ids)) {
                 push_course($courses_completed, $course_optional_item);
                 $sttTotalCourse++;
                 array_push($couresIdAllow, $course_optional_item->id);
-            } //then chua hoc
+            }
+            elseif (is_numeric($course_optional_item->mue_id)) {
+                //đã enrol nhưng chưa học => required courses
+                push_course($courses_required, $course_optional_item);
+                $sttTotalCourse++;
+                array_push($couresIdAllow, $course_optional_item->id);
+            }
+            //then chua hoc, chưa enrol
             else {
                 $coursesSuggest[] = $course_optional_item;
             }
