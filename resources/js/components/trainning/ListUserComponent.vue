@@ -7,27 +7,27 @@
                         <li class="breadcrumb-item">
                             <router-link to="/tms/dashboard">{{ trans.get('keys.dashboard') }}</router-link>
                         </li>
-                      <li class="breadcrumb-item">
-                        <router-link v-if="trainning.style == 1"
-                                     :to="{ path: '/tms/trainning/list',
+                        <li class="breadcrumb-item">
+                            <router-link v-if="trainning.style == 1"
+                                         :to="{ path: '/tms/trainning/list',
                                   name: 'TrainningIndex',
                                   query: { type: trainning.style } }">
-                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
-                        </router-link>
-                        <router-link v-else-if="trainning.style == 2"
-                                     :to="{ path: '/tms/trainning/group',
+                                {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                            </router-link>
+                            <router-link v-else-if="trainning.style == 2"
+                                         :to="{ path: '/tms/trainning/group',
                                   name: 'TrainningGroupIndex',
                                   query: { type: trainning.style } }">
-                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
-                        </router-link>
-                        <router-link v-else-if="trainning.style == 0"
-                                     :to="{ path: '/tms/trainning/certification',
+                                {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                            </router-link>
+                            <router-link v-else-if="trainning.style == 0"
+                                         :to="{ path: '/tms/trainning/certification',
                                    name: 'TrainningCertificationIndex',
                                    query: { type: trainning.style } }">
-                          {{ trans.get('keys.quan_tri_khung_nang_luc') }}
-                        </router-link>
-                      </li>
-                      <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung_knl') }}</li>
+                                {{ trans.get('keys.quan_tri_khung_nang_luc') }}
+                            </router-link>
+                        </li>
+                        <li class="breadcrumb-item active">{{ trans.get('keys.danh_sach_nguoi_dung_knl') }}</li>
                     </ol>
                 </nav>
             </div>
@@ -66,9 +66,11 @@
                                                                     </label>
                                                                 </div>
                                                             </div>
-                                                          <div class="col-sm-4">
-                                                            <treeselect class="form-group" v-model="organization_id_1" :multiple="false" :options="options"/>
-                                                          </div>
+                                                            <div class="col-sm-4">
+                                                                <treeselect class="form-group"
+                                                                            v-model="organization_id_1"
+                                                                            :multiple="false" :options="options"/>
+                                                            </div>
                                                             <div class="col-sm-4">
                                                                 <form v-on:submit.prevent="getUserOutTrainning(1)">
                                                                     <div class="d-flex flex-row form-group">
@@ -86,7 +88,8 @@
                                                         </div>
                                                         <div class="mt-10 mb-20">
                                                             <strong>
-                                                                {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{ total_out }}
+                                                                {{trans.get('keys.tong_so_nguoi_dung_hien_tai')}} : {{
+                                                                total_out }}
                                                             </strong>
                                                         </div>
                                                         <div class="table-responsive">
@@ -195,7 +198,8 @@
                                             <div class="col-12 col-lg-12">
                                                 <div class="form-row">
                                                     <div class="col-sm-8 form-group">
-                                                        <treeselect v-model="organization_id" :multiple="false" :options="tree_options" id="organization_id"/>
+                                                        <treeselect v-model="organization_id" :multiple="false"
+                                                                    :options="tree_options" id="organization_id"/>
                                                     </div>
                                                     <div class="col-4 form-group">
                                                         <button type="button"
@@ -211,8 +215,8 @@
                                                 <div class="form-row">
                                                     <div class="col-sm-12 form-group">
                                                         <label style="font-style: italic;">{{trans.get('keys.them_user_cctc_vao_knl')}}</label>
-<!--                                                        <br/>-->
-<!--                                                        <label style="font-style: italic; color: red;">{{trans.get('keys.luu_y_cctc_vao_knl')}}</label>-->
+                                                        <!--                                                        <br/>-->
+                                                        <!--                                                        <label style="font-style: italic; color: red;">{{trans.get('keys.luu_y_cctc_vao_knl')}}</label>-->
                                                     </div>
                                                 </div>
                                             </div>
@@ -242,12 +246,13 @@
                                                 </select>
                                             </label>
                                         </div>
-                                        <div class="col-4" style="width: auto; height: 35px; display: inline-block; position: absolute;">
-                                          <label>
-                                            <treeselect v-model="organization_id1"
-                                                        :multiple="false" :options="optionsOrganize"
-                                                        @input="getUser(1)"/>
-                                          </label>
+                                        <div class="col-4"
+                                             style="width: auto; height: 35px; display: inline-block; position: absolute;">
+                                            <label>
+                                                <treeselect v-model="organization_id1"
+                                                            :multiple="false" :options="optionsOrganize"
+                                                            @input="getUser(1)"/>
+                                            </label>
                                         </div>
                                     </div>
                                     <div class="col-sm-4">
@@ -274,15 +279,21 @@
                                     <table class="table_res">
                                         <thead>
                                         <tr>
+                                            <th class="text-center" v-if="slug_can('tms-system-administrator-grant')">
+                                                <input type="checkbox"
+                                                       v-model="allSelected_user"
+                                                       @click="selectAllUserDel()">
+                                            </th>
                                             <th>{{trans.get('keys.stt')}}</th>
                                             <th>{{trans.get('keys.tai_khoan')}}</th>
                                             <th class=" mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
                                             <th class=" mobile_hide">{{trans.get('keys.email')}}</th>
                                             <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <template v-if="posts.length == 0">
+                                        <template v-if="posts.length === 0">
                                             <!--                      <tr v-if="posts.length == 0">-->
                                             <!--                        <td colspan="8">{{trans.get('keys.khong_tim_thay_du_lieu')}}</td>-->
                                             <!--                      </tr>-->
@@ -292,6 +303,12 @@
                                         </template>
                                         <template v-else>
                                             <tr v-if="user" v-for="(user,index) in posts">
+                                                <td class="text-center"
+                                                    v-if="slug_can('tms-system-administrator-grant')">
+                                                    <input type="checkbox" :value="user.user_id"
+                                                           v-model="userDels"
+                                                           @change="onCheckboxUserDel()"/>
+                                                </td>
                                                 <td>{{ (current-1)*row+(index+1) }}</td>
                                                 <td>
                                                     <router-link
@@ -304,13 +321,16 @@
                                                 <td class=" mobile_hide">{{ user.email }}</td>
 
                                                 <td class="text-center">
-                                                    <button v-if="slug_can('tms-system-administrator-grant')" @click="remove_trainning(user.id,user.user_id,trainning_id)"
+                                                    <button v-if="slug_can('tms-system-administrator-grant')"
+                                                            @click="remove_trainning(user.id,user.user_id,trainning_id)"
                                                             class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 btn_open_select"
                                                             type="button">
                                                         <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </button>
-                                                    <button v-else class="btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2" type="button">
-                                                      <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                                                    <button v-else
+                                                            class="btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2"
+                                                            type="button">
+                                                        <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
                                                     </button>
                                                 </td>
                                             </tr>
@@ -319,6 +339,11 @@
                                         </tbody>
                                         <tfoot>
                                         <tr>
+                                            <th class="text-center" v-if="slug_can('tms-system-administrator-grant')">
+                                                <input type="checkbox"
+                                                       v-model="allSelected_user"
+                                                       @click="selectAllUserDel()">
+                                            </th>
                                             <th>{{trans.get('keys.stt')}}</th>
                                             <th>{{trans.get('keys.tai_khoan')}}</th>
                                             <th class=" mobile_hide">{{trans.get('keys.ten_nguoi_dung')}}</th>
@@ -333,36 +358,48 @@
                                                   :labels=$pagination.labels></v-pagination>
 
                                 </div>
-                              <div class="form-row text-left">
-                                <div class="col-12 form-group">
-                                  <div class="button-list text-right">
-                                    <router-link v-if="trainning.style == 1"
-                                                 :to="{ path: '/tms/trainning/list',
-                                  name: 'TrainningIndex',
-                                  params:{back_page: '1'},
-                                  query: { type: trainning.style } }"
-                                                 class="btn btn-danger btn-sm">
-                                      {{ trans.get('keys.huy') }}
-                                    </router-link>
-                                    <router-link v-else-if="trainning.style == 2"
-                                                 :to="{ path: '/tms/trainning/group',
-                                  name: 'TrainningGroupIndex',
-                                  params:{back_page: '1'},
-                                  query: { type: trainning.style } }"
-                                                 class="btn btn-danger btn-sm">
-                                      {{ trans.get('keys.huy') }}
-                                    </router-link>
-                                    <router-link v-else-if="trainning.style == 0"
-                                                 :to="{ path: '/tms/trainning/certification',
-                                   name: 'TrainningCertificationIndex',
-                                   params:{back_page: '1'},
-                                   query: { type: trainning.style } }"
-                                                 class="btn btn-danger btn-sm">
-                                      {{ trans.get('keys.huy') }}
-                                    </router-link>
-                                  </div>
+                                <div class="form-row text-left">
+                                    <div class="col-12 form-group">
+                                        <div class="button-list text-right">
+                                            <button type="button" id="btnRemoveAll"
+                                                    v-if="slug_can('tms-system-administrator-grant')"
+                                                    style="float: left; position: relative;"
+                                                    class="btn btn-sm btn-danger btn-excel"
+                                                    @click="removeToTraining()">
+                                                {{trans.get('keys.xoa_khoi_knl')}}
+                                                <i class="fa fa-spinner"
+                                                   aria-hidden="true"></i>
+                                            </button>
+
+                                            <router-link v-if="trainning.style === 1"
+                                                         :to="{ path: '/tms/trainning/list',
+                                                          name: 'TrainningIndex',
+                                                          params:{back_page: '1'},
+                                                          query: { type: trainning.style } }"
+                                                         class="btn btn-danger btn-sm">
+                                                {{ trans.get('keys.huy') }}
+                                            </router-link>
+
+                                            <router-link v-else-if="trainning.style === 2"
+                                                         :to="{ path: '/tms/trainning/group',
+                                                          name: 'TrainningGroupIndex',
+                                                          params:{back_page: '1'},
+                                                          query: { type: trainning.style } }"
+                                                         class="btn btn-danger btn-sm">
+                                                {{ trans.get('keys.huy') }}
+                                            </router-link>
+
+                                            <router-link v-else-if="trainning.style === 0"
+                                                         :to="{ path: '/tms/trainning/certification',
+                                                           name: 'TrainningCertificationIndex',
+                                                           params:{back_page: '1'},
+                                                           query: { type: trainning.style } }"
+                                                         class="btn btn-danger btn-sm">
+                                                {{ trans.get('keys.huy') }}
+                                            </router-link>
+                                        </div>
+                                    </div>
                                 </div>
-                              </div>
                             </div>
                         </div>
                     </div>
@@ -398,8 +435,8 @@
                 allSelected: false,
                 userTrainning: [],
                 tree_placeholder: {
-                  id: 0,
-                  label: this.trans.get('keys.chon_to_chuc')
+                    id: 0,
+                    label: this.trans.get('keys.chon_to_chuc')
                 },
                 tree_options: [],
                 organization_parent_list: [],
@@ -408,31 +445,50 @@
                 options: [],
                 organization_id_1: 0,
                 optionsOrganize: [
-                  {
-                    id: 0,
-                    label: this.trans.get('keys.chon_to_chuc')
-                  }
+                    {
+                        id: 0,
+                        label: this.trans.get('keys.chon_to_chuc')
+                    }
                 ],
                 organization_id1: 0,
                 trainning: {
-                  code: '',
-                  name: '',
-                  style: 1,
-                  role_id: 0,
-                  organization_id: 0,
-                  run_cron: 1,
-                  auto_certificate: 1,
-                  auto_badge: 1,
-                  time_start: '',
-                  time_end: '',
-                  logo: '',
-                  description: ''
+                    code: '',
+                    name: '',
+                    style: 1,
+                    role_id: 0,
+                    organization_id: 0,
+                    run_cron: 1,
+                    auto_certificate: 1,
+                    auto_badge: 1,
+                    time_start: '',
+                    time_end: '',
+                    logo: '',
+                    description: ''
                 },
+
+                userDels: [],
+                allSelected_user: false,
             }
         },
         methods: {
             slug_can(permissionName) {
-              return this.slugs.indexOf(permissionName) !== -1;
+                return this.slugs.indexOf(permissionName) !== -1;
+            },
+            selectAllUserDel() {
+                this.userDels = [];
+                this.allSelected_user = !this.allSelected_user;
+                if (this.allSelected_user) {
+                    var countEnrol = this.posts.length;
+                    if (countEnrol > 0) {
+                        for (var i = 0; i < countEnrol; i++) {
+                            this.userDels.push(this.posts[i].user_id.toString());
+                        }
+                    }
+                }
+                console.log(JSON.stringify(this.userDels));
+            },
+            onCheckboxUserDel() {
+                this.allSelected_user = false;
             },
             listOrganization() {
                 axios.post('/organization/list', {
@@ -477,23 +533,60 @@
                     org_id: this.organization_id,
                     trainning_id: this.trainning_id
                 })
-                .then(response => {
-                    loader.fadeOut();
-                    if (response.data.status) {
-                        toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
-                        current_pos.getUser(current_pos.current);
-                        current_pos.getUserOutTrainning(current_pos.current_out);
-                    } else {
-                        toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
-                    }
-                    $('button.btn-pdf i').css("display", "none");
-                })
-                .catch(error => {
-                    loader.fadeOut();
-                    $('button.btn-pdf i').css("display", "none");
-                    toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
-                });
+                    .then(response => {
+                        loader.fadeOut();
+                        if (response.data.status) {
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            current_pos.getUser(current_pos.current);
+                            current_pos.getUserOutTrainning(current_pos.current_out);
+                        } else {
+                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                        }
+                        $('button.btn-pdf i').css("display", "none");
+                    })
+                    .catch(error => {
+                        loader.fadeOut();
+                        $('button.btn-pdf i').css("display", "none");
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                    });
                 this.organization_id = 0;
+            },
+            removeToTraining() {
+                let current_pos = this;
+                let count = this.userDels.length;
+                if (count === 0) {
+                    toastr['warning'](current_pos.trans.get('keys.chua_chon_user'), current_pos.trans.get('keys.thong_bao'));
+                    return;
+                }
+
+                $('button.btn-excel i').css("display", "inline-block");
+                let loader = $('.preloader-it');
+                loader.fadeIn();
+
+                axios.post('/api/trainning/remove-user-to-training', {
+                    Users: this.userDels,
+                    trainning_id: this.trainning_id
+                })
+                    .then(response => {
+                        loader.fadeOut();
+                        if (response.data.status) {
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            current_pos.getUser(current_pos.current);
+                            current_pos.getUserOutTrainning(current_pos.current_out);
+                            current_pos.allSelected_user = false;
+                        } else {
+                            toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+                        }
+                        $('button.btn-excel i').css("display", "none");
+                    })
+                    .catch(error => {
+                        current_pos.allSelected_user = false;
+                        loader.fadeOut();
+                        $('button.btn-excel i').css("display", "none");
+                        toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                    });
+                //reset selected array
+                this.userDels = [];
             },
             addToTrainning() {
                 let current_pos = this;
@@ -566,8 +659,8 @@
                         .then(response => {
                             toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
                             $('.btn_open_select.actives').trigger('click');
-                            if(current_pos.posts.length == 1){
-                              current_pos.current = current_pos.current > 1 ? current_pos.current -1 : 1 ;
+                            if (current_pos.posts.length === 1) {
+                                current_pos.current = current_pos.current > 1 ? current_pos.current - 1 : 1;
                             }
                             current_pos.onPageChange();
                             // current_pos.getUser(current_pos.current);
@@ -609,7 +702,7 @@
                     keyword: this.keyword_out,
                     row: this.row_out,
                     trainning: this.trainning_id,
-                  organization_id: this.organization_id_1
+                    organization_id: this.organization_id_1
                 })
                     .then(response => {
                         this.users_out_trainning = response.data.data ? response.data.data.data : [];
@@ -640,87 +733,87 @@
                     });
             },
             selectOrganization(current_id) {
-              $('.content_search_box').addClass('loadding');
-              axios.post('/organization/list',{
-                keyword: this.organization_keyword,
-                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
-                paginated: 0 //không phân trang
-              })
-                .then(response => {
-                  this.organization_list = response.data;
-                  //Set options recursive
-                  this.options = this.setOptions(response.data, current_id);
-                  this.options.unshift(this.tree_placeholder);
-                  $('.content_search_box').removeClass('loadding');
+                $('.content_search_box').addClass('loadding');
+                axios.post('/organization/list', {
+                    keyword: this.organization_keyword,
+                    level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                    paginated: 0 //không phân trang
                 })
-                .catch(error => {
-                  $('.content_search_box').removeClass('loadding');
-                })
+                    .then(response => {
+                        this.organization_list = response.data;
+                        //Set options recursive
+                        this.options = this.setOptions(response.data, current_id);
+                        this.options.unshift(this.tree_placeholder);
+                        $('.content_search_box').removeClass('loadding');
+                    })
+                    .catch(error => {
+                        $('.content_search_box').removeClass('loadding');
+                    })
             },
             setOptions(list, current_id) {
-              let outPut = [];
-              for (const [key, item] of Object.entries(list)) {
-                let newOption = {
-                  id: item.id,
-                  label: item.name,
-                };
-                if (item.children.length > 0) {
-                  for (const [key, child] of Object.entries(item.children)) {
-                    if (child.id === current_id) {
-                      newOption.isDefaultExpanded = true;
-                      break;
+                let outPut = [];
+                for (const [key, item] of Object.entries(list)) {
+                    let newOption = {
+                        id: item.id,
+                        label: item.name,
+                    };
+                    if (item.children.length > 0) {
+                        for (const [key, child] of Object.entries(item.children)) {
+                            if (child.id === current_id) {
+                                newOption.isDefaultExpanded = true;
+                                break;
+                            }
+                        }
+                        newOption.children = this.setOptions(item.children, current_id);
                     }
-                  }
-                  newOption.children = this.setOptions(item.children, current_id);
+                    outPut.push(newOption);
                 }
-                outPut.push(newOption);
-              }
-              return outPut;
+                return outPut;
             },
             onPageChange() {
                 let back = this.getParamsBackPage();
-                if(back == '1'){
-                  this.current = Number(sessionStorage.getItem('userListPage'));
-                  this.row = Number(sessionStorage.getItem('userListPageSize'));
-                  this.keyword = sessionStorage.getItem('userListKeyWord');
+                if (back === '1') {
+                    this.current = Number(sessionStorage.getItem('userListPage'));
+                    this.row = Number(sessionStorage.getItem('userListPageSize'));
+                    this.keyword = sessionStorage.getItem('userListKeyWord');
 
-                  sessionStorage.clear();
-                  this.$route.params.back_page= null;
+                    sessionStorage.clear();
+                    this.$route.params.back_page = null;
                 }
                 this.getUser();
                 this.getUserOutTrainning();
             },
             getParamsBackPage() {
-              return this.$route.params.back_page;
+                return this.$route.params.back_page;
             },
             setParamsBackPage(value) {
-              this.$route.params.back_page = value;
+                this.$route.params.back_page = value;
             },
             selectOrganization1(current_id) {
-              $('.content_search_box').addClass('loadding');
-              axios.post('/organization/list', {
-                keyword: this.organization_keyword,
-                level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
-                paginated: 0 //không phân trang
-              })
-                .then(response => {
-                  this.organization_list = response.data;
-                  //Set options recursive
-                  this.optionsOrganize = this.setOptions(response.data, current_id);
-                  $('.content_search_box').removeClass('loadding');
+                $('.content_search_box').addClass('loadding');
+                axios.post('/organization/list', {
+                    keyword: this.organization_keyword,
+                    level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+                    paginated: 0 //không phân trang
                 })
-                .catch(error => {
-                  $('.content_search_box').removeClass('loadding');
-                })
+                    .then(response => {
+                        this.organization_list = response.data;
+                        //Set options recursive
+                        this.optionsOrganize = this.setOptions(response.data, current_id);
+                        $('.content_search_box').removeClass('loadding');
+                    })
+                    .catch(error => {
+                        $('.content_search_box').removeClass('loadding');
+                    })
             },
             getDetailTrainning() {
-              axios.get('/api/trainning/detail/' + this.trainning_id)
-                .then(response => {
-                  this.trainning = response.data;
-                })
-                .catch(error => {
-                  console.log(error);
-                });
+                axios.get('/api/trainning/detail/' + this.trainning_id)
+                    .then(response => {
+                        this.trainning = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
             },
         },
         mounted() {

@@ -17,7 +17,10 @@ Cài đặt các phần mềm liên quan
 - Cấp quyền cho các folder: public, storage, vendor, node_modules
 - cd /path/to/folder/source
 - Run: **sudo docker-compose up -d**
-- Import database, connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
+- Import database theo lệnh
+
+    **docker exec -i <db_container_name> mysql -u <mysql_user> -pPassword database_name < /path/to/sql/file**
+- Sửa connect src -> db tại 2 file: **.env** và **/public/lms/config.php**, nếu chưa có file .env có thể copy từ file **.env.example**
 - Chỉnh sửa config trong file: **/config/constanst.php**
 - Tạo ra các file json bao gồm: **enroll_trainning.json**, **enroll_user.json** với nội dung: **{"flag":"stop"}** trong folder: **{path}/{to}/{folder}/{source}/storage/app/public/cron**
     Nếu ko có folder cron trong src, cần tạo mới folder này

@@ -636,6 +636,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/trainning/api_trainning_list', 'Backend\TrainningController@apiTrainningList');
     Route::post('/trainning/api_trainning_change', 'Backend\TrainningController@apiTrainningChange');
     Route::post('/trainning/api_remove_trainning', 'Backend\TrainningController@apiTrainningRemove');
+    Route::post('/api/trainning/remove-user-to-training', 'Backend\TrainningController@apiRemoveMultiUser');
 //    Route::get('/api/trainning/update_user_trainning/{trainning_id}', 'Backend\TrainningController@apiUpdateUserTrainning');
 //    Route::get('/api/trainning/update_user_market/{trainning_id}', 'Backend\TrainningController@apiUpdateUserMarket');
 //    Route::get('/api/trainning/update_user_course/{course_id}', 'Backend\TrainningController@apiUpdateUserMarketCourse');
