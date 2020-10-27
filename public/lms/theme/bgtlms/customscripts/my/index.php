@@ -410,6 +410,7 @@ if (!empty($reverse_recursive_org_ids)) {
             and cm.course = mc.id
             and cmc.userid = '.$USER->id.') as numoflearned,
         mc.estimate_duration,
+        mue.id as mue_id,
 
         muet.userid as teacher_id,
         tudt.fullname as teacher_name,
@@ -430,6 +431,9 @@ if (!empty($reverse_recursive_org_ids)) {
         inner join mdl_course mc on toc.course_id = mc.id
         left join tms_trainning_courses ttc on mc.id = ttc.course_id
         left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
+
+        left join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
+        left join mdl_user_enrolments mue on me.id = mue.enrolid AND mue.userid = ' . $USER->id . '
 
 		left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . ' AND met.enrol = "manual"
 		left join mdl_user_enrolments muet on met.id = muet.enrolid
@@ -473,7 +477,14 @@ if (!empty($reverse_recursive_org_ids)) {
                 push_course($courses_completed, $course_optional_item);
                 $sttTotalCourse++;
                 array_push($couresIdAllow, $course_optional_item->id);
-            } //then chua hoc
+            }
+            elseif (is_numeric($course_optional_item->mue_id)) {
+                //đã enrol nhưng chưa học => required courses
+                push_course($courses_required, $course_optional_item);
+                $sttTotalCourse++;
+                array_push($couresIdAllow, $course_optional_item->id);
+            }
+            //then chua hoc, chưa enrol
             else {
                 $coursesSuggest[] = $course_optional_item;
             }
@@ -800,7 +811,19 @@ $_SESSION["allowCms"] = $allowCms;
         box-shadow: 3px 3px 6px #00000029;
         display: flex;
         overflow: hidden;
-        height: 100%;
+        /*height: 100%;*/
+    }
+
+    @media screen and (max-width: 1600px) {
+        .block-items__item {
+            height: 250px;
+        }
+    }
+
+    @media screen and (min-width: 1600px) {
+        .block-items__item {
+            height: 300px;
+        }
     }
 
     .block-items__item img {
@@ -924,13 +947,13 @@ $_SESSION["allowCms"] = $allowCms;
     }
 
     .info-user .avatar {
-        width: 100%;
         border-radius: 50%;
         margin: 0 !important;
         padding: 0;
         text-align: right;
         width: calc(100% - 10px);
-        height: 100%;
+        /* width: 100%; */
+        /* height: 100%; */
     }
 
     .info-user .avatar img {
@@ -1132,13 +1155,15 @@ $_SESSION["allowCms"] = $allowCms;
         margin: 0;
     }
 
+    .logo-container {
+        display: flex;
+    }
+
     .footer-logo {
-        width: auto;
-        height: auto;
-        max-width: 200px;
         background-color: #ffffff;
         width: 200px;
-        height: 90px;
+        height: auto;
+        align-self: flex-start;
     }
 
     .block-note {
@@ -1867,7 +1892,7 @@ $_SESSION["allowCms"] = $allowCms;
     <section class="section-footer">
         <footer>
             <div class="container">
-                <div class="row">
+                <div class="row logo-container">
                     <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                 </div>
                 <div class="row mb-3">

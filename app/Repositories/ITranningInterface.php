@@ -28,4 +28,6 @@ interface ITranningInterface
     public function apiTrainningListUser(Request $request);
 
     public function apiTrainningRemove(Request $request);
+
+    public function removeMultiUser(Request $request);
 }
