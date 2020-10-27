@@ -6700,6 +6700,16 @@ class BussinessRepository implements IBussinessInterface
                 return response()->json($response);
             }
 
+            if ($type_question == TmsQuestion::FILL_TEXT) {
+                $count_filltext = TmsQuestion::where('survey_id', $survey_id)->where('type_question', TmsQuestion::FILL_TEXT)->count();
+
+                if ($count_filltext >= 4) {
+                    $response->status = false;
+                    $response->message = __('survey_vuot_qua_4_cau_filltext');
+                    return response()->json($response);
+                }
+            }
+
 
             $count_ans = 0;
             if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::CHECKBOX) {
@@ -6910,6 +6920,16 @@ class BussinessRepository implements IBussinessInterface
                 $response->status = false;
                 $response->message = __('dinh_dang_du_lieu_khong_hop_le');
                 return response()->json($response);
+            }
+
+            if ($type_question == TmsQuestion::FILL_TEXT) {
+                $count_filltext = TmsQuestion::where('survey_id', $survey_id)->where('type_question', TmsQuestion::FILL_TEXT)->count();
+
+                if ($count_filltext >= 4) {
+                    $response->status = false;
+                    $response->message = __('survey_vuot_qua_4_cau_filltext');
+                    return response()->json($response);
+                }
             }
 
             $count_ans = 0;
