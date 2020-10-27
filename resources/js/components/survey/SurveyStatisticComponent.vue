@@ -143,6 +143,41 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="row">
+
+                                    <table class="table_res">
+                                        <thead>
+                                        <tr>
+                                            <th style="width: 20%;"></th>
+                                            <th style="width: 20%;" v-for="(hd,index) in headers">
+                                                <div v-html="hd.ques_content"></div>
+                                            </th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr v-for="(rs,index) in results">
+                                            <!--                                            <th>{{rs.email}}</th>-->
+                                            <th>
+                                                <router-link
+                                                        :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: rs.user_id }, query: {type: type} }">
+                                                    {{ rs.email }}
+                                                </router-link>
+
+                                            </th>
+                                            <td v-for="(hd,index_hd) in headers">
+                                                <div v-for="(dt,index_dt) in rs.lstData">
+                                                    <div v-if="dt.ques_id === hd.ques_id" v-html="dt.ans_content">
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+
+                                        </tfoot>
+                                    </table>
+
+                                </div>
                             </section>
                         </div>
                     </div>
@@ -408,6 +443,9 @@
                     showClear: true,
                     showClose: true,
                 },
+
+                headers: [],
+                results: []
             }
         },
         methods: {
@@ -565,6 +603,7 @@
             search() {
                 this.getStatictisSurveyView();
                 this.getStatictisSurveyExam();
+                this.showResultFilltext();
             },
             getStatictisSurveyExam() {
                 if (this.keyword === '' || this.keyword === null || this.keyword === undefined) {
@@ -591,7 +630,6 @@
                                 this.survey_exam.push(data_result[keys[i]]);
                             }
                         }
-
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -722,6 +760,31 @@
                         } else {
                             $('button.btn-excel i').css("display", "none");
                         }
+                    });
+            },
+            showResultFilltext() {
+                this.course_id = Ls.get('course');
+                if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
+                    this.headers = [];
+                    this.results = [];
+                    return;
+                }
+                axios.post('/api/survey/result-filltext', {
+                    survey_id: this.survey_id,
+                    organization_id: this.organization.parent_id,
+                    course_id: this.course_id,
+                    startdate: this.startdate,
+                    enddate: this.enddate
+                })
+                    .then(response => {
+                        if (response.data.status) {
+                            this.headers = response.data.message;
+                            this.results = response.data.otherData;
+                        }
+
+                    })
+                    .catch(error => {
+
                     });
             }
         },

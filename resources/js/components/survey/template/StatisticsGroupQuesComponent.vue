@@ -1,7 +1,8 @@
 <template>
     <div class="col-12 form-group">
         <!--hien thi cau hoi theo dang cau hoi phia tren, dap an o duoi -->
-        <h6>{{trans.get('keys.cau_hoi_nhom')}} {{index_question + 1}}: <label
+        <h6 v-if="question.lstQuesChild != null && question.lstQuesChild.length>0">
+            {{trans.get('keys.cau_hoi_nhom')}} {{index_question + 1}}: <label
                 v-html="question.question_content"></label></h6><br/>
 
         <div class="col-12 form-group" v-for="(ques_data,index) in question.lstQuesChild">
