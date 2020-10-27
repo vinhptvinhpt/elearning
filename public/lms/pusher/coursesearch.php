@@ -340,7 +340,7 @@ mc.estimate_duration,
                         array_push($competency_completed, $course_optional_item->training_id);
                         push_course($courses_completed, $course_optional_item);
                     }
-                    elseif (is_numeric($course_optional_item->enrol_count)) {
+                    elseif ($course_optional_item->enrol_count > 0) {
                         //đã enrol nhưng chưa học => required courses
                         push_course($courses_required, $course_optional_item);
                         $sttTotalCourse++;
