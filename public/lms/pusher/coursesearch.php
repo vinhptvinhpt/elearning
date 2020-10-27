@@ -163,6 +163,9 @@ mc.estimate_duration,
         $stt = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
+            $course->enable = true;
+            $course->category_type = '';
+
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $courses_others_id .= ', ' . $course->id;
@@ -183,6 +186,7 @@ mc.estimate_duration,
                 } else {
                     $course->enable = false;
                 }
+                $course->category_type = 'required';
             } else {
                 $courses_others_id .= ', ' . $course->id;
             }
@@ -328,6 +332,9 @@ mc.estimate_duration,
             foreach ($courses_training_optional as $training_courses) {
                 foreach ($training_courses as &$course_optional_item) {
                     $course_optional_item->sttShow = $stt;
+                    $course_optional_item->enable = true;
+                    $course_optional_item->category_type = '';
+
                     //current first
                     if ($course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule > 0
@@ -348,6 +355,7 @@ mc.estimate_duration,
                         } else {
                             $course_optional_item->enable = false;
                         }
+                        $course_optional_item->category_type = 'required';
                     }
                     //then chua hoc
                     else {
