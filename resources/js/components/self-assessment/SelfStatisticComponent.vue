@@ -17,228 +17,158 @@
             </div>
         </div>
 
-        <div class="row mx-0">
-            <ul class="col-12 nav nav-tabs nav-light" id="myTab" role="tablist">
-                <li class="nav-item">
-                    <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab"
-                       aria-controls="home" aria-selected="true"> {{trans.get('keys.sumary')}}</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab"
-                       aria-controls="profile" aria-selected="false">{{trans.get('keys.question')}}</a>
-                </li>
-            </ul>
+        <div class="row">
+            <div class="col-12">
+                <section class="hk-sec-wrapper">
+                    <div class="col-lg-12 col-sm-12 mb-3">
 
-            <div class="col-12 tab-content py-4 border-top-0 rounded-top-0" id="myTabContent">
-                <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-                    <div class="row">
-                        <div class="col-xl-12">
-                            <section class="hk-sec-wrapper">
-                                <h5 class="hk-sec-title">{{trans.get('keys.thong_ke_self')}}</h5>
-
-                                <div class="row">
-                                    <div class="col-sm-4 form-group">
-                                        <div class="d-flex flex-row form-group">
-                                            <treeselect v-model="organization.parent_id" :multiple="false"
-                                                        :options="options" id="organization_parent_id"
-                                                        @input="getSelfStatistic(1)"/>
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4">
-                                        <div class="d-flex flex-row form-group">
-                                            <input v-model="keywordc" type="text" class="form-control" id="tags"
-                                                   :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                                        </div>
-                                    </div>
-                                    <div class="col-sm-4 form-group">
-                                        <form v-on:submit.prevent="getSelfStatistic(1)">
-                                            <div class="d-flex flex-row form-group">
-                                                <input v-model="keyword" type="text"
-                                                       class="form-control"
-                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_or_section')+' ...'"/>
-                                                <button type="button" id="btnFilter"
-                                                        class="btn btn-primary btn-sm"
-                                                        @click="getSelfStatistic(1)">
-                                                    {{trans.get('keys.tim')}}
-                                                </button>
-                                            </div>
-                                        </form>
-                                    </div>
+                        <div class="row">
+                            <div class="col-4">
+                                <treeselect v-model="organization_id_1"
+                                            :multiple="false" :options="options"
+                                            @input="getUserSurvey(1)"/>
+                            </div>
+                            <div class="col-sm-4">
+                                <div class="d-flex flex-row form-group">
+                                    <input v-model="keyword_us" type="text" class="form-control"
+                                           id="tag-users"
+                                           :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
                                 </div>
-
-                                <div class="row">
-                                    <div class="col-sm">
-                                        <div class="table-wrap">
-
-                                            <div class="row pt-3">
-                                                <div class="col-6 dataTables_wrapper">
-                                                    <div class="dataTables_length d-block">
-                                                        <label>{{trans.get('keys.hien_thi')}}
-                                                            <select v-model="row"
-                                                                    class="custom-select custom-select-sm form-control form-control-sm"
-                                                                    @change="getSelfStatistic(1)">
-                                                                <option value="5">5</option>
-                                                                <option value="10">10</option>
-                                                                <option value="20">20</option>
-                                                                <option value="50">50</option>
-                                                            </select>
-                                                        </label>
-                                                    </div>
-                                                </div>
-
-                                            </div>
-
-                                            <br/>
-                                            <div class="table-responsive">
-                                                <table id="datable_1" class="table_res">
-                                                    <thead>
-                                                    <tr>
-                                                        <th>{{trans.get('keys.stt')}}</th>
-                                                        <th style="width: 10%;">{{trans.get('keys.username')}}</th>
-                                                        <th style="width: 20%;">{{trans.get('keys.fullname')}}</th>
-                                                        <th>{{trans.get('keys.ques_name')}}</th>
-                                                        <th>{{trans.get('keys.sec_name')}}</th>
-                                                        <th>{{trans.get('keys.total_point')}}</th>
-                                                        <th>{{trans.get('keys.avg_point')}}</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                    <tr v-for="(sur,index) in surveys">
-                                                        <td>{{ (current-1)*row+(index+1) }}</td>
-                                                        <td>
-                                                            <router-link
-                                                                    :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: sur.user_id }, query: {type: 'system'} }">
-                                                                {{ sur.username }}
-                                                            </router-link>
-                                                        </td>
-                                                        <td>{{ sur.fullname }}</td>
-                                                        <td>{{ sur.ques_name }}</td>
-                                                        <td>{{ sur.section_name }}</td>
-                                                        <td>{{ sur.total_point }}</td>
-                                                        <td>{{ sur.avg_point.toFixed(2) }}</td>
-
-                                                    </tr>
-                                                    </tbody>
-                                                    <tfoot>
-
-                                                    </tfoot>
-                                                </table>
-
-                                                <v-pagination v-model="current" @input="onPageChange"
-                                                              :page-count="totalPages"
-                                                              :classes=$pagination.classes
-                                                              :labels=$pagination.labels></v-pagination>
-                                            </div>
-                                        </div>
+                            </div>
+                            <div class="col-4">
+                                <form v-on:submit.prevent="getUserSurvey(1)">
+                                    <div class="d-flex flex-row form-group">
+                                        <input v-model="keyword_rs" type="text"
+                                               class="form-control search_text"
+                                               :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
+                                        <button type="button" id="btnFilter1"
+                                                class="btn btn-primary btn-sm"
+                                                @click="getUserSurvey(1)">
+                                            {{trans.get('keys.tim')}}
+                                        </button>
                                     </div>
-                                </div>
-                            </section>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                </div>
-                <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-                    <div class="row">
-                        <div class="col-12">
-                            <section class="hk-sec-wrapper">
-                                <div class="col-lg-12 col-sm-12 mb-3">
 
-                                    <div class="row">
-                                        <div class="col-4">
-                                            <treeselect v-model="organization_id_1"
-                                                        :multiple="false" :options="options"
-                                                        @input="getUserSurvey(1)"/>
-                                        </div>
-                                        <div class="col-sm-4">
-                                            <div class="d-flex flex-row form-group">
-                                                <input v-model="keyword_us" type="text" class="form-control"
-                                                       id="tag-users"
-                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
-                                            <form v-on:submit.prevent="getUserSurvey(1)">
-                                                <div class="d-flex flex-row form-group">
-                                                    <input v-model="keyword_rs" type="text"
-                                                           class="form-control search_text"
-                                                           :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
-                                                    <button type="button" id="btnFilter1"
-                                                            class="btn btn-primary btn-sm"
-                                                            @click="getUserSurvey(1)">
-                                                        {{trans.get('keys.tim')}}
-                                                    </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
+                        <h6 class="hk-sec-title">
+                            {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_self')}}</h6>
+                        <div class="row mb-3">
+                            <div class="col-2 dataTables_wrapper">
+                                <div class="dataTables_length"
+                                     style="display:block;">
+                                    <label>{{trans.get('keys.hien_thi')}}
+                                        <select v-model="row_rs"
+                                                class="custom-select custom-select-sm form-control form-control-sm"
+                                                @change="getUserSurvey(1)">
+                                            <option value="5">5</option>
+                                            <option value="10">10</option>
+                                            <option value="50">50</option>
+                                        </select>
+                                    </label>
+                                </div>
+                            </div>
 
-                                    <h6 class="hk-sec-title">
-                                        {{trans.get('keys.danh_sach_nguoi_dung_tham_gia_self')}}</h6>
-                                    <div class="row mb-3">
-                                        <div class="col-2 dataTables_wrapper">
-                                            <div class="dataTables_length"
-                                                 style="display:block;">
-                                                <label>{{trans.get('keys.hien_thi')}}
-                                                    <select v-model="row_rs"
-                                                            class="custom-select custom-select-sm form-control form-control-sm"
-                                                            @change="getUserSurvey(1)">
-                                                        <option value="5">5</option>
-                                                        <option value="10">10</option>
-                                                        <option value="50">50</option>
-                                                    </select>
-                                                </label>
-                                            </div>
-                                        </div>
+                            <div class="col-10 form-group">
+                                <button type="button" id="btnExportExcel" style="float: right;"
+                                        class="btn-sm btn-excel btn-primary d-none d-lg-block"
+                                        @click="exportFileData('excel')">
+                                    {{trans.get('keys.xuat_file_excel')}} <i class="fa fa-spinner"
+                                                                             aria-hidden="true"></i>
+                                </button>
+                            </div>
 
-                                    </div>
+                        </div>
+                        <p style="color: red;font-style: italic;">
+                            {{trans.get('keys.chu_y_click_moi_hang_de_xem_chi_tiet')}}</p>
+                        <table class="table_res">
+                            <thead>
+                            <tr>
+                                <th>{{trans.get('keys.stt')}}</th>
+                                <th>{{trans.get('keys.username')}}</th>
+                                <th class=" mobile_hide">
+                                    {{trans.get('keys.ho_ten')}}
+                                </th>
+                                <th>{{trans.get('keys.email')}}</th>
+                                <th>{{trans.get('keys.ten_khoa_hoc')}}</th>
+                                <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                            </tr>
+                            </thead>
+                            <tbody v-for="(user,index) in lstUsers">
+                            <tr @click="getPointOfSection(user.user_id,user.course_id,'self_user_' + user.tsu_id)">
+                                <td>{{ (current_rs-1)*row_rs+(index+1) }}</td>
+                                <td>
+                                    <router-link
+                                            :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }">
+                                        {{ user.username }}
+                                    </router-link>
+                                </td>
+                                <td>{{ user.fullname }}
+                                </td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.course_code }} - {{ user.course_name }}</td>
+                                <td class="text-center">
+                                    <router-link :title="trans.get('keys.chi_tiet_ks')" target="_blank"
+                                                 class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                 :to="{ name: 'SelfResultUser', params: { self_id: self_id,user_id: user.user_id,course_id: user.course_id } }">
+                                                    <span class="btn-icon-wrap"><i
+                                                            class="fal fa-arrow-alt-right"></i></span>
+                                    </router-link>
+                                </td>
+                            </tr>
+                            <tr class="hidden self-user-content" :id="'self_user_' + user.tsu_id"
+                                style="display: none;">
+                                <td></td>
+                                <td colspan="5">
                                     <table class="table_res">
                                         <thead>
                                         <tr>
-                                            <th>{{trans.get('keys.stt')}}</th>
-                                            <th>{{trans.get('keys.username')}}</th>
-                                            <th class=" mobile_hide">
-                                                {{trans.get('keys.ho_ten')}}
+                                            <th style="width: 15%; color: #007bff;">
+                                                {{trans.get('keys.ques_name')}}
                                             </th>
-                                            <th>{{trans.get('keys.email')}}</th>
-                                            <th>{{trans.get('keys.ten_khoa_hoc')}}</th>
-                                            <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
+                                            <th style="width: 30%; color: #007bff;">
+                                                {{trans.get('keys.ques_title')}}
+                                            </th>
+                                            <th style="width: 15%; color: #007bff;">
+                                                {{trans.get('keys.sec_name')}}
+                                            </th>
+                                            <th style="width: 15%; color: #007bff;">
+                                                {{trans.get('keys.total_point')}}
+                                            </th>
+                                            <th style="width: 15%; color: #007bff;">
+                                                {{trans.get('keys.avg_point')}}
+                                            </th>
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(user,index) in lstUsers">
-                                            <td>{{ (current_rs-1)*row_rs+(index+1) }}</td>
+                                        <tr v-for="(sur,index) in points">
+                                            <td>{{ sur.ques_name }}</td>
                                             <td>
-                                                <router-link
-                                                        :to="{ path: 'system/user/edit', name: 'EditUserById', params: { user_id: user.user_id }, query: {type: type} }">
-                                                    {{ user.username }}
-                                                </router-link>
+                                                <div v-html="sur.ques_content"
+                                                     style="font-weight: normal;"></div>
                                             </td>
-                                            <td>{{ user.fullname }}
-                                            </td>
-                                            <td>{{ user.email }}</td>
-                                            <td>{{ user.course_code }} - {{ user.course_name }}</td>
-                                            <td class="text-center">
-                                                <router-link :title="trans.get('keys.chi_tiet_ks')" target="_blank"
-                                                             class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
-                                                             :to="{ name: 'SelfResultUser', params: { self_id: self_id,user_id: user.user_id,course_id: user.course_id } }">
-                                                    <span class="btn-icon-wrap"><i
-                                                            class="fal fa-arrow-alt-right"></i></span>
-                                                </router-link>
-                                            </td>
+                                            <td>{{ sur.section_name }}</td>
+                                            <td>{{ sur.total_point }}</td>
+                                            <td>{{ sur.avg_point.toFixed(2) }}</td>
+
                                         </tr>
                                         </tbody>
                                         <tfoot>
 
                                         </tfoot>
                                     </table>
-                                    <v-pagination v-model="current_rs" @input="onPageChangeUS"
-                                                  :page-count="totalPages_rs"
-                                                  :classes=$pagination.classes></v-pagination>
-                                </div>
-                            </section>
-                        </div>
+                                </td>
+                            </tr>
+                            </tbody>
+                            <tfoot>
 
+                            </tfoot>
+                        </table>
+                        <v-pagination v-model="current_rs" @input="onPageChangeUS"
+                                      :page-count="totalPages_rs"
+                                      :classes=$pagination.classes></v-pagination>
                     </div>
-                </div>
+                </section>
             </div>
 
         </div>
@@ -290,10 +220,78 @@
                 current_rs: 1,
                 totalPages_rs: 1,
 
-                type: ''
+                type: '',
+
+                points: []
             }
         },
         methods: {
+            exportFileData(type_file) {
+                this.course_id = Ls.get('course-self');
+                if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
+                    toastr['warning'](this.trans.get('keys.chon_khoa_hoc'), this.trans.get('keys.that_bai'));
+                    return;
+                }
+
+                var course_info = Ls.get('course-self-data');
+
+                if (type_file === 'pdf') {
+                    $('button.btn-pdf i').css("display", "inline-block");
+                } else {
+                    $('button.btn-excel i').css("display", "inline-block");
+                }
+
+                axios.post('/api/self/export-file', {
+                    self_id: this.self_id,
+                    organization_id: this.organization_id_1,
+                    course_id: this.course_id,
+                    course_info: course_info,
+                    type_file: type_file
+                })
+                    .then(response => {
+                        if (response.data.status) {
+                            var a = $("<a>")
+                                .prop("href", "/api/self/download-file/" + type_file)
+                                .appendTo("body");
+                            a[0].click();
+                            a.remove();
+
+                            if (type_file === 'pdf') {
+                                $('button.btn-pdf i').css("display", "none");
+                            } else {
+                                $('button.btn-excel i').css("display", "none");
+                            }
+                        }
+
+                    })
+                    .catch(error => {
+                        if (type_file === 'pdf') {
+                            $('button.btn-pdf i').css("display", "none");
+                        } else {
+                            $('button.btn-excel i').css("display", "none");
+                        }
+                    });
+            },
+            getPointOfSection(user_id, course_id, tag_id) {
+
+                if ($('#' + tag_id + ':visible').length)
+                    $('#' + tag_id).hide(500);
+                else {
+                    axios.post('/api/self/point-of-section', {
+                        self_id: this.self_id,
+                        user_id: user_id,
+                        course_id: course_id
+                    })
+                        .then(response => {
+                            this.points = response.data;
+                            $('.self-user-content').hide(100);
+                            $('#' + tag_id).show(500);
+                        })
+                        .catch(error => {
+                            console.log(error);
+                        });
+                }
+            },
             getCourseSelectOptions() {
                 axios.post('/api/courses/list', {
                     row: 0,
@@ -310,28 +308,28 @@
                             additionalCities.push(newCity);
                         });
                         this.courseSelectOptions = additionalCities;
-                        this.loadAutoComplete();
+                        // this.loadAutoComplete();
                         this.loadAutoCompleteUser();
                     })
                     .catch(error => {
                         //console.log(error.response.data);
                     });
             },
-            loadAutoComplete() {
-                $("#tags").autocomplete({
-                    source: this.lightWell,
-                    minLength: 2,
-                    select: function (e, ui) {
-                        this.keywordc = ui.item.label;
-
-                        this.course_id = ui.item.id;
-
-                        Ls.set('course-self', this.course_id);
-                    },
-                    change: function (e, ui) {
-                    }
-                });
-            },
+            // loadAutoComplete() {
+            //     $("#tags").autocomplete({
+            //         source: this.lightWell,
+            //         minLength: 2,
+            //         select: function (e, ui) {
+            //             this.keywordc = ui.item.label;
+            //
+            //             this.course_id = ui.item.id;
+            //
+            //             Ls.set('course-self', this.course_id);
+            //         },
+            //         change: function (e, ui) {
+            //         }
+            //     });
+            // },
             loadAutoCompleteUser() {
                 $("#tag-users").autocomplete({
                     source: this.lightWell,
@@ -342,6 +340,7 @@
                         this.course_id = ui.item.id;
 
                         Ls.set('course-self', this.course_id);
+                        Ls.set('course-self-data', ui.item.label);
                     },
                     change: function (e, ui) {
                         // alert(ui.item.value);
@@ -384,30 +383,30 @@
                 }
                 response(matches);
             },
-            getSelfStatistic(paged) {
-
-                if (this.keywordc === '' || this.keywordc === null || this.keywordc === undefined) {
-                    Ls.set('course-self', '');
-                }
-                this.course_id = Ls.get('course-self');
-
-                axios.post('/api/self/statistic', {
-                    self_id: this.self_id,
-                    course_id: this.course_id,
-                    organization_id: this.organization.parent_id,
-                    page: paged || this.current,
-                    keyword: this.keyword,
-                    row: this.row,
-                })
-                    .then(response => {
-                        this.surveys = response.data.data.data;
-                        this.current = response.data.pagination.current_page;
-                        this.totalPages = response.data.pagination.total;
-                    })
-                    .catch(error => {
-                        console.log(error.response.data);
-                    });
-            },
+            // getSelfStatistic(paged) {
+            //
+            //     if (this.keywordc === '' || this.keywordc === null || this.keywordc === undefined) {
+            //         Ls.set('course-self', '');
+            //     }
+            //     this.course_id = Ls.get('course-self');
+            //
+            //     axios.post('/api/self/statistic', {
+            //         self_id: this.self_id,
+            //         course_id: this.course_id,
+            //         organization_id: this.organization.parent_id,
+            //         page: paged || this.current,
+            //         keyword: this.keyword,
+            //         row: this.row,
+            //     })
+            //         .then(response => {
+            //             this.surveys = response.data.data.data;
+            //             this.current = response.data.pagination.current_page;
+            //             this.totalPages = response.data.pagination.total;
+            //         })
+            //         .catch(error => {
+            //             console.log(error.response.data);
+            //         });
+            // },
             selectParentItem(parent_id) {
                 this.organization.parent_id = parent_id;
             },
@@ -442,9 +441,9 @@
                 }
                 return outPut;
             },
-            onPageChange() {
-                this.getSelfStatistic();
-            },
+            // onPageChange() {
+            //     this.getSelfStatistic();
+            // },
             getUserSurvey(paged) {
                 if (this.keyword_us === '' || this.keyword_us === null || this.keyword_us === undefined) {
                     Ls.set('course-self', '');

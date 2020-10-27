@@ -15,6 +15,38 @@
                     <br/>
                     <h6>{{trans.get('keys.learner')}}: {{user.fullname}}</h6>
                     <h6>{{trans.get('keys.email')}}: {{user.email}}</h6><br/>
+                
+                    <div class="table-responsive">
+                        <table class="table_res">
+                            <thead>
+                            <tr>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.ques_name')}}</th>
+                                <th style="width: 30%; color: #007bff;">{{trans.get('keys.ques_title')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.sec_name')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.total_point')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.avg_point')}}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(sur,index) in points">
+                                <td>{{ sur.ques_name }}</td>
+                                <td>
+                                    <div v-html="sur.ques_content" style="font-weight: normal;"></div>
+                                </td>
+                                <td>{{ sur.section_name }}</td>
+                                <td>{{ sur.total_point }}</td>
+                                <td>{{ sur.avg_point.toFixed(2) }}</td>
+
+                            </tr>
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <br/>
+
                     <div class="hk-sec-title" v-html="self.description">
                     </div>
 
@@ -58,11 +90,11 @@
                 self: '',
                 question_answers: [],
                 user: '',
+                points: []
             }
         },
         methods: {
             getSurvey() {
-
                 this.getLeanerInfo(this.user_id);
 
                 axios.post('/api/self/view-result', {
@@ -73,6 +105,19 @@
                     .then(response => {
                         this.self = response.data.survey;
                         this.question_answers = response.data.result;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
+            getPointOfSection() {
+                axios.post('/api/self/point-of-section', {
+                    self_id: this.self_id,
+                    user_id: this.user_id,
+                    course_id: this.course_id
+                })
+                    .then(response => {
+                        this.points = response.data;
                     })
                     .catch(error => {
                         console.log(error);
@@ -95,6 +140,7 @@
             }
         },
         mounted() {
+            this.getPointOfSection();
             this.getSurvey();
         }
     }
