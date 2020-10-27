@@ -29,16 +29,17 @@
     <tr>
         <th colspan="3" rowspan="2"></th>
         @foreach($header as $hd)
-            <th scope="col" colspan="2" rowspan="2" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
+            <th colspan="2" rowspan="2" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
         @endforeach
 
     </tr>
     </thead>
     <tbody>
     <tr></tr>
+    <tr></tr>
     @foreach($dataModel as $data)
         <tr>
-            <th colspan="3" scope="row">{{$data['email']}}</th>
+            <th colspan="3">{{$data['email']}}</th>
             @foreach($header as $hd)
                 @foreach($data['lstData'] as $dt)
                     @if($dt['ques_id'] == $hd->ques_id)
