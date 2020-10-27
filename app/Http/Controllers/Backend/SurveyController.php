@@ -250,7 +250,7 @@ class SurveyController extends Controller
     {
         $survey_id = 8;
         $organization_id = '';
-        $course_id = '';
+        $course_id = 770;
         $type_file = 'excel';
         $startdate = '';
         $enddate = '';
