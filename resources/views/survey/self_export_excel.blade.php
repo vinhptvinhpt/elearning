@@ -27,9 +27,10 @@
 <table class="table table-bordered">
     <thead>
     <tr>
-        <th colspan="3" rowspan="2"></th>
+        <th colspan="3" rowspan="10"></th>
         @foreach($header as $hd)
-            <th colspan="2" rowspan="2" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
+            <th colspan="2" rowspan="10" style="word-wrap: break-word;">{{$hd->ques_name}}:{!! $hd->ques_content !!} -
+                Section: {{$hd->section_name}}</th>
         @endforeach
 
     </tr>
@@ -37,17 +38,35 @@
     <tbody>
     <tr></tr>
     <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
     @foreach($dataModel as $data)
         <tr>
-            <th colspan="3">{{$data['email']}}</th>
+            <th colspan="3" rowspan="4">{{$data['email']}}</th>
             @foreach($header as $hd)
                 @foreach($data['lstData'] as $dt)
-                    @if($dt['ques_id'] == $hd->ques_id)
-                        <td colspan="2">{!!$dt['ans_content']!!}</td>
+                    @if($dt['ques_id'] == $hd->ques_id && $dt['section_id'] == $hd->section_id)
+                        <td colspan="2" rowspan="4">Total Point: {{$dt['total_point']}} <br/>
+                            @if($dt['avg_point'])
+                                Average Point: {{number_format($dt['avg_point'],2)}}
+                            @else
+                                Average Point:
+                            @endif
+                        </td>
                     @endif
                 @endforeach
             @endforeach
         </tr>
+        <tr></tr>
+        <tr></tr>
+        <tr></tr>
+
     @endforeach
 
     </tbody>

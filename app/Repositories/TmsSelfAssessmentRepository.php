@@ -4,6 +4,7 @@
 namespace App\Repositories;
 
 
+use App\Exports\SelfExportView;
 use App\TmsLog;
 use App\TmsSelfAssessment;
 use App\TmsSelfQuestion;
@@ -19,6 +20,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommonInterface
 {
@@ -986,17 +988,20 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         }
 
         if ($organization_id) {
-            $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+            $org_query = '( SELECT toe.organization_id, toe.user_id FROM tms_organization_employee toe
+
+                        where toe.organization_id in (
+                          (select  tto.id
+                           from    (select * from tms_organization
+                             order by parent_id, id) tto,
+                            (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(parent_id, @pv) >0
+                                and     @pv := concat(@pv, \',\', id))
+                        )
+                         UNION
+                          select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
                             ) as org_tp';
+
 
             $org_query = DB::raw($org_query);
 
@@ -1077,7 +1082,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             ->join('tms_user_detail as tud', 'u.id', '=', 'tud.user_id')
             ->join('mdl_course as c', 'c.id', '=', 'tsu.course_id')
             ->where('tsu.self_id', '=', $self_id)
-            ->select('tsu.user_id', 'u.username', 'tud.fullname', 'u.email',
+            ->select('tsu.id as tsu_id', 'tsu.user_id', 'u.username', 'tud.fullname', 'u.email',
                 'c.shortname as course_code', 'c.fullname as course_name', 'c.id as course_id');
 
         if ($keyword) {
@@ -1127,6 +1132,192 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         ];
 
         return response()->json($response);
+
+    }
+
+    public function getPointOfSection(Request $request)
+    {
+        // TODO: Implement getPointOfSection() method.
+        $self_id = $request->input('self_id');
+        $user_id = $request->input('user_id');
+        $course_id = $request->input('course_id');
+
+
+        $param = [
+            'self_id' => 'number',
+            'user_id' => 'number',
+            'course_id' => 'number'
+        ];
+
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $lstData = DB::table('tms_self_statistic_users as tsu')
+            ->where('tsu.course_id', '=', $course_id)
+            ->where('tsu.user_id', '=', $user_id)
+            ->where('tsu.self_id', '=', $self_id)
+            ->where('tsu.type_question', '=', TmsSelfQuestion::GROUP)
+            ->join('tms_self_questions as tsq', 'tsq.id', '=', 'tsu.question_parent_id')
+            ->join('tms_self_sections as tss', 'tss.id', '=', 'tsu.section_id')
+            ->select('tsq.name as ques_name', 'tsq.content as ques_content'
+                , 'tss.section_name', 'tsu.total_point', 'tsu.avg_point')->get();
+
+        return response()->json($lstData);
+    }
+
+    public function exportFile(Request $request)
+    {
+        $responseModel = new ResponseModel();
+        try {
+            // TODO: Implement exportFile() method.
+            $self_id = $request->input('self_id');
+            $organization_id = $request->input('organization_id');
+            $keyword = $request->input('keyword');
+            $course_id = $request->input('course_id');
+            $couse_info = $request->input('course_info');
+
+            $param = [
+                'self_id' => 'number',
+                'organization_id' => 'number',
+                'course_id' => 'number'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                return response()->json([]);
+            }
+
+
+            $lstData = DB::table('tms_self_statistic_users as tsu')
+                ->where('tsu.course_id', '=', $course_id)
+                ->where('tsu.self_id', '=', $self_id)
+                ->where('tsu.type_question', '=', TmsSelfQuestion::GROUP)
+                ->join('tms_self_questions as tsq', 'tsq.id', '=', 'tsu.question_parent_id')
+                ->join('tms_self_sections as tss', 'tss.id', '=', 'tsu.section_id')
+                ->join('mdl_user as mu', 'mu.id', '=', 'tsu.user_id')
+                ->join('tms_user_detail as tud', 'tud.user_id', '=', 'mu.id')
+                ->select('mu.username', 'tsq.name as ques_name', 'tsq.content as ques_content', 'mu.email as email', 'tsq.id as ques_id', 'tss.id as section_id'
+                    , 'tss.section_name', 'tsu.total_point', 'tsu.avg_point', 'mu.id as user_id');
+
+            if ($keyword) {
+                $lstData = $lstData->where(function ($query) use ($keyword) {
+                    $query->orWhere('mu.username', 'like', "%{$keyword}%")
+                        ->orWhere('tsq.name', 'like', "%{$keyword}%")
+                        ->orWhere('tss.section_name', 'like', "%{$keyword}%")
+                        ->orWhere('tud.fullname', 'like', "%{$keyword}%");
+                });
+            }
+
+            if ($organization_id) {
+                $org_query = '( SELECT toe.organization_id, toe.user_id FROM tms_organization_employee toe
+
+                        where toe.organization_id in (
+                          (select  tto.id
+                           from    (select * from tms_organization
+                             order by parent_id, id) tto,
+                            (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(parent_id, @pv) >0
+                                and     @pv := concat(@pv, \',\', id))
+                        )
+                         UNION
+                          select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+
+                $org_query = DB::raw($org_query);
+
+                $lstData = $lstData->join($org_query, 'org_tp.org_uid', '=', 'mu.id');
+            }
+
+            $lstData = $lstData->groupBy(['mu.id', 'tsq.id', 'tss.id'])->get();
+
+            $arrData = array();
+            $arr_rs = [];
+            $dt = [];
+            foreach ($lstData as $data) {
+                $key = myArrayContainsWord($arrData, $data->email, 'email');
+                if ($key >= 0) {
+                    $arr_rs['ques_name'] = $data->ques_name;
+                    $arr_rs['ques_id'] = $data->ques_id;
+                    $arr_rs['ques_content'] = $data->ques_content;
+                    $arr_rs['section_id'] = $data->section_id;
+                    $arr_rs['section_name'] = $data->section_name;
+                    $arr_rs['total_point'] = $data->total_point;
+                    $arr_rs['avg_point'] = $data->avg_point;
+
+                    array_push($arrData[$key]['lstData'], $arr_rs);
+                } else {
+                    $dt['email'] = $data->email;
+                    $dt['user_id'] = $data->user_id;
+
+                    $dt['lstData'] = [];
+
+                    $arr_rs['ques_name'] = $data->ques_name;
+                    $arr_rs['ques_id'] = $data->ques_id;
+                    $arr_rs['ques_content'] = $data->ques_content;
+                    $arr_rs['section_id'] = $data->section_id;
+                    $arr_rs['section_name'] = $data->section_name;
+                    $arr_rs['total_point'] = $data->total_point;
+                    $arr_rs['avg_point'] = $data->avg_point;
+                    array_push($dt['lstData'], $arr_rs);
+                    array_push($arrData, $dt);
+                }
+            }
+
+
+            $self_data = TmsSelfAssessment::findOrFail($self_id);
+
+            $lstQues = DB::table('tms_self_sections as tss')
+                ->join('tms_self_questions as tsq', 'tsq.id', '=', 'tss.question_id')
+                ->where('tsq.self_id', '=', $self_id)
+                ->where('tsq.isdeleted', '=', 0)
+                ->select('tsq.id as ques_id', 'tss.id as section_id', 'tsq.name as ques_name',
+                    'tsq.content as ques_content', 'tss.section_name as section_name')->orderBy('tsq.id')->orderBy('tss.id')->get();
+
+
+            $count_ques = count($lstQues);
+
+            foreach ($arrData as $pos => $item) {
+                $count_dt = count($item['lstData']);
+                if ($count_dt != $count_ques) {
+                    foreach ($lstQues as $ques) {
+                        $arr_rs = [];
+                        $key = myArrayContainsWord($item['lstData'], $ques->section_id, 'section_id');
+
+                        if ($key == -1) {
+
+                            $arr_rs['ques_name'] = $ques->ques_name;
+                            $arr_rs['ques_id'] = $ques->ques_id;
+                            $arr_rs['ques_content'] = $ques->ques_content;
+                            $arr_rs['section_id'] = $ques->section_id;
+                            $arr_rs['section_name'] = $ques->section_name;
+                            $arr_rs['total_point'] = '';
+                            $arr_rs['avg_point'] = '';
+
+                            array_push($item['lstData'], $arr_rs);
+
+                        }
+                    }
+                    usort($item['lstData'], function ($a, $b) {
+                        return $a['ques_id'] > $b['ques_id'] ? 1 : -1;
+                    });
+
+                    $arrData[$pos] = $item;
+
+                }
+
+            }
+
+            $filename = 'report_self_assessment.xlsx';
+            Excel::store(new SelfExportView($arrData, $lstQues, $self_data, $couse_info), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
+
+            $responseModel->status = true;
+        } catch (\Exception $e) {
+            \Log::info($e);
+            $responseModel->status = false;
+        }
+        return response()->json($responseModel);
 
     }
 }

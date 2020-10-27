@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Backend;
 use App\Repositories\BussinessRepository;
 use App\Repositories\TmsSelfAssessmentRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SelfAssessmentController
 {
@@ -140,5 +141,21 @@ class SelfAssessmentController
     public function apiGetUserSelf(Request $request)
     {
         return $this->tmsSelfAssessmentRepository->getUserSelf($request);
+    }
+
+    public function apiGetPointOfSection(Request $request)
+    {
+        return $this->tmsSelfAssessmentRepository->getPointOfSection($request);
+    }
+
+    public function apiExportFile(Request $request)
+    {
+        return $this->tmsSelfAssessmentRepository->exportFile($request);
+    }
+
+    public function apiDownloadFile($type_file)
+    {
+        $filename = "report_self_assessment.xlsx";
+        return Storage::download($filename);
     }
 }

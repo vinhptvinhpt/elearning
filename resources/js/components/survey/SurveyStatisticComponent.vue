@@ -282,7 +282,7 @@
                                             <td>{{ user.email }}</td>
                                             <td>{{ user.course_code }} - {{ user.course_name }}</td>
                                             <td class="text-center">
-                                                <router-link :title="trans.get('keys.chi_tiet_ks')"
+                                                <router-link :title="trans.get('keys.chi_tiet_ks')" target="_blank"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
                                                              :to="{ name: 'SurveyResultUser', params: { survey_id: survey_id,user_id: user.id,course_id: user.course_id } }">
                                                     <span class="btn-icon-wrap"><i
@@ -769,7 +769,6 @@
                     this.results = [];
                     return;
                 }
-                console.log('764');
                 axios.post('/api/survey/result-filltext', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
@@ -779,7 +778,6 @@
                 })
                     .then(response => {
                         if (response.data.status) {
-                            console.log('776');
                             this.headers = response.data.message;
                             this.results = response.data.otherData;
                         }
