@@ -332,19 +332,22 @@ mc.estimate_duration,
                     if ($course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule < 1) {
-                        array_push($competency_exists, $course->training_id);
                         push_course($courses_current, $course_optional_item);
                     } //then complete
                     elseif ($course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule == 1) {
-                        array_push($competency_completed, $course_optional_item->training_id);
                         push_course($courses_completed, $course_optional_item);
                     }
                     elseif ($course_optional_item->enrol_count > 0) {
                         //đã enrol nhưng chưa học => required courses
-                        push_course($courses_required, $course_optional_item);
-                        $sttTotalCourse++;
-                        array_push($couresIdAllow, $course_optional_item->id);
+                        $courses_required[$course_optional_item->training_id][$course_optional_item->id] = $course_optional_item;
+                        $courses_required[$course_optional_item->training_id] = array_values($courses_required[$course_optional_item->training_id]);
+                        if (!in_array($course_optional_item->training_id, $getInCourses)) {
+                            array_push($getInCourses, $course_optional_item->training_id);
+                            $course_optional_item->enable = true;
+                        } else {
+                            $course_optional_item->enable = false;
+                        }
                     }
                     //then chua hoc
                     else {
