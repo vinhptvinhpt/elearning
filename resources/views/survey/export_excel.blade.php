@@ -29,7 +29,13 @@
     <tr>
         <th colspan="3" rowspan="2"></th>
         @foreach($header as $hd)
-            <th colspan="2" rowspan="2" style="word-wrap: break-word;">{!! $hd->ques_content !!}</th>
+            <th colspan="2" rowspan="2" style="word-wrap: break-word;">
+                @if($hd->type_question == 'group' || $hd->type_question == 'minmax')
+                    {!! $hd->qr_name !!}:{!! $hd->qr_content !!} - {!! $hd->ques_content !!}
+                @else
+                    {!! $hd->ques_content !!}
+                @endif
+            </th>
         @endforeach
 
     </tr>
