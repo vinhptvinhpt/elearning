@@ -163,6 +163,9 @@ mc.estimate_duration,
         $stt = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
+            $course->enable = true;
+            $course->category_type = '';
+
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                 $courses_others_id .= ', ' . $course->id;
@@ -183,6 +186,7 @@ mc.estimate_duration,
                 } else {
                     $course->enable = false;
                 }
+                $course->category_type = 'required';
             } else {
                 $courses_others_id .= ', ' . $course->id;
             }
@@ -328,23 +332,30 @@ mc.estimate_duration,
             foreach ($courses_training_optional as $training_courses) {
                 foreach ($training_courses as &$course_optional_item) {
                     $course_optional_item->sttShow = $stt;
+                    $course_optional_item->enable = true;
+                    $course_optional_item->category_type = '';
+
                     //current first
                     if ($course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule < 1) {
-                        array_push($competency_exists, $course->training_id);
                         push_course($courses_current, $course_optional_item);
                     } //then complete
                     elseif ($course_optional_item->numofmodule > 0
                         && $course_optional_item->numoflearned / $course_optional_item->numofmodule == 1) {
-                        array_push($competency_completed, $course_optional_item->training_id);
                         push_course($courses_completed, $course_optional_item);
                     }
                     elseif ($course_optional_item->enrol_count > 0) {
                         //đã enrol nhưng chưa học => required courses
-                        push_course($courses_required, $course_optional_item);
-                        $sttTotalCourse++;
-                        array_push($couresIdAllow, $course_optional_item->id);
+                        $courses_required[$course_optional_item->training_id][$course_optional_item->id] = $course_optional_item;
+                        $courses_required[$course_optional_item->training_id] = array_values($courses_required[$course_optional_item->training_id]);
+                        if (!in_array($course_optional_item->training_id, $getInCourses)) {
+                            array_push($getInCourses, $course_optional_item->training_id);
+                            $course_optional_item->enable = true;
+                        } else {
+                            $course_optional_item->enable = false;
+                        }
+                        $course_optional_item->category_type = 'required';
                     }
                     //then chua hoc
                     else {
