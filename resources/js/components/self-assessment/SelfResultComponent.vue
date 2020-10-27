@@ -7,6 +7,38 @@
                     <br/>
                     <h6>{{trans.get('keys.learner')}}: {{user.fullname}}</h6>
                     <h6>{{trans.get('keys.email')}}: {{user.email}}</h6><br/>
+
+                    <div class="table-responsive">
+                        <table class="table_res">
+                            <thead>
+                            <tr>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.ques_name')}}</th>
+                                <th style="width: 30%; color: #007bff;">{{trans.get('keys.ques_title')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.sec_name')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.total_point')}}</th>
+                                <th style="width: 15%; color: #007bff;">{{trans.get('keys.avg_point')}}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr v-for="(sur,index) in points">
+                                <td>{{ sur.ques_name }}</td>
+                                <td>
+                                    <div v-html="sur.ques_content" style="font-weight: normal;"></div>
+                                </td>
+                                <td>{{ sur.section_name }}</td>
+                                <td>{{ sur.total_point }}</td>
+                                <td>{{ sur.avg_point.toFixed(2) }}</td>
+
+                            </tr>
+                            </tbody>
+                            <tfoot>
+
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <br/>
+
                     <div class="hk-sec-title" v-html="self.description">
                     </div>
 
@@ -50,6 +82,7 @@
                 self: '',
                 question_answers: [],
                 user: '',
+                points: []
             }
         },
         methods: {
@@ -79,6 +112,28 @@
                         console.log(error);
                     });
             },
+            getPointOfSection() {
+                let obj = Ls.get('auth.user');
+                let user_id = '';
+                if (obj && obj !== 'undefined') {
+                    var user_info = JSON.parse(obj);
+                    user_id = user_info.id;
+                }
+                // user_id = 23973;
+                let course_id = Ls.get('courseid');
+
+                axios.post('/api/self/point-of-section', {
+                    self_id: this.self_id,
+                    user_id: user_id,
+                    course_id: course_id
+                })
+                    .then(response => {
+                        this.points = response.data;
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+            },
             getLeanerInfo(user_id) {
 
                 axios.post('/api/system/user/info', {
@@ -93,6 +148,7 @@
             },
         },
         mounted() {
+            this.getPointOfSection();
             this.getSurvey();
         }
     }
