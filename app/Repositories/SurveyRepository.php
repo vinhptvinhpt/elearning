@@ -232,7 +232,7 @@ class SurveyRepository implements ISurveyInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
             $union = DB::table('tms_survey_users as su')
@@ -242,7 +242,7 @@ class SurveyRepository implements ISurveyInterface
                 ->where('su.survey_id', '=', $survey_id)
                 ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                 ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
-                    'su.answer_id', 'su.user_id as user_id', 'mu.email as email', 'qd.question_id as qd_pr')->groupBy(['su.question_id', 'su.answer_id']);
+                    'su.answer_id', 'su.user_id as user_id', 'mu.email as email', 'qd.question_id as qd_pr')->groupBy(['mu.id','su.question_id', 'su.answer_id']);
 
 
             $org_query = '( SELECT toe.organization_id, toe.user_id FROM tms_organization_employee toe
@@ -271,7 +271,7 @@ class SurveyRepository implements ISurveyInterface
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
                     $org_query = DB::raw($org_query);
@@ -295,7 +295,7 @@ class SurveyRepository implements ISurveyInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . ' 
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
 
@@ -320,7 +320,7 @@ class SurveyRepository implements ISurveyInterface
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
                     $org_query = DB::raw($org_query);
@@ -471,7 +471,7 @@ class SurveyRepository implements ISurveyInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
             $union = DB::table('tms_survey_users as su')
@@ -508,7 +508,7 @@ class SurveyRepository implements ISurveyInterface
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
                     $org_query = DB::raw($org_query);
@@ -532,7 +532,7 @@ class SurveyRepository implements ISurveyInterface
                                 join mdl_course mc
                                 on mc.id = su.course_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . ' 
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
 
@@ -557,7 +557,7 @@ class SurveyRepository implements ISurveyInterface
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id 
                                 join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
-                                group by su.question_id,su.answer_id
+                                group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
                     $org_query = DB::raw($org_query);
