@@ -614,7 +614,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     .course_img {
         padding-top: 141%;
         background-size: cover;
-        height: 100%;
         min-height: 220px;
     }
 
@@ -1154,7 +1153,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         <section class="section-footer">
             <footer>
                 <div class="container">
-                    <div class="row">
+                    <div>
                         <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                     </div>
                     <div class="row mb-3">

@@ -113,6 +113,7 @@
 {{/js}}
 <script>
     $(document).ready(function () {
+
         var x = document.getElementsByTagName("BODY")[0];
         var classes = x.className.toString().split(/\s+/);
         let course_id = '0';
@@ -139,99 +140,114 @@
                 }
             });
 
-            //init screen
-            $.ajax({
-                url: '{{ wwwroot }}/pusher/study.php',
-                data: {
-                    'course_id': course_id,
-                    'context_id': context_id,
-                    'module_id': module_id,
-                    'activity_id': activity_id,
-                    'category_id': category_id,
-                    'url': currentUrl,
-                    'type': 'init'
-                },
-                type: 'POST',
-                success: function (data) {
-                    //console.log('init done');
-                },
-                error: function (e) {
-                    console.log(e);
-                }
-            });
-
-            //Close tab, leave page
-            //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
-            window.addEventListener('beforeunload', function (e) {
+            // Check if firefox browser
+            var isFirefox = typeof InstallTrigger !== 'undefined';
+            var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+            var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+            var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+            
+            // Redirect to main course page if activity is h5p module and using firefox
+            if((((is_firefox || is_mozilla) && (is_android || is_iphone)) || isFirefox) && currentUrl.includes("mod/hvp")){
+                var url_course = '{{ wwwroot }}/course/view.php?id=' + course_id;
+                alert('For Firefox browser you can not view interactive content, this will return you back to course');
+                window.location.replace(url_course);
+            }else{
+                //init screen
                 $.ajax({
                     url: '{{ wwwroot }}/pusher/study.php',
                     data: {
                         'course_id': course_id,
                         'context_id': context_id,
-                        'activity_id': activity_id,
                         'module_id': module_id,
+                        'activity_id': activity_id,
                         'category_id': category_id,
                         'url': currentUrl,
-                        'type': 'final'
+                        'type': 'init'
                     },
                     type: 'POST',
                     success: function (data) {
-                        //console.log('close done');
+                        //console.log('init done');
                     },
                     error: function (e) {
                         console.log(e);
                     }
                 });
-                //e.preventDefault();
-                //e.returnValue = 'Are you sure you want to stop studying?';
-                //return;
-            });
 
-            //Click next activity
-            $("#next-activity-link").click(function () {
-                $.ajax({
-                    url: '{{ wwwroot }}/pusher/study.php',
-                    data: {
-                        'course_id': course_id,
-                        'context_id': context_id,
-                        'activity_id': activity_id,
-                        'module_id': module_id,
-                        'category_id': category_id,
-                        'url': currentUrl,
-                        'type': 'final'
-                    },
-                    type: 'POST',
-                    success: function (data) {
-                        //console.log('next done');
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    }
+                //Close tab, leave page
+                //https://www.geeksforgeeks.org/how-to-detect-browser-or-tab-closing-in-javascript/
+                window.addEventListener('beforeunload', function (e) {
+                    $.ajax({
+                        url: '{{ wwwroot }}/pusher/study.php',
+                        data: {
+                            'course_id': course_id,
+                            'context_id': context_id,
+                            'activity_id': activity_id,
+                            'module_id': module_id,
+                            'category_id': category_id,
+                            'url': currentUrl,
+                            'type': 'final'
+                        },
+                        type: 'POST',
+                        success: function (data) {
+                            //console.log('close done');
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                    //e.preventDefault();
+                    //e.returnValue = 'Are you sure you want to stop studying?';
+                    //return;
                 });
-            });
 
-            //Click prev activity
-            $("#prev-activity-link").click(function () {
-                $.ajax({
-                    url: '{{ wwwroot }}/pusher/study.php',
-                    data: {
-                        'course_id': course_id,
-                        'context_id': context_id,
-                        'activity_id': activity_id,
-                        'module_id': module_id,
-                        'category_id': category_id,
-                        'url': currentUrl,
-                        'type': 'final'
-                    },
-                    type: 'POST',
-                    success: function (data) {
-                        //console.log('prev done');
-                    },
-                    error: function (e) {
-                        console.log(e);
-                    }
+                //Click next activity
+                $("#next-activity-link").click(function () {
+                    $.ajax({
+                        url: '{{ wwwroot }}/pusher/study.php',
+                        data: {
+                            'course_id': course_id,
+                            'context_id': context_id,
+                            'activity_id': activity_id,
+                            'module_id': module_id,
+                            'category_id': category_id,
+                            'url': currentUrl,
+                            'type': 'final'
+                        },
+                        type: 'POST',
+                        success: function (data) {
+                            //console.log('next done');
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
                 });
-            });
+
+                //Click prev activity
+                $("#prev-activity-link").click(function () {
+                    $.ajax({
+                        url: '{{ wwwroot }}/pusher/study.php',
+                        data: {
+                            'course_id': course_id,
+                            'context_id': context_id,
+                            'activity_id': activity_id,
+                            'module_id': module_id,
+                            'category_id': category_id,
+                            'url': currentUrl,
+                            'type': 'final'
+                        },
+                        type: 'POST',
+                        success: function (data) {
+                            //console.log('prev done');
+                        },
+                        error: function (e) {
+                            console.log(e);
+                        }
+                    });
+                });
+            }
+
         } else {
             $('#header-search-box-container').removeClass("hide");
         }

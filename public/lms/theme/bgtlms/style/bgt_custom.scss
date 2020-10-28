@@ -2840,3 +2840,7 @@ body#page-mod-quiz-summary .quizsummaryofattempt,
 body#page-mod-quiz-summary section#region-main h2 + h3 {
     display: none;
 }
+
+li.section.hidden, .block.hidden, .block.invisible {
+    display: block !important;
+}
