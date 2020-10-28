@@ -136,15 +136,39 @@ class H5peditorFile
           $image_size = $_FILES['file']['size'];
           // Set the limit size (1MB)/(2MB)
           $limit_resize_1mb = 1000000;
-          $limit_resize_5mb = 5000000;
-          if ($image_size > $limit_resize_5mb) {
-            $ratio = 6;  
-          } else if ($image_size > $limit_resize_1mb) {
-            $ratio = round($image_size / $limit_resize_1mb) + 1;
+          // $limit_resize_5mb = 5000000;
+          // if ($image_size > $limit_resize_5mb) {
+          //   $ratio = 6;  
+          // } else if ($image_size > $limit_resize_1mb) {
+          //   $ratio = round($image_size / $limit_resize_1mb) + 1;
+          // }
+          // $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / $ratio, $image[1] / $ratio);
+          // $image = @getimagesize($_FILES['file']['tmp_name']);
+          if ($image_size > $limit_resize_1mb) {
+            $width = $image[0];
+            $height = $image[1];
+            $ratio = $width/$height;
+            // if ($ratio > 1){
+            //   $new_weight = 700;
+            //   $new_height = 700/$ratio;
+
+            // }else{
+            //   $new_weight = 700/$ratio;
+            //   $new_height = 700;
+            // }
+            if ($ratio > 1){
+              $quality = round((700/$width)*100);
+              
+            }else{
+              $quality = round((700/$height)*100);
+            }
           }
-          $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $image[0] / $ratio, $image[1] / $ratio);
+          // $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $new_weight, $new_height);
+          // $image = @getimagesize($_FILES['file']['tmp_name']);
+          $new_image = $this->compress_image($_FILES['file']['tmp_name'], $this->extension, $quality);
           $image = @getimagesize($_FILES['file']['tmp_name']);
         }
+
 
         $this->result->width = $image[0];
         $this->result->height = $image[1];
@@ -292,8 +316,40 @@ class H5peditorFile
     $dst = imagecreatetruecolor($newwidth, $newheight);
     imagecopyresampled($dst, $src, 0, 0, 0, 0, $newwidth, $newheight, $width, $height);
     imagedestroy($src);
-    $new_file = imagepng($dst, $file); // adjust format as needed
+    $new_file = imagejpeg($dst, $file); // adjust format as needed
     imagedestroy($dst);
+    return $new_file;
+  }
+
+
+  /**
+   * [Easia-Elearning][Modified] Compress upload image.
+   *
+   */
+  public function compress_image($file, $extension, $quality)
+  {
+    // Get the original width and height of image
+    list($width, $height) = getimagesize($file);
+    $r = $width / $height;
+
+    // Create image from diffrent kinds of extension (Differnt function)
+    switch (strtolower($extension)) {
+      case "png":
+        $src = imagecreatefrompng($file);
+        break;
+      case "jpg":
+        $src = imagecreatefromjpeg($file);
+        break;
+      case "jpeg":
+        $src = imagecreatefromjpeg($file);
+        break;
+      case "gif":
+        $src = imagecreatefromgif($file);
+        break;
+    }
+    // Save image 
+    $new_file = imagejpeg($src, $file, $quality); // adjust format as needed
+    // Return compressed image 
     return $new_file;
   }
 }

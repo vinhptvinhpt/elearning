@@ -7229,7 +7229,7 @@ class BussinessRepository implements IBussinessInterface
 
                         $data['survey_id'] = $id;
                         $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
-
+                        $data['ques_parent'] = $ddtotext['questions'][$j]['id'];
                         if (!empty(Auth::user())) {
                             $data['user_id'] = Auth::user()->id;
                         } else {
@@ -7321,7 +7321,7 @@ class BussinessRepository implements IBussinessInterface
 
                         $data['survey_id'] = $id;
                         $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
-
+                        $data['ques_parent'] = $ddtotext['questions'][$j]['id'];
                         $data['user_id'] = $user_id;
                         $data['course_id'] = $course_id;
                         $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
