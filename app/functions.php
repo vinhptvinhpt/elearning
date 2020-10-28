@@ -3455,8 +3455,8 @@ function processInteractive33($jsonData, $urlLink)
 
             $blob_name = $arr_name[0];
 
-//                $end_date = Carbon::now()->addHour(23)->addMinute(58);
-            $end_date = Carbon::now()->addSecond(12);
+            $end_date = Carbon::now()->addMinute(19);
+//            $end_date = Carbon::now()->addSecond(12);
 
             $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -3491,8 +3491,7 @@ function processInteractive140($jsonData, $urlLink)
                     $arr_name = explode('?', $file_name_rp);
 
                     $blob_name = $arr_name[0];
-//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
-                    $end_date = Carbon::now()->addSecond(12);
+                    $end_date = Carbon::now()->addMinute(19);
 
                     $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -3514,8 +3513,7 @@ function processInteractive140($jsonData, $urlLink)
                     $arr_name = explode('?', $file_name_rp);
 
                     $blob_name = $arr_name[0];
-//                        $end_date = Carbon::now()->addHour(23)->addMinute(59);
-                    $end_date = Carbon::now()->addSecond(12);
+                    $end_date = Carbon::now()->addMinute(19);
 
                     $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
