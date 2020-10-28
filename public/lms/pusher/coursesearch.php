@@ -146,9 +146,11 @@ mc.estimate_duration,
     //Có enrol
     $sql_pqdl .=  ' having enrol_count > 0';
 
-    $sql_pqdl .= ' ORDER BY ttp.deleted, ttp.id, ttc.order_no';
+    //28102020 not works => move outside select alias
+    //$sql_pqdl .= ' ORDER BY ttp.deleted, ttp.id, ttc.order_no';
+    //$sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
 
-    $sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
+    $sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses order by training_deleted, training_id, order_no';
 
     $courses = array_values($DB->get_records_sql($sql));
 
