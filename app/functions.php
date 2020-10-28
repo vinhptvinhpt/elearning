@@ -4,6 +4,7 @@ use App\MdlContext;
 use App\MdlCourseCategory;
 use App\MdlGradeGrade;
 use App\MdlGradeItem;
+use App\MdlHvp;
 use App\MdlRoleAssignments;
 use App\MdlRoleCapabilities;
 use App\MdlUser;
@@ -3427,7 +3428,7 @@ function removeCourseFromTraining($course_id)
     \App\TmsTrainningCourse::query()->where('course_id', $course_id)->delete();
 }
 
-function myArrayContainsWord(array $myArray, $word,$attr)
+function myArrayContainsWord(array $myArray, $word, $attr)
 {
     foreach ($myArray as $key => $element) {
         if (!empty($element[$attr]) && $element[$attr] == $word) {
@@ -3436,3 +3437,138 @@ function myArrayContainsWord(array $myArray, $word,$attr)
     }
     return -1;
 }
+
+
+//region azure generate link
+function processInteractive33($jsonData, $urlLink)
+{
+    if (isset($jsonData['interactiveVideo']) && isset($jsonData['interactiveVideo']['video']) && isset($jsonData['interactiveVideo']['video']['files'])
+        && isset($jsonData['interactiveVideo']['video']['files'][0]) && isset($jsonData['interactiveVideo']['video']['files'][0]['path'])
+    ) {
+
+        $path = $jsonData['interactiveVideo']['video']['files'][0]['path'];
+        if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+            $file_name = basename($path);
+
+            $file_name_rp = str_replace('#', '?', $file_name);
+            $arr_name = explode('?', $file_name_rp);
+
+            $blob_name = $arr_name[0];
+
+            $end_date = Carbon::now()->addMinute(19);
+//            $end_date = Carbon::now()->addSecond(12);
+
+            $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+            $_signature = getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+            $urlLink = getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+
+        }
+
+    }
+
+    return $urlLink;
+}
+
+function processInteractive140($jsonData, $urlLink)
+{
+    if (isset($jsonData['content'])) {
+
+        foreach ($jsonData['content'] as $key => $data_content) {
+
+            if (isset($data_content['content']) && isset($data_content['content']['params'])
+                && isset($data_content['content']['params']['interactiveVideo']) && isset($data_content['content']['params']['interactiveVideo']['video'])
+                && isset($data_content['content']['params']['interactiveVideo']['video']['files']) && isset($data_content['content']['params']['interactiveVideo']['video']['files'][0])
+                && isset($data_content['content']['params']['interactiveVideo']['video']['files'][0]['path'])
+            ) {
+                $path = $data_content['content']['params']['interactiveVideo']['video']['files'][0]['path'];
+
+                if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                    $file_name = basename($path);
+
+                    $file_name_rp = str_replace('#', '?', $file_name);
+                    $arr_name = explode('?', $file_name_rp);
+
+                    $blob_name = $arr_name[0];
+                    $end_date = Carbon::now()->addMinute(19);
+
+                    $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                    $_signature = getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                    $urlLink = getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+
+                }
+            } else if (isset($data_content['content']) && isset($data_content['content']['params'])
+                && isset($data_content['content']['params']['sources']) && isset($data_content['content']['params']['sources'][0])
+                && isset($data_content['content']['params']['sources'][0]['path'])
+            ) {
+                $path = $data_content['content']['params']['sources'][0]['path'];
+
+                if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                    $file_name = basename($path);
+
+                    $file_name_rp = str_replace('#', '?', $file_name);
+                    $arr_name = explode('?', $file_name_rp);
+
+                    $blob_name = $arr_name[0];
+                    $end_date = Carbon::now()->addMinute(19);
+
+                    $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+
+                    $_signature = getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                    $urlLink = getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+
+
+                }
+            }
+        }
+    }
+    return $urlLink;
+}
+
+function getSASForBlob($accountName, $container, $blob, $resourceType, $permissions, $expiry, $key)
+{
+
+    /* Create the signature */
+    $_arraysign = array();
+    $_arraysign[] = $permissions;
+    $_arraysign[] = '';
+    $_arraysign[] = $expiry;
+    $_arraysign[] = '/' . $accountName . '/' . $container . '/' . $blob;
+    $_arraysign[] = '';
+    $_arraysign[] = "2014-02-14"; //the API version is now required
+    $_arraysign[] = '';
+    $_arraysign[] = '';
+    $_arraysign[] = '';
+    $_arraysign[] = '';
+    $_arraysign[] = '';
+
+    $_str2sign = implode("\n", $_arraysign);
+
+    return base64_encode(
+        hash_hmac('sha256', urldecode(utf8_encode($_str2sign)), base64_decode($key), true)
+    );
+}
+
+function getBlobUrl($accountName, $container, $blob, $resourceType, $permissions, $expiry, $_signature)
+{
+    /* Create the signed query part */
+    $_parts = array();
+    $_parts[] = (!empty($expiry)) ? 'se=' . urlencode($expiry) : '';
+    $_parts[] = 'sr=' . $resourceType;
+    $_parts[] = (!empty($permissions)) ? 'sp=' . $permissions : '';
+    $_parts[] = 'sig=' . urlencode($_signature);
+    $_parts[] = 'sv=2014-02-14';
+
+    /* Create the signed blob URL */
+    $_url = 'https://'
+        . $accountName . '.blob.core.windows.net/'
+        . $container . '/'
+        . $blob . '?'
+        . implode('&', $_parts);
+
+    return $_url;
+}
+//endregion

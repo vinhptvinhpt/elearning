@@ -21,6 +21,7 @@ class VerifyCsrfToken extends Middleware
         '/loginfirst/executelogin',
         '/elearning/v1/sync-organization',
         '/elearning/v1/sync-user',
-        '/elearning/v1/test-user'
+        '/elearning/v1/test-user',
+        '/api/protect/azure'
     ];
 }

@@ -602,6 +602,9 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/self/view-result', 'Backend\SelfAssessmentController@apiViewResultSelf');
     Route::post('/api/self/check-result', 'Backend\SelfAssessmentController@apiCheckResultSelf');
     Route::post('/api/self/users', 'Backend\SelfAssessmentController@apiGetUserSelf');
+    Route::post('/api/self/point-of-section', 'Backend\SelfAssessmentController@apiGetPointOfSection');
+    Route::post('/api/self/export-file', 'Backend\SelfAssessmentController@apiExportFile');
+    Route::get('/api/self/download-file/{type_file}', 'Backend\SelfAssessmentController@apiDownloadFile');
 
     Route::post('/api/selfquestion/list', 'Backend\SelfAssessmentController@apiGetListQuestion');
     Route::get('/api/selfquestion/listself', 'Backend\SelfAssessmentController@apiGetListSelfAssessment');
@@ -850,3 +853,4 @@ Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataControll
 Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
 Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');
 Route::get('/show-survey', 'Backend\SurveyController@viewExport');
+Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLink');

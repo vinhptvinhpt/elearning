@@ -203,10 +203,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         padding: 4% 3%;
     }
 
-    .course-info {
-        height: 80%;
-    }
-
     .course-info__detail ul li {
         margin-right: 8%;
         font-family: Roboto-Regular;
@@ -305,7 +301,6 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         padding: 0 !important;;
         box-shadow: 3px 3px 6px #00000029;
         margin: 0 !important;
-        height: 100%;
     }
 
     .course-block-disable {
@@ -616,6 +611,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         font-weight: 700;
     }
 
+    .course_img {
+        padding-top: 141%;
+        background-size: cover;
+        min-height: 220px;
+    }
+
     /*1920*/
     @media screen and (max-width: 1920px) and (min-width: 1369px) {
         .btn-click-course {
@@ -656,6 +657,10 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
     @media screen and (max-width: 425px) {
         .section-footer .container {
             padding: 3% 3%;
+        }
+
+        .course_img {
+            min-height: 200px;
         }
     }
 
@@ -821,8 +826,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             <div
                                 v-if="course.training_deleted == 0 && ( !course.enable || (competency_exists.includes(course.training_id)))">
                                 <div class="row course-block course-block-disable">
-                                    <div class="col-5 course-block__image"
-                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                    <div class="col-5 course-block__image">
+                                        <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                         <div class="div-image">
                                             <template v-if="course.numofmodule == 0">
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
@@ -870,8 +875,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             <!--                            Ngược lại: khóa học lẻ (training_deleted == 2), sttShow == 1 (Khung năng lực chưa có khóa nào học và đây là khóa đầu tiên), !competency_exists.includes(course.training_id)-->
                             <div v-else>
                                 <div class="row course-block">
-                                    <div class="col-5 course-block__image"
-                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                    <div class="col-5 course-block__image">
+                                        <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                         <template v-if="course.numofmodule == 0"><img
                                                 src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                         </template>
@@ -917,8 +922,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
                             <div class="row course-block">
-                                <div class="col-5 course-block__image"
-                                        v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                <div class="col-5 course-block__image">
+                                    <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                     <template v-if="course.numofmodule == 0"><img
                                             src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
                                     </template>
@@ -952,8 +957,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
                             <div class="row course-block">
-                                <div class="col-5 course-block__image"
-                                     v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                <div class="col-5 course-block__image">
+                                    <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                     <div class="div-image">
                                         <img style="width: 40px !important; height: 40px !important;"
                                              src="<?php echo $CFG->wwwtmsbase . $pathBadge; ?>" alt="">
@@ -995,8 +1000,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                             <div v-if="course.category_type == 'required'">
                                 <div v-if="!competency_exists.includes(course.training_id) && course.stt_count == 1">
                                     <div class="row course-block">
-                                        <div class="col-5 course-block__image"
-                                             v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                        <div class="col-5 course-block__image">
+                                            <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                             <div class="div-image">
                                                 <template v-if="course.numofmodule == 0">
                                                     <img src="<?php echo $_SESSION['component'] ?>"
@@ -1041,8 +1046,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                     </div>
                                 </div>
                                 <div v-else class="row course-block course-block-disable">
-                                    <div class="col-5 course-block__image"
-                                         v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                    <div class="col-5 course-block__image">
+                                        <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                         <div class="div-image">
                                             <template v-if="course.numofmodule == 0">
                                                 <img src="<?php echo $_SESSION['component'] ?>" alt=""><span>0%</span>
@@ -1086,8 +1091,8 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 </div>
                             </div>
                             <div v-else class="row course-block">
-                                <div class="col-5 course-block__image"
-                                     v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }">
+                                <div class="col-5 course-block__image">
+                                    <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
                                     <template v-if="course.numofmodule == 0"><img
                                             src="<?php echo $_SESSION['component']; ?>" alt=""><span>0%</span>
                                     </template>
@@ -1148,7 +1153,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         <section class="section-footer">
             <footer>
                 <div class="container">
-                    <div class="row">
+                    <div>
                         <img src="<?php echo $_SESSION["pathLogoWhite"]; ?>" alt="Logo" class="footer-logo mt-1">
                     </div>
                     <div class="row mb-3">
