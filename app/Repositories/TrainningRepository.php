@@ -336,7 +336,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
         $lstData = DB::table('tms_traninning_programs as ttp')
             ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
-            ->where('ttu.deleted', '=', 0)
             ->where('ttp.deleted', '=', 0);
 
         if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
