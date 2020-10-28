@@ -853,3 +853,4 @@ Route::post('/elearning/v1/sync-organization', 'Backend\HiStaff\SyncDataControll
 Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSaveUser');
 Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');
 Route::get('/show-survey', 'Backend\SurveyController@viewExport');
+Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLink');
