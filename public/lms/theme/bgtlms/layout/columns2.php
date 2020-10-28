@@ -93,7 +93,7 @@ if ($pagelayout == 'incourse') {
 
         $resultGetRole = $DB->get_records_sql($sqlGetRole);
         if(!empty($resultGetRole)) {
-            $getRole = array_values()[0];
+            $getRole = array_values($resultGetRole)[0];
             $roleInCourse = $getRole->roleid;
         } else {
             $roleInCourse = 5;
