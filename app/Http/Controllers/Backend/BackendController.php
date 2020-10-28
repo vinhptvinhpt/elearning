@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\MdlHvp;
 use App\MdlUser;
 use App\Repositories\BussinessRepository;
+use App\ViewModel\ResponseModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -130,24 +131,30 @@ class BackendController extends Controller
 
     public function apiGenerateAzureLink(Request $request)
     {
-        $hvp_id = $request->input('hvp_id');
-        $data = MdlHvp::findOrFail($hvp_id);
+        $response = new ResponseModel();
+        try {
+            $hvp_id = $request->input('hvp_id');
+            $data = MdlHvp::findOrFail($hvp_id);
 
-        $urlLink = '';
+            $urlLink = '';
 
-        $jsonData = json_decode($data->json_content, true);
+            $jsonData = json_decode($data->json_content, true);
 
-        switch ($data->main_library_id) {
-            case 33:
-            case 141:
-                $urlLink = processInteractive33($jsonData, $urlLink);
-                break;
-            case 140:
-                $urlLink = processInteractive140($jsonData, $urlLink);
-                break;
+            switch ($data->main_library_id) {
+                case 33:
+                case 141:
+                    $urlLink = processInteractive33($jsonData, $urlLink);
+                    break;
+                case 140:
+                    $urlLink = processInteractive140($jsonData, $urlLink);
+                    break;
+            }
+            $response->status = true;
+            $response->message = $urlLink;
+        } catch (\Exception $e) {
+            $response->status = false;
         }
 
-
-        return response()->json($urlLink);
+        return response()->json($response);
     }
 }
