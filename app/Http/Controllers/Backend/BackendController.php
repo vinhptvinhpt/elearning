@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\MdlHvp;
 use App\MdlUser;
 use App\Repositories\BussinessRepository;
 use Illuminate\Http\Request;
@@ -125,5 +126,28 @@ class BackendController extends Controller
     public function checkRole(Request $request)
     {
         return $this->bussinessRepository->checkRole($request);
+    }
+
+    public function apiGenerateAzureLink(Request $request)
+    {
+        $hvp_id = $request->input('hvp_id');
+        $data = MdlHvp::findOrFail($hvp_id);
+
+        $urlLink = '';
+
+        $jsonData = json_decode($data->json_content, true);
+
+        switch ($data->main_library_id) {
+            case 33:
+            case 141:
+                $urlLink = processInteractive33($jsonData, $urlLink);
+                break;
+            case 140:
+                $urlLink = processInteractive140($jsonData, $urlLink);
+                break;
+        }
+
+
+        return response()->json($urlLink);
     }
 }
