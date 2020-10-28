@@ -401,7 +401,7 @@ if (!empty($reverse_recursive_org_ids)) {
 		(
 		select count(id)
 		from mdl_user_enrolments
-		where userid = tud.user_id
+		where userid = ' . $USER->id . '
 		and enrolid in (
 			select id
 			from mdl_enrol
@@ -425,9 +425,7 @@ if (!empty($reverse_recursive_org_ids)) {
         ttc.order_no,
         GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
 
-        from tms_user_detail tud
-        inner join tms_organization_employee toe on toe.user_id = tud.user_id
-        inner join tms_optional_courses toc on toe.organization_id = toc.organization_id AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
+        from tms_optional_courses toc
         inner join mdl_course mc on toc.course_id = mc.id
         left join tms_trainning_courses ttc on mc.id = ttc.course_id
         left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
@@ -444,7 +442,7 @@ if (!empty($reverse_recursive_org_ids)) {
         and mc.visible = 1
 		and ttc.deleted <> 1
 		and ttp.style <> 2
-		and tud.user_id = ' . $USER->id . '
+		AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
         and mc.id NOT IN ' . $courses_others_id;
 
     $sqlCourseNotEnrol .= ' group by mc.id'; //cần để tạo tên giáo viên
