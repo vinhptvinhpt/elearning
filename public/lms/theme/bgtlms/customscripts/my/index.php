@@ -306,10 +306,8 @@ $courses_required = array();
 $courses_completed = array();
 $courses_soft_skills = array();
 $courses_training = array();
-$courses_required_list = array();
 $competency_exists = array();
 $competency_completed = array();
-$countRequiredCourses = 0;
 $sttTotalCourse = 0;
 $couresIdAllow = array();
 $courses_others_id = '(0';
@@ -318,7 +316,7 @@ $coursesSuggest = [];
 foreach ($courses as $course) {
     $sttTotalCourse++;
     $courses_training[$course->training_id][$course->id] = $course;
-    array_push($couresIdAllow, $course->id);
+    array_push($couresIdAllow, $course->id); //Lay data cho courses cho phep
 }
 
 $exitCourseInRequiredCourse = array();
@@ -339,13 +337,11 @@ foreach ($courses_training as $courses) {
             push_course($courses_completed, $course);
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-            $courses_required[$course->training_id][$course->order_no] = $course;
             if ($course->training_deleted == 2) {
                 $course->sttShow = 99999;
             }
             $courses_others_id .= ', ' . $course->id;
-            $countRequiredCourses++;
-            $courses_required_list[] = $course;
+            push_course($courses_required, $course);
         } else {
             $courses_others_id .= ', ' . $course->id;
         }
@@ -479,11 +475,12 @@ if (!empty($reverse_recursive_org_ids)) {
             }
             elseif ($course_optional_item->enrol_count > 0) {
                 //đã enrol nhưng chưa học => required courses
-                push_course($courses_required, $course_optional_item);
+                if ($course_optional_item->training_deleted == 2) {
+                    $course_optional_item->sttShow = 99999;
+                }
                 $sttTotalCourse++;
                 array_push($couresIdAllow, $course_optional_item->id);
-                $countRequiredCourses++;
-                $courses_required_list[] = $course;
+                push_course($courses_required, $course_optional_item);
             }
             //then chua hoc, chưa enrol
             else {
@@ -514,7 +511,7 @@ function cmp_stt($a, $b)
 }
 
 //Sort results by stt
-usort($courses_required_list, 'cmp_stt');
+usort($courses_required, 'cmp_stt');
 
 $_SESSION["couresIdAllow"] = $couresIdAllow;
 
@@ -522,7 +519,7 @@ $countBlock = 1;
 // Set session variables
 if ($sttTotalCourse > 0) {
     $_SESSION["courses_current"] = $courses_current;
-    $_SESSION["courses_required"] = $courses_required_list;
+    $_SESSION["courses_required"] = $courses_required;
     $_SESSION["courses_completed"] = $courses_completed;
     $_SESSION["totalCourse"] = $sttTotalCourse;
     $percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
@@ -1494,7 +1491,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
+                                        <div class="text-number"><?php echo count($courses_required); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
@@ -1614,9 +1611,9 @@ $_SESSION["allowCms"] = $allowCms;
                                 <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
-                                        <?php if (count($courses_required_list) > 0) {
+                                        <?php if (count($courses_required) > 0) {
                                             $countBlock = 1;
-                                            foreach ($courses_required_list as $course) {
+                                            foreach ($courses_required as $course) {
                                                 //Nếu đang học thì disable
                                                 if (in_array($course->training_id, $competency_exists)) {
                                                     $enable = 'disable';
