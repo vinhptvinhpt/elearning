@@ -2398,7 +2398,7 @@ class TaskController extends Controller
 
     public function apiGenerateSASUrlAzure()
     {
-        $arrMainId = [33, 140];
+        $arrMainId = [33, 140, 141];
         $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->select('id', 'main_library_id', 'json_content')->get();
 
         foreach ($lstData as $data) {
@@ -2406,6 +2406,7 @@ class TaskController extends Controller
 
             switch ($data->main_library_id) {
                 case 33:
+                case 141:
                     $this->processInteractive33($jsonData, $data->id);
                     break;
                 case 140:

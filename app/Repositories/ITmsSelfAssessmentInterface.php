@@ -60,4 +60,10 @@ interface ITmsSelfAssessmentInterface
     //get list user in self
     public function getUserSelf(Request $request);
 
+    //get point of section by user
+    public function getPointOfSection(Request $request);
+
+    //export file self result
+    public function exportFile(Request $request);
+
 }

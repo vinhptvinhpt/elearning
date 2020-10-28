@@ -344,7 +344,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
         /*max-height: 300px;*/
         max-width: 70%;
         margin: auto;
-        display: flex;
     }
 
     .item-image img {
