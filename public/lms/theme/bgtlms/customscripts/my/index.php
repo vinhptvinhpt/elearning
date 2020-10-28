@@ -295,9 +295,11 @@ $sql_pqdl .= ' group by mc.id'; //cần để tạo tên giáo viên
 //Có enrol
 $sql_pqdl .=  ' having enrol_count > 0';
 
-$sql_pqdl .= ' ORDER BY ttp.id, ttc.order_no';
+//28102020 not works => move outside select alias
+//$sql_pqdl .= ' ORDER BY ttp.id, ttc.order_no';
+//$sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
 
-$sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
+$sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses order by training_id, order_no';
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -306,10 +308,8 @@ $courses_required = array();
 $courses_completed = array();
 $courses_soft_skills = array();
 $courses_training = array();
-$courses_required_list = array();
 $competency_exists = array();
 $competency_completed = array();
-$countRequiredCourses = 0;
 $sttTotalCourse = 0;
 $couresIdAllow = array();
 $courses_others_id = '(0';
@@ -318,7 +318,7 @@ $coursesSuggest = [];
 foreach ($courses as $course) {
     $sttTotalCourse++;
     $courses_training[$course->training_id][$course->id] = $course;
-    array_push($couresIdAllow, $course->id);
+    array_push($couresIdAllow, $course->id); //Lay data cho courses cho phep
 }
 
 $exitCourseInRequiredCourse = array();
@@ -339,13 +339,11 @@ foreach ($courses_training as $courses) {
             push_course($courses_completed, $course);
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-            $courses_required[$course->training_id][$course->order_no] = $course;
             if ($course->training_deleted == 2) {
                 $course->sttShow = 99999;
             }
             $courses_others_id .= ', ' . $course->id;
-            $countRequiredCourses++;
-            $courses_required_list[] = $course;
+            push_course($courses_required, $course);
         } else {
             $courses_others_id .= ', ' . $course->id;
         }
@@ -403,7 +401,7 @@ if (!empty($reverse_recursive_org_ids)) {
 		(
 		select count(id)
 		from mdl_user_enrolments
-		where userid = tud.user_id
+		where userid = ' . $USER->id . '
 		and enrolid in (
 			select id
 			from mdl_enrol
@@ -427,9 +425,7 @@ if (!empty($reverse_recursive_org_ids)) {
         ttc.order_no,
         GROUP_CONCAT(CONCAT(tudt.fullname, " created_at ",  muet.timecreated)) as teachers
 
-        from tms_user_detail tud
-        inner join tms_organization_employee toe on toe.user_id = tud.user_id
-        inner join tms_optional_courses toc on toe.organization_id = toc.organization_id AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
+        from tms_optional_courses toc
         inner join mdl_course mc on toc.course_id = mc.id
         left join tms_trainning_courses ttc on mc.id = ttc.course_id
         left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
@@ -446,7 +442,7 @@ if (!empty($reverse_recursive_org_ids)) {
         and mc.visible = 1
 		and ttc.deleted <> 1
 		and ttp.style <> 2
-		and tud.user_id = ' . $USER->id . '
+		AND toc.organization_id IN (' . $reverse_recursive_org_ids_string . ')
         and mc.id NOT IN ' . $courses_others_id;
 
     $sqlCourseNotEnrol .= ' group by mc.id'; //cần để tạo tên giáo viên
@@ -479,11 +475,12 @@ if (!empty($reverse_recursive_org_ids)) {
             }
             elseif ($course_optional_item->enrol_count > 0) {
                 //đã enrol nhưng chưa học => required courses
-                push_course($courses_required, $course_optional_item);
+                if ($course_optional_item->training_deleted == 2) {
+                    $course_optional_item->sttShow = 99999;
+                }
                 $sttTotalCourse++;
                 array_push($couresIdAllow, $course_optional_item->id);
-                $countRequiredCourses++;
-                $courses_required_list[] = $course;
+                push_course($courses_required, $course_optional_item);
             }
             //then chua hoc, chưa enrol
             else {
@@ -514,7 +511,7 @@ function cmp_stt($a, $b)
 }
 
 //Sort results by stt
-usort($courses_required_list, 'cmp_stt');
+usort($courses_required, 'cmp_stt');
 
 $_SESSION["couresIdAllow"] = $couresIdAllow;
 
@@ -522,7 +519,7 @@ $countBlock = 1;
 // Set session variables
 if ($sttTotalCourse > 0) {
     $_SESSION["courses_current"] = $courses_current;
-    $_SESSION["courses_required"] = $courses_required_list;
+    $_SESSION["courses_required"] = $courses_required;
     $_SESSION["courses_completed"] = $courses_completed;
     $_SESSION["totalCourse"] = $sttTotalCourse;
     $percentCompleted = round(count($courses_completed) * 100 / $sttTotalCourse);
@@ -1494,7 +1491,7 @@ $_SESSION["allowCms"] = $allowCms;
                                 <div class="info-statistic__all-required">
                                     <a class="info-text" href="lms/course/index.php?progress=1&type=required">
                                         <div class="text-course">Required courses</div>
-                                        <div class="text-number"><?php echo $countRequiredCourses; ?></div>
+                                        <div class="text-number"><?php echo count($courses_required); ?></div>
                                     </a>
                                 </div>
                                 <div class="info-statistic__completed-courses">
@@ -1614,9 +1611,9 @@ $_SESSION["allowCms"] = $allowCms;
                                 <!--content-->
                                 <div class="courses-block__content">
                                     <div class="courses-block__content__item row course-row-mx-5">
-                                        <?php if (count($courses_required_list) > 0) {
+                                        <?php if (count($courses_required) > 0) {
                                             $countBlock = 1;
-                                            foreach ($courses_required_list as $course) {
+                                            foreach ($courses_required as $course) {
                                                 //Nếu đang học thì disable
                                                 if (in_array($course->training_id, $competency_exists)) {
                                                     $enable = 'disable';
