@@ -464,6 +464,7 @@ if __name__ == '__main__':
                             distance_2way_max = 320
                             distance_2way = 80
                             distance_line = 100
+                            center_pos = 0
                             #programSize_badge = 36
 
                             # if programSize_badge >=40:
@@ -481,16 +482,19 @@ if __name__ == '__main__':
                                 distance_line = 80
                                 #print('433: '+code)
                             elif (length_text >= 35 and length_text < 46):
+                                center_pos = 2
                                 programSize_badge = 30
                                 distance_2way_max = 350
                                 distance_2way = 240
                                 distance_line = 80
                                 #print('448: '+code)
                             elif (length_text >= 20 and length_text < 35):
+                                center_pos = 2
                                 programSize_badge = 38
                                 distance_2way_max = 350
                                 distance_2way = 150
                             else:
+                                center_pos = 1
                                 programSize_badge = 36
                                 distance_2way_max = 260
                                 distance_2way = 60
@@ -525,15 +529,23 @@ if __name__ == '__main__':
                             canvas = ImageDraw.Draw(img_badge)
                             line_height = font.getsize('hg')[1]
 
+                            # y = 0
+
                             y_min = (programY_badge * 150) // 100   # 150% from the top
                             y_max = (programY_badge * 175) //100   # 175% to the bottom
-                            ran_y = randint(y_min, y_max)      # Generate random point
-                            y = ran_y
+                            # ran_y = randint(y_min, y_max)      # Generate random point
+                            # y = ran_y
+                            y = int(y_min)
+                            if center_pos == 2:
+                                y = int(y_max)
 
                             for line in lines:
                                 w, h = canvas.textsize(line,font)
-                                canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
-                                y = y + line_height + distance_line
+                                if center_pos == 1:
+                                    canvas.text(((image_new_width_bg-w)/2, (y+distance_line-line_height)/2), line, font=font,fill=textColor_bg)
+                                else:
+                                    canvas.text(((image_new_width_bg-w)/2, (y-h-20)/2), line, font=font,fill=textColor_bg)
+                                    y = y + line_height + distance_line
 
                             #save image badge
                             img_badge.save(os.path.join(path_gen_img, 'certificate', code + '_badge.png'))
