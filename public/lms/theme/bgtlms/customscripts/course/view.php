@@ -642,6 +642,7 @@ if (!isloggedin()) {
     .unit-detail {
         background-color: #FFFFFF;
         height: fit-content;
+        height: -moz-fit-content;
     }
 
     .prev-btn {
@@ -668,6 +669,7 @@ if (!isloggedin()) {
         border-radius: 4px;
         min-width: 50px;
         width: fit-content;
+        width: -moz-fit-content;
         padding: 1px 5px;
         margin: 0;
         margin-bottom: 1em;

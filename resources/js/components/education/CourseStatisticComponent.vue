@@ -742,6 +742,7 @@
 
   .dataTables_wrapper select.custom-select {
     width: fit-content;
+    width: -moz-fit-content;
   }
 
   .dataTables_wrapper_search {
