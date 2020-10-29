@@ -58,6 +58,10 @@
                                         <label v-if="!roles.description" class="text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                     </div>
                                 </div>
+                                <div class="col-sm-12">
+                                  <input type="checkbox" id="is_organization_role" v-model="roles.is_organization_role" style="width:20px; height:20px;">
+                                  <label for="is_organization_role">{{trans.get('keys.su_dung_cho_to_chuc')}}</label>
+                                </div>
                             </div>
                             <hr v-if="!roles.role_organization">
                             <h4 v-if="!roles.role_organization" class="mb-10">{{trans.get('keys.chuc_nang')}}</h4>
@@ -285,6 +289,7 @@
                     citys:this.citys,
                     branchs:this.branchs,
                     salerooms:this.salerooms,*/
+                    is_organization_role: this.roles.is_organization_role,
                 })
                     .then(response => {
                         roam_message(response.data.status, response.data.message);

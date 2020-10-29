@@ -474,11 +474,13 @@ if __name__ == '__main__':
                             #     programSize_badge = 36
                             
                             if (length_text >= 62):
+                                center_pos = 3
                                 programSize_badge = 24
                                 distance_2way_max = 360
                                 distance_2way = 240
                                 distance_line = 80
                             elif (length_text >= 46 and length_text < 62):
+                                center_pos = 4
                                 programSize_badge = 28
                                 distance_2way_max = 360
                                 distance_2way = 240
@@ -534,20 +536,30 @@ if __name__ == '__main__':
 
                             # y = 0
 
-                            y_min = (programY_badge * 150) // 100   # 150% from the top
+                            y_min = (programY_badge * 140) // 100   # 150% from the top
                             y_max = (programY_badge * 175) //100   # 175% to the bottom
                             # ran_y = randint(y_min, y_max)      # Generate random point
                             # y = ran_y
-                            y = int(y_min)
+                            sub_dis = 0
                             if center_pos == 2:
-                                y = int(y_max)
+                                # sub_dis = -40
+                                y_min = (programY_badge * 130) // 100   # 150% from the top
+                            elif center_pos == 3:
+                                sub_dis = 70
+                            elif center_pos == 1:
+                                sub_dis = 60
+                            elif center_pos == 4:
+                                sub_dis = 100
 
+                            y = int(y_min)
+                            # print('543'+ str(lines))
                             for line in lines:
                                 w, h = canvas.textsize(line,font)
                                 if center_pos == 1:
-                                    canvas.text(((image_new_width_bg-w)/2, (y+distance_line-line_height)/2), line, font=font,fill=textColor_bg)
+                                    canvas.text(((image_new_width_bg-w)/2, (y+distance_line-line_height-sub_dis)/2), line, font=font,fill=textColor_bg)
                                 else:
-                                    canvas.text(((image_new_width_bg-w)/2, (y-h-20)/2), line, font=font,fill=textColor_bg)
+                                    # print('549')
+                                    canvas.text(((image_new_width_bg-w)/2, (y-h-sub_dis)/2), line, font=font,fill=textColor_bg)
                                     y = y + line_height + distance_line
 
                             #save image badge

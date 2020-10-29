@@ -139,7 +139,7 @@
                             :required="inputRole"
                             v-model="inputRole">
                     </v-select>
-                    <label v-if="inputRole.length==0" class="text-danger inputRole_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                    <label v-if="inputRole.length === 0" class="text-danger inputRole_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                     <!--                  <label for="inputRole">{{trans.get('keys.quyen')}}</label>-->
                     <!--                    <select v-model="inputRole" class="form-control selectpicker" id="inputRole" autocomplete="false" multiple>-->
                     <!--                        <option value="">{{trans.get('keys.chon_vai_tro')}}</option>-->
@@ -800,9 +800,10 @@
                 for (const [key, item] of Object.entries(list)) {
                     let newOption = {
                         id: item.id,
-                        label: this.trans.has('keys.' + item.name) ? this.trans.get('keys.' + item.name) : item.name.charAt(0).toUpperCase() + item.name.slice(1),
+                        //label: this.trans.has('keys.' + item.name) ? this.trans.get('keys.' + item.name) : item.name.charAt(0).toUpperCase() + item.name.slice(1),
                         //label: item.name.charAt(0).toUpperCase() + item.name.slice(1),
                         //name: item.name
+                        label: this.trans.has('keys.' + item.name) ? this.trans.get('keys.' + item.name) : item.description,
                     };
                     if (this.role_selected === 'root' || this.role_selected === 'admin') {
                         outPut.push(newOption);

@@ -48,6 +48,10 @@
                                                        class="text-danger description_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                         </div>
+                                        <div class="col-sm-12">
+                                          <input type="checkbox" id="is_organization_role" v-model="role.is_organization_role" style="width:20px; height:20px;">
+                                          <label for="is_organization_role">{{trans.get('keys.su_dung_cho_to_chuc')}}</label>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="col-12">
@@ -92,7 +96,7 @@
                                                 <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                             </router-link>
 
-                                            <button v-if="ro.status == 0" @click="deleteRole(ro.id)"
+                                            <button v-if="ro.status === 0" @click="deleteRole(ro.id)"
                                                     class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2"
                                                     :title="trans.get('keys.xoa')">
                                                 <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
@@ -171,6 +175,7 @@
                 role: {
                     name: '',
                     description: '',
+                    is_organization_role: 0,
                 },
                 roles: [],
                 content_roles: [],
@@ -203,11 +208,13 @@
                 axios.post('/role/create', {
                     name: this.role.name,
                     description: this.role.description,
+                    is_organization_role: this.role.is_organization_role
                 })
                     .then(response => {
                         roam_message(response.data.status, response.data.message);
                         this.role.name = '';
                         this.role.description = '';
+                        this.role.is_organization_role = 0;
                     })
                     .catch(error => {
                         roam_message('error', current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'));
