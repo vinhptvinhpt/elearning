@@ -294,12 +294,12 @@ class TaskController extends Controller
         //Lấy ra số khóa học theo khung năng lực deleted = 0
         $lstTrainning = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
-            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)')//khung nang lcu thong thuong, chua bi xoa
+            ->whereRaw('(ttp.deleted = 0 or ttp.deleted = 2)')//khung nang luc thong thuong, chua bi xoa
             ->where('ttc.deleted', '=', '0')//Khoa hoc trong khung nang luc
-            ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'))
+            ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'), 'ttp.deleted')
             ->groupBy(['ttc.trainning_id'])
             ->get();
-
+        
         foreach ($lstTrainning as $training) {
 
             $training_courses = $training->training_courses;
@@ -347,7 +347,9 @@ class TaskController extends Controller
 
                     if ($num >= $limit) {
                         TmsTrainningComplete::insert($arrData);
-                        $this->insertCompetencyCompleted($arrData);
+                        if ($training->deleted == 0) {
+                            $this->insertCompetencyCompleted($arrData);
+                        }
                         $num = 0;
                         $arrData = [];
                     }
@@ -356,7 +358,9 @@ class TaskController extends Controller
                 }
 
                 TmsTrainningComplete::insert($arrData);
-                $this->insertCompetencyCompleted($arrData);
+                if ($training->deleted == 0) {
+                    $this->insertCompetencyCompleted($arrData);
+                }
                 sleep(1);
             }
         }
