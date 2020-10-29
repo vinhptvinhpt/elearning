@@ -31,6 +31,8 @@ bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
 logo_size_height = 100
+bg_resize_width = 487
+bg_resize_height = 457
 
 # D:\\Job\\elearning-easia\\python\\generate.py  D:\\Job\\elearning-easia\\python\\certificate.jpg 1571 u:1 w:0 c:0
 if __name__ == '__main__':
@@ -442,7 +444,7 @@ if __name__ == '__main__':
 
                             #khoi tao bien tai day de tranh hien tuong bien bi giu lai sau khi gen anh xong, tam thoi fix
                             img_badge = Image.open(path_badge)
-                            img_badge = img_badge.resize((image_new_width_bg, image_new_height_bg), Image.ANTIALIAS)
+                            img_badge = img_badge.resize((bg_resize_width, bg_resize_height), Image.ANTIALIAS)
                             #region in anh huy hieu
                             name_utf8_training = training_name
 
