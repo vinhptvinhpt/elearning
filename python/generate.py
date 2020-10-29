@@ -467,33 +467,39 @@ if __name__ == '__main__':
                             distance_2way_max = 320
                             distance_2way = 80
                             distance_line = 100
+                            center_pos = 0
                             #programSize_badge = 36
 
                             # if programSize_badge >=40:
                             #     programSize_badge = 36
                             
                             if (length_text >= 62):
+                                center_pos = 0
                                 programSize_badge = 24
                                 distance_2way_max = 360
                                 distance_2way = 240
                                 distance_line = 80
                             elif (length_text >= 46 and length_text < 62):
+                                center_pos = 0
                                 programSize_badge = 28
                                 distance_2way_max = 360
                                 distance_2way = 240
                                 distance_line = 80
                                 #print('433: '+code)
                             elif (length_text >= 35 and length_text < 46):
+                                center_pos = 0
                                 programSize_badge = 30
                                 distance_2way_max = 350
                                 distance_2way = 240
                                 distance_line = 80
                                 #print('448: '+code)
                             elif (length_text >= 20 and length_text < 35):
+                                center_pos = 0
                                 programSize_badge = 38
                                 distance_2way_max = 350
                                 distance_2way = 150
                             else:
+                                center_pos = 1
                                 programSize_badge = 36
                                 distance_2way_max = 260
                                 distance_2way = 60
@@ -535,7 +541,10 @@ if __name__ == '__main__':
 
                             for line in lines:
                                 w, h = canvas.textsize(line,font)
-                                canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
+                                if center_pos == 1:
+                                    canvas.text(((image_new_width_bg-w)/2, (y+distance_line-line_height-10)/2), line, font=font,fill=textColor_bg)
+                                else:
+                                    canvas.text(((image_new_width_bg-w)/2, (y-h)/2), line, font=font,fill=textColor_bg)
                                 y = y + line_height + distance_line
 
                             #save image badge
