@@ -81,13 +81,13 @@ class BackgroundController extends Controller
 
         $env = "background";
 
-        $manager_keys = array(
-            'manager',
-            'officer',
-            'director',
-            'controller',
-            'chief'
-        );
+//        $manager_keys = array(
+//            'manager',
+//            'officer',
+//            'director',
+//            'controller',
+//            'chief'
+//        );
 
         $base_level_orgs = array(
             //PHH level 1 organizations
@@ -183,9 +183,10 @@ class BackgroundController extends Controller
                 }
 
                 $team_code = $user[8];
-                $position_name = $user[9];
-                $city =  $user[10]; //office name
-                $country = $user[11]; //country name
+                $title = $user[9];
+                $position = $user[10];
+                $city =  $user[11]; //office name
+                $country = $user[12]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);
                     $country = $country_code;
@@ -198,17 +199,23 @@ class BackgroundController extends Controller
                     }
                 }
 
-                if (strlen($position_name) == 0) {
+                if (strlen($title) == 0) {
+                    $content[] = 'Title is missing';
+                }
+
+                if (strlen($position) == 0) {
                     $content[] = 'Position is missing';
                 }
 
-                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
-                    $role = Role::ROLE_MANAGER;
-                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
-                    $role = Role::ROLE_LEADER;
-                } else {
-                    $role = Role::ROLE_EMPLOYEE;
-                }
+//                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
+//                    $role = Role::ROLE_MANAGER;
+//                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
+//                    $role = Role::ROLE_LEADER;
+//                } else {
+//                    $role = Role::ROLE_EMPLOYEE;
+//                }
+
+                $role = $position;
 
                 //Check / create department
                 $department_name = $user[5];
@@ -243,7 +250,7 @@ class BackgroundController extends Controller
 
                 //Validate required fields
                 //email
-                $email = trim($user[31]);
+                $email = trim($user[32]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -270,19 +277,19 @@ class BackgroundController extends Controller
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[23];
+                $personal_id = $user[24];
                 //Skip check missing
 //                if (strlen($personal_id) == 0) {
 //                    $content[] = 'Personal id is missing';
 //                }
 
-                $address = $user[22];
-                $phone = self::preparePhoneNo($user[29]);
-                $phone2 = self::preparePhoneNo($user[30]);
+                $address = $user[23];
+                $phone = self::preparePhoneNo($user[30]);
+                $phone2 = self::preparePhoneNo($user[31]);
 
-                $skype = $user[32];
+                $skype = $user[33];
 
-                $line_manager_email = $user[33];
+                $line_manager_email = $user[34];
                 $line_manager = '';
                 if (strlen($line_manager_email) != 0) {
                     if (filter_var($line_manager_email, FILTER_VALIDATE_EMAIL) === false) {
@@ -297,7 +304,7 @@ class BackgroundController extends Controller
                     }
                 }
 
-                $gender = $user[17];
+                $gender = $user[18];
                 if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
                     $gender = 1;
                 } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
@@ -307,13 +314,13 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                $day_raw = $user[13];
-                $month_raw = $user[14];
-                $year_raw = $user[15];
+                $day_raw = $user[14];
+                $month_raw = $user[15];
+                $year_raw = $user[16];
                 if (strlen($day_raw) == 0 || strlen($month_raw) == 0 || strlen($year_raw) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    if (checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
+                    if (is_integer($month_raw) && is_integer($day_raw) && is_integer($year_raw) && checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
                         $dob_date = str_pad($day_raw, 2, '0', STR_PAD_LEFT);
                         $dob_month = str_pad($month_raw, 2, '0', STR_PAD_LEFT);
                         $dob_year = $year_raw;
@@ -325,11 +332,11 @@ class BackgroundController extends Controller
                 }
 
                 $start_time = "";
-                $start_day_raw = $user[19];
-                $start_month_raw = $user[20];
-                $start_year_raw = $user[21];
+                $start_day_raw = $user[20];
+                $start_month_raw = $user[21];
+                $start_year_raw = $user[22];
                 if (strlen($start_day_raw) != 0 && strlen($start_month_raw) != 0 && strlen($start_year_raw) != 0) {
-                    if (checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
+                    if (is_integer($start_month_raw) && is_integer($start_day_raw) && is_integer($start_year_raw) && checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
                         $start_date = str_pad($start_day_raw, 2, '0', STR_PAD_LEFT);
                         $start_month = str_pad($start_month_raw, 2, '0', STR_PAD_LEFT);
                         $start_year = $start_year_raw;
@@ -379,7 +386,7 @@ class BackgroundController extends Controller
                             $line_manager = '';
                             $content[] = "Line manager need to be different with current user";
                         }
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $title, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -435,13 +442,13 @@ class BackgroundController extends Controller
 
         $env = "background";
 
-        $manager_keys = array(
-            'manager',
-            'officer',
-            'director',
-            'controller',
-            'chief'
-        );
+//        $manager_keys = array(
+//            'manager',
+//            'officer',
+//            'director',
+//            'controller',
+//            'chief'
+//        );
 
         $base_level_orgs = array(
             'EA' => 'Easia Travel',
@@ -541,9 +548,10 @@ class BackgroundController extends Controller
                 }
 
                 $team_code = $user[8];
-                $position_name = $user[9];
-                $city = $user[10]; //office name
-                $country = $user[11]; //country name
+                $title = $user[9];
+                $position = $user[10];
+                $city = $user[11]; //office name
+                $country = $user[12]; //country name
                 if (strlen($country) == 0) {//Set default country vi
                     $country_code = array_search('Vietnam', $countries,true);
                     $country = $country_code;
@@ -556,17 +564,23 @@ class BackgroundController extends Controller
                     }
                 }
 
-                if (strlen($position_name) == 0) {
+                if (strlen($title) == 0) {
+                    $content[] = 'Title is missing';
+                }
+
+                if (strlen($position) == 0) {
                     $content[] = 'Position is missing';
                 }
 
-                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
-                    $role = Role::ROLE_MANAGER;
-                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
-                    $role = Role::ROLE_LEADER;
-                } else {
-                    $role = Role::ROLE_EMPLOYEE;
-                }
+//                if (str_replace($manager_keys, '', strtolower($position_name)) != strtolower($position_name)) {
+//                    $role = Role::ROLE_MANAGER;
+//                } elseif (strpos(strtolower($position_name), Role::ROLE_LEADER) !== false) {
+//                    $role = Role::ROLE_LEADER;
+//                } else {
+//                    $role = Role::ROLE_EMPLOYEE;
+//                }
+
+                $role = $position;
 
                 //Check / create department
                 $department_name = $user[5];
@@ -601,7 +615,7 @@ class BackgroundController extends Controller
 
                 //Validate required fields
                 //email
-                $email = trim($user[22]);
+                $email = trim($user[23]);
 
                 if (strlen($email) == 0) {
                     $content[] = 'Email is missing';
@@ -628,16 +642,16 @@ class BackgroundController extends Controller
                     $content[] = 'Last name is missing';
                 }
                 //cmtnd
-                $personal_id = $user[20];
+                $personal_id = $user[21];
                 //Skip check missing
 //                if (strlen($personal_id) == 0) {
 //                    $content[] = 'Personal id is missing';
 //                }
 
-                $address = $user[19];
+                $address = $user[20];
                 $phone = self::preparePhoneNo($user[21]);
 
-                $gender = $user[15];
+                $gender = $user[16];
                 if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
                     $gender = 1;
                 } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
@@ -647,13 +661,13 @@ class BackgroundController extends Controller
                 }
 
                 $dob = "";
-                $day_raw = $user[12];
-                $month_raw = $user[13];
-                $year_raw = $user[14];
+                $day_raw = $user[13];
+                $month_raw = $user[14];
+                $year_raw = $user[15];
                 if (strlen($day_raw) == 0 || strlen($month_raw) == 0 || strlen($year_raw) == 0) {
                     $content[] = 'Dob is missing';
                 } else {
-                    if (checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
+                    if (is_integer($month_raw) && is_integer($day_raw) && is_integer($year_raw) && checkdate($month_raw, $day_raw, $year_raw)) { //Check valid format
                         $dob_date = str_pad($day_raw, 2, '0', STR_PAD_LEFT);
                         $dob_month = str_pad($month_raw, 2, '0', STR_PAD_LEFT);
                         $dob_year = $year_raw;
@@ -665,11 +679,11 @@ class BackgroundController extends Controller
                 }
 
                 $start_time = "";
-                $start_day_raw = $user[16];
-                $start_month_raw = $user[17];
-                $start_year_raw = $user[18];
+                $start_day_raw = $user[17];
+                $start_month_raw = $user[18];
+                $start_year_raw = $user[19];
                 if (strlen($start_day_raw) != 0 && strlen($start_month_raw) != 0 && strlen($start_year_raw) != 0) {
-                    if (checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
+                    if (is_integer($start_month_raw) && is_integer($start_day_raw) && is_integer($start_year_raw) && checkdate($start_month_raw, $start_day_raw, $start_year_raw)) {
                         $start_date = str_pad($start_day_raw, 2, '0', STR_PAD_LEFT);
                         $start_month = str_pad($start_month_raw, 2, '0', STR_PAD_LEFT);
                         $start_year = $start_year_raw;
@@ -692,7 +706,7 @@ class BackgroundController extends Controller
                 $middle_name = self::prepareName($middle_name);
                 $last_name = self::prepareName($last_name);
 
-                $line_manager_email = $user[23];
+                $line_manager_email = $user[24];
                 $line_manager = '';
                 if (strlen($line_manager_email) != 0) {
                     if (filter_var($line_manager_email, FILTER_VALIDATE_EMAIL) === false) {
@@ -734,7 +748,7 @@ class BackgroundController extends Controller
                             $line_manager = '';
                             $content[] = "Line manager need to be different with current user";
                         }
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $position_name, $line_manager);
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $title, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -1280,17 +1294,64 @@ class BackgroundController extends Controller
      * @param bool $update
      */
     function assignRoles($user_id, $role, $update = false) {
-        $role = Role::query()->select('id', 'name', 'mdl_role_id')->where('name', $role)->first();
+        $role_item = null;
+        $role_2nd_item = null;
+        $role_2nd = 'executive';
+
+        if (strtolower($role) == 'bom') {
+            $role_2nd = 'manager';
+        }
+
+        if (strpos($role, 'executive') !==  false) { //là nhân viên
+            $role_2nd = 'executive';
+            if ($role == 'executive') { //Role gốc thì không
+                $role_2nd = '';
+            }
+        }
+
+        if (strpos($role, 'manager') !==  false) { //là manager
+            $role_2nd = 'manager';
+            if ($role == 'manager') { //Role gốc thì không
+                $role_2nd = '';
+            }
+        }
+
+        if (strpos($role, 'leader') !==  false) { //là leader
+            $role_2nd = 'leader';
+            if ($role == 'leader') { //Role gốc thì không
+                $role_2nd = '';
+            }
+        }
+
+        $role_item = Role::query()->select('id', 'name', 'mdl_role_id')
+            ->where(function($query) use ($role) {
+                return $query->where('name', $role)->orWhere('description', $role);
+            })
+            ->first();
+
+        if (strlen($role_2nd) != 0) {
+            $role_2nd_item = Role::query()->select('id', 'name', 'mdl_role_id')
+            ->where(function($query) use ($role_2nd) {
+                return $query->where('name', $role_2nd)->orWhere('description', $role_2nd);
+            })->first();
+        }
+
         //Remove old roles when update
         if ($update) {
             $this->clearRole($user_id);
         }
         //Auto thêm quyền học viên nếu chưa có
         self::add_user_by_role($user_id, 5);
-        if ($role) {
+
+        if (isset($role)) {
             //Thêm quyền mới nếu chưa có
-            self::add_user_by_role($user_id, $role['id']);
+            self::add_user_by_role($user_id, $role_item['id']);
             //self::enrole_lms($check->id, $role['mdl_role_id'], 1);
+        }
+
+        if (isset($role_2nd_item)) {
+            //Thêm quyền gốc nếu có
+            self::add_user_by_role($user_id, $role_2nd_item['id']);
         }
     }
 

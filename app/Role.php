@@ -57,7 +57,7 @@ class Role extends Model
 
     protected $table = 'roles';
     // bang chua danh sach quyen trong he thong
-    protected $fillable = ['mdl_role_id', 'name', 'description', 'guard_name'];
+    protected $fillable = ['mdl_role_id', 'name', 'description', 'guard_name', 'is_organization_role'];
 
     public function roleOrganization()
     {
