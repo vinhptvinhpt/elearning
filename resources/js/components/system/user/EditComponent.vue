@@ -218,10 +218,8 @@
                                     <label for="inputRole">{{trans.get('keys.quyen')}} *</label>
                                     <select v-model="users.role" class="form-control selectpicker" id="inputRole"
                                             multiple>
-                                        <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name)
-                                            ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() +
-                                            role.name.slice(1) }}
-                                        </option>
+<!--                                        <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>-->
+                                        <option v-for="role in roles" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.description }}</option>
                                     </select>
                                     <label v-if="!users.role" class="text-danger user_role_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                 </div>

@@ -154,14 +154,13 @@
                         </select>
                       </label>
                     </div>
-                    <div class="fillterConfirm" style="display: inline-block;" v-if="type == 'system'">
+                    <div class="fillterConfirm" style="display: inline-block;" v-if="type === 'system'">
                       <label>
                         <select v-model="roles" class="custom-select custom-select-sm form-control form-control-sm"
                                 @change="getUser(1)" style="height: 35px;">
                           <option value="0">{{trans.get('keys.theo_quyen')}}</option>
-                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ?
-                            trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}
-                          </option>
+<!--                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.name.charAt(0).toUpperCase() + role.name.slice(1) }}</option>-->
+                          <option v-for="role in listrole" :value="role.id">{{ trans.has('keys.' + role.name) ? trans.get('keys.' + role.name) : role.description }}</option>
                         </select>
                       </label>
                     </div>

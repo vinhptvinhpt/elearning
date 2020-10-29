@@ -4620,6 +4620,7 @@ class BussinessRepository implements IBussinessInterface
         try {
             $name = $request->input('name');
             $description = $request->input('description');
+            $is_organization_role = $request->input('is_organization_role');
 
             $param = [
                 'name' => 'code',
@@ -4654,6 +4655,7 @@ class BussinessRepository implements IBussinessInterface
             $role->mdl_role_id = $mdlRole->id;
             $role->name = $name;
             $role->description = $description;
+            $role->is_organization_role = $is_organization_role;
             $role->guard_name = 'web';
             $role->status = 1;
             $role->save();
@@ -4754,6 +4756,7 @@ class BussinessRepository implements IBussinessInterface
             //$cap_input      = $request->input('cap_input');
             $name = $request->input('name');
             $description = $request->input('description');
+            $is_organization_role = $request->input('is_organization_role');
 
             if (!is_array($per_slug_input))
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
@@ -4772,6 +4775,7 @@ class BussinessRepository implements IBussinessInterface
             $role = Role::findOrFail($role_id);
             $role->name = $name;
             $role->description = $description;
+            $role->is_organization_role = $is_organization_role;
             $role->save();
 
             $mdlRole = MdlRole::findOrFail($role['mdl_role_id']);
@@ -11633,7 +11637,7 @@ class BussinessRepository implements IBussinessInterface
                     ->from('tms_role_organization');
             })
             //->whereNotIn('name',['teacher','student','managemarket'])
-            ->select('id', 'name')
+            ->select('id', 'name', 'description')
             ->get()->toArray();
         return response()->json($roles);
     }
