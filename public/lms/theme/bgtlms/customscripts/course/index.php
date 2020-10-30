@@ -179,6 +179,12 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
         margin-left: 80%;
     }
 
+    .number-order-placeholder {
+        width: 20px;
+        height: 20px;
+        margin-left: 80%;
+    }
+
     .div-image-disable {
         background-color: #fdf2f285;
         position: absolute;
@@ -867,6 +873,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <p v-if="course.training_deleted == 0" class="number-order">{{
                                                     course.sttShow }}</p>
+                                                <p v-else class="number-order-placeholder"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -911,6 +918,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <p v-if="course.training_deleted == 0" class="number-order">{{
                                                     course.sttShow }}</p>
+                                                <p v-else class="number-order-placeholder"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -988,6 +996,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                             </div>
                                             <p v-if="course.training_deleted == 0" class="number-order">{{
                                                 course.sttShow }}</p>
+                                            <p v-else class="number-order-placeholder"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -1040,6 +1049,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     </div>
                                                     <p v-if="course.training_deleted == 0" class="number-order">{{
                                                         course.sttShow }}</p>
+                                                    <p v-else class="number-order-placeholder"></p>
                                                 </div>
                                             </div>
                                         </div>
@@ -1085,6 +1095,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                 </div>
                                                 <p v-if="course.training_deleted == 0" class="number-order">{{
                                                     course.sttShow }}</p>
+                                                <p v-else class="number-order-placeholder"></p>
                                             </div>
                                         </div>
                                     </div>
@@ -1128,8 +1139,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                                     </li>
                                                 </ul>
                                             </div>
-                                            <p v-if="course.training_deleted == 0" class="number-order">{{
-                                                course.sttShow }}</p>
+                                            <p v-if="course.training_deleted == 0" class="number-order"></p>
                                         </div>
                                     </div>
                                 </div>
