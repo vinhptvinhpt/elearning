@@ -435,10 +435,10 @@ foreach ($courses_training as $courses) {
     foreach ($courses as &$course) {
         $course->sttShow = $stt;
         //current first
-        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1  && $course->is_optional == 0) {
+        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             push_course($courses_current, $course);
         } //then complete
-        elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1  && $course->is_optional == 0) {
+        elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2) && $course->is_optional == 0) {

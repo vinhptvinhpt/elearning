@@ -306,12 +306,12 @@ mc.estimate_duration,
                 $course->enable = true;
                 $course->category_type = '';
                 //current first
-                if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1 && $course->is_optional == 0) {
+                if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
                     $course->category_type = 'current';
                     array_push($competency_exists, $course->training_id);
                     push_course($courses_current, $course);
                 } //then complete
-                elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1 && $course->is_optional == 0) {
+                elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
                     $course->category_type = 'completed';
                     push_course($courses_completed, $course);
                 } //then required
