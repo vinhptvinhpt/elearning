@@ -1193,6 +1193,7 @@ class BackgroundController extends Controller
                 $response['message'] = $check;
             } else {
                 $response['id'] = $check->id;
+                $response['role'] = $check->role;
                 $response['message'] = 'Create successfully';
             }
         }
