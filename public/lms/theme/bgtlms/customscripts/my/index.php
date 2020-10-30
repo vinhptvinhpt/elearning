@@ -437,9 +437,11 @@ foreach ($courses_training as $courses) {
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             push_course($courses_current, $course);
+            array_push($competency_exists, $course->training_id);
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
+            array_push($competency_completed, $course->training_id);
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2) && $course->is_optional == 0) {
             if ($course->training_deleted == 2) {
@@ -455,9 +457,6 @@ foreach ($courses_training as $courses) {
             } else { // Chưa enrol => optional courses
                 $coursesSuggest[] = $course;
             }
-        }
-        if($course->training_deleted == 0) {
-            array_push($competency_exists, $course->training_id);
         }
         $sttTotalCourse++;
         array_push($couresIdAllow, $course->id);
