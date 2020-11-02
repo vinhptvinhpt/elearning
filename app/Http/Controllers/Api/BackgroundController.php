@@ -386,7 +386,8 @@ class BackgroundController extends Controller
                             $line_manager = '';
                             $content[] = "Line manager need to be different with current user";
                         }
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $title, $line_manager);
+                        $standard_role = $createEmployeeResponse['role'];
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $standard_role, $title, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -748,7 +749,9 @@ class BackgroundController extends Controller
                             $line_manager = '';
                             $content[] = "Line manager need to be different with current user";
                         }
-                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $role, $title, $line_manager);
+
+                        $standard_role = $createEmployeeResponse['role'];
+                        $employee = self::createOrganizationEmployee($organization->id, $user_id, $standard_role, $title, $line_manager);
                         if (!is_numeric($employee)) {
                             $content[] = $employee;
                         }
@@ -1153,9 +1156,11 @@ class BackgroundController extends Controller
                     $user_detail->start_time = $working_start_at;
                     $user_detail->save();
 
-                    self::assignRoles($check->id, $role, true);
+                    $standard_role = self::assignRoles($check->id, $role, true);
 
                     $response['id'] = $check->id;
+                    $response['role'] = $standard_role;
+
                     if (strlen($response['message']) == 0) {
                         $response['message'] = 'Update successfully';
                     }
@@ -1188,6 +1193,7 @@ class BackgroundController extends Controller
                 $response['message'] = $check;
             } else {
                 $response['id'] = $check->id;
+                $response['role'] = $check->role;
                 $response['message'] = 'Create successfully';
             }
         }
@@ -1264,7 +1270,8 @@ class BackgroundController extends Controller
             $check->active = 1;
             $check->save();
 
-            self::assignRoles($check->id, $role);
+            $role = self::assignRoles($check->id, $role);
+            $check->role = $role;
 
             $user_detail = new TmsUserDetail;
             $user_detail->cmtnd = $personal_id;
@@ -1296,27 +1303,27 @@ class BackgroundController extends Controller
     function assignRoles($user_id, $role, $update = false) {
         $role_item = null;
         $role_2nd_item = null;
-        $role_2nd = 'executive';
+        $role_2nd = 'employee';
 
         if (strtolower($role) == 'bom') {
             $role_2nd = 'manager';
         }
 
-        if (strpos($role, 'executive') !==  false) { //là nhân viên
+        if (strpos(strtolower($role), 'executive') !==  false) { //là nhân viên
             $role_2nd = 'executive';
             if ($role == 'executive') { //Role gốc thì không
                 $role_2nd = '';
             }
         }
 
-        if (strpos($role, 'manager') !==  false) { //là manager
+        if (strpos(strtolower($role), 'manager') !==  false) { //là manager
             $role_2nd = 'manager';
             if ($role == 'manager') { //Role gốc thì không
                 $role_2nd = '';
             }
         }
 
-        if (strpos($role, 'leader') !==  false) { //là leader
+        if (strpos(strtolower($role), 'leader') !==  false) { //là leader
             $role_2nd = 'leader';
             if ($role == 'leader') { //Role gốc thì không
                 $role_2nd = '';
@@ -1352,7 +1359,11 @@ class BackgroundController extends Controller
         if (isset($role_2nd_item)) {
             //Thêm quyền gốc nếu có
             self::add_user_by_role($user_id, $role_2nd_item['id']);
+            return $role_2nd_item['name'];
         }
+
+        return 'employee';
+
     }
 
     function clearRole($user_id) {
