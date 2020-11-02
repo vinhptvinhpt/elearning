@@ -846,7 +846,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <div class="course-info">
                                             <div class="info-text">
                                                 <div class="course-info__title">
-                                                    <a :href="'lms/course/view.php?id=' + course.id + '&from=courses' + category" :title="course.fullname">
+                                                    <a :href="'lms/course/view.php?id=' + course.id + '&from=courses.' + category" :title="course.fullname">
                                                         <p class="title-course"><i></i>{{course.fullname}}</p>
                                                     </a>
                                                 </div>
@@ -892,7 +892,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                         <div class="course-info">
                                             <div class="info-text">
                                                 <div class="course-info__title">
-                                                    <a :href="'lms/course/view.php?id=' + course.id + '&from=courses' + category" :title="course.fullname">
+                                                    <a :href="'lms/course/view.php?id=' + course.id + '&from=courses.' + category" :title="course.fullname">
                                                         <p class="title-course"><i></i>{{course.fullname}}</p>
                                                     </a>
                                                 </div>
@@ -939,7 +939,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="block-item__content col-7">
                                     <div class="course-info">
                                         <div class="info-text">
-                                            <a :href="'lms/course/view.php?id=' + course.id + '&from=courses' + category" :title="course.fullname">
+                                            <a :href="'lms/course/view.php?id=' + course.id + '&from=courses.' + category" :title="course.fullname">
                                                 <p class="title-course"><i></i>{{course.fullname}}</p>
                                             </a>
                                             <div class="course-info__detail">
@@ -974,7 +974,7 @@ $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
                                 <div class="block-item__content col-7">
                                     <div class="course-info">
                                         <div class="info-text">
-                                            <a :href="'lms/course/view.php?id=' + course.id + '&from=courses' + category" :title="course.fullname">
+                                            <a :href="'lms/course/view.php?id=' + course.id + '&from=courses.' + category" :title="course.fullname">
                                                 <p class="title-course"><i></i>{{course.fullname}}</p>
                                             </a>
                                             <div class="course-info__detail">
