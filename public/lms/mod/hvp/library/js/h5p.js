@@ -2893,10 +2893,7 @@ H5P.createTitle = function (rawTitle, maxLength) {
         }
     }
 
-    // End
-})(H5P.jQuery);
-
-function checkFirefox() {
+  function checkFirefox() {
 
     var isFirefox = typeof InstallTrigger !== 'undefined';
     if (isFirefox) {
@@ -2911,6 +2908,12 @@ function checkFirefox() {
 
     var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
 
-    return (is_firefox || is_mozilla) && (is_android || is_iphone);
-    
-}
+    if((is_firefox || is_mozilla) && (is_android || is_iphone)){
+        return true;
+    }
+
+    return false;
+  }
+
+    // End
+})(H5P.jQuery);
