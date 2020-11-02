@@ -316,10 +316,8 @@ $courses_others_id = '(0';
 $coursesSuggest = [];
 
 foreach ($courses as &$course) {
-    $sttTotalCourse++;
     $course->is_optional = 0; //current, completed, required
     $courses_training[$course->training_id][$course->id] = $course;
-    array_push($couresIdAllow, $course->id); //Lay data cho courses cho phep
     $courses_others_id .= ', ' . $course->id;
 }
 $courses_others_id .= ')';
@@ -459,7 +457,7 @@ foreach ($courses_training as $courses) {
             }
         }
         $sttTotalCourse++;
-        array_push($couresIdAllow, $course->id);
+        $couresIdAllow[] = $course->id;
         $stt++;
     }
 }

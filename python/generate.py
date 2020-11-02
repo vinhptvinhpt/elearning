@@ -605,7 +605,7 @@ if __name__ == '__main__':
                     time.sleep(0.3)
                 num = num + 1
                 if num >= limit:
-                    connection.commit()
+                    #connection.commit()
                     num = 0
 
                 connection.commit()

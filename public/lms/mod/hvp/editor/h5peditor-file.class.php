@@ -171,11 +171,11 @@ class H5peditorFile
             }else{
               $quality = round((700/$height)*100);
             }
+            $new_image = $this->compress_image($_FILES['file']['tmp_name'], $this->extension, $quality);
+            $image = @getimagesize($_FILES['file']['tmp_name']);
           }
           // $new_image = $this->resize_image($_FILES['file']['tmp_name'], $this->extension, $new_weight, $new_height);
           // $image = @getimagesize($_FILES['file']['tmp_name']);
-          $new_image = $this->compress_image($_FILES['file']['tmp_name'], $this->extension, $quality);
-          $image = @getimagesize($_FILES['file']['tmp_name']);
         }
 
 

@@ -1989,6 +1989,8 @@ $_SESSION["displayPopup"] = 2; ?>
                                 location.reload();
                             } else
                                 alert(response.data.msg);
+                                document.getElementById("validatedCustomFile").value = "";
+                                document.getElementById("labelValidatedCustomFile").innerHTML = "Choose file...";
                         })
                         .catch(error => {
                             console.log("Error ", error);
