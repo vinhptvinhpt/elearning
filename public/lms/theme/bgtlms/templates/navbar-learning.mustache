@@ -202,14 +202,14 @@
     }
 
     .sp-name-course {
-        font-size: 32px;
+        font-size: 30px;
         position: absolute;
-        width: 80%;
+        width: 60%;
         text-align: center;
         margin-left: 0;
         margin-right: 0;
         right: 0;
-        top: 40%;
+        top: 46%;
         left: 50%;
         transform: translate(-50%, -50%);
     }
@@ -245,7 +245,8 @@
         }
 
         let finishCourse = {{ finishCourse }};
-        if(finishCourse == 1){
+
+        if(finishCourse == true){
             $('.modal').addClass('show');
         }
 

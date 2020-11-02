@@ -315,43 +315,16 @@ $couresIdAllow = array();
 $courses_others_id = '(0';
 $coursesSuggest = [];
 
-foreach ($courses as $course) {
+foreach ($courses as &$course) {
     $sttTotalCourse++;
+    $course->is_optional = 0; //current, completed, required
     $courses_training[$course->training_id][$course->id] = $course;
     array_push($couresIdAllow, $course->id); //Lay data cho courses cho phep
+    $courses_others_id .= ', ' . $course->id;
 }
+$courses_others_id .= ')';
 
 $exitCourseInRequiredCourse = array();
-
-foreach ($courses_training as $courses) {
-    $stt = 1;
-    foreach ($courses as &$course) {
-        $course->sttShow = $stt;
-        //current first
-        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-            $courses_others_id .= ', ' . $course->id;
-            array_push($competency_exists, $course->training_id);
-            push_course($courses_current, $course);
-        } //then complete
-        elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
-            $courses_others_id .= ', ' . $course->id;
-            array_push($competency_completed, $course->training_id);
-            push_course($courses_completed, $course);
-        } //then required = khoa hoc trong khung nang luc
-        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2)) {
-            if ($course->training_deleted == 2) {
-                $course->sttShow = 99999;
-            }
-            $courses_others_id .= ', ' . $course->id;
-            push_course($courses_required, $course);
-        } else {
-            $courses_others_id .= ', ' . $course->id;
-        }
-        $stt++;
-    }
-}
-
-$courses_others_id .= ')';
 
 //Optional courses
 /* Chỉ lấy các khóa chưa enrol, các khóa đã enrol sẽ chuyển lên block learning, completed, required courses phía trên */
@@ -450,44 +423,44 @@ if (!empty($reverse_recursive_org_ids)) {
 
     $allCoursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
-    foreach ($allCoursesSuggest as $course_optional) {
-        $courses_training_optional[$course_optional->training_id][$course_optional->id] = $course_optional;
+    //Đẩy course option vào mảng chung
+    foreach ($allCoursesSuggest as &$course_optional) {
+        $course_optional->is_optional = 1;
+        $courses_training[$course_optional->training_id][$course_optional->id] = $course_optional;
     }
+}
 
-    foreach ($courses_training_optional as $training_courses) {
-        foreach ($training_courses as &$course_optional_item) {
-            $course_optional_item->sttShow = $stt;
-            //current first
-            if ($course_optional_item->numofmodule > 0
-                && $course_optional_item->numoflearned / $course_optional_item->numofmodule > 0
-                && $course_optional_item->numoflearned / $course_optional_item->numofmodule < 1) {
-                array_push($competency_exists, $course->training_id);
-                push_course($courses_current, $course_optional_item);
-                $sttTotalCourse++;
-                array_push($couresIdAllow, $course_optional_item->id);
-            } //then complete
-            elseif ($course_optional_item->numofmodule > 0
-                && $course_optional_item->numoflearned / $course_optional_item->numofmodule == 1) {
-                array_push($competency_completed, $course_optional_item->training_id);
-                push_course($courses_completed, $course_optional_item);
-                $sttTotalCourse++;
-                array_push($couresIdAllow, $course_optional_item->id);
+foreach ($courses_training as $courses) {
+    $stt = 1;
+    foreach ($courses as &$course) {
+        $course->sttShow = $stt;
+        //current first
+        if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            push_course($courses_current, $course);
+            array_push($competency_exists, $course->training_id);
+        } //then complete
+        elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
+            push_course($courses_completed, $course);
+            array_push($competency_completed, $course->training_id);
+        } //then required = khoa hoc trong khung nang luc
+        elseif ($course->training_name && ($course->training_deleted == 0 || $course->training_deleted == 2) && $course->is_optional == 0) {
+            if ($course->training_deleted == 2) {
+                $course->sttShow = 99999;
             }
-            elseif ($course_optional_item->enrol_count > 0) {
-                //đã enrol nhưng chưa học => required courses
-                if ($course_optional_item->training_deleted == 2) {
-                    $course_optional_item->sttShow = 99999;
+            push_course($courses_required, $course);
+        } elseif ($course->is_optional == 1) { // Duyệt optinal courses only
+            if ($course->enrol_count > 0) { //Đã enrol => required courses
+                if ($course->training_deleted == 2) {
+                    $course->sttShow = 99999;
                 }
-                $sttTotalCourse++;
-                array_push($couresIdAllow, $course_optional_item->id);
-                push_course($courses_required, $course_optional_item);
+                push_course($courses_required, $course);
+            } else { // Chưa enrol => optional courses
+                $coursesSuggest[] = $course;
             }
-            //then chua hoc, chưa enrol
-            else {
-                $coursesSuggest[] = $course_optional_item;
-            }
-            $stt++;
         }
+        $sttTotalCourse++;
+        array_push($couresIdAllow, $course->id);
+        $stt++;
     }
 }
 

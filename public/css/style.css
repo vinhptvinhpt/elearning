@@ -1040,6 +1040,7 @@ ul.user_detail_wrap li > div > div:first-child{
 /* Filer vue-select customization */
 .vs__dropdown-option {
     width: fit-content;
+    width: -moz-fit-content;
     min-width: 100%;
 }
 .vs--searchable .vs__dropdown-toggle {
