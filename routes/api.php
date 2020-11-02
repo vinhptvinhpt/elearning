@@ -38,6 +38,7 @@ Route::get('/cron/task/addSingleUserToTrainning', 'Api\TaskController@addSingleU
 Route::get('/cron/task/autogenerateSASAzureTest', 'Api\TaskController@apiGenerateSASUrlAzureTest');
 Route::get('/cron/task/completeCourseSingle', 'Api\TaskController@completeCourseSingle')->middleware(['App\Http\Middleware\CheckToken']);
 Route::get('/cron/task/enrolUserOrganization', 'Api\TaskController@enrolUserOrganization')->middleware(['App\Http\Middleware\CheckToken']);
+Route::get('/cron/task/deleteCourseRestore', 'Api\TaskController@deleteCourseRestore')->middleware(['App\Http\Middleware\CheckToken']);
 
 Route::get('/invitation/detail/{id}', 'Backend\CourseController@apiInvitationDetail');
 Route::post('/invitation/confirm', 'Backend\CourseController@apiInvitationConfirm');
@@ -100,7 +101,6 @@ Route::get('/cron/mail/insertRemindAccess', 'Api\MailController@insertRemindAcce
 
 //Clear mail
 Route::get('/cron/mail/removeAllRemind', 'Api\MailController@removeAllRemind')->middleware(['App\Http\Middleware\CheckToken']); //every week => month
-
 
 
 // update email + active
