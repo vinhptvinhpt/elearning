@@ -176,7 +176,7 @@ if __name__ == '__main__':
             if (get_user_id == 0):
                 if (get_training_id == 0):
                     #sql_select_Query = "select tms_user_detail.user_id, tms_user_detail.fullname as fullname, tms_traninning_programs.name as name, tms_traninning_programs.logo as logo, student_certificate.timecertificate as timecertificate, student_certificate.code as code, student_certificate.id as student_certificate_id from student_certificate join tms_user_detail on student_certificate.userid = tms_user_detail.user_id join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 "
-                    sql_select_Query = "select tud.user_id, tud.fullname as fullname, ttp.name as name,ttp.logo as logo, sc.timecertificate as timecertificate, sc.code as code, sc.id as sc_id, toe.organization_id,ttp.auto_certificate as auto_certificate,ttp.auto_badge as auto_badge, sc.auto_run from student_certificate as sc join tms_user_detail as tud on sc.userid = tud.user_id join tms_organization_employee as toe on toe.user_id = tud.user_id join tms_traninning_programs as ttp on ttp.id = sc.trainning_id where sc.status = 1"
+                    sql_select_Query = "select tud.user_id, tud.fullname as fullname, ttp.name as name,ttp.logo as logo, sc.timecertificate as timecertificate, sc.code as code, sc.id as sc_id, toe.organization_id,ttp.auto_certificate as auto_certificate,ttp.auto_badge as auto_badge, sc.auto_run, ttp.deleted, ttp.id as trainning_id from student_certificate as sc join tms_user_detail as tud on sc.userid = tud.user_id join tms_organization_employee as toe on toe.user_id = tud.user_id join tms_traninning_programs as ttp on ttp.id = sc.trainning_id where sc.status = 1"
                 else:
                     sql_select_Query = "select tms_user_detail.user_id, tms_user_detail.fullname as fullname, tms_traninning_programs.name as name, tms_traninning_programs.logo as logo, student_certificate.timecertificate as timecertificate, student_certificate.code as code, student_certificate.id as student_certificate_id from student_certificate join tms_user_detail on student_certificate.userid = tms_user_detail.user_id join tms_traninning_programs on tms_traninning_programs.id = student_certificate.trainning_id where student_certificate.status = 1 and student_certificate.trainning_id = " + str(
                         get_training_id)
@@ -202,6 +202,20 @@ if __name__ == '__main__':
                     auto_cer = row[8]
                     auto_badge = row[9]
                     auto_run = row[10]
+
+                    deleted = row[11]
+                    trainning_id = row[12]
+
+
+
+                    if deleted == 2:
+                        sql_select_course = "SELECT c.fullname FROM `tms_trainning_courses` ttc join mdl_course c on c.id = ttc.course_id where trainning_id = "+str(trainning_id)
+                        cursor.execute(sql_select_course)
+                        course_records = cursor.fetchall()
+
+                        training_name = course_records[0][0]
+
+
                     try:
                         if auto_cer == 1 or (auto_run == 1 and auto_cer == 0):
 
@@ -330,7 +344,7 @@ if __name__ == '__main__':
                                 font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
 
 
-                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width:
+                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width-100:
                                 lines.append(name_utf8_training)
                             else:
                                 # split the line by spaces to get words
@@ -575,20 +589,20 @@ if __name__ == '__main__':
 
 
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
-                        cursor.execute(sql, (student_certificate_id,))
+                       # cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
-                        cursor.execute(sql_update_confirm, (get_user_id,))
+                      #  cursor.execute(sql_update_confirm, (get_user_id,))
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
 
-                        cursor.execute(sql, (student_certificate_id,))
+                     #   cursor.execute(sql, (student_certificate_id,))
 
                     #gian cach thoi gian chay script
                     time.sleep(0.3)
                 num = num + 1
                 if num >= limit:
-                    connection.commit()
+                    #connection.commit()
                     num = 0
 
                 connection.commit()
