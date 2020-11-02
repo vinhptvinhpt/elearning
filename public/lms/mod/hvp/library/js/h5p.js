@@ -2893,25 +2893,25 @@ H5P.createTitle = function (rawTitle, maxLength) {
         }
     }
 
+})(H5P.jQuery);
+
 function checkFirefox() {
 
-  var isFirefox = typeof InstallTrigger !== 'undefined';
-  if (isFirefox) {
-      return true;
-  }
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    if (isFirefox) {
+        return true;
+    }
 
-  var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-  //Iphone use safari core for firefox app, so we need to check mozilla text
-  var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+    var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    //Iphone use safari core for firefox app, so we need to check mozilla text
+    var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
 
-  var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+    var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
 
-  var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+    var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
 
-  if((is_firefox || is_mozilla) && (is_android || is_iphone)){
-      return true;
-  }
-  return false;
+    if((is_firefox || is_mozilla) && (is_android || is_iphone)){
+        return true;
+    }
+    return false;
 }
-
-})(H5P.jQuery);
