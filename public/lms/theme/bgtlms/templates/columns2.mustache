@@ -140,19 +140,19 @@
                 }
             });
 
-            // Check if firefox browser
-            var isFirefox = typeof InstallTrigger !== 'undefined';
-            var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
-            var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
-            var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
-            var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+            //// Check if firefox browser
+            //var isFirefox = typeof InstallTrigger !== 'undefined';
+            //var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+            //var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+            //var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+            //var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
             
-            // Redirect to main course page if activity is h5p module and using firefox
-            if((((is_firefox || is_mozilla) && (is_android || is_iphone)) || isFirefox) && currentUrl.includes("mod/hvp")){
-                var url_course = '{{ wwwroot }}/course/view.php?id=' + course_id;
-                alert('For Firefox browser you can not view interactive content, this will return you back to course');
-                window.location.replace(url_course);
-            }else{
+            //// Redirect to main course page if activity is h5p module and using firefox
+            //if((((is_firefox || is_mozilla) && (is_android || is_iphone)) || isFirefox) && currentUrl.includes("mod/hvp")){
+            //    var url_course = '{{ wwwroot }}/course/view.php?id=' + course_id;
+            //    alert('For Firefox browser you can not view interactive content, this will return you back to course');
+            //    window.location.replace(url_course);
+            //}else{
                 //init screen
                 $.ajax({
                     url: '{{ wwwroot }}/pusher/study.php',
@@ -246,7 +246,7 @@
                         }
                     });
                 });
-            }
+            //}
 
         } else {
             $('#header-search-box-container').removeClass("hide");

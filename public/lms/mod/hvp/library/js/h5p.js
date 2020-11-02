@@ -384,6 +384,31 @@ H5P.init = function (target) {
     this.contentDocument.write('<!doctype html><html class="h5p-iframe"><head>' + H5P.getHeadTags(contentId) + '</head><body><div class="h5p-content" data-content-id="' + contentId + '"/></body></html>');
     this.contentDocument.close();
   });
+
+  //hide content video on firefox
+  if(checkFirefox()){
+    var html = '<div style="height:525px; background-color: black;"><p  style="color: white;  text-align: center;vertical-align: middle; line-height: 500px; font-size:20px; ">We recommend you do not use firefox browser for security</p></div>';
+    //check for column
+    var videoTagColumns = document.querySelectorAll('div.h5p-column-content.h5p-video');
+    if(videoTagColumns){
+      for (var i = 0; i < videoTagColumns.length; i++) {
+        videoTagColumns[i].innerHTML = '';				
+        videoTagColumns[i].innerHTML = html;
+        
+      }			
+    }
+    
+    //check for interactive video
+    var videoTagInters = document.querySelectorAll('div.h5p-video-wrapper.h5p-video.hardware-accelerated');
+    if(videoTagInters){
+      for (var i = 0; i < videoTagInters.length; i++) {
+        videoTagInters[i].innerHTML = '';
+        videoTagInters[i].innerHTML = html;				
+      }
+      
+    }
+    
+  }
 };
 
 /**
@@ -2892,6 +2917,28 @@ H5P.createTitle = function (rawTitle, maxLength) {
       e.preventDefault();
       return false;
     }
+  }
+
+  function checkFirefox() {
+
+    var isFirefox = typeof InstallTrigger !== 'undefined';
+    if (isFirefox) {
+        return true;
+    }
+
+    var is_firefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
+    //Iphone use safari core for firefox app, so we need to check mozilla text
+    var is_mozilla = navigator.userAgent.toLowerCase().indexOf('mozilla') > -1;
+
+    var is_android = navigator.platform.toLowerCase().indexOf("android") > -1;
+
+    var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
+
+    if((is_firefox || is_mozilla) && (is_android || is_iphone)){
+        return true;
+    }
+
+    return false;
   }
   // End
 })(H5P.jQuery);
