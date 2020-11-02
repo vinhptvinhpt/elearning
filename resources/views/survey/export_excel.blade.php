@@ -29,7 +29,7 @@
     <tr>
         <th colspan="3" rowspan="2"></th>
         @foreach($header as $hd)
-            <th colspan="2" rowspan="2" style="word-wrap: break-word;">
+            <th colspan="2" rowspan="10" style="word-wrap: break-word;">
                 @if($hd->type_question == 'group' || $hd->type_question == 'minmax')
                     {!! $hd->qr_name !!}:{!! $hd->qr_content !!} - {!! $hd->ques_content !!}
                 @else
@@ -41,6 +41,14 @@
     </tr>
     </thead>
     <tbody>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
+    <tr></tr>
     <tr></tr>
     <tr></tr>
     @foreach($dataModel as $data)
