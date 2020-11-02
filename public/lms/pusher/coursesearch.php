@@ -337,6 +337,7 @@ mc.estimate_duration,
                             $course->enable = false;
                         }
                     } else { // Chưa enrol => optional courses
+                        $course->category_type = 'optional';
                         $coursesSuggest[] = $course;
                     }
                 }
