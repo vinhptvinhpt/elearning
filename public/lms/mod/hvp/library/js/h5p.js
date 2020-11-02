@@ -408,6 +408,15 @@ H5P.init = function (target) {
       
     }
     
+    //hide control bar video
+    var videoTagControls = document.querySelectorAll('div.h5p-controls');
+    if (videoTagControls) {
+      for (var k = 0; k < videoTagControls.length; k++) {
+        videoTagControls[k].innerHTML = '';
+      }
+    }
+
+
   }
 };
 
