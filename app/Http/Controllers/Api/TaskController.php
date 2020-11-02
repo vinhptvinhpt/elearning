@@ -64,6 +64,32 @@ class TaskController extends Controller
         }
     }
 
+    //region deleted course restore after 15 days
+    public function deleteCourseRestore()
+    {
+        $listCourses = DB::table('mdl_course')
+            ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
+            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
+            ->where('mdl_course.deleted', '=', 1)
+            ->select(
+                'mdl_course.id', 'mdl_course.updated_at'
+            )->get();
+
+        $now = date('Y-m-d', strtotime(Carbon::now()));
+        $arr_course = [];
+        foreach ($listCourses as $course) {
+            $updated_at = date('Y-m-d', strtotime($course->updated_at));
+            if ((strtotime($now) - strtotime($updated_at)) > 15 * 60 * 60 * 24) { // xoa cac khoa sau 15 ngay
+                array_push($arr_course, $course->id);
+            }
+        }
+
+
+        MdlCourse::whereIn('id', $arr_course)->delete();
+
+    }
+    //endregion
+
     #region insert student to course_completion courses certificate
     //insert hoc vien da hoan thanh khoa hoc vao bang course_completion
     // fix cho TH hoc vien duoc enrol doc lap vao khoa, ko lien quan den KNL
@@ -299,7 +325,7 @@ class TaskController extends Controller
             ->select('ttc.trainning_id', DB::raw('GROUP_CONCAT(`ttc`.`course_id`) as `training_courses`'), 'ttp.deleted')
             ->groupBy(['ttc.trainning_id'])
             ->get();
-        
+
         foreach ($lstTrainning as $training) {
 
             $training_courses = $training->training_courses;
@@ -924,73 +950,6 @@ class TaskController extends Controller
     }
 
     #endregion
-
-    public function autoEnrolTrainningOld() //Don't use
-    {
-        //ThoLd 31/12/2019
-        //optimize query
-        $courses = DB::table('tms_traninning_users as ttu')
-            ->join('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttu.trainning_id')
-            ->join('model_has_roles as mhr', 'mhr.model_id', '=', 'ttu.user_id')
-            ->join('roles as r', 'r.id', '=', 'mhr.role_id')
-            ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttu.trainning_id')//uydd check auto enrol
-            ->select('ttu.user_id', 'ttc.course_id as course_id', 'r.mdl_role_id')
-            //->where('r.name', '=', \App\Role::STUDENT)
-            ->where('ttp.run_cron', '=', 1)
-            ->where('ttc.deleted', '=', 0)
-            ->groupBy(['ttu.user_id', 'ttc.course_id', 'r.mdl_role_id'])
-            ->get();
-
-        if ($courses) {
-            foreach ($courses as $course) {
-                $enrole = MdlEnrol::firstOrCreate(
-                    [
-                        'enrol' => 'manual',
-                        'courseid' => $course->course_id,
-                        'roleid' => $course->mdl_role_id
-                    ],
-                    [
-                        'sortorder' => 0,
-                        'status' => 0,
-                        'expirythreshold' => 86400,
-                        'timecreated' => strtotime(Carbon::now()),
-                        'timemodified' => strtotime(Carbon::now()),
-                    ]
-                );
-
-                MdlUserEnrolments::firstOrCreate([
-                    'enrolid' => $enrole->id,
-                    'userid' => $course->user_id
-                ]);
-
-                $context = DB::table('mdl_context')
-                    ->where('instanceid', '=', $course->course_id)
-                    ->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE)
-                    ->first();
-                $context_id = $context ? $context->id : 0;
-                MdlRoleAssignments::firstOrCreate([
-                    'roleid' => $course->mdl_role_id,
-                    'userid' => $course->user_id,
-                    'contextid' => $context_id
-                ]);
-
-                //lay gia trị trong bang mdl_grade_items
-                $mdl_grade_item = MdlGradeItem::where('courseid', $course->course_id)->first();
-
-                if ($mdl_grade_item) {
-                    //insert du lieu vao bang mdl_grade_grades phuc vu chuc nang cham diem -> Vinh PT require
-                    MdlGradeGrade::firstOrCreate([
-                        'userid' => $course->user_id,
-                        'itemid' => $mdl_grade_item->id
-                    ]);
-                }
-
-                //write log to notifications
-                $this->insert_single_notification(\App\TmsNotification::MAIL, $course->user_id, \App\TmsNotification::ENROL, $course->course_id);
-                usleep(200);
-            }
-        }
-    }
 
     //cron enrol user to course in organization
     public function enrolUserOrganization()
