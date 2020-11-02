@@ -344,7 +344,7 @@ if __name__ == '__main__':
                                 font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
 
 
-                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width:
+                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width-100:
                                 lines.append(name_utf8_training)
                             else:
                                 # split the line by spaces to get words
@@ -589,20 +589,20 @@ if __name__ == '__main__':
 
 
                         sql = """UPDATE student_certificate SET status = 2 WHERE id = %s"""
-                        cursor.execute(sql, (student_certificate_id,))
+                       # cursor.execute(sql, (student_certificate_id,))
                         sql_update_confirm = """UPDATE tms_user_detail SET confirm = 1 WHERE tms_user_detail.id = %s"""
-                        cursor.execute(sql_update_confirm, (get_user_id,))
+                      #  cursor.execute(sql_update_confirm, (get_user_id,))
                     except Exception, e:  # xu ly chuyen trang thai cho cac ban ghi bi loi
                         print(e)
                         sql = """UPDATE student_certificate SET status = 3 WHERE id = %s"""
 
-                        cursor.execute(sql, (student_certificate_id,))
+                     #   cursor.execute(sql, (student_certificate_id,))
 
                     #gian cach thoi gian chay script
                     time.sleep(0.3)
                 num = num + 1
                 if num >= limit:
-                    connection.commit()
+                    #connection.commit()
                     num = 0
 
                 connection.commit()
