@@ -2911,9 +2911,6 @@ function checkFirefox() {
 
     var is_iphone = navigator.platform.toLowerCase().indexOf("iphone") > -1;
 
-    if ((is_firefox || is_mozilla) && (is_android || is_iphone)) {
-        return true;
-    }
-
-    return false;
+    return (is_firefox || is_mozilla) && (is_android || is_iphone);
+    
 }
