@@ -344,7 +344,7 @@ if __name__ == '__main__':
                                 font_training = ImageFont.truetype(os.path.join(path, 'SVN-Aleo-Regular.otf'), size=programSize, encoding="unic")
 
 
-                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width:
+                            if font_training.getsize(name_utf8_training)[0] <= bg_size_width-100:
                                 lines.append(name_utf8_training)
                             else:
                                 # split the line by spaces to get words
@@ -602,7 +602,7 @@ if __name__ == '__main__':
                     time.sleep(0.3)
                 num = num + 1
                 if num >= limit:
-                    connection.commit()
+                    #connection.commit()
                     num = 0
 
                 connection.commit()
