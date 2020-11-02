@@ -407,6 +407,7 @@ H5P.init = function (target) {
             for (var k = 0; k < videoTagControls.length; k++) {
                 videoTagControls[k].innerHTML = '';
             }
+
         }
 
     }
