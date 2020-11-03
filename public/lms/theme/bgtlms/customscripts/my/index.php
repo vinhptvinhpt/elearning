@@ -439,8 +439,6 @@ if (!empty($reverse_recursive_org_ids)) {
 
 
 $courseSuggestIds = array_unique($courseSuggestIds);
-
-
 $required_and_suggest_ids = array_unique(array_merge($coursesRequiredIds, $courseSuggestIds));
 $required_and_suggest_ids_string = implode(',', $required_and_suggest_ids);
 
@@ -535,14 +533,13 @@ $sqlManualCourse .= ' ORDER BY ttp.id, ttc.order_no';
 
 $allManualCourses = array_values($DB->get_records_sql($sqlManualCourse));
 
-//Đẩy course option vào mảng chung
+//Đẩy course manual vào mảng chung
 foreach ($allManualCourses as &$course_manual) {
     $course_manual->is_optional = 0;
     $courses_training[$course_manual->training_id][$course_manual->id] = $course_manual;
 }
 
 //Duyệt mảng chung
-
 foreach ($courses_training as $courses) {
     $stt = 1;
     foreach ($courses as &$course) {
@@ -569,7 +566,6 @@ foreach ($courses_training as $courses) {
                 push_course($courses_required, $course);
             } else { // Chưa enrol => optional courses
                 $coursesSuggest[] = $course;
-                $courseSuggestIds[] = $course->id;
             }
         }
         $sttTotalCourse++;
@@ -600,7 +596,7 @@ function cmp_stt($a, $b)
 //Sort results by stt
 usort($courses_required, 'cmp_stt');
 
-$_SESSION["couresIdAllow"] = $couresIdAllow;
+$_SESSION["couresIdAllow"] = array_unique($couresIdAllow);
 
 $countBlock = 1;
 // Set session variables
