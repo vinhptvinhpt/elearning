@@ -1410,20 +1410,8 @@ class MailController extends Controller
     {
         $configs = self::loadConfiguration();
         if ($configs[TmsNotification::SUGGEST] == TmsConfigs::ENABLE) {
-            $userNeedEnrol = DB::table('tms_organization')
-                //Lấy nhân viên
-                ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
-                ->join('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
-                //Lấy khóa được phân quyền dữ liệu
-                ->join('tms_role_organization', 'tms_organization.id', '=', 'tms_role_organization.organization_id')
-                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                ->join('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id')
-                //User được enrol as student
-                ->leftjoin('mdl_enrol', function ($join) {
-                    $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
-                    $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT);
-                })
-                ->leftJoin('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+
+            $userNeedEnrol = DB::table('tms_user_detail')
                 //Lấy thông tin user
                 ->select(
                     'tms_user_detail.user_id',
@@ -1434,14 +1422,6 @@ class MailController extends Controller
                 ->whereNotIn('tms_user_detail.user_id', function ($query) {
                     $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
                 })
-                //Null tức là chưa được enrol
-                ->whereNull('mdl_user_enrolments.userid')
-                //Ngoại trừ thư viện
-                ->where('mdl_course.category', '<>', 2)
-                //Ngoại trừ khóa bị xóa
-                ->where('mdl_course.deleted', '=', 0)
-                //Loại bỏ bản ghi trùng
-                ->groupBy(['tms_user_detail.user_id'])
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get();
             //Khóa học phân quyền dữ liệu - các khóa đã enrol => Ra những khóa thư viện và những khóa bị xóa => Có cần thiết
@@ -1619,67 +1599,48 @@ class MailController extends Controller
                         //Check email format
                         if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
 
-                            //Get list optional course
-                            $courses = DB::table('tms_organization')
-                                //Lấy nhân viên
-                                ->join('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
-                                ->join('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id')
-                                //Lấy khóa được phân quyền dữ liệu
-                                ->join('tms_role_organization', 'tms_organization.id', '=', 'tms_role_organization.organization_id')
-                                ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                                ->join('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id')
-                                //User được enrol as student
-                                ->leftjoin('mdl_enrol', function ($join) {
-                                    $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
-                                    $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT);
-                                })
-                                ->leftJoin('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                                //Lấy thông tin user
-                                ->select('mdl_course.*')
-                                //Null tức là chưa được enrol
-                                ->whereNull('mdl_user_enrolments.userid')
-                                //cho user hiện tại
-                                ->where('tms_user_detail.user_id', $user_id)
-                                //Ngoại trừ thư viện
-                                ->where('mdl_course.category', '<>', 2)
-                                //Ngoại trừ khóa bị xóa
-                                ->where('mdl_course.deleted', '=', 0)
-                                //Lấy 5 khóa
-                                ->limit(5)
-                                //Mới nhất
-                                ->orderBy('mdl_course.id', 'desc')
-                                ->get();
+                            $check_user_optional_courses = DB::table('tms_user_optional_courses')->where('user_id', $user_id)->first();
+                            if (isset($check_user_optional_courses)) {
 
-                            Mail::to($email)->send(new CourseSendMail(
-                                TmsNotification::SUGGEST,
-                                $itemNotif->username,
-                                $fullname,
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                $courses
-                            ));
+                                $user_optional_course_ids_string = $check_user_optional_courses->optional_course_ids;
+                                $user_optional_courses_ids = explode(',', $user_optional_course_ids_string);
 
-                            $object_content = [];
-                            foreach ($courses as $course_detail) {
-                                $object_content[] = array(
-                                    'object_id' => $course_detail->id,
-                                    'object_name' => $course_detail->fullname,
-                                    'object_type' => 'course',
-                                    'parent_id' => '',
-                                    'parent_name' => '',
-                                    'start_date' => $course_detail->startdate,
-                                    'end_date' => $course_detail->enddate,
-                                    'code' => $course_detail->shortname,
-                                    'room' => $course_detail->course_place,
-                                    'grade' => '',
-                                );
+                                //Get list optional course
+                                $courses = DB::table('mdl_course')
+                                    ->whereIn('id', $user_optional_courses_ids)
+                                    ->get();
+
+                                Mail::to($email)->send(new CourseSendMail(
+                                    TmsNotification::SUGGEST,
+                                    $itemNotif->username,
+                                    $fullname,
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    $courses
+                                ));
+
+                                $object_content = [];
+                                foreach ($courses as $course_detail) {
+                                    $object_content[] = array(
+                                        'object_id' => $course_detail->id,
+                                        'object_name' => $course_detail->fullname,
+                                        'object_type' => 'course',
+                                        'parent_id' => '',
+                                        'parent_name' => '',
+                                        'start_date' => $course_detail->startdate,
+                                        'end_date' => $course_detail->enddate,
+                                        'code' => $course_detail->shortname,
+                                        'room' => $course_detail->course_place,
+                                        'grade' => '',
+                                    );
+                                }
+                                $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             }
-                            $itemNotif->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
                             $this->update_notification($itemNotif, \App\TmsNotification::SENT);
                             sleep(1);
                         } else {
