@@ -16,7 +16,7 @@ class CreateTmsUserOptionalCoursesTable extends Migration
         Schema::create('tms_user_optional_courses', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->integer('user_id')->index()->nullable(false);
-            $table->integer('optional_course_ids')->index()->nullable(false);
+            $table->string('optional_course_ids','2000')->nullable(false);
             $table->timestamps();
         });
     }
