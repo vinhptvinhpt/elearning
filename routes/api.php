@@ -81,8 +81,8 @@ Route::get('/cron/mail/sendSuggestOC', 'Api\MailController@sendSuggestOptionalCo
 
 //Insert mail
 //Insert suggest soft skill course
-Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
-Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+//Route::get('/cron/mail/insertSuggestSSC', 'Api\MailController@insertSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+//Route::get('/cron/mail/removeSuggestSSC', 'Api\MailController@removeSuggestSoftSkillCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 
 //2020 September 10
 //Insert suggest optional course

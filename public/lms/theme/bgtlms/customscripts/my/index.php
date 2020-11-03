@@ -313,7 +313,8 @@ $competency_completed = array();
 $sttTotalCourse = 0;
 $couresIdAllow = array();
 $courses_others_id = '(0';
-$coursesSuggest = [];
+$coursesSuggest = array();
+$courseSuggestIds = array();
 
 foreach ($courses as &$course) {
     $course->is_optional = 0; //current, completed, required
@@ -454,6 +455,7 @@ foreach ($courses_training as $courses) {
                 push_course($courses_required, $course);
             } else { // Chưa enrol => optional courses
                 $coursesSuggest[] = $course;
+                $courseSuggestIds[] = $course->id;
             }
         }
         $sttTotalCourse++;
@@ -505,6 +507,21 @@ if ($sttTotalCourse > 0) {
 }
 
 $_SESSION["coursesSuggest"] = $coursesSuggest;
+
+$servername = $CFG->dbhost;
+$dbname = $CFG->dbname;
+$username = $CFG->dbuser;
+$password = $CFG->dbpass;
+$conn = new mysqli($servername, $username, $password, $dbname);
+$now = date('Y-m-d H:i:s', time());
+$delete_query = "DELETE from `tms_user_optional_courses` where user_id = $user_id";
+$conn->query($delete_query);
+
+if (count($coursesSuggest) != 0) {
+    $optional_course_ids_string = implode(',', $courseSuggestIds);
+    $insert_query = "INSERT INTO `tms_user_optional_courses`(user_id, optional_course_ids, created_at, updated_at) VALUES ($user_id, $optional_course_ids_string, '$now', '$now')";
+    $conn->query($insert_query);
+}
 //get image badge
 $sqlGetBadge = "select path from image_certificate where type =2 and is_active";
 $pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
