@@ -508,6 +508,8 @@ if ($sttTotalCourse > 0) {
 
 $_SESSION["coursesSuggest"] = $coursesSuggest;
 
+
+$user_id = $USER->id;
 $servername = $CFG->dbhost;
 $dbname = $CFG->dbname;
 $username = $CFG->dbuser;
@@ -519,7 +521,7 @@ $conn->query($delete_query);
 
 if (count($coursesSuggest) != 0) {
     $optional_course_ids_string = implode(',', $courseSuggestIds);
-    $insert_query = "INSERT INTO `tms_user_optional_courses`(user_id, optional_course_ids, created_at, updated_at) VALUES ($user_id, $optional_course_ids_string, '$now', '$now')";
+    $insert_query = "INSERT INTO `tms_user_optional_courses`(user_id, optional_course_ids, created_at, updated_at) VALUES ($user_id, '$optional_course_ids_string', '$now', '$now')";
     $conn->query($insert_query);
 }
 //get image badge
