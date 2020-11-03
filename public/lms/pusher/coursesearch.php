@@ -404,11 +404,13 @@ from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
 inner join tms_trainning_courses ttc on mc.id = ttc.course_id
+inner join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
 where me.enrol = "manual"
 and mc.deleted = 0
 and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
+and ttp.deleted <> 1
 and mue.userid = ' . $USER->id;
 
     if ($category > 0) {
@@ -452,6 +454,7 @@ and mc.visible = 1
 and mc.category NOT IN (2,7)
 and ttc.deleted <> 1
 and ttp.style not in (2)
+and ttp.deleted <> 1
 and mue.userid = ' . $USER->id;
 
     $sqlGetCoures .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
