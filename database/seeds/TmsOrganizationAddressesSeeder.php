@@ -180,7 +180,7 @@ class TmsOrganizationAddressesSeeder extends Seeder
         $organizationEX = TmsOrganization::where('level', '=', 1);
         $organizationEX->where(function($q) {
             $q->where('code', 'like', '%EXOTIC%')
-                ->orWhere('code', 'like', '%EX%');
+                ->orWhere('code', 'like', '%EV%');
         });
         $organizationEX = $organizationEX->first();
         $organizationEX = $organizationEX->id;

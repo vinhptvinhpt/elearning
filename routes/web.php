@@ -835,8 +835,8 @@ Route::post('/bridge/fetch', 'BridgeController@fetch');
 Route::post('/bridge/bonus', 'BridgeController@bonus');
 
 // [VinhPT][26.12.2019] Login first screen
-Route::get('/loginfirst', 'Backend\loginfirst\LoginFirstController@viewLoginFirst');
-Route::post('/loginfirst/executelogin', 'Backend\loginfirst\LoginFirstController@executeLogin');
+//Route::get('/loginfirst', 'Backend\loginfirst\LoginFirstController@viewLoginFirst');
+//Route::post('/loginfirst/executelogin', 'Backend\loginfirst\LoginFirstController@executeLogin');
 //Route::get('/import', 'Backend\CourseController@importFile');
 
 // send mail xác nhận email trong tài khoản
