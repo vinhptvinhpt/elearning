@@ -395,21 +395,27 @@ foreach ($courses_training as $courses) {
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             push_course($courses_current, $course);
+            $sttTotalCourse++;
+            $couresIdAllow[] = $course->id;
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
+            $sttTotalCourse++;
+            $couresIdAllow[] = $course->id;
         } //then required = khoa hoc trong khung nang luc
         elseif ($course->is_optional == 0) {
             push_course($courses_required, $course);
+            $sttTotalCourse++;
+            $couresIdAllow[] = $course->id;
         } elseif ($course->is_optional == 1) { // Duyệt optinal courses only
             if ($course->enrol_count > 0) { //Đã enrol => required courses
                 push_course($courses_required, $course);
+                $sttTotalCourse++;
+                $couresIdAllow[] = $course->id;
             } else { // Chưa enrol => optional courses
                 $coursesSuggest[] = $course;
             }
         }
-        $sttTotalCourse++;
-        $couresIdAllow[] = $course->id;
     }
 }
 
