@@ -1047,11 +1047,11 @@ class TaskController extends Controller
     //cron enroll user to competency framework, run cron by time
     public function autoEnrolTrainningCron()
     {
-        $result = $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_READ_FLAG'), '');
-        $result = json_decode($result, true);
-
-        if ($result['flag'] == 'stop')
-            return;
+//        $result = $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_READ_FLAG'), '');
+//        $result = json_decode($result, true);
+//
+//        if ($result['flag'] == 'stop')
+//            return;
 
 
         //lay danh sach khoa hoc theo tung khung nang luc
@@ -1091,8 +1091,8 @@ class TaskController extends Controller
 
         usleep(100);
         //cap nhat trang thai cho cron
-        $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
-            Config::get('constants.domain.STOP_CRON'));
+//        $this->updateFlagCron(Config::get('constants.domain.ENROLL_USER'), Config::get('constants.domain.ACTION_UPDATE_FLAG'),
+//            Config::get('constants.domain.STOP_CRON'));
     }
 
     // ghi text vao file, phuc vu cho chay cron, bao cho cron biet khi nao start
