@@ -140,14 +140,18 @@
         },
         methods: {
             convertDateTime(value) {
-                var options = {
-                   timeZone:"Asia/Bangkok",
-                   hour12 : false,
-                   hour:  "2-digit",
-                   minute: "2-digit"
-                };
-                var time = new Date(value * 1000);
-                return time.toLocaleDateString('hi',options);
+                if (value){
+                    var options = {
+                       timeZone:"Asia/Bangkok",
+                       hour12 : false,
+                       hour:  "2-digit",
+                       minute: "2-digit"
+                    };
+                    var time = new Date(value * 1000);
+                    return time.toLocaleDateString('hi',options);
+                }else{
+                    return "";
+                }
             },
             getSchedule(paged) {
                 axios.post('/system/user/user_schedule', {

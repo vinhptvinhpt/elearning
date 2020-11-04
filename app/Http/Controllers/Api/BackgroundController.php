@@ -2066,7 +2066,7 @@ Log::info('348');
         try {
             foreach ($users as $user) {
                 //Gọi hàm xóa tms user, trong hàm có gọi sang lms để xóa
-                TmsUserDetail::clearUser($user);
+                TmsUserDetail::clearUser($user,'');
             }
             DB::commit();
         } catch (\Exception $e) {
