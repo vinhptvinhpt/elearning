@@ -11005,7 +11005,7 @@ class BussinessRepository implements IBussinessInterface
                     $mdlUser = MdlUser::findOrFail($user_id);
 
                     //Function clear user khỏi DB
-                    TmsUserDetail::clearUser($user_id);
+                    TmsUserDetail::clearUser($user_id, $mdlUser->username);
 
                     $type = 'user';
                     $url = '*';
