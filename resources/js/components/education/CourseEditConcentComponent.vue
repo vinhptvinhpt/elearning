@@ -266,8 +266,11 @@
                             js_ip['list_access_ip'].forEach(item => this.string_ip += item + ', ');
                             this.string_ip = this.string_ip.substr(0, this.string_ip.length - 2);
                         }
-                        this.course.startdate = this.parseDateFromTimestamp(response.data.startdate);
-                        if (response.data.enddate) {
+                        if (response.data.startdate) {
+                            this.course.startdate = this.parseDateFromTimestamp(response.data.startdate);
+                        } else {
+                            this.course.startdate = "";
+                        }                        if (response.data.enddate) {
                             this.course.enddate = this.parseDateFromTimestamp(response.data.enddate);
                         } else {
                             this.course.enddate = "";
