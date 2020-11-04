@@ -11366,7 +11366,7 @@ class BussinessRepository implements IBussinessInterface
 					 inner join mdl_user as u on u.id = mu.userid
                      inner join mdl_enrol as e on e.id = mu.enrolid
                      inner join mdl_course as c on c.id = e.courseid
-                     where c.deleted = 0 and e.roleid = ' . Role::ROLE_STUDENT . ' and u.id =  ' . $user_id;
+                     where c.deleted = 0 and c.visible = 1 and e.roleid = ' . Role::ROLE_STUDENT . ' and u.id =  ' . $user_id;
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
