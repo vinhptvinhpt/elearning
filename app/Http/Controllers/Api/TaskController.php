@@ -265,11 +265,12 @@ class TaskController extends Controller
 
             //query lay tat ca nguoi dung duoc ghi danh vao khoa hoc khong nam trong bang trainning_user
             $query_sql = '(select mu.id from mdl_user_enrolments as mue
-                            inner join mdl_user as mu on mu.id = mue.userid
-                            inner join mdl_enrol as me on me.id = mue.enrolid
-                            inner join mdl_course as mc on mc.id = me.courseid
+                            join mdl_user as mu on mu.id = mue.userid
+                            join tms_user_detail as tud on mu.id = tud.user_id
+                            join mdl_enrol as me on me.id = mue.enrolid
+                            join mdl_course as mc on mc.id = me.courseid
                             left join tms_traninning_users as ttu on ttu.user_id = mu.id and ttu.trainning_id = ' . $data->trainning_id . '
-                            where mc.id = ' . $data->course_id . ' and ttu.trainning_id is null)';
+                            where mc.id = ' . $data->course_id . ' and tud.deleted = 0 and ttu.trainning_id is null)';
 
             $query_sql = DB::raw($query_sql);
             $lstUser = DB::select($query_sql);
