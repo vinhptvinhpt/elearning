@@ -596,6 +596,28 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             return response()->json([]);
         }
 
+        //Check đã có học viên học
+        $checkLearned = DB::table('mdl_course_modules as cm')
+            ->join('mdl_course_modules_completion as cmc', 'cm.id', '=', 'cmc.coursemoduleid')
+            ->join('mdl_course_sections as cs', function ($join) {
+                $join->on('cm.course', '=', 'cs.course');
+                $join->on('cm.section', '=', 'cs.id'); //Lấy học viên only
+            })
+            ->join('mdl_course as c', 'cm.course', '=', 'c.id')
+            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+            ->where('cs.section', '<>', 0)
+            ->where('cm.completion', '<>', 0)
+            ->whereIn('cmc.completionstate',[1,2])
+            ->where('ttc.trainning_id', '=', $training_id)
+            ->select(DB::raw('count(cmc.coursemoduleid) as num'))->first();
+
+        if ($checkLearned && $checkLearned->num > 0) {
+            return array(
+                'status' => false,
+                'message' => __('da_co_hoc_vien_hoc_khung_nang_luc_nay_nen_khong_thay_doi_thu_tu_duoc')
+            );
+        }
+
         DB::beginTransaction();
         try {
             foreach ($list as $key => $item) {
@@ -1416,7 +1438,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                                     where   find_in_set(ttoe.parent_id, @pv)
                                     and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
                                     UNION
-                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe 
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe
                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                     where tud.deleted = 0 and toe.organization_id = ' . $org_id . ') as org_us';
 
