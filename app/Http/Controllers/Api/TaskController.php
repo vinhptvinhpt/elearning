@@ -294,9 +294,9 @@ class TaskController extends Controller
                 $num++;
                 if ($num >= $limit) {
                     TmsTrainningUser::insert($queryArray);
-                    foreach ($userArrayByTraining as $training => $users) {
-                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
-                    }
+//                    foreach ($userArrayByTraining as $training => $users) {
+//                        $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+//                    }
                     $num = 0;
                     $queryArray = [];
                     $userArrayByTraining = [];
@@ -304,9 +304,9 @@ class TaskController extends Controller
             }
 
             TmsTrainningUser::insert($queryArray);
-            foreach ($userArrayByTraining as $training => $users) {
-                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
-            }
+//            foreach ($userArrayByTraining as $training => $users) {
+//                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+//            }
 
             $queryArray = [];
 
