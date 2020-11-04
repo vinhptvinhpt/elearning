@@ -401,6 +401,15 @@ H5P.init = function (target) {
 
         }
 
+        //column inter
+        var videoTagColumnInters = document.querySelectorAll('div.h5p-column-content.h5p-interactive-video');
+        if (videoTagColumnInters) {
+            for (var i = 0; i < videoTagColumnInters.length; i++) {
+            videoTagColumnInters[i].innerHTML = '';
+            videoTagColumnInters[i].innerHTML = html;
+            }
+        }
+
         //hide control bar video
         var videoTagControls = document.querySelectorAll('div.h5p-controls');
         if (videoTagControls) {
