@@ -68,9 +68,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'description' => 'text',
             ];
             $validator = validate_fails($request, $param);
+
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
             if ($style == 1) {
@@ -189,7 +190,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -305,6 +306,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             TmsTrainningGroup::where('trainning_id', $id)->delete();
+
+            TmsTrainningCourse::where('trainning_id', $id)->update(['deleted' => 1]);
 
             $trainning = TmsTrainningProgram::findOrFail($id);
             $trainning->deleted = 1;
@@ -974,7 +977,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $response->status = true;
             $response->message = __('them_khoa_hoc_vao_knl_thanh_cong');
         } catch (\Exception $e) {
-            Log::info($e);
             \DB::rollBack();
             $response->status = false;
             //$response->message = $e->getMessage();
@@ -1399,20 +1401,24 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return json_encode($response);
             }
 
             //lay danh sach user nam trong co cau to chuc va ko nam trong KNL
             $tblQuery = '(select  ttoe.organization_id, ttoe.user_id
                                     from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
+                                     where tud.deleted = 0
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                                     where   find_in_set(ttoe.parent_id, @pv)
                                     and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
                                     UNION
-                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe 
+                                    join tms_user_detail tud on tud.user_id = toe.user_id
+                                    where tud.deleted = 0 and toe.organization_id = ' . $org_id . ') as org_us';
 
             $tblQuery = DB::raw($tblQuery);
 
