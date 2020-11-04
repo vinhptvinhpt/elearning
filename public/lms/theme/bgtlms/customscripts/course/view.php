@@ -23,7 +23,7 @@ if ($test_mode) {
 $user_id = $USER->id;
 $course_id = $id;
 
-//Auto enrol optional courses => Now click button to enrol
+//Auto enrol optional courses => Removed! Now click button to enrol
 
 if (strlen($from) != 0) {
     $passover = explode('.', $from);
@@ -1159,20 +1159,22 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
 
     //check permission for start course
     $enableLearn = '';
-    $checkExist = true;
-    $couresIdAllow = $_SESSION["couresIdAllow"];
-    if (!$permission_edit) {
-        $coursesSuggest = $_SESSION["coursesSuggest"];
-        foreach ($coursesSuggest as $courseS) {
-            if ($courseS->id == $id) {
-                $enableLearn = 'btn-learn-disable';
-                break;
-            }
-        }
-        //Check if this course is in the allowed list of courses
-        if ($enableLearn == '')
-            $checkExist = in_array($id, $couresIdAllow);
+    if (!$permission_learn) {
+        $enableLearn = 'btn-learn-disable';
     }
+
+//    $coursesSuggest = $_SESSION["coursesSuggest"];
+//    foreach ($coursesSuggest as $courseS) {
+//        if ($courseS->id == $id) {
+//            $enableLearn = 'btn-learn-disable';
+//            break;
+//        }
+//    }
+
+//    $checkExist = true;
+//    $couresIdAllow = $_SESSION["couresIdAllow"];
+//    $checkExist = in_array($id, $couresIdAllow);
+
     //Check section
     $section_no = isset($_REQUEST['section_no']) ? $_REQUEST['section_no'] : '';
     $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
@@ -1358,8 +1360,7 @@ where ttc.course_id = ' . $id . ')';
                                 <?php } else { ?>
                                     <a href="<?php echo $start_course_link ?>"
                                        <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()" <?php } ?>
-                                       class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start
-                                        course</a>
+                                       class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start course</a>
                                 <?php } ?>
                             </div>
 
@@ -1430,7 +1431,6 @@ where ttc.course_id = ' . $id . ')';
                 </div>
             </div>
         </section>
-
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
@@ -1562,8 +1562,7 @@ where ttc.course_id = ' . $id . ')';
                                 <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                     <div class="detail-btn">
                                         <a href="<?php echo $unit['modules'][0]['url']; ?>"
-                                           class="btn btn-click btn-start-unit <?php echo $enableLearn; ?>">Start
-                                            unit</a>
+                                           class="btn btn-click btn-start-unit <?php echo $enableLearn; ?>">Start unit</a>
                                     </div>
                                 <?php } ?>
                             </div>
