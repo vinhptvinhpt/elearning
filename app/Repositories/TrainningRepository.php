@@ -472,6 +472,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
             ->where('mc.deleted', '=', 0)
+            ->where('mc.visible', '=', 1)
             ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id', 'ttc.order_no');
 
         if ($this->keyword) {
@@ -673,6 +674,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->leftJoin('mdl_course_completion_criteria as mcc', 'mcc.course', '=', 'mc.id')
             ->where('mc.category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
             ->where('mc.deleted', '=', 0)
+            ->where('mc.visible', '=', 1)
             ->whereNotIn('mc.id', $lstCourseTrainning)
             ->select('mc.id',
                 'mc.fullname',
