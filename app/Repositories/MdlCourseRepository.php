@@ -304,8 +304,12 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-
-        $listCourses = $listCourses->orderBy('c.id', 'desc');
+        if ($keyword) {
+            $listCourses = $listCourses->orderBy('c.shortname', 'desc');
+        } else {
+            $listCourses = $listCourses->orderBy('c.id', 'desc');
+        }
+//        $listCourses = $listCourses->orderBy('c.id', 'desc');
 
         if ($row == 0) {
             return $listCourses->get();
