@@ -436,7 +436,7 @@ mc.estimate_duration,
                 push_course($courses_current, $course);
             } //then complete
             elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
-                if ($course->order_no > $training_current_max[$training_id]) {
+                if ($course->order_no >= $training_current_max[$training_id]) {
                     $training_current_max[$training_id] = $course->order_no + 1;
                 }
                 $course->category_type = 'completed';
