@@ -300,8 +300,8 @@ $sql_pqdl .=  ' having enrol_count > 0';
 //28102020 not works => move outside select alias
 //$sql_pqdl .= ' ORDER BY ttp.id, ttc.order_no';
 //$sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
+$sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses group by id order by training_id, order_no' ;
 
-$sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses order by training_id, order_no';
 
 $courses = array_values($DB->get_records_sql($sql));
 
@@ -310,8 +310,6 @@ $courses_required = array();
 $courses_completed = array();
 $courses_soft_skills = array();
 $courses_training = array();
-$competency_exists = array();
-$competency_completed = array();
 $sttTotalCourse = 0;
 $couresIdAllow = array();
 $coursesRequiredIds = array(0);
@@ -320,16 +318,13 @@ $courseSuggestIds = array();
 
 foreach ($courses as &$course) {
     $course->is_optional = 0; //current, completed, required
-    $courses_training[$course->training_id][$course->id] = $course;
+    //$courses_training[$course->training_id][$course->id] = $course; //add $course->id to remove dupplicate //Không cần thiết nếu đã group by ngoài query
+    $courses_training[$course->training_id][] = $course; //remove $course->id to keep order_no
     $coursesRequiredIds[] = $course->id;
 }
 
-
 $coursesRequiredIds = array_unique($coursesRequiredIds);
 $coursesRequiredIdsString = implode(',', $coursesRequiredIds);
-
-
-$exitCourseInRequiredCourse = array();
 
 //Optional courses
 /* Chỉ lấy các khóa chưa enrol, các khóa đã enrol sẽ chuyển lên block learning, completed, required courses phía trên */
@@ -425,7 +420,7 @@ if (!empty($reverse_recursive_org_ids)) {
         and mc.id NOT IN (' . $coursesRequiredIdsString . ')';
 
     $sqlCourseNotEnrol .= ' group by mc.id'; //cần để tạo tên giáo viên
-    $sqlCourseNotEnrol .= ' ORDER BY ttp.id, ttc.order_no';
+    //$sqlCourseNotEnrol .= ' ORDER BY ttp.id, ttc.order_no'; //Không cần sort sau
 
     $allCoursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
@@ -528,7 +523,7 @@ $sqlManualCourse = 'select @s:=@s+1 stt,
 
 $sqlManualCourse .= ' group by mc.id'; //cần để tạo tên giáo viên
 $sqlManualCourse .=  ' having enrol_count > 0';
-$sqlManualCourse .= ' ORDER BY ttp.id, ttc.order_no';
+//$sqlManualCourse .= ' ORDER BY ttp.id, ttc.order_no'; //Không cần sort sau
 
 
 $allManualCourses = array_values($DB->get_records_sql($sqlManualCourse));
@@ -539,21 +534,33 @@ foreach ($allManualCourses as &$course_manual) {
     $courses_training[$course_manual->training_id][$course_manual->id] = $course_manual;
 }
 
+$course_training_arranged = [];
+//Reorder by order_no for competency framework
+foreach ($courses_training as $training_id => $courses) {
+    usort($courses, function($a, $b) {
+        return $a->order_no <=> $b->order_no ;
+    });
+    $course_training_arranged[$training_id] =  $courses;
+}
+
+
+$training_next = array();
+
 //Duyệt mảng chung
-foreach ($courses_training as $courses) {
+foreach ($course_training_arranged as $training_id => $courses) {
     $stt = 1;
+
     foreach ($courses as &$course) {
         $course->sttShow = $stt;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             push_course($courses_current, $course);
-            array_push($competency_exists, $course->training_id);
+            $training_next[$training_id] = $course->order_no;
             $sttTotalCourse++;
             $couresIdAllow[] = $course->id;
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
-            array_push($competency_completed, $course->training_id);
             $sttTotalCourse++;
             $couresIdAllow[] = $course->id;
         } //then required = khoa hoc trong khung nang luc
@@ -594,14 +601,17 @@ function push_course(&$array, $course)
     }
 }
 
-function cmp_stt($a, $b)
-{
-    if ($a->sttShow == $b->sttShow) return 0;
-    return ($a->sttShow < $b->sttShow) ? -1 : 1;
-}
+// function cmp_stt($a, $b)
+// {
+// if ($a->sttShow == $b->sttShow) return 0;
+// return ($a->sttShow < $b->sttShow) ? -1 : 1;
+// }
 
 //Sort results by stt
-usort($courses_required, 'cmp_stt');
+// usort($courses_required, 'cmp_stt');
+// usort($courses_completed, 'cmp_stt');
+// usort($courses_current, 'cmp_stt');
+// usort($coursesSuggest, 'cmp_stt');
 
 $_SESSION["couresIdAllow"] = array_unique($couresIdAllow);
 
@@ -1721,14 +1731,13 @@ $_SESSION["allowCms"] = $allowCms;
                                         <?php if (count($courses_required) > 0) {
                                             $countBlock = 1;
                                             foreach ($courses_required as $course) {
-                                                //Nếu đang học thì disable
-                                                if (in_array($course->training_id, $competency_exists)) {
-                                                    $enable = 'disable';
-                                                } else if (in_array($course->training_id, $exitCourseInRequiredCourse)) {
-                                                    $enable = 'disable';
+                                                $enable = 'enable';
+                                                if (isset($training_next[$course->training_id])) {
+                                                    if ($course->order_no > $training_next[$course->training_id]) {
+                                                        $enable = 'disable';
+                                                    }
                                                 } else {
-                                                    $enable = 'enable';
-                                                    array_push($exitCourseInRequiredCourse, $course->training_id);
+                                                    $training_next[$course->training_id] = $course->order_no;
                                                 }
                                                 ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">

@@ -22,6 +22,7 @@ if ($progress == 1) { //List from home
     $courses_required = array();
     $courses_completed = array();
     $coursesSuggest = array();
+    $courses_training = array();
 
     $coursesRequiredIds = array(0);
     $courseSuggestIds = array();
@@ -152,18 +153,16 @@ mc.estimate_duration,
     //28102020 not works => move outside select alias
     //$sql_pqdl .= ' ORDER BY ttp.deleted, ttp.id, ttc.order_no';
     //$sql = '(' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')';
-
-    $sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses order by training_deleted, training_id, order_no';
+    $sql = 'select * from ((' . $sql_training . ') UNION ALL (' . $sql_pqdl . ')) courses group by id order by training_deleted, training_id, order_no';
 
     $courses = array_values($DB->get_records_sql($sql));
 
     $competency_exists = array();
-    $courses_training = array();
-    $getInCourses = array();
 
     foreach ($courses as &$course) {
         $course->is_optional = 0; //current, completed, required
-        $courses_training[$course->training_id][$course->id] = $course;
+        //$courses_training[$course->training_id][$course->id] = $course; //add $course->id to remove dupplicate //Không cần thiết nếu đã group by ngoài query
+        $courses_training[$course->training_id][] = $course; //remove $course->id to keep order_no
         $coursesRequiredIds[] = $course->id;
     }
 
@@ -294,7 +293,7 @@ mc.estimate_duration,
         }
 
         $sqlCourseNotEnrol .= ' group by mc.id'; //cần để tạo tên giáo viên
-        $sqlCourseNotEnrol .= ' ORDER BY ttp.id, ttc.order_no';
+        //$sqlCourseNotEnrol .= ' ORDER BY ttp.id, ttc.order_no'; //Không cần sort sau
 
         $allCoursesSuggest = array_values($DB->get_records_sql($sqlCourseNotEnrol));
 
@@ -396,7 +395,7 @@ mc.estimate_duration,
 
     $sqlManualCourse .= ' group by mc.id'; //cần để tạo tên giáo viên
     $sqlManualCourse .=  ' having enrol_count > 0';
-    $sqlManualCourse .= ' ORDER BY ttp.id, ttc.order_no';
+//    $sqlManualCourse .= ' ORDER BY ttp.id, ttc.order_no'; //Không cần sort sau
 
 
     $allManualCourses = array_values($DB->get_records_sql($sqlManualCourse));
@@ -407,8 +406,19 @@ mc.estimate_duration,
         $courses_training[$course_manual->training_id][$course_manual->id] = $course_manual;
     }
 
+    $course_training_arranged = [];
+//Reorder by order_no for competency framework
+    foreach ($courses_training as $training_id => $courses) {
+        usort($courses, function($a, $b) {
+            return $a->order_no <=> $b->order_no ;
+        });
+        $course_training_arranged[$training_id] =  $courses;
+    }
+
+    $training_next = array();
+
 //Duyệt mảng chung
-    foreach ($courses_training as $courses) {
+    foreach ($course_training_arranged as $training_id => $courses) {
         $stt = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
@@ -416,6 +426,7 @@ mc.estimate_duration,
             $course->category_type = '';
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+                $training_next[$training_id] = $course->order_no;
                 $course->category_type = 'current';
                 array_push($competency_exists, $course->training_id);
                 push_course($courses_current, $course);
@@ -423,31 +434,27 @@ mc.estimate_duration,
             elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
                 $course->category_type = 'completed';
                 push_course($courses_completed, $course);
-            } //then required
-            elseif ($course->is_optional == 0) {
-                $course->category_type = 'required';
-                $courses_required[$course->training_id][$course->id] = $course;
-                $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                if (!in_array($course->training_id, $getInCourses)) {
-                    array_push($getInCourses, $course->training_id);
-                    $course->enable = true;
+            } else {
+                if (isset($training_next[$course->training_id])) {
+                    if ($course->order_no > $training_next[$course->training_id]) {
+                        $course->enable = false;
+                    }
                 } else {
-                    $course->enable = false;
+                    $training_next[$course->training_id] = $course->order_no;
                 }
-            } elseif ($course->is_optional == 1) { // Duyệt optinal courses only
-                if ($course->enrol_count > 0) { //Đã enrol => required courses
+                if ($course->is_optional == 0) {//Khóa required
                     $course->category_type = 'required';
                     $courses_required[$course->training_id][$course->id] = $course;
                     $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                    if (!in_array($course->training_id, $getInCourses)) {
-                        array_push($getInCourses, $course->training_id);
-                        $course->enable = true;
-                    } else {
-                        $course->enable = false;
+                } elseif ($course->is_optional == 1) { // Duyệt optinal courses
+                    if ($course->enrol_count > 0) { //Đã enrol => chuyển vào required courses
+                        $course->category_type = 'required';
+                        $courses_required[$course->training_id][$course->id] = $course;
+                        $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
+                    } else { // Chưa enrol => optional courses
+                        $course->category_type = 'optional';
+                        $coursesSuggest[] = $course;
                     }
-                } else { // Chưa enrol => optional courses
-                    $course->category_type = 'optional';
-                    $coursesSuggest[] = $course;
                 }
             }
             $stt++;
@@ -502,11 +509,12 @@ mc.estimate_duration,
 
     $total = count($resultSearch);
 
-    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists, 'coursesSuggest' => $coursesSuggest]);
+    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total]);
 
 } else {
     //course available
     //count total
+
     $sqlCountCoures = 'select mc.id
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
@@ -527,7 +535,7 @@ and mue.userid = ' . $USER->id;
 
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
-    $sqlGetCoures = 'select
+    $sqlGetCoures = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
 mc.category,
@@ -547,14 +555,14 @@ GROUP_CONCAT(CONCAT(tud.fullname, " created_at ",  muet.timecreated)) as teacher
 from mdl_course mc
 inner join mdl_enrol me on mc.id = me.courseid AND me.roleid = 5
 inner join mdl_user_enrolments mue on me.id = mue.enrolid
-left JOIN mdl_course_completion_criteria mccc on mccc.course = mc.id
+left join mdl_course_completion_criteria mccc on mccc.course = mc.id
 left join mdl_enrol met on mc.id = met.courseid AND met.roleid = ' . $teacher_role_id . '
 left join mdl_user_enrolments muet on met.id = muet.enrolid
 left join tms_user_detail tud on tud.user_id = muet.userid
 left join tms_organization_employee toe on toe.user_id = muet.userid
 left join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-left join tms_organization tor on tor.id = toe.organization_id
+left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
 
 where me.enrol = "manual"
 and mc.deleted = 0
@@ -568,20 +576,27 @@ and mue.userid = ' . $USER->id;
     $sqlGetCoures .= ' group by mc.id ORDER BY ttp.id, ttc.order_no'; //cần để tạo tên giáo viên
     $courses = array_values($DB->get_records_sql($sqlGetCoures));
 
-    $stt_count = 1;
-    $competency_exists = array();
-    $temp_competency_exists = array();
-    $tempCourse = [];
     $courses_training = array();
     $courses_result = array();
-    $getInCourses = array();
 
     foreach ($courses as $course) {
-        $courses_training[$course->training_id][$course->id] = $course;
+        $courses_training[$course->training_id][$course->id] = $course; //Chống duplicate và gom theo training
     }
 
-    foreach ($courses_training as $courses) {
+    $course_training_arranged = [];
+    //Reorder by order_no for competency framework
+    foreach ($courses_training as $training_id => $courses) {
+        usort($courses, function($a, $b) {
+            return $a->order_no <=> $b->order_no ;
+        });
+        $course_training_arranged[$training_id] =  $courses;
+    }
+
+    $training_next = array();
+
+    foreach ($course_training_arranged as $training_id => $courses) {
         $stt = 1;
+
         foreach ($courses as &$course) {
 
             $course->sttShow = $stt;
@@ -589,7 +604,7 @@ and mue.userid = ' . $USER->id;
             $teacher_name = '';
             $teacher_created = 0;
             $course->enable = true;
-            $course->category_type = '';
+            $course->category_type = $course->category;
 
             if (strlen($teachers) != 0) {
                 $teachers_and_created = explode(',', $teachers);
@@ -601,28 +616,34 @@ and mue.userid = ' . $USER->id;
                     }
                 }
             }
+
             $course->teacher_name = $teacher_name;
 
-            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
+            if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) { //Khóa đang học => gán current_max
+                $training_next[$training_id] = $course->order_no;
                 $course->order_learn = 2;
-                array_push($competency_exists, $course->training_id);
-            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
-                $course->order_learn = 1;
-                $course->category_type = 'required';
-                array_push($temp_competency_exists, $course->training_id);
-                if (in_array($course->training_id, $temp_competency_exists)) {
-                    $stt_count = $tempCourse[$course->training_id]['stt'];
-                    $stt_count++;
+            } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) { //Khóa trong KNL và chưa học
+                if (isset($training_next[$training_id])) {
+                    if ($course->order_no > $training_next[$training_id]) {
+                        $course->enable = false;
+                    }
                 } else {
-                    $stt_count = 1;
+                    $training_next[$training_id] = $course->order_no;
                 }
-                $tempCourse[$course->training_id]['stt'] = $stt_count;
-                $course->stt_count = $tempCourse[$course->training_id]['stt'];
-            } else if ($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0))) {
                 $course->order_learn = 1;
-            } elseif ($course->numoflearned / $course->numofmodule == 1) {
+            } else if ($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0))) { //khóa lẻ & chưa học
+                if (isset($training_next[$training_id])) {
+                    if ($course->order_no > $training_next[$training_id]) {
+                        $course->enable = false;
+                    }
+                } else {
+                    $training_next[$training_id] = $course->order_no;
+                }
+                $course->order_learn = 1;
+            } elseif ($course->numoflearned / $course->numofmodule == 1) { //Khóa hoàn thành
                 $course->order_learn = 0;
             }
+
             $stt++;
             $courses_result[] = $course;
         }
@@ -631,6 +652,7 @@ and mue.userid = ' . $USER->id;
     if ($pageRequest == 'profile') {
         usort($courses_result, 'cmp_order_learn');
     }
+
     //Search by keyword
     $resultSearch = array();
     if ($txtSearch || $category > 0) {
@@ -649,6 +671,7 @@ and mue.userid = ' . $USER->id;
     } else {
         $resultSearch = $courses_result;
     }
+
     //Pagination
     $start_index = $current * $recordPerPage - $recordPerPage;
 
@@ -656,8 +679,7 @@ and mue.userid = ' . $USER->id;
 
     $total = count($resultSearch);
 
-
-    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total, 'competency_exists' => $competency_exists]);
+    $response = json_encode(['courses' => $course_list, 'totalPage' => ceil($total / $recordPerPage), 'totalRecords' => $total]);
 }
 
 //Functions
