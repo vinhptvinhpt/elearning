@@ -1007,7 +1007,8 @@ class BussinessRepository implements IBussinessInterface
             ->where('mdl_course.category', '=', 2)
             ->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
 
-        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+//        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+        $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc')->get();
 
         return response()->json($listCourses);
     }
@@ -1468,7 +1469,12 @@ class BussinessRepository implements IBussinessInterface
             }
         }
 
-        $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+
+        if ($keyword) {
+            $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
+        } else {
+            $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+        }
 
         if ($row == 0) {
             return $listCourses->get();
@@ -11366,7 +11372,7 @@ class BussinessRepository implements IBussinessInterface
 					 inner join mdl_user as u on u.id = mu.userid
                      inner join mdl_enrol as e on e.id = mu.enrolid
                      inner join mdl_course as c on c.id = e.courseid
-                     where c.deleted = 0 and e.roleid = ' . Role::ROLE_STUDENT . ' and u.id =  ' . $user_id;
+                     where c.deleted = 0 and c.visible = 1 and e.roleid = ' . Role::ROLE_STUDENT . ' and u.id =  ' . $user_id;
 
 //        if ($category) {
 //            $data = $data->where('c.category', '=', $category);
