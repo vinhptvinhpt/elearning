@@ -647,7 +647,7 @@ and mue.userid = ' . $USER->id;
                 }
                 $course->order_learn = 1;
             } elseif ($course->numoflearned / $course->numofmodule == 1) { //Khóa hoàn thành
-                if ($course->order_no > $training_current_max[$training_id]) {
+                if ($course->order_no >= $training_current_max[$training_id]) {
                     $training_current_max[$training_id] = $course->order_no + 1;
                 }
                 $course->order_learn = 0;
