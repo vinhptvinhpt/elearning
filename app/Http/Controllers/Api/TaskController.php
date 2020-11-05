@@ -960,6 +960,7 @@ class TaskController extends Controller
             ->join('mdl_course as c', 'c.id', '=', 'trc.course_id')
             ->join('tms_role_organization as tro', 'tro.role_id', '=', 'trc.role_id')
             ->join('tms_organization as tor', 'tor.id', '=', 'tro.organization_id')
+            ->where('c.visible', '=', 1)//khoa hoc duoc enable moi enrol hoc vien
             ->where('c.deleted', '=', 0)
             ->where('c.category', '!=', 2)
             ->select('tor.id as org_id', 'trc.course_id')->groupBy(['tor.id', 'trc.course_id'])
@@ -1006,6 +1007,8 @@ class TaskController extends Controller
         //lay danh sach khoa hoc theo tung khung nang luc
         $lstData = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->join('mdl_course as c', 'c.id', '=', 'ttc.course_id')
+            ->where('c.visible', '=', 1)//khoa hoc duoc enable moi enrol hoc vien
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
             ->where('ttp.deleted', '=', 0)
@@ -1057,6 +1060,8 @@ class TaskController extends Controller
         //lay danh sach khoa hoc theo tung khung nang luc
         $lstData = DB::table('tms_trainning_courses as ttc')
             ->join('tms_traninning_programs as ttp', 'ttp.id', '=', 'ttc.trainning_id')
+            ->join('mdl_course as c', 'c.id', '=', 'ttc.course_id')
+            ->where('c.visible', '=', 1)//khoa hoc duoc enable moi enrol hoc vien
             ->where('ttp.run_cron', '=', 1)
             ->where('ttc.deleted', '=', 0)
             ->where('ttp.deleted', '=', 0)
