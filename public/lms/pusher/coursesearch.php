@@ -420,10 +420,10 @@ mc.estimate_duration,
 //Duyệt mảng chung
     foreach ($course_training_arranged as $training_id => $courses) {
         $stt = 1;
+        //Set default current max
+        $training_current_max[$training_id] = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
-            //Set default current max
-            $training_current_max[$training_id] = 1;
             $course->enable = true;
             $course->category_type = '';
             //current first
@@ -443,20 +443,16 @@ mc.estimate_duration,
                 push_course($courses_completed, $course);
             } //then required
             elseif ($course->is_optional == 0) {
-
                 if ($course->order_no > $training_current_max[$training_id]) {
                     $course->enable = false;
                 }
-
                 $course->category_type = 'required';
                 $courses_required[$course->training_id][$course->id] = $course;
                 $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
             } elseif ($course->is_optional == 1) { // Duyệt optinal courses only
-
                 if ($course->order_no > $training_current_max[$training_id]) {
                     $course->enable = false;
                 }
-
                 if ($course->enrol_count > 0) { //Đã enrol => required courses
                     $course->category_type = 'required';
                     $courses_required[$course->training_id][$course->id] = $course;
