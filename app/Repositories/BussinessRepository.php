@@ -1007,7 +1007,8 @@ class BussinessRepository implements IBussinessInterface
             ->where('mdl_course.category', '=', 2)
             ->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
 
-        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+//        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+        $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc')->get();
 
         return response()->json($listCourses);
     }
@@ -1468,7 +1469,12 @@ class BussinessRepository implements IBussinessInterface
             }
         }
 
-        $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+
+        if ($keyword) {
+            $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
+        } else {
+            $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+        }
 
         if ($row == 0) {
             return $listCourses->get();
