@@ -415,54 +415,46 @@ mc.estimate_duration,
         $course_training_arranged[$training_id] =  $courses;
     }
 
-    $training_current_max = array();
+    $training_next = array();
 
 //Duyệt mảng chung
     foreach ($course_training_arranged as $training_id => $courses) {
         $stt = 1;
-        //Set default current max
-        $training_current_max[$training_id] = 1;
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
             $course->enable = true;
             $course->category_type = '';
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $training_current_max[$training_id] = $course->order_no;
-                }
+                $training_next[$training_id] = $course->order_no;
                 $course->category_type = 'current';
                 array_push($competency_exists, $course->training_id);
                 push_course($courses_current, $course);
             } //then complete
             elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
-                if ($course->order_no >= $training_current_max[$training_id]) {
-                    $training_current_max[$training_id] = $course->order_no + 1;
-                }
                 $course->category_type = 'completed';
                 push_course($courses_completed, $course);
-            } //then required
-            elseif ($course->is_optional == 0) {
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $course->enable = false;
+            } else {
+                if (isset($training_next[$course->training_id])) {
+                    if ($course->order_no > $training_next[$course->training_id]) {
+                        $course->enable = false;
+                    }
+                } else {
+                    $training_next[$course->training_id] = $course->order_no;
                 }
-                $course->category_type = 'required';
-                $courses_required[$course->training_id][$course->id] = $course;
-                $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-            } elseif ($course->is_optional == 1) { // Duyệt optinal courses only
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $course->enable = false;
-                }
-                if ($course->enrol_count > 0) { //Đã enrol => required courses
+                if ($course->is_optional == 0) {//Khóa required
                     $course->category_type = 'required';
                     $courses_required[$course->training_id][$course->id] = $course;
                     $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
-                    if ($course->order_no > $training_current_max[$training_id] + 1) {
-                        $course->enable = false;
+                } elseif ($course->is_optional == 1) { // Duyệt optinal courses
+                    if ($course->enrol_count > 0) { //Đã enrol => chuyển vào required courses
+                        $course->category_type = 'required';
+                        $courses_required[$course->training_id][$course->id] = $course;
+                        $courses_required[$course->training_id] = array_values($courses_required[$course->training_id]);
+                    } else { // Chưa enrol => optional courses
+                        $course->category_type = 'optional';
+                        $coursesSuggest[] = $course;
                     }
-                } else { // Chưa enrol => optional courses
-                    $course->category_type = 'optional';
-                    $coursesSuggest[] = $course;
                 }
             }
             $stt++;
@@ -543,7 +535,7 @@ and mue.userid = ' . $USER->id;
 
     $total = count(array_values($DB->get_records_sql($sqlCountCoures)));
 
-    $sqlGetCoures = 'select
+    $sqlGetCoures = 'select @s:=@s+1 stt,
 mc.id,
 mc.fullname,
 mc.category,
@@ -570,7 +562,7 @@ left join tms_user_detail tud on tud.user_id = muet.userid
 left join tms_organization_employee toe on toe.user_id = muet.userid
 left join tms_trainning_courses ttc on mc.id = ttc.course_id
 left join tms_traninning_programs ttp on ttc.trainning_id = ttp.id
-left join tms_organization tor on tor.id = toe.organization_id
+left join tms_organization tor on tor.id = toe.organization_id, (SELECT @s:= 0) AS s
 
 where me.enrol = "manual"
 and mc.deleted = 0
@@ -600,10 +592,10 @@ and mue.userid = ' . $USER->id;
         $course_training_arranged[$training_id] =  $courses;
     }
 
+    $training_next = array();
+
     foreach ($course_training_arranged as $training_id => $courses) {
         $stt = 1;
-
-        $training_current_max[$training_id] = 1;
 
         foreach ($courses as &$course) {
 
@@ -628,27 +620,29 @@ and mue.userid = ' . $USER->id;
             $course->teacher_name = $teacher_name;
 
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) { //Khóa đang học => gán current_max
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $training_current_max[$training_id] = $course->order_no;
-                }
+                $training_next[$training_id] = $course->order_no;
                 $course->order_learn = 2;
             } elseif (($course->training_name && $course->training_deleted == 0) && (($course->numoflearned == 0) || ($course->numofmodule == 0))) { //Khóa trong KNL và chưa học
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $course->enable = false;
+                if (isset($training_next[$training_id])) {
+                    if ($course->order_no > $training_next[$training_id]) {
+                        $course->enable = false;
+                    }
+                } else {
+                    $training_next[$training_id] = $course->order_no;
                 }
                 $course->order_learn = 1;
             } else if ($course->training_deleted == 2 && (($course->numoflearned == 0) || ($course->numofmodule == 0))) { //khóa lẻ & chưa học
-                if ($course->order_no > $training_current_max[$training_id]) {
-                    $course->enable = false;
+                if (isset($training_next[$training_id])) {
+                    if ($course->order_no > $training_next[$training_id]) {
+                        $course->enable = false;
+                    }
+                } else {
+                    $training_next[$training_id] = $course->order_no;
                 }
                 $course->order_learn = 1;
             } elseif ($course->numoflearned / $course->numofmodule == 1) { //Khóa hoàn thành
-                if ($course->order_no >= $training_current_max[$training_id]) {
-                    $training_current_max[$training_id] = $course->order_no + 1;
-                }
                 $course->order_learn = 0;
             }
-
 
             $stt++;
             $courses_result[] = $course;
