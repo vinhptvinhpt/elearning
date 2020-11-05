@@ -566,7 +566,7 @@ foreach ($course_training_arranged as $training_id => $courses) {
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
-            if ($course->order_no > $training_current_max[$training_id]) {
+            if ($course->order_no >= $training_current_max[$training_id]) {
                 $training_current_max[$training_id] = $course->order_no + 1;
             }
             $sttTotalCourse++;
