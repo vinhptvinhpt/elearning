@@ -544,6 +544,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $listCourses = $listCourses->where('c.deleted', '=', 0);
         $listCourses = $listCourses->where('c.category', '<>', 2);
+        $listCourses = $listCourses->where('c.visible', '=', 1);
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D

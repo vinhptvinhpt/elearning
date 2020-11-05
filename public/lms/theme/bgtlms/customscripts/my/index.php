@@ -544,31 +544,23 @@ foreach ($courses_training as $training_id => $courses) {
 }
 
 
-$training_current_max = array();
+$training_next = array();
 
 //Duyệt mảng chung
 foreach ($course_training_arranged as $training_id => $courses) {
     $stt = 1;
-
-    //Set default current max
-    $training_current_max[$training_id] = 1;
 
     foreach ($courses as &$course) {
         $course->sttShow = $stt;
         //current first
         if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
             push_course($courses_current, $course);
-            if ($course->order_no > $training_current_max[$training_id]) {
-                $training_current_max[$training_id] = $course->order_no;
-            }
+            $training_next[$training_id] = $course->order_no;
             $sttTotalCourse++;
             $couresIdAllow[] = $course->id;
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
             push_course($courses_completed, $course);
-            if ($course->order_no >= $training_current_max[$training_id]) {
-                $training_current_max[$training_id] = $course->order_no + 1;
-            }
             $sttTotalCourse++;
             $couresIdAllow[] = $course->id;
         } //then required = khoa hoc trong khung nang luc
@@ -1739,10 +1731,13 @@ $_SESSION["allowCms"] = $allowCms;
                                         <?php if (count($courses_required) > 0) {
                                             $countBlock = 1;
                                             foreach ($courses_required as $course) {
-                                                if ($course->order_no <= $training_current_max[$course->training_id]) {
-                                                    $enable = 'enable';
+                                                $enable = 'enable';
+                                                if (isset($training_next[$course->training_id])) {
+                                                    if ($course->order_no > $training_next[$course->training_id]) {
+                                                        $enable = 'disable';
+                                                    }
                                                 } else {
-                                                    $enable = 'disable';
+                                                    $training_next[$course->training_id] = $course->order_no;
                                                 }
                                                 ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
