@@ -628,17 +628,23 @@
           .then(response => {
             this.course = response.data;
 
-            var startdate = new Date(response.data.startdate * 1000);
-
             var ten = function (i) {
               return (i < 10 ? '0' : '') + i;
             };
-            var YYYY = startdate.getFullYear();
-            var MM = ten(startdate.getMonth() + 1);
-            var DD = ten(startdate.getDate());
 
+            if (response.data.startdate) {
+              var startdate = new Date(response.data.startdate * 1000);
 
-            this.course.startdate = DD + '/' + MM + '/' + YYYY;
+              var YYYY = startdate.getFullYear();
+              var MM = ten(startdate.getMonth() + 1);
+              var DD = ten(startdate.getDate());
+
+              this.course.startdate = DD + '/' + MM + '/' + YYYY;
+              
+            } else {
+              this.course.startdate = "";
+            }
+
             if (response.data.enddate) {
               var endate = new Date(response.data.enddate * 1000);
 
