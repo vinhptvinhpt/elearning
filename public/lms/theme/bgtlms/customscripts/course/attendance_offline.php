@@ -407,7 +407,8 @@ foreach ($attendance_history as $history) {
         }
 
         #data_table {
-            font-family: "Roboto", sans-serif border-collapse: collapse;
+            font-family: "Roboto", sans-serif;
+            border-collapse: collapse;
             width: 100%;
         }
 
@@ -434,7 +435,8 @@ foreach ($attendance_history as $history) {
         }
 
         #list_table {
-            font-family: "Roboto", sans-serif border-collapse: collapse;
+            font-family: "Roboto", sans-serif;
+            border-collapse: collapse;
             width: 100%;
         }
 
