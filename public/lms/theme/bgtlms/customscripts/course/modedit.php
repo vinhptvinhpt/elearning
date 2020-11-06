@@ -169,7 +169,7 @@ if ($mform->is_cancelled()) {
                 $noti->start_time = $fromform->timeopen;
                 $noti->end_time = $fromform->timeclose;
                 $content = json_encode($noti);
-                $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,createdby,course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->createdby . ', ' . $noti->course_id .',\''.$content.'\')';
+                $noti_quiz = 'INSERT INTO tms_nofitications (type,target,status_send,createdby,date_quiz, course_id,content) values ("' . $noti->type . '","' . $noti->target . '", ' . $noti->status_send . ',' . $noti->createdby . ', ' . $fromform->timeopen . ', ' . $noti->course_id .',\''.$content.'\')';
                 $DB->execute($noti_quiz);
             }
         }
