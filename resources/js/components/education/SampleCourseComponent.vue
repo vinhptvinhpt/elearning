@@ -667,8 +667,10 @@
               var expires = "expires="+d.toUTCString();
               let storage = localStorage.getItem('auth.user');
               let user_id = storage ? JSON.parse(storage).id : '';
+              let domain = storage ? JSON.parse(storage).domain : '';
               let cookie_name = 'library' + '_' + id + '_' + user_id;
               document.cookie = cookie_name + "=" + 1 + ";" + expires + ";path=/";
+              window.location.href = domain + "lms/course/view.php?id=" + id;
             }
         },
         mounted() {
