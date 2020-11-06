@@ -4335,11 +4335,14 @@ class BussinessRepository implements IBussinessInterface
                     if ($data_type == 'counter') { //complete course and learning time
                         //col1 & col2
                         //Update array for organization
-                        self::pushUserWithCounter($data[$item['organization_id']], 'col1', $item['user_id'], $user, $mode_select);
-                        self::pushUserWithCounter($data[$item['organization_id']], 'col2', $item['user_id'], $user, $mode_select);
+                        $user_with_course_id = $user;
+                        $user_with_course_id['course_id'] = $item['course_id'];
+
+                        self::pushUserWithCounter($data[$item['organization_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
                         //Update array for training
-                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user, $mode_select);
-                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
                         //Update arrray for course
                         //col3
                         if (isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
@@ -4353,8 +4356,8 @@ class BussinessRepository implements IBussinessInterface
                                 $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = strlen($user['estimate_duration']) != 0 ? $user['estimate_duration'] : 0;
                             }
                             //Update for all counter type
-                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user, $mode_select);
-                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user, $mode_select);
+                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
                         }
                     }
                 }
@@ -4569,26 +4572,25 @@ class BussinessRepository implements IBussinessInterface
     public static function pushUserWithCounter(&$object, $key, $id, $user, $mode_select)
     {
         if ($mode_select == 'learning_time') {
-            if ($key == 'col1') {
-                $add_to_total = true;
+            if ($key == 'col1') { //Cộng dồn giá trị các hàng
                 if ($user['category'] == 5) {//Khóa offline => thời gian học = thời gian dự kiến
                     $duration = $user['estimate_duration'] * 3600;
                 } else {
                     $duration = $user['duration'];
                 }
-                //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration
-                if (isset($object[$key][$id]) && isset($object[$key][$id]['duration'])) {
-                    if ($user['category'] != 5) { //Khóa offline không cộng dồn
-                        $object[$key][$id]['duration'] += $duration;
-                    } else { //Khóa offline không cộng dồn vào tổng nếu đã có
-                        $add_to_total = false;
+                $course_id = $user['course_id'];
+
+                //Có thể trùng user, check nếu tồn tại thì chỉ cộng trường duration, khóa online cộng tất, offline cộng lần đầu
+                if (isset($object[$key][$id . $course_id]) && isset($object[$key][$id . $course_id]['duration'])) {
+                    if ($user['category'] != 5) { //Chỉ cộng dồn khóa online
+                        $object[$key][$id . $course_id]['duration'] += $duration;
+                        //Cộng vào tổng của parent
+                        $object['col1_counter'] += $duration;
                     }
-                } else { //Khởi tạo
-                    $object[$key][$id] = $user;
-                    $object[$key][$id]['duration'] = $duration;
-                }
-                //Cộng vào tổng của parent
-                if ($add_to_total) {
+                } else { //Khởi tạo + cộng dồn vào tổng cho cả khóa online / offline
+                    $object[$key][$id . $course_id] = $user;
+                    $object[$key][$id . $course_id]['duration'] = $duration;
+                    //Cộng vào tổng của parent
                     $object['col1_counter'] += $duration;
                 }
             } else { //nếu không gom user bình thường
