@@ -1179,6 +1179,15 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     }
                 }
             }
+            if ($course_category == 5) {
+                //Check khóa học trong tổ chưc cho phép sửa (Manager, Leader)
+                foreach ($permissions as $permission) {
+                    if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+                        $permission_edit = true;
+                        break;
+                    }
+                }
+            }
         }
     }
 
