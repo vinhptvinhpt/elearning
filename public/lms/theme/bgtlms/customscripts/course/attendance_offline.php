@@ -41,6 +41,7 @@ echo $OUTPUT->header();
 global $DB, $CFG, $USER;
 
 $itemtype = 'course';
+$enrol_method = 'manual';
 // Get records for attendance check
 $sql_01 = '
     select
@@ -55,7 +56,9 @@ $sql_01 = '
     inner join mdl_user U on 
         UE.userid = U.id
     where
-        E.courseid = ' . $courseid;
+        E.roleid = 5
+        and E.enrol = "'.$enrol_method.'"
+        and E.courseid = ' . $courseid;
 
 // List attendance history of course
 $sql_02 = '
@@ -504,7 +507,7 @@ foreach ($attendance_history as $history) {
                 // Parse the result set, and adds each row and colums in HTML table
                 foreach ($user_attendance as $row) {
 
-                    if ($isStudent = current(get_user_roles($context, $row->userid))->shortname == 'student' ? true : false) {
+                    // if ($isStudent = current(get_user_roles($context, $row->userid))->shortname == 'student' ? true : false) {
                         $index++;
                         ?>
                         <tr id=<?= $row->userid ?>>
@@ -519,9 +522,9 @@ foreach ($attendance_history as $history) {
                             <td id="attendance-<?= $row->userid ?>" hidden>1</td>
                         </tr>
                 <?php
-                    } else {
-                        continue;
-                    }
+                    // } else {
+                    //     continue;
+                    // }
                 }
                 ?>
             </tbody>
