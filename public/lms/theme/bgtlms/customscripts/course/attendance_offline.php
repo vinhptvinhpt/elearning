@@ -524,10 +524,10 @@ foreach ($attendance_history as $history) {
                 ?>
             </tbody>
         </table>
-        <input type="button" href="#myModal" data-toggle="modal" style="margin-top: 20px; margin-left: auto; margin-right: auto; display: block;" class="btn btn-primary btn-sm" value=<?= get_string('attendancesubmit') ?> onclick="update()" />
+        <input type="button" href="#notimodal" data-toggle="modal" style="margin-top: 20px; margin-left: auto; margin-right: auto; display: block;" class="btn btn-primary btn-sm" value=<?= get_string('attendancesubmit') ?> onclick="update()" />
 
         <!-- Modal HTML -->
-        <div id="myModal" class="modal fade">
+        <div id="notimodal" class="modal fade">
             <div class="modal-dialog modal-confirm">
                 <div class="modal-content">
                     <div class="modal-header">
