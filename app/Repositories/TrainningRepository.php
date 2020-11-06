@@ -68,9 +68,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 'description' => 'text',
             ];
             $validator = validate_fails($request, $param);
+
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
             if ($style == 1) {
@@ -189,7 +190,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -305,6 +306,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             }
 
             TmsTrainningGroup::where('trainning_id', $id)->delete();
+
+            TmsTrainningCourse::where('trainning_id', $id)->update(['deleted' => 1]);
 
             $trainning = TmsTrainningProgram::findOrFail($id);
             $trainning->deleted = 1;
@@ -469,6 +472,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->where('ttc.trainning_id', '=', $trainning_id)
             ->where('ttc.deleted', '=', 0)
             ->where('mc.deleted', '=', 0)
+            ->where('mc.visible', '=', 1)
             ->select('mc.id', 'mc.fullname', 'mc.shortname', 'ttc.sample_id', 'ttc.order_no');
 
         if ($this->keyword) {
@@ -541,6 +545,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
 
         $listCourses = $listCourses->where('c.deleted', '=', 0);
         $listCourses = $listCourses->where('c.category', '<>', 2);
+        $listCourses = $listCourses->where('c.visible', '=', 1);
 
         if ($keyword) {
             //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
@@ -591,6 +596,28 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         $validator = validate_fails($request, $param);
         if (!empty($validator) || !is_array($list)) {
             return response()->json([]);
+        }
+
+        //Check đã có học viên học
+        $checkLearned = DB::table('mdl_course_modules as cm')
+            ->join('mdl_course_modules_completion as cmc', 'cm.id', '=', 'cmc.coursemoduleid')
+            ->join('mdl_course_sections as cs', function ($join) {
+                $join->on('cm.course', '=', 'cs.course');
+                $join->on('cm.section', '=', 'cs.id'); //Lấy học viên only
+            })
+            ->join('mdl_course as c', 'cm.course', '=', 'c.id')
+            ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
+            ->where('cs.section', '<>', 0)
+            ->where('cm.completion', '<>', 0)
+            ->whereIn('cmc.completionstate',[1,2])
+            ->where('ttc.trainning_id', '=', $training_id)
+            ->select(DB::raw('count(cmc.coursemoduleid) as num'))->first();
+
+        if ($checkLearned && $checkLearned->num > 0) {
+            return array(
+                'status' => false,
+                'message' => __('da_co_hoc_vien_hoc_khung_nang_luc_nay_nen_khong_thay_doi_thu_tu_duoc')
+            );
         }
 
         DB::beginTransaction();
@@ -647,6 +674,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->leftJoin('mdl_course_completion_criteria as mcc', 'mcc.course', '=', 'mc.id')
             ->where('mc.category', '=', MdlCourseCategory::COURSE_LIBRALY[0])
             ->where('mc.deleted', '=', 0)
+            ->where('mc.visible', '=', 1)
             ->whereNotIn('mc.id', $lstCourseTrainning)
             ->select('mc.id',
                 'mc.fullname',
@@ -974,7 +1002,6 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $response->status = true;
             $response->message = __('them_khoa_hoc_vao_knl_thanh_cong');
         } catch (\Exception $e) {
-            Log::info($e);
             \DB::rollBack();
             $response->status = false;
             //$response->message = $e->getMessage();
@@ -1399,20 +1426,24 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return json_encode($response);
             }
 
             //lay danh sach user nam trong co cau to chuc va ko nam trong KNL
             $tblQuery = '(select  ttoe.organization_id, ttoe.user_id
                                     from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
+                                     where tud.deleted = 0
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                                     where   find_in_set(ttoe.parent_id, @pv)
                                     and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
                                     UNION
-                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $org_id . ') as org_us';
+                                    select   toe.organization_id,toe.user_id from tms_organization_employee toe
+                                    join tms_user_detail tud on tud.user_id = toe.user_id
+                                    where tud.deleted = 0 and toe.organization_id = ' . $org_id . ') as org_us';
 
             $tblQuery = DB::raw($tblQuery);
 

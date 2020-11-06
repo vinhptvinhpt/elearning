@@ -304,8 +304,12 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
 
         $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-
-        $listCourses = $listCourses->orderBy('c.id', 'desc');
+        if ($keyword) {
+            $listCourses = $listCourses->orderBy('c.shortname', 'desc');
+        } else {
+            $listCourses = $listCourses->orderBy('c.id', 'desc');
+        }
+//        $listCourses = $listCourses->orderBy('c.id', 'desc');
 
         if ($row == 0) {
             return $listCourses->get();
@@ -718,7 +722,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 $response->otherData = $validator;
                 $response->error = $description;
                 return response()->json($response);
@@ -914,7 +918,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 

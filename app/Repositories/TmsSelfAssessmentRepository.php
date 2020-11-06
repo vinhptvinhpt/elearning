@@ -84,7 +84,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -173,7 +173,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -289,7 +289,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
 
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -415,7 +415,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
 
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -531,7 +531,7 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 

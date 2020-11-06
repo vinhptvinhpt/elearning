@@ -853,7 +853,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -1007,7 +1007,8 @@ class BussinessRepository implements IBussinessInterface
             ->where('mdl_course.category', '=', 2)
             ->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
 
-        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+//        $listCourses = $listCourses->orderBy('id', 'desc')->get();
+        $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc')->get();
 
         return response()->json($listCourses);
     }
@@ -1054,7 +1055,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -1468,7 +1469,12 @@ class BussinessRepository implements IBussinessInterface
             }
         }
 
-        $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+
+        if ($keyword) {
+            $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
+        } else {
+            $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+        }
 
         if ($row == 0) {
             return $listCourses->get();
@@ -1594,7 +1600,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6319,7 +6325,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6381,7 +6387,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6429,7 +6435,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6522,7 +6528,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6575,7 +6581,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6700,7 +6706,7 @@ class BussinessRepository implements IBussinessInterface
 
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -6922,7 +6928,7 @@ class BussinessRepository implements IBussinessInterface
 
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -7119,7 +7125,7 @@ class BussinessRepository implements IBussinessInterface
             $validator = validate_fails($request, $param);
             if (!empty($validator)) {
                 $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
+                $response->message = $validator['message'];
                 return response()->json($response);
             }
 
@@ -11005,7 +11011,7 @@ class BussinessRepository implements IBussinessInterface
                     $mdlUser = MdlUser::findOrFail($user_id);
 
                     //Function clear user khỏi DB
-                    TmsUserDetail::clearUser($user_id);
+                    TmsUserDetail::clearUser($user_id, $mdlUser->username);
 
                     $type = 'user';
                     $url = '*';

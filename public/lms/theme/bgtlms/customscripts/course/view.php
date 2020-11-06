@@ -23,7 +23,7 @@ if ($test_mode) {
 $user_id = $USER->id;
 $course_id = $id;
 
-//Auto enrol optional courses => Now click button to enrol
+//Auto enrol optional courses => Removed! Now click button to enrol
 
 if (strlen($from) != 0) {
     $passover = explode('.', $from);
@@ -1118,39 +1118,34 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
     //Nếu chưa có quyền permission_edit thì loop để check
     if (!$permission_edit) {
         //Kiểm tra nếu có enrol mà là quyền học viên thì không được sửa
-        if (!is_null($roleId) && $roleId == 5) {
-            $permission_edit = false;
-            $permission_learn = true;
-        } else {
-            foreach ($permissions as $permission) {
-
-                if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
-                    $permission_edit = true;
-                    break;
-                }
-
-                //Kiểm tra nếu có enrol mà không phải quyền học viên thì được sửa
-                if (!is_null($roleId) && $roleId != 5) {
-                    $permission_edit = true;
-                    break;
-                }
-
-                //có quyền chỉnh sửa thư viện khóa học
-                if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
-                    $permission_edit = true;
-                    break;
-                }
-
-                //có quyền chỉnh sửa khóa học offline
-                if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
-                    $permission_edit = true;
-                    break;
-                }
-
-                //có quyền chỉnh sửa khóa học online
-                if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
-                    $permission_edit = true;
-                    break;
+        if (!is_null($roleId)) {
+            if ($roleId == 5) { //Enrol học viên
+                $permission_edit = false;
+                $permission_learn = true;
+            }
+            if ($roleId == 4) { //Enrol giáo viên
+                $permission_learn = true;
+                //Check khóa học trong tổ chưc cho phép sửa (Manager, Leader)
+                foreach ($permissions as $permission) {
+                    if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
+                        $permission_edit = true;
+                        break;
+                    }
+                    //có quyền chỉnh sửa thư viện khóa học
+                    if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category = 3) {
+                        $permission_edit = true;
+                        break;
+                    }
+                    //có quyền chỉnh sửa khóa học offline
+                    if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category = 5) {
+                        $permission_edit = true;
+                        break;
+                    }
+                    //có quyền chỉnh sửa khóa học online
+                    if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+                        $permission_edit = true;
+                        break;
+                    }
                 }
             }
         }
@@ -1159,20 +1154,22 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
 
     //check permission for start course
     $enableLearn = '';
-    $checkExist = true;
-    $couresIdAllow = $_SESSION["couresIdAllow"];
-    if (!$permission_edit) {
-        $coursesSuggest = $_SESSION["coursesSuggest"];
-        foreach ($coursesSuggest as $courseS) {
-            if ($courseS->id == $id) {
-                $enableLearn = 'btn-learn-disable';
-                break;
-            }
-        }
-        //Check if this course is in the allowed list of courses
-        if ($enableLearn == '')
-            $checkExist = in_array($id, $couresIdAllow);
+    if (!$permission_learn) {
+        $enableLearn = 'btn-learn-disable';
     }
+
+//    $coursesSuggest = $_SESSION["coursesSuggest"];
+//    foreach ($coursesSuggest as $courseS) {
+//        if ($courseS->id == $id) {
+//            $enableLearn = 'btn-learn-disable';
+//            break;
+//        }
+//    }
+
+//    $checkExist = true;
+//    $couresIdAllow = $_SESSION["couresIdAllow"];
+//    $checkExist = in_array($id, $couresIdAllow);
+
     //Check section
     $section_no = isset($_REQUEST['section_no']) ? $_REQUEST['section_no'] : '';
     $source = isset($_REQUEST['source']) ? $_REQUEST['source'] : '';
@@ -1358,8 +1355,7 @@ where ttc.course_id = ' . $id . ')';
                                 <?php } else { ?>
                                     <a href="<?php echo $start_course_link ?>"
                                        <?php if (strlen($start_course_link) == 0) { ?>onclick="return notifyNoContent()" <?php } ?>
-                                       class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start
-                                        course</a>
+                                       class="btn btn-start-course btn-click <?php echo $enableLearn; ?>">start course</a>
                                 <?php } ?>
                             </div>
 
@@ -1430,7 +1426,6 @@ where ttc.course_id = ' . $id . ')';
                 </div>
             </div>
         </section>
-
         <!--    body-->
         <section class="section section-content section-course-info">
             <div class="container">
@@ -1562,8 +1557,7 @@ where ttc.course_id = ' . $id . ')';
                                 <?php if ($unit['modules'][0] && $unit['modules'][0]['url'] && strlen($unit['modules'][0]['url']) != 0) { ?>
                                     <div class="detail-btn">
                                         <a href="<?php echo $unit['modules'][0]['url']; ?>"
-                                           class="btn btn-click btn-start-unit <?php echo $enableLearn; ?>">Start
-                                            unit</a>
+                                           class="btn btn-click btn-start-unit <?php echo $enableLearn; ?>">Start unit</a>
                                     </div>
                                 <?php } ?>
                             </div>
