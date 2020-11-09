@@ -1701,7 +1701,7 @@ class BackgroundController extends Controller
                 }
 
                 //write log to notifications
-                self::insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
+                //self::insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
             }
         }
     }

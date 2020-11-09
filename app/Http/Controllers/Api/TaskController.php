@@ -1230,7 +1230,7 @@ class TaskController extends Controller
                     'timemodified' => strtotime(Carbon::now())
                 ];
                 if ($notify && $role_id == Role::ROLE_STUDENT) {
-                    self::insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+                    //self::insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
                 }
             }
             if (!empty($insert_enrolment_data)) {
