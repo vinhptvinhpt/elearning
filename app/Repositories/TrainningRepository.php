@@ -1397,7 +1397,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             // he thong dang set mac dinh user tao ra deu co quyen student
 
             foreach ($courses as $course) {
-                enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
+                enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, false);
                 usleep(10);
             }
 
