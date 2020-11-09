@@ -2010,16 +2010,17 @@ class TaskController extends Controller
 
                     }
                 }
+                TmsTrainningUser::insert($queryArray);
+                //Lần cuối insert nốt số còn lại
+                foreach ($userArrayByTraining as $training => $users) {
+                    $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
+                }
+                //Reset
+                $num = 0;
+                $queryArray = [];
+                $userArrayByTraining = [];
             }
-            TmsTrainningUser::insert($queryArray);
-            //Lần cuối insert nốt số còn lại
-            foreach ($userArrayByTraining as $training => $users) {
-                $this->insert_mail_notifications(TmsNotification::ASSIGNED_COMPETENCY, $users, $training);
-            }
-            //Reset
-            $num = 0;
-            $queryArray = [];
-            $userArrayByTraining = [];
+
         }
 
         usleep(100);
