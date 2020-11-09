@@ -346,10 +346,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $lstData = $lstData
 //                ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
 //                ->leftJoin('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
-                ->leftJoin('tms_user_detail as tud', 'ttu.user_id', '=', 'tud.user_id')
+                ->leftJoin('tms_user_detail as tud', function ($join) {
+                    $join->on('ttu.user_id', '=', 'tud.user_id');
+                    $join->where('tud.deleted', '=', 0);
+                })
 //                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
-                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'))
-                ->where('tud.deleted', '=', 0);
+                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'));
 //                ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
         } else {
 
