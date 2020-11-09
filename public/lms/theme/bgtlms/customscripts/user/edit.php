@@ -184,13 +184,13 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             Date of Birth <input type="date" class="form-control" v-model="user.dob">
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
-                            Address <input type="text" class="form-control" v-model="user.address">
+                            Address <input type="text" class="form-control" v-model="user.address" readonly onfocus="this.removeAttribute('readonly');">
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Email <input type="text" class="form-control" v-model="user.email" readonly>
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
-                            Contact Number <input type="text" class="form-control" v-model="user.phone">
+                            Contact Number <input type="text" class="form-control" v-model="user.phone" readonly onfocus="this.removeAttribute('readonly');">
                         </div>
                         <div class="col-12 col-xs-12 col-md-6 col-xl-6 col-lg-6 col-xxl-4 info-edit__block form-group">
                             Gender

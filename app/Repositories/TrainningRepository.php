@@ -346,10 +346,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $lstData = $lstData
 //                ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
 //                ->leftJoin('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
-                ->leftJoin('tms_user_detail as tud', 'ttu.user_id', '=', 'tud.user_id')
+                ->leftJoin('tms_user_detail as tud', function ($join) {
+                    $join->on('ttu.user_id', '=', 'tud.user_id');
+                    $join->where('tud.deleted', '=', 0);
+                })
 //                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
                 ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'));
-//                ->where('ttp.deleted', '=', 0);
 //                ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
         } else {
 
@@ -609,7 +611,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             ->join('tms_trainning_courses as ttc', 'ttc.course_id', '=', 'c.id')
             ->where('cs.section', '<>', 0)
             ->where('cm.completion', '<>', 0)
-            ->whereIn('cmc.completionstate',[1,2])
+            ->whereIn('cmc.completionstate', [1, 2])
             ->where('ttc.trainning_id', '=', $training_id)
             ->select(DB::raw('count(cmc.coursemoduleid) as num'))->first();
 
@@ -1149,7 +1151,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $data = DB::table('tms_traninning_users as ttu')
                 ->join('mdl_user as mu', 'mu.id', '=', 'ttu.user_id')
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
-                //->where('mu.active', '=', 0)
+                ->where('tud.deleted', '=', 0)
                 ->select('ttu.id as id', 'mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
             if ($trainning != 0) {
@@ -1258,7 +1260,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->leftJoin($leftJoin, 'ttpu.user_id', '=', 'mu.id')
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
                 //->where('mu.active', '=', 0)
-                ->where('mu.deleted', '=', 0)
+                ->where('tud.deleted', '=', 0)
                 ->whereNull('ttpu.trainning_id')
                 ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 
@@ -1395,7 +1397,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             // he thong dang set mac dinh user tao ra deu co quyen student
 
             foreach ($courses as $course) {
-                enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, true);
+                enrole_user_to_course_multiple($lstUserIDs, Role::ROLE_STUDENT, $course, false);
                 usleep(10);
             }
 

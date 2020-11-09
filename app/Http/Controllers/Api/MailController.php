@@ -276,8 +276,10 @@ class MailController extends Controller
                         ->join('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
                         ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
                         ->where('mdl_course.id', $itemNotification->course_id)
+                        ->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT)
                         ->select(
-                    'mdl_user.email',
+                            'mdl_user.id',
+                            'mdl_user.email',
                             'mdl_user.firstname',
                             'mdl_user.lastname',
                             'mdl_user.username'
@@ -289,6 +291,7 @@ class MailController extends Controller
                             //send mail can not continue if has fake email
                             $fullname = $user->lastname . ' ' . $user->firstname;
                             $email = $user->email;
+                            $send_to = $user->id;
                             if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
 
                                 Mail::to($email)->send(new CourseSendMail(
@@ -308,18 +311,18 @@ class MailController extends Controller
                                 $tms_notifLog->type = $itemNotification->type;
                                 $tms_notifLog->target = TmsNotification::REMIND_EXAM;
                                 $tms_notifLog->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
-                                $tms_notifLog->sendto = $user->id;
+                                $tms_notifLog->sendto = $send_to;
                                 $tms_notifLog->status_send = 1;
                                 $tms_notifLog->createdby = $itemNotification->createdby;
                                 $tms_notifLog->course_id = $itemNotification->course_id;
                                 $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
                             } else {
-                                //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
+                                //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED); //Không đổi status notify gốc
                             }
                         }
 
                         $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
-                        $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+                        $this->update_notification($itemNotification, \App\TmsNotification::SENT, false); //Không ghi log cho notify gốc nữa
 
                     } catch (Exception $e) {
                         $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
