@@ -755,8 +755,8 @@ function training_enrole($user_id, $trainning_id = null)
                 ]);
             }
 
-            //write log to notifications
-            insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
+            //write log to notifications => khong gui mail thong bao enrol cho tung khoa trong khung nua
+            //insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
 
             usleep(200);
         }
@@ -1772,6 +1772,33 @@ function callAPI($method, $url, $data, $hasHeader, $user_token)
 
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_HTTPAUTH, CURLAUTH_BASIC);
+
+    // EXECUTE:
+    $result = curl_exec($curl);
+
+    curl_close($curl);
+    return $result;
+}
+
+//call api histaff
+function callAPIHiStaff($method, $url, $username, $token, $key)
+{
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => $url,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => "",
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => $method,
+        CURLOPT_POSTFIELDS => "username=" . $username . "&token=" . $token . "&key=" . $key,
+        CURLOPT_HTTPHEADER => array(
+            "Content-Type: application/x-www-form-urlencoded"
+        ),
+    ));
 
     // EXECUTE:
     $result = curl_exec($curl);
