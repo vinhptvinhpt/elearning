@@ -255,7 +255,6 @@ class MailController extends Controller
                 ->where('tms_nofitications.target', \App\TmsNotification::REMIND_EXAM)
                 ->where('status_send', \App\TmsNotification::UN_SENT)
                 ->where('date_quiz', '<', $next_3_days)
-                ->join('mdl_user', 'mdl_user.id', '=', 'tms_nofitications.sendto')
                 ->select(
                     'tms_nofitications.id',
                     'tms_nofitications.target',
@@ -263,12 +262,7 @@ class MailController extends Controller
                     'tms_nofitications.type',
                     'tms_nofitications.sendto',
                     'tms_nofitications.createdby',
-                    'tms_nofitications.content',
-
-                    'mdl_user.email',
-                    'mdl_user.firstname',
-                    'mdl_user.lastname',
-                    'mdl_user.username'
+                    'tms_nofitications.content'
                 )
                 ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                 ->get(); //lay danh sach cac thong bao chua gui
@@ -278,45 +272,74 @@ class MailController extends Controller
             if ($countRemindNotification > 0) {
                 \DB::beginTransaction();
                 foreach ($lstNotifi as $itemNotification) {
-                    try {
-                        //send mail can not continue if has fake email
-                        $fullname = $itemNotification->lastname . ' ' . $itemNotification->firstname;
-                        $email = $itemNotification->email;
-                        if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
 
-                            Mail::to($email)->send(new CourseSendMail(
-                                TmsNotification::REMIND_EXAM,
-                                $itemNotification->username,
-                                $fullname,
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                '',
-                                $itemNotification->content
-                            ));
-                            $object_content = [];
-                            $exam = json_decode($itemNotification->content);
-                            if (!empty($exam)) {
-                                $object_content = array(
-                                    'object_id' => '',
-                                    'object_name' => $exam->quiz_name ,
-                                    'object_type' => 'exam',
-                                    'parent_id' => '',
-                                    'parent_name' => '',
-                                    'start_date' => $exam->start_time,
-                                    'end_date' => $exam->end_time,
-                                    'code' => '',
-                                    'room' => '',
-                                    'grade' => '',
-                                );
+                    $object_content = [];
+                    $exam = json_decode($itemNotification->content);
+                    if (!empty($exam)) {
+                        $object_content = array(
+                            'object_id' => '',
+                            'object_name' => $exam->quiz_name ,
+                            'object_type' => 'exam',
+                            'parent_id' => '',
+                            'parent_name' => '',
+                            'start_date' => $exam->start_time,
+                            'end_date' => $exam->end_time,
+                            'code' => '',
+                            'room' => '',
+                            'grade' => '',
+                        );
+                    }
+
+                    $course_users = MdlCourse::query()
+                        ->join('mdl_enrol', 'mdl_enrol.courseid', '=', 'mdl_course.id')
+                        ->join('mdl_user_enrolments', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
+                        ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
+                        ->where('mdl_course.id', $itemNotification->course_id)
+                        ->select(
+                    'mdl_user.email',
+                            'mdl_user.firstname',
+                            'mdl_user.lastname',
+                            'mdl_user.username'
+                        )->get();
+
+                    try {
+
+                        foreach ($course_users as $user) {
+                            //send mail can not continue if has fake email
+                            $fullname = $user->lastname . ' ' . $user->firstname;
+                            $email = $user->email;
+                            if (strlen($email) != 0 && filter_var($email, FILTER_VALIDATE_EMAIL) && $this->filterMail($email)) {
+
+                                Mail::to($email)->send(new CourseSendMail(
+                                    TmsNotification::REMIND_EXAM,
+                                    $user->username,
+                                    $fullname,
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    '',
+                                    $itemNotification->content
+                                ));
+
+                                $tms_notifLog = new \stdClass();
+                                $tms_notifLog->type = $itemNotification->type;
+                                $tms_notifLog->target = TmsNotification::REMIND_EXAM;
+                                $tms_notifLog->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                                $tms_notifLog->sendto = $user->id;
+                                $tms_notifLog->status_send = 1;
+                                $tms_notifLog->createdby = $itemNotification->createdby;
+                                $tms_notifLog->course_id = $itemNotification->course_id;
+                                $this->insert_single_notification_log($tms_notifLog, \App\TmsNotificationLog::UPDATE_STATUS_NOTIF, $tms_notifLog->content);
+                            } else {
+                                //$this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                             }
-                            $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
-                            $this->update_notification($itemNotification, \App\TmsNotification::SENT);
-                        } else {
-                            $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                         }
+
+                        $itemNotification->content = json_encode($object_content, JSON_UNESCAPED_UNICODE);
+                        $this->update_notification($itemNotification, \App\TmsNotification::SENT);
+
                     } catch (Exception $e) {
                         $this->update_notification($itemNotification, \App\TmsNotification::SEND_FAILED);
                     }

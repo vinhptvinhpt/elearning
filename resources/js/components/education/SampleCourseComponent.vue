@@ -223,7 +223,7 @@
                                                 <a :title="trans.get('keys.sua_noi_dung')"
                                                    v-if="slug_can('tms-educate-libraly-edit')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
-                                                   :href="'/lms/course/view.php?id='+course.id">
+                                                   @click="openView(course.id)">
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
 
@@ -660,6 +660,17 @@
             },
             setFileInput() {
                 $('.dropify').dropify();
+            },
+            openView(id) {
+              let d = new Date();
+              d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+              var expires = "expires="+d.toUTCString();
+              let storage = localStorage.getItem('auth.user');
+              let user_id = storage ? JSON.parse(storage).id : '';
+              let domain = storage ? JSON.parse(storage).domain : '';
+              let cookie_name = 'library' + '_' + id + '_' + user_id;
+              document.cookie = cookie_name + "=" + 1 + ";" + expires + ";path=/";
+              window.location.href = domain + "lms/course/view.php?id=" + id;
             }
         },
         mounted() {
