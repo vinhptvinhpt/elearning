@@ -984,7 +984,7 @@ class TaskController extends Controller
                     // enroll user to course in competency framework
                     // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
                     // he thong dang set mac dinh user tao ra deu co quyen student
-                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, true);
+                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, false);
                 }
 
                 usleep(100);
@@ -1087,7 +1087,7 @@ class TaskController extends Controller
                     // enroll user to course in competency framework
                     // do moodle chi hieu user duoc hoc khi duoc enroll voi quyen student or teacher
                     // he thong dang set mac dinh user tao ra deu co quyen student
-                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, true);
+                    $this->cron_enroll_user_to_course_multiple($users, Role::ROLE_STUDENT, $data->course_id, false);
                 }
 
                 usleep(100);
@@ -1230,7 +1230,7 @@ class TaskController extends Controller
                     'timemodified' => strtotime(Carbon::now())
                 ];
                 if ($notify && $role_id == Role::ROLE_STUDENT) {
-                    //self::insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
+                    self::insert_single_notification(\App\TmsNotification::MAIL, $user_id, \App\TmsNotification::ENROL, $course_id);
                 }
             }
             if (!empty($insert_enrolment_data)) {
