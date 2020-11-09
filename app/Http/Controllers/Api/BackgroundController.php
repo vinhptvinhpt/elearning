@@ -165,7 +165,7 @@ class BackgroundController extends Controller
                     continue;
                 }
 
-                $base_level_organization_code = $user[7];
+                $base_level_organization_code = trim($user[7]);
                 if (self::validateRawData($base_level_organization_code, 'code')) {
                     if (strlen($base_level_organization_code) != 0 && array_key_exists($base_level_organization_code, $base_level_orgs)) { //Check manual
                         $base_organization = TmsOrganization::firstOrCreate([
@@ -219,7 +219,7 @@ class BackgroundController extends Controller
 
                 //Check / create department
                 $department_name = $user[5];
-                $department_code = $user[6];
+                $department_code = trim($user[6]);
                 if (self::validateRawData($department_code, 'code')) {
                     if (strlen($department_name) == 0 || strlen($department_code) == 0) {
                         $content[] = 'Department info is missing';
@@ -304,10 +304,10 @@ class BackgroundController extends Controller
                     }
                 }
 
-                $gender = $user[18];
-                if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
+                $gender =  strtolower(self::vn_to_str(self::convertToUTF8(trim($user[18]))));
+                if (strpos($gender, 'nam') !== false || strpos($gender, 'male') !== false) {
                     $gender = 1;
-                } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
+                } elseif (strpos($gender, 'nu') !== false || strpos($gender, 'female') !== false) {
                     $gender = 0;
                 } else {
                     $gender = -1;
@@ -525,7 +525,7 @@ class BackgroundController extends Controller
                     continue;
                 }
 
-                $base_level_organization_code = $user[7];
+                $base_level_organization_code = trim($user[7]);
                 if (self::validateRawData($base_level_organization_code, 'code')) {
                     if (strlen($base_level_organization_code) != 0) {
                         if (array_key_exists($base_level_organization_code, $base_level_orgs)) { //To chuc cap 1
@@ -585,7 +585,7 @@ class BackgroundController extends Controller
 
                 //Check / create department
                 $department_name = $user[5];
-                $department_code = $user[6];
+                $department_code = trim($user[6]);
                 if (self::validateRawData($department_code, 'code')) {
                     if (strlen($department_name) == 0 || strlen($department_code) == 0) {
                         $content[] = 'Department info is missing';
@@ -650,12 +650,12 @@ class BackgroundController extends Controller
 //                }
 
                 $address = $user[20];
-                $phone = self::preparePhoneNo($user[21]);
+                $phone = self::preparePhoneNo($user[22]);
 
-                $gender = $user[16];
-                if (strtolower($gender) == 'nam' || strtolower($gender) == 'male') {
+                $gender =  strtolower(self::vn_to_str(self::convertToUTF8(trim($user[16]))));
+                if (strpos($gender, 'nam') !== false || strpos($gender, 'male') !== false) {
                     $gender = 1;
-                } elseif (strtolower($gender) == 'nữ' || strtolower($gender) == 'female') {
+                } elseif (strpos($gender, 'nu') !== false || strpos($gender, 'female') !== false) {
                     $gender = 0;
                 } else {
                     $gender = -1;
@@ -816,6 +816,45 @@ class BackgroundController extends Controller
         } else {
             return true;
         }
+    }
+
+    public function vn_to_str($str)
+    {
+        $str = preg_replace("/(à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ)/", 'a', $str);
+        $str = preg_replace("/(è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ)/", 'e', $str);
+        $str = preg_replace("/(ì|í|ị|ỉ|ĩ)/", 'i', $str);
+        $str = preg_replace("/(ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ)/", 'o', $str);
+        $str = preg_replace("/(ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ)/", 'u', $str);
+        $str = preg_replace("/(ỳ|ý|ỵ|ỷ|ỹ)/", 'y', $str);
+        $str = preg_replace("/(đ)/", 'd', $str);
+        $str = preg_replace("/(À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ)/", 'A', $str);
+        $str = preg_replace("/(È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ)/", 'E', $str);
+        $str = preg_replace("/(Ì|Í|Ị|Ỉ|Ĩ)/", 'I', $str);
+        $str = preg_replace("/(Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ)/", 'O', $str);
+        $str = preg_replace("/(Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ)/", 'U', $str);
+        $str = preg_replace("/(Ỳ|Ý|Ỵ|Ỷ|Ỹ)/", 'Y', $str);
+        $str = preg_replace("/(Đ)/", 'D', $str);
+        $str = str_replace(' ', '', $str);
+        $str = strtolower($str);
+        try {
+            $str = self::convertToUTF8($str);
+            $str = iconv('utf-8','ASCII//IGNORE//TRANSLIT',$str);
+            $str = preg_replace("/[^a-zA-Z0-9]+/", "", $str);
+        } catch (\Exception $e) {
+            return $str;
+        }
+        return $str;
+    }
+
+    function convertToUTF8($text){
+        $encoding = mb_detect_encoding($text, mb_detect_order(), false);
+
+        if($encoding == "UTF-8")
+        {
+            $text = mb_convert_encoding($text, 'UTF-8', 'UTF-8');
+        }
+        $out = iconv(mb_detect_encoding($text, mb_detect_order(), false), "UTF-8//IGNORE", $text);
+        return $out;
     }
 
     public function fillMissingPQDL() {
