@@ -755,8 +755,8 @@ function training_enrole($user_id, $trainning_id = null)
                 ]);
             }
 
-            //write log to notifications
-            insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
+            //write log to notifications => khong gui mail thong bao enrol cho tung khoa trong khung nua
+            //insert_single_notification(TmsNotification::MAIL, $user_id, TmsNotification::ENROL, $course->course_id);
 
             usleep(200);
         }
