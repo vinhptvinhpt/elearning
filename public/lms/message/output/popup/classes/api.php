@@ -187,17 +187,17 @@ class api
                     $content = json_decode($record->fullmessage);
 
                     //convert startdate
-                    $start_time = $content->start_time;
+                    $start_time = $content->start_date;
                     if ($start_time > 0) {
-                        $start_time = date('m/d/Y', $content->start_time);
+                        $start_time = date('m/d/Y', $start_time);
                     } else {
                         $start_time = 'N/A';
                     }
 
                     //convert enddate
-                    $end_time = $content->end_time;
+                    $end_time = $content->end_date;
                     if ($end_time > 0) {
-                        $end_time = date('m/d/Y', $content->end_time);
+                        $end_time = date('m/d/Y', $end_time);
                     } else {
                         $end_time = 'N/A';
                     }
