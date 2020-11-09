@@ -854,3 +854,5 @@ Route::post('/elearning/v1/sync-user', 'Backend\HiStaff\SyncDataController@apiSa
 Route::get('/elearning/v1/test-user', 'Backend\HiStaff\SyncDataController@testAPI');
 Route::get('/show-survey', 'Backend\SurveyController@viewExport');
 Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLink');
+Route::get('/elearning/auth', 'Backend\HiStaff\SyncDataController@index');
+Route::post('/elearning/v1/auth', 'Backend\HiStaff\SyncDataController@login');
