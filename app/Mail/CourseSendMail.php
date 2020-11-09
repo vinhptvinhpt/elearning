@@ -47,6 +47,7 @@ class CourseSendMail extends Mailable
     const EXAMNAME = "[EXAMNAME]";
     const LINK_TO_UNLOCK = "[LINK_TO_UNLOCK]";
     const LINK_TO_QUIZ = "[LINK_TO_QUIZ]";
+    const DEADLINE = "[DEADLINE]";
 
 
     private $activity;

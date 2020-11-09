@@ -34,9 +34,10 @@
 
     $url = $app_base_url . 'page/invitation/confirm/' . $content;
 
-    $start_date = !empty($start_date) ? date('Y-m-d H:i:s', $start_date) : '';
-    $end_date = !empty($end_date) ? date('Y-m-d H:i:s', $end_date) : '';
+    $start_date = !empty($start_date) ? date('Y-m-d H:i:s', $start_date) : 'N/A';
+    $end_date = !empty($end_date) ? date('Y-m-d H:i:s', $end_date) : 'N/A';
     $course_description = !empty($course_description) ? $course_description : 'N/A';
+    $course_place = !empty($course_place) ? $course_place : 'N/A';
     //replace values
     $text = str_replace(CourseSendMail::FULLNAME, $fullname, $text);
     $text = str_replace(CourseSendMail::COURSENAME, $course_name, $text);
@@ -46,6 +47,7 @@
     $text = str_replace(CourseSendMail::COURSEDESCRIPTION, $course_description, $text);
     $text = str_replace(CourseSendMail::STARTTIME, $start_date, $text);
     $text = str_replace(CourseSendMail::ENDTIME, $end_date, $text);
+    $text = str_replace(CourseSendMail::DEADLINE, $start_date, $text);
 
     echo $text;
     ?>

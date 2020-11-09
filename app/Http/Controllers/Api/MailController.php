@@ -277,7 +277,8 @@ class MailController extends Controller
                         ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
                         ->where('mdl_course.id', $itemNotification->course_id)
                         ->select(
-                    'mdl_user.email',
+                            'mdl_user.id',
+                            'mdl_user.email',
                             'mdl_user.firstname',
                             'mdl_user.lastname',
                             'mdl_user.username'
