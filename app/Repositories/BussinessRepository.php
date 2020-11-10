@@ -4136,7 +4136,7 @@ class BussinessRepository implements IBussinessInterface
                 'mdl_course.fullname as course_name',
             ];
 
-            if ($training_id == 0) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
+            if ($training_id == 0 || $training_id == 99999) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
                 /////////////////////////// PHAN QUYEN DU LIEU ///////////////////////
                 //lấy người dùng theo tổ chức
                 $query_per = TmsOrganization::query()->where('tms_organization.enabled', 1)
@@ -4147,6 +4147,18 @@ class BussinessRepository implements IBussinessInterface
                 $query_per->leftJoin('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
                     ->leftJoin('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
                     ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id');
+
+                //Học viên phải được assign vào khóa
+                $query_per
+                    ->leftJoin('mdl_enrol', function ($join) {
+                        $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                        $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                        $join->where('mdl_enrol.enrol', '=', 'manual');
+                    })
+                    ->leftJoin('mdl_user_enrolments', function ($join) {
+                             $join->on('mdl_user_enrolments.userid', '=', 'tms_user_detail.user_id');
+                             $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                         });
 
                 $select_array_per = array_merge($select_array, [
                     DB::raw('CONCAT(tms_organization.id, "_", "pdql") as training_id'),
@@ -4196,7 +4208,7 @@ class BussinessRepository implements IBussinessInterface
         }
 
         if ($mode_select == 'completed_course') {
-            if ($training_id == 0) {
+            if ($training_id == 0 || $training_id == 99999) {
                 $query_per->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
@@ -4214,7 +4226,7 @@ class BussinessRepository implements IBussinessInterface
 
         if ($mode_select == 'learning_time') {
             $data_type = 'counter'; //Thống kê theo số lượng, cộng dồn
-            if ($training_id == 0) { //Both knl and permission
+            if ($training_id == 0 || $training_id == 99999) { //Both knl and permission
                 $query_per->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
@@ -4241,7 +4253,7 @@ class BussinessRepository implements IBussinessInterface
 
         //Merge array results
         if ($show_courses) {
-            if ($training_id == 0) {
+            if ($training_id == 0 || $training_id == 99999) {
                 $query_per->select($select_array_per);
                 self::finishQuery($query_per, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, false);
                 $list2 = $query_per->get()->toArray();
@@ -4377,6 +4389,8 @@ class BussinessRepository implements IBussinessInterface
         //Trong query chứa khung năng lực => check khung năng lực chưa bị xóa
         if ($in_training) {
             $query = $query->where('tms_traninning_programs.deleted', '=', 0);
+        } else { //Khóa học phân quyền dữ liệu thì phải được enrol
+            $query = $query->whereNotNull('mdl_user_enrolments.id');
         }
 
         //Query liên quan đến khóa học => check khóa học chưa bị xóa
@@ -4399,7 +4413,7 @@ class BussinessRepository implements IBussinessInterface
             //$level_1_ids = TmsOrganization::query()->where('level', 1)->pluck('id')->toArray();
         }
 
-        if (strlen($training_id) != 0 && $training_id != 0) {
+        if (strlen($training_id) != 0 && $training_id != 0 && $in_training) { //trường hợp training_id = 99999 cũng được vì nó sẽ k ra kết quả nào cho query khóa trong khung năng lực
             //$query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
             $query = $query->where('tms_traninning_users.trainning_id', '=', $training_id);
         }
