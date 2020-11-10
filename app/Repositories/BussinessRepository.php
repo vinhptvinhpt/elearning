@@ -4148,6 +4148,18 @@ class BussinessRepository implements IBussinessInterface
                     ->leftJoin('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
                     ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id');
 
+                //Học viên phải được assign vào khóa
+                $query_per
+                    ->leftJoin('mdl_enrol', function ($join) {
+                        $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                        $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                        $join->where('mdl_enrol.enrol', '=', 'manual');
+                    })
+                    ->leftJoin('mdl_user_enrolments', function ($join) {
+                             $join->on('mdl_user_enrolments.userid', '=', 'tms_user_detail.user_id');
+                             $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                         });
+
                 $select_array_per = array_merge($select_array, [
                     DB::raw('CONCAT(tms_organization.id, "_", "pdql") as training_id'),
                     DB::raw('"Other assigned courses" as training_name')
@@ -4377,6 +4389,8 @@ class BussinessRepository implements IBussinessInterface
         //Trong query chứa khung năng lực => check khung năng lực chưa bị xóa
         if ($in_training) {
             $query = $query->where('tms_traninning_programs.deleted', '=', 0);
+        } else { //Khóa học phân quyền dữ liệu thì phải được enrol
+            $query = $query->whereNotNull('mdl_user_enrolments.id');
         }
 
         //Query liên quan đến khóa học => check khóa học chưa bị xóa
