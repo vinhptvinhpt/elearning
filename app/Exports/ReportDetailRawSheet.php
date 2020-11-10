@@ -50,7 +50,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
     public function _getRowBy($row) //overwrite row data if necessary
     {
         if ($this->type == 'learning_time') { //Convert seconds to hours
-            $row[8] = round($row[8]/3600, 2);
+            $row[8] = round($row[8]/3600, 4);
         }
         //array_pop($row); // remove column type when return
         return $row;
