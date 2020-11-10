@@ -1132,7 +1132,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         break;
                     }
                     //có quyền chỉnh sửa thư viện khóa học
-                    if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 3) {
+                    if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 2) {
                         $permission_edit = true;
                         break;
                     }
@@ -1142,14 +1142,14 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         break;
                     }
                     //có quyền chỉnh sửa khóa học online
-                    if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
+                    if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 2 && $course_category != 5) {
                         $permission_edit = true;
                         break;
                     }
                 }
             }
         } else {
-            if ($course_category == 2) {
+            if ($course_category == 2) { //Khóa thư viện
                 //Check cookie
                 $library_key = 'library' . '_' . $id . '_' . $user_id;
                 if(!isset($_COOKIE[$library_key])) {
@@ -1159,31 +1159,33 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     foreach ($permissions as $permission) {
                         if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                             $permission_edit = true;
+                            $permission_learn = true;
                             break;
                         }
+
+                        //Các role khác giáo viên: leader, manager => check permission cụ thể
                         //có quyền chỉnh sửa thư viện khóa học
-                        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 3) {
+                        if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 2) {
                             $permission_edit = true;
-                            break;
-                        }
-                        //có quyền chỉnh sửa khóa học offline
-                        if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category == 5) {
-                            $permission_edit = true;
-                            break;
-                        }
-                        //có quyền chỉnh sửa khóa học online
-                        if ($permission->permission_slug == 'tms-educate-exam-online-edit' && $course_category != 3 && $course_category != 5) {
-                            $permission_edit = true;
+                            $permission_learn = true;
                             break;
                         }
                     }
                 }
             }
-            if ($course_category == 5) {
+            if ($course_category == 5) { //Khóa offline
                 //Check khóa học trong tổ chưc cho phép sửa (Manager, Leader)
                 foreach ($permissions as $permission) {
                     if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                         $permission_edit = true;
+                        $permission_learn = true;
+                        break;
+                    }
+                    //có quyền chỉnh sửa khóa học offline
+                    //Các role khác giáo viên: leader, manager => check permission cụ thể
+                    if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category == 5) {
+                        $permission_edit = true;
+                        $permission_learn = true;
                         break;
                     }
                 }

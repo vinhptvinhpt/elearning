@@ -413,6 +413,12 @@
                 axios.get('/api/training/list_for_filter')
                     .then(response => {
                         this.training_options = response.data;
+                        let newOption = {
+                          id: 99999,
+                          code: 'Other assigned courses',
+                          name: 'Other assigned courses'
+                        }
+                        this.training_options.push(newOption);
                     })
                     .catch(error => {
                         console.log(error.response.data);
