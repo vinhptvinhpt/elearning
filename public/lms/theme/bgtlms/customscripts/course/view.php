@@ -1161,8 +1161,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     foreach ($permissions as $permission) {
                         if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                             $permission_edit = true;
-                            $permission_learn = true;
-                            $learnable = true;
+                            $permission_learn = false;
+                            $learnable = false;
                             break;
                         }
 
@@ -1170,8 +1170,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         //có quyền chỉnh sửa thư viện khóa học
                         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 2) {
                             $permission_edit = true;
-                            $permission_learn = true;
-                            $learnable = true;
+                            $permission_learn = false;
+                            $learnable = false;
                             break;
                         }
                     }
