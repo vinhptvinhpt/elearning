@@ -236,6 +236,19 @@
             }
         });
 
+        $('form#responseform .que .formulation .qtext select.select').change(function() {
+            var name = $(this).attr('name');
+            var array = name.split(":");
+            var strs = array[1].split("_");
+            var quesid = 'quiznavbutton' + strs[0];
+			if($('#' + quesid).hasClass('notyetanswered')){
+				$('#' + quesid).removeClass('notyetanswered');
+			}
+			if(!$('#' + quesid).hasClass('invalidanswer')){
+				$('#' + quesid).addClass('invalidanswer');
+			}
+        });
+
         $('form#responseform .que .formulation .answer [type="text"]').change(function () {
             var name = $(this).attr('name');
             var array = name.split(":");
