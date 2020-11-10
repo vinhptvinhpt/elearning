@@ -1076,8 +1076,12 @@ where mc.id = ' . $id;
         foreach ($units as $unit) {
             $modules = $unit['modules'];
             if ($modules) {
-                $start_course_link = $modules[0]['url'];
-                break;
+                foreach ($modules as $module) {
+                    if (strlen($module['url']) != 0) {
+                        $start_course_link = $module['url'];
+                        break;
+                    }
+                }
             }
         }
     }
@@ -1161,8 +1165,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     foreach ($permissions as $permission) {
                         if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                             $permission_edit = true;
-                            $permission_learn = false;
-                            $learnable = false;
+                            $permission_learn = true;
+                            $learnable = true;
                             break;
                         }
 
@@ -1170,8 +1174,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         //có quyền chỉnh sửa thư viện khóa học
                         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 2) {
                             $permission_edit = true;
-                            $permission_learn = false;
-                            $learnable = false;
+                            $permission_learn = true;
+                            $learnable = true;
                             break;
                         }
                     }
@@ -1341,6 +1345,8 @@ where ttc.course_id = ' . $id . ')';
     if ($countTemp == $countCourses)
         $doneCompetency = true;
 }
+
+
 
 ?>
 
