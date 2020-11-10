@@ -1122,9 +1122,11 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             if ($roleId == 5) { //Enrol học viên
                 $permission_edit = false;
                 $permission_learn = true;
+                $learnable = true;
             }
             if ($roleId == 4) { //Enrol giáo viên
                 $permission_learn = true;
+                $learnable = true;
                 //Check khóa học trong tổ chưc cho phép sửa (Manager, Leader)
                 foreach ($permissions as $permission) {
                     if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
@@ -1160,6 +1162,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                             $permission_edit = true;
                             $permission_learn = true;
+                            $learnable = true;
                             break;
                         }
 
@@ -1168,6 +1171,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                         if ($permission->permission_slug == 'tms-educate-libraly-edit' && $course_category == 2) {
                             $permission_edit = true;
                             $permission_learn = true;
+                            $learnable = true;
                             break;
                         }
                     }
@@ -1179,6 +1183,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     if (in_array($permission->name, ['teacher'])) { //Nếu Content creater => Mặc định được sửa khóa học
                         $permission_edit = true;
                         $permission_learn = true;
+                        $learnable = true;
                         break;
                     }
                     //có quyền chỉnh sửa khóa học offline
@@ -1186,6 +1191,7 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
                     if ($permission->permission_slug == 'tms-educate-exam-offline-edit' && $course_category == 5) {
                         $permission_edit = true;
                         $permission_learn = true;
+                        $learnable = true;
                         break;
                     }
                 }
