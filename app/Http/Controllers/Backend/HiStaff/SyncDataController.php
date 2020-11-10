@@ -43,7 +43,7 @@ class SyncDataController
             $result_api = json_decode($result_api, true);
 
             if ($result_api['Code'] != '200') {
-                return response()->json(['status' => 'FAILUSER']);
+                return response()->json(['status' => 'FAILTOKEN']);
             }
 
 

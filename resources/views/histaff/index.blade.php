@@ -103,12 +103,16 @@
                 } else if (
                     data.status === "FAILUSER" || data.status === "FAILPASSWORD" || data.status === "FAILBANNED" || data.status === "FAILORGANIZATION" ||
                     data.status === "INVALID" || data.status === "FAILCONFIRM" || data.status === "FAILCODE" || data.status === "FAILVALIDATECODE"
+                    || data.status === "FAILTOKEN"
                 ) {
                     if (data.status === "FAILPASSWORD" || data.status === "FAILUSER") {
                         alert('Username or password incorrect');
                     }
                     if (data.status === "FAILBANNED") {
                         alert('User is banned');
+                    }
+                    if (data.status === "FAILTOKEN") {
+                        alert('Token is not valid');
                     }
                     $.LoadingOverlay("hide");
                 }
