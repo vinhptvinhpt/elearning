@@ -105,6 +105,7 @@
                     data.status === "INVALID" || data.status === "FAILCONFIRM" || data.status === "FAILCODE" || data.status === "FAILVALIDATECODE"
                     || data.status === "FAILTOKEN"
                 ) {
+                    $.LoadingOverlay("hide");
                     if (data.status === "FAILPASSWORD" || data.status === "FAILUSER") {
                         alert('Username or password incorrect');
                     }
@@ -114,7 +115,8 @@
                     if (data.status === "FAILTOKEN") {
                         alert('Token is not valid');
                     }
-                    $.LoadingOverlay("hide");
+
+                    window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + '{{Config::get('constants.domain.TMS')}}';
                 }
 
             }
