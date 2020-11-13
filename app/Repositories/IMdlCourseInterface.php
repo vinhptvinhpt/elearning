@@ -21,4 +21,8 @@ interface IMdlCourseInterface
 
     public function removeAssignOptionalCourse(Request $request);
 
+    public function apiGetExistedCodeLibraries();
+
+    public function cloneCourseLibrary(Request $request);
+
 }

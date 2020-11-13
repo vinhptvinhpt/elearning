@@ -1,6 +1,5 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
-import AuthService from './services/auth';
 
 import 'nprogress/nprogress.css';
 import NProgress from 'nprogress';
@@ -133,6 +132,7 @@ import CompetencyListComponent from "./components/tnd-report/CompetencyListCompo
 import CompetencyEditComponent from "./components/tnd-report/CompetencyEditComponent";
 import SelfResult from "./components/self-assessment/SelfResultComponent";
 import SelfResultUser from "./components/self-assessment/SelfResultUserComponent";
+import CloneCourseLibrary from "./components/education/CloneCourseLibraryComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -682,6 +682,12 @@ const routes = [
                 path: 'education/course/clone/:course_id',
                 component: CourseCloneComponent,
                 name: 'CourseClone',
+                props: (route) => ({course_id: route.params.course_id})
+            },
+            {
+                path: 'education/course/clone-library/:course_id',
+                component: CloneCourseLibrary,
+                name: 'CloneCourseLibrary',
                 props: (route) => ({course_id: route.params.course_id})
             },
             {
