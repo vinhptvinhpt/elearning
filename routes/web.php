@@ -515,6 +515,8 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/courses/get_library', 'Backend\CourseController@apiGetListLibrary');
     Route::post('/api/courses/get_library_codes', 'Backend\CourseController@apiGetListLibraryCodes');
     Route::post('/api/courses/get_existed_codes', 'Backend\CourseController@apiGetExistedCodes');
+    Route::post('/api/courses/get-existed-code-libraries', 'Backend\CourseController@apiGetExistedCodeLibraries');
+    Route::post('/api/courses/clone-library', 'Backend\CourseController@apiCloneCourseLibrary');
 
     Route::post('/api/courses/optional_courses', 'Backend\CourseController@apiGetOptionalCourses');
     Route::post('/api/courses/assign_optional_course', 'Backend\CourseController@apiAssignOptionalCourse');

@@ -4212,7 +4212,7 @@ class BussinessRepository implements IBussinessInterface
                 $query_per->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
-                    //$join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
+                    $join->on('mdl_course.id', '=', 'course_completion.courseid');
                 });
                 $select_array_per[] = 'course_completion.timecompleted as completed';
             }

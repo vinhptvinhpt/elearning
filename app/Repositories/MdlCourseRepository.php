@@ -19,6 +19,8 @@ use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
+use App\TmsTrainningCourse;
+use App\TmsTrainningProgram;
 use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Illuminate\Database\Query\Builder;
@@ -1309,6 +1311,16 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($codes);
     }
 
+    public function apiGetExistedCodeLibraries()
+    {
+        $codes = MdlCourse::query()
+            ->select('id', 'shortname')
+            ->where('category', 2)
+            ->get();
+        return response()->json($codes);
+    }
+
+
     /**
      * @param $num
      * @return string
@@ -1473,5 +1485,193 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return response()->json($response);
     }
+
     //#endregion
+
+    public function cloneCourseLibrary(Request $request)
+    {
+        $avatar = $request->input('course_avatar');
+        $fullname = $request->input('fullname');
+        $shortname = $request->input('shortname');
+        $startdate = $request->input('startdate');
+        $enddate = $request->input('enddate');
+        $pass_score = $request->input('pass_score');
+        $description = $request->input('description');
+        $category_id = $request->input('category_id');
+        $sample = $request->input('sample');
+        $course_place = $request->input('course_place');
+        $allow_register = $request->input('allow_register');
+        $total_date_course = $request->input('total_date_course');
+        $is_end_quiz = $request->input('is_end_quiz');
+        $estimate_duration = $request->input('estimate_duration');
+        $course_budget = $request->input('course_budget');
+        $access_ip_string = $request->input('access_ip');
+        $is_toeic = $request->input('is_toeic');
+
+
+        $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
+        $course->category = $category_id;
+        $course->shortname = $shortname;
+        $course->fullname = $fullname;
+        $course->summary = $description;
+        $course->is_toeic = $is_toeic;
+        $course->course_avatar = $avatar;
+        if ($sample == 1) {
+            $course->startdate = strtotime(Carbon::now());
+            $course->enddate = strtotime(Carbon::now()->addYear(100)); // gia hạn thời gian cho khóa học mẫu là 100 năm
+            $course->visible = 1;  //luôn hiển thị khi là khóa học mẫu
+        } else {
+            $stdate = strtotime($startdate);
+            $eddate = !is_null($enddate) ? strtotime($enddate) : 0;
+            $course->course_place = $course_place;
+            $course->startdate = $stdate;
+            $course->enddate = $eddate;
+            $course->visible = 0;
+        }
+
+        if ($category_id == 3) {
+            $course->is_certificate = 1;
+            $course->is_end_quiz = $is_end_quiz;
+        }
+
+        $course->total_date_course = $total_date_course;
+
+        $course->allow_register = $allow_register;
+        $course->enablecompletion = 1;
+        $course->estimate_duration = $estimate_duration;
+        $course->course_budget = $course_budget;
+
+        //access_ip
+        $access_ip = $this->spitIP($access_ip_string);
+
+        $course->access_ip = $access_ip;
+
+        $course->save();
+        //nếu manager hoặc leader tạo khóa
+        $checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
+        if ($checkRole == true) {
+            $organization_employee = TmsOrganizationEmployee::query()->where('user_id', '=', \Auth::user()->id)->first();
+            if (isset($organization_employee)) {
+                if ($organization_employee->organization) {
+                    $role_organization = TmsRoleOrganization::query()->where('organization_id', $organization_employee->organization_id)->first();
+                    if (isset($role_organization)) { //Map course to that roles
+//                        $role_course = new TmsRoleCourse();
+//                        $role_course->role_id = $role_organization->role_id;
+//                        $role_course->course_id = $course->id;
+//                        $role_course->save();
+                        TmsRoleCourse::firstOrCreate([
+                            'role_id' => $role_organization->role_id,
+                            'course_id' => $course->id
+                        ]);
+                    } else { //Enable use organization as role and map course to that role
+
+                        $lastRole = MdlRole::query()->orderBy('sortorder', 'desc')->first();
+                        //Tạo quyền bên LMS
+                        if (isset($lastRole)) {
+                            $sortorder = $lastRole['sortorder'] + 1;
+                        } else {
+                            $sortorder = 1;
+                        }
+
+                        $mdlRole = MdlRole::firstOrCreate([
+                            'shortname' => $organization_employee->organization->code,
+                            'archetype' => 'user'
+                        ], [
+                            'description' => $organization_employee->organization->name,
+                            'sortorder' => $sortorder
+                        ]);
+
+                        $role = Role::firstOrCreate([
+                            'mdl_role_id' => $mdlRole->id,
+                            'name' => $organization_employee->organization->code,
+                            'guard_name' => 'web',
+                            'status' => 1
+                        ], [
+                            'description' => $organization_employee->organization->name
+                        ]);
+
+                        $role_organization = TmsRoleOrganization::firstOrCreate([
+                            'role_id' => $role->id,
+                            'organization_id' => $organization_employee->organization_id
+                        ]);
+
+                        TmsRoleCourse::firstOrCreate([
+                            'role_id' => $role_organization->role_id,
+                            'course_id' => $course->id
+                        ]);
+                    }
+                }
+            }
+        }
+        //insert dữ liệu điểm qua môn
+        MdlCourseCompletionCriteria::create(array(
+            'course' => $course->id,
+            'criteriatype' => 6, //default là 6 trong trường hợp này
+            'gradepass' => $pass_score
+        ));
+
+        $context_cate = MdlContext::where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT)
+            ->where('instanceid', '=', $category_id)->first();
+
+        if ($context_cate) {
+            //insert dữ liệu vào bảng mdl_context
+            $mdl_context = MdlContext::firstOrCreate([
+                'contextlevel' => \App\MdlUser::CONTEXT_COURSE,
+                'instanceid' => $course->id,
+                'depth' => 3,
+                'locked' => 0
+            ]);
+
+            //cập nhật path
+            $mdl_context->path = '/1/' . $context_cate->id . '/' . $mdl_context->id;
+            $mdl_context->save();
+        }
+
+
+        if ($allow_register == 1) {
+            MdlEnrol::firstOrCreate(
+                [
+                    'enrol' => 'self',
+                    'courseid' => $course->id,
+                    'roleid' => 5,
+                    'sortorder' => 2,
+                    'customint6' => 1
+                ],
+                [
+                    'expirythreshold' => 86400,
+                    'timecreated' => strtotime(Carbon::now()),
+                    'timemodified' => strtotime(Carbon::now())
+                ]
+            );
+        }
+
+        //get info of role teacher
+        $role_teacher = MdlRole::where('shortname', 'teacher')->first();
+        //call function auto enrol to show list courses for teacher when teacher create a course
+        enrole_user_to_course(Auth::user()->id, $role_teacher->id, $course->id, $course->category);
+
+        //write data to table mdl_grade_categories -> muc dich phuc vu cham diem, Vinh PT yeu cau
+        $mdl_grade_cate = MdlGradeCategory::firstOrCreate([
+            'courseid' => $course->id,
+            'depth' => 1,
+            'aggregation' => 13,
+            'aggregateonlygraded' => 1,
+            'timecreated' => strtotime(Carbon::now()),
+            'timemodified' => strtotime(Carbon::now())
+        ]);
+
+        $mdl_grade_cate->path = '/' . $mdl_grade_cate->id . '/';
+        $mdl_grade_cate->save();
+
+        //write data to table mdl_grade_items
+        MdlGradeItem::firstOrCreate([
+            'courseid' => $course->id,
+            'itemname' => $course->fullname,
+            'itemtype' => 'course',
+            'iteminstance' => $mdl_grade_cate->id,
+            'gradepass' => $pass_score
+        ]);
+
+        return $course;
+    }
 }
