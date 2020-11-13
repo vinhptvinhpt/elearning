@@ -561,6 +561,99 @@ class CourseController extends Controller
         return $this->mdlCourseRepository->apiGetExistedCodes();
     }
 
+    public function apiGetExistedCodeLibraries()
+    {
+        return $this->mdlCourseRepository->apiGetExistedCodeLibraries();
+    }
+
+    public function apiCloneCourseLibrary(Request $request)
+    {
+        $response = new ResponseModel();
+        try {
+            $param = [
+                'shortname' => 'code',
+                'fullname' => 'text',
+                'description' => 'longtext',
+                'pass_score' => 'positivenumber',
+                'category_id' => 'number',
+                'sample' => 'number',
+                'course_place' => 'text',
+                'allow_register' => 'number',
+                'total_date_course' => 'number',
+                'is_end_quiz' => 'number',
+                'estimate_duration' => 'positivenumber',
+                'course_budget' => 'positivenumber',
+                'access_ip' => 'text'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                $response->status = false;
+                $msg = $validator['message'];
+
+                $msg = str_replace('shortname', __('ma_thu_vien'), $msg);
+                $msg = str_replace('fullname', __('ten_thu_vien'), $msg);
+
+                $response->message = $msg;
+                return response()->json($response);
+            }
+
+            //check course info exist
+            $courseInfo = MdlCourse::select('id')->where('shortname', $request->input('shortname'))->first();
+
+            if ($courseInfo) {
+                $response->status = false;
+                $response->message = __('ma_khoa_hoc_da_ton_tai');
+                return response()->json($response);
+            }
+
+            \DB::beginTransaction();
+
+            //create course
+            $course = $this->mdlCourseRepository->cloneCourseLibrary($request);
+
+            //Add newly course to phân quyền dữ liệu
+            $checkRoleOrg = 0;
+            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+                //admin do nothing
+                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+                    if (isset($checkOrg)) {
+                        $checkRoleOrg = $checkOrg->id;
+                    }
+                }
+            } else { //User thuoc to chuc
+                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+            }
+            if ($checkRoleOrg != 0) {
+                $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                if (isset($org_role)) {
+                    $new_relation = new TmsRoleCourse();
+                    $new_relation->role_id = $org_role->role_id;
+                    $new_relation->course_id = $course->id;
+                    $new_relation->save();
+                }
+            }
+
+            \DB::commit();
+
+            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
+            updateLastModification('create', $course->id);
+
+            $response->otherData = $course->id;
+            $response->status = true;
+            $response->message = __('tao_moi_khoa_hoc_thanh_cong');
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            dd($e->getMessage());
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+
+        }
+
+        return response()->json($response);
+    }
+
     //#region api optional courses
     public function apiAssignOptionalCourse(Request $request)
     {
