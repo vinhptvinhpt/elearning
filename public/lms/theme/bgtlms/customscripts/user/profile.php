@@ -451,6 +451,9 @@ if ($_SESSION["totalCourse"] > 0) {
 }
 
 $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
+
+$hrm_link = $CFG->wwwhrm;
+
 ?>
 
 <html>
@@ -987,6 +990,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                 <div><a href="lms/user/edit.php"
                         style="font-size: 14px; font-style: italic; color: <?= $_SESSION["color"] ?>">Edit profile</a>
                 </div>
+                <div><a :href="hrm_link"
+                        style="font-size: 14px; font-style: italic; color: <?= $_SESSION["color"] ?>">HRM</a>
+                </div>
             </div>
             <div class="info-learn">
                 <div class="container">
@@ -1328,6 +1334,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             category: 0,
             training: 0,
 
+            hrm_link: '<?= $hrm_link ?>',
+            token: '';
+
             txtSearch: '',
             txtSearchTraining: '',
 
@@ -1463,6 +1472,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .then(response => {
                         this.user = response.data.profile;
 
+                        let token = this.getCookie('hrm_token');
+                        this.hrm_link = this.hrm_link + 'mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + token;
+
                         this.linemanagers = response.data.linemanagers;
                         // if(response.data.linemanagers.length > 0){
                         //     var lineStr = '';
@@ -1486,7 +1498,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             this.progressCurrentCourse = numCurrentCourses + "/" + totalCourse;
                             this.progressRequiredCourse = numRequiredCourses + "/" + totalCourse;
 
-                            //
                             $('.progress-current').css('width', numCurrentCourses * 100 / totalCourse + '%');
                             $('.progress-required').css('width', numRequiredCourses * 100 / totalCourse + '%');
                         }
@@ -1495,6 +1506,21 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         console.log("Error ", error);
                     });
             },
+            getCookie: function(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for(var i = 0; i <ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
         },
         mounted() {
             this.searchCourse();
