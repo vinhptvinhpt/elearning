@@ -1472,7 +1472,7 @@ $hrm_link = $CFG->wwwhrm;
                     .then(response => {
                         this.user = response.data.profile;
 
-                        let this.hrm_token = this.getCookie('hrm_token');
+                        this.hrm_token = this.getCookie('hrm_token');
 
                         this.hrm_link = this.hrm_link + 'mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + hrm_token;
 
