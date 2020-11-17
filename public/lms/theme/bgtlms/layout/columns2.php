@@ -245,7 +245,7 @@ $permission_histaff = false;
 $username = $USER->username;
 $hrm_token = '';
 $histaff_key = 'hrm_token';
-if(!isset($_COOKIE[$histaff_key])) {
+if(isset($_COOKIE[$histaff_key])) {
     if (strlen($_COOKIE[$histaff_key]) > 0) {
         $permission_histaff = true;
         $hrm_token = $_COOKIE[$histaff_key];
