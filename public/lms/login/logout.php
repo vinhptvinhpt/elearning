@@ -41,9 +41,9 @@ if ($login) {
 
 if (!isloggedin()) {
     // no confirmation, user has already logged out
+    setcookie("hrm_token", "", time() - 3600);
     require_logout();
     redirect($redirect);
-
 } else if (!confirm_sesskey($sesskey)) {
     $PAGE->set_title($SITE->fullname);
     $PAGE->set_heading($SITE->fullname);
@@ -52,8 +52,6 @@ if (!isloggedin()) {
     echo $OUTPUT->footer();
     die;
 } elseif (!$ssoconfirm) {
-
-
     // echo $OUTPUT->header();
 
 //     echo <<<JSLOGOUTSSO
@@ -67,9 +65,10 @@ if (!isloggedin()) {
 // 				 window.location.href = '/';
 //             },1000);
 //         });
-        
+
 //         </script>
 // JSLOGOUTSSO;
+
 //     echo $OUTPUT->footer();
 
     echo file_get_contents("logout_loader.html");
@@ -80,6 +79,8 @@ if (!isloggedin()) {
         $authplugin = get_auth_plugin($authname);
         $authplugin->logoutpage_hook();
     }
+
+    setcookie("hrm_token", "", time() - 3600);
 
     require_logout();
 
