@@ -41,7 +41,7 @@ if ($login) {
 
 //Remove token hrm_token
 $domain = parse_url($CFG->wwwroot);
-setcookie("hrm_token", '', time() + 3600, '/', $domain, false, false);
+setcookie("hrm_token", '', time() + 3600, '/', $domain['host'], false, false);
 
 if (!isloggedin()) {
     // no confirmation, user has already logged out
