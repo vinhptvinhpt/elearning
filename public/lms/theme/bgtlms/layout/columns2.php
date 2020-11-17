@@ -245,6 +245,8 @@ $permission_histaff = false;
 $username = $USER->username;
 $hrm_token = '';
 $histaff_key = 'hrm_token';
+$wwwhrm = $CFG->wwwhrm;
+
 if(isset($_COOKIE[$histaff_key])) {
     if (strlen($_COOKIE[$histaff_key]) > 0) {
         $permission_histaff = true;
@@ -293,7 +295,8 @@ $templatecontext = [
     'numOfLearned' => $numOfLearned,
     'numOfModule' => $numOfModule,
     'username' => $username,
-    'hrm_token' => $hrm_token
+    'hrm_token' => $hrm_token,
+    'wwwhrm' => $wwwhrm,
 ];
 
 $nav = $PAGE->flatnav;
