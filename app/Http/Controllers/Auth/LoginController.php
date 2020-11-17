@@ -343,10 +343,10 @@ class LoginController extends Controller
                 JWTAuth::invalidate($token);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => 'FAILED']);
+//            return response()->json(['status' => 'FAILED']);
         }
         Auth::logout();
-        setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() + 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
+        setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
         return response()->json(['status' => 'SUCCESS']);
     }
 
