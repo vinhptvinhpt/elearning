@@ -236,7 +236,7 @@ class SyncDataController
             if ($result_api['Code'] != '200') {
                 $result->code = 'ERR06';
                 $result->status = false;
-                $result->message = $result_api->Msg;
+                $result->message = $result_api['Msg'];
                 return response()->json($result);
             }
 
@@ -389,7 +389,7 @@ class SyncDataController
             if ($result_api['Code'] != '200') {
                 $result->code = 'ERR06';
                 $result->status = false;
-                $result->message = $result_api->Msg;
+                $result->message = $result_api['Msg'];
                 return response()->json($result);
             }
 
