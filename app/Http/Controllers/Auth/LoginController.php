@@ -296,8 +296,10 @@ class LoginController extends Controller
 
 
             //xac thuc user ben histaff neu co
+            // api nay ko cần token
+            // truyen token vao do api cu vẫn sử dụng, histaff đang ko check token
             $url = Config::get('constants.domain.HISTAFF-API') . 'GenerateToken';
-            $result_api = callAPIHiStaff('POST', $url, $username, $password, Config::get('constants.domain.HISTAFF-KEY'));
+            $result_api = callAPIHiStaff('POST', $url, $username, '123456', Config::get('constants.domain.HISTAFF-KEY'));
 
             $result_api = json_decode($result_api, true);
 
@@ -467,16 +469,6 @@ class LoginController extends Controller
                             $redirect_type = "default";
                             break;
                         }
-//                    if (in_array($role->name, [
-//                            Role::ROLE_MANAGER,
-//                            Role::ROLE_LEADER,
-//                            Role::ROOT,
-//                            Role::ADMIN,
-//                            Role::TEACHER
-//                        ])) {
-//                        $redirect_type = "default";
-//                        break;
-//                    }
                     }
                 }
 
@@ -506,6 +498,19 @@ class LoginController extends Controller
 
                 Auth::login($checkUser);
 
+                //xac thuc user ben histaff neu co
+                // api nay ko cần token
+                // truyen token vao do api cu vẫn sử dụng, histaff đang ko check token
+                $url = Config::get('constants.domain.HISTAFF-API') . 'GenerateToken';
+                $result_api = callAPIHiStaff('POST', $url, $username, '123456', Config::get('constants.domain.HISTAFF-KEY'));
+
+                $result_api = json_decode($result_api, true);
+
+                if ($result_api['Code'] == '200') {
+                    $token_user = $result_api['Data']['TOKEN'];
+                    setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), $token_user, time() + 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
+                }
+
                 $response['jwt'] = $token;
                 $response['status'] = 'SUCCESS';
                 // [VinhPT]
@@ -527,30 +532,6 @@ class LoginController extends Controller
                 return response()->json($response);
 
             }
-
-//            $token = createJWT($username, 'data');
-//            $checkUser->token = $token;
-//            $checkUser->save();
-//
-//            $response['jwt'] = $token;
-//            $response['status'] = 'SUCCESS';
-//            // [VinhPT]
-//            // Get description for user check
-//            $response['redirect_type'] = $checkUser->redirect_type;
-//            //encrypt for login lms
-//            $app_name = Config::get('constants.domain.APP_NAME');
-//
-//            $key_app = encrypt_key($app_name);
-//
-//            $data_lms = array(
-//                'user_id' => $checkUser->id,
-//                'app_key' => $key_app
-//            );
-//
-//            $data_lms = createJWT($data_lms, 'data');
-//
-//            $response['data'] = $data_lms;
-//            return response()->json($response);
             return response()->json(['status' => 'FAIL']);
 
         } catch (Exception $e) {
