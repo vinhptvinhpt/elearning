@@ -240,6 +240,20 @@ $wwwtms = $CFG->wwwtms;
 //color organization
 $color = $_SESSION["color"];
 
+//Check cookie
+$permission_histaff = false;
+$username = $USER->username;
+$hrm_token = '';
+$histaff_key = 'hrm_token';
+$wwwhrm = $CFG->wwwhrm;
+
+if(isset($_COOKIE[$histaff_key])) {
+    if (strlen($_COOKIE[$histaff_key]) > 0) {
+        $permission_histaff = true;
+        $hrm_token = $_COOKIE[$histaff_key];
+    }
+}
+
 $templatecontext = [
     'sitename' => format_string($SITE->shortname, true, ['context' => context_course::instance(SITEID), "escape" => false]),
     'output' => $OUTPUT,
@@ -265,6 +279,7 @@ $templatecontext = [
     'permission_edit' => $permission_edit,
     'permission_tms' => $permission_tms,
     'permission_editor' => $permission_editor,
+    'permission_histaff' => $permission_histaff,
     'pathLogo' => $pathLogo,
     'getPathPublic' => $getPathPublic,
     'wwwroot' => $wwwroot,
@@ -278,7 +293,10 @@ $templatecontext = [
     'courseName' => $course_name,
     'roleInCourse' => $roleInCourse,
     'numOfLearned' => $numOfLearned,
-    'numOfModule' => $numOfModule
+    'numOfModule' => $numOfModule,
+    'username' => $username,
+    'hrm_token' => $hrm_token,
+    'wwwhrm' => $wwwhrm,
 ];
 
 $nav = $PAGE->flatnav;

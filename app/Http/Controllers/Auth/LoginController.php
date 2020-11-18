@@ -294,6 +294,18 @@ class LoginController extends Controller
 
             Auth::login($checkUser, $remember);
 
+
+            //xac thuc user ben histaff neu co
+            $url = Config::get('constants.domain.HISTAFF-API') . 'GenerateToken';
+            $result_api = callAPIHiStaff('POST', $url, $username, $password, Config::get('constants.domain.HISTAFF-KEY'));
+
+            $result_api = json_decode($result_api, true);
+
+            if ($result_api['Code'] == '200') {
+                $token_user = $result_api['Data']['TOKEN'];
+                setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), $token_user, time() + 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
+            }
+
             $response['id'] = $checkUser->id;
             $response['username'] = $checkUser->username;
             $response['avatar'] = Auth::user()->detail['avatar'];
@@ -331,9 +343,10 @@ class LoginController extends Controller
                 JWTAuth::invalidate($token);
             }
         } catch (\Exception $e) {
-            return response()->json(['status' => 'FAILED']);
+//            return response()->json(['status' => 'FAILED']);
         }
         Auth::logout();
+        setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
         return response()->json(['status' => 'SUCCESS']);
     }
 

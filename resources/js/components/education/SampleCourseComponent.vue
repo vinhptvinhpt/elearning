@@ -235,6 +235,13 @@
                                                 </router-link>
 
                                                 <router-link v-if="slug_can('tms-educate-exam-clone-add')"
+                                                             :title="trans.get('keys.clone_khoa_hoc_tu_thu_vien')"
+                                                             class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                                             :to="{ name: 'CloneCourseLibrary', params: { course_id: course.id } }">
+                                                    <span class="btn-icon-wrap"><i class="fal fa-clone"></i></span>
+                                                </router-link>
+
+                                                <router-link v-if="slug_can('tms-educate-exam-clone-add')"
                                                              :title="trans.get('keys.tao_moi_khoa_hoc_tu_thu_vien')"
                                                              class="btn btn-sm btn-icon btn-icon-circle btn-outline-success btn-icon-style-2"
                                                              :to="{ name: 'CourseClone', params: { course_id: course.id } }">
