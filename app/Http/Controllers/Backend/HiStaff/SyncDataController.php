@@ -211,7 +211,12 @@ class SyncDataController
             $level = 0;
 
             if (!empty($data['parent_code'])) {
-                $org_parent = TmsOrganization::where('code', $data['parent_code'])->first();
+//                $org_parent = TmsOrganization::where('code', $data['parent_code'])->first();
+
+                $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
+                    ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+                    ->where('tohm.histaff_code', '=', $data['parent_code'])
+                    ->select('tor.id', 'tor.code')->first();
 
                 if ($org_parent) {
                     $parent_id = $org_parent->id;
@@ -219,7 +224,12 @@ class SyncDataController
                 }
             }
 
-            $org_check = TmsOrganization::where('code', $data['code'])->first();
+//            $org_check = TmsOrganization::where('code', $data['code'])->first();
+
+            $org_check = DB::table('tms_organization_histaff_mapping as tohm')
+                ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+                ->where('tohm.histaff_code', '=', $data['code'])
+                ->select('tor.id', 'tor.code')->first();
 
 
             if ($org_check) {
@@ -335,8 +345,6 @@ class SyncDataController
             }
 
             //xac thuc token voi histaff
-            $token = str_replace('', 'Bearer ', $token);
-
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $result_api = callAPIHiStaff('POST', $url, $username, $token, Config::get('constants.domain.HISTAFF-KEY'));
@@ -351,7 +359,12 @@ class SyncDataController
 
             ////// xu ly flow insert vao elearning
             //region flow insert or update data vao elearning
-            $org_check = TmsOrganization::where('code', $data['organization_code'])->first();
+//            $org_check = TmsOrganization::where('code', $data['organization_code'])->first();
+
+            $org_check = DB::table('tms_organization_histaff_mapping as tohm')
+                ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+                ->where('tohm.histaff_code', '=', $data['organization_code'])
+                ->select('tor.id', 'tor.code')->first();
 
             if (empty($org_check)) {
                 $result->code = 'US05';
@@ -401,6 +414,17 @@ class SyncDataController
                 $tms_user->working_status = $data['working_status'] ? 0 : 1;
 
                 $tms_user->save();
+
+
+                //add user to organization
+                TmsOrganizationEmployee::where('user_id', $user->id)->where('position', Role::ROLE_EMPLOYEE)->where('enabled', 1)->delete();
+
+                TmsOrganizationEmployee::firstOrCreate([
+                    'user_id' => $user->id,
+                    'organization_id' => $org_check->id,
+                    'position' => Role::ROLE_EMPLOYEE,
+                    'enabled' => 1
+                ]);
 
                 $result->message = 'Success update user';
 
