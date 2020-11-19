@@ -35,6 +35,7 @@ class SyncDataController
         try {
             $username = $request->input('username');
             $token_histaff = $request->input('token_histaff');
+            setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
 
             $param = [
                 'username' => 'text'
