@@ -10,6 +10,7 @@ use App\ModelHasRole;
 use App\Role;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsOrganizationHistaffMapping;
 use App\TmsUserDetail;
 use App\ViewModel\ResultModel;
 use Illuminate\Http\Request;
@@ -210,12 +211,18 @@ class SyncDataController
             $parent_id = 0;
             $level = 0;
 
+            $company_parent = '';
+
             if (!empty($data['parent_code'])) {
-//                $org_parent = TmsOrganization::where('code', $data['parent_code'])->first();
+                $arr_org = explode('-', $data['parent_code']);
+                $company_parent = convertOrgCode($arr_org[0]);
+
+                $org_code = str_replace($arr_org[0] . '-', '', $data['parent_code']);
+
 
                 $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
                     ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
-                    ->where('tohm.histaff_code', '=', $data['parent_code'])
+                    ->where('tohm.histaff_code', '=', $org_code)
                     ->select('tor.id', 'tor.code')->first();
 
                 if ($org_parent) {
@@ -224,12 +231,19 @@ class SyncDataController
                 }
             }
 
-//            $org_check = TmsOrganization::where('code', $data['code'])->first();
 
-            $org_check = DB::table('tms_organization_histaff_mapping as tohm')
-                ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
-                ->where('tohm.histaff_code', '=', $data['code'])
-                ->select('tor.id', 'tor.code')->first();
+
+            $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $data['code'])->select('tms_code')->first();
+
+            $org_code_check = $org_mapping->tms_code;
+            if ($company_parent)
+                $org_code_check = $company_parent . '-' . $org_mapping->tms_code;
+
+            $org_check = TmsOrganization::where('code', $org_code_check)->first();
+//            $org_check = DB::table('tms_organization_histaff_mapping as tohm')
+//                ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+//                ->where('tohm.histaff_code', '=', $org_code_check)
+//                ->select('tor.id', 'tor.code')->first();
 
 
             if ($org_check) {
@@ -359,12 +373,17 @@ class SyncDataController
 
             ////// xu ly flow insert vao elearning
             //region flow insert or update data vao elearning
-//            $org_check = TmsOrganization::where('code', $data['organization_code'])->first();
 
-            $org_check = DB::table('tms_organization_histaff_mapping as tohm')
-                ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
-                ->where('tohm.histaff_code', '=', $data['organization_code'])
-                ->select('tor.id', 'tor.code')->first();
+            $arr_org = explode('-', $data['organization_code']);
+
+            $company_parent = convertOrgCode($arr_org[0]);
+
+            $org_code = str_replace($arr_org[0] . '-', '', $data['organization_code']);
+
+            $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $org_code)->select('tms_code')->first();
+
+            $org_check = TmsOrganization::where('code', $company_parent . '-' . $org_mapping->tms_code)->first();
+
 
             if (empty($org_check)) {
                 $result->code = 'US05';

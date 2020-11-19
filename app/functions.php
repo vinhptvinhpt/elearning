@@ -3598,4 +3598,28 @@ function getBlobUrl($accountName, $container, $blob, $resourceType, $permissions
 
     return $_url;
 }
+
 //endregion
+
+
+//lay ma to chuc cha to nhat map voi Histaff
+function convertOrgCode($input)
+{
+    $org_code = '';
+    switch ($input) {
+        case 'EASIA':
+            $org_code = 'EA';
+            break;
+        case 'BEGODI':
+            $org_code = 'BG';
+            break;
+        case 'AVANA':
+            $org_code = 'AV';
+            break;
+        case 'EXOTIC':
+            $org_code = 'EV';
+            break;
+    }
+
+    return $org_code;
+}
