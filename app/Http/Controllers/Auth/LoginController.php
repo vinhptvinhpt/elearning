@@ -294,6 +294,7 @@ class LoginController extends Controller
 
             Auth::login($checkUser, $remember);
 
+            setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
 
             //xac thuc user ben histaff neu co
             // api nay ko cần token
@@ -435,6 +436,7 @@ class LoginController extends Controller
     {
         try {
             $username = $request->input('username');
+            setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
 
             $param = [
                 'username' => 'text'
