@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use JWTAuth;
 use Mockery\Exception;
@@ -233,7 +234,6 @@ class SyncDataController
             }
 
 
-
             $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $data['code'])->select('tms_code')->first();
 
             $org_code_check = $org_mapping->tms_code;
@@ -359,6 +359,28 @@ class SyncDataController
                 return response()->json($result);
             }
 
+            if (empty($data['line_manager'])) {
+                $result->code = 'US06';
+                $result->status = false;
+                $result->message = 'line_manager is empty';
+                return response()->json($result);
+            }
+
+            if (empty($data['title_position'])) {
+                $result->code = 'US07';
+                $result->status = false;
+                $result->message = 'title_position is empty';
+                return response()->json($result);
+            }
+
+
+            if (empty($data['title_position_code'])) {
+                $result->code = 'US08';
+                $result->status = false;
+                $result->message = 'title_position_code is empty';
+                return response()->json($result);
+            }
+
             //xac thuc token voi histaff
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
@@ -393,17 +415,42 @@ class SyncDataController
                 return response()->json($result);
             }
 
-            //hard code, default user sync tu histaff co quyen student va excutive
-            $inputRole = array(
-                array(//student
-                    "id" => 5,
-                    "mdl_role_id" => 5
-                ),
-                array(//excutive
-                    "id" => 29,
-                    "mdl_role_id" => 80
-                )
-            );
+            $line_manager = MdlUser::where('username', $data['line_manager'])->first();
+
+            if (empty($line_manager)) {
+                $result->code = 'US09';
+                $result->status = false;
+                $result->message = 'Line manager is not exists';
+                return response()->json($result);
+            }
+
+            //region lay danh sach quyen va vi tri tuong ung cho nguoi dung
+            $position = Role::ROLE_EMPLOYEE;
+            $arrRoleName = [];
+            switch ($data['title_position_code']) {
+                case 9425: //manager
+                case 9426:
+                case 9427:
+                case 9428:
+                    $arrRoleName = [Role::ROLE_MANAGER, Role::STUDENT];
+                    $position = Role::ROLE_MANAGER;
+                    break;
+                case 9429: //leader
+                    $arrRoleName = [Role::ROLE_LEADER, Role::STUDENT];
+                    $position = Role::ROLE_LEADER;
+                    break;
+                case 9430: //senior excutive
+                    $arrRoleName = [Role::ROLE_EMPLOYEE_SENIOR, Role::ROLE_EMPLOYEE, Role::STUDENT];
+                    $position = Role::ROLE_EMPLOYEE;
+                    break;
+                case 9431: //junior excutive
+                    $arrRoleName = [Role::ROLE_EMPLOYEE_JUNIOR, Role::ROLE_EMPLOYEE, Role::STUDENT];
+                    $position = Role::ROLE_EMPLOYEE;
+                    break;
+            }
+
+            $inputRoles = Role::whereIn('name', $arrRoleName)->select('id', 'mdl_role_id')->get();
+            //endregion
 
             DB::beginTransaction();
 
@@ -437,14 +484,40 @@ class SyncDataController
 
 
                 //add user to organization
-                TmsOrganizationEmployee::where('user_id', $user->id)->where('position', Role::ROLE_EMPLOYEE)->where('enabled', 1)->delete();
+                TmsOrganizationEmployee::where('user_id', $user->id)->where('enabled', 1)->delete();
 
                 TmsOrganizationEmployee::firstOrCreate([
                     'user_id' => $user->id,
                     'organization_id' => $org_check->id,
-                    'position' => Role::ROLE_EMPLOYEE,
-                    'enabled' => 1
+                    'position' => $position,
+                    'enabled' => 1,
+                    'line_manager_id' => $line_manager->id,
+                    'description' => $data['title_position']
                 ]);
+
+
+                //update role for user
+                ModelHasRole::where('model_id', $user->id)->where('model_type', 'App/MdlUser')->delete();
+                MdlRoleAssignments::where('userid', $user->id)->where('contextid', 1)->delete();
+
+                $arr_data = [];
+                $data_item = [];
+
+                $arr_data_enrol = [];
+                $data_item_enrol = [];
+
+                foreach ($inputRoles as $role) {
+
+                    $data_item['role_id'] = $role->id;
+                    $data_item['model_id'] = $user->id;
+                    $data_item['model_type'] = 'App/MdlUser';
+                    array_push($arr_data, $data_item);
+
+                    bulk_enrol_lms($user->id, $role->mdl_role_id, $arr_data_enrol, $data_item_enrol);
+                }
+
+                ModelHasRole::insert($arr_data);
+                MdlRoleAssignments::insert($arr_data_enrol);
 
                 $result->message = 'Success update user';
 
@@ -469,8 +542,10 @@ class SyncDataController
                 TmsOrganizationEmployee::firstOrCreate([
                     'user_id' => $user->id,
                     'organization_id' => $org_check->id,
-                    'position' => Role::ROLE_EMPLOYEE,
-                    'enabled' => 1
+                    'position' => $position,
+                    'enabled' => 1,
+                    'line_manager_id' => $line_manager->id,
+                    'description' => $data['title_position']
                 ]);
 
                 //update role for user
@@ -480,14 +555,14 @@ class SyncDataController
                 $arr_data_enrol = [];
                 $data_item_enrol = [];
 
-                foreach ($inputRole as $role) {
+                foreach ($inputRoles as $role) {
 
-                    $data_item['role_id'] = $role["id"];
+                    $data_item['role_id'] = $role->id;
                     $data_item['model_id'] = $user->id;
                     $data_item['model_type'] = 'App/MdlUser';
                     array_push($arr_data, $data_item);
 
-                    bulk_enrol_lms($user->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
+                    bulk_enrol_lms($user->id, $role->mdl_role_id, $arr_data_enrol, $data_item_enrol);
                 }
 
                 ModelHasRole::insert($arr_data);
