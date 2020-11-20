@@ -99,6 +99,31 @@ class BackgroundController extends Controller
             'TVE' => 'TVE'
         );
 
+        $mapping_position_histaff = array(
+            9425 => [
+                'name' => 'Manager',
+                'title' => 'General Director'
+            ],9426 => [
+                'name' => 'Manager',
+                'title' => 'Director'
+            ],9427 => [
+                'name' => 'Manager',
+                'title' => 'Senior Manager'
+            ],9428 => [
+                'name' => 'Manager',
+                'title' => 'Manager'
+            ],9429 => [
+                'name' => 'Leader',
+                'title' => 'Assistant Manager/Team Leader'
+            ],9430 => [
+                'name' => 'Senior Executive',
+                'title' => 'Senior Executive/Senior Guide'
+            ],9431 => [
+                'name' => 'Junior Executive',
+                'title' => 'Executive/Guide'
+            ],
+        );
+
         $countries = TmsUserDetail::country;
 
         $from = $request->input('from');
@@ -214,6 +239,11 @@ class BackgroundController extends Controller
 //                } else {
 //                    $role = Role::ROLE_EMPLOYEE;
 //                }
+
+                if (array_key_exists($position, $mapping_position_histaff)) {
+                    $position = $mapping_position_histaff[$position]['name'];
+                    $title = $mapping_position_histaff[$position]['title'];
+                }
 
                 $role = $position;
 
@@ -464,6 +494,31 @@ class BackgroundController extends Controller
             'TVE' => 'TVE'
         );
 
+        $mapping_position_histaff = array(
+            9425 => [
+                'name' => 'Manager',
+                'title' => 'General Director'
+            ],9426 => [
+                'name' => 'Manager',
+                'title' => 'Director'
+            ],9427 => [
+                'name' => 'Manager',
+                'title' => 'Senior Manager'
+            ],9428 => [
+                'name' => 'Manager',
+                'title' => 'Manager'
+            ],9429 => [
+                'name' => 'Leader',
+                'title' => 'Assistant Manager/Team Leader'
+            ],9430 => [
+                'name' => 'Senior Executive',
+                'title' => 'Senior Executive/Senior Guide'
+            ],9431 => [
+                'name' => 'Junior Executive',
+                'title' => 'Executive/Guide'
+            ],
+        );
+
         $countries = TmsUserDetail::country;
 
         $from = $request->input('from');
@@ -585,6 +640,11 @@ class BackgroundController extends Controller
 //                } else {
 //                    $role = Role::ROLE_EMPLOYEE;
 //                }
+
+                if (array_key_exists($position, $mapping_position_histaff)) {
+                    $position = $mapping_position_histaff[$position]['name'];
+                    $title = $mapping_position_histaff[$position]['title'];
+                }
 
                 $role = $position;
 
