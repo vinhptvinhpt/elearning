@@ -1082,6 +1082,9 @@ where mc.id = ' . $id;
                         break;
                     }
                 }
+                if($start_course_link){
+                    break;
+                }
             }
         }
     }
