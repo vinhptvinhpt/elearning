@@ -47,13 +47,20 @@
                             </select>
                         </div>
                         <div class="col-6 mb-1"
-                             v-if="mode_select === 'completed_course' || mode_select === 'learning_time'">
-                            <select id="course_select" v-model="course_id" class="custom-select">
-                                <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>
-                                <option v-for="course in course_list" :value="course.id">
-                                    {{course.name}}
-                                </option>
-                            </select>
+                             v-if="(mode_select === 'completed_course' || mode_select === 'learning_time') && training_id !== 99999">
+<!--                            <select id="course_select" v-model="course_id" class="custom-select">-->
+<!--                                <option value="0">{{ trans.get('keys.chon_khoa_hoc') }}</option>-->
+<!--                                <option v-for="course in course_list" :value="course.id">-->
+<!--                                    {{course.name}}-->
+<!--                                </option>-->
+<!--                            </select>-->
+                            <v-select
+                              :options="courseSelectOptions"
+                              :reduce="courseSelectOption => courseSelectOption.id"
+                              :placeholder="this.trans.get('keys.chon_khoa_hoc')"
+                              :filter-by="myFilterBy"
+                              v-model="course_id">
+                            </v-select>
                         </div>
                         <div class="col-6 mb-1">
                             <select id="inputCountry" class="custom-select mb-0" v-model="country">
@@ -220,6 +227,8 @@
                 country: '',
                 countries: [],
                 export_data: [],
+
+                courseSelectOptions: [],
             }
         },
         methods: {
@@ -271,7 +280,23 @@
                         training_id: this.training_id,
                     })
                         .then(response => {
-                            this.course_list = response.data;
+                            //this.course_list = response.data;
+                            this.course_id = 0;
+                            let additionalSelections = [
+                              {
+                                label: 'Select course',
+                                id: 0
+                              }
+                            ];
+                            response.data.forEach(function (selectItem) {
+                              let newItem = {
+                                label: selectItem.name,
+                                id: selectItem.id
+                              };
+                              additionalSelections.push(newItem);
+                            });
+                            this.courseSelectOptions = additionalSelections;
+                            //this.categories = response.data;
                         })
                         .catch(error => {
                             console.log(error);
@@ -415,8 +440,8 @@
                         this.training_options = response.data;
                         let newOption = {
                           id: 99999,
-                          code: 'Other assigned courses',
-                          name: 'Other assigned courses'
+                          code: 'Data access courses',
+                          name: 'Data access courses'
                         }
                         this.training_options.push(newOption);
                     })

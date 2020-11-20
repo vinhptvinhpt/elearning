@@ -4162,7 +4162,7 @@ class BussinessRepository implements IBussinessInterface
 
                 $select_array_per = array_merge($select_array, [
                     DB::raw('CONCAT(tms_organization.id, "_", "pdql") as training_id'),
-                    DB::raw('"Other assigned courses" as training_name')
+                    DB::raw('"Data access courses" as training_name')
                 ]);
                 $select_array_per = array_merge($select_array_per, $addtion_select_for_course);
             }
