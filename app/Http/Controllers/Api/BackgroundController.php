@@ -225,6 +225,11 @@ class BackgroundController extends Controller
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
+                            //Check organization code
+                            $check_mapping_department_code = self::mappingDepartment($department_code);
+                            if ($check_mapping_department_code != $department_code) {
+                                $department_code = str_replace($base_level_organization_code . "-", "", $check_mapping_department_code);
+                            }
                             $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
                             $new_org_level = $base_level + 1;
                             $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
@@ -591,6 +596,13 @@ class BackgroundController extends Controller
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
+
+                            //Check organization code
+                            $check_mapping_department_code = self::mappingDepartment($department_code);
+                            if ($check_mapping_department_code != $department_code) {
+                                $department_code = str_replace($base_level_organization_code . "-", "", $check_mapping_department_code);
+                            }
+
                             $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
                             $new_org_level = $base_level + 1;
                             $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
@@ -1593,6 +1605,18 @@ class BackgroundController extends Controller
         //         $roleAssign->save();
         //     }
         // }
+    }
+
+    function mappingDepartment($code) {
+        $checkMappingDepartment =  DB::table('tms_organization_histaff_mapping')
+            ->where('histaff_code', '=', $code)
+            ->first();
+
+        if (isset($checkMappingDepartment)) {
+            return $checkMappingDepartment->tms_code;
+        } else {
+            return $code;
+        }
     }
 
     function training_enrole($user_id, $category_id = null)

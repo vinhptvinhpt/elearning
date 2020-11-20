@@ -25,10 +25,6 @@
 </head>
 
 <body class="">
-<div>
-    <input id="pass" value="123456a@" hidden="hidden"
-           type="password" placeholder="Password">
-</div>
 
 
 <script src="/js/jquery.min.js"></script>
@@ -62,14 +58,12 @@
         $.LoadingOverlay("show");
         var token = '{{$token}}';
         var username = '{{$username}}';
-        var pass = $('#pass').val();
 
         $.ajax({
             type: "POST",
             url: '/elearning/v1/auth',
             data: {
                 username: username,
-                password: pass,
                 token_histaff: token,
                 _token: '{{csrf_token()}}'
             },

@@ -220,7 +220,12 @@ class CourseSendMail extends Mailable
         elseif($this->activity == TmsNotification::NOTICE_SPAM_EMAIL){
             $subject = '[ELEARNING] Testing email from Elearning';
             $view = 'email.notice_spam_email';
+        } else {
+            $subject = '[ELEARNING] Welcome to Elearning system';
+            $view = 'email.welcome';
         }
+
+
         if (strlen($subject) != 0 AND strlen($view) != 0) {
             $this->subject($subject)
                 ->with('fullname', $this->fullname)

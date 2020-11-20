@@ -982,8 +982,7 @@ $hrm_link = $CFG->wwwhrm;
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
                         <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
-                        <li v-if="linemanagers && linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
-                        <li v-else>Line Manager: <span>Not yet update</span></li>
+                        <li>Line Manager: <p>{{ linemanagers }}</p></li>
                         <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
                 </div>
@@ -1347,8 +1346,7 @@ $hrm_link = $CFG->wwwhrm;
             requiredCourse: 0,
             currentCourse: 0,
 
-            linemanagers: [],
-            linemanagersStr: '',
+            linemanagers: 'Not Yet Update',
 
             trainingList: [],
 
@@ -1474,18 +1472,11 @@ $hrm_link = $CFG->wwwhrm;
 
                         this.hrm_token = this.getCookie('hrm_token');
 
-                        this.hrm_link = this.hrm_link + '?mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + hrm_token;
+                        this.hrm_link = this.hrm_link + '?mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + this.hrm_token;
 
-                        this.linemanagers = response.data.linemanagers;
-                        // if(response.data.linemanagers.length > 0){
-                        //     var lineStr = '';
-                        //     $.each(response.data.linemanagers, function(key, value) {
-                        //         lineStr += value.fullname+', ';
-                        //     });
-                        //     lineStr = lineStr.substring(0, lineStr.length - 2);
-                        //     this.linemanagersStr = lineStr;
-                        // }
-                        this.linemanagersStr = this.linemanagers;
+                        if (response.data.linemanagers && response.data.linemanagers.length > 0) {
+                            this.linemanagers = response.data.linemanagers;
+                        }
 
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;

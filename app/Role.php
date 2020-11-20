@@ -21,6 +21,8 @@ class Role extends Model
     const ROLE_MANAGER = 'manager';
     const ROLE_LEADER = 'leader';
     const ROLE_EMPLOYEE = 'employee';
+    const ROLE_EMPLOYEE_SENIOR = 'seniorexecutive';
+    const ROLE_EMPLOYEE_JUNIOR = 'juniorexecutive';
 
 
     const arr_role_special = [

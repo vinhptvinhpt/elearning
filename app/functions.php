@@ -1794,7 +1794,7 @@ function callAPIHiStaff($method, $url, $username, $token, $key)
         CURLOPT_FOLLOWLOCATION => true,
         CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
         CURLOPT_CUSTOMREQUEST => $method,
-        CURLOPT_POSTFIELDS => "username=" . $username . "&token=" . urlencode($token) . "&key=" . $key,
+        CURLOPT_POSTFIELDS => "username=" . $username . "&token=" . $token . "&key=" . $key,
         CURLOPT_HTTPHEADER => array(
             "Content-Type: application/x-www-form-urlencoded"
         ),
@@ -3598,4 +3598,29 @@ function getBlobUrl($accountName, $container, $blob, $resourceType, $permissions
 
     return $_url;
 }
+
 //endregion
+
+
+//lay ma to chuc cha to nhat map voi Histaff
+function convertOrgCode($input)
+{
+    $org_code = '';
+    switch ($input) {
+        case 'EASIA':
+            $org_code = 'EA';
+            break;
+        case 'BEGODI':
+            $org_code = 'BG';
+            break;
+        case 'AVANA':
+            $org_code = 'AV';
+            break;
+        case 'EXOTIC':
+            $org_code = 'EV';
+            break;
+    }
+
+    return $org_code;
+}
+

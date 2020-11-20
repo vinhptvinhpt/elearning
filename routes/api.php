@@ -57,6 +57,10 @@ Route::get('/background/fillMissingPQDL', 'Api\BackgroundController@fillMissingP
 //Route::get('/background/fillTrainingForStandaloneCourses', 'Api\BackgroundController@fillTrainingForStandaloneCourses'); //Tạo training cho các khóa lẻ đã tạo từ trước, vì hiện tai tất cả khóa lẻ đều có KNL của riêng nó
 Route::get('/background/removeSelectedUsers', 'Api\BackgroundController@removeSelectedUsers'); //Xóa users theo id
 
+//Welcome - Test function email
+Route::get('/cron/mail/welcome', 'Api\MailController@welcome');
+
+
 //Send mail
 Route::get('/cron/mail/sendInvitation', 'Api\MailController@sendInvitation')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/sendESEC', 'Api\MailController@sendEnrolQuizStartQuizEndQuizCompleted')->middleware(['App\Http\Middleware\CheckToken']); //every minute
