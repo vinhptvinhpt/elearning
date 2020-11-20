@@ -1472,9 +1472,11 @@ $hrm_link = $CFG->wwwhrm;
 
                         this.hrm_token = this.getCookie('hrm_token');
 
-                        this.hrm_link = this.hrm_link + '?mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + hrm_token;
+                        this.hrm_link = this.hrm_link + '?mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + this.hrm_token;
 
-                        this.linemanagers = response.data.linemanagers;
+                        if (response.data.linemanagers && response.data.linemanagers.length > 0) {
+                            this.linemanagers = response.data.linemanagers;
+                        }
 
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;
