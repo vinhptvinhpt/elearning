@@ -416,12 +416,14 @@ class SyncDataController
             }
 
             $line_manager = MdlUser::where('username', $data['line_manager'])->first();
+            $message = '';
 
             if (empty($line_manager)) {
-                $result->code = 'US09';
-                $result->status = false;
-                $result->message = 'Line manager is not exists';
-                return response()->json($result);
+                $message = 'Line manager is not exists';
+//                $result->code = 'US09';
+//                $result->status = false;
+//                $result->message = 'Line manager is not exists';
+//                return response()->json($result);
             }
 
             //region lay danh sach quyen va vi tri tuong ung cho nguoi dung
@@ -486,14 +488,24 @@ class SyncDataController
                 //add user to organization
                 TmsOrganizationEmployee::where('user_id', $user->id)->where('enabled', 1)->delete();
 
-                TmsOrganizationEmployee::firstOrCreate([
-                    'user_id' => $user->id,
-                    'organization_id' => $org_check->id,
-                    'position' => $position,
-                    'enabled' => 1,
-                    'line_manager_id' => $line_manager->id,
-                    'description' => $data['title_position']
-                ]);
+                if (empty($line_manager)) {
+                    TmsOrganizationEmployee::firstOrCreate([
+                        'user_id' => $user->id,
+                        'organization_id' => $org_check->id,
+                        'position' => $position,
+                        'enabled' => 1,
+                        'description' => $data['title_position']
+                    ]);
+                } else {
+                    TmsOrganizationEmployee::firstOrCreate([
+                        'user_id' => $user->id,
+                        'organization_id' => $org_check->id,
+                        'position' => $position,
+                        'enabled' => 1,
+                        'line_manager_id' => $line_manager->id,
+                        'description' => $data['title_position']
+                    ]);
+                }
 
 
                 //update role for user
@@ -519,7 +531,7 @@ class SyncDataController
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
 
-                $result->message = 'Success update user';
+                $result->message = 'Success update user. ' . $message;
 
             } else {
                 $user = MdlUser::firstOrCreate([
@@ -539,14 +551,24 @@ class SyncDataController
                     ]);
 
                 //add user to organization
-                TmsOrganizationEmployee::firstOrCreate([
-                    'user_id' => $user->id,
-                    'organization_id' => $org_check->id,
-                    'position' => $position,
-                    'enabled' => 1,
-                    'line_manager_id' => $line_manager->id,
-                    'description' => $data['title_position']
-                ]);
+                if (empty($line_manager)) {
+                    TmsOrganizationEmployee::firstOrCreate([
+                        'user_id' => $user->id,
+                        'organization_id' => $org_check->id,
+                        'position' => $position,
+                        'enabled' => 1,
+                        'description' => $data['title_position']
+                    ]);
+                } else {
+                    TmsOrganizationEmployee::firstOrCreate([
+                        'user_id' => $user->id,
+                        'organization_id' => $org_check->id,
+                        'position' => $position,
+                        'enabled' => 1,
+                        'line_manager_id' => $line_manager->id,
+                        'description' => $data['title_position']
+                    ]);
+                }
 
                 //update role for user
                 $arr_data = [];
@@ -585,7 +607,7 @@ class SyncDataController
                         'avatar' => '/userfiles/files/avatar.png'
                     ]);
 
-                $result->message = 'Success insert user';
+                $result->message = 'Success insert user. ' . $message;
 
             }
             DB::commit();
