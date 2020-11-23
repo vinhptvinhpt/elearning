@@ -420,38 +420,12 @@ class SyncDataController
 
             if (empty($line_manager)) {
                 $message = 'Line manager is not exists';
-//                $result->code = 'US09';
-//                $result->status = false;
-//                $result->message = 'Line manager is not exists';
-//                return response()->json($result);
             }
 
             //region lay danh sach quyen va vi tri tuong ung cho nguoi dung
-            $position = Role::ROLE_EMPLOYEE;
-            $arrRoleName = [];
-            switch ($data['title_position_code']) {
-                case 9425: //manager
-                case 9426:
-                case 9427:
-                case 9428:
-                    $arrRoleName = [Role::ROLE_MANAGER, Role::STUDENT];
-                    $position = Role::ROLE_MANAGER;
-                    break;
-                case 9429: //leader
-                    $arrRoleName = [Role::ROLE_LEADER, Role::STUDENT];
-                    $position = Role::ROLE_LEADER;
-                    break;
-                case 9430: //senior excutive
-                    $arrRoleName = [Role::ROLE_EMPLOYEE_SENIOR, Role::ROLE_EMPLOYEE, Role::STUDENT];
-                    $position = Role::ROLE_EMPLOYEE;
-                    break;
-                case 9431: //junior excutive
-                    $arrRoleName = [Role::ROLE_EMPLOYEE_JUNIOR, Role::ROLE_EMPLOYEE, Role::STUDENT];
-                    $position = Role::ROLE_EMPLOYEE;
-                    break;
-            }
-
-            $inputRoles = Role::whereIn('name', $arrRoleName)->select('id', 'mdl_role_id')->get();
+            $position = '';
+            $inputRoles = [];
+            getRoleAndPosition($position, $inputRoles, $data['title_position_code']);
             //endregion
 
             DB::beginTransaction();
