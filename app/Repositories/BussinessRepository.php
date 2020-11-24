@@ -2120,7 +2120,17 @@ class BussinessRepository implements IBussinessInterface
                 ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
                 ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             if ($organization_id != 0) {
-                $query_users->where('tms_organization_employee.organization_id', $organization_id);
+                //Exactly
+                //$query_users->where('tms_organization_employee.organization_id', $organization_id);
+                //Recursive
+                $query_users->whereIn('tms_user_detail.user_id', function ($q) use ($organization_id) {
+                    $q->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                        from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                        (select @pv := $organization_id) initialisation
+                        where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                        UNION
+                        select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
             }
             $array_users = $query_users->select('tms_user_detail.user_id',
                 'tms_user_detail.fullname',
@@ -2148,19 +2158,15 @@ class BussinessRepository implements IBussinessInterface
             ];
 
             if ($mode_select == 'completed_course') {
-                $query = CourseCompletion::query()->whereIn('userid', $user_ids);
+                $query = CourseCompletion::query()->whereIn('course_completion.userid', $user_ids);
                 $query->join('mdl_course', 'mdl_course.id', '=', 'course_completion.courseid');
                 $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'course_completion.userid');
-                $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
-                $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
                 $select_array[] = 'course_completion.timecompleted as completed';
             } elseif ($mode_select == 'learning_time') {
                 $data_type = 'counter';
                 $query = TmsLearningActivityLog::query()->whereIn('tms_learning_activity_logs.user_id', $user_ids);
                 $query->join('mdl_course', 'mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
                 $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
-                $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
-                $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
                 $select_array[] = 'mdl_course.estimate_duration';
                 $select_array[] = DB::raw('SUM(tms_learning_activity_logs.duration) as duration');
                 $select_array[] = 'mdl_course.category';
@@ -2182,6 +2188,10 @@ class BussinessRepository implements IBussinessInterface
             } else {
                 return "Mismatch Input";
             }
+
+            //Lấy thêm thông tin tổ chức
+            $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
+            $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
 
             $query->select($select_array);
 
@@ -2241,21 +2251,54 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
-            //vá user chưa hoàn thành và tổng số
-            foreach ($completed_users as $course_id => $item_completed) {
-                foreach ($array_users as $item) {
-                    $user = [
-                        'user_id' => $item['user_id'],
-                        'fullname' => $item['fullname'],
-                        'email' => $item['email'],
-                        'country' => $item['country'],
-                        'city' => $item['city'],
-                        'organization_id' => $item['organization_id'],
-                        'organization_name' => $item['organization_name']
-                    ];
-                    if (!in_array($item['user_id'], $item_completed)) { //User chua hoan thanh
-                        self::pushUser($data[$course_id], 'col3', $item['user_id'], $user);
-                        self::pushUser($data[$course_id], 'col2', $item['user_id'], $user);
+            if ($mode_select == 'completed_course') { //User chua hoan thanh
+                //Lấy các user đã enrol vào các khóa học
+                $courses_users = MdlCourse::query()
+                    ->join('mdl_enrol', function ($join) {
+                        $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                        $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                        $join->where('mdl_enrol.enrol', '=', 'manual');
+                    })
+                    ->join('mdl_user_enrolments', function ($join) use ($user_ids) {
+                        $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                    })
+                    ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user_enrolments.userid')
+                    ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+                    ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
+                    ->select('tms_user_detail.user_id',
+                        'tms_user_detail.fullname',
+                        'tms_user_detail.email',
+                        'tms_user_detail.country',
+                        'tms_user_detail.city',
+                        'tms_organization.id as organization_id',
+                        'tms_organization.name as organization_name',
+                        'mdl_course.id as course_id'
+                    )
+                    ->get()->toArray();
+
+                //Gom lai
+                $arranged_courses_users = array();
+                foreach ($courses_users as $item) {
+                    $arranged_courses_users[$item['course_id']][] = $item;
+                }
+
+                //vá user chưa hoàn thành và tổng số
+                foreach ($completed_users as $course_id => $item_completed) {
+                    //Lấy tất cả user đã enrol các khóa
+                    foreach ($arranged_courses_users[$course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname'],
+                            'email' => $item['email'],
+                            'country' => $item['country'],
+                            'city' => $item['city'],
+                            'organization_id' => $item['organization_id'],
+                            'organization_name' => $item['organization_name']
+                        ];
+                        if (!in_array($item['user_id'], $item_completed) ) { //User chua hoan thanh
+                            self::pushUser($data[$course_id], 'col3', $item['user_id'], $user);
+                            self::pushUser($data[$course_id], 'col2', $item['user_id'], $user);
+                        }
                     }
                 }
             }

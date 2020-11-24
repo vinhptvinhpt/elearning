@@ -336,7 +336,7 @@
               ];
               response.data.forEach(function (selectItem) {
                 let newItem = {
-                  label: selectItem.name,
+                  label: selectItem.name + ' (' + selectItem.shortname + ')',
                   id: selectItem.id
                 };
                 additionalSelections.push(newItem);
