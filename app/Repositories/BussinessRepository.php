@@ -857,7 +857,6 @@ class BussinessRepository implements IBussinessInterface
     // PermissionController
 
 
-
     public function apiAttemptDetail($id)
     {
         $check = new \stdClass();
@@ -4451,11 +4450,11 @@ class BussinessRepository implements IBussinessInterface
             else
                 $inputRole = '5';
             //  Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->first();
-            $name_role = array("student");
-            if ($type == 'teacher') {
-                $name_role[] = "teacher";
+            $name_role = array(Role::STUDENT);
+            if ($type == Role::TEACHER) {
+                $name_role[] = Role::TEACHER;
                 $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
-            } elseif ($type == 'student') {
+            } elseif ($type == Role::STUDENT) {
                 $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } else {
                 if ($inputRole) {
@@ -4583,7 +4582,7 @@ class BussinessRepository implements IBussinessInterface
                     bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 //                    bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 
-                    usleep(100);
+                    usleep(10);
                 }
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
