@@ -4,73 +4,59 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Repositories\SurveyRepository;
-use App\TmsQuestionData;
-use App\TmsSurveyUser;
 use App\TmsSurveyUserView;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
-use App\Repositories\BussinessRepository;
 
 //Quản lý thông tin survey
-//ThoLD (21/09/2019)
 class SurveyController extends Controller
 {
-    private $bussinessRepository;
     private $surveyRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository, SurveyRepository $surveyRepository)
+    public function __construct(SurveyRepository $surveyRepository)
     {
-        $this->bussinessRepository = $bussinessRepository;
         $this->surveyRepository = $surveyRepository;
     }
 
     #region survey
     //view hiển thị danh sách survey
-    //ThoLD (21/08/2019)
     public function viewIndex()
     {
         return view('survey.index');
     }
 
     //view tao moi survey
-    //ThoLD (21/09/2019)
     public function viewCreateCourse()
     {
         return view('survey.create');
     }
 
     //view hiển thị chi tiet survey
-    //ThoLD (21/09/2019)
     public function viewSurveyDetail($id)
     {
         return view('survey.edit', ['survey_id' => $id]);
     }
 
     //view hiển thị danh sách survey
-    //ThoLD (21/08/2019)
     public function viewRestore()
     {
         return view('survey.restore');
     }
 
     //view hiển thị danh sách cau hoi
-    //ThoLD (25/09/2019)
     public function viewQuesttion()
     {
         return view('survey.index_question');
     }
 
     //view tao moi cau hoi
-    //ThoLD (29/09/2019)
     public function viewCreateQuestion($id)
     {
         return view('survey.create_question', ['survey_id' => $id]);
     }
 
     //view  edit cau hoi
-    //ThoLD (29/09/2019)
     public function viewEditQuestion($id)
     {
         return view('survey.edit_question', ['question_id' => $id]);
@@ -78,7 +64,6 @@ class SurveyController extends Controller
 
     #region  trinh bay survey va nop bai
     //view hien thi survey duoi dang bai thi
-    //ThoLd (02/10/2019)
     public function viewDisplaySurvey($id, $courseid)
     {
         //luu so luot xem survey
@@ -92,7 +77,6 @@ class SurveyController extends Controller
 
     #region  trinh bay survey va nop bai
     //view hien thi survey duoi dang bai thi
-    //ThoLd (02/10/2019)
     public function viewDisplaySurveyAdmin($id)
     {
         //luu so luot xem survey
@@ -105,133 +89,131 @@ class SurveyController extends Controller
     }
 
     //view hien thi survey duoi dang bai thi
-    //ThoLd (02/10/2019)
     public function viewStatisticSurvey($id)
     {
         return view('survey.statistic', ['survey_id' => $id]);
     }
 
     //api lấy danh sách survey
-    //ThoLD (21/09/2019)
     public function apiGetListSurvey(Request $request)
     {
-        return $this->bussinessRepository->apiGetListSurvey($request);
+        return $this->surveyRepository->apiGetListSurvey($request);
     }
 
     public function apiCreateSurvey(Request $request)
     {
-        return $this->bussinessRepository->apiCreateSurvey($request);
+        return $this->surveyRepository->apiCreateSurvey($request);
     }
 
     public function apiGetDetailSurvey($id)
     {
-        return $this->bussinessRepository->apiGetDetailSurvey($id);
+        return $this->surveyRepository->apiGetDetailSurvey($id);
     }
 
     public function apiEditSurvey($id, Request $request)
     {
-        return $this->bussinessRepository->apiEditSurvey($id, $request);
+        return $this->surveyRepository->apiEditSurvey($id, $request);
     }
 
     public function apiDeleteSurvey(Request $request)
     {
-        return $this->bussinessRepository->apiDeleteSurvey($request);
+        return $this->surveyRepository->apiDeleteSurvey($request);
     }
 
     public function apiGetListSurveyRestore(Request $request)
     {
-        return $this->bussinessRepository->apiGetListSurveyRestore($request);
+        return $this->surveyRepository->apiGetListSurveyRestore($request);
     }
 
     public function apiRestoreSurvey(Request $request)
     {
-        return $this->bussinessRepository->apiRestoreSurvey($request);
+        return $this->surveyRepository->apiRestoreSurvey($request);
     }
 
     public function apiDeleteSurveyRestore(Request $request)
     {
-        return $this->bussinessRepository->apiDeleteSurveyRestore($request);
+        return $this->surveyRepository->apiDeleteSurveyRestore($request);
     }
 
     public function apiGetListQuestion(Request $request)
     {
-        return $this->bussinessRepository->apiGetListQuestion($request);
+        return $this->surveyRepository->apiGetListQuestion($request);
     }
 
     public function apiGetListSurveyQuestion()
     {
-        return $this->bussinessRepository->apiGetListSurveyQuestion();
+        return $this->surveyRepository->apiGetListSurveyQuestion();
     }
 
     public function apiCreateQuestion(Request $request)
     {
-        return $this->bussinessRepository->apiCreateQuestion($request);
+        return $this->surveyRepository->apiCreateQuestion($request);
     }
 
     public function apiGetDetailQuestion($id)
     {
-        return $this->bussinessRepository->apiGetDetailQuestion($id);
+        return $this->surveyRepository->apiGetDetailQuestion($id);
     }
 
     public function apiGetListAnswerQuestion($id)
     {
-        return $this->bussinessRepository->apiGetListAnswerQuestion($id);
+        return $this->surveyRepository->apiGetListAnswerQuestion($id);
     }
 
     public function apiGetListQuestionChild($id)
     {
-        return $this->bussinessRepository->apiGetListQuestionChild($id);
+        return $this->surveyRepository->apiGetListQuestionChild($id);
     }
 
     public function apiUpdateQuestion($id, Request $request)
     {
-        return $this->bussinessRepository->apiUpdateQuestion($id, $request);
+        return $this->surveyRepository->apiUpdateQuestion($id, $request);
     }
 
     public function apiDeleteQuestion(Request $request)
     {
-        return $this->bussinessRepository->apiDeleteQuestion($request);
+        return $this->surveyRepository->apiDeleteQuestion($request);
     }
 
     public function apiPresentSurvey($id)
     {
-        return $this->bussinessRepository->apiPresentSurvey($id);
+        return $this->surveyRepository->apiPresentSurvey($id);
     }
 
     public function apiSubmitSurvey($id, Request $request)
     {
-        return $this->bussinessRepository->apiSubmitSurvey($id, $request);
+        return $this->surveyRepository->apiSubmitSurvey($id, $request);
     }
 
     public function apiSubmitSurveyLMS($id, Request $request)
     {
-        return $this->bussinessRepository->apiSubmitSurveyLMS($id, $request);
+        return $this->surveyRepository->apiSubmitSurveyLMS($id, $request);
     }
 
     public function apiStatisticSurveyView(Request $request)
     {
-        return $this->bussinessRepository->apiStatisticSurveyView($request);
+        return $this->surveyRepository->apiStatisticSurveyView($request);
     }
 
     public function apiStatisticSurveyExam(Request $request)
     {
-        return $this->bussinessRepository->apiStatisticSurveyExam($request);
+        return $this->surveyRepository->apiStatisticSurveyExam($request);
     }
 
     public function apiGetProvinces()
     {
-        return $this->bussinessRepository->apiGetProvinces();
+        return $this->surveyRepository->apiGetProvinces();
     }
 
 
     public function apiGetBarnchs($province_id)
     {
-        return $this->bussinessRepository->apiGetBarnchs($province_id);
+        return $this->surveyRepository->apiGetBarnchs($province_id);
     }
 
     public function apiGetSaleRooms($branch_id)
     {
-        return $this->bussinessRepository->apiGetSaleRooms($branch_id);
+        return $this->surveyRepository->apiGetSaleRooms($branch_id);
     }
 
     public function apiExportFile(Request $request)
