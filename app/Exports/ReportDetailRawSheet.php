@@ -18,13 +18,15 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
     use Exportable;
     private $title = '';
     private $content = array();
+    private $mode = '';
     private $type = '';
     protected $column_count = 4;
 
-    public function __construct(string $title, $sheet_content, $type)
+    public function __construct(string $title, $sheet_content, $mode, $type)
     {
         $this->title = $title;
         $this->content = $sheet_content;
+        $this->mode = $mode;
         $this->type = $type;
     }
 
@@ -49,7 +51,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
 
     public function _getRowBy($row) //overwrite row data if necessary
     {
-        if ($this->type == 'learning_time') { //Convert seconds to hours
+        if ($this->mode == 'learning_time') { //Convert seconds to hours
             $row[8] = round($row[8]/3600, 4);
         }
         //array_pop($row); // remove column type when return
@@ -63,7 +65,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
 
     public function _getHeading()
     {
-        if ($this->type == 'completed_training') {
+        if ($this->mode == 'completed_training') {
             $heading =  [
                 'No',
                 'Name',
@@ -74,7 +76,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
                 'Competency framework',
                 'Completed',
             ];
-        } elseif ( $this->type == 'completed_course') {
+        } elseif ( $this->mode == 'completed_course') {
             $heading =  [
                 'No',
                 'Name',
@@ -86,7 +88,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
                 'Course',
                 'Completed',
             ];
-        } elseif ($this->type == 'certificated') {
+        } elseif ($this->mode == 'certificated') {
             $heading =  [
                 'No',
                 'Name',
@@ -97,8 +99,7 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
                 'Competency framework',
                 'Certificated',
             ];
-
-        } elseif ($this->type == 'learning_time') {
+        } elseif ($this->mode == 'learning_time') {
             $heading =  [
                 'No',
                 'Name',
@@ -115,6 +116,11 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
             $heading =  [];
         }
 
+//        if ($this->type == 'single_course') {
+//            $competency_heading_key = array_search('Competency framework', $heading);
+//            unset($heading[$competency_heading_key]);
+//        }
+
         return $heading;
     }
 
@@ -124,16 +130,25 @@ class ReportDetailRawSheet implements WithTitle, WithHeadings, FromArray, WithMa
 
             AfterSheet::class => function (AfterSheet $event) {
                 $endingCol = 'A';
-                if ($this->type == 'certificated' || $this->type == 'completed_training') {
+                if ($this->mode == 'certificated' || $this->mode == 'completed_training') {
                     $this->column_count = 8;
                     $endingCol = 'H';
-                } elseif ($this->type == 'completed_course') {
+                } elseif ($this->mode == 'completed_course') {
                     $this->column_count = 9;
                     $endingCol = 'I';
-                } elseif ($this->type == 'learning_time') {
+//                    if ($this->type == 'single_course') {
+//                        $this->column_count = 8;
+//                        $endingCol = 'H';
+//                    }
+                } elseif ($this->mode == 'learning_time') {
                     $this->column_count = 10;
                     $endingCol = 'J';
+//                    if ($this->type == 'single_course') {
+//                        $this->column_count = 9;
+//                        $endingCol = 'I';
+//                    }
                 }
+
                 //Set Width
                 for ($i = 1; $i <= $this->column_count; $i++) {
                     $event->sheet->getDelegate()->getColumnDimensionByColumn($i)->setWidth(20);
