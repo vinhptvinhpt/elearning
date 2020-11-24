@@ -27,40 +27,6 @@ interface IBussinessInterface
 
     public function apiGetSaleRoomByBranch(Request $request);
 
-    //------------CourseController-----------------//
-
-    public function apiDeleteCourse(Request $request);
-
-    public function apiGetListCourseSample();
-
-    public function apiCloneCourse(Request $request);
-
-    public function apiGetListCourseConcen(Request $request);
-
-    public function apiGetListCourseRestore(Request $request);
-
-    public function apiRestoreCourse(Request $request);
-
-    public function apiUserCurrentEnrol(Request $request);
-
-    public function apiUserNeedEnrol(Request $request);
-
-    public function apiEnrolUser(Request $request);
-
-    public function apiRemoveEnrolUser(Request $request);
-
-    public function apiGetTotalActivityCourse(Request $request);
-
-    public function apiStatisticUserInCourse(Request $request);
-
-    public function apiListAttendanceUsers(Request $request);
-
-    public function apiDeleteEnrolNotUse();
-
-    public function importFile();
-
-    public function apiImportQuestion(Request $request);
-
     //------------EducationController--------------------//
     public function apiListUserTeacher(Request $request);
 
@@ -81,17 +47,6 @@ interface IBussinessInterface
 
     public function apiSend(Request $request);
 
-
-    //------------PermissionController----------------//
-    public function apiPermissionAdd(Request $request);
-
-    public function apiPermissionListDetail(Request $request);
-
-    public function apiPermissionDelete($permission_id);
-
-    public function apiPermissionDetail(Request $request);
-
-    public function apiPermissionUpdate(Request $request);
 
 
     //------------ReportController----------------//
@@ -184,56 +139,6 @@ interface IBussinessInterface
     public function apiAutoGenCertificate();
 
     public function autoGenCertificate($user_id);
-
-
-    //------------SurveyController----------------//
-    public function apiGetListSurvey(Request $request);
-
-    public function apiCreateSurvey(Request $request);
-
-    public function apiGetDetailSurvey($id);
-
-    public function apiEditSurvey($id, Request $request);
-
-    public function apiDeleteSurvey(Request $request);
-
-    public function apiGetListSurveyRestore(Request $request);
-
-    public function apiRestoreSurvey(Request $request);
-
-    public function apiDeleteSurveyRestore(Request $request);
-
-    public function apiGetListQuestion(Request $request);
-
-    public function apiGetListSurveyQuestion();
-
-    public function apiCreateQuestion(Request $request);
-
-    public function apiGetDetailQuestion($id);
-
-    public function apiGetListAnswerQuestion($id);
-
-    public function apiGetListQuestionChild($id);
-
-    public function apiUpdateQuestion($id, Request $request);
-
-    public function apiDeleteQuestion(Request $request);
-
-    public function apiPresentSurvey($id);
-
-    public function apiSubmitSurvey($id, Request $request);
-
-    public function apiStatisticSurveyView(Request $request);
-
-    public function apiStatisticSurveyExam(Request $request);
-
-    public function apiGetProvinces();
-
-    public function apiGetBarnchs($province_id);
-
-    public function apiGetSaleRooms($branch_id);
-
-    public function apiExportFile(Request $request);
 
 
     //------------SystemController-----------------------//
