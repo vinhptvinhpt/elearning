@@ -2116,14 +2116,20 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
         } else { //View theo khóa học
-
-            $query_users = TmsUserDetail::query()->where('deleted', 0);
+            $query_users = TmsUserDetail::query()->where('deleted', 0)
+                ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+                ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
             if ($organization_id != 0) {
-                $query_users
-                    ->join('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
-                    ->where('tms_organization_employee.organization_id', $organization_id);
+                $query_users->where('tms_organization_employee.organization_id', $organization_id);
             }
-            $array_users = $query_users->select('user_id', 'fullname', 'email', 'country', 'city')->get()->toArray();
+            $array_users = $query_users->select('tms_user_detail.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.country',
+                'tms_user_detail.city',
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name'
+            )->get()->toArray();
 
             $user_ids = array_column($array_users, 'user_id');
 
@@ -2136,19 +2142,25 @@ class BussinessRepository implements IBussinessInterface
                 'tms_user_detail.confirm',
                 'tms_user_detail.email',
                 'tms_user_detail.city',
-                'tms_user_detail.country'
+                'tms_user_detail.country',
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name',
             ];
 
             if ($mode_select == 'completed_course') {
                 $query = CourseCompletion::query()->whereIn('userid', $user_ids);
                 $query->join('mdl_course', 'mdl_course.id', '=', 'course_completion.courseid');
                 $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'course_completion.userid');
+                $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
+                $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
                 $select_array[] = 'course_completion.timecompleted as completed';
             } elseif ($mode_select == 'learning_time') {
                 $data_type = 'counter';
                 $query = TmsLearningActivityLog::query()->whereIn('tms_learning_activity_logs.user_id', $user_ids);
                 $query->join('mdl_course', 'mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
                 $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
+                $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
+                $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
                 $select_array[] = 'mdl_course.estimate_duration';
                 $select_array[] = DB::raw('SUM(tms_learning_activity_logs.duration) as duration');
                 $select_array[] = 'mdl_course.category';
@@ -2191,6 +2203,8 @@ class BussinessRepository implements IBussinessInterface
                         'email' => $item['email'],
                         'country' => $item['country'],
                         'city' => $item['city'],
+                        'organization_id' => $item['organization_id'],
+                        'organization_name' => $item['organization_name'],
                     ];
                     if ($mode_select == 'learning_time') {
                         $user['duration'] = $item['duration'];
@@ -2236,6 +2250,8 @@ class BussinessRepository implements IBussinessInterface
                         'email' => $item['email'],
                         'country' => $item['country'],
                         'city' => $item['city'],
+                        'organization_id' => $item['organization_id'],
+                        'organization_name' => $item['organization_name']
                     ];
                     if (!in_array($item['user_id'], $item_completed)) { //User chua hoan thanh
                         self::pushUser($data[$course_id], 'col3', $item['user_id'], $user);

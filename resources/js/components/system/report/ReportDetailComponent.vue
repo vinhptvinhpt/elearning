@@ -556,7 +556,8 @@
         loader.fadeIn();
         axios.post('/exportReportDetailRaw', {
           data: data,
-          type: this.mode_select
+          mode: this.mode_select,
+          type: this.type_select
         })
           .then(response => {
             loader.fadeOut();
