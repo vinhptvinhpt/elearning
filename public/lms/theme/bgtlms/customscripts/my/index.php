@@ -188,6 +188,7 @@ mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
+mc.is_toeic,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
@@ -244,6 +245,7 @@ mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
+mc.is_toeic,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
@@ -560,7 +562,18 @@ foreach ($course_training_arranged as $training_id => $courses) {
             $couresIdAllow[] = $course->id;
         } //then complete
         elseif ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule == 1) {
-            push_course($courses_completed, $course);
+            // With TOEIC course when user completed all the tests + admin import converted grade to system => completed course
+            if($course->is_toeic == "1"){
+                $sql_toeic = "SELECT id FROM tms_quiz_grades WHERE courseid = ".$course->id." AND userid = ".$USER->id;
+                $check_completed_toeic = array_values($DB->get_records_sql($sql_toeic));
+                if($check_completed_toeic){
+                    push_course($courses_completed, $course);
+                }else{
+                    push_course($courses_current, $course);
+                }
+            }else{
+                push_course($courses_completed, $course);
+            }
             $sttTotalCourse++;
             $couresIdAllow[] = $course->id;
         } //then required = khoa hoc trong khung nang luc
