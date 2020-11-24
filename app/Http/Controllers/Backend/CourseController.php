@@ -4,7 +4,6 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\MdlCourse;
-use App\Repositories\BussinessRepository;
 use App\Repositories\MdlCourseRepository;
 use App\Role;
 use App\TmsOrganization;
@@ -17,16 +16,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 //Quản lý thông tin khóa học
-//ThoLD (21/08/2019)
 class CourseController extends Controller
 {
 
-    private $bussinessRepository;
     private $mdlCourseRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository, MdlCourseRepository $mdlCourseRepository)
+    public function __construct(MdlCourseRepository $mdlCourseRepository)
     {
-        $this->bussinessRepository = $bussinessRepository;
         $this->mdlCourseRepository = $mdlCourseRepository;
     }
 
@@ -273,11 +269,8 @@ class CourseController extends Controller
             $response->message = __('tao_moi_khoa_hoc_thanh_cong');
         } catch (\Exception $e) {
             \DB::rollBack();
-            dd($e->getMessage());
             $response->status = false;
-            //$response->message = $e->getMessage();
             $response->message = __('loi_he_thong_thao_tac_that_bai');
-
         }
 
         return response()->json($response);
@@ -301,52 +294,52 @@ class CourseController extends Controller
 
     public function apiDeleteCourse(Request $request)
     {
-        return $this->bussinessRepository->apiDeleteCourse($request);
+        return $this->mdlCourseRepository->apiDeleteCourse($request);
     }
 
     public function apiGetListCourseSample()
     {
-        return $this->bussinessRepository->apiGetListCourseSample();
+        return $this->mdlCourseRepository->apiGetListCourseSample();
     }
 
     public function apiCloneCourse(Request $request)
     {
-        return $this->bussinessRepository->apiCloneCourse($request);
+        return $this->mdlCourseRepository->apiCloneCourse($request);
     }
 
     public function apiGetListCourseConcen(Request $request)
     {
-        return $this->bussinessRepository->apiGetListCourseConcen($request);
+        return $this->mdlCourseRepository->apiGetListCourseConcen($request);
     }
 
     public function apiGetListCourseRestore(Request $request)
     {
-        return $this->bussinessRepository->apiGetListCourseRestore($request);
+        return $this->mdlCourseRepository->apiGetListCourseRestore($request);
     }
 
     public function apiRestoreCourse(Request $request)
     {
-        return $this->bussinessRepository->apiRestoreCourse($request);
+        return $this->mdlCourseRepository->apiRestoreCourse($request);
     }
 
     public function apiUserCurrentEnrol(Request $request)
     {
-        return $this->bussinessRepository->apiUserCurrentEnrol($request);
+        return $this->mdlCourseRepository->apiUserCurrentEnrol($request);
     }
 
     public function apiUserCurrentInvite(Request $request)
     {
-        return $this->bussinessRepository->apiUserCurrentInvite($request);
+        return $this->mdlCourseRepository->apiUserCurrentInvite($request);
     }
 
     public function apiUserCourseException(Request $request)
     {
-        return $this->bussinessRepository->apiUserCourseException($request);
+        return $this->mdlCourseRepository->apiUserCourseException($request);
     }
 
     public function apiUserNeedEnrol(Request $request)
     {
-        return $this->bussinessRepository->apiUserNeedEnrol($request);
+        return $this->mdlCourseRepository->apiUserNeedEnrol($request);
     }
 
     public function apiAttendanceList(Request $request)
@@ -356,52 +349,52 @@ class CourseController extends Controller
 
     public function apiUserNeedInvite(Request $request)
     {
-        return $this->bussinessRepository->apiUserNeedInvite($request);
+        return $this->mdlCourseRepository->apiUserNeedInvite($request);
     }
 
     public function apiUserNeedInviteToException(Request $request)
     {
-        return $this->bussinessRepository->apiUserNeedInviteToException($request);
+        return $this->mdlCourseRepository->apiUserNeedInviteToException($request);
     }
 
     public function apiEnrolUser(Request $request)
     {
-        return $this->bussinessRepository->apiEnrolUser($request);
+        return $this->mdlCourseRepository->apiEnrolUser($request);
     }
 
     public function apiInviteUser(Request $request)
     {
-        return $this->bussinessRepository->apiInviteUser($request);
+        return $this->mdlCourseRepository->apiInviteUser($request);
     }
 
     public function apiEnrolUserException(Request $request)
     {
-        return $this->bussinessRepository->apiEnrolUserException($request);
+        return $this->mdlCourseRepository->apiEnrolUserException($request);
     }
 
     public function apiInvitationDetail($id)
     {
-        return $this->bussinessRepository->apiInvitationDetail($id);
+        return $this->mdlCourseRepository->apiInvitationDetail($id);
     }
 
     public function apiInvitationConfirm(Request $request)
     {
-        return $this->bussinessRepository->apiInvitationConfirm($request);
+        return $this->mdlCourseRepository->apiInvitationConfirm($request);
     }
 
     public function apiRemoveEnrolUser(Request $request)
     {
-        return $this->bussinessRepository->apiRemoveEnrolUser($request);
+        return $this->mdlCourseRepository->apiRemoveEnrolUser($request);
     }
 
     public function apiRemoveInviteUser(Request $request)
     {
-        return $this->bussinessRepository->apiRemoveInviteUser($request);
+        return $this->mdlCourseRepository->apiRemoveInviteUser($request);
     }
 
     public function apiRemoveUserException(Request $request)
     {
-        return $this->bussinessRepository->apiRemoveUserException($request);
+        return $this->mdlCourseRepository->apiRemoveUserException($request);
     }
 
     public function apiImportExcelEnrol(Request $request)
@@ -411,22 +404,22 @@ class CourseController extends Controller
 
     public function apiGetTotalActivityCourse(Request $request)
     {
-        return $this->bussinessRepository->apiGetTotalActivityCourse($request);
+        return $this->mdlCourseRepository->apiGetTotalActivityCourse($request);
     }
 
     public function apiStatisticUserInCourse(Request $request)
     {
-        return $this->bussinessRepository->apiStatisticUserInCourse($request);
+        return $this->mdlCourseRepository->apiStatisticUserInCourse($request);
     }
 
     public function apiListAttendanceUsers(Request $request)
     {
-        return $this->bussinessRepository->apiListAttendanceUsers($request);
+        return $this->mdlCourseRepository->apiListAttendanceUsers($request);
     }
 
     public function apiDeleteEnrolNotUse()
     {
-        return $this->bussinessRepository->apiDeleteEnrolNotUse();
+        return $this->mdlCourseRepository->apiDeleteEnrolNotUse();
     }
 
     public function importFile()
@@ -436,50 +429,46 @@ class CourseController extends Controller
 
     public function apiImportQuestion(Request $request)
     {
-        return $this->bussinessRepository->apiImportQuestion($request);
+        return $this->mdlCourseRepository->apiImportQuestion($request);
     }
 
     public function apiGetCourseDetail($id)
     {
-        return $this->bussinessRepository->apiGetCourseDetail($id);
+        return $this->mdlCourseRepository->apiGetCourseDetail($id);
     }
 
     public function apiGetCourseLastUpdate($id)
     {
-        return $this->bussinessRepository->apiGetCourseLastUpdate($id);
+        return $this->mdlCourseRepository->apiGetCourseLastUpdate($id);
     }
 
     //api lấy danh sách danh mục khóa học
     //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
     public function apiGetListCategoryForClone()
     {
-        return $this->bussinessRepository->apiGetListCategoryForClone();
+        return $this->mdlCourseRepository->apiGetListCategoryForClone();
     }
 
 
     //api lấy danh sách danh mục khóa học
     //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
     public function apiGetListCategory()
     {
-        return $this->bussinessRepository->apiGetListCategory();
+        return $this->mdlCourseRepository->apiGetListCategory();
     }
 
     //api lấy danh sách danh mục khóa học
     //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
     public function apiGetListCategoryForEdit()
     {
-        return $this->bussinessRepository->apiGetListCategoryForEdit();
+        return $this->mdlCourseRepository->apiGetListCategoryForEdit();
     }
 
     //api lấy danh sách danh mục khóa học cho chức năng restore
     //hiển hị dưới view create và edit course
-    //ThoLD (10/09/2019)
     public function apiGetListCategoryRestore()
     {
-        return $this->bussinessRepository->apiGetListCategoryRestore();
+        return $this->mdlCourseRepository->apiGetListCategoryRestore();
     }
 
     public function apiDeleteCourseForever(Request $request)
@@ -538,7 +527,7 @@ class CourseController extends Controller
 
     public function apiEnrolUserCourseConcent(Request $request)
     {
-        return $this->bussinessRepository->apiEnrolUserCourseConcent($request);
+        return $this->mdlCourseRepository->apiEnrolUserCourseConcent($request);
     }
 
     public function apiHintCourseCode(Request $request)
