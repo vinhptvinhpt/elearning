@@ -2254,7 +2254,9 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
-
+            if ($mode_select == 'learning_time') {
+                return $data;
+            }
             //Fill users chua hoan thanh
             //Lấy các user đã enrol vào các khóa học
             $courses_users = MdlCourse::query()
@@ -2320,7 +2322,8 @@ class BussinessRepository implements IBussinessInterface
                                 $user['estimate_duration'] = '';
                                 $user['category'] = '';
                                 $user['course_id'] = '';
-                                self::pushUserWithCounter($data[$completed_course_id], 'col2', $item['user_id'], $user, $mode_select);
+                                self::pushUser($data[$completed_course_id], 'col1', $item['user_id'], '');
+                                self::pushUser($data[$completed_course_id], 'col2', $item['user_id'], $user);
                             }
                         }
                     }
@@ -2351,7 +2354,8 @@ class BussinessRepository implements IBussinessInterface
                             $user['estimate_duration'] = '';
                             $user['category'] = '';
                             $user['course_id'] = '';
-                            self::pushUserWithCounter($data[$incomplete_course_id], 'col2', $item['user_id'], $user, $mode_select);
+                            self::pushUser($data[$incomplete_course_id], 'col1', $item['user_id'], '');
+                            self::pushUser($data[$incomplete_course_id], 'col2', $item['user_id'], $user);
                         }
                     }
                 }
