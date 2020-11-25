@@ -2157,7 +2157,6 @@ class BussinessRepository implements IBussinessInterface
                 'tms_organization.id as organization_id',
                 'tms_organization.name as organization_name',
             ];
-
             if ($mode_select == 'completed_course') {
                 $query = CourseCompletion::query()->whereIn('course_completion.userid', $user_ids);
                 $query->join('mdl_course', 'mdl_course.id', '=', 'course_completion.courseid');
@@ -2205,7 +2204,9 @@ class BussinessRepository implements IBussinessInterface
             foreach ($list as $item) {
                 if ($data_type == 'person' || strlen($item['user_id']) != 0) { //data_type counter only defined new object if have users
                     //Build course object
-                    self::buildDefaultReportObject($data, $item['course_id'], $item['course_name']);
+                    if (!array_key_exists($item['course_id'], $data)) {
+                        self::buildDefaultReportObject($data, $item['course_id'], $item['course_name']);
+                    }
                 }
                 if (strlen($item['user_id']) != 0) {
                     $user = [
@@ -2252,6 +2253,7 @@ class BussinessRepository implements IBussinessInterface
                 }
             }
 
+
             if ($mode_select == 'completed_course') { //User chua hoan thanh
                 //Lấy các user đã enrol vào các khóa học
                 $courses_users = MdlCourse::query()
@@ -2267,6 +2269,7 @@ class BussinessRepository implements IBussinessInterface
                     ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
                     ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
                     ->whereIn('tms_user_detail.user_id', $user_ids)
+                    ->where('mdl_course.deleted', 0)
                     ->select('tms_user_detail.user_id',
                         'tms_user_detail.fullname',
                         'tms_user_detail.email',
@@ -2289,7 +2292,7 @@ class BussinessRepository implements IBussinessInterface
                 $arranged_courses_users = array();
                 foreach ($courses_users as $item) {
                     $arranged_courses_users[$item['course_id']][] = $item;
-                }
+                };
 
                 $diff = array_diff(array_keys($arranged_courses_users), array_keys($completed_users));
 
@@ -2315,8 +2318,11 @@ class BussinessRepository implements IBussinessInterface
 
                 if (!empty($diff)) { //Ko co hoc vien da hoan thanh van va
                     foreach ($diff as $incomplete_course_id) {
+                        //Lay cac hoc vien da enrol khoi tao danh sach moi
                         foreach ($arranged_courses_users[$incomplete_course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
-                            self::buildDefaultReportObject($data, $incomplete_course_id, $item['course_name']);
+                            if (!array_key_exists($incomplete_course_id, $data)) {
+                                self::buildDefaultReportObject($data, $incomplete_course_id, $item['course_name']);
+                            }
                             $user = [
                                 'user_id' => $item['user_id'],
                                 'fullname' => $item['fullname'],

@@ -56,7 +56,7 @@
 
             <div class="col-6 mb-1">
               <label for="organization_id">{{trans.get('keys.to_chuc')}}</label>
-              <treeselect v-model="organization_id" :multiple="false" :options="organization_options" id="organization_id"/>
+              <treeselect :multiple="false" :options="select_organization_options" id="organization_id" v-model="organization_id"/>
             </div>
 
 
@@ -241,12 +241,14 @@
         course_list: [],
         organization_id: 0,
         organizations: [],
-        organization_options: [
+        default_organization_options: [
           {
             id: 0,
             label: this.trans.get('keys.chon_to_chuc')
           }
         ],
+        organization_options: [],
+        select_organization_options: [],
         training_id: 0,
         course_id: 0,
         training_options: [],
@@ -267,21 +269,12 @@
         this.resetForm(level);
       },
       resetForm(level) {
-        //Reset organization select
         this.organization_id = 0;
-        this.organization_options = [
-          {
-            id: 0,
-            label: this.trans.get('keys.chon_to_chuc')
-          }
-        ];
-        this.organization_options = this.setOptions(this.organizations);
         this.training_id = 0;
         this.course_id = 0;
         this.country = '';
         this.startdate = '';
         this.enddate = '';
-
         if (level === 0) {
           this.type_select = 'training_pqdl';
         } else {
@@ -327,7 +320,6 @@
           })
             .then(response => {
               //this.course_list = response.data;
-              this.course_id = 0;
               let additionalSelections = [
                 {
                   label: 'Select course',
@@ -593,6 +585,7 @@
             this.organizations = response.data;
             //Set options recursive
             this.organization_options = this.setOptions(response.data);
+            this.select_organization_options = [ ...this.default_organization_options, ...this.organization_options ]
             $('.content_search_box').removeClass('loadding');
           })
           .catch(error => {
