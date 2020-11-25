@@ -2299,27 +2299,29 @@ class BussinessRepository implements IBussinessInterface
 
             //vá user chưa hoàn thành và tổng số / danh sach da hoan thanh
             foreach ($completed_users as $completed_course_id => $item_completed) {
-                //Lấy tất cả user đã enrol các khóa
-                foreach ($arranged_courses_users[$completed_course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
-                    $user = [
-                        'user_id' => $item['user_id'],
-                        'fullname' => $item['fullname'],
-                        'email' => $item['email'],
-                        'country' => $item['country'],
-                        'city' => $item['city'],
-                        'organization_id' => $item['organization_id'],
-                        'organization_name' => $item['organization_name']
-                    ];
-                    if (!in_array($item['user_id'], $item_completed) ) { //User chua hoan thanh
-                        if ($mode_select == 'completed_course') {
-                            self::pushUser($data[$completed_course_id], 'col3', $item['user_id'], $user);
-                            self::pushUser($data[$completed_course_id], 'col2', $item['user_id'], $user);
-                        } else if ($mode_select == 'learning_time') {
-                            $user['duration'] = $item['duration'];
-                            $user['estimate_duration'] = $item['estimate_duration'];
-                            $user['category'] = $item['category'];
-                            $user['course_id'] = $completed_course_id;
-                            self::pushUserWithCounter($data[$completed_course_id], 'col2', $item['user_id'], $user, $mode_select);
+                if (array_key_exists($completed_course_id, $arranged_courses_users)) {
+                    //Lấy tất cả user đã enrol các khóa
+                    foreach ($arranged_courses_users[$completed_course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname'],
+                            'email' => $item['email'],
+                            'country' => $item['country'],
+                            'city' => $item['city'],
+                            'organization_id' => $item['organization_id'],
+                            'organization_name' => $item['organization_name']
+                        ];
+                        if (!in_array($item['user_id'], $item_completed) ) { //User chua hoan thanh
+                            if ($mode_select == 'completed_course') {
+                                self::pushUser($data[$completed_course_id], 'col3', $item['user_id'], $user);
+                                self::pushUser($data[$completed_course_id], 'col2', $item['user_id'], $user);
+                            } else if ($mode_select == 'learning_time') {
+                                $user['duration'] = '';
+                                $user['estimate_duration'] = '';
+                                $user['category'] = '';
+                                $user['course_id'] = '';
+                                self::pushUserWithCounter($data[$completed_course_id], 'col2', $item['user_id'], $user, $mode_select);
+                            }
                         }
                     }
                 }
@@ -2345,10 +2347,10 @@ class BussinessRepository implements IBussinessInterface
                             self::pushUser($data[$incomplete_course_id], 'col3', $item['user_id'], $user);
                             self::pushUser($data[$incomplete_course_id], 'col2', $item['user_id'], $user);
                         } else if ($mode_select == 'learning_time') {
-                            $user['duration'] = $item['duration'];
-                            $user['estimate_duration'] = $item['estimate_duration'];
-                            $user['category'] = $item['category'];
-                            $user['course_id'] = $incomplete_course_id;
+                            $user['duration'] = '';
+                            $user['estimate_duration'] = '';
+                            $user['category'] = '';
+                            $user['course_id'] = '';
                             self::pushUserWithCounter($data[$incomplete_course_id], 'col2', $item['user_id'], $user, $mode_select);
                         }
                     }
