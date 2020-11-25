@@ -451,6 +451,9 @@ if ($_SESSION["totalCourse"] > 0) {
 }
 
 $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
+
+$hrm_link = $CFG->wwwhrm;
+
 ?>
 
 <html>
@@ -979,13 +982,15 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         <li v-if="user.yearworking > 1">Experience: <span>{{ user.yearworking }} years</span></li>
                         <li v-else-if="user.yearworking < 0">Experience: <span>Not yet update</span></li>
                         <li v-else>Experience: <span>Under 1 year</span></li>
-                        <li v-if="linemanagers && linemanagers.length > 0">Line Manager: <p>{{ linemanagersStr }}</p></li>
-                        <li v-else>Line Manager: <span>Not yet update</span></li>
+                        <li>Line Manager: <p>{{ linemanagers }}</p></li>
                         <li>Company: <span>{{ user.company }}</span></li>
                     </ul>
                 </div>
                 <div><a href="lms/user/edit.php"
                         style="font-size: 14px; font-style: italic; color: <?= $_SESSION["color"] ?>">Edit profile</a>
+                </div>
+                <div v-if="hrm_token && hrm_token.length != 0"><a :href="hrm_link"
+                        style="font-size: 14px; font-style: italic; color: <?= $_SESSION["color"] ?>">HRM</a>
                 </div>
             </div>
             <div class="info-learn">
@@ -1328,6 +1333,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             category: 0,
             training: 0,
 
+            hrm_link: '<?= $hrm_link ?>',
+            hrm_token: '',
+
             txtSearch: '',
             txtSearchTraining: '',
 
@@ -1338,8 +1346,7 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
             requiredCourse: 0,
             currentCourse: 0,
 
-            linemanagers: [],
-            linemanagersStr: '',
+            linemanagers: 'Not Yet Update',
 
             trainingList: [],
 
@@ -1463,16 +1470,13 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                     .then(response => {
                         this.user = response.data.profile;
 
-                        this.linemanagers = response.data.linemanagers;
-                        // if(response.data.linemanagers.length > 0){
-                        //     var lineStr = '';
-                        //     $.each(response.data.linemanagers, function(key, value) {
-                        //         lineStr += value.fullname+', ';
-                        //     });
-                        //     lineStr = lineStr.substring(0, lineStr.length - 2);
-                        //     this.linemanagersStr = lineStr;
-                        // }
-                        this.linemanagersStr = this.linemanagers;
+                        this.hrm_token = this.getCookie('hrm_token');
+
+                        this.hrm_link = this.hrm_link + '?mid=Dashboard&fid=ctrlDashboardPortalSixCell&username=' + this.user.username + '&token=' + this.hrm_token;
+
+                        if (response.data.linemanagers && response.data.linemanagers.length > 0) {
+                            this.linemanagers = response.data.linemanagers;
+                        }
 
                         //set progress
                         var numCurrentCourses = Object.keys(response.data.currentcourses).length;
@@ -1486,7 +1490,6 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                             this.progressCurrentCourse = numCurrentCourses + "/" + totalCourse;
                             this.progressRequiredCourse = numRequiredCourses + "/" + totalCourse;
 
-                            //
                             $('.progress-current').css('width', numCurrentCourses * 100 / totalCourse + '%');
                             $('.progress-required').css('width', numRequiredCourses * 100 / totalCourse + '%');
                         }
@@ -1495,6 +1498,21 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                         console.log("Error ", error);
                     });
             },
+            getCookie: function(cname) {
+                var name = cname + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var ca = decodedCookie.split(';');
+                for(var i = 0; i <ca.length; i++) {
+                    var c = ca[i];
+                    while (c.charAt(0) == ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(name) == 0) {
+                        return c.substring(name.length, c.length);
+                    }
+                }
+                return "";
+            }
         },
         mounted() {
             this.searchCourse();

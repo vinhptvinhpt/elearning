@@ -16,8 +16,10 @@ tud.dob,
 tud.email,
 tud.phone,
 tud.sex,
-tudlm.fullname as line_manager
+tudlm.fullname as line_manager,
+mu.username
 from tms_user_detail tud
+inner join mdl_user mu on tud.user_id = mu.id
 left join tms_organization_employee toe on tud.user_id = toe.user_id
 left join tms_organization tmso on toe.organization_id = tmso.id
 left join tms_user_detail tudlm on toe.line_manager_id = tudlm.user_id

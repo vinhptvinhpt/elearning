@@ -306,13 +306,15 @@ class ExcelController extends Controller
     {
 
         $data = $request->input('data');
+        $mode = $request->input('mode');
         $type = $request->input('type');
 
         $export_data = array();
 
         //Export export_data
         $stt = 0;
-        if ($type == 'certificated' || $type == 'completed_training') {
+
+        if ($mode == 'certificated' || $mode == 'completed_training') {
 
             foreach ($data as $organization_id => $organization) { //organization
                 $organization_name = $organization['col0'];
@@ -360,70 +362,130 @@ class ExcelController extends Controller
             }
         }
 
-        if ($type == 'completed_course' || $type == 'learning_time') {
+        if ($mode == 'completed_course' || $mode == 'learning_time') {
+            if ($type == 'single_course') {
+                foreach ($data as $course_id => $course) {
+                    $course_name = $course['col0'];
+                    $training_name = null;
+                    //Col1 for both
+                    $certificated_array = $course['col1'];
+                    if (is_array($certificated_array) && !empty($certificated_array)) {
+                        foreach ($certificated_array as $certificated) {
+                            $stt++;
+                            if ($mode == 'completed_course') {
+                                $export_data[] = array(
+                                    $stt,
+                                    $certificated['fullname'],
+                                    $certificated['email'],
+                                    $certificated['organization_name'],
+                                    self::getCountryName($certificated['country']),
+                                    $certificated['city'],
+                                    $training_name,
+                                    $course_name,
+                                    'Yes'
+                                );
+                            } else {
+                                $export_data[] = array(
+                                    $stt,
+                                    $certificated['fullname'],
+                                    $certificated['email'],
+                                    $certificated['organization_name'],
+                                    self::getCountryName($certificated['country']),
+                                    $certificated['city'],
+                                    $training_name,
+                                    $course_name,
+                                    $certificated['duration'],
+                                    $certificated['estimate_duration'],
+                                );
+                            }
+                        }
+                    }
 
-            foreach ($data as $organization_id => $organization) { //organization
-                $organization_name = $organization['col0'];
-                $training_list = isset($organization['training']) ? $organization['training'] : [];
-                if (!empty($training_list)) { //Certificated
-                    foreach ($training_list as $training_id => $training) {
-                        $training_name = $training['col0'];
-                        $course_list = isset($training['courses']) ? $training['courses'] : [];
-                        if (!empty($course_list)) {
-                            foreach ($course_list as $course) {
-                                $course_name = $course['col0'];
+                    //Col2 for complete course only
+                    if ($mode == 'completed_course') {
+                        $missing_array = $course['col2'];
+                        if (is_array($missing_array) && !empty($missing_array)) {
+                            foreach ($missing_array as $missing) {
+                                $stt++;
+                                $export_data[] = array(
+                                    $stt,
+                                    $missing['fullname'],
+                                    $missing['email'],
+                                    $missing['organization_name'],
+                                    self::getCountryName($missing['country']),
+                                    $missing['city'],
+                                    $training_name,
+                                    $course_name,
+                                    'No'
+                                );
+                            }
+                        }
+                    }
+                }
+            } else {
+                foreach ($data as $organization_id => $organization) { //organization
+                    $organization_name = $organization['col0'];
+                    $training_list = isset($organization['training']) ? $organization['training'] : [];
+                    if (!empty($training_list)) { //Certificated
+                        foreach ($training_list as $training_id => $training) {
+                            $training_name = $training['col0'];
+                            $course_list = isset($training['courses']) ? $training['courses'] : [];
+                            if (!empty($course_list)) {
+                                foreach ($course_list as $course) {
+                                    $course_name = $course['col0'];
 
-                                //Col1 for both
-                                $certificated_array = $course['col1'];
-                                if (is_array($certificated_array) && !empty($certificated_array)) {
-                                    foreach ($certificated_array as $certificated) {
-                                        $stt++;
-                                        if ($type == 'completed_course') {
-                                            $export_data[] = array(
-                                                $stt,
-                                                $certificated['fullname'],
-                                                $certificated['email'],
-                                                $organization_name,
-                                                self::getCountryName($certificated['country']),
-                                                $certificated['city'],
-                                                $training_name,
-                                                $course_name,
-                                                'Yes'
-                                            );
-                                        } else {
-                                            $export_data[] = array(
-                                                $stt,
-                                                $certificated['fullname'],
-                                                $certificated['email'],
-                                                $organization_name,
-                                                self::getCountryName($certificated['country']),
-                                                $certificated['city'],
-                                                $training_name,
-                                                $course_name,
-                                                $certificated['duration'],
-                                                $certificated['estimate_duration'],
-                                            );
+                                    //Col1 for both
+                                    $certificated_array = $course['col1'];
+                                    if (is_array($certificated_array) && !empty($certificated_array)) {
+                                        foreach ($certificated_array as $certificated) {
+                                            $stt++;
+                                            if ($mode == 'completed_course') {
+                                                $export_data[] = array(
+                                                    $stt,
+                                                    $certificated['fullname'],
+                                                    $certificated['email'],
+                                                    $organization_name,
+                                                    self::getCountryName($certificated['country']),
+                                                    $certificated['city'],
+                                                    $training_name,
+                                                    $course_name,
+                                                    'Yes'
+                                                );
+                                            } else {
+                                                $export_data[] = array(
+                                                    $stt,
+                                                    $certificated['fullname'],
+                                                    $certificated['email'],
+                                                    $organization_name,
+                                                    self::getCountryName($certificated['country']),
+                                                    $certificated['city'],
+                                                    $training_name,
+                                                    $course_name,
+                                                    $certificated['duration'],
+                                                    $certificated['estimate_duration'],
+                                                );
+                                            }
                                         }
                                     }
-                                }
 
-                                //Col2 for complete course only
-                                if ($type == 'completed_course') {
-                                    $missing_array = $course['col2'];
-                                    if (is_array($missing_array) && !empty($missing_array)) {
-                                        foreach ($missing_array as $missing) {
-                                            $stt++;
-                                            $export_data[] = array(
-                                                $stt,
-                                                $missing['fullname'],
-                                                $missing['email'],
-                                                $organization_name,
-                                                self::getCountryName($missing['country']),
-                                                $missing['city'],
-                                                $training_name,
-                                                $course_name,
-                                                'No'
-                                            );
+                                    //Col2 for complete course only
+                                    if ($mode == 'completed_course') {
+                                        $missing_array = $course['col2'];
+                                        if (is_array($missing_array) && !empty($missing_array)) {
+                                            foreach ($missing_array as $missing) {
+                                                $stt++;
+                                                $export_data[] = array(
+                                                    $stt,
+                                                    $missing['fullname'],
+                                                    $missing['email'],
+                                                    $organization_name,
+                                                    self::getCountryName($missing['country']),
+                                                    $missing['city'],
+                                                    $training_name,
+                                                    $course_name,
+                                                    'No'
+                                                );
+                                            }
                                         }
                                     }
                                 }
@@ -434,7 +496,7 @@ class ExcelController extends Controller
             }
         }
 
-        $exportExcel = new ReportDetailRawSheet('Report Detail', $export_data, $type);
+        $exportExcel = new ReportDetailRawSheet('Report Detail', $export_data, $mode, $type);
 
         $filename = "report_detail.xlsx";
 

@@ -50,5 +50,9 @@ return [
         'HISTAFF-API' => 'http://222.252.30.92:2000/SynData.asmx/',
 
         'HISTAFF-KEY' => 'G6rikv0U0eQUIRak7owtmw==',
+
+        'HISTAFF-COOKIE' => 'hrm_token',
+
+        'DOMAIN-COOKIE' => 'dev-easia.tinhvan.com',
     ],
 ];

@@ -10,14 +10,13 @@ use App\ModelHasRole;
 use App\Role;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
+use App\TmsOrganizationHistaffMapping;
 use App\TmsUserDetail;
 use App\ViewModel\ResultModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
-use JWTAuth;
 use Mockery\Exception;
 
 class SyncDataController
@@ -34,151 +33,108 @@ class SyncDataController
         try {
             $username = $request->input('username');
             $token_histaff = $request->input('token_histaff');
-            $password = $request->input('password');
+            setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
+
+            $param = [
+                'username' => 'text'
+            ];
+            $validator = validate_fails($request, $param);
+            if (!empty($validator)) {
+                return response()->json(['status' => 'FAIL']);
+            }
+
+            if (!$username)
+                return response()->json(['status' => 'FAIL']);
+
 
             //xac thuc token voi histaff
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $result_api = callAPIHiStaff('POST', $url, $username, $token_histaff, Config::get('constants.domain.HISTAFF-KEY'));
+
             $result_api = json_decode($result_api, true);
 
             if ($result_api['Code'] != '200') {
                 return response()->json(['status' => 'FAILTOKEN']);
             }
 
+            $checkUser = MdlUser::where('username', $username)->first();
 
-            $checkUser = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($username))->first();
+            if ($checkUser) {
+                //Cuonghq
+                //Check role and update redirect type
+                $sru = DB::table('model_has_roles as mhr')
+                    ->join('roles', 'roles.id', '=', 'mhr.role_id')
+                    ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
+                    ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
+                    ->where('mhr.model_id', $checkUser->id)
+                    ->where('mhr.model_type', 'App/MdlUser')
+                    ->get();
 
+                $current_redirect_type = $checkUser->redirect_type;
 
-            if (!$checkUser) {
-                return response()->json(['status' => 'FAILUSER']);
-            }
-
-            if ($checkUser->active == 0) {
-                return response()->json(['status' => 'FAILBANNED']);
-            }
-
-            if (strpos($username, 'admin') !== false) {
-            } else {
-                //lấy url hiện tại
-                $host = Config::get('constants.domain.TMS');
-
-                //lấy ra mã tổ chức
-                $query_cctc = "(SELECT f.id, f.level, f.code
-            FROM (SELECT @id AS _id, (SELECT @id := parent_id FROM tms_organization WHERE id = _id)
-            FROM (SELECT @id := (select toe.organization_id from tms_organization_employee toe join mdl_user mu on mu.id = toe.user_id
-            where mu.username= '" . $username . "')) tmp1
-            JOIN tms_organization ON @id IS NOT NULL) tmp2
-            JOIN tms_organization f ON tmp2._id = f.id
-            where f.level = 2 or f.level = 1 limit 1)";
-
-
-                $query_cctc = DB::raw($query_cctc);
-
-                $results = DB::select($query_cctc);
-                $rs = "";
-                foreach ($results as $rs) {
-                    $rs = $rs->code;
-                    break;
-                };
-
-                //Nếu có tên - thuộc tổ chức
-                $partOfUrl = "phh";
-                if ($rs) {
-                    if (Str::contains(strtolower($rs), ['ea']) == 1) {
-                        $partOfUrl = "easia";
-                    } else if (Str::contains(strtolower($rs), ['bg']) == 1) {
-                        $partOfUrl = "begodi";
-                    } else if (Str::contains(strtolower($rs), ['av']) == 1) {
-                        $partOfUrl = "avana";
-                    } else if (Str::contains(strtolower($rs), ['ev']) == 1) {
-                        $partOfUrl = "exotic";
+                $redirect_type = 'lms';
+                if (count($sru) != 0) {
+                    foreach ($sru as $role) {
+                        if (!in_array($role->name, [Role::STUDENT, Role::ROLE_EMPLOYEE])) {
+                            $redirect_type = "default";
+                            break;
+                        }
                     }
                 }
 
-
-                if (strpos(strtolower($host), $partOfUrl) !== false || Str::contains(strtolower($host), ['localhost']) == 1 || Str::contains(strtolower($host), ['dev']) == 1) {
-
-                } else {
-                    return response()->json(['status' => 'FAILORGANIZATION']);
+                $updated = false;
+                //Update redirect type
+                if ($redirect_type != $current_redirect_type) {
+                    $checkUser->redirect_type = $redirect_type;
+                    $updated = true;
                 }
-            }
 
+                // [VinhPT]
+                // Get description for user check
+                $response['redirect_type'] = $redirect_type;
 
-            // grab credentials from the request
-            $credentials = $request->only('username', 'password');
-            if (!$token = JWTAuth::attempt($credentials)) {
-                return response()->json(['status' => 'invalid_credentials'], 401);
-            }
-
-            //Check role and update redirect type
-            $sru = DB::table('model_has_roles as mhr')
-                ->join('roles', 'roles.id', '=', 'mhr.role_id')
-                ->leftJoin('permission_slug_role as psr', 'psr.role_id', '=', 'mhr.role_id')
-                ->join('mdl_user as mu', 'mu.id', '=', 'mhr.model_id')
-                ->where('mhr.model_id', $checkUser->id)
-                ->where('mhr.model_type', 'App/MdlUser')
-                ->get();
-
-            $current_redirect_type = $checkUser->redirect_type;
-
-            $redirect_type = 'lms';
-            if (count($sru) != 0) {
-                foreach ($sru as $role) {
-                    if (!in_array($role->name, [Role::STUDENT, Role::ROLE_EMPLOYEE])) {
-                        $redirect_type = "default";
-                        break;
-                    }
+                if (empty($checkUser->token)) {
+                    $token = compact('token');
+                    $checkUser->token = $token['token'];
+                    $updated = true;
                 }
+
+                if ($updated) { //Luu thong tin moi
+                    $checkUser->save();
+                }
+
+                $token = $checkUser->token;
+
+
+                Auth::login($checkUser);
+
+                //set token cho phep nhan dang dau la user cua histaff
+                setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), $token_histaff, time() + 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
+
+                $response['jwt'] = $token;
+                $response['status'] = 'SUCCESS';
+                // [VinhPT]
+                // Get description for user check
+                $response['redirect_type'] = $checkUser->redirect_type;
+                //encrypt for login lms
+                $app_name = Config::get('constants.domain.APP_NAME');
+
+                $key_app = encrypt_key($app_name);
+
+                $data_lms = array(
+                    'user_id' => $checkUser->id,
+                    'app_key' => $key_app
+                );
+
+                $data_lms = createJWT($data_lms, 'data');
+
+                $response['data'] = $data_lms;
+                return response()->json($response);
+
             }
 
-            $updated = false;
-            //Update redirect type
-            if ($redirect_type != $current_redirect_type) {
-                $checkUser->redirect_type = $redirect_type;
-                $updated = true;
-            }
-
-            // Get description for user check
-            $response['redirect_type'] = $redirect_type;
-
-            if (empty($checkUser->token)) {
-                $token = compact('token');
-                $checkUser->token = $token['token'];
-                $updated = true;
-            }
-
-            if ($updated) { //Luu thong tin moi
-                $checkUser->save();
-            }
-
-            $token = $checkUser->token;
-
-            Auth::login($checkUser, 1);
-
-            $response['id'] = $checkUser->id;
-            $response['username'] = $checkUser->username;
-            $response['avatar'] = Auth::user()->detail['avatar'];
-            $response['fullname'] = Auth::user()->detail['fullname'];
-            $response['domain'] = Config::get('constants.domain.TMS');
-            $response['jwt'] = $token;
-            $response['status'] = 'SUCCESS';
-
-            //encrypt for login lms
-            $app_name = Config::get('constants.domain.APP_NAME');
-
-            $key_app = encrypt_key($app_name);
-
-            $data_lms = array(
-                'user_id' => $checkUser->id,
-                'app_key' => $key_app
-            );
-
-            $data_lms = createJWT($data_lms, 'data');
-
-            $response['data'] = $data_lms;
-
-            return response()->json($response);
+            return response()->json(['status' => 'FAIL']);
 
         } catch (Exception $e) {
             return response()->json(['status' => 'FAIL']);
@@ -236,7 +192,7 @@ class SyncDataController
             if ($result_api['Code'] != '200') {
                 $result->code = 'ERR06';
                 $result->status = false;
-                $result->message = $result_api->Msg;
+                $result->message = $result_api['Msg'];
                 return response()->json($result);
             }
 
@@ -254,8 +210,19 @@ class SyncDataController
             $parent_id = 0;
             $level = 0;
 
+            $company_parent = '';
+
             if (!empty($data['parent_code'])) {
-                $org_parent = TmsOrganization::where('code', $data['parent_code'])->first();
+                $arr_org = explode('-', $data['parent_code']);
+                $company_parent = convertOrgCode($arr_org[0]);
+
+                $org_code = str_replace($arr_org[0] . '-', '', $data['parent_code']);
+
+
+                $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
+                    ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+                    ->where('tohm.histaff_code', '=', $org_code)
+                    ->select('tor.id', 'tor.code')->first();
 
                 if ($org_parent) {
                     $parent_id = $org_parent->id;
@@ -263,8 +230,14 @@ class SyncDataController
                 }
             }
 
-            $org_check = TmsOrganization::where('code', $data['code'])->first();
 
+            $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $data['code'])->select('tms_code')->first();
+
+            $org_code_check = $org_mapping->tms_code;
+            if ($company_parent)
+                $org_code_check = $company_parent . '-' . $org_mapping->tms_code;
+
+            $org_check = TmsOrganization::where('code', $org_code_check)->first();
 
             if ($org_check) {
                 $org_check->code = $data['code'];
@@ -378,9 +351,29 @@ class SyncDataController
                 return response()->json($result);
             }
 
-            //xac thuc token voi histaff
-            $token = str_replace('', 'Bearer ', $token);
+            if (empty($data['line_manager'])) {
+                $result->code = 'US06';
+                $result->status = false;
+                $result->message = 'line_manager is empty';
+                return response()->json($result);
+            }
 
+            if (empty($data['title_position'])) {
+                $result->code = 'US07';
+                $result->status = false;
+                $result->message = 'title_position is empty';
+                return response()->json($result);
+            }
+
+
+            if (empty($data['title_position_code'])) {
+                $result->code = 'US08';
+                $result->status = false;
+                $result->message = 'title_position_code is empty';
+                return response()->json($result);
+            }
+
+            //xac thuc token voi histaff
             $url = Config::get('constants.domain.HISTAFF-API') . 'CheckToken';
 
             $result_api = callAPIHiStaff('POST', $url, $username, $token, Config::get('constants.domain.HISTAFF-KEY'));
@@ -389,13 +382,30 @@ class SyncDataController
             if ($result_api['Code'] != '200') {
                 $result->code = 'ERR06';
                 $result->status = false;
-                $result->message = $result_api->Msg;
+                $result->message = $result_api['Msg'];
                 return response()->json($result);
             }
 
             ////// xu ly flow insert vao elearning
             //region flow insert or update data vao elearning
-            $org_check = TmsOrganization::where('code', $data['organization_code'])->first();
+
+            $arr_org = explode('-', $data['organization_code']);
+
+            $company_parent = convertOrgCode($arr_org[0]);
+
+            $org_code = str_replace($arr_org[0] . '-', '', $data['organization_code']);
+
+            $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $org_code)->select('tms_code')->first();
+
+            if (empty($org_mapping)) {
+                $result->code = 'US09';
+                $result->status = false;
+                $result->message = 'Organization of Histaff is not exists in Elearning';
+                return response()->json($result);
+            }
+
+            $org_check = TmsOrganization::where('code', $company_parent . '-' . $org_mapping->tms_code)->first();
+
 
             if (empty($org_check)) {
                 $result->code = 'US05';
@@ -404,23 +414,30 @@ class SyncDataController
                 return response()->json($result);
             }
 
-            //hard code, default user sync tu histaff co quyen student va excutive
-            $inputRole = array(
-                array(//student
-                    "id" => 5,
-                    "mdl_role_id" => 5
-                ),
-                array(//excutive
-                    "id" => 29,
-                    "mdl_role_id" => 80
-                )
-            );
+            $line_manager = MdlUser::where('username', $data['line_manager'])->first();
+            $message = '';
+
+            if (empty($line_manager)) {
+                $message = '. Line manager is not exists';
+            }
+
+            //region lay danh sach quyen va vi tri tuong ung cho nguoi dung
+            $position = '';
+            $inputRoles = [];
+            getRoleAndPosition($position, $inputRoles, $data['title_position_code']);
+            //endregion
 
             DB::beginTransaction();
 
             $convert_name = convert_name($data['fullname']);
 
             $user = MdlUser::where('username', $data['username'])->first();
+
+            $arr_data = [];
+            $data_item = [];
+
+            $arr_data_enrol = [];
+            $data_item_enrol = [];
 
             if ($user) {
                 //update user in mdl_user
@@ -446,7 +463,15 @@ class SyncDataController
 
                 $tms_user->save();
 
-                $result->message = 'Success update user';
+
+                //delete user to organization
+                TmsOrganizationEmployee::where('user_id', $user->id)->where('enabled', 1)->delete();
+
+                //delete role for user
+                ModelHasRole::where('model_id', $user->id)->where('model_type', 'App/MdlUser')->delete();
+                MdlRoleAssignments::where('userid', $user->id)->where('contextid', 1)->delete();
+
+                $result->message = 'Success update user' . $message;
 
             } else {
                 $user = MdlUser::firstOrCreate([
@@ -465,34 +490,6 @@ class SyncDataController
                         'redirect_type' => 'lms'
                     ]);
 
-                //add user to organization
-                TmsOrganizationEmployee::firstOrCreate([
-                    'user_id' => $user->id,
-                    'organization_id' => $org_check->id,
-                    'position' => Role::ROLE_EMPLOYEE,
-                    'enabled' => 1
-                ]);
-
-                //update role for user
-                $arr_data = [];
-                $data_item = [];
-
-                $arr_data_enrol = [];
-                $data_item_enrol = [];
-
-                foreach ($inputRole as $role) {
-
-                    $data_item['role_id'] = $role["id"];
-                    $data_item['model_id'] = $user->id;
-                    $data_item['model_type'] = 'App/MdlUser';
-                    array_push($arr_data, $data_item);
-
-                    bulk_enrol_lms($user->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
-                }
-
-                ModelHasRole::insert($arr_data);
-                MdlRoleAssignments::insert($arr_data_enrol);
-
                 //update info to tms_user_detail
                 TmsUserDetail::firstOrCreate([
                     'user_id' => $user->id,
@@ -510,9 +507,45 @@ class SyncDataController
                         'avatar' => '/userfiles/files/avatar.png'
                     ]);
 
-                $result->message = 'Success insert user';
+                $result->message = 'Success insert user' . $message;
 
             }
+
+            //update user to organization
+            if (empty($line_manager)) {
+                TmsOrganizationEmployee::firstOrCreate([
+                    'user_id' => $user->id,
+                    'organization_id' => $org_check->id,
+                    'position' => $position,
+                    'enabled' => 1,
+                    'description' => $data['title_position']
+                ]);
+            } else {
+                TmsOrganizationEmployee::firstOrCreate([
+                    'user_id' => $user->id,
+                    'organization_id' => $org_check->id,
+                    'position' => $position,
+                    'enabled' => 1,
+                    'line_manager_id' => $line_manager->id,
+                    'description' => $data['title_position']
+                ]);
+            }
+
+            //update role for user
+            foreach ($inputRoles as $role) {
+
+                $data_item['role_id'] = $role->id;
+                $data_item['model_id'] = $user->id;
+                $data_item['model_type'] = 'App/MdlUser';
+                array_push($arr_data, $data_item);
+
+                bulk_enrol_lms($user->id, $role->mdl_role_id, $arr_data_enrol, $data_item_enrol);
+            }
+
+            ModelHasRole::insert($arr_data);
+            MdlRoleAssignments::insert($arr_data_enrol);
+
+
             DB::commit();
             //endregion
 

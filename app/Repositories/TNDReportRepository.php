@@ -4,12 +4,9 @@
 namespace App\Repositories;
 
 
-use App\MdlCourse;
 use App\TmsTdCompetency;
 use App\TmsTdCompetencyCourse;
 use App\TmsTdCompetencyMark;
-use App\TmsTrainningCourse;
-use App\TmsTrainningProgram;
 use App\ViewModel\ResponseModel;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;

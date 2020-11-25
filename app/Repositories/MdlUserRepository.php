@@ -9,7 +9,6 @@ use App\TmsLearnerHistory;
 use App\TmsUserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use mod_lti\local\ltiservice\response;
 
 class MdlUserRepository implements IMdlUserInterface
 {

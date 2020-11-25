@@ -39,6 +39,10 @@ if ($login) {
     $redirect = $CFG->wwwroot . '/';
 }
 
+//Remove token hrm_token
+$domain = parse_url($CFG->wwwroot);
+setcookie("hrm_token", '', time() + 3600, '/', $domain['host'], false, false);
+
 if (!isloggedin()) {
     // no confirmation, user has already logged out
     require_logout();
@@ -67,7 +71,7 @@ if (!isloggedin()) {
 // 				 window.location.href = '/';
 //             },1000);
 //         });
-        
+
 //         </script>
 // JSLOGOUTSSO;
 //     echo $OUTPUT->footer();
