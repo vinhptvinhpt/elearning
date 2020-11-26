@@ -642,10 +642,11 @@ class BackgroundController extends Controller
 //                }
 
                 if (array_key_exists($position, $mapping_position_histaff)) {
-                    $position = $mapping_position_histaff[$position]['name'];
-                    $title = $mapping_position_histaff[$position]['title'];
+                    $position_code = $position;
+                    $position = $mapping_position_histaff[$position_code]['name'];
+                    $title = $mapping_position_histaff[$position_code]['title'];
                 }
-
+                
                 $role = $position;
 
                 //Check / create department
