@@ -101,24 +101,31 @@ class BackgroundController extends Controller
 
         $mapping_position_histaff = array(
             9425 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'General Director'
             ],9426 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Director'
             ],9427 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Senior Manager'
             ],9428 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Manager'
             ],9429 => [
+                'code' => 'leader',
                 'name' => 'Leader',
                 'title' => 'Assistant Manager/Team Leader'
             ],9430 => [
+                'code' => 'seniorexecutive',
                 'name' => 'Senior Executive',
                 'title' => 'Senior Executive/Senior Guide'
             ],9431 => [
+                'code' => 'juniorexecutive',
                 'name' => 'Junior Executive',
                 'title' => 'Executive/Guide'
             ],
@@ -646,7 +653,7 @@ class BackgroundController extends Controller
                     $position = $mapping_position_histaff[$position_code]['name'];
                     $title = $mapping_position_histaff[$position_code]['title'];
                 }
-                
+
                 $role = $position;
 
                 //Check / create department
