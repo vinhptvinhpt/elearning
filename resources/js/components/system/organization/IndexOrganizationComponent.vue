@@ -222,12 +222,12 @@
                                                         <!--                                         :to="{ name: 'IndexEmployee', query: { organization_id: item.id}, params: {source_page: current}}">-->
                                                         <!--                              <span class="btn-icon-wrap"><i class="fal fa-users"></i></span>-->
                                                         <!--                            </router-link>-->
-<!--                                                        <router-link v-if="slug_can('tms-system-organize-edit')"-->
-<!--                                                                     :title="trans.get('keys.sua_to_chuc_ngoai_le')"-->
-<!--                                                                     class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"-->
-<!--                                                                     :to="{ name: 'UserOrganizationException', params: { org_id: item.id}}">-->
-<!--                                                            <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>-->
-<!--                                                        </router-link>-->
+                                                        <router-link v-if="slug_can('tms-system-organize-edit')"
+                                                                     :title="trans.get('keys.sua_to_chuc_ngoai_le')"
+                                                                     class="btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2"
+                                                                     :to="{ name: 'UserOrganizationException', params: { org_id: item.id}}">
+                                                            <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>
+                                                        </router-link>
 
                                                         <router-link v-if="slug_can('tms-system-organize-edit')"
                                                                      :title="trans.get('keys.sua_to_chuc')"
