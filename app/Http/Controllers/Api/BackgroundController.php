@@ -65,6 +65,8 @@ set_time_limit(0);
 
 class BackgroundController extends Controller
 {
+    const DEFAULT_PASSWORD = '123456a@';
+
     public function test()
     {
 //        path to files folder contain excel files
@@ -80,6 +82,7 @@ class BackgroundController extends Controller
         set_time_limit(0);
 
         $env = "background";
+        $password = self::DEFAULT_PASSWORD;
 
 //        $manager_keys = array(
 //            'manager',
@@ -189,6 +192,7 @@ class BackgroundController extends Controller
                 $status = true;
                 $base_level_id = 0;
                 $team_id = 0;
+                $is_histaff = false;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -248,8 +252,11 @@ class BackgroundController extends Controller
 //                }
 
                 if (array_key_exists($position, $mapping_position_histaff)) {
-                    $position = $mapping_position_histaff[$position]['name'];
-                    $title = $mapping_position_histaff[$position]['title'];
+                    $position_code = $position;
+                    $position = $mapping_position_histaff[$position_code]['name'];
+                    $title = $mapping_position_histaff[$position_code]['title'];
+                    $is_histaff = true;
+                    $password = '123456';
                 }
 
                 $role = $position;
@@ -405,6 +412,7 @@ class BackgroundController extends Controller
                     $createEmployeeResponse = self::createEmployee(
                         $role,
                         $email,
+                        $password,
                         $email,
                         $full_name,
                         $first_name,
@@ -484,6 +492,7 @@ class BackgroundController extends Controller
         set_time_limit(0);
 
         $env = "background";
+        $password = self::DEFAULT_PASSWORD;
 
 //        $manager_keys = array(
 //            'manager',
@@ -503,24 +512,31 @@ class BackgroundController extends Controller
 
         $mapping_position_histaff = array(
             9425 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'General Director'
             ],9426 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Director'
             ],9427 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Senior Manager'
             ],9428 => [
+                'code' => 'manager',
                 'name' => 'Manager',
                 'title' => 'Manager'
             ],9429 => [
+                'code' => 'leader',
                 'name' => 'Leader',
                 'title' => 'Assistant Manager/Team Leader'
             ],9430 => [
+                'code' => 'seniorexecutive',
                 'name' => 'Senior Executive',
                 'title' => 'Senior Executive/Senior Guide'
             ],9431 => [
+                'code' => 'juniorexecutive',
                 'name' => 'Junior Executive',
                 'title' => 'Executive/Guide'
             ],
@@ -584,6 +600,7 @@ class BackgroundController extends Controller
                 $status = true;
                 $base_level_id = 0;
                 $team_id = 0;
+                $is_histaff = false;
 
                 //Fetch data
                 //Skip 2 first row and department name row, check first column is numeric or not
@@ -652,6 +669,8 @@ class BackgroundController extends Controller
                     $position_code = $position;
                     $position = $mapping_position_histaff[$position_code]['name'];
                     $title = $mapping_position_histaff[$position_code]['title'];
+                    $is_histaff = true;
+                    $password = '123456';
                 }
 
                 $role = $position;
@@ -806,6 +825,7 @@ class BackgroundController extends Controller
                     $createEmployeeResponse = self::createEmployee(
                         $role,
                         $email,
+                        $password,
                         $email,
                         $full_name,
                         $first_name,
@@ -1203,6 +1223,7 @@ class BackgroundController extends Controller
     public function createEmployee(
         $role,
         $username,
+        $password,
         $email,
         $full_name,
         $first_name,
@@ -1228,6 +1249,9 @@ class BackgroundController extends Controller
 
         if (isset($check)) { //Cập nhật
             try {
+                if ($password != self::DEFAULT_PASSWORD) {//Cap nhat cho histaff
+                    $check->password = bcrypt($password);
+                }
                 $check->redirect_type = 'lms';
                 $check->firstname = $first_name;
                 $check->middlename = $middle_name;
@@ -1291,6 +1315,7 @@ class BackgroundController extends Controller
             $check = self::createUserNew(
                 $role,
                 $username,
+                $password,
                 $email,
                 $full_name,
                 $first_name,
@@ -1323,6 +1348,7 @@ class BackgroundController extends Controller
     /**
      * @param $role
      * @param $username
+     * @param $password
      * @param $email
      * @param $full_name
      * @param $first_name
@@ -1341,6 +1367,7 @@ class BackgroundController extends Controller
     public function createUserNew(
         $role,
         $username,
+        $password,
         $email,
         $full_name,
         $first_name,
@@ -1369,7 +1396,7 @@ class BackgroundController extends Controller
 
             $check = new MdlUser;
             $check->username = $username;
-            $check->password = bcrypt('123456a@');
+            $check->password = bcrypt($password);
             $check->redirect_type = 'lms';
             $check->firstname = $first_name;
             $check->middlename = $middle_name;
