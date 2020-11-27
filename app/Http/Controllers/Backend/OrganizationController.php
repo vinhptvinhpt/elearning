@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\TmsOrganizationEmployeeRepository;
 use App\Repositories\TmsOrganizationRepository;
 use App\Repositories\TmsOrganizationTeamRepository;
+use App\Repositories\TmsUserOrgExceptionRepository;
 use Illuminate\Http\Request;
 
 class OrganizationController extends Controller
@@ -13,12 +14,17 @@ class OrganizationController extends Controller
     private $tmsOrganizationRepository;
     private $tmsOrganizationEmployeeRepository;
     private $tmsOrganizationTeamRepository;
+    private $tmsUserExceptionRepository;
 
-    public function __construct(TmsOrganizationRepository $tmsOrganizationRepository, TmsOrganizationEmployeeRepository $tmsOrganizationEmployeeRepository, TmsOrganizationTeamRepository $tmsOrganizationTeamRepository)
+    public function __construct(TmsOrganizationRepository $tmsOrganizationRepository,
+                                TmsOrganizationEmployeeRepository $tmsOrganizationEmployeeRepository,
+                                TmsOrganizationTeamRepository $tmsOrganizationTeamRepository,
+                                TmsUserOrgExceptionRepository $tmsUserExceptionRepository)
     {
         $this->tmsOrganizationRepository = $tmsOrganizationRepository;
         $this->tmsOrganizationEmployeeRepository = $tmsOrganizationEmployeeRepository;
         $this->tmsOrganizationTeamRepository = $tmsOrganizationTeamRepository;
+        $this->tmsUserExceptionRepository = $tmsUserExceptionRepository;
     }
 
     public function apiListOrganization(Request $request)
@@ -134,5 +140,34 @@ class OrganizationController extends Controller
     public function apiRemoveMember(Request $request)
     {
         return $this->tmsOrganizationTeamRepository->apiRemoveMember($request);
+    }
+
+    //lay danh sach user content creator khong thuoc cctc hien tai
+    public function apiGetUserWithoutOrg(Request $request)
+    {
+        return $this->tmsUserExceptionRepository->getUserWithoutOrganization($request);
+    }
+
+    //lay danh sach user content creator ngoai le thuoc cctc hien tai
+    public function apiGetUserOrg(Request $request)
+    {
+        return $this->tmsUserExceptionRepository->getUserOrganization($request);
+    }
+
+    //add nguoi dung ngoai le vao cctc
+    public function apiAddUserOrganizationException(Request $request)
+    {
+        return $this->tmsUserExceptionRepository->addUserOrganizationException($request);
+    }
+
+    //xoa nguoi dung ngoai le khoi cctc
+    public function apiRemoveUserOrganizationException(Request $request)
+    {
+        return $this->tmsUserExceptionRepository->removeUserOrganizationException($request);
+    }
+
+    public function apiRemoveMultiUserOrganizationException(Request $request)
+    {
+        return $this->tmsUserExceptionRepository->removeMultiUserOrganizationException($request);
     }
 }

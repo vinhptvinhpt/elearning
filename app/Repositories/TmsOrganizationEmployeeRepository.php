@@ -7,6 +7,8 @@ use App\ModelHasRole;
 use App\Role;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
+use App\TmsUserOrganizationCourseException;
+use App\TmsUserOrganizationException;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
@@ -46,14 +48,14 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                     $keyword = substr($keyword, 1, $total_len - 1);
                 }
             }
-            $list->whereHas('user', function($q) use($keyword) {
+            $list->whereHas('user', function ($q) use ($keyword) {
                 // Query the name field in status table
                 $q->where('fullname', 'like', '%' . $keyword . '%');
                 $q->orWhere('email', 'like', '%' . $keyword . '%');
             });
         }
 
-        $list->whereHas('user', function($q) {
+        $list->whereHas('user', function ($q) {
             // Loại trừ user đã xóa
             $q->where('deleted', '=', 0);
         });
@@ -75,7 +77,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         //nếu k kịp lấy role từ frontend => load from session
         if ($current_user_roles_and_slugs['roles']->has_role_admin) {
             $role = Role::ADMIN;
-        }else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+        } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
             $role = Role::ROLE_MANAGER;
         } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
             $role = Role::ROLE_LEADER;
@@ -85,7 +87,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             if (strlen($organization_id) == 0 || $organization_id == 0) {
                 $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
                 if (isset($check)) {
-                    $organization_id =  $check->organization_id;
+                    $organization_id = $check->organization_id;
                 }
             }
         }
@@ -153,8 +155,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 
             //Check exist
             $check = TmsOrganizationEmployee::where('organization_id', $organization_id)->where('user_id', $user_id)->count();
-            if ($check > 0)
-            {
+            if ($check > 0) {
                 return response()->json([
                     'key' => 'user_id',
                     'message' => __('nhan_vien_da_ton_tai_trong_to_chuc')
@@ -212,7 +213,16 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //                return response()->json(status_message('error', __('nguoi_dung_khong_co_quuyen_cho_vi_tri_nay')));
 //            }
 
-            $item = TmsOrganizationEmployee::where('id', $id)->first();
+//            $item = TmsOrganizationEmployee::where('id', $id)->first();
+            $item = TmsOrganizationEmployee::findOrFail($id);
+
+            //check neu cctc update thay doi, xoa du lieu trong bang tms_user_organization_course_exceptions va tms_user_organization_exceptions
+            // action lien quan den flow 1 nguoi dung quan ly du lieu thuoc cctc khac
+            if ($item->organization_id != $organization_id) {
+                TmsUserOrganizationCourseException::where('user_id', $user_id)->delete();
+                TmsUserOrganizationException::where('user_id', $user_id)->delete();
+            }
+
             $old_pos = $item->position;
             $item->organization_id = $organization_id;
             $item->position = $position;
@@ -224,12 +234,12 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 $old_sys_role = Role::query()->where('name', $old_pos)->first();
                 if ($old_sys_role) {
                     //Xóa role cũ
-                    ModelHasRole::query()->where('model_id', $user_id)->where('role_id', $old_sys_role->id)->delete();
+                    ModelHasRole::where('model_id', $user_id)->where('role_id', $old_sys_role->id)->delete();
                     //remove role of user from table mdl_role_assignments for lms
-                    MdlRoleAssignments::query()->where('userid', $user_id)->where('roleid', $old_sys_role->mdl_role_id)->delete();
+                    MdlRoleAssignments::where('userid', $user_id)->where('roleid', $old_sys_role->mdl_role_id)->delete();
                 }
                 //Apply role mới
-                $sys_role = Role::query()->where('name', $position)->first();
+                $sys_role = Role::where('name', $position)->first();
                 if ($sys_role) {
                     add_user_by_role($user_id, $sys_role->id);
                     enrole_lms($user_id, $sys_role->mdl_role_id, 1);
@@ -252,11 +262,12 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             if (!is_numeric($id)) {
                 return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
             }
-            $item = TmsOrganizationEmployee::findOrFail($id);
-            if ($item) {
-                $item->delete();
-                //TmsOrganization::where('parent_id', $id)->delete();
-            }
+//            $item = TmsOrganizationEmployee::findOrFail($id);
+            TmsOrganizationEmployee::where('id', $id)->delete();
+//            if ($item) {
+//                $item->delete();
+//                //TmsOrganization::where('parent_id', $id)->delete();
+//            }
             \DB::commit();
             return response()->json(status_message('success', __('xoa_nhan_vien_thanh_cong')));
         } catch (Exception $e) {
@@ -368,7 +379,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         $organization_id = $request->input('organization_id');
         try {
             $data = array();
-            foreach($users as $user) {
+            foreach ($users as $user) {
                 $split = explode('/', $user);
                 $user_id = $split[0];
                 $position = $split[1];

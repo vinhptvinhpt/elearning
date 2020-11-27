@@ -15,6 +15,8 @@ use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
 use App\TmsRoleOrganization;
 use App\TmsUserCourseException;
+use App\TmsUserOrganizationCourseException;
+use App\TmsUserOrganizationException;
 use App\User;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Database\Query\JoinClause;
@@ -3984,11 +3986,13 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
 
-        $role = Role::select('id')->where('name', 'teacher')->first();
-        $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
+//        $role = Role::select('id')->where('name', 'teacher')->first();
+//        $userArray = ModelHasRole::where('role_id', $role['id'])->pluck('model_id');
+
         $listUsers = DB::table('tms_user_detail')
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id');
-        $listUsers = $listUsers
+            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_detail.user_id')
+            ->join('model_has_roles', 'model_has_roles.model_id', '=', 'mdl_user.id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->select(
                 'tms_user_detail.fullname as fullname',
                 'tms_user_detail.email as email',
@@ -3999,7 +4003,8 @@ class BussinessRepository implements IBussinessInterface
                 'tms_user_detail.working_status'
             )
             ->where('tms_user_detail.deleted', 0)
-            ->whereIn('tms_user_detail.user_id', $userArray)
+            ->where('roles.name', 'teacher')
+//            ->whereIn('tms_user_detail.user_id', $userArray)
             ->whereNotIn('mdl_user.username', ['admin']);
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {
@@ -4028,6 +4033,8 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mdl_user.username', 'like', "%{$this->keyword}%");
             });
         }
+        $listUsers =$listUsers->groupBy(['mdl_user.id']);
+
         $listUsers = $listUsers->paginate($row);
         $total = ceil($listUsers->total() / $row);
         $total_user = $listUsers->total();
@@ -5359,6 +5366,15 @@ class BussinessRepository implements IBussinessInterface
             if (strlen($organization_id) != 0 && $organization_id != 0) {
                 $selected_roles = Role::whereIn('id', $roles)->whereIn('name', Role::arr_role_organization)->get();
                 $employee = TmsOrganizationEmployee::where('user_id', $user_id)->first();
+
+                //check neu cctc update thay doi, xoa du lieu trong bang tms_user_organization_course_exceptions va tms_user_organization_exceptions
+                // action lien quan den flow 1 nguoi dung quan ly du lieu thuoc cctc khac
+                if ($employee->organization_id != $organization_id) {
+                    TmsUserOrganizationCourseException::where('user_id', $user_id)->delete();
+                    TmsUserOrganizationException::where('user_id', $user_id)->delete();
+                }
+
+
                 if (count($selected_roles) != 0) {
                     if (!isset($employee)) {
                         $employee = new TmsOrganizationEmployee();
