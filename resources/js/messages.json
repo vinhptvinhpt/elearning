@@ -1096,7 +1096,8 @@
     "phan_loai": "Type",
     "training_pqdl": "Organization training and data access courses",
     "single_course": "Standalone courses",
-    "xoa_nguoi_dung_ngoai_le": "Remove the exception users"
+    "xoa_nguoi_dung_ngoai_le": "Remove the exception users",
+    "ban_muon_thuc_hien_thao_tac_nay": "Are you sure want to remove this user?"
   },
   "vi.keys": {
     "language": "",
@@ -2186,6 +2187,7 @@
     "phan_loai": "Type",
     "training_pqdl": "Organization training and data access courses",
     "single_course": "Standalone courses",
-    "xoa_nguoi_dung_ngoai_le": "Xóa người dùng ngoại lệ"
+    "xoa_nguoi_dung_ngoai_le": "Xóa người dùng ngoại lệ",
+    "ban_muon_thuc_hien_thao_tac_nay": "Bạn có chắc chắn muốn thực hiện thao tác này?"
   }
 }
