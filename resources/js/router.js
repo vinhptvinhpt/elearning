@@ -133,7 +133,7 @@ import CompetencyEditComponent from "./components/tnd-report/CompetencyEditCompo
 import SelfResult from "./components/self-assessment/SelfResultComponent";
 import SelfResultUser from "./components/self-assessment/SelfResultUserComponent";
 import CloneCourseLibrary from "./components/education/CloneCourseLibraryComponent";
-import UserOrganizationException from "./components/system/organization/UserExceptionComponent";
+import UserExceptionComponent from "./components/system/organization/UserExceptionComponent";
 
 Vue.use(VueRouter);
 Vue.use(NProgress);
@@ -834,8 +834,8 @@ const routes = [
             },
             {
                 path: 'organization/exception/:id',
-                component: UserOrganizationException,
-                name: 'UserOrganizationException',
+                component: UserExceptionComponent,
+                name: 'UserExceptionComponent',
                 props: (route) => ({org_id: route.params.id})
             },
             {
