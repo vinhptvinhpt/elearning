@@ -54,5 +54,7 @@ return [
         'HISTAFF-COOKIE' => 'hrm_token',
 
         'DOMAIN-COOKIE' => 'dev-easia.tinhvan.com',
+
+        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el']
     ],
 ];
