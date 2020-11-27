@@ -255,14 +255,9 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
 
             DB::beginTransaction();
 
-            foreach ($lstUserIDs as $user_id) {
-
-                TmsUserOrganizationException::where('organization_id', $org_id)->where('user_id', $user_id)->delete();
-
-                TmsUserOrganizationCourseException::where('organization_id', $org_id)->where('user_id', $user_id)->delete();
-
-                usleep(10);
-            }
+            TmsUserOrganizationException::where('organization_id', $org_id)->whereIn('user_id', $lstUserIDs)->delete();
+            
+            TmsUserOrganizationCourseException::where('organization_id', $org_id)->whereIn('user_id', $lstUserIDs)->delete();
 
             DB::commit();
 

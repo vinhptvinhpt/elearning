@@ -3196,6 +3196,15 @@ class BussinessRepository implements IBussinessInterface
             $arrData = [];
             $data_item = [];
 
+            $arr_data = [];
+            $data_course = [];
+            //lay tat ca user exception dc phan quyen quan ly course cua to chuc
+            $lstData = DB::table('tms_role_organization as tror')
+                ->join('tms_user_organization_exceptions as tuoe', 'tuoe.organization_id', '=', 'tror.organization_id')
+                ->where('tror.role_id', '=', $role_id)
+                ->select('tuoe.user_id', 'tuoe.organization_id')->get();
+
+
             foreach ($lstUserIDs as $course_id) {
                 $data_item['course_id'] = $course_id;
                 $data_item['role_id'] = $role_id;
@@ -3203,9 +3212,22 @@ class BussinessRepository implements IBussinessInterface
                 $data_item['updated_at'] = Carbon::now();
 
                 array_push($arrData, $data_item);
+
+                foreach ($lstData as $data) {
+                    $data_course['user_id'] = $data->user_id;
+                    $data_course['organization_id'] = $data->organization_id;
+                    $data_course['course_id'] = $course_id;
+                    $data_course['created_at'] = Carbon::now();
+                    $data_course['updated_at'] = Carbon::now();
+
+                    array_push($arr_data, $data_course);
+                }
             }
 
             TmsRoleCourse::insert($arrData);
+
+            //gan course cho user do quan ly
+            TmsUserOrganizationCourseException::insert($arr_data);
 
             $response->status = true;
             $response->message = __('phan_quyen_thanh_cong');
@@ -3235,7 +3257,18 @@ class BussinessRepository implements IBussinessInterface
                 return json_encode($response);
             }
 
+
+            //lay tat ca user exception dc phan quyen quan ly course cua to chuc
+            $lstData = DB::table('tms_role_organization as tror')
+                ->join('tms_user_organization_exceptions as tuoe', 'tuoe.organization_id', '=', 'tror.organization_id')
+                ->where('tror.role_id', '=', $role_id)
+                ->pluck('tuoe.user_id')->toArray();
+
+
             TmsRoleCourse::whereIn('course_id', $lstUserIDs)->delete();
+
+            // xoa course user exception duoc quyen quan ly
+            TmsUserOrganizationCourseException::whereIn('user_id', $lstData)->whereIn('course_id', $lstUserIDs)->delete();
 
             $response->status = true;
             $response->message = __('phan_quyen_thanh_cong');
@@ -4033,7 +4066,7 @@ class BussinessRepository implements IBussinessInterface
                     ->orWhere('mdl_user.username', 'like', "%{$this->keyword}%");
             });
         }
-        $listUsers =$listUsers->groupBy(['mdl_user.id']);
+        $listUsers = $listUsers->groupBy(['mdl_user.id']);
 
         $listUsers = $listUsers->paginate($row);
         $total = ceil($listUsers->total() / $row);
