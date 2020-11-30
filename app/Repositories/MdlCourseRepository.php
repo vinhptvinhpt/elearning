@@ -27,6 +27,8 @@ use App\TmsRoleOrganization;
 use App\TmsTrainningCourse;
 use App\TmsTrainningProgram;
 use App\TmsUserCourseException;
+use App\TmsUserOrganizationCourseException;
+use App\TmsUserOrganizationException;
 use App\ViewModel\ImportModel;
 use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
@@ -1853,6 +1855,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                                     })
                                     ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
                                     ->where('mue.userid', '=', \Auth::user()->id);
+                            })
+                            ->orWhereIn('c.id', function ($q3) { //cac khoa nam trong to chuc khac neu co
+                                /* @var $q1 Builder */
+                                $q3->select('mdl_course.id')
+                                    ->from('tms_user_organization_course_exceptions as tuoce')
+                                    ->join('mdl_course', 'tuoce.course_id', '=', 'mdl_course.id')
+                                    ->where('tuoce.user_id', '=', \Auth::user()->id);
                             });
                     });
                 $select = [
@@ -2245,6 +2254,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $organization_employee = TmsOrganizationEmployee::query()->where('user_id', '=', \Auth::user()->id)->first();
             if (isset($organization_employee)) {
                 if ($organization_employee->organization) {
+
                     $role_organization = TmsRoleOrganization::query()->where('organization_id', $organization_employee->organization_id)->first();
                     if (isset($role_organization)) { //Map course to that roles
 //                        $role_course = new TmsRoleCourse();
@@ -2764,7 +2774,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
     }
 
 
-
     //Lấy danh sách học viên điểm danh theo lớp
     public function apiListAttendanceUsers(Request $request)
     {
@@ -3115,6 +3124,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
     }
 
     public $arrError = [];
+
     //api import enrol học viên vào khóa học
     public function importExcelEnrol(Request $request)
     {

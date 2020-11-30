@@ -808,7 +808,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/team/user_in', 'Backend\OrganizationController@apiTeamUserIn');
     Route::post('/api/team/assign_member', 'Backend\OrganizationController@apiAssignMember');
     Route::post('/api/team/remove_member', 'Backend\OrganizationController@apiRemoveMember');
-
+    Route::post('/api/organization/get-user-without-org', 'Backend\OrganizationController@apiGetUserWithoutOrg');
+    Route::post('/api/organization/get-user-org', 'Backend\OrganizationController@apiGetUserOrg');
+    Route::post('/api/organization/add-user-org', 'Backend\OrganizationController@apiAddUserOrganizationException');
+    Route::post('/api/organization/remove-user-org', 'Backend\OrganizationController@apiRemoveUserOrganizationException');
+    Route::post('/api/organization/remove-multi-user-org', 'Backend\OrganizationController@apiRemoveMultiUserOrganizationException');
 
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
 

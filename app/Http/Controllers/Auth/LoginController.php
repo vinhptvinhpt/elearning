@@ -214,8 +214,9 @@ class LoginController extends Controller
                     }
                 }
 
-
-                if (strpos(strtolower($host), $partOfUrl) !== false || Str::contains(strtolower($host), ['localhost']) == 1 || Str::contains(strtolower($host), ['dev']) == 1) {
+                if (strpos(strtolower($host), $partOfUrl) !== false
+                    || Str::contains(strtolower($host), Config::get('constants.domain.EXCEPTION-DOMAIN')) == 1
+                ) {
 
                 } else {
                     return response()->json(['status' => 'FAILORGANIZATION']);
