@@ -50,7 +50,7 @@
                 </div>
                 <div class="wrap-remember100">
                     <input type="checkbox" checked id="ip-checkbox">
-                    <span>Remeber login</span>
+                    <span>Remember login</span>
                 </div>
                 <div class="wrap-btn100 text-center">
                     <button style="position: relative;" type="submit" class="btn btn-login">Login

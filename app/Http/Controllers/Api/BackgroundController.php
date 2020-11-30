@@ -99,6 +99,31 @@ class BackgroundController extends Controller
             'TVE' => 'TVE'
         );
 
+        $mapping_position_histaff = array(
+            9425 => [
+                'name' => 'Manager',
+                'title' => 'General Director'
+            ],9426 => [
+                'name' => 'Manager',
+                'title' => 'Director'
+            ],9427 => [
+                'name' => 'Manager',
+                'title' => 'Senior Manager'
+            ],9428 => [
+                'name' => 'Manager',
+                'title' => 'Manager'
+            ],9429 => [
+                'name' => 'Leader',
+                'title' => 'Assistant Manager/Team Leader'
+            ],9430 => [
+                'name' => 'Senior Executive',
+                'title' => 'Senior Executive/Senior Guide'
+            ],9431 => [
+                'name' => 'Junior Executive',
+                'title' => 'Executive/Guide'
+            ],
+        );
+
         $countries = TmsUserDetail::country;
 
         $from = $request->input('from');
@@ -215,6 +240,11 @@ Log::info('157');
 //                    $role = Role::ROLE_EMPLOYEE;
 //                }
 
+                if (array_key_exists($position, $mapping_position_histaff)) {
+                    $position = $mapping_position_histaff[$position]['name'];
+                    $title = $mapping_position_histaff[$position]['title'];
+                }
+
                 $role = $position;
 
                 //Check / create department
@@ -225,6 +255,11 @@ Log::info('157');
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
+                            //Check organization code
+                            $check_mapping_department_code = self::mappingDepartment($department_code);
+                            if ($check_mapping_department_code != $department_code) {
+                                $department_code = str_replace($base_level_organization_code . "-", "", $check_mapping_department_code);
+                            }
                             $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
                             $new_org_level = $base_level + 1;
                             $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
@@ -459,6 +494,31 @@ Log::info('348');
             'TVE' => 'TVE'
         );
 
+        $mapping_position_histaff = array(
+            9425 => [
+                'name' => 'Manager',
+                'title' => 'General Director'
+            ],9426 => [
+                'name' => 'Manager',
+                'title' => 'Director'
+            ],9427 => [
+                'name' => 'Manager',
+                'title' => 'Senior Manager'
+            ],9428 => [
+                'name' => 'Manager',
+                'title' => 'Manager'
+            ],9429 => [
+                'name' => 'Leader',
+                'title' => 'Assistant Manager/Team Leader'
+            ],9430 => [
+                'name' => 'Senior Executive',
+                'title' => 'Senior Executive/Senior Guide'
+            ],9431 => [
+                'name' => 'Junior Executive',
+                'title' => 'Executive/Guide'
+            ],
+        );
+
         $countries = TmsUserDetail::country;
 
         $from = $request->input('from');
@@ -581,6 +641,11 @@ Log::info('348');
 //                    $role = Role::ROLE_EMPLOYEE;
 //                }
 
+                if (array_key_exists($position, $mapping_position_histaff)) {
+                    $position = $mapping_position_histaff[$position]['name'];
+                    $title = $mapping_position_histaff[$position]['title'];
+                }
+
                 $role = $position;
 
                 //Check / create department
@@ -591,6 +656,13 @@ Log::info('348');
                         $content[] = 'Department info is missing';
                     } else {
                         if (empty($content) && $base_level_id != 0) {
+
+                            //Check organization code
+                            $check_mapping_department_code = self::mappingDepartment($department_code);
+                            if ($check_mapping_department_code != $department_code) {
+                                $department_code = str_replace($base_level_organization_code . "-", "", $check_mapping_department_code);
+                            }
+
                             $new_org_code = strtoupper($base_level_organization_code . "-" . $department_code);
                             $new_org_level = $base_level + 1;
                             $organization = self::createOrganization($new_org_code, $department_name, $base_level_id, $new_org_level);
@@ -1593,6 +1665,18 @@ Log::info('348');
         //         $roleAssign->save();
         //     }
         // }
+    }
+
+    function mappingDepartment($code) {
+        $checkMappingDepartment =  DB::table('tms_organization_histaff_mapping')
+            ->where('histaff_code', '=', $code)
+            ->first();
+
+        if (isset($checkMappingDepartment)) {
+            return $checkMappingDepartment->tms_code;
+        } else {
+            return $code;
+        }
     }
 
     function training_enrole($user_id, $category_id = null)

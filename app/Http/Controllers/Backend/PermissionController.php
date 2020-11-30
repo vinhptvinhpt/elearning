@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\PermissionRepository;
 use Illuminate\Http\Request;
-use App\Repositories\BussinessRepository;
 
 class PermissionController extends Controller
 {
 
-    private $bussinessRepository;
+    private $perRepository;
 
-    public function __construct(BussinessRepository $bussinessRepository)
+    public function __construct(PermissionRepository $perRepository)
     {
-        $this->bussinessRepository = $bussinessRepository;
+        $this->perRepository = $perRepository;
     }
 
     public function viewIndexPermission()
@@ -41,22 +41,26 @@ class PermissionController extends Controller
 
     public function apiPermissionAdd(Request $request)
     {
-        return $this->bussinessRepository->apiPermissionAdd($request);
+        return $this->perRepository->apiPermissionAdd($request);
     }
+
     public function apiPermissionListDetail(Request $request)
     {
-        return $this->bussinessRepository->apiPermissionListDetail($request);
+        return $this->perRepository->apiPermissionListDetail($request);
     }
+
     public function apiPermissionDelete($permission_id)
     {
-        return $this->bussinessRepository->apiPermissionDelete($permission_id);
+        return $this->perRepository->apiPermissionDelete($permission_id);
     }
+
     public function apiPermissionDetail(Request $request)
     {
-        return $this->bussinessRepository->apiPermissionDetail($request);
+        return $this->perRepository->apiPermissionDetail($request);
     }
+
     public function apiPermissionUpdate(Request $request)
     {
-        return $this->bussinessRepository->apiPermissionUpdate($request);
+        return $this->perRepository->apiPermissionUpdate($request);
     }
 }

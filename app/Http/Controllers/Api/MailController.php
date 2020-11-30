@@ -87,7 +87,6 @@ class MailController extends Controller
         return $configs;
     }
 
-
     ///email_template/sendDemo/
     public function demoSendMail()
     {
@@ -150,13 +149,13 @@ class MailController extends Controller
         return 'Total: ' . $countTotal . '; Sent: ' . $sent . ', Fail: ' . $fail;
     }
 
-
     public function welcome()
     {
-        Mail::to("innrhy@gmail.com")->send(new CourseSendMail(
+        $cc_user = array('example2@gmail.com');
+        Mail::to("example@gmail.com")->cc($cc_user)->send(new CourseSendMail(
             TmsNotification::WELCOME,
-            '',
-            '',
+            'example@gmail.com',
+            'Sample Name',
             '',
             '',
             '',
@@ -984,33 +983,37 @@ class MailController extends Controller
                                 ->select('mhr.model_id', 'mu.username', 'tud.fullname')
                                 ->groupBy(['mhr.model_id', 'mu.username', 'tud.fullname'])
                                 ->get();
-                            $sent = array();
+                            //$sent = array();
+                            $email_cc = array();
                             foreach ($admins as $admin) {
-                                $sent[] = $admin->model_id;
+                                //$sent[] = $admin->model_id;
                                 $admin_email = $admin->username;
-                                if (strlen($admin_email) != 0 && filter_var($admin_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($admin_email)) {
-                                    Mail::to($admin_email)->send(new CourseSendMail(
-                                        TmsNotification::REQUEST_MORE_ATTEMPT,
-                                        $admin->username,
-                                        $admin->fullname,
-                                        $itemNotification->course_code,
-                                        $itemNotification->course_name,
-                                        '',
-                                        '',
-                                        '',
-                                        '',
-                                        $itemNotification
-                                    ));
-                                }
+                                $email_cc[] = $admin_email;
+//                                if (strlen($admin_email) != 0 && filter_var($admin_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($admin_email)) {
+//                                    Mail::to($admin_email)->send(new CourseSendMail(
+//                                        TmsNotification::REQUEST_MORE_ATTEMPT,
+//                                        $admin->username,
+//                                        $admin->fullname,
+//                                        $itemNotification->course_code,
+//                                        $itemNotification->course_name,
+//                                        '',
+//                                        '',
+//                                        '',
+//                                        '',
+//                                        $itemNotification
+//                                    ));
+//                                }
                             }
 
-                            //org uppers, send only
+                            //org uppers, send only (cc to t&d)
                             $orgUppers = self::getLinemanager($user_id);
                             if (!empty($orgUppers)) {
                                 foreach ($orgUppers as $orgUpper) {
                                     $upper_email = $orgUpper->email;
-                                    if (!in_array($orgUpper->user_id, $sent) && strlen($upper_email) != 0 && filter_var($upper_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($upper_email)) {
-                                        Mail::to($upper_email)->send(new CourseSendMail(
+                                    if (
+                                        //!in_array($orgUpper->user_id, $sent) &&
+                                        strlen($upper_email) != 0 && filter_var($upper_email, FILTER_VALIDATE_EMAIL) && $this->filterMail($upper_email)) {
+                                        Mail::to($upper_email)->cc($email_cc)->send(new CourseSendMail(
                                             TmsNotification::REQUEST_MORE_ATTEMPT,
                                             $orgUpper->email,
                                             $orgUpper->fullname,

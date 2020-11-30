@@ -1082,6 +1082,9 @@ where mc.id = ' . $id;
                         break;
                     }
                 }
+                if($start_course_link){
+                    break;
+                }
             }
         }
     }
@@ -1437,7 +1440,7 @@ where ttc.course_id = ' . $id . ')';
                         <?php if ($course->category == "5") { ?>
                             <li class="nav-item nav-click ">
                                 <a id="attendance-link" class="nav-link" data-toggle="tab" href="#attendance"
-                                   role="tab">Attendance</a>
+                                   role="tab" onclick="clickIframe()">Attendance</a>
                             </li>
                         <?php } ?>
                         <li class="nav-item nav-click <?php echo $tab_unit; ?>">
@@ -2102,7 +2105,17 @@ $_SESSION["displayPopup"] = 2; ?>
     });
 
     function resizeIframe(obj) {
+        console.log(obj);
         obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
+    }
+    var onetime = true;
+    function clickIframe() {
+        if (onetime){
+            var ifr = document.getElementById('attendance_offline');
+            ifr.src = ifr.src;
+            onetime = false;
+        }
+
     }
 </script>
 

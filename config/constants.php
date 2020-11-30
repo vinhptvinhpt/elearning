@@ -52,5 +52,9 @@ return [
 
         'HISTAFF-KEY' => 'G6rikv0U0eQUIRak7owtmw==',
 
+        'HISTAFF-COOKIE' => 'hrm_token',
+
+        'DOMAIN-COOKIE' => 'academy.phh-group.com',
+
     ],
 ];

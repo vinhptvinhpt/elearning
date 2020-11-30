@@ -9,6 +9,7 @@ use App\Mail\CourseSendMail;
 use App\MdlUserEnrolments;
 use App\TmsInvitation;
 use App\TmsLearnerHistory;
+use App\TmsLearningActivityLog;
 use App\TmsOrganization;
 use App\TmsOrganizationEmployee;
 use App\TmsRoleCourse;
@@ -711,577 +712,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($listUsers);
     }
 
-    //api lấy danh sách danh mục khóa học
-    //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
-    public function apiGetListCategory()
-    {
-        $listCategories = DB::table('mdl_course_categories')
-            ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->where('mdl_course_categories.id', '!=', 2)
-            //->where('mdl_course_categories.id', '!=', 3)
-            ->where('mdl_course_categories.id', '!=', 5)
-            ->where('mdl_course_categories.visible', '=', 1)->get();
-        return response()->json($listCategories);
-    }
-
-    //api lấy danh sách danh mục khóa học
-    //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
-    public function apiGetListCategoryForEdit()
-    {
-        $listCategories = DB::table('mdl_course_categories')
-            ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->where('mdl_course_categories.id', '!=', 2)
-            ->where('mdl_course_categories.id', '!=', 5)
-            ->where('mdl_course_categories.visible', '=', 1)->get();
-        return response()->json($listCategories);
-    }
-
-    //api lấy danh sách danh mục khóa học
-    //hiển hị dưới view create và edit course
-    //ThoLD (24/08/2019)
-    public function apiGetListCategoryForClone()
-    {
-        $listCategories = DB::table('mdl_course_categories')
-            ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->whereNotIn('mdl_course_categories.id', [2, 5])
-//            ->where('mdl_course_categories.id', '!=', 5) //ko lay danh muc khoa
-            ->where('mdl_course_categories.visible', '=', 1)->get();
-        return response()->json($listCategories);
-    }
-
-    //api lấy danh sách danh mục khóa học cho chức năng restore
-    //hiển hị dưới view create và edit course
-    //ThoLD (10/09/2019)
-    public function apiGetListCategoryRestore()
-    {
-        $listCategories = DB::table('mdl_course_categories')
-            ->select('mdl_course_categories.id as id', 'mdl_course_categories.name as category_name')
-            ->where('mdl_course_categories.visible', '=', 1)->get();
-        return response()->json($listCategories);
-    }
-
-    public function apiGetCourseDetail($id)
-    {
-        $id = is_numeric($id) ? $id : 0;
-
-        $course_info = MdlCourse::query()
-            //->with('lastEdit')
-            ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-            //->join('mdl_logstore_standard_log', 'mdl_course_categories.id', '=', 'mdl_course.category')
-            ->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id')
-            ->select(
-                'mdl_course.id as id',
-                'mdl_course.fullname as fullname',
-                'mdl_course.shortname as shortname',
-                'mdl_course.category as category',
-                'mdl_course_categories.name as category_name',
-                'mdl_course.startdate as startdate',
-                'mdl_course.enddate as enddate',
-                'mdl_course_completion_criteria.gradepass as pass_score',
-                'mdl_course.course_avatar as avatar',
-                'mdl_course.allow_register',
-                'mdl_course.total_date_course',
-                'mdl_course.is_end_quiz',
-                'mdl_course.summary',
-                'mdl_course.course_place',
-                'mdl_course.estimate_duration',
-                'mdl_course.course_budget',
-                'mdl_course.is_toeic',
-                'mdl_course.access_ip',
-                'mdl_user.username',
-                DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time"),
-                'mdl_course.last_modify_action',
-                'mdl_course.last_modify_user'
-            )
-            ->where('mdl_course.id', '=', $id)->first();
-
-        return response()->json($course_info);
-    }
-
-    public function apiGetCourseLastUpdate($id)
-    {
-        $id = is_numeric($id) ? $id : 0;
-        $last_update = null;
-        if ($id != 0) {
-            $log_latest = MdlLogstoreStandardLog::with('userDetail')
-                //->where('mdl_logstore_standard_log.target', 'course') //course only, comment out for module and section fetch
-                ->select(
-                    DB::raw('"education" as type'),
-                    'mdl_logstore_standard_log.action',
-                    DB::raw('FROM_UNIXTIME(mdl_logstore_standard_log.timecreated) as created_at'),
-                    'mdl_course.shortname as course_name',
-                    'mdl_logstore_standard_log.contextinstanceid as course_id',
-                    'mdl_logstore_standard_log.userid',
-                    'mdl_logstore_standard_log.target'
-                )
-                ->whereHas('userDetail')
-                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_logstore_standard_log.contextinstanceid')
-                //->where('mdl_logstore_standard_log.contextlevel', 50) //course only
-                //->where('mdl_logstore_standard_log.contextinstanceid', $id) //course only
-
-                //new, get all activity for course and its modules, sections etc
-                ->where('courseid', $id)
-                ->where('mdl_logstore_standard_log.action', "<>", 'viewed')//update nên k tính viewed
-                ->orderBy('mdl_logstore_standard_log.timecreated', 'desc')
-                ->first();
-
-            if (isset($log_latest)) {
-                $last_update = $log_latest;
-//                $last_update['user_id'] = $log_latest->userid;
-//                $last_update['user_fullname'] = $log_latest->user_detail ? $log_latest->user_detail->fullname : '';
-//                $last_update['updated_at'] = $log_latest->created_at;
-            }
-        }
-        return response()->json(['last' => $last_update]);
-    }
-
-    //api xóa khóa học
-    //ThoLD (22/08/2019)
-    public function apiDeleteCourse(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            $id = $request->input('course_id');
-
-            $param = [
-                'course_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            //Nếu trạng thái là visible thì có thể xóa
-
-            $course = MdlCourse::where('id', '=', $id)
-                ->where('startdate', '<=', time())
-                ->where('visible', '=', '1')
-                ->where('enddate', '>=', time())->first();
-
-            //nếu tồn tại khóa học trong thời gian học và không phải khóa học mẫu
-            if ($course && $course->category != 2) {
-                //Đang trong thời gian học, không xóa được
-                $result = 10;
-            } else {
-
-//                $app_name = Config::get('constants.domain.APP_NAME');
-//
-//                $key_app = encrypt_key($app_name);
-//
-//                $data = array(
-//                    'courseid' => $id,
-//                    'app_key' => $key_app
-//                );
-//
-//                $data = createJWT($data, 'data');
-//
-//                $data_del = array(
-//                    'data' => $data
-//                );
-//
-//                $url = Config::get('constants.domain.LMS') . '/course/delete_course.php';
-//                //call api write log
-//                $result = callAPI('POST', $url, $data_del, false, '');
-                $course = MdlCourse::findOrFail($id);
-                $course->deleted = 1;
-                // update an khoa hoc neu khoa hoc xoa dang nam trong khung nang luc => để không vênh dữ liệu
-//                if($course->category == 2){
-                TmsTrainningCourse::where('course_id', '=', $id)->update(['deleted' => '1']);
-//                }
-                $course->save();
-
-                $result = 1;
-            }
-
-            if ($result == 1) {
-
-                //write log to mdl_logstore_standard_log
-                /*                $app_name = Config::get('constants.domain.APP_NAME');
-
-                                $key_app = encrypt_key($app_name);
-                                $user_id = Auth::id();
-                                $dataLog = array(
-                                    'app_key' => $key_app,
-                                    'courseid' => $course->id,
-                                    'action' => 'delete',
-                                    //'description' => json_encode($course->toArray()), //Cause error when decode jwt by using html editor here
-                                    'userid' => $user_id
-                                );
-                                $dataLog = createJWT($dataLog, 'data');
-                                $data_write = array(
-                                    'data' => $dataLog,
-                                );
-                                $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-                                $checkUser = MdlUser::where('id', $user_id)->first();
-                                $token = '';
-                                if (isset($checkUser)) {
-                                    $token = strlen($checkUser->token) != 0 ? $checkUser->token : '';
-                                }
-                                //call api write log
-                                callAPI('POST', $url, $data_write, false, $token);*/
-
-                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'delete', 'Delete course: ' . $course->shortname);
-                updateLastModification('delete', $course->id);
-
-
-                $response->status = true;
-                $response->message = __('xoa_khoa_hoc');
-            } else if ($result == 10) {
-                $response->status = false;
-                $response->message = __('dang_trong_thoi_gian_hoc');
-            } else {
-                $response->status = false;
-                $response->message = __('xoa_khoa_hoc_khong_thanh_cong');
-            }
-
-            //            MdlCourseCompletionCriteria::where('course', '=', $id)->delete();
-            //
-            //            MdlCourse::where('id', $id)->delete();
-
-
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-
-    //api lấy danh sách khóa học mẫu
-    //ThoLD (05/09/2019)
-    public function apiGetListCourseSample()
-    {
-
-        if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-            $listCourses = DB::table('mdl_course')
-                ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->select(
-                    'mdl_course.id',
-                    'mdl_course.fullname',
-                    'mdl_course.shortname',
-                    'mdl_course.summary as description',
-                    'mdl_course.course_avatar as avatar',
-                    'mdl_course.allow_register',
-                    'mdl_course.total_date_course',
-                    'mdl_course.is_end_quiz',
-                    'mdl_course_completion_criteria.gradepass as pass_score'
-                );
-
-        } else {
-//            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
-            $listCourses = DB::table('mdl_course')
-                ->join('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-                ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-                ->whereIn('mdl_course.id', function ($q) { //organization
-                    /* @var $q Builder */
-                    $q->select('mdl_course.id')
-                        ->from('tms_organization_employee')
-                        ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                        ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                        ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-                        ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-                })
-                ->select(
-                    'mdl_course.id',
-                    'mdl_course.fullname',
-                    'mdl_course.shortname',
-                    'mdl_course.summary as description',
-                    'mdl_course.course_avatar as avatar',
-                    'mdl_course.allow_register',
-                    'mdl_course.total_date_course',
-                    'mdl_course.is_end_quiz',
-                    'mdl_course_completion_criteria.gradepass as pass_score'
-                );
-        }
-
-
-        $listCourses = $listCourses
-            ->where('mdl_course.category', '=', 2)
-            ->where('mdl_course.deleted', '=', 0); //2 là khóa học mẫu
-
-//        $listCourses = $listCourses->orderBy('id', 'desc')->get();
-        $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc')->get();
-
-        return response()->json($listCourses);
-    }
-
-    //api clone khóa học
-    //ThoLD (21/08/2019)
-    public function apiCloneCourse(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            $avatar = $request->file('file');
-            $course_avatar = $request->input('course_avatar');
-            $fullname = $request->input('fullname');
-            $shortname = $request->input('shortname');
-            $startdate = $request->input('startdate');
-            $enddate = $request->input('enddate');
-            $pass_score = $request->input('pass_score');
-            $description = $request->input('description');
-            $category_id = $request->input('category_id');
-            $allow_register = $request->input('allow_register');
-            $total_date_course = $request->input('total_date_course');
-            $is_end_quiz = $request->input('is_end_quiz');
-            $estimate_duration = $request->input('estimate_duration');
-            $course_budget = $request->input('course_budget');
-            $access_ip_string = $request->input('access_ip');
-            $is_toeic = $request->input('is_toeic');
-
-            $param = [
-                'course_avatar' => 'text',
-                'fullname' => 'text',
-                'shortname' => 'code',
-                'description' => 'longtext',
-                'pass_score' => 'number',
-                'category_id' => 'number',
-                'course_place' => 'text',
-                'allow_register' => 'number',
-                'total_date_course' => 'number',
-                'is_end_quiz' => 'number',
-                'estimate_duration' => 'number',
-                'course_budget' => 'number',
-                'access_ip' => 'text'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-
-            //check course info exist
-            $courseInfo = MdlCourse::select('id')->where('shortname', $shortname)->where('deleted', 0)->first();
-
-            if ($courseInfo) {
-                $response->status = false;
-                $response->message = __('ma_khoa_hoc_da_ton_tai');
-                return response()->json($response);
-            }
-
-            //thực hiện insert dữ liệu
-
-            if ($avatar) {
-                $name_file = str_replace(' ', '', $shortname);
-                $name_file = str_replace('/', '', $name_file);
-                $name_file = str_replace('\\', '', $name_file);
-                $name_file = utf8convert($name_file);
-                $name = $name_file . '.' . $avatar->getClientOriginalExtension();
-
-                // cơ chế lưu ảnh vào folder storage, tăng cường bảo mật
-                Storage::putFileAs(
-                    'public/upload/course',
-                    $avatar,
-                    $name
-                );
-
-                $path_avatar = '/storage/upload/course/' . $name;
-            } else if ($course_avatar) {
-                $path_avatar = $course_avatar;
-            } else {
-                $path_avatar = '/storage/upload/course/default_course.jpg';
-            }
-
-            $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
-            $course->category = $category_id;
-            $course->shortname = $shortname;
-            $course->fullname = $fullname;
-            $course->summary = $description;
-            $course->course_avatar = $path_avatar;
-            $course->estimate_duration = $estimate_duration;
-            $course->course_budget = $course_budget;
-
-            if ($category_id == 3) {
-                $course->is_certificate = 1;
-                $course->is_end_quiz = $is_end_quiz;
-            }
-
-            if ($category_id != 2) { //nếu là thư viện khóa học thì không check thời gian
-                $stdate = strtotime($startdate);
-                $eddate = !is_null($enddate) ? strtotime($enddate) : 0;
-                if ($enddate && $stdate > $eddate) {
-                    $response->status = false;
-                    $response->message = __('thoi_gian_bat_dau_khong_lon_hon_ket_thuc');
-                    return response()->json($response);
-                }
-
-                $course->startdate = $stdate;
-                $course->enddate = $eddate;
-            }
-
-
-            $course->total_date_course = $total_date_course;
-            $course->allow_register = $allow_register;
-            $course->visible = 0;
-
-            //access_ip
-            $access_ip = $this->spitIP($access_ip_string);
-            $course->access_ip = $access_ip;
-
-            //toeic
-            $course->is_toeic = $is_toeic;
-            $course->save();
-
-            //insert dữ liệu điểm qua môn
-            MdlCourseCompletionCriteria::create(array(
-                'course' => $course->id,
-                'criteriatype' => 6, //default là 6 trong trường hợp này
-                'gradepass' => $pass_score
-            ));
-
-
-            $context_cate = MdlContext::where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT)
-                ->where('instanceid', '=', $category_id)->first();
-
-            if ($context_cate) {
-                //insert dữ liệu vào bảng mdl_context
-                $mdl_context = MdlContext::firstOrCreate([
-                    'contextlevel' => \App\MdlUser::CONTEXT_COURSE,
-                    'instanceid' => $course->id,
-                    'depth' => 3,
-                    'locked' => 0
-                ]);
-
-                //cập nhật path
-                $mdl_context->path = '/1/' . $context_cate->id . '/' . $mdl_context->id;
-                $mdl_context->save();
-            }
-
-            //write data to table mdl_grade_categories -> muc dich phuc vu cham diem, Vinh PT yeu cau
-            $mdl_grade_cate = MdlGradeCategory::firstOrCreate([
-                'courseid' => $course->id,
-                'depth' => 1,
-                'aggregation' => 13,
-                'aggregateonlygraded' => 1,
-                'timecreated' => strtotime(Carbon::now()),
-                'timemodified' => strtotime(Carbon::now())
-            ]);
-
-            $mdl_grade_cate->path = '/' . $mdl_grade_cate->id . '/';
-            $mdl_grade_cate->save();
-
-            //write data to table mdl_grade_items
-            MdlGradeItem::firstOrCreate([
-                'courseid' => $course->id,
-                'itemname' => $course->fullname,
-                'itemtype' => 'course',
-                'iteminstance' => $mdl_grade_cate->id,
-                'gradepass' => $pass_score
-            ]);
-
-            //insert dữ liệu vào bảng mdl_enrol, yêu cầu của VinhPT phục vụ mục đích đăng ký học của học viên bên LMS
-            $enrol = DB::table('mdl_enrol')
-                ->where('enrol', '=', 'manual')
-                ->where('courseid', '=', $course->id)
-                ->where('enrol', '=', 'self')
-                ->where('roleid', '=', 5)//quyền học viên
-                ->first();
-
-            if ($enrol) {
-                $enrol->status = 0;
-                $enrol->save();
-            } else {
-                MdlEnrol::create([
-                    'enrol' => 'self',
-                    'courseid' => $course->id,
-                    'roleid' => 5,
-                    'sortorder' => 0,
-                    'status' => 0
-                ]);
-            }
-
-            if ($course->category != 2) { //ko phai thu vien khoa hoc
-                $tms_trainning = TmsTrainningProgram::firstOrCreate([
-                    'code' => $course->shortname . $course->id,
-                    'name' => $course->fullname,
-                    'style' => 1,
-                    'run_cron' => 1,
-                    'time_start' => 0,
-                    'time_end' => 0,
-                    'auto_certificate' => 1,
-                    'auto_badge' => 1,
-                    'deleted' => 2 //KNL ko hien thi tren he thong
-                ]);
-
-                if ($tms_trainning) {
-                    TmsTrainningCourse::firstOrCreate([
-                        'trainning_id' => $tms_trainning->id,
-                        'sample_id' => $course->id,
-                        'course_id' => $course->id
-                    ]);
-                }
-            }
-
-
-            $user_id = Auth::id();
-            //Check role teacher and enrol for creator of course
-            $current_user_roles_and_slugs = checkRole();
-            //If user ís not a teacher, assign as teacher
-            $role_teacher = Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', Role::TEACHER)->first();
-            if (!$current_user_roles_and_slugs['roles']->has_role_teacher) {
-                add_user_by_role($user_id, $role_teacher->id);
-                enrole_lms($user_id, $role_teacher->mdl_role_id, 1);
-            }
-            //Enrol user to newly created course as teacher
-            enrole_user_to_course_multiple(array($user_id), $role_teacher->mdl_role_id, $course->id, true);
-
-
-            //Add newly course to phân quyền dữ liệu
-            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-                //admin do nothing
-            } else {
-                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
-                if ($checkRoleOrg != 0) {
-                    $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
-                    if (isset($org_role)) {
-                        $new_relation = new TmsRoleCourse();
-                        $new_relation->role_id = $org_role->role_id;
-                        $new_relation->course_id = $course->id;
-                        $new_relation->save();
-                    }
-                }
-            }
-
-            //write log to mdl_logstore_standard_log
-            /*            $app_name = Config::get('constants.domain.APP_NAME');
-                        $key_app = encrypt_key($app_name);
-                        $dataLog = array(
-                            'app_key' => $key_app,
-                            'courseid' => $course->id,
-                            'action' => 'create',
-                            'description' => json_encode($course),
-                        );
-                        $dataLog = createJWT($dataLog, 'data');
-                        $data_write = array(
-                            'data' => $dataLog,
-                        );
-                        $url = Config::get('constants.domain.LMS') . '/course/write_log.php';
-                        //call api write log
-                        callAPI('POST', $url, $data_write, false, '');*/
-
-            devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'create', 'Create course: ' . $course->shortname);
-            updateLastModification('create', $course->id);
-
-            $response->status = true;
-            $response->message = __('nhan_ban_khoa_hoc');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
     public function spitIP($ip)
     {
         $access_ip = '{"list_access_ip":[';
@@ -1298,1492 +728,13 @@ class BussinessRepository implements IBussinessInterface
         return $access_ip;
     }
 
-    //api lấy danh sách khóa học tập trung
-    //ThoLD (09/09/2019)
-    public function apiGetListCourseConcen(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $category_id = $request->input('category_id');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-        $status_course = $request->input('status_course');
-//        $sample = $request->input('sample'); //field xác định giá trị là khóa học mẫu hay không
-
-        if (strlen($category_id) == 0) {
-            $category_id = 5;
-        }
-
-        $param = [
-            'keyword' => 'text',
-            'row' => 'number',
-            'category_id' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $select = [];
-        //Nếu có quyền admin hoặc root hoặc có quyền System administrator thì được phép xem tất cả
-        //if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-
-//        if (true) { //hack show all courses offline
-        $listCourses = DB::table('mdl_course')
-            ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-            ->where('mdl_course.category', '=', $category_id);
-        $select = [
-            'mdl_course.id',
-            'mdl_course.fullname',
-            'mdl_course.shortname',
-            'mdl_course.startdate',
-            'mdl_course.enddate',
-            'mdl_course.visible',
-            'mdl_course_completion_criteria.gradepass as pass_score'
-        ];
-
-        //region comment code by require easia show all course offline
-//        }
-//        else {
-//            //check xem người dùng có thuộc bộ 3 quyền: leader, employee, manager hay không?
-//            //$checkRole = tvHasRoles(\Auth::user()->id, ["manager", "leader", "employee"]);
-//            //if ($checkRole === true) {
-//            $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
-//            if ($checkRoleOrg != 0) {
-//                $listCourses = DB::table('mdl_course')
-//                    ->leftJoin('mdl_course_completion_criteria as mccc', 'mccc.course', '=', 'mdl_course.id')
-//                    ->where('mdl_course.category', '=', $category_id)
-//                    ->where(function ($query) {
-//                        /* @var $query Builder */
-//                        $query
-//                            ->whereIn('mdl_course.id', function ($q1) { //enrol
-//                                /* @var $q1 Builder */
-//                                $q1->select('mdl_course.id')
-//                                    ->from('mdl_user_enrolments as mue')
-//                                    ->join('mdl_enrol as e', 'mue.enrolid', '=', 'e.id')
-//                                    ->join('mdl_course', 'e.courseid', '=', 'mdl_course.id')
-//                                    ->where('mue.userid', '=', \Auth::user()->id);
-//                            })
-//                            ->orWhereIn('mdl_course.id', function ($q2) { //organization
-//                                /* @var $q2 Builder */
-//                                $q2->select('mdl_course.id')
-//                                    ->from('tms_organization_employee')
-//                                    ->join('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-//                                    ->join('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-//                                    ->join('mdl_course', 'tms_role_course.course_id', '=', 'mdl_course.id')
-//                                    ->where('tms_organization_employee.user_id', '=', \Auth::user()->id);
-//                            });
-//                    });
-//                $select = [
-//                    'mdl_course.id',
-//                    'mdl_course.fullname',
-//                    'mdl_course.shortname',
-//                    'mdl_course.startdate',
-//                    'mdl_course.enddate',
-//                    'mdl_course.visible',
-//                    'mdl_course.category',
-//                    'mdl_course.deleted',
-//                    'mccc.gradepass as pass_score'
-//                ];
-//            } else {
-//                //Kiểm tra xem có phải role teacher hay không
-//                $checkRole = tvHasRole(\Auth::user()->id, "teacher");
-//                if ($checkRole == true) {
-//                    $listCourses = DB::table('mdl_user_enrolments')
-//                        ->where('mdl_user_enrolments.userid', '=', \Auth::user()->id)
-//                        ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
-//                        ->join('mdl_course', 'mdl_enrol.courseid', '=', 'mdl_course.id')
-//                        ->where('mdl_course.category', '=', $category_id)
-//                        ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id');
-//                    $select = [
-//                        'mdl_course.id',
-//                        'mdl_course.fullname',
-//                        'mdl_course.shortname',
-//                        'mdl_course.startdate',
-//                        'mdl_course.enddate',
-//                        'mdl_course.visible',
-//                        'mdl_course_completion_criteria.gradepass as pass_score'
-//                    ];
-//                }
-//            }
-//        }
-        //endregion
-
-        $listCourses->leftJoin('mdl_user', 'mdl_course.last_modify_user', '=', 'mdl_user.id');
-        //$select[] = 'mdl_course.last_modify_user';
-        $select[] = 'mdl_user.username';
-        $select[] = DB::raw("DATE_FORMAT(FROM_UNIXTIME(`mdl_course`.`last_modify_time`), '%Y-%m-%d %H:%i:%s') as last_modify_time");
-        $select[] = 'mdl_course.last_modify_action';
-        $listCourses->select($select);
-
-        //là khóa học mẫu
-        //        if ($sample == 1) {
-        //            $listCourses = $listCourses->where('mdl_course.category', '=', 2); //2 là khóa học mẫu
-        //        } else {
-        //            $listCourses = $listCourses->where('mdl_course.category', '!=', 2);
-        //        }
-
-        if ($keyword) {
-            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
-            // code xử lý remove ký tự đầu tiên của keyword đi
-            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
-                $total_len = strlen($keyword);
-                if ($total_len > 2) {
-                    $keyword = substr($keyword, 1, $total_len - 1);
-                }
-            }
-
-            $listCourses = $listCourses->whereRaw('( mdl_course.fullname like "%' . $keyword . '%" OR mdl_course.shortname like "%' . $keyword . '%" )');
-        }
-
-        //        if ($category_id) {
-        //            $listCourses = $listCourses->where('mdl_course.category', '=', $category_id);
-        //        }
-
-        if ($startdate) {
-            $cv_startDate = strtotime($startdate);
-            $listCourses = $listCourses->where('mdl_course.startdate', '>=', $cv_startDate);
-        }
-
-        if ($enddate) {
-            $cv_endDate = strtotime($enddate);
-            $listCourses = $listCourses->where('mdl_course.enddate', '<=', $cv_endDate);
-        }
-        $listCourses = $listCourses->where('mdl_course.deleted', '=', 0);
-
-        if ($status_course) {
-            $unix_now = strtotime(Carbon::now());
-            if ($status_course == 1) { //các khóa sắp diễn ra
-                $listCourses = $listCourses->where('mdl_course.startdate', '>', $unix_now);
-            } else if ($status_course == 2) { //các khóa đang diễn ra
-                $listCourses = $listCourses->where('mdl_course.startdate', '<=', $unix_now);
-//                $listCourses = $listCourses->where('mdl_course.enddate', '>=', $unix_now);
-                $listCourses = $listCourses->where(function ($query) use ($unix_now) {
-                    $query->where('mdl_course.enddate', '>=', $unix_now)
-                        ->orWhere('mdl_course.enddate', '=', 0);
-                });
-            } else if ($status_course == 3) { //các khóa đã diễn ra
-                $listCourses = $listCourses->where('mdl_course.enddate', '<=', $unix_now)
-                    ->where('mdl_course.enddate', '>', 0);
-            }
-        }
-
-
-        if ($keyword) {
-            $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
-        } else {
-            $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
-        }
-
-        if ($row == 0) {
-            return $listCourses->get();
-        }
-
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-
-        $listCourses = $listCourses->paginate($row);
-        $total = ceil($listCourses->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $listCourses->currentPage(),
-            ],
-            'data' => $listCourses,
-            'total_course' => $totalCourse
-        ];
-
-
-        return response()->json($response);
-    }
-
-
-    //api lấy danh sách khóa học cần restore
-    //ThoLD (09/09/2019)
-    public function apiGetListCourseRestore(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $category_id = $request->input('category_id');
-        $timecreated = $request->input('timecreated');
-        $enddate = $request->input('enddate');
-
-        $param = [
-            'keyword' => 'text',
-            'row' => 'number',
-            'category_id' => 'number',
-            'timecreated' => 'text',
-            'enddate' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $listCourses = DB::table('mdl_course')
-            ->leftJoin('mdl_course_completion_criteria', 'mdl_course_completion_criteria.course', '=', 'mdl_course.id')
-            ->join('mdl_course_categories', 'mdl_course_categories.id', '=', 'mdl_course.category')
-            ->select(
-                'mdl_course.id',
-                'mdl_course.fullname',
-                'mdl_course.shortname',
-                'mdl_course.updated_at as timecreated',
-                'mdl_course_categories.name as category_name',
-                'mdl_course_categories.id as categoryid'
-            );
-
-        if ($category_id) {
-            $listCourses = $listCourses->where('mdl_course.category', '=', $category_id);
-        }
-
-        if ($keyword) {
-            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
-            // code xử lý remove ký tự đầu tiên của keyword đi
-            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
-                $total_len = strlen($keyword);
-                if ($total_len > 2) {
-                    $keyword = substr($keyword, 1, $total_len - 1);
-                }
-            }
-
-            $listCourses = $listCourses->whereRaw('( mdl_course.fullname like "%' . $keyword . '%" OR mdl_course.shortname like "%' . $keyword . '%" )');
-        }
-
-        if ($timecreated) {
-            $cv_startDate = strtotime($timecreated);
-            $listCourses = $listCourses->where('mdl_course.updated_at', '>=', date("Y-m-d H:i:s", $cv_startDate));
-        }
-
-        if ($enddate) {
-            $cv_endDate = strtotime($enddate . " 23:59:59");
-            $listCourses = $listCourses->where('mdl_course.updated_at', '<=', date("Y-m-d H:i:s", $cv_endDate));
-        }
-
-        $listCourses = $listCourses->where('mdl_course.deleted', '=', 1);
-
-
-        $totalCourse = count($listCourses->get()); //lấy tổng số khóa học hiện tại
-
-        $listCourses = $listCourses->orderBy('id', 'desc');
-
-        $listCourses = $listCourses->paginate($row);
-        $total = ceil($listCourses->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $listCourses->currentPage(),
-            ],
-            'data' => $listCourses,
-            'total_course' => $totalCourse
-        ];
-
-
-        return response()->json($response);
-    }
-
-    //api restore khóa học
-    //ThoLD (10/09/2019)
-    public function apiRestoreCourse(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            $id = $request->input('course_id');
-            $instance_id = $request->input('instance_id');
-            $action = $request->input('action');
-
-            $param = [
-                'course_id' => 'number',
-                'instance_id' => 'number',
-                'action' => 'text'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-
-//            $contextData = MdlContext::query();
-//            $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSECAT);
-//            $contextData = $contextData->where('instanceid', '=', $instance_id);
-//            $contextData = $contextData->orderBy('id', 'desc')->first();
-//
-//            if (!$contextData) {
-//                $response->status = false;
-//                $response->message = __('khoi_phuc_khoa_hoc');
-//                return response()->json($response);
-//            }
-
-//            $app_name = Config::get('constants.domain.APP_NAME');
-//
-//            $key_app = encrypt_key($app_name);
-//
-//            $data = array(
-//                'contextid' => $contextData->id,
-//                'itemid' => $id,
-//                'action' => $action,
-//                'app_key' => $key_app
-//            );
-//
-//            $data = createJWT($data, 'data');
-//
-//            $data_res = array(
-//                'data' => $data
-//            );
-//
-//            $url = Config::get('constants.domain.LMS') . '/admin/tool/recyclebin/recyclebin.php';
-//
-//            //call api write log
-//            $result = callAPI('POST', $url, $data_res, false, '');
-
-
-            $course = MdlCourse::findOrFail($id);
-            $course->deleted = 0;
-            //nếu là thư viện khóa học => Cập nhật cả trong khung năng lực tms_trainning_courses vì
-            // khi xóa thư viện khóa học thì chuyển trạng thái khóa học đó trong knl = 1
-
-            TmsTrainningCourse::where('course_id', '=', $id)->update(['deleted' => '0']);
-
-            $course->save();
-
-            $result = 1;
-
-            if ($result == 1) {
-
-
-                /*                $contextData = MdlContext::query();
-                                $contextData = $contextData->where('contextlevel', '=', \App\MdlUser::CONTEXT_COURSE);
-                                $contextData = $contextData->where('instanceid', '=', $id);
-                                $contextData = $contextData->orderBy('id', 'desc')->first();
-
-                                if ($contextData) {
-                                    //Write log to mdl_logstore_standard_log
-                                    $new_event = new MdlLogstoreStandardLog();
-                                    $new_event->eventname = '\core\event\course_restored';
-                                    $new_event->component = 'core';
-                                    $new_event->action = 'restored';
-                                    $new_event->target = 'course';
-                                    $new_event->objecttable = 'course';
-                                    $new_event->objectid = $id;
-                                    $new_event->crud = 'c';
-                                    $new_event->edulevel = 1;
-                                    $new_event->contextid = $contextData->id;
-                                    $new_event->contextlevel = \App\MdlUser::CONTEXT_COURSE;
-                                    $new_event->contextinstanceid = $id;
-                                    $new_event->userid = Auth::id();
-                                    $new_event->courseid = $id;
-                                    $new_event->other = json_encode([
-                                        "type"=>"course",
-                                        "target"=> 1,
-                                        "mode"=> 20,
-                                        "operation" => "restore",
-                                        "samesite" => true,
-                                        "originalcourseid"=> "596"
-                                    ]);
-                                    $new_event->timecreated = time();
-                                    $new_event->origin = "restore";
-                                    $new_event->ip = '192.168.1.1';
-                                    $new_event->save();
-                                }*/
-                devcpt_log_system('course', 'lms/course/view.php?id=' . $course->id, 'restore', 'Restore course: ' . $course->shortname);
-                updateLastModification('restore', $course->id);
-
-                $response->status = true;
-                $response->message = __('thao_tac_thanh_cong');
-            } else {
-                $response->status = false;
-                $response->message = __('thao_tac_khong_thanh_cong');
-            }
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //api lọc thông tin người dùng đang được ghi danh vào khóa học
-    //ThoLD 13/09/2019
-    public function apiUserCurrentEnrol(Request $request)
-    {
-
-        $course_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $role_id = $request->input('role_id');
-        $organization_id = $request->input('organization_id');
-
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-
-        //lấy danh sách học viên/giáo viên đang được enrol vào khóa học hiện tại
-        $currentUserEnrol = DB::table('mdl_user_enrolments')
-            ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-            ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-            ->where('mdl_course.id', '=', $course_id)
-            ->where('mdl_enrol.enrol', '<>', 'self')
-            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'mdl_enrol.id as enrol_id');
-        if ($keyword) {
-            $currentUserEnrol = $currentUserEnrol->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-//        if (strlen($organization_id) != 0 && $organization_id != 0) {
-//            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-//            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-//        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
-                            ) as org_tp';
-
-            $org_query = DB::raw($org_query);
-
-            $currentUserEnrol = $currentUserEnrol->join($org_query, 'org_tp.org_uid', '=', 'mdl_user.id');
-
-//            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-//            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-        if ($role_id) {
-            $currentUserEnrol = $currentUserEnrol->where('mdl_enrol.roleid', '=', $role_id);
-        }
-
-
-        $currentUserEnrol = $currentUserEnrol->orderBy('mdl_enrol.id', 'desc');
-
-        $currentUserEnrol = $currentUserEnrol->paginate($row);
-        $total = ceil($currentUserEnrol->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $currentUserEnrol->currentPage(),
-            ],
-            'data' => $currentUserEnrol
-        ];
-
-        return response()->json($response);
-    }
-
-    public function apiUserCurrentInvite(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $organization_id = $request->input('organization_id');
-        $invite_status = $request->input('invite_status');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text',
-            'invite_status' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
-        $currentUserEnrol = DB::table('tms_invitation')
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_invitation.user_id')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->where('tms_invitation.course_id', '=', $course_id)
-            ->select(
-                'mdl_user.id',
-                'mdl_user.username',
-                'mdl_user.firstname',
-                'mdl_user.lastname',
-                'tms_user_detail.fullname',
-                'tms_invitation.replied',
-                'tms_invitation.accepted',
-                'tms_invitation.reason'
-            );
-        if ($keyword) {
-            $currentUserEnrol = $currentUserEnrol->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-        if ($invite_status == 'noreply') {
-            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 0);
-        } elseif ($invite_status == 'accepted') {
-            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 1);
-        } elseif ($invite_status == 'denied') {
-            $currentUserEnrol = $currentUserEnrol->where('tms_invitation.replied', 1)->where('tms_invitation.accepted', 0);
-        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $currentUserEnrol = $currentUserEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $currentUserEnrol = $currentUserEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-        $currentUserEnrol = $currentUserEnrol->paginate($row);
-        $total = ceil($currentUserEnrol->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $currentUserEnrol->currentPage(),
-            ],
-            'data' => $currentUserEnrol
-        ];
-
-        return response()->json($response);
-    }
-
-    //api lấy danh sách người dùng ngoại lệ được vào khóa học
-    public function apiUserCourseException(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $organization_id = $request->input('organization_id');
-//        $invite_status = $request->input('invite_status');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text',
-//            'invite_status' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //lấy danh sách học viên đang được enrol vào khóa học hiện tại
-        $currentUserCourseException = DB::table('tms_user_course_exception')
-            ->join('mdl_user', 'mdl_user.id', '=', 'tms_user_course_exception.user_id')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->where('tms_user_course_exception.course_id', '=', $course_id)
-            ->select(
-                'mdl_user.id',
-                'mdl_user.username',
-                'mdl_user.firstname',
-                'mdl_user.lastname',
-                'tms_user_detail.fullname'
-            );
-        if ($keyword) {
-            $currentUserCourseException = $currentUserCourseException->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $currentUserCourseException = $currentUserCourseException->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $currentUserCourseException = $currentUserCourseException->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-        $currentUserCourseException = $currentUserCourseException->paginate($row);
-        $total = ceil($currentUserCourseException->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $currentUserCourseException->currentPage(),
-            ],
-            'data' => $currentUserCourseException
-        ];
-
-        return response()->json($response);
-    }
-
-    //api lấy danh sách người dùng cần ghi danh
-    //ThoLD 14/09/2019
-    public $courseCurrent_id;
-    public $category_id;
-
-    public function apiUserNeedEnrol(Request $request)
-    {
-        $this->courseCurrent_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $role_id = $request->input('role_id');
-        $organization_id = $request->input('organization_id');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
-        $userNeedEnrol = DB::table('model_has_roles')
-            ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('mdl_user.deleted', '=', 0)
-            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
-            ->whereNotExists(function ($query) use ($role_id) {
-                $query->select(DB::raw(1))
-                    ->from('mdl_user_enrolments')
-                    ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-                    ->where('mdl_course.id', '=', $this->courseCurrent_id)
-                    ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
-
-//                if ($role_id == 4) { //Instructor => cho phép lấy ra, để có thể overwrite vào role học viên đã từng tạo
-//                    $query->where('mdl_enrol.roleid', '=', $role_id);
-//                }
-
-            });
-
-        if ($keyword) {
-            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-        //Lấy user trực thuộc tổ chức
-//        if (strlen($organization_id) != 0 && $organization_id != 0) {
-//            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-//            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-//        }
-
-        //Lấy user thuộc tổ chức và các tổ chức đệ quy của nó
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-
-            $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
-                            ) as org_tp';
-
-            $org_query = DB::raw($org_query);
-
-            $userNeedEnrol = $userNeedEnrol->join($org_query, 'org_tp.org_uid', '=', 'mdl_user.id');
-
-//            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-//            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-
-        if ($role_id) {
-            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
-        }
-
-        $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
-
-        $userNeedEnrol = $userNeedEnrol->paginate($row);
-        $total = ceil($userNeedEnrol->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $userNeedEnrol->currentPage(),
-            ],
-            'data' => $userNeedEnrol
-        ];
-
-        return response()->json($response);
-    }
-
-    public function apiUserNeedInvite(Request $request)
-    {
-        $this->courseCurrent_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $role_id = $request->input('role_id');
-        $organization_id = $request->input('organization_id');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //xử lý lấy dữ liệu người dùng bên diva
-        //        if ($keyword) {
-        //            \DB::beginTransaction();
-        //            $checkUser = MdlUser::where('username', $keyword);
-        //            $checkUser = $checkUser->where('deleted', 0)->first();
-        //            if (!$checkUser) {
-        //
-        //                $url = Config::get('constants.domain.DIVA') . 'user/search?term=' . $keyword;
-        //
-        //                $result = callAPI('GET', $url, '', true, '');
-        //
-        //                $result = json_decode($result, true);
-        //
-        //                if ($result['code'] == 0 && !empty($result['data'])) {
-        //
-        //                    $mdl_user = new MdlUser();
-        //                    insert_user_search($result, $mdl_user, 'Bgt@2109');
-        //
-        //                    //Assign TMS
-        //                    //mặc định add tài khoản từ diva có quyền học viên
-        //                    $modelHasRole = ModelHasRole::where([
-        //                        'role_id' => 5,
-        //                        'model_id' => $mdl_user->id
-        //                    ])->first();
-        //                    if (!$modelHasRole) {
-        //                        $userRole = new ModelHasRole;
-        //                        $userRole->role_id = 5;
-        //                        $userRole->model_id = $mdl_user->id;
-        //                        $userRole->model_type = 'App/MdlUser';
-        //                        $userRole->save();
-        //
-        //                        enrole_lms($mdl_user->id, 5, 0); //mặc định set người dùng diva có quyền học viên
-        //                    }
-        //                }
-        //            }
-        //            \DB::commit();
-        //        }
-
-
-        //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
-        $userNeedEnrol = DB::table('model_has_roles')
-            ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('mdl_user.deleted', '=', 0)
-            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('mdl_user_enrolments')
-                    ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
-                    ->where('mdl_course.id', '=', $this->courseCurrent_id)
-                    ->whereRaw('mdl_user_enrolments.userid = mdl_user.id');
-            })->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('tms_invitation')
-                    ->where('course_id', '=', $this->courseCurrent_id)
-                    ->whereRaw('tms_invitation.user_id = mdl_user.id');
-            });
-
-        if ($keyword) {
-            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-        if ($role_id) {
-            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
-        }
-
-        $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
-
-        $userNeedEnrol = $userNeedEnrol->paginate($row);
-        $total = ceil($userNeedEnrol->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $userNeedEnrol->currentPage(),
-            ],
-            'data' => $userNeedEnrol
-        ];
-
-        return response()->json($response);
-    }
-
-    public function apiUserNeedInviteToException(Request $request)
-    {
-        $this->courseCurrent_id = $request->input('course_id');
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $role_id = $request->input('role_id');
-        $organization_id = $request->input('organization_id');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'role_id' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
-        $userNeedEnrol = DB::table('model_has_roles')
-            ->join('mdl_user', 'mdl_user.id', '=', 'model_has_roles.model_id')
-            ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->where('mdl_user.deleted', '=', 0)
-            ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
-            ->whereNotExists(function ($query) {
-                $query->select(DB::raw(1))
-                    ->from('tms_user_course_exception')
-                    ->where('course_id', '=', $this->courseCurrent_id)
-                    ->whereRaw('tms_user_course_exception.user_id = mdl_user.id');
-            });
-        if ($keyword) {
-            $userNeedEnrol = $userNeedEnrol->where(function ($query) use ($keyword) {
-                $query->where('mdl_user.username', 'like', '%' . $keyword . '%')
-                    ->orWhere('tms_user_detail.fullname', 'like', "%{$keyword}%");
-            });
-        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $userNeedEnrol = $userNeedEnrol->join('tms_organization_employee', 'mdl_user.id', '=', 'tms_organization_employee.user_id');
-            $userNeedEnrol = $userNeedEnrol->where('tms_organization_employee.organization_id', '=', $organization_id);
-        }
-
-        if ($role_id) {
-            $userNeedEnrol = $userNeedEnrol->where('roles.id', '=', $role_id);
-        }
-
-        $userNeedEnrol = $userNeedEnrol->orderBy('mdl_user.id', 'desc');
-
-        $userNeedEnrol = $userNeedEnrol->paginate($row);
-        $total = ceil($userNeedEnrol->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $userNeedEnrol->currentPage(),
-            ],
-            'data' => $userNeedEnrol
-        ];
-
-        return response()->json($response);
-    }
-
-    //api enrol học viên vào khóa học
-    //ThoLD 15/09/2019
-    public function apiEnrolUser(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $role_id = $request->input('role_id');
-            $lstUserIDs = $request->input('Users');
-
-            $param = [
-                'course_id' => 'number',
-                'role_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            $course = MdlCourse::findOrFail($course_id);
-
-            if (empty($course)) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_khoa_hoc');
-                return json_encode($response);
-            }
-
-            //Update performance 02/03/2020 by cuonghq
-            enrole_user_to_course_multiple($lstUserIDs, $role_id, $course_id, true);
-
-//            $count_user = count($lstUserIDs);
-//            if ($count_user > 0) {
-//                \DB::beginTransaction();
-//                for ($i = 0; $i < $count_user; $i++) {
-//
-//                    enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id, $course->category);
-//                    sleep(0.01);
-//
-//                    insert_single_notification(\App\TmsNotification::MAIL, $lstUserIDs[$i], \App\TmsNotification::ENROL, $course_id);
-//                }
-//                \DB::commit();
-//            }
-
-            $response->status = true;
-            $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    public function apiInviteUser(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $lstUserIDs = $request->input('users');
-
-            $param = [
-                'course_id' => 'number',
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            $course = MdlCourse::find($course_id);
-
-            if (empty($course)) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_khoa_hoc');
-                return json_encode($response);
-            }
-
-            $insert_data = [];
-            $dt = Carbon::now();
-
-            $send = false;
-
-            if (count($lstUserIDs) == 1 && TmsInvitation::where('user_id', '=', $lstUserIDs[0])
-                    ->where('course_id', '=', $course_id)->first()) {
-                $send = true;
-            }
-
-            foreach ($lstUserIDs as $user_id) {
-                $checkInvitation = TmsInvitation::where('user_id', '=', $user_id)
-                    ->where('course_id', '=', $course_id)->first();
-                if (!$checkInvitation) {
-                    $insert_data[] = [
-                        'course_id' => $course_id,
-                        'user_id' => $user_id,
-                        'replied' => 0,
-                        'accepted' => 0,
-                        'created_at' => $dt->toDateTimeString()
-                    ];
-                }
-            }
-            if (!empty($insert_data)) {
-                TmsInvitation::insert($insert_data);
-            }
-
-            $response->status = true;
-            $response->send = $send;
-            $response->message = __('them_vao_danh_sach_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            $response->send = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    //api enrol học viên vào khóa học
-    //ThoLD 15/09/2019
-    public function apiRemoveEnrolUser(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $role_id = $request->input('role_id');
-            $lstUserIDs = $request->input('Users');
-            $param = [
-                'course_id' => 'number',
-                'role_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-
-            $count_user = count($lstUserIDs);
-            if ($count_user > 0) {
-                \DB::beginTransaction();
-                for ($i = 0; $i < $count_user; $i++) {
-                    remove_enrole_user_to_course($lstUserIDs[$i], $role_id, $course_id);
-                    sleep(0.01);
-                }
-                \DB::commit();
-            }
-
-            $response->status = true;
-            $response->message = __('huy_ghi_danh_khoa_hoc');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    public function apiRemoveInviteUser(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $lstUserIDs = $request->input('users');
-            $param = [
-                'course_id' => 'number',
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            TmsInvitation::whereIn('user_id', $lstUserIDs)->where('course_id', $course_id)->delete();
-
-            $response->status = true;
-            $response->message = __('xoa_khoi_danh_sach_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    public function apiEnrolUserException(Request $request)
-    {
-        self::apiInviteUser($request);
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $lstUserIDs = $request->input('users');
-
-            $param = [
-                'course_id' => 'number',
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            $course = MdlCourse::find($course_id);
-
-            if (empty($course)) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_khoa_hoc');
-                return json_encode($response);
-            }
-
-            $insert_data = [];
-            $dt = Carbon::now();
-
-            $send = false;
-
-            if (count($lstUserIDs) == 1 && TmsUserCourseException::where('user_id', '=', $lstUserIDs[0])
-                    ->where('course_id', '=', $course_id)->first()) {
-                $send = true;
-            }
-
-            foreach ($lstUserIDs as $user_id) {
-                $checkInvitation = TmsUserCourseException::where('user_id', '=', $user_id)
-                    ->where('course_id', '=', $course_id)->first();
-                if (!$checkInvitation) {
-                    $insert_data[] = [
-                        'course_id' => $course_id,
-                        'user_id' => $user_id,
-                        'created_at' => $dt->toDateTimeString()
-                    ];
-                }
-            }
-            if (!empty($insert_data)) {
-                TmsUserCourseException::insert($insert_data);
-            }
-
-            $response->status = true;
-            $response->send = $send;
-            $response->message = __('them_vao_danh_sach_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            $response->send = false;
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    public function apiRemoveUserException(Request $request)
-    {
-        self::apiRemoveInviteUser($request);
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $lstUserIDs = $request->input('users');
-            $param = [
-                'course_id' => 'number',
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            TmsUserCourseException::whereIn('user_id', $lstUserIDs)->where('course_id', $course_id)->delete();
-
-            $response->status = true;
-            $response->message = __('xoa_khoi_danh_sach_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
-
-    public function apiGetTotalActivityCourse(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $param = [
-            'course_id' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-
-        $totalActivity = DB::table('mdl_course_modules as cm')
-            ->join("mdl_course_sections as cs", function ($join) {
-                $join->on("cs.course", "=", "cm.course")
-                    ->on("cs.id", "=", "cm.section");
-            })
-            ->where('cs.section', '<>', 0)
-            ->where('cm.course', '=', $course_id)
-            ->count();
-
-        return response()->json($totalActivity);
-    }
-
-    public function apiStatisticUserInCourse(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $row = $request->input('row');
-        $keyword = $request->input('keyword');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-
-        $totalActivity = DB::table('mdl_course_modules as cm')
-            ->join("mdl_course_sections as cs", function ($join) {
-                $join->on("cs.course", "=", "cm.course")
-                    ->on("cs.id", "=", "cm.section");
-            })
-            ->where('cs.section', '<>', 0)
-            ->where('cm.course', '=', $course_id)
-            ->where('cm.completion', '<>', 0)
-            ->count();
-
-        $lstUserCourse = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
-            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
-            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            ->where('c.id', '=', $course_id)
-            //->where('roles.id', 5)//hoc vien only
-            ->where('e.roleid', '=', Role::ROLE_STUDENT)
-            ->select(
-                'u.id as user_id',
-                'u.username',
-                'u.firstname',
-                'u.lastname',
-                'tud.fullname',
-                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
-                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
-                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
-                cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id and cm.completion <> 0) as user_course_learn'),
-
-                DB::raw('(select `g`.`finalgrade`
-  				from mdl_grade_items as gi
-				join mdl_grade_grades as g
-				on g.itemid = gi.id
-				where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
-            );
-        if ($keyword) {
-            $lstUserCourse = $lstUserCourse->whereRaw('( u.username like "%' . $keyword . '%" OR tud.fullname like "%' . $keyword . '%" )');
-        }
-
-        $lstUserCourse = $lstUserCourse->orderBy('u.id', 'desc')->groupBy('u.id');
-
-        $total_Data = $lstUserCourse->get()->count();
-
-        $lstUserCourse = $lstUserCourse->paginate($row);
-        $total = ceil($total_Data / $row);
-
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $lstUserCourse->currentPage(),
-            ],
-            'data' => $lstUserCourse,
-            'total_course' => $totalActivity
-        ];
-
-
-        return response()->json($response);
-    }
-
-
-    //Lấy danh sách học viên điểm danh theo lớp
-    public function apiListAttendanceUsers(Request $request)
-    {
-        $course_id = $request->input('course_id');
-        $row = $request->input('row');
-        $keyword = $request->input('keyword');
-
-        $param = [
-            'course_id' => 'number',
-            'row' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        //Lấy danh sách học viên trong khóa học và leftjoin vào table điểm danh
-        $lstUserAttendance = DB::table('mdl_user_enrolments as mu')
-            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
-//            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
-//            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
-            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
-            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
-            ->leftJoin('mdl_attendance as mat', 'mat.userid', '=', 'mu.userid')
-            ->where('c.id', '=', $course_id)
-            ->where('e.roleid', 5)//hoc vien only
-//            ->where('roles.id', 5)//hoc vien only
-            ->select(
-                'u.id as user_id',
-                'u.username',
-                'u.firstname',
-                'u.lastname',
-                'c.total_date_course',
-                DB::raw('(SELECT count(att.id) FROM `mdl_attendance` att
-                                    where att.courseid = c.id and att.userid = u.id) as count_attendance')
-            );
-
-        //search
-        if ($keyword) {
-            $lstUserAttendance = $lstUserAttendance->where('u.username', 'like', '%' . $keyword . '%');
-        }
-        //order by
-        $lstUserAttendance = $lstUserAttendance->orderBy('u.id', 'desc')->groupBy('u.id');
-
-        $total_Data = $lstUserAttendance->get()->count();
-        $lstUserAttendance = $lstUserAttendance->paginate($row);
-        $total = ceil($total_Data / $row);
-
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $lstUserAttendance->currentPage(),
-            ],
-            'data' => $lstUserAttendance
-        ];
-
-
-        return response()->json($response);
-    }
-
-    public function apiDeleteEnrolNotUse()
-    {
-        $responseModel = new ResponseModel();
-        try {
-
-            //lấy danh sách học viên chưa được enrol vào khóa học hiện tại
-
-            $lstData = DB::table('mdl_user_enrolments')
-                ->join('mdl_enrol', 'mdl_enrol.id', '=', 'mdl_user_enrolments.enrolid')
-                ->join('mdl_user', 'mdl_user.id', '=', 'mdl_user_enrolments.userid')
-                ->select('mdl_enrol.id')
-                ->groupBy('mdl_enrol.id')->pluck('mdl_enrol.id');
-
-            //lay danh sach cac ban ghi enrol khong phu hop, loai bo cac ban ghi co enrol la self
-            $lstNormal = $lstData = DB::table('mdl_enrol')
-                ->where('mdl_enrol.enrol', '!=', 'self')
-                ->select('mdl_enrol.id')->whereNotIn('mdl_enrol.id', $lstData)->pluck('mdl_enrol.id');
-
-
-            $count_data = count($lstNormal);
-            if ($count_data > 0) {
-                DB::table('mdl_enrol')->whereIn('id', $lstNormal)->delete();
-            }
-
-            $responseModel->status = true;
-            $responseModel->message = 'success';
-        } catch (Exception $e) {
-            $responseModel->status = false;
-            $responseModel->message = $e->getMessage();
-        }
-        return response()->json($responseModel);
-    }
 
     public function importFile()
     {
         return view('survey.test');
     }
 
-    //api import câu hỏi vào ngân hàng câu hỏi
-    //ThoLD 05/11/2019
-    public function apiImportQuestion(Request $request)
-    {
-        $responseModel = new ResponseModel();
-        try {
 
-            if (!$request->hasFile('import_file')) {
-                $responseModel->status = false;
-                $responseModel->message = 'Bạn chưa chọn file nào';
-                return response()->json($responseModel);
-            }
-
-            $file = $request->file('import_file');
-
-            $extension = $file->getClientOriginalExtension();
-            if ($extension != 'xls' && $extension != 'xlsx') {
-                $responseModel->status = false;
-                $responseModel->message = __('dinh_dang_file');
-                return response()->json($responseModel);
-            }
-
-            $this->category_id = $request->input('category');
-
-            $param = [
-                'category' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $responseModel->status = false;
-                $responseModel->message = __('dinh_dang_du_lieu_danh_muc_khong_hop_le');
-                return response()->json($responseModel);
-            }
-
-            if (empty($this->category_id)) {
-                $responseModel->status = false;
-                $responseModel->message = __('ban_chua_chon_danh_muc_cao_hoi');
-                return response()->json($responseModel);
-            }
-
-            //import dữ liệu
-            $array = (new QuestionImport())->toArray($file, '', '');
-            $count_arr = count($array);
-            if ($count_arr > 0 && !empty($array[0])) {
-                $count_array = count($array[0]);
-                for ($i = 1; $i < $count_array; $i++) {
-                    $result = array_values(array_diff($array[0][$i], array("null", "")));
-                    $count_item = count($result);
-                    $count_ans = $count_item - 8; //lấy số lượng đáp án của câu hỏi
-
-                    $question = MdlQuestion::create([
-                        'category' => $this->category_id,
-                        'name' => $result[1],
-                        'questiontext' => $result[4],
-                        'questiontextformat' => 1,
-                        'generalfeedback' => 'nothing data',
-                        'stamp' => 'online.bgt.com.vn',
-                        'version' => 'online.bgt.com.vn',
-                        'timecreated' => strtotime(Carbon::now()),
-                        'timemodified' => strtotime(Carbon::now()),
-                        'createdby' => Auth::user()->id,
-                        'modifiedby' => Auth::user()->id,
-                        'qtype' => MdlQuestion::TYPE_MULTIPLE_CHOICE,
-                    ]);
-
-                    if ($question) {
-                        if ($count_ans > 0) {
-                            $anwser_right = $result[7];
-                            $arr_ans = explode(',', $anwser_right);
-                            $count_r = count($arr_ans);
-                            for ($j = 0; $j < $count_ans; $j++) {
-                                for ($k = 0; $k < $count_r; $k++) {
-                                    MdlQuestionAnswer::where('question', '=', $question->id)
-                                        ->where('answer', '=', $result[8 + $j])
-                                        ->where('fraction', '=', 0)->delete();
-                                    if ($arr_ans[$k] == ($j + 1)) {
-
-                                        MdlQuestionAnswer::firstOrCreate([
-                                            'question' => $question->id,
-                                            'answer' => $result[8 + $j],
-                                            'fraction' => 1,
-                                            'feedback' => 'nothing'
-                                        ]);
-                                    } else {
-
-                                        $check = MdlQuestionAnswer::where('question', '=', $question->id)
-                                            ->where('answer', '=', $result[8 + $j])
-                                            ->where('fraction', '=', 1)->first();
-
-                                        if (!$check) {
-                                            MdlQuestionAnswer::firstOrCreate([
-                                                'question' => $question->id,
-                                                'answer' => $result[8 + $j],
-                                                'fraction' => 0,
-                                                'feedback' => 'nothing'
-                                            ]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            $responseModel->status = true;
-            $responseModel->message = 'success';
-        } catch (Exception $e) {
-            $responseModel->status = false;
-            $responseModel->message = $e->getMessage();
-        }
-        return response()->json($responseModel);
-    }
     // End CourseController
 
     // LanguageController
@@ -2904,75 +855,7 @@ class BussinessRepository implements IBussinessInterface
     // End NotificationController
 
     // PermissionController
-    public function apiPermissionAdd(Request $request)
-    {
-        try {
-            $slug = $request->input('slug');
-            $name = $request->input('name');
-            $url = $request->input('url');
-            $method = $request->input('method');
-            $description = $request->input('description');
-            $param = [
-                'slug' => 'text',
-                'name' => 'longtext',
-                'url' => 'longtext',
-                'method' => 'text',
-                'description' => 'longtext',
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                return response()->json('error');
-            }
-            $perCheck = Permission::select('id')->where('name', $name)->first();
-            if ($perCheck)
-                return 'warning';
-            \DB::beginTransaction();
-            $permission = Permission::create([
-                'name' => $name,
-                'url' => $url,
-                'method' => $method,
-                'description' => $description,
-                'permission_slug' => $slug,
-            ]);
 
-            $info = 'Create permission: ' . '<br>';
-            $info .= 'Permission slug: ' . $slug . '<br>';
-            $info .= 'Permission name: ' . $name . '<br>';
-            $info .= 'Permission url: ' . $url . '<br>';
-            $info .= 'Permission method: ' . $method;
-
-            $role_ids = PermissionSlugRole::where('permission_slug', $slug)->pluck('role_id');
-            giveRoleToPermission($permission->id, $role_ids); //Add Permission To Roles
-            devcpt_log_system('role', '/permission/detail/' . $permission->id, 'create', $info);
-            \DB::commit();
-            return 'success';
-        } catch (\Exception $e) {
-            return 'error';
-        }
-    }
-
-    public function apiPermissionListDetail(Request $request)
-    {
-        $slug = $request->input('slug');
-        $param = [
-            'slug' => 'text',
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-        $permissions = Permission::select('id', 'name', 'url', 'method', 'description')
-            ->where('permission_slug', $slug)
-            ->get()->toArray();
-        return response()->json($permissions);
-    }
-
-    public function apiInvitationDetail($id)
-    {
-        $invitation = TmsInvitation::with('course')->where('id', $id)->first();
-
-        return response()->json($invitation);
-    }
 
     public function apiAttemptDetail($id)
     {
@@ -3016,41 +899,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($check);
     }
 
-    public function apiInvitationConfirm(Request $request)
-    {
-        $id = $request->input('id');
-        $accepted = $request->input('accepted');
-        $reason = $request->input('reason');
-        DB::beginTransaction();
-        try {
-            $invitation = TmsInvitation::query()->where('id', $id)->first();
-            if (isset($invitation)) {
-                $invitation->replied = 1;
-                if ($accepted == 'false') {
-                    $invitation->accepted = 0;
-                    $invitation->reason = $reason;
-                    $accepted_bool = false;
-                } else {
-                    $invitation->accepted = 1;
-                    $accepted_bool = true;
-                }
-                $invitation->save();
-                if ($accepted_bool) {
-                    //Enrol user vào khóa
-                    enrole_user_to_course_multiple([$invitation->user_id], Role::ROLE_STUDENT, $invitation->course_id, true);
-                }
-            }
-            DB::commit();
-            $data['status'] = 'success';
-            $data['message'] = __('xac_nhan_thanh_cong');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            $data['status'] = 'error';
-            $data['message'] = __('xac_nhan_that_bai');
-        }
-        return response()->json($data);
-
-    }
 
     public function apiUnlockConfirm(Request $request)
     {
@@ -3185,121 +1033,7 @@ class BussinessRepository implements IBussinessInterface
 
     }
 
-    public function apiPermissionDelete($permission_id)
-    {
-        try {
-            \DB::beginTransaction();
-            if (!is_numeric($permission_id)) {
-                return 'error';
-            }
-            $permission = Permission::findOrFail($permission_id);
-            $permission->delete();
 
-            removeRoleTo($permission_id); //Remove Permission all role
-            devcpt_log_system('role', '/permission/detail/' . $permission_id, 'delete', 'Delete permission ID = ' . $permission_id);
-            \DB::commit();
-            return 'success';
-        } catch (\Exception $e) {
-            return 'error';
-        }
-    }
-
-    public function apiPermissionDetail(Request $request)
-    {
-        $data = [];
-        $param = [
-            'permission_id' => 'number',
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-        $permission_id = $request->input('permission_id');
-        $permission = Permission::select('id', 'name', 'url', 'method', 'description', 'permission_slug')
-            ->findOrFail($permission_id);
-        $data['permission'] = $permission;
-        $permission_slug = permission_slug();
-        $permission_name = permission_cat_name();
-        $items = [];
-        $row = 0;
-        foreach ($permission_slug as $key => $values) {
-            $row++;
-            $items[$row]['id'] = '';
-            $items[$row]['space'] = '+)';
-            $items[$row]['name'] = $permission_name[$key];
-            $items[$row]['disabled'] = true;
-            foreach ($values as $var_key => $value) {
-                $row++;
-                $items[$row]['id'] = '';
-                $items[$row]['space'] = '----';
-                $items[$row]['name'] = $permission_name[$var_key];
-                $items[$row]['disabled'] = true;
-                foreach ($value as $v_key => $val) {
-                    $row++;
-                    $items[$row]['id'] = $v_key;
-                    $items[$row]['space'] = '--------';
-                    $items[$row]['name'] = $val;
-                    $items[$row]['disabled'] = false;
-                }
-            }
-        }
-        $data['permission_list'] = $items;
-        return response()->json($data);
-    }
-
-    public function apiPermissionUpdate(Request $request)
-    {
-        try {
-            $permission_id = $request->input('permission_id');
-            $name = $request->input('name');
-            //            $description        = $request->input('description');
-            $url = $request->input('url');
-            $method = $request->input('method');
-            $permission_slug = $request->input('permission_slug');
-            \DB::beginTransaction();
-            $param = [
-                'permission_id' => 'number',
-                'name' => 'longtext',
-                'description' => 'longtext',
-                'url' => 'longtext',
-                'method' => 'longtext',
-                'permission_slug' => 'text'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                return response()->json('error');
-            }
-            $permission = Permission::findOrFail($permission_id);
-            $permissions = Permission::select('id')
-                ->where('name', $name)
-                ->whereNotIn('name', [$permission['name']])
-                ->first();
-            if ($permissions)
-                return 'warning';
-
-            $info = 'Update permission: ' . '<br>';
-            $info .= 'Permission slug: ' . $permission->permission_slug . ' -> ' . $permission_slug . '<br>';
-            $info .= 'Permission name: ' . $permission->name . ' -> ' . $name . '<br>';
-            $info .= 'Permission url: ' . $permission->url . ' -> ' . $url . '<br>';
-            $info .= 'Permission method: ' . $permission->method . ' -> ' . $method;
-
-            $permission->name = $name;
-            $permission->description = $name;
-            $permission->url = $url;
-            $permission->method = $method;
-            $permission->permission_slug = $permission_slug;
-            $permission->save();
-
-            devcpt_log_system('role', '/permission/detail/' . $permission_id, 'update', $info);
-
-            //$roleArray = PermissionSlugRole::where('permission_slug',$info['permission_slug'])->pluck('role_id');
-            //giveRoleToPermission($permission_id,$roleArray);
-            \DB::commit();
-            return 'success';
-        } catch (\Exception $e) {
-            return 'error';
-        }
-    }
     // End PermissionController
 
     // ReportController
@@ -4076,6 +1810,9 @@ class BussinessRepository implements IBussinessInterface
         // completed_training,
         // completed_course,
         // learning_time
+        $type_select = $request->input('type_select');
+        // training_pqdl,
+        // single_course,
         $organization_id = $request->input('organization_id');
         $training_id = $request->input('training_id');
         $course_id = $request->input('course_id');
@@ -4087,28 +1824,32 @@ class BussinessRepository implements IBussinessInterface
 
         $data_type = 'person'; //Thống kê số lượng bản ghi, duy nhất
 
-        $select_array = array(
-            'tms_organization.id as organization_id',
-            'tms_organization.name as organization_name',
-            'tms_user_detail.user_id',
-            'tms_user_detail.fullname',
-            'tms_user_detail.confirm',
-            'tms_user_detail.email',
-            'tms_user_detail.city',
-            'tms_user_detail.country'
-        );
+        $data = array();
 
         if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
             $show_courses = true;
         }
 
-        //lấy người dùng theo tổ chức
-        $query = TmsOrganization::query()->where('tms_organization.enabled', 1)
-            ->leftJoin('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
-            ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
+        if ($type_select == 'training_pqdl') { //View theo tổ chức: Khóa học trong training va pqdl
 
-        //Lấy theo khung năng lực
-        //Join tổ chức và khung năng lực - commented 2020 06 25
+            $select_array = array(
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name',
+                'tms_user_detail.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.confirm',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country'
+            );
+
+            //lấy người dùng theo tổ chức
+            $query = TmsOrganization::query()->where('tms_organization.enabled', 1)
+                ->leftJoin('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+                ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
+
+            //Lấy theo khung năng lực
+            //Join tổ chức và khung năng lực - commented 2020 06 25
 //        $query->leftJoin('tms_trainning_groups', function ($join) {
 //            /* @var $join JoinClause */
 //            $join->on('tms_trainning_groups.group_id', '=', 'tms_organization.id');
@@ -4116,171 +1857,357 @@ class BussinessRepository implements IBussinessInterface
 //        })
 //            ->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_trainning_groups.trainning_id');
 
-        //join người dùng vào KNL - added 2020 06 25
-        $query->leftJoin('tms_traninning_users', 'tms_traninning_users.user_id', '=', 'tms_organization_employee.user_id');
-        $query->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_traninning_users.trainning_id');
+            //join người dùng vào KNL - added 2020 06 25
+            $query->leftJoin('tms_traninning_users', 'tms_traninning_users.user_id', '=', 'tms_organization_employee.user_id');
+            $query->leftJoin('tms_traninning_programs', 'tms_traninning_programs.id', '=', 'tms_traninning_users.trainning_id');
 
 
-        //hoàn thành khóa học cũ - long time ago
+            //hoàn thành khóa học cũ - long time ago
 //        $query->leftjoin('course_final', function ($join) {
 //            $join->on('tms_user_detail.user_id', '=', 'course_final.userid');
 //            $join->on('tms_trainning_courses.course_id', '=', 'course_final.courseid');
 //        });
 //        $select_array[] = 'course_final.timecompleted';
 
-        if ($show_courses) { //complete course and learning time => cần tính thêm phân quyền dữ liệu
+            if ($show_courses) { //complete course and learning time => cần tính thêm phân quyền dữ liệu
 
-            $addtion_select_for_course = [
-                'mdl_course.id as course_id',
-                'mdl_course.shortname as course_code',
-                'mdl_course.fullname as course_name',
-            ];
+                $addtion_select_for_course = [
+                    'mdl_course.id as course_id',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name',
+                ];
 
-            if ($training_id == 0 || $training_id == 99999) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
-                /////////////////////////// PHAN QUYEN DU LIEU ///////////////////////
-                //lấy người dùng theo tổ chức
-                $query_per = TmsOrganization::query()->where('tms_organization.enabled', 1)
-                    ->leftJoin('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
-                    ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
+                if ($training_id == 0 || $training_id == 99999) { //Không chọn khung năng lực, lấy data các khóa học được phân quyền dữ liệu
+                    /////////////////////////// PHAN QUYEN DU LIEU ///////////////////////
+                    //lấy người dùng theo tổ chức
+                    $query_per = TmsOrganization::query()->where('tms_organization.enabled', 1)
+                        ->leftJoin('tms_organization_employee', 'tms_organization.id', '=', 'tms_organization_employee.organization_id')
+                        ->leftJoin('tms_user_detail', 'tms_organization_employee.user_id', '=', 'tms_user_detail.user_id');
 
-                //khoá học lẻ được phân quyền dữ liệu
-                $query_per->leftJoin('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
-                    ->leftJoin('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
-                    ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id');
+                    //khoá học lẻ được phân quyền dữ liệu
+                    $query_per->leftJoin('tms_role_organization', 'tms_organization_employee.organization_id', '=', 'tms_role_organization.organization_id')
+                        ->leftJoin('tms_role_course', 'tms_role_organization.role_id', '=', 'tms_role_course.role_id')
+                        ->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_role_course.course_id');
 
-                //Học viên phải được assign vào khóa
-                $query_per
-                    ->leftJoin('mdl_enrol', function ($join) {
-                        $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
-                        $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
-                        $join->where('mdl_enrol.enrol', '=', 'manual');
-                    })
-                    ->leftJoin('mdl_user_enrolments', function ($join) {
-                             $join->on('mdl_user_enrolments.userid', '=', 'tms_user_detail.user_id');
-                             $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
-                         });
+                    //Học viên phải được assign vào khóa
+                    $query_per
+                        ->leftJoin('mdl_enrol', function ($join) {
+                            $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                            $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                            $join->where('mdl_enrol.enrol', '=', 'manual');
+                        })
+                        ->leftJoin('mdl_user_enrolments', function ($join) {
+                            $join->on('mdl_user_enrolments.userid', '=', 'tms_user_detail.user_id');
+                            $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                        });
 
-                $select_array_per = array_merge($select_array, [
-                    DB::raw('CONCAT(tms_organization.id, "_", "pdql") as training_id'),
-                    DB::raw('"Other assigned courses" as training_name')
+                    $select_array_per = array_merge($select_array, [
+                        DB::raw('CONCAT(tms_organization.id, "_", "pdql") as training_id'),
+                        DB::raw('"Data access courses" as training_name')
+                    ]);
+                    $select_array_per = array_merge($select_array_per, $addtion_select_for_course);
+                }
+
+                //khóa học trong khung năng lục
+                //$query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id'); //Commented 2020 06 25
+                $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_traninning_users.trainning_id');
+                $query->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
+
+                $select_array = array_merge($select_array, [
+                    'tms_traninning_programs.id as training_id',
+                    'tms_traninning_programs.name as training_name',
                 ]);
-                $select_array_per = array_merge($select_array_per, $addtion_select_for_course);
+                $select_array = array_merge($select_array, $addtion_select_for_course);
+
+            } else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
+
+                $select_array = array_merge($select_array, [
+                    'tms_traninning_programs.id as training_id',
+                    'tms_traninning_programs.name as training_name',
+                ]);
+
+                //chứng chỉ
+                if ($mode_select == 'certificated') {
+                    //$query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
+                    //Join theo khun năng lục, vì chứng chỉ hiện tại đã đi theo từng khung năng lực chứ k phải mỗi user chỉ có 1 chứng chỉ như trước nữa
+                    $query->leftJoin('student_certificate', function ($join) {
+                        $join->on('tms_user_detail.user_id', '=', 'student_certificate.userid');
+                        $join->on('tms_traninning_users.trainning_id', '=', 'student_certificate.trainning_id');
+                    });
+                    $select_array[] = 'student_certificate.code';
+                }
+
+                //Hoàn thành KNL
+                if ($mode_select == 'completed_training') {
+                    $query->leftjoin('tms_trainning_complete', function ($join) { //Hoàn thành khung năng lực
+                        /* @var $join JoinClause */
+                        $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
+                        $join->on('tms_trainning_complete.trainning_id', '=', 'tms_traninning_programs.id');
+                    });
+                    $select_array[] = 'tms_trainning_complete.id as completed';
+                }
             }
 
-            //khóa học trong khung năng lục
-            //$query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_trainning_groups.trainning_id'); //Commented 2020 06 25
-            $query->leftJoin('tms_trainning_courses', 'tms_trainning_courses.trainning_id', '=', 'tms_traninning_users.trainning_id');
-            $query->leftJoin('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id');
-
-            $select_array = array_merge($select_array, [
-                'tms_traninning_programs.id as training_id',
-                'tms_traninning_programs.name as training_name',
-            ]);
-            $select_array = array_merge($select_array, $addtion_select_for_course);
-
-        } else { //complete training and certificated k cần tính thêm phân quyền dữ liệu
-
-            $select_array = array_merge($select_array, [
-                'tms_traninning_programs.id as training_id',
-                'tms_traninning_programs.name as training_name',
-            ]);
-
-            //chứng chỉ
-            if ($mode_select == 'certificated') {
-                //$query->leftJoin('student_certificate', 'tms_user_detail.user_id', '=', 'student_certificate.userid');
-                //Join theo khun năng lục, vì chứng chỉ hiện tại đã đi theo từng khung năng lực chứ k phải mỗi user chỉ có 1 chứng chỉ như trước nữa
-                $query->leftJoin('student_certificate', function ($join) {
-                    $join->on('tms_user_detail.user_id', '=', 'student_certificate.userid');
-                    $join->on('tms_traninning_users.trainning_id', '=', 'student_certificate.trainning_id');
-                });
-                $select_array[] = 'student_certificate.code';
-            }
-
-            //Hoàn thành KNL
-            if ($mode_select == 'completed_training') {
-                $query->leftjoin('tms_trainning_complete', function ($join) { //Hoàn thành khung năng lực
-                    /* @var $join JoinClause */
-                    $join->on('tms_user_detail.user_id', '=', 'tms_trainning_complete.user_id');
-                    $join->on('tms_trainning_complete.trainning_id', '=', 'tms_traninning_programs.id');
-                });
-                $select_array[] = 'tms_trainning_complete.id as completed';
-            }
-        }
-
-        if ($mode_select == 'completed_course') {
-            if ($training_id == 0 || $training_id == 99999) {
-                $query_per->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
+            if ($mode_select == 'completed_course') {
+                if ($training_id == 0 || $training_id == 99999) {
+                    $query_per->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
+                        /* @var $join JoinClause */
+                        $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
+                        $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                    });
+                    $select_array_per[] = 'course_completion.timecompleted as completed';
+                }
+                $query->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
-                    $join->on('mdl_course.id', '=', 'course_completion.courseid');
+                    $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
                 });
-                $select_array_per[] = 'course_completion.timecompleted as completed';
+                $select_array[] = 'course_completion.timecompleted as completed';
             }
-            $query->leftjoin('course_completion', function ($join) { //Hoàn thành các khóa học
-                /* @var $join JoinClause */
-                $join->on('tms_user_detail.user_id', '=', 'course_completion.userid');
-                $join->on('tms_trainning_courses.course_id', '=', 'course_completion.courseid');
-            });
-            $select_array[] = 'course_completion.timecompleted as completed';
-        }
 
-        if ($mode_select == 'learning_time') {
-            $data_type = 'counter'; //Thống kê theo số lượng, cộng dồn
-            if ($training_id == 0 || $training_id == 99999) { //Both knl and permission
-                $query_per->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
+            if ($mode_select == 'learning_time') {
+                $data_type = 'counter'; //Thống kê theo số lượng, cộng dồn
+                if ($training_id == 0 || $training_id == 99999) { //Both knl and permission
+                    $query_per->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
+                        /* @var $join JoinClause */
+                        $join->on('tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
+                        $join->on('mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
+                    });
+                    $select_array_per[] = 'tms_learning_activity_logs.duration';
+                    $select_array_per[] = 'mdl_course.estimate_duration';
+                    $select_array_per[] = 'mdl_course.category';
+                }
+                $query->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
                     /* @var $join JoinClause */
                     $join->on('tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
                     $join->on('mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
                 });
-                $select_array_per[] = 'tms_learning_activity_logs.duration';
-                $select_array_per[] = 'mdl_course.estimate_duration';
-                $select_array_per[] = 'mdl_course.category';
+
+                $select_array[] = 'tms_learning_activity_logs.duration';
+                $select_array[] = 'mdl_course.estimate_duration';
+                $select_array[] = 'mdl_course.category';
             }
-            $query->leftjoin('tms_learning_activity_logs', function ($join) { //Hoàn thành các khóa học
-                /* @var $join JoinClause */
-                $join->on('tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
-                $join->on('mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
-            });
 
-            $select_array[] = 'tms_learning_activity_logs.duration';
-            $select_array[] = 'mdl_course.estimate_duration';
-            $select_array[] = 'mdl_course.category';
-        }
+            $query->select($select_array);
+            self::finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $type_select, true);
+            $list = $query->get()->toArray();
 
-        $query->select($select_array);
-        self::finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, true);
-        $list = $query->get()->toArray();
-
-        //Merge array results
-        if ($show_courses) {
-            if ($training_id == 0 || $training_id == 99999) {
-                $query_per->select($select_array_per);
-                self::finishQuery($query_per, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, false);
-                $list2 = $query_per->get()->toArray();
-                $list = array_merge($list, $list2);
+            //Merge array results
+            if ($show_courses) {
+                if ($training_id == 0 || $training_id == 99999) {
+                    $query_per->select($select_array_per);
+                    self::finishQuery($query_per, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $type_select, false);
+                    $list2 = $query_per->get()->toArray();
+                    $list = array_merge($list, $list2);
+                }
             }
-        }
 
-        $data = array();
-        foreach ($list as $item) {
-            if (!isset($data[$item['organization_id']])) {
-                //Build organization object
-                self::buildDefaultReportObject($data, $item['organization_id'], $item['organization_name']);
-            }
-            if (strlen($item['training_id']) != 0) {
-                //Build training object
-                if ($data_type == 'person' || strlen($item['user_id']) != 0) { //data_type counter only defined new object if have users
-                    if (!isset($data[$item['organization_id']]['training'][$item['training_id']])) {
-                        self::buildDefaultReportObject($data[$item['organization_id']]['training'], $item['training_id'], $item['training_name']);
+            foreach ($list as $item) {
+                if (!isset($data[$item['organization_id']])) {
+                    //Build organization object
+                    self::buildDefaultReportObject($data, $item['organization_id'], $item['organization_name']);
+                }
+                if (strlen($item['training_id']) != 0) {
+                    //Build training object
+                    if ($data_type == 'person' || strlen($item['user_id']) != 0) { //data_type counter only defined new object if have users
+                        if (!isset($data[$item['organization_id']]['training'][$item['training_id']])) {
+                            self::buildDefaultReportObject($data[$item['organization_id']]['training'], $item['training_id'], $item['training_name']);
+                        }
+                        if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                            //Build course object
+                            if (!isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
+                                self::buildDefaultReportObject($data[$item['organization_id']]['training'][$item['training_id']]['courses'], $item['course_id'], $item['course_name']);
+                            }
+                        }
                     }
-                    if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
-                        //Build course object
-                        if (!isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
-                            self::buildDefaultReportObject($data[$item['organization_id']]['training'][$item['training_id']]['courses'], $item['course_id'], $item['course_name']);
+
+                    if (strlen($item['user_id']) != 0) {
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname'],
+                            'email' => $item['email'],
+                            'country' => $item['country'],
+                            'city' => $item['city'],
+                        ];
+                        if ($mode_select == 'learning_time') {
+                            $user['duration'] = $item['duration'];
+                            $user['estimate_duration'] = $item['estimate_duration'];
+                            $user['category'] = $item['category'];
+                        }
+                        if ($data_type == 'person') { //certificated & complete training & complete course
+                            //col3
+                            //Update all user array for organization
+                            self::pushUser($data[$item['organization_id']], 'col3', $item['user_id'], $user);
+                            //Update all user array for training
+                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col3', $item['user_id'], $user);
+                            if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                                //Update user array for course
+                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col3', $item['user_id'], $user);
+                            }
+                            //chứng chỉ, chỉ tính đến cấp training
+                            if ($mode_select == 'certificated') {
+                                //col1
+                                if (isset($item['code'])) {
+                                    //Update array for organization
+                                    self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                                    //Update array for training
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
+                                } else { //col2
+                                    //Update array for organization
+                                    self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                                    //Update array for training
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
+                                }
+                            }
+                            if ($mode_select == 'completed_course' || $mode_select == 'completed_training') {
+                                //hoàn thành, tính đến cấp course nếu chọn type completed_course
+                                if (is_numeric($item['completed']) && $item['completed'] != 0) { //col1
+                                    //completed_course / completed_training
+                                    //Update array for organization
+                                    self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
+                                    //Update array for training
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
+                                    //completed_course only
+                                    if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user);
+                                    }
+                                } else { //col2
+                                    //completed_course / completed_training
+                                    //Update array for organization
+                                    self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
+                                    //Update array for training
+                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
+                                    //completed_course only
+                                    if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
+                                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user);
+                                    }
+                                }
+                            }
+                        }
+                        if ($data_type == 'counter') { //learning time
+                            //col1 & col2
+                            //Update array for organization
+                            $user_with_course_id = $user;
+                            $user_with_course_id['course_id'] = $item['course_id'];
+
+                            self::pushUserWithCounter($data[$item['organization_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                            self::pushUserWithCounter($data[$item['organization_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
+                            //Update array for training
+                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
+                            //Update arrray for course
+                            //col3
+                            if (isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
+                                //set duration(learning time only)
+                                if ($mode_select == 'learning_time') {//thời gian học
+                                    //Update for organization
+                                    //$data[$item['organization_id']]['col3'] = '';
+                                    //Update for training
+                                    //$data[$item['organization_id']]['training'][$item['training_id']]['col3'] = '';
+                                    //Update for course
+                                    $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = strlen($user['estimate_duration']) != 0 ? $user['estimate_duration'] : 0;
+                                }
+                                //Update for all counter type
+                                self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                                self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
+                            }
                         }
                     }
                 }
+            }
+        } else { //View theo khóa học
+            $query_users = TmsUserDetail::query()->where('deleted', 0)
+                ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+                ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
+            if ($organization_id != 0) {
+                //Exactly
+                //$query_users->where('tms_organization_employee.organization_id', $organization_id);
+                //Recursive
+                $query_users->whereIn('tms_user_detail.user_id', function ($q) use ($organization_id) {
+                    $q->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+                        from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
+                        (select @pv := $organization_id) initialisation
+                        where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
+                        UNION
+                        select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                });
+            }
+            $array_users = $query_users->select('tms_user_detail.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.email',
+                'tms_user_detail.country',
+                'tms_user_detail.city',
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name'
+            )->get()->toArray();
 
+            $user_ids = array_column($array_users, 'user_id');
+
+            //Fetch data
+            $select_array = [
+                'mdl_course.id as course_id',
+                'mdl_course.shortname as course_code',
+                'mdl_course.fullname as course_name',
+                'tms_user_detail.user_id',
+                'tms_user_detail.fullname',
+                'tms_user_detail.confirm',
+                'tms_user_detail.email',
+                'tms_user_detail.city',
+                'tms_user_detail.country',
+                'tms_organization.id as organization_id',
+                'tms_organization.name as organization_name',
+            ];
+            if ($mode_select == 'completed_course') {
+                $query = CourseCompletion::query()->whereIn('course_completion.userid', $user_ids);
+                $query->join('mdl_course', 'mdl_course.id', '=', 'course_completion.courseid');
+                $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'course_completion.userid');
+                $select_array[] = 'course_completion.timecompleted as completed';
+            } elseif ($mode_select == 'learning_time') {
+                $data_type = 'counter';
+                $query = TmsLearningActivityLog::query()->whereIn('tms_learning_activity_logs.user_id', $user_ids);
+                $query->join('mdl_course', 'mdl_course.id', '=', 'tms_learning_activity_logs.course_id');
+                $query->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'tms_learning_activity_logs.user_id');
+                $select_array[] = 'mdl_course.estimate_duration';
+                $select_array[] = DB::raw('SUM(tms_learning_activity_logs.duration) as duration');
+                $select_array[] = 'mdl_course.category';
+                $query->groupBy([
+                        'tms_learning_activity_logs.user_id',
+                        'tms_learning_activity_logs.course_id',
+                        'mdl_course.shortname',
+                        'mdl_course.fullname',
+                        'tms_user_detail.user_id',
+                        'tms_user_detail.fullname',
+                        'tms_user_detail.confirm',
+                        'tms_user_detail.email',
+                        'tms_user_detail.city',
+                        'tms_user_detail.country',
+                        'mdl_course.estimate_duration',
+                        'mdl_course.category'
+                    ]
+                );
+            } else {
+                return "Mismatch Input";
+            }
+
+            //Lấy thêm thông tin tổ chức
+            $query->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id');
+            $query->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id');
+
+            $query->select($select_array);
+
+            self::finishQuery($query, 0, 0, $course_id, $country, $start_date, $end_date, $mode_select, $type_select, false);
+
+            $list = $query->get()->toArray();
+
+            $completed_users = array();
+
+            foreach ($list as $item) {
+                if ($data_type == 'person' || strlen($item['user_id']) != 0) { //data_type counter only defined new object if have users
+                    //Build course object
+                    if (!array_key_exists($item['course_id'], $data)) {
+                        self::buildDefaultReportObject($data, $item['course_id'], $item['course_name']);
+                    }
+                }
                 if (strlen($item['user_id']) != 0) {
                     $user = [
                         'user_id' => $item['user_id'],
@@ -4288,88 +2215,147 @@ class BussinessRepository implements IBussinessInterface
                         'email' => $item['email'],
                         'country' => $item['country'],
                         'city' => $item['city'],
+                        'organization_id' => $item['organization_id'],
+                        'organization_name' => $item['organization_name'],
                     ];
                     if ($mode_select == 'learning_time') {
                         $user['duration'] = $item['duration'];
                         $user['estimate_duration'] = $item['estimate_duration'];
                         $user['category'] = $item['category'];
                     }
-                    if ($data_type == 'person') { //certificated & complete training
+                    if ($data_type == 'person') { //certificated & complete training & complete course
+                        if ($mode_select == 'completed_course') {
+                            //col1 => hoan thanh
+                            self::pushUser($data[$item['course_id']], 'col1', $item['user_id'], $user);
+                            self::pushUser($data[$item['course_id']], 'col3', $item['user_id'], $user);
+                        }
+                    }
+                    if ($data_type == 'counter') {//learning time only
+                        $user_with_course_id = $user;
+                        $user_with_course_id['course_id'] = $item['course_id'];
+                        //Update arrray for course
                         //col3
-                        //Update all user array for organization
-                        self::pushUser($data[$item['organization_id']], 'col3', $item['user_id'], $user);
-                        //Update all user array for training
-                        self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col3', $item['user_id'], $user);
-                        if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
-                            //Update user array for course
-                            self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col3', $item['user_id'], $user);
+                        //set duration(learning time only)
+                        if ($mode_select == 'learning_time') {//thời gian học
+                            $data[$item['course_id']]['col3'] = strlen($user['estimate_duration']) != 0 ? $user['estimate_duration'] : 0;
                         }
-                        //chứng chỉ, chỉ tính đến cấp training
-                        if ($mode_select == 'certificated') {
-                            //col1
-                            if (isset($item['code'])) {
-                                //Update array for organization
-                                self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
-                                //Update array for training
-                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
-                            } else { //col2
-                                //Update array for organization
-                                self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
-                                //Update array for training
-                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
-                            }
-                        }
-                        if ($mode_select == 'completed_course' || $mode_select == 'completed_training') {
-                            //hoàn thành, tính đến cấp course nếu chọn type completed_course
-                            if (is_numeric($item['completed']) && $item['completed'] != 0) { //col1
-                                //completed_course / completed_training
-                                //Update array for organization
-                                self::pushUser($data[$item['organization_id']], 'col1', $item['user_id'], $user);
-                                //Update array for training
-                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user);
-                                //completed_course only
-                                if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
-                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user);
-                                }
-                            } else { //col2
-                                //completed_course / completed_training
-                                //Update array for organization
-                                self::pushUser($data[$item['organization_id']], 'col2', $item['user_id'], $user);
-                                //Update array for training
-                                self::pushUser($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user);
-                                //completed_course only
-                                if (isset($item['course_id']) && strlen($item['course_id']) != 0) {
-                                    self::pushUser($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user);
-                                }
+                        //Update for all counter type
+                        self::pushUserWithCounter($data[$item['course_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
+                        self::pushUserWithCounter($data[$item['course_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
+                    }
+
+                    //Store checked users
+                    if (!isset($completed_users[$item['course_id']])) {
+                        $completed_users[$item['course_id']] = array($item['user_id']);
+                    } else {
+                        $completed_users[$item['course_id']][] = $item['user_id'];
+                    }
+
+                }
+            }
+
+            if ($mode_select == 'learning_time') {
+                return $data;
+            }
+            //Fill users chua hoan thanh
+            //Lấy các user đã enrol vào các khóa học
+            $courses_users = MdlCourse::query()
+                ->join('mdl_enrol', function ($join) {
+                    $join->on('mdl_course.id', '=', 'mdl_enrol.courseid');
+                    $join->where('mdl_enrol.roleid', '=', Role::ROLE_STUDENT); //Lấy học viên only
+                    $join->where('mdl_enrol.enrol', '=', 'manual');
+                })
+                ->join('mdl_user_enrolments', function ($join) {
+                    $join->on('mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id');
+                })
+                ->join('tms_user_detail', 'tms_user_detail.user_id', '=', 'mdl_user_enrolments.userid')
+                ->leftJoin('tms_organization_employee', 'tms_user_detail.user_id', '=', 'tms_organization_employee.user_id')
+                ->leftJoin('tms_organization', 'tms_organization_employee.organization_id', '=', 'tms_organization.id')
+                ->whereIn('tms_user_detail.user_id', $user_ids)
+                ->where('mdl_course.deleted', 0)
+                ->select('tms_user_detail.user_id',
+                    'tms_user_detail.fullname',
+                    'tms_user_detail.email',
+                    'tms_user_detail.country',
+                    'tms_user_detail.city',
+                    'tms_organization.id as organization_id',
+                    'tms_organization.name as organization_name',
+                    'mdl_course.id as course_id',
+                    'mdl_course.shortname as course_code',
+                    'mdl_course.fullname as course_name'
+                );
+
+                if ($course_id != 0) {
+                    $courses_users = $courses_users->where('mdl_course.id', $course_id);
+                }
+
+            $courses_users = $courses_users->get()->toArray();
+
+            //Gom lai
+            $arranged_courses_users = array();
+            foreach ($courses_users as $item) {
+                $arranged_courses_users[$item['course_id']][] = $item;
+            };
+
+            $diff = array_diff(array_keys($arranged_courses_users), array_keys($completed_users));
+
+            //vá user chưa hoàn thành và tổng số / danh sach da hoan thanh
+            foreach ($completed_users as $completed_course_id => $item_completed) {
+                if (array_key_exists($completed_course_id, $arranged_courses_users)) {
+                    //Lấy tất cả user đã enrol các khóa
+                    foreach ($arranged_courses_users[$completed_course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname'],
+                            'email' => $item['email'],
+                            'country' => $item['country'],
+                            'city' => $item['city'],
+                            'organization_id' => $item['organization_id'],
+                            'organization_name' => $item['organization_name']
+                        ];
+                        if (!in_array($item['user_id'], $item_completed) ) { //User chua hoan thanh
+                            if ($mode_select == 'completed_course') {
+                                self::pushUser($data[$completed_course_id], 'col3', $item['user_id'], $user);
+                                self::pushUser($data[$completed_course_id], 'col2', $item['user_id'], $user);
+                            } else if ($mode_select == 'learning_time') {
+                                $user['duration'] = '';
+                                $user['estimate_duration'] = '';
+                                $user['category'] = '';
+                                $user['course_id'] = '';
+                                self::pushUser($data[$completed_course_id], 'col1', $item['user_id'], '');
+                                self::pushUser($data[$completed_course_id], 'col2', $item['user_id'], $user);
                             }
                         }
                     }
-                    if ($data_type == 'counter') { //complete course and learning time
-                        //col1 & col2
-                        //Update array for organization
-                        $user_with_course_id = $user;
-                        $user_with_course_id['course_id'] = $item['course_id'];
+                }
+            }
 
-                        self::pushUserWithCounter($data[$item['organization_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
-                        self::pushUserWithCounter($data[$item['organization_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
-                        //Update array for training
-                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
-                        self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
-                        //Update arrray for course
-                        //col3
-                        if (isset($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']])) {
-                            //set duration(learning time only)
-                            if ($mode_select == 'learning_time') {//thời gian học
-                                //Update for organization
-                                //$data[$item['organization_id']]['col3'] = '';
-                                //Update for training
-                                //$data[$item['organization_id']]['training'][$item['training_id']]['col3'] = '';
-                                //Update for course
-                                $data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']]['col3'] = strlen($user['estimate_duration']) != 0 ? $user['estimate_duration'] : 0;
-                            }
-                            //Update for all counter type
-                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col1', $item['user_id'], $user_with_course_id, $mode_select);
-                            self::pushUserWithCounter($data[$item['organization_id']]['training'][$item['training_id']]['courses'][$item['course_id']], 'col2', $item['user_id'], $user_with_course_id, $mode_select);
+            if (!empty($diff)) { //Ko co hoc vien da hoan thanh van va
+                foreach ($diff as $incomplete_course_id) {
+                    //Lay cac hoc vien da enrol khoi tao danh sach moi
+                    foreach ($arranged_courses_users[$incomplete_course_id] as $item) { //$array_users => lấy tất cả user trong tổ chức / hệ thống
+                        if (!array_key_exists($incomplete_course_id, $data)) {
+                            self::buildDefaultReportObject($data, $incomplete_course_id, $item['course_name']);
+                        }
+                        $user = [
+                            'user_id' => $item['user_id'],
+                            'fullname' => $item['fullname'],
+                            'email' => $item['email'],
+                            'country' => $item['country'],
+                            'city' => $item['city'],
+                            'organization_id' => $item['organization_id'],
+                            'organization_name' => $item['organization_name']
+                        ];
+                        if ($mode_select == 'completed_course') {
+                            self::pushUser($data[$incomplete_course_id], 'col3', $item['user_id'], $user);
+                            self::pushUser($data[$incomplete_course_id], 'col2', $item['user_id'], $user);
+                        } else if ($mode_select == 'learning_time') {
+                            $user['duration'] = '';
+                            $user['estimate_duration'] = '';
+                            $user['category'] = '';
+                            $user['course_id'] = '';
+                            self::pushUser($data[$incomplete_course_id], 'col1', $item['user_id'], '');
+                            self::pushUser($data[$incomplete_course_id], 'col2', $item['user_id'], $user);
                         }
                     }
                 }
@@ -4379,43 +2365,44 @@ class BussinessRepository implements IBussinessInterface
         return $data;
     }
 
-    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $in_training)
+    function finishQuery($query, $organization_id, $training_id, $course_id, $country, $start_date, $end_date, $mode_select, $in_training, $type_select = 'training_pqdl')
     {
         //Thêm các điều kiện lọc bỏ các item bị xóa
 
         //Loại bỏ user đã bị xóa
         $query = $query->where('tms_user_detail.deleted', '=', 0);
 
-        //Trong query chứa khung năng lực => check khung năng lực chưa bị xóa
-        if ($in_training) {
-            $query = $query->where('tms_traninning_programs.deleted', '=', 0);
-        } else { //Khóa học phân quyền dữ liệu thì phải được enrol
-            $query = $query->whereNotNull('mdl_user_enrolments.id');
-        }
-
-        //Query liên quan đến khóa học => check khóa học chưa bị xóa
-        if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
-            $query = $query->where('mdl_course.deleted', '=', 0);
-        }
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
-            //đệ quy tổ chức con nếu có
-            $query = $query->whereIn('tms_organization.id', function ($q) use ($organization_id) {
-                $q->select('id')->from(DB::raw("
+        if ($type_select == 'training_pqdl') {
+            //Trong query chứa khung năng lực => check khung năng lực chưa bị xóa
+            if ($in_training) {
+                $query = $query->where('tms_traninning_programs.deleted', '=', 0);
+            } else { //Khóa học phân quyền dữ liệu thì phải được enrol
+                $query = $query->whereNotNull('mdl_user_enrolments.id');
+            }
+            if (strlen($organization_id) != 0 && $organization_id != 0) {
+                //$query = $query->where('tms_organization.id', '=', $organization_id); commented 2020 06 25
+                //đệ quy tổ chức con nếu có
+                $query = $query->whereIn('tms_organization.id', function ($q) use ($organization_id) {
+                    $q->select('id')->from(DB::raw("
                             (select id from (select * from tms_organization) torg,
                             (select @pv := $organization_id) initialisation
                             where find_in_set(parent_id, @pv) and length(@pv := concat(@pv, ',', id))
                             UNION
                             select id from tms_organization where id = $organization_id) as merged"));
-            });
-        } else {
-            //$level_1_ids = TmsOrganization::query()->where('level', 1)->pluck('id')->toArray();
+                });
+            } else {
+                //$level_1_ids = TmsOrganization::query()->where('level', 1)->pluck('id')->toArray();
+            }
+
+            if (strlen($training_id) != 0 && $training_id != 0 && $in_training) { //trường hợp training_id = 99999 cũng được vì nó sẽ k ra kết quả nào cho query khóa trong khung năng lực
+                //$query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
+                $query = $query->where('tms_traninning_users.trainning_id', '=', $training_id);
+            }
         }
 
-        if (strlen($training_id) != 0 && $training_id != 0 && $in_training) { //trường hợp training_id = 99999 cũng được vì nó sẽ k ra kết quả nào cho query khóa trong khung năng lực
-            //$query = $query->where('tms_trainning_groups.trainning_id', '=', $training_id);
-            $query = $query->where('tms_traninning_users.trainning_id', '=', $training_id);
+        //Query liên quan đến khóa học => check khóa học chưa bị xóa
+        if ($mode_select == 'completed_course' || $mode_select == 'learning_time') {
+            $query = $query->where('mdl_course.deleted', '=', 0);
         }
 
         if (strlen($course_id) != 0 && $course_id != 0) {
@@ -4573,7 +2560,7 @@ class BussinessRepository implements IBussinessInterface
     {
         $object[$object_id]['col0'] = $col0;
         $object[$object_id]['col1'] = [];
-        $object[$object_id]['col1_counter'] = 0;
+        $object[$object_id]['col1_counter'] = 0; //Dùng cho counter only
         $object[$object_id]['col2'] = [];
         $object[$object_id]['col3'] = [];
     }
@@ -4620,14 +2607,26 @@ class BussinessRepository implements IBussinessInterface
     public function apiListCourseByTraining(Request $request)
     {
         $training_id = $request->input('training_id');
-        return TmsTrainningCourse::where('tms_trainning_courses.trainning_id', $training_id)
-            ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
-            ->where('mdl_course.deleted', 0)
-            ->select(
-                'mdl_course.id',
-                'mdl_course.fullname as name',
-                'mdl_course.shortname'
-            )->get();
+        if ($training_id != 0) {
+            $courses = TmsTrainningCourse::query()->where('tms_trainning_courses.trainning_id', $training_id)
+                ->join('mdl_course', 'mdl_course.id', '=', 'tms_trainning_courses.course_id')
+                ->where('mdl_course.deleted', 0)
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.fullname as name',
+                    'mdl_course.shortname'
+                )->get();
+        } else {
+            $courses = MdlCourse::query()
+                ->where('mdl_course.deleted', 0)
+                ->where('category', '<>', 2)
+                ->select(
+                    'mdl_course.id',
+                    'mdl_course.fullname as name',
+                    'mdl_course.shortname'
+                )->get();
+        }
+        return $courses;
     }
 
     function arrayUniqueMultidimensional($array)
@@ -6266,1864 +4265,6 @@ class BussinessRepository implements IBussinessInterface
     }
     // End EducationController
 
-    // SurveyController
-
-    //api lấy danh sách survey
-    //ThoLD (21/09/2019)
-    public function apiGetListSurvey(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-
-        $param = [
-            'row' => 'number',
-            'keyword' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $lstSurvey = TmsSurvey::query();
-        $lstSurvey = $lstSurvey->where('isdeleted', '=', 0);
-
-        if ($keyword) {
-            $lstSurvey = $lstSurvey->where(function ($query) use ($keyword) {
-                $query->orWhere('name', 'like', "%{$keyword}%")
-                    ->orWhere('code', 'like', "%{$keyword}%");
-            });
-        }
-
-        if ($startdate) {
-            $cv_startDate = strtotime($startdate);
-            $lstSurvey = $lstSurvey->where('startdate', '>=', $cv_startDate);
-        }
-
-        if ($enddate) {
-            $cv_endDate = strtotime($enddate);
-            $lstSurvey = $lstSurvey->where('enddate', '<=', $cv_endDate);
-        }
-
-        $lstSurvey = $lstSurvey->orderBy('id', 'desc');
-
-        $lstSurvey = $lstSurvey->paginate($row);
-        $total = ceil($lstSurvey->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $lstSurvey->currentPage(),
-            ],
-            'data' => $lstSurvey
-        ];
-
-        return response()->json($response);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiCreateSurvey(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $sur_code = $request->input('sur_code');
-            $sur_name = $request->input('sur_name');
-//            $startdate = $request->input('startdate');
-//            $enddate = $request->input('enddate');
-            $description = $request->input('description');
-
-            $param = [
-                'sur_code' => 'code',
-                'sur_name' => 'text',
-                'description' => 'longtext'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            //Check survey code
-            $checkSurvey = TmsSurvey::select('id')->where('code', $sur_code)->where('isdeleted', 0)->first();
-
-            if ($checkSurvey) {
-                $response->status = false;
-                $response->message = __('ma_survey_da_ton_tai');
-                return response()->json($response);
-            }
-
-            $survey = new TmsSurvey();
-            $survey->code = $sur_code;
-            $survey->name = $sur_name;
-//            $survey->startdate = strtotime($startdate);
-//            $survey->enddate = strtotime($enddate);
-            $survey->startdate = strtotime(Carbon::now());
-            $survey->enddate = strtotime(Carbon::now());
-            $survey->description = $description;
-            $survey->isdeleted = 0;
-            $survey->save();
-
-            $response->otherData = $survey->id;
-            $response->status = true;
-            $response->message = __('tao_moi_survey_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //ThoLD (21/08/2019)
-    public function apiGetDetailSurvey($id)
-    {
-        $survey = TmsSurvey::findOrFail($id);
-        return json_encode($survey);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiEditSurvey($id, Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $sur_code = $request->input('sur_code');
-            $sur_name = $request->input('sur_name');
-//            $startdate = $request->input('startdate');
-//            $enddate = $request->input('enddate');
-            $description = $request->input('description');
-
-            $param = [
-                'sur_code' => 'code',
-                'sur_name' => 'text',
-                'description' => 'longtext'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            //Check course code
-            $checkCourse = TmsSurvey::select('id')->whereNotIn('id', [$survey->id])->where('code', $sur_code)->where('isdeleted', 0)->first();
-
-            if ($checkCourse) {
-                $response->status = false;
-                $response->message = __('ma_survey_da_ton_tai');
-                return response()->json($response);
-            }
-
-
-            $survey->code = $sur_code;
-            $survey->name = $sur_name;
-//            $survey->startdate = strtotime($startdate);
-//            $survey->enddate = strtotime($enddate);
-
-            $survey->description = $description;
-            $survey->save();
-
-            $response->status = true;
-            $response->message = __('sua_survey_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiDeleteSurvey(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $id = $request->input('survey_id');
-
-            $param = [
-                'survey_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            if (!$survey) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_survey');
-                return response()->json($response);
-            }
-
-            $survey->isdeleted = 1;
-            $survey->save();
-            devcpt_log_system(TmsLog::TYPE_SURVEY, '/survey/detail/' . $survey->id, 'delete', 'Xóa khảo sát ' . $survey->code);
-            //xử lý xóa tất cả các câu hỏi thuộc survey
-            TmsQuestion::where('survey_id', '=', $survey->id)->update(['isdeleted' => 1]);
-
-            $response->status = true;
-            $response->message = __('xoa_survey');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //api lấy danh sách survey
-    //ThoLD (21/09/2019)
-    public function apiGetListSurveyRestore(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-
-        $param = [
-            'keyword' => 'text',
-            'row' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $lstSurvey = TmsSurvey::query();
-        $lstSurvey = $lstSurvey->where('isdeleted', '=', 1);
-
-        if ($keyword) {
-            $lstSurvey = $lstSurvey->where('name', 'like', '%' . $keyword . '%');
-            $lstSurvey = $lstSurvey->orWhere('code', 'like', '%' . $keyword . '%');
-        }
-
-        if ($startdate) {
-            $cv_startDate = strtotime($startdate);
-            $lstSurvey = $lstSurvey->where('startdate', '>=', $cv_startDate);
-        }
-
-        if ($enddate) {
-            $cv_endDate = strtotime($enddate);
-            $lstSurvey = $lstSurvey->where('enddate', '<=', $cv_endDate);
-        }
-
-        $lstSurvey = $lstSurvey->orderBy('id', 'desc');
-
-        $lstSurvey = $lstSurvey->paginate($row);
-        $total = ceil($lstSurvey->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $lstSurvey->currentPage(),
-            ],
-            'data' => $lstSurvey
-        ];
-
-        return response()->json($response);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiRestoreSurvey(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $id = $request->input('survey_id');
-
-            $param = [
-                'survey_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            //Check course code
-            $checkCourse = TmsSurvey::select('id')->whereNotIn('id', [$survey->id])->where('code', $survey->code)->where('isdeleted', 0)->first();
-
-            if ($checkCourse) {
-                $response->status = false;
-                $response->message = __('ma_survey_da_ton_tai');
-                return response()->json($response);
-            }
-
-            if (!$survey) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_survey');
-                return response()->json($response);
-            }
-
-            $survey->isdeleted = 0;
-            $survey->save();
-
-            //xử lý mở lại các câu hỏi thuộc survey
-            TmsQuestion::where('survey_id', '=', $survey->id)->update(['isdeleted' => 0]);
-
-            devcpt_log_system(TmsLog::TYPE_SURVEY, '/survey/detail/' . $survey->id, 'restore', 'Khôi phục khảo sát ' . $survey->code);
-
-            $response->status = true;
-            $response->message = __('khoi_phuc_survey_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //api tạo mới khóa học
-    //ThoLD (21/08/2019)
-    public function apiDeleteSurveyRestore(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $id = $request->input('survey_id');
-
-            $param = [
-                'survey_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            if (!$survey) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_survey');
-                return response()->json($response);
-            }
-            devcpt_log_system(TmsLog::TYPE_SURVEY, '/survey/detail/' . $survey->id, 'delete', 'Xóa hoàn toàn khảo sát ' . $survey->code);
-            //xử lý xóa tất cả các câu hỏi thuộc survey
-            TmsQuestion::where('survey_id', '=', $survey->id)->delete();
-
-            $survey->delete();
-
-            $response->status = true;
-            $response->message = __('xoa_survey');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    #endregion
-
-
-    #region question
-
-
-    public function apiGetListQuestion(Request $request)
-    {
-        $keyword = $request->input('keyword');
-        $row = $request->input('row');
-        $type_question = $request->input('type_question');
-        $survey_id = $request->input('survey_id');
-
-        $param = [
-            'keyword' => 'text',
-            'row' => 'number',
-            'survey_id' => 'number',
-            'type_question' => 'text'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-
-        $listQuestions = DB::table('tms_questions as tq')
-            ->join('tms_surveys as ts', 'ts.id', '=', 'tq.survey_id')
-            ->where('tq.isdeleted', '=', 0)
-            ->select(
-                'tq.id',
-                'tq.name',
-                'tq.type_question',
-                'ts.name as survey_name',
-                'ts.code as survey_code'
-            );
-
-        if ($survey_id) {
-            $listQuestions = $listQuestions->where('tq.survey_id', '=', $survey_id);
-        }
-        if ($type_question) {
-            $listQuestions = $listQuestions->where('tq.type_question', '=', $type_question);
-        }
-
-        if ($keyword) {
-            $listQuestions = $listQuestions->where('tq.name', 'like', '%' . $keyword . '%');
-        }
-
-        $listQuestions = $listQuestions->orderBy('id', 'desc');
-
-        $listQuestions = $listQuestions->paginate($row);
-        $total = ceil($listQuestions->total() / $row);
-        $response = [
-            'pagination' => [
-                'total' => $total,
-                'current_page' => $listQuestions->currentPage(),
-            ],
-            'data' => $listQuestions
-        ];
-
-        return response()->json($response);
-    }
-
-    //api lấy danh sách survey
-    //ThoLD (29/09/2019)
-    public function apiGetListSurveyQuestion()
-    {
-        $lstSurvey = TmsSurvey::query();
-        $lstSurvey = $lstSurvey->where('isdeleted', '=', 0);
-        $lstSurvey = $lstSurvey->select('id', 'name', 'code');
-        $lstSurvey = $lstSurvey->orderBy('id', 'desc')->get();
-
-        return response()->json($lstSurvey);
-    }
-
-
-    public function apiCreateQuestion(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $survey_id = $request->input('survey_id');
-            $type_question = $request->input('type_question');
-            $question_name = $request->input('question_name');
-            $question_content = $request->input('question_content');
-            $anwsers = $request->input('anwsers');
-            $question_childs = $request->input('question_childs');
-            $min = $request->input('min_value');
-            $max = $request->input('max_value');
-
-            $param = [
-                'question_content' => 'longtext',
-                'question_name' => 'text',
-                'survey_id' => 'number',
-                'type_question' => 'text'
-            ];
-            $validator = validate_fails($request, $param);
-
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            if ($type_question == TmsQuestion::FILL_TEXT) {
-                $count_filltext = TmsQuestion::where('survey_id', $survey_id)->where('type_question', TmsQuestion::FILL_TEXT)->count();
-
-                if ($count_filltext >= 4) {
-                    $response->status = false;
-                    $response->message = __('survey_vuot_qua_4_cau_filltext');
-                    return response()->json($response);
-                }
-            }
-
-
-            $count_ans = 0;
-            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::CHECKBOX) {
-                $count_ans = count($anwsers);
-                if ($count_ans == 0) {
-                    $response->status = false;
-                    $response->message = __('ban_chua_nhap_cau_tra_loi');
-                    return response()->json($response);
-                }
-            }
-
-            $count_ques_child = 0;
-            if ($type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::MIN_MAX) {
-                $count_ques_child = count($question_childs);
-                if ($count_ques_child == 0) {
-                    $response->status = false;
-                    $response->message = __('ban_chua_nhap_cau_hoi_con');
-                    return response()->json($response);
-                }
-            }
-
-            \DB::beginTransaction();
-            $tms_question = new TmsQuestion();
-            $tms_question->survey_id = $survey_id;
-            $tms_question->type_question = $type_question;
-            $tms_question->display = 1;
-
-            $tms_question->name = $question_name;
-            $tms_question->content = $question_content;
-            $tms_question->created_by = Auth::user()->id;
-            $tms_question->status = 1;
-            $tms_question->total_answer = count($anwsers);
-            $tms_question->isdeleted = 0;
-
-
-            $other_data = json_encode(array('min' => $min, 'max' => $max));
-            $tms_question->other_data = $other_data;
-            $tms_question->save();
-
-
-            if ($type_question == \App\TmsQuestion::GROUP) {
-
-                for ($m = 0; $m < $count_ques_child; $m++) {
-                    $tms_ques_data = new TmsQuestionData();
-                    $tms_ques_data->question_id = $tms_question->id;
-                    $tms_ques_data->content = $question_childs[$m]['content'];
-                    $tms_ques_data->created_by = Auth::user()->id;
-                    $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::GROUP;
-                    $tms_ques_data->save();
-
-                    for ($i = 0; $i < $count_ans; $i++) {
-                        if (!empty($anwsers[$i]['content'])) {
-
-                            $tms_question_ans = new TmsQuestionAnswer();
-                            $tms_question_ans->content = $anwsers[$i]['content'];
-                            $tms_question_ans->question_id = $tms_ques_data->id;
-                            $tms_question_ans->save();
-                        }
-
-                        sleep(0.01);
-                    }
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE) { //insert dap an trong TH la cau hoi chon dap an
-
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
-                $tms_ques_data->save();
-
-                for ($i = 0; $i < $count_ans; $i++) {
-
-                    if (!empty($anwsers[$i]['content'])) {
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $anwsers[$i]['content'];
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-                    }
-
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::CHECKBOX) { //insert dap an trong TH la cau hoi chon dap an
-
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::CHECKBOX;
-                $tms_ques_data->save();
-
-                for ($i = 0; $i < $count_ans; $i++) {
-
-                    if (!empty($anwsers[$i]['content'])) {
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $anwsers[$i]['content'];
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-                    }
-
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::MIN_MAX) {
-
-                for ($m = 0; $m < $count_ques_child; $m++) {
-                    $tms_ques_data = new TmsQuestionData();
-                    $tms_ques_data->question_id = $tms_question->id;
-                    $tms_ques_data->content = $question_childs[$m]['content'];
-                    $tms_ques_data->created_by = Auth::user()->id;
-                    $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::MIN_MAX;
-                    $tms_ques_data->save();
-
-                    for ($i = $min; $i <= $max; $i++) {
-
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $i;
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-
-                        sleep(0.01);
-                    }
-                    sleep(0.01);
-                }
-            } else {
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::FILL_TEXT;
-                $tms_ques_data->save();
-            }
-
-
-            \DB::commit();
-
-            $response->status = true;
-            $response->message = __('them_moi_cau_hoi_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-
-    public function apiGetDetailQuestion($id)
-    {
-        $id = is_numeric($id) ? $id : 0;
-
-        $question = TmsQuestion::findOrFail($id);
-        return response()->json($question);
-    }
-
-    public function apiGetListAnswerQuestion($id)
-    {
-        $id = is_numeric($id) ? $id : 0;
-
-        $questionData = TmsQuestionData::query();
-        $questionData = $questionData->where('question_id', $id)->select('id')->first();
-
-        $lstAnswer = TmsQuestionAnswer::query();
-        $lstAnswer = $lstAnswer->where('question_id', $questionData->id)->select('content')->get();
-
-        return response()->json($lstAnswer);
-    }
-
-    public function apiGetListQuestionChild($id)
-    {
-        $id = is_numeric($id) ? $id : 0;
-
-        $questionData = TmsQuestionData::query();
-        $questionData = $questionData->where('question_id', $id)->select('id', 'question_id', 'content')->get();
-
-        return response()->json($questionData);
-    }
-
-
-    public function apiUpdateQuestion($id, Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $survey_id = $request->input('survey_id');
-            $type_question = $request->input('type_question');
-
-            $question_name = $request->input('question_name');
-            $question_content = $request->input('question_content');
-            $anwsers = $request->input('anwsers');
-            $question_childs = $request->input('question_childs');
-            $min = $request->input('min_value');
-            $max = $request->input('max_value');
-
-            $param = [
-                'question_content' => 'longtext',
-                'question_name' => 'text',
-                'survey_id' => 'number',
-                'type_question' => 'text'
-            ];
-            $validator = validate_fails($request, $param);
-
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            if ($type_question == TmsQuestion::FILL_TEXT) {
-                $count_filltext = TmsQuestion::where('survey_id', $survey_id)->where('type_question', TmsQuestion::FILL_TEXT)->count();
-
-                if ($count_filltext >= 4) {
-                    $response->status = false;
-                    $response->message = __('survey_vuot_qua_4_cau_filltext');
-                    return response()->json($response);
-                }
-            }
-
-            $count_ans = 0;
-            if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE || $type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::CHECKBOX) {
-                $count_ans = count($anwsers);
-                if ($count_ans == 0) {
-                    $response->status = false;
-                    $response->message = __('ban_chua_nhap_cau_tra_loi');
-                    return response()->json($response);
-                }
-            }
-
-            $count_ques_child = 0;
-            if ($type_question == \App\TmsQuestion::GROUP || $type_question == \App\TmsQuestion::MIN_MAX) {
-                $count_ques_child = count($question_childs);
-                if ($count_ques_child == 0) {
-                    $response->status = false;
-                    $response->message = __('ban_chua_nhap_cau_hoi_con');
-                    return response()->json($response);
-                }
-            }
-
-            \DB::beginTransaction();
-            $tms_question = TmsQuestion::findOrFail($id);
-
-            if (!$tms_question) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_cau_hoi');
-                return response()->json($response);
-            }
-
-            $tms_question->survey_id = $survey_id;
-            $tms_question->type_question = $type_question;
-
-            $tms_question->name = $question_name;
-            $tms_question->content = $question_content;
-            $tms_question->created_by = Auth::user()->id;
-            $tms_question->status = 1;
-            $tms_question->total_answer = $count_ans;
-            $tms_question->isdeleted = 0;
-
-            $other_data = json_encode(array('min' => $min, 'max' => $max));
-            $tms_question->other_data = $other_data;
-
-            $tms_question->save();
-
-
-            if ($type_question == \App\TmsQuestion::GROUP) {
-
-                TmsQuestionData::where('question_id', $id)->delete();
-
-                for ($m = 0; $m < $count_ques_child; $m++) {
-                    $tms_ques_data = new TmsQuestionData();
-                    $tms_ques_data->question_id = $tms_question->id;
-                    $tms_ques_data->content = $question_childs[$m]['content'];
-                    $tms_ques_data->created_by = Auth::user()->id;
-                    $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::GROUP;
-                    $tms_ques_data->save();
-
-                    for ($i = 0; $i < $count_ans; $i++) {
-                        if (!empty($anwsers[$i]['content'])) {
-
-                            $tms_question_ans = new TmsQuestionAnswer();
-                            $tms_question_ans->content = $anwsers[$i]['content'];
-                            $tms_question_ans->question_id = $tms_ques_data->id;
-                            $tms_question_ans->save();
-                        }
-
-                        sleep(0.01);
-                    }
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::MULTIPLE_CHOICE) { //insert dap an trong TH la cau hoi chon dap an
-
-                $questionData = TmsQuestionData::query();
-                $questionData = $questionData->where('question_id', $id)->select('id')->first();
-
-                //xóa tất cả các đáp án và insert lại
-                TmsQuestionAnswer::where('question_id', $questionData->id)->delete();
-                TmsQuestionData::where('question_id', $id)->delete();
-
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::MULTIPLE_CHOICE;
-                $tms_ques_data->save();
-
-                for ($i = 0; $i < $count_ans; $i++) {
-                    if (!empty($anwsers[$i]['content'])) {
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $anwsers[$i]['content'];
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-                    }
-
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::CHECKBOX) { //insert dap an trong TH la cau hoi chon dap an
-
-                $questionData = TmsQuestionData::query();
-                $questionData = $questionData->where('question_id', $id)->select('id')->first();
-
-                //xóa tất cả các đáp án và insert lại
-                TmsQuestionAnswer::where('question_id', $questionData->id)->delete();
-                TmsQuestionData::where('question_id', $id)->delete();
-
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::CHECKBOX;
-                $tms_ques_data->save();
-
-                for ($i = 0; $i < $count_ans; $i++) {
-                    if (!empty($anwsers[$i]['content'])) {
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $anwsers[$i]['content'];
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-                    }
-
-                    sleep(0.01);
-                }
-            } else if ($type_question == \App\TmsQuestion::MIN_MAX) {
-
-                TmsQuestionData::where('question_id', $id)->delete();
-
-                for ($m = 0; $m < $count_ques_child; $m++) {
-                    $tms_ques_data = new TmsQuestionData();
-                    $tms_ques_data->question_id = $tms_question->id;
-                    $tms_ques_data->content = $question_childs[$m]['content'];
-                    $tms_ques_data->created_by = Auth::user()->id;
-                    $tms_ques_data->status = 1;
-                    $tms_ques_data->type_question = \App\TmsQuestion::MIN_MAX;
-                    $tms_ques_data->save();
-
-                    for ($i = $min; $i <= $max; $i++) {
-                        $tms_question_ans = new TmsQuestionAnswer();
-                        $tms_question_ans->content = $i;
-                        $tms_question_ans->question_id = $tms_ques_data->id;
-                        $tms_question_ans->save();
-                        sleep(0.01);
-                    }
-                    sleep(0.01);
-                }
-            } else {
-                TmsQuestionData::where('question_id', $id)->delete();
-                $tms_ques_data = new TmsQuestionData();
-                $tms_ques_data->question_id = $tms_question->id;
-                $tms_ques_data->content = $question_content;
-                $tms_ques_data->created_by = Auth::user()->id;
-                $tms_ques_data->status = 1;
-                $tms_ques_data->type_question = \App\TmsQuestion::FILL_TEXT;
-                $tms_ques_data->save();
-            }
-
-            \DB::commit();
-
-            $response->status = true;
-            $response->message = __('sua_cau_hoi_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-
-    public function apiDeleteQuestion(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $id = $request->input('question_id');
-
-            $param = [
-                'question_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = $validator['message'];
-                return response()->json($response);
-            }
-
-            \DB::beginTransaction();
-            $tms_question = TmsQuestion::findOrFail($id);
-
-            if (!$tms_question) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_cau_hoi');
-                return response()->json($response);
-            }
-
-            if ($tms_question->type_question == 'multiplechoice') { //insert dap an trong TH la cau hoi chon dap an
-                //xóa tất cả các đáp án
-                TmsQuestionAnswer::where('question_id', $id)->delete();
-            }
-
-            $tms_question->delete();
-
-            \DB::commit();
-
-            $response->status = true;
-            $response->message = __('xoa_cau_hoi_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-    #endregion
-
-
-    //api lay thong tin survey va cau hoi trong survey
-    //ThoLd (03/10/2019)
-    public function apiPresentSurvey($id)
-    {
-        if (!is_numeric($id)) {
-            return response()->json([]);
-        }
-
-        $dataSurvey = TmsSurvey::with(['questions', 'questions.question_data', 'questions.question_data.answers'])->findOrFail($id)->toArray();
-
-        return response()->json($dataSurvey);
-    }
-
-    //api lsubmit ket qua survey
-    //ThoLd (04/10/2019)
-    public function apiSubmitSurvey($id, Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            if (!is_numeric($id)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            if (!$survey) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_survey');
-                return response()->json($response);
-            }
-
-            $question_answers = $request->input('question_answers');
-            $ddtotext = $request->input('ddtotext');
-
-
-            \DB::beginTransaction();
-
-            TmsSurveyUser::where('survey_id', $id)->where('user_id', Auth::user()->id)->delete();
-
-            $count_multi = count($question_answers);
-
-            $arr_data = [];
-            $data = [];
-
-            if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
-                for ($i = 0; $i < $count_multi; $i++) {
-
-                    $data['survey_id'] = $id;
-                    $data['question_id'] = $question_answers[$i]['ques_id'];
-                    $data['answer_id'] = $question_answers[$i]['ans_id'];
-                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
-
-
-                    if (!empty(Auth::user())) {
-                        $data['user_id'] = Auth::user()->id;
-                    } else {
-                        $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
-                    }
-
-
-                    $data['type_question'] = $question_answers[$i]['type_ques'];
-                    $data['content_answer'] = $question_answers[$i]['ans_content'];
-                    $data['created_at'] = Carbon::now();
-                    $data['updated_at'] = Carbon::now();
-
-                    array_push($arr_data, $data);
-                }
-            }
-
-            $count_ddtotext = count($ddtotext['questions']);
-            if ($count_ddtotext > 0) { //insert ket qua cau hoi dien dap an
-                for ($j = 0; $j < $count_ddtotext; $j++) {
-
-                    if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
-
-                        $data['survey_id'] = $id;
-                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
-                        $data['ques_parent'] = $ddtotext['questions'][$j]['id'];
-                        if (!empty(Auth::user())) {
-                            $data['user_id'] = Auth::user()->id;
-                        } else {
-                            $data['user_id'] = 1; //ko cần đăng nhập để làm survey, id tài khoản guest
-                        }
-                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
-                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
-                        $data['created_at'] = Carbon::now();
-                        $data['updated_at'] = Carbon::now();
-
-                        array_push($arr_data, $data);
-                    }
-                }
-            }
-
-            TmsSurveyUser::insert($arr_data);
-
-
-            \DB::commit();
-
-            $response->status = true;
-            $response->message = __('gui_ket_qua_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-    //api lsubmit ket qua survey
-    //ThoLd (04/10/2019)
-    public function apiSubmitSurveyLMS($id, Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-
-            if (!is_numeric($id)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return response()->json($response);
-            }
-
-            $survey = TmsSurvey::findOrFail($id);
-
-            if (!$survey) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_survey');
-                return response()->json($response);
-            }
-
-            $question_answers = $request->input('question_answers');
-            $ddtotext = $request->input('ddtotext');
-            $user_id = $request->input('user_id');
-            $course_id = $request->input('course_id');
-
-            \DB::beginTransaction();
-
-            TmsSurveyUser::where('survey_id', $id)->where('user_id', $user_id)->where('course_id', $course_id)->delete();
-
-            $count_multi = count($question_answers);
-
-            $arr_data = [];
-            $data = [];
-
-            if ($count_multi > 0) { //insert ket qua cau hoi chon dap an
-                for ($i = 0; $i < $count_multi; $i++) {
-
-                    $data['survey_id'] = $id;
-                    $data['question_id'] = $question_answers[$i]['ques_id'];
-                    $data['answer_id'] = $question_answers[$i]['ans_id'];
-                    $data['ques_parent'] = $question_answers[$i]['ques_pr'];
-                    $data['user_id'] = $user_id;
-                    $data['course_id'] = $course_id;
-                    $data['type_question'] = $question_answers[$i]['type_ques'];
-                    $data['content_answer'] = $question_answers[$i]['ans_content'];
-                    $data['created_at'] = Carbon::now();
-                    $data['updated_at'] = Carbon::now();
-
-                    array_push($arr_data, $data);
-                }
-            }
-
-            $count_ddtotext = count($ddtotext['questions']);
-            if ($count_ddtotext > 0) { //insert ket qua cau hoi dien dap an
-                for ($j = 0; $j < $count_ddtotext; $j++) {
-
-                    if ($ddtotext['questions'][$j]['type_question'] === \App\TmsQuestion::FILL_TEXT && isset($ddtotext['questions'][$j]['question_data'][0]['answers'][0])) {
-
-                        $data['survey_id'] = $id;
-                        $data['question_id'] = $ddtotext['questions'][$j]['question_data'][0]['id'];
-                        $data['ques_parent'] = $ddtotext['questions'][$j]['id'];
-                        $data['user_id'] = $user_id;
-                        $data['course_id'] = $course_id;
-                        $data['type_question'] = $ddtotext['questions'][$j]['type_question'];
-                        $data['content_answer'] = $ddtotext['questions'][$j]['question_data'][0]['answers'][0];
-                        $data['created_at'] = Carbon::now();
-                        $data['updated_at'] = Carbon::now();
-
-                        array_push($arr_data, $data);
-                    }
-                }
-            }
-
-            TmsSurveyUser::insert($arr_data);
-
-            \DB::commit();
-
-            $response->status = true;
-            $response->message = __('gui_ket_qua_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return response()->json($response);
-    }
-
-
-    public function apiStatisticSurveyView(Request $request)
-    {
-        $survey_id = $request->input('survey_id');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-        $organization_id = $request->input('organization_id');
-        $course_id = $request->input('course_id');
-
-        $param = [
-            'survey_id' => 'number',
-            'organization_id' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $data = DB::table('tms_survey_users as uv')
-            ->join('mdl_user as u', 'u.id', '=', 'uv.user_id')
-            ->join('mdl_course as mc', 'mc.id', '=', 'uv.course_id')
-            ->where('uv.survey_id', '=', $survey_id)
-            ->select('u.id as user_id');
-
-
-        if (strlen($organization_id) != 0 && $organization_id != 0) {
-            $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
-                            ) as org_tp';
-
-            $org_query = DB::raw($org_query);
-
-            $data = $data->join($org_query, 'org_tp.org_uid', '=', 'u.id');
-        }
-
-        if ($course_id) {
-            $data = $data->where('uv.course_id', '=', $course_id);
-        }
-
-        if ($startdate) {
-            $full_start_date = $startdate . " 00:00:00";
-            $start_time = strtotime($full_start_date);
-
-            $data = $data->where('uv.created_at', ">=", date("Y-m-d H:i:s", $start_time));
-        }
-        if ($enddate) {
-            $full_end_date = $enddate . " 23:59:59";
-            $end_time = strtotime($full_end_date);
-
-            $data = $data->where('uv.created_at', "<=", date("Y-m-d H:i:s", $end_time));
-        }
-
-        $data = $data->groupBy('u.id')->get();
-
-
-        return response()->json($data);
-    }
-
-    //api lay thong tin survey va cau hoi trong survey
-    //ThoLd (03/10/2019)
-    public function apiStatisticSurveyExam(Request $request)
-    {
-        $survey_id = $request->input('survey_id');
-        $organization_id = $request->input('organization_id');
-        $course_id = $request->input('course_id');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-
-        $param = [
-            'survey_id' => 'number',
-            'organization_id' => 'number'
-        ];
-        $validator = validate_fails($request, $param);
-        if (!empty($validator)) {
-            return response()->json([]);
-        }
-
-        $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
-                    q.type_question as qp_type, qd.id as ques_id,
-                    qd.content as qd_content,qa.id as an_id, qd.content,
-                    qa.content as ans_content  from tms_question_answers qa
-                    join tms_question_datas qd
-                    on qd.id = qa.question_id
-                    join tms_questions q
-                    on q.id = qd.question_id
-                    join tms_surveys s
-                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
-
-        $main_tables = DB::raw($main_tables);
-//        $join_tables = 'tms_survey_users as su';
-
-        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id group by su.question_id,su.answer_id
-                                ) as su';
-
-
-        $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
-                            ) as org_tp';
-
-
-        if ($course_id || $organization_id) {
-            if ($organization_id && $course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id
-                                and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
-
-            } else if ($course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
-            } else if ($organization_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id
-                                group by su.question_id,su.answer_id) as su';
-
-
-            }
-        }
-
-        $join_tables = DB::raw($join_tables);
-
-        $dataStatisctics = DB::table($main_tables)
-            ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
-            ->where('ques_a.survey_id', '=', $survey_id)
-            ->select(
-                'ques_a.ques_pid',
-                'ques_a.qpid_content',
-                'ques_a.qp_type',
-                'ques_a.ques_id',
-                'ques_a.content',
-                'ques_a.an_id', 'ques_a.ans_content',
-                'su.total_choice'
-//                DB::raw('(count(su.answer_id)) as total_choice')
-            );
-
-        if ($startdate) {
-            $full_start_date = $startdate . " 00:00:00";
-            $start_time = strtotime($full_start_date);
-
-            $dataStatisctics = $dataStatisctics->where('su.created_at', ">=", date("Y-m-d H:i:s", $start_time));
-        }
-        if ($enddate) {
-            $full_end_date = $enddate . " 23:59:59";
-            $end_time = strtotime($full_end_date);
-
-            $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
-        }
-
-        $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
-//        Log::info($lstData);
-//        die;
-
-        $datas = array();
-        $count_data = count($lstData);
-        if ($count_data > 0) {
-            for ($i = 0; $i < $count_data; $i++) {
-                $quesModel = new QuestionModel();
-                $quesModel->questionid = $lstData[$i]->ques_pid;
-                $quesModel->question_content = $lstData[$i]->qpid_content;
-                $quesModel->type_question = $lstData[$i]->qp_type;
-
-                if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                                break;
-                            }
-                        }
-                    }
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                                break;
-                            }
-                        }
-                    }
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                            }
-                        }
-                    }
-
-                    $data_childs = my_array_unique($data_childs, true);
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else {
-
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::GROUP) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::GROUP) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-//                                            $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                            }
-                        }
-                    }
-
-                    $data_childs = my_array_unique($data_childs, true);
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                }
-            }
-        }
-
-        $datas = my_array_unique($datas, true);
-
-        return response()->json($datas);
-    }
-
-    //api lay danh sach tinh thanh
-    //ThoLD (08/10/2019)
-    public function apiGetProvinces()
-    {
-        $dataProvinces = TmsCity::select('id', 'name')->where('parent', '=', 0)->get();
-        return response()->json($dataProvinces);
-    }
-
-
-    //api lay danh sach dai ly theo tinh thanh
-    //ThoLD (08/10/2019)
-    public function apiGetBarnchs($province_id)
-    {
-        if (!is_numeric($province_id)) {
-            return response()->json([]);
-        }
-        $dataBranchs = TmsBranch::query();
-        $dataBranchs = $dataBranchs->join('tms_city_branch as cb', 'cb.branch_id', '=', 'tms_branch.id')
-            ->join('tms_city as c', 'c.id', '=', 'cb.city_id')
-            ->select('tms_branch.id', 'tms_branch.name')
-            ->where('c.id', $province_id)->get();
-
-        return response()->json($dataBranchs);
-    }
-
-
-    //api lay danh sach diem ban theo dai ly
-    //ThoLD (08/10/2019)
-    public function apiGetSaleRooms($branch_id)
-    {
-        if (!is_numeric($branch_id)) {
-            return response()->json([]);
-        }
-
-        $dataSaleRooms = TmsSaleRooms::query();
-        $dataSaleRooms = $dataSaleRooms->join('tms_branch_sale_room as sr', 'sr.sale_room_id', '=', 'tms_sale_rooms.id')
-            ->join('tms_branch as b', 'b.id', '=', 'sr.branch_id')
-            ->select('tms_sale_rooms.id', 'tms_sale_rooms.name')
-            ->where('b.id', $branch_id)->get();
-
-        return response()->json($dataSaleRooms);
-    }
-
-    public $dataResult;
-
-    public function apiExportFile(Request $request)
-    {
-        $survey_id = $request->input('survey_id');
-        $organization_id = $request->input('organization_id');
-        $course_id = $request->input('course_id');
-        $type_file = $request->input('type_file');
-        $startdate = $request->input('startdate');
-        $enddate = $request->input('enddate');
-
-
-        $main_tables = '(SELECT s.id as survey_id, s.name as sur_name, q.id as ques_pid,q.content as qpid_content,
-                    q.type_question as qp_type, qd.id as ques_id,
-                    qd.content as qd_content,qa.id as an_id, qd.content,
-                    qa.content as ans_content  from tms_question_answers qa
-                    join tms_question_datas qd
-                    on qd.id = qa.question_id
-                    join tms_questions q
-                    on q.id = qd.question_id
-                    join tms_surveys s
-                    on s.id = q.survey_id  where s.id = ' . $survey_id . ') as ques_a';
-
-        $main_tables = DB::raw($main_tables);
-
-        $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id group by su.question_id,su.answer_id
-                                ) as su';
-
-
-        $org_query = '(select ttoe.organization_id,
-                                   ttoe.user_id as org_uid
-                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
-                                     join tms_organization tor on tor.id = toe.organization_id
-                                     order by tor.parent_id, toe.id) ttoe,
-                                    (select @pv := ' . $organization_id . ') initialisation
-                            where   find_in_set(ttoe.parent_id, @pv)
-                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
-                            UNION
-                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
-                            ) as org_tp';
-
-
-        if ($course_id || $organization_id) {
-            if ($organization_id && $course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id
-                                and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
-
-            } else if ($course_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
-            } else if ($organization_id) {
-                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id
-                                group by su.question_id,su.answer_id) as su';
-
-
-            }
-        }
-        $join_tables = DB::raw($join_tables);
-
-        $dataStatisctics = DB::table($main_tables)
-            ->leftJoin($join_tables, 'su.answer_id', '=', 'ques_a.an_id')
-            ->where('ques_a.survey_id', '=', $survey_id)
-            ->select(
-                'ques_a.ques_pid',
-                'ques_a.qpid_content',
-                'ques_a.qp_type',
-                'ques_a.ques_id',
-                'ques_a.content',
-                'ques_a.an_id', 'ques_a.ans_content',
-                'su.total_choice'
-//                DB::raw('(count(su.answer_id)) as total_choice')
-            );
-
-        if ($startdate) {
-            $full_start_date = $startdate . " 00:00:00";
-            $start_time = strtotime($full_start_date);
-
-            $dataStatisctics = $dataStatisctics->where('su.created_at', ">=", date("Y-m-d H:i:s", $start_time));
-        }
-        if ($enddate) {
-            $full_end_date = $enddate . " 23:59:59";
-            $end_time = strtotime($full_end_date);
-
-            $dataStatisctics = $dataStatisctics->where('su.created_at', "<=", date("Y-m-d H:i:s", $end_time));
-        }
-
-        $lstData = $dataStatisctics->groupBy('ques_a.an_id')->get();
-
-        $datas = array();
-
-        #region sort data
-        $count_data = count($lstData);
-        if ($count_data > 0) {
-            for ($i = 0; $i < $count_data; $i++) {
-                $quesModel = new QuestionModel();
-                $quesModel->questionid = $lstData[$i]->ques_pid;
-                $quesModel->question_content = $lstData[$i]->qpid_content;
-                $quesModel->type_question = $lstData[$i]->qp_type;
-
-                if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MULTIPLE_CHOICE) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->indexAns = 'Đáp án ' . $k;
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                                break;
-                            }
-                        }
-                    }
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::CHECKBOX) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->indexAns = 'Đáp án ' . $k;
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                                break;
-                            }
-                        }
-                    }
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::MIN_MAX) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->indexAns = 'Đáp án ' . $k;
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                            }
-                        }
-                    }
-
-                    $data_childs = my_array_unique($data_childs, true);
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                } else {
-
-                    $data_childs = array();
-                    for ($j = 0; $j < $count_data; $j++) {
-
-                        if ($lstData[$j]->ques_pid == $quesModel->questionid) {
-                            if ($lstData[$i]->qp_type === \App\TmsQuestion::GROUP) {
-                                $quesChildModel = new QuestionChildModel();
-                                $quesChildModel->questionid = $lstData[$j]->ques_id;
-                                $quesChildModel->question_content = $lstData[$j]->content;
-
-                                $total_ques = 0;
-                                $answers = array();
-                                for ($k = 0; $k < $count_data; $k++) {
-                                    if ($lstData[$k]->ques_id == $quesChildModel->questionid) {
-                                        if ($lstData[$i]->qp_type === \App\TmsQuestion::GROUP) {
-                                            $ansModel = new AnswerModel();
-                                            $ansModel->indexAns = 'Đáp án ' . $k;
-                                            $ansModel->answerid = $lstData[$k]->an_id;
-                                            $ansModel->answer_content = $lstData[$k]->ans_content;
-                                            if ($lstData[$k]->total_choice) {
-                                                $ansModel->total_choice = $lstData[$k]->total_choice;
-                                            } else {
-                                                $ansModel->total_choice = 0;
-                                            }
-                                            $total_ques += $ansModel->total_choice;
-                                            array_push($answers, $ansModel);
-                                        }
-                                    }
-                                }
-
-                                $quesChildModel->total_choice = $total_ques;
-                                $quesChildModel->lstAnswers = $answers;
-
-                                array_push($data_childs, $quesChildModel);
-                            }
-                        }
-                    }
-
-                    $data_childs = my_array_unique($data_childs, true);
-                    $quesModel->lstQuesChild = $data_childs;
-                    array_push($datas, $quesModel);
-                }
-            }
-        }
-        #endregion
-
-        $datas = my_array_unique($datas, true);
-
-        $arrKeys = array_keys($datas);
-        $countkey = count($arrKeys);
-
-        $dataFinish = array();
-
-        if ($countkey > 0) {
-            foreach ($arrKeys as $key) {
-                $dataObj = $datas[$key];
-                if ($dataObj->type_question === \App\TmsQuestion::GROUP || $dataObj->type_question === \App\TmsQuestion::MIN_MAX) {
-                    $arrKeyGrs = array_keys($dataObj->lstQuesChild);
-
-                    $count_group = count($arrKeyGrs);
-                    $dataGroups = array();
-                    if ($count_group > 0) {
-                        foreach ($arrKeyGrs as $keyGr) {
-                            $dtGr = $dataObj->lstQuesChild[$keyGr];
-                            array_push($dataGroups, $dtGr);
-                        }
-                    }
-                    $dataObj->lstQuesChild = $dataGroups;
-                }
-                array_push($dataFinish, $dataObj);
-            }
-        }
-        $dataModel = new DataModel();
-
-        $survey = TmsSurvey::findOrFail($survey_id);
-
-        $startdate = date('d/m/Y', $survey->startdate);
-        $enddate = date('d/m/Y', $survey->enddate);
-
-        $dataModel->survey = $survey;
-        $dataModel->survey->startdate = $startdate;
-        $dataModel->survey->enddate = $enddate;
-        $dataModel->statistics = $dataFinish;
-
-        $lstFeedback = DB::table('tms_survey_users as tsu')
-            ->join('tms_questions as tq', 'tq.id', '=', 'tsu.question_id')
-            ->join('mdl_user as u', 'u.id', '=', 'tsu.user_id')
-            ->where('tsu.type_question', '=', TmsQuestion::FILL_TEXT)
-            ->where('tsu.survey_id', '=', $survey_id)
-            ->select('tq.content', 'u.username', 'tsu.content_answer')->get();
-
-        $dataModel->lstFeedback = $lstFeedback;
-
-//        $filename = '';
-        if ($type_file == 'pdf') {
-            $filename = 'report_survey.pdf';
-            $pdf = PDF::loadView('survey.survey_export', compact('dataModel'));
-//            $pdf->save(storage_path($filename));
-            Storage::put($filename, $pdf->output());
-//            return $pdf->download($survey->code . '-' . $survey->name . '.pdf');
-        } else {
-            $this->dataResult = $dataModel;
-            // $exportExcel = new SurveyExportView($this->dataResult);
-            $filename = 'report_survey.xlsx';
-            // $exportExcel->store($filename, '', \Maatwebsite\Excel\Excel::XLSX);
-
-//            Excel::store(new SurveyExportView($this->dataResult), $filename, 'local', \Maatwebsite\Excel\Excel::XLSX);
-
-        }
-        return response()->json(storage_path($filename));
-    }
-
-    #endregion
-    // End SurveyController
 
     // SystemController
     public function apiListRole(Request $request)
@@ -8427,11 +4568,11 @@ class BussinessRepository implements IBussinessInterface
             else
                 $inputRole = '5';
             //  Role::select('id', 'name', 'mdl_role_id', 'status')->where('name', 'student')->first();
-            $name_role = array("student");
-            if ($type == 'teacher') {
-                $name_role[] = "teacher";
+            $name_role = array(Role::STUDENT);
+            if ($type == Role::TEACHER) {
+                $name_role[] = Role::TEACHER;
                 $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
-            } elseif ($type == 'student') {
+            } elseif ($type == Role::STUDENT) {
                 $roles = Role::select('id', 'name', 'mdl_role_id', 'status')->whereIn('name', $name_role)->get()->toArray();
             } else {
                 if ($inputRole) {
@@ -8559,7 +4700,7 @@ class BussinessRepository implements IBussinessInterface
                     bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 //                    bulk_enrol_lms($mdlUser->id, $role['mdl_role_id'], $arr_data_enrol, $data_item_enrol);
 
-                    usleep(100);
+                    usleep(10);
                 }
                 ModelHasRole::insert($arr_data);
                 MdlRoleAssignments::insert($arr_data_enrol);
@@ -15815,69 +11956,6 @@ class BussinessRepository implements IBussinessInterface
     }
     // End UserExamController
 
-    //api enrol học viên vào khóa học tập trung
-    //NamNT 24/03/2020
-    public function apiEnrolUserCourseConcent(Request $request)
-    {
-        $response = new ResponseModel();
-        try {
-            $course_id = $request->input('course_id');
-            $role_id = $request->input('role_id');
-            $lstUserIDs = $request->input('Users');
-
-            $param = [
-                'course_id' => 'number',
-                'role_id' => 'number'
-            ];
-            $validator = validate_fails($request, $param);
-            if (!empty($validator)) {
-                $response->status = false;
-                $response->message = __('dinh_dang_du_lieu_khong_hop_le');
-                return json_encode($response);
-            }
-
-            $course = MdlCourse::findOrFail($course_id);
-
-            if (empty($course)) {
-                $response->status = false;
-                $response->message = __('khong_tim_thay_khoa_hoc');
-                return json_encode($response);
-            }
-
-            $start_date = $course->startdate;
-            $end_date = $course->enddate;
-
-            $ids = array();
-            $ids_error = '';
-            // End_date rỗng insert bình thường
-
-            //id category
-            $category = 5;
-
-//            if (empty($end_date)) {
-//                $ids = $lstUserIDs;
-//            } else {
-            foreach ($lstUserIDs as $user_id) {
-                if (checkUserEnrol($user_id, $start_date, $end_date, $category)) {
-                    array_push($ids, $user_id);
-                } else {
-                    $ids_error .= MdlUser::find($user_id)->username . ', ';
-                }
-            }
-//            }
-
-            enrole_user_to_course_multiple($ids, $role_id, $course_id, true);
-
-            $response->otherData = $ids_error;
-            $response->status = true;
-            $response->message = __('ghi_danh_khoa_hoc_thanh_cong');
-        } catch (\Exception $e) {
-            $response->status = false;
-            //$response->message = $e->getMessage();
-            $response->message = __('loi_he_thong_thao_tac_that_bai');
-        }
-        return json_encode($response);
-    }
 
     // Confirm email
     public function apiConfirmEmail($no_id, $email)

@@ -64,22 +64,6 @@
 </div>
 
 <script type="text/javascript" src="{{mix("/assets/js/app.js")}}"></script>
-{{--<script src="/js/rsvp.min.js"></script>--}}
-{{--<script src="/js/basket.min.js"></script>--}}
-{{--<script>--}}
-{{--    basket.require(--}}
-{{--        {url: '/sso/sslssso.js'},--}}
-{{--        {url: '/js/sweetalert.min.js'},--}}
-{{--        {url: '/assets/vendors/datatables.net/js/jquery.dataTables.min.js'},--}}
-{{--        {url: '/assets/vendors/jquery-toggles/toggles.min.js'},--}}
-{{--        {url: '/assets/dist/js/toggle-data.js'},--}}
-{{--        {url: '/assets/vendors/dropify/dist/js/dropify.min.js'},--}}
-{{--        {url: '/assets/vendors/select2/dist/js/select2.full.min.js'},--}}
-{{--        {url: '/assets/dist/js/select2-data.js'},--}}
-{{--        {url: '/js/main.js'}--}}
-{{--    )--}}
-{{--</script>--}}
-
 
 <script src="/sso/sslssso.js"></script>
 <script src="/js/sweetalert.min.js"></script>
@@ -98,7 +82,6 @@
 <script src="/assets/vendors/select2/dist/js/select2.full.min.js"></script>
 <script src="/assets/dist/js/select2-data.js"></script>
 <script src="/js/main.js"></script>
-{{--<script src="/vendor/unisharp/laravel-ckeditor/ckeditor.js"></script>--}}
 @php
     $actual_link = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? "https" : "http") . "://{$_SERVER['HTTP_HOST']}{$_SERVER['REQUEST_URI']}";
 @endphp

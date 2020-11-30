@@ -33,12 +33,15 @@ CKEDITOR.editorConfig = function( config ) {
 	config.removeDialogTabs = 'image:advanced;link:advanced';
 
 	// Se the most common block elements.
-	config.format_tags = 'p;h1;h2;h3;pre';
+		// Se the most common block elements.
+		config.format_tags = 'p;h1;h2;h3;pre';
 
-	config.autoGrow_minHeight = 80;
-	config.height = 80;
-	config.autoGrow_onStartup = true;
-	config.autoGrow_maxHeight = 500;
-	config.colorButton_enableMore = true;
-	config.plugins += ',removeRedundantNBSP,customCodeHighlighter';
+		config.autoGrow_minHeight = 80;
+		config.height = 80;
+		config.autoGrow_onStartup = true;
+		config.autoGrow_maxHeight = 500;
+		config.colorButton_enableMore = true;
+		config.plugins += ',removeRedundantNBSP';
+		config.scayt_autoStartup = true;
+		config.disableNativeSpellChecker = false;
 };

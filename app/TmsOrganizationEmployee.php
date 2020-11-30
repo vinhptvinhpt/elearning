@@ -13,7 +13,7 @@ class TmsOrganizationEmployee extends Model
     protected $table = 'tms_organization_employee';
 
     protected $fillable = [
-        'organization_id', 'user_id', 'position', 'enabled', 'line_manager_id'
+        'organization_id', 'user_id', 'position', 'enabled', 'line_manager_id', 'description'
     ];
 
     /**
