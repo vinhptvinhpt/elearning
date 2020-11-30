@@ -5429,6 +5429,8 @@ class BussinessRepository implements IBussinessInterface
                 if (isset($employee)) {
                     $employee->delete();
                 }
+                TmsUserOrganizationCourseException::where('user_id', $user_id)->delete();
+                TmsUserOrganizationException::where('user_id', $user_id)->delete();
             }
 
             //Thêm nơi làm việc cho tài khoản
