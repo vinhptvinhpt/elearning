@@ -223,6 +223,8 @@
                                                 <a :title="trans.get('keys.sua_noi_dung')"
                                                    v-if="slug_can('tms-educate-libraly-edit')"
                                                    class="btn btn-sm btn-icon btn-icon-circle btn-primary btn-icon-style-2"
+                                                   style="color: white;"
+                                                   @mousedown="openView(course.id)"
                                                    @click="openView(course.id)">
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
