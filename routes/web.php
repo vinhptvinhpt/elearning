@@ -862,3 +862,5 @@ Route::get('/show-survey', 'Backend\SurveyController@viewExport');
 Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLink');
 Route::get('/elearning/auth', 'Backend\HiStaff\SyncDataController@index');
 Route::post('/elearning/v1/auth', 'Backend\HiStaff\SyncDataController@login');
+//Route::get('/api/media-azure', 'Backend\TrainningController@testMediaAzure');
+//Route::get('/api/get-media-azure', 'Backend\TrainningController@getMediaAzure');
