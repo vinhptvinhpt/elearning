@@ -56,5 +56,7 @@ return [
 
         'DOMAIN-COOKIE' => 'academy.phh-group.com',
 
+        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el','phh-group']
+
     ],
 ];
