@@ -450,6 +450,28 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         $new_relation->course_id = $course->id;
                         $new_relation->save();
                     }
+
+                    //lay tat ca user ngoai le duoc quyen quan ly course cua cctc
+                    $lstUserExcept = TmsUserOrganizationException::where('organization_id', $checkRoleOrg)->pluck('user_id');
+
+                    if ($lstUserExcept) {
+                        $arr_data = [];
+                        $data_course = [];
+
+                        foreach ($lstUserExcept as $user) {
+                            $data_course['user_id'] = $user;
+                            $data_course['organization_id'] = $checkRoleOrg;
+                            $data_course['course_id'] = $course->id;
+                            $data_course['created_at'] = Carbon::now();
+                            $data_course['updated_at'] = Carbon::now();
+
+                            array_push($arr_data, $data_course);
+                        }
+
+                        //gan course cho user ngoai le quan ly
+                        TmsUserOrganizationCourseException::insert($arr_data);
+                    }
+
                 }
             }
 
@@ -3722,6 +3744,28 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $organization_employee = TmsOrganizationEmployee::query()->where('user_id', '=', \Auth::user()->id)->first();
             if (isset($organization_employee)) {
                 if ($organization_employee->organization) {
+
+                    //lay tat ca user ngoai le duoc quyen quan ly course cua cctc
+                    $lstUserExcept = TmsUserOrganizationException::where('organization_id', $organization_employee->organization_id)->pluck('user_id');
+
+                    if ($lstUserExcept) {
+                        $arr_data = [];
+                        $data_course = [];
+
+                        foreach ($lstUserExcept as $user) {
+                            $data_course['user_id'] = $user;
+                            $data_course['organization_id'] = $organization_employee->organization_id;
+                            $data_course['course_id'] = $course->id;
+                            $data_course['created_at'] = Carbon::now();
+                            $data_course['updated_at'] = Carbon::now();
+
+                            array_push($arr_data, $data_course);
+                        }
+
+                        //gan course cho user ngoai le quan ly
+                        TmsUserOrganizationCourseException::insert($arr_data);
+                    }
+
                     $role_organization = TmsRoleOrganization::query()->where('organization_id', $organization_employee->organization_id)->first();
                     if (isset($role_organization)) { //Map course to that roles
 //                        $role_course = new TmsRoleCourse();
