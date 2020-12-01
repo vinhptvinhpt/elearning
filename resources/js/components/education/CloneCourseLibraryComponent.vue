@@ -136,6 +136,7 @@
         props: ['course_id'],
         data() {
             return {
+                org_code: '',
                 fullname: '',
                 shortname: '',
                 estimate_duration: '',
@@ -327,6 +328,7 @@
                 this.formData.append('access_ip', this.string_ip);
                 var is_toeic = this.is_toeic ? 1 : 0;
                 this.formData.append('is_toeic', is_toeic);
+                this.formData.append('org_code', this.org_code);
 
                 let current_pos = this;
                 let loader = $('.preloader-it');
@@ -377,7 +379,9 @@
 
                 if (arr.length > 0) {
                     let last_text = '_' + arr[arr.length - 1];
+                    this.org_code = prefix.replace(last_text, '').replace('_', '-');
                     prefix = prefix.replace(last_text, '');
+
                 }
 
                 let biggest = 0;

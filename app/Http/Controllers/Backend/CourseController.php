@@ -17,6 +17,7 @@ use App\ViewModel\ResponseModel;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 //Quản lý thông tin khóa học
 class CourseController extends Controller
@@ -611,6 +612,7 @@ class CourseController extends Controller
                 $response->message = $msg;
                 return response()->json($response);
             }
+
 
             //check course info exist
             $courseInfo = MdlCourse::select('id')->where('shortname', $request->input('shortname'))->first();
