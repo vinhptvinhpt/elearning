@@ -11,6 +11,20 @@ use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\DB;
 use mod_lti\local\ltiservice\response;
+use WindowsAzure\Common\Internal\MediaServicesSettings;
+use WindowsAzure\MediaServices\Authentication\AzureAdClientSymmetricKey;
+use WindowsAzure\MediaServices\Authentication\AzureAdTokenCredentials;
+use WindowsAzure\MediaServices\Authentication\AzureAdTokenProvider;
+use WindowsAzure\MediaServices\Authentication\AzureEnvironments;
+use WindowsAzure\MediaServices\MediaServicesRestProxy;
+use WindowsAzure\MediaServices\Models\AccessPolicy;
+use WindowsAzure\MediaServices\Models\Asset;
+use WindowsAzure\Common\ServicesBuilder;
+use WindowsAzure\Common\ServiceException;
+use WindowsAzure\MediaServices\Models\Job;
+use WindowsAzure\MediaServices\Models\Locator;
+use WindowsAzure\MediaServices\Models\Task;
+use WindowsAzure\MediaServices\Models\TaskOptions;
 
 class TrainningController extends Controller
 {
@@ -276,5 +290,132 @@ class TrainningController extends Controller
         }
         return 'start';
         return response()->json($data);
+    }
+
+    public function testMediaAzure()
+    {
+        try {
+            $tenant = "quenguyeneasiatravel.onmicrosoft.com";
+            $username = 'quenguyen@easia-travel.net';
+            $password = 'EasiaTVC-2020';
+            $clientId = "c49b0518-fe9c-4da1-9369-d0e93d88601b";
+            $clientKey = "ZtX_6~3xAAG9VF66DO2s9ha153-7_.e8oQ";
+            $restApiEndpoint = "https://emedia.restv2.eastasia.media.azure.net/api/";
+//        $pfxFileName = "C:\\Path\\To\\keystore.pfx";
+//        $pfxPassword = "KeyStorePassword";
+
+            // 1 - Instantiate the credentials
+            $credentials = new AzureAdTokenCredentials(
+                $tenant,
+                new AzureAdClientSymmetricKey($clientId, $clientKey),
+                AzureEnvironments::AZURE_CLOUD_ENVIRONMENT());
+
+            // 2 - Instantiate a token provider
+            $provider = new AzureAdTokenProvider($credentials);
+
+            // 3 - Connect to Azure Media Services
+            $restProxy = ServicesBuilder::getInstance()->createMediaServicesService(new MediaServicesSettings($restApiEndpoint, $provider));
+
+
+            $asset = new Asset(Asset::OPTIONS_NONE);
+            $asset = $restProxy->createAsset($asset);
+
+
+            $access = new AccessPolicy('EasiaEMService');
+            $access->setDurationInMinutes(100);
+            $access->setPermissions(AccessPolicy::PERMISSIONS_WRITE);
+            $access = $restProxy->createAccessPolicy($access);
+
+            $sasLocator = new Locator($asset, $access, Locator::TYPE_SAS);
+            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
+            $sasLocator = $restProxy->createLocator($sasLocator);
+
+            $restProxy->uploadAssetFile($sasLocator, 'dtl1.mp4', public_path('dtl.mp4'));
+            $restProxy->createFileInfos($asset);
+            return 'success';
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
+    }
+
+    public function getMediaAzure()
+    {
+        try {
+            $tenant = "quenguyeneasiatravel.onmicrosoft.com";
+            $username = 'quenguyen@easia-travel.net';
+            $password = 'EasiaTVC-2020';
+            $clientId = "c49b0518-fe9c-4da1-9369-d0e93d88601b";
+            $clientKey = "ZtX_6~3xAAG9VF66DO2s9ha153-7_.e8oQ";
+            $restApiEndpoint = "https://emedia.restv2.eastasia.media.azure.net/api/";
+//        $pfxFileName = "C:\\Path\\To\\keystore.pfx";
+//        $pfxPassword = "KeyStorePassword";
+
+            // 1 - Instantiate the credentials
+            $credentials = new AzureAdTokenCredentials(
+                $tenant,
+                new AzureAdClientSymmetricKey($clientId, $clientKey),
+                AzureEnvironments::AZURE_CLOUD_ENVIRONMENT());
+
+            // 2 - Instantiate a token provider
+            $provider = new AzureAdTokenProvider($credentials);
+
+            // 3 - Connect to Azure Media Services
+            $restProxy = ServicesBuilder::getInstance()->createMediaServicesService(new MediaServicesSettings($restApiEndpoint, $provider));
+
+            $asset = new Asset(Asset::OPTIONS_NONE);
+            $asset = $restProxy->createAsset($asset);
+
+
+            $access = new AccessPolicy('EasiaEMService');
+            $access->setDurationInMinutes(100);
+            $access->setPermissions(AccessPolicy::PERMISSIONS_WRITE);
+            $access = $restProxy->createAccessPolicy($access);
+
+            $sasLocator = new Locator($asset, $access, Locator::TYPE_SAS);
+            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
+            $sasLocator = $restProxy->createLocator($sasLocator);
+
+            $restProxy->uploadAssetFile($sasLocator, 'dtl3.mp4', public_path('dtl.mp4'));
+            $restProxy->createFileInfos($asset);
+
+            //encode file
+//            $mediaProcessor = $restProxy->getLatestMediaProcessor('emedia');
+//            \Log::info(json_encode($mediaProcessor));
+//            $task = new Task('[Task XML body]', $mediaProcessor->getId(), TaskOptions::NONE);
+//            $task->setConfiguration('Task_dtl2');
+//
+//            $restProxy->createJob(new Job(), array($asset), array($task));
+
+
+            $accessPolicy = new AccessPolicy('EasiaEMService');
+            $accessPolicy->setDurationInMinutes(100);
+            $accessPolicy->setPermissions(AccessPolicy::PERMISSIONS_READ);
+            $accessPolicy = $restProxy->createAccessPolicy($accessPolicy);
+
+//            // Download URL
+//            $sasLocator = new Locator($asset, $accessPolicy, Locator::TYPE_SAS);
+//            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
+//            $sasLocator = $restProxy->createLocator($sasLocator);
+//
+//            // Azure needs time to publish media
+//            sleep(30);
+//
+//            $downloadUrl = $sasLocator->getBaseUri() . '/' . '[File name]' . $sasLocator->getContentAccessComponent();
+
+            // Streaming URL
+            $originLocator = new Locator($asset, $accessPolicy, Locator::TYPE_ON_DEMAND_ORIGIN);
+            $originLocator = $restProxy->createLocator($originLocator);
+
+            // Azure needs time to publish media
+            sleep(30);
+
+            $streamingUrl = $originLocator->getPath() . 'dtl3.mp4' . "/manifest";
+
+            return $streamingUrl;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+
     }
 }
