@@ -237,6 +237,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             $course_budget = $request->input('course_budget');
             $access_ip_string = $request->input('access_ip');
             $is_toeic = $request->input('is_toeic');
+            $org_code = $request->input('org_code');
 
             $param = [
                 'course_avatar' => 'text',
@@ -472,6 +473,33 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                         TmsUserOrganizationCourseException::insert($arr_data);
                     }
 
+                }
+            }
+
+            //add user except, apply when admin or user not in organization select course code
+            if ($org_code) {
+
+                $userExcept = DB::table('tms_organization as tor')
+                    ->join('tms_user_organization_exceptions as tuoe', 'tuoe.organization_id', '=', 'tor.id')
+                    ->where('tor.code', '=', $org_code)
+                    ->select('tuoe.user_id', 'tor.id as org_id')->get();
+
+                if ($userExcept) {
+                    $arr_data = [];
+                    $data_course = [];
+
+                    foreach ($userExcept as $user) {
+                        $data_course['user_id'] = $user->user_id;
+                        $data_course['organization_id'] = $user->org_id;
+                        $data_course['course_id'] = $course->id;
+                        $data_course['created_at'] = Carbon::now();
+                        $data_course['updated_at'] = Carbon::now();
+
+                        array_push($arr_data, $data_course);
+                    }
+
+                    //gan course cho user ngoai le quan ly
+                    TmsUserOrganizationCourseException::insert($arr_data);
                 }
             }
 
@@ -2211,6 +2239,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course_budget = $request->input('course_budget');
         $access_ip_string = $request->input('access_ip');
         $is_toeic = $request->input('is_toeic');
+        $library_code = $request->input('selected_org');
 
         //thực hiện insert dữ liệu
         if ($avatar) {
@@ -2327,6 +2356,32 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 }
             }
         }
+
+        if ($library_code){
+            $userExcept = DB::table('tms_organization as tor')
+                ->join('tms_user_organization_exceptions as tuoe', 'tuoe.organization_id', '=', 'tor.id')
+                ->where('tor.code', '=', $library_code)
+                ->select('tuoe.user_id', 'tor.id as org_id')->get();
+
+            if ($userExcept) {
+                $arr_data = [];
+                $data_course = [];
+
+                foreach ($userExcept as $user) {
+                    $data_course['user_id'] = $user->user_id;
+                    $data_course['organization_id'] = $user->org_id;
+                    $data_course['course_id'] = $course->id;
+                    $data_course['created_at'] = Carbon::now();
+                    $data_course['updated_at'] = Carbon::now();
+
+                    array_push($arr_data, $data_course);
+                }
+
+                //gan course cho user ngoai le quan ly
+                TmsUserOrganizationCourseException::insert($arr_data);
+            }
+        }
+
         //insert dữ liệu điểm qua môn
         MdlCourseCompletionCriteria::create(array(
             'course' => $course->id,
@@ -3698,7 +3753,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         $course_budget = $request->input('course_budget');
         $access_ip_string = $request->input('access_ip');
         $is_toeic = $request->input('is_toeic');
-
+        $org_code = $request->input('org_code');
 
         $course = new MdlCourse(); //khởi tạo theo cách này để tránh trường hợp insert startdate và endate bị set về 0
         $course->category = $category_id;
@@ -3816,6 +3871,34 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 }
             }
         }
+
+        if ($org_code) {
+
+            $userExcept = DB::table('tms_organization as tor')
+                ->join('tms_user_organization_exceptions as tuoe', 'tuoe.organization_id', '=', 'tor.id')
+                ->where('tor.code', '=', $org_code)
+                ->select('tuoe.user_id', 'tor.id as org_id')->get();
+
+            if ($userExcept) {
+                $arr_data = [];
+                $data_course = [];
+
+                foreach ($userExcept as $user) {
+                    $data_course['user_id'] = $user->user_id;
+                    $data_course['organization_id'] = $user->org_id;
+                    $data_course['course_id'] = $course->id;
+                    $data_course['created_at'] = Carbon::now();
+                    $data_course['updated_at'] = Carbon::now();
+
+                    array_push($arr_data, $data_course);
+                }
+
+                //gan course cho user ngoai le quan ly
+                TmsUserOrganizationCourseException::insert($arr_data);
+            }
+        }
+
+
         //insert dữ liệu điểm qua môn
         MdlCourseCompletionCriteria::create(array(
             'course' => $course->id,
