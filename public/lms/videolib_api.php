@@ -2,6 +2,7 @@
 
 require_once('config.php');
 require_once('vendor/autoload.php');
+require_once ('videolib_utilities.php');
 
 use MicrosoftAzure\Storage\Common\Exceptions\ServiceException;
 use MicrosoftAzure\Storage\Common\ServicesBuilder;
@@ -22,10 +23,13 @@ $type = isset($_POST['type']) ? $_POST['type']:'get';
 $page = isset($_POST['current']) ? $_POST['current']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage']:1;
 $nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
+$nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
+$file = isset($_FILES['file']) ? $_FILES['file'] : "";
+
 //type = get: get list
 if($type == 'get'){
     //get list videos with name in db
-    $sqlGetVideos = "select name, url from tms_videolib where deleted = 0 and user_id=".$USER->id;
+    $sqlGetVideos = "select name, url, stream_link from tms_videolib where deleted = 0 and user_id=".$USER->id;
     $videos = array_values($DB->get_records_sql($sqlGetVideos));
     //paging
     $total = count($videos); //total items in array
@@ -63,8 +67,10 @@ else if($type == 'generate'){
 else{
     try {
         if(!empty($nameFile)){
+            //Create live stream link, use uploaded temp file to upload, not need to save file
+            $live_stream_link = VideoLibUtilities::getMediaLink($file["tmp_name"]);
             $urlVideo = $containerName."/".$nameFile;
-            $sql = "INSERT INTO tms_videolib(name, url, user_id, deleted) VALUES('".$nameFile."', '".$urlVideo."', ".$USER->id.", 0)";
+            $sql = "INSERT INTO tms_videolib(name, url, stream_link, user_id, deleted) VALUES('".$nameFile."', '".$urlVideo."', '".$live_stream_link."', ".$USER->id.", 0)";
             $DB->execute($sql);
             $res['result'] = 1;
         }

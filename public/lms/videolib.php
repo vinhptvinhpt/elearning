@@ -52,8 +52,12 @@ echo $OUTPUT->header();
                                                 <ul class="utilities list-inline">
                                                     <li><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy link"
-                                                           @click="copyToClipboard(video.name)"><i
-                                                                class="fa fa-external-link"></i></a></li>
+                                                           @click="copyToClipboard(video.name, 'link')"><i
+                                                                class="fa fa-external-link"></i></a>
+                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
+                                                           data-original-title="Copy steam link"
+                                                           @click="copyToClipboard(video.stream_link, 'stream_link')"><i
+                                                                class="fa fa-play"></i></a></li>
                                                     <li><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy link"
                                                            @click="deleteVideo(video.name)"><i
@@ -103,7 +107,7 @@ echo $OUTPUT->header();
         </div>
     </div>
 
-        <script src="/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
+    <script src="/elearning-easia-merge/elearning-easia/public/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>
 <!--    <script src="/elearning-easia/public/lms/theme/bgtlms/js/azure-storage-blob.min.js"></script>-->
     <script type="text/javascript">
         Vue.component('v-pagination', window['vue-plain-pagination'])
@@ -128,7 +132,7 @@ echo $OUTPUT->header();
                 additional_param: '?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930&sig=nFSTSk7bpjBou7LVrrqETZdxWOfYXXq4%2Bkyp6mJ53U8%3D&st=2020-03-06T12%3A07%3A20Z&se=2120-03-06T12%3A07%3A20Z',
                 current: 1,
                 totalPage: 0,
-                recordPerPage: 12,
+                recordPerPage: 3,
                 file: '',
                 percent: 0,
                 message: "",
@@ -170,11 +174,24 @@ echo $OUTPUT->header();
                             console.log(error);
                         });
                 },
-                copyToClipboard: function (name) {
+                copyToClipboard: function (name, linkType) {
+
+                    if (linkType === 'stream_link') {
+                        let link = this.url + '/streamingvideo/index.html?streaminglink=' + name
+                        var $temp = $("<input>");
+                        $("body").append($temp);
+                        $temp.val(link).select();
+                        document.execCommand("copy");
+                        $temp.remove();
+                        alert("Copied to clipboard");
+                        return false;
+                    }
+
                     var _this = this;
                     let formData = new FormData();
                     formData.append('type', 'generate');
                     formData.append('nameFile', name);
+
 
                     axios.post(_this.url + '/videolib_api.php', formData, {
                         headers: {
@@ -199,6 +216,8 @@ echo $OUTPUT->header();
                     var _this = this;
                     var file = this.$refs.file.files[0];
                     var validate = this.validateFile(file);
+
+                    //Upload with blob video created
                     if(validate){
                         var sasToken = '?sv=2019-12-12&ss=bfqt&srt=sco&sp=rwdlacupx&se=2030-07-29T11:45:28Z&st=2020-07-29T03:45:28Z&spr=https&sig=GcW9fcjuCWEaql8U6pe%2FX%2FbRuY9T5OcQXBVifmZ4HnI%3D';
                         var containerURL = 'https://elearningdata.blob.core.windows.net/asset-f8418a8e-bf70-44d8-bba0-b4c3144d7dd6/';
@@ -220,6 +239,7 @@ echo $OUTPUT->header();
                                 let formData = new FormData();
                                 formData.append('type', 'put');
                                 formData.append('nameFile', file.name);
+                                formData.append('file', file);
                                 axios.post(_this.url + '/videolib_api.php', formData, {
                                     headers: {
                                         'Content-Type': 'multipart/form-data'
