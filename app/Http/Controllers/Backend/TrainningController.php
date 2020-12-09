@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Repositories\TrainningRepository;
 use App\TmsOrganizationEmployee;
 use App\TmsTrainningGroup;
+use Config;
 use Illuminate\Http\Request;
 use App\Repositories\BussinessRepository;
 use Illuminate\Support\Facades\Route;
@@ -252,57 +253,15 @@ class TrainningController extends Controller
         return response()->json($users);
     }
 
-    public function getAllRoute()
-    {
-//        $arrData = [];
-//        $routeCollection = Route::getRoutes();
 
-        //dd($routeCollection->getRoutes()[250]);
-
-//        foreach ($routeCollection as $value) {
-//            $data_item['url'] = $value->uri();
-//            $data_item['method'] = $value->getName();
-//            array_push($arrData,$data_item);
-//        }
-
-//        $arrData = [];
-//        $routeCollection = Route::getRoutes()->getRoutes();
-//
-////        dd($routeCollection[250]);
-//
-//        foreach ($routeCollection as $value) {
-//            if (array_key_exists('middleware', $value->action)) {
-//                if (in_array('clearance', $value->action['middleware']) && strpos($value->uri, 'locale') == false) {
-//
-//                    $data_item['url'] = $value->uri;
-//                    $data_item['method'] = $value->methods;
-//                    $data_item['action'] = $value->action['middleware'];
-//                    array_push($arrData, $data_item);
-//
-//                }
-//            }
-//        }
-//        return response()->json($arrData);
-        $data = updateFlagCron('enroll_trainning.json', 'write', 'stop');
-        $data = json_decode($data, true);
-        if ($data['flag'] == 'stop') {
-            return 'stop';
-        }
-        return 'start';
-        return response()->json($data);
-    }
-
-    public function testMediaAzure()
+    public function getMediaLink()
     {
         try {
             $tenant = "quenguyeneasiatravel.onmicrosoft.com";
-            $username = 'quenguyen@easia-travel.net';
-            $password = 'EasiaTVC-2020';
+
             $clientId = "c49b0518-fe9c-4da1-9369-d0e93d88601b";
             $clientKey = "ZtX_6~3xAAG9VF66DO2s9ha153-7_.e8oQ";
             $restApiEndpoint = "https://emedia.restv2.eastasia.media.azure.net/api/";
-//        $pfxFileName = "C:\\Path\\To\\keystore.pfx";
-//        $pfxPassword = "KeyStorePassword";
 
             // 1 - Instantiate the credentials
             $credentials = new AzureAdTokenCredentials(
@@ -316,106 +275,137 @@ class TrainningController extends Controller
             // 3 - Connect to Azure Media Services
             $restProxy = ServicesBuilder::getInstance()->createMediaServicesService(new MediaServicesSettings($restApiEndpoint, $provider));
 
+            $mezzanineFile = public_path('dtl.mp4');
+            $sourceAsset = $this->uploadFileAndCreateAsset($restProxy, $mezzanineFile);
 
-            $asset = new Asset(Asset::OPTIONS_NONE);
-            $asset = $restProxy->createAsset($asset);
-
-
-            $access = new AccessPolicy('EasiaEMService');
-            $access->setDurationInMinutes(100);
-            $access->setPermissions(AccessPolicy::PERMISSIONS_WRITE);
-            $access = $restProxy->createAccessPolicy($access);
-
-            $sasLocator = new Locator($asset, $access, Locator::TYPE_SAS);
-            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
-            $sasLocator = $restProxy->createLocator($sasLocator);
-
-            $restProxy->uploadAssetFile($sasLocator, 'dtl1.mp4', public_path('dtl.mp4'));
-            $restProxy->createFileInfos($asset);
-            return 'success';
+            $encodedAsset = $this->encodeToAdaptiveBitrateMP4Set($restProxy, $sourceAsset);
+            $mediaLink = $this->publishEncodedAsset($restProxy, $encodedAsset);
         } catch (\Exception $e) {
-            return $e->getMessage();
+            $mediaLink = $e->getMessage();
         }
-
+        return $mediaLink;
     }
 
-    public function getMediaAzure()
+    public function uploadFileAndCreateAsset($restProxy, $mezzanineFileName)
     {
-        try {
-            $tenant = "quenguyeneasiatravel.onmicrosoft.com";
-            $username = 'quenguyen@easia-travel.net';
-            $password = 'EasiaTVC-2020';
-            $clientId = "c49b0518-fe9c-4da1-9369-d0e93d88601b";
-            $clientKey = "ZtX_6~3xAAG9VF66DO2s9ha153-7_.e8oQ";
-            $restApiEndpoint = "https://emedia.restv2.eastasia.media.azure.net/api/";
-//        $pfxFileName = "C:\\Path\\To\\keystore.pfx";
-//        $pfxPassword = "KeyStorePassword";
+        $fileName = basename($mezzanineFileName);
 
-            // 1 - Instantiate the credentials
-            $credentials = new AzureAdTokenCredentials(
-                $tenant,
-                new AzureAdClientSymmetricKey($clientId, $clientKey),
-                AzureEnvironments::AZURE_CLOUD_ENVIRONMENT());
+        // create an empty "Asset" by specifying the name
+        $asset = new Asset(Asset::OPTIONS_NONE);
+        //$asset->setName('Mezzanine '.$mezzanineFileName);
+        $asset->setName('Easia ' . $fileName);
+        $asset = $restProxy->createAsset($asset);
 
-            // 2 - Instantiate a token provider
-            $provider = new AzureAdTokenProvider($credentials);
+        // create an Access Policy with Write permissions
+        $accessPolicy = new AccessPolicy('UploadAccessPolicy');
+        $accessPolicy->setDurationInMinutes(60.0);
+        //$accessPolicy->setPermissions(AccessPolicy::PERMISSIONS_WRITE );
+        $accessPolicy->setPermissions(AccessPolicy::PERMISSIONS_WRITE | AccessPolicy::PERMISSIONS_LIST);
+        $accessPolicy = $restProxy->createAccessPolicy($accessPolicy);
 
-            // 3 - Connect to Azure Media Services
-            $restProxy = ServicesBuilder::getInstance()->createMediaServicesService(new MediaServicesSettings($restApiEndpoint, $provider));
+        // create a SAS Locator for the Asset
+        $sasLocator = new Locator($asset, $accessPolicy, Locator::TYPE_SAS);
+        $sasLocator = $restProxy->createLocator($sasLocator);
 
-            $asset = new Asset(Asset::OPTIONS_NONE);
-            $asset = $restProxy->createAsset($asset);
+        // get the mezzanine file content
+        $fileContent = file_get_contents($mezzanineFileName);
 
+        // use the 'uploadAssetFile' to perform a multi-part upload using the Block Blobs REST API storage operations
+        $restProxy->uploadAssetFile($sasLocator, $fileName, $fileContent);
 
-            $access = new AccessPolicy('EasiaEMService');
-            $access->setDurationInMinutes(100);
-            $access->setPermissions(AccessPolicy::PERMISSIONS_WRITE);
-            $access = $restProxy->createAccessPolicy($access);
+        // notify Media Services that the file upload operation is done to generate the asset file metadata
+        $restProxy->createFileInfos($asset);
 
-            $sasLocator = new Locator($asset, $access, Locator::TYPE_SAS);
-            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
-            $sasLocator = $restProxy->createLocator($sasLocator);
+        // delete the SAS Locator (and Access Policy) for the Asset since we are done uploading files
+        $restProxy->deleteLocator($sasLocator);
+        $restProxy->deleteAccessPolicy($accessPolicy);
 
-            $restProxy->uploadAssetFile($sasLocator, 'dtl3.mp4', public_path('dtl.mp4'));
-            $restProxy->createFileInfos($asset);
+        return $asset;
+    }
 
-            //encode file
-//            $mediaProcessor = $restProxy->getLatestMediaProcessor('emedia');
-//            \Log::info(json_encode($mediaProcessor));
-//            $task = new Task('[Task XML body]', $mediaProcessor->getId(), TaskOptions::NONE);
-//            $task->setConfiguration('Task_dtl2');
-//
-//            $restProxy->createJob(new Job(), array($asset), array($task));
+    public function encodeToAdaptiveBitrateMP4Set($restProxy, $asset)
+    {
+        // Retrieve the latest 'Media Encoder Standard' processor version
+        $mediaProcessor = $restProxy->getLatestMediaProcessor('Media Encoder Standard');
 
+        // Create the Job; this automatically schedules and runs it
+        $outputAssetName = 'Encoded ' . $asset->getName();
+        $outputAssetCreationOption = Asset::OPTIONS_NONE;
+        $taskBody = '<?xml version="1.0" encoding="utf-8"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset assetCreationOptions="' . $outputAssetCreationOption . '" assetName="' . $outputAssetName . '">JobOutputAsset(0)</outputAsset></taskBody>';
 
-            $accessPolicy = new AccessPolicy('EasiaEMService');
-            $accessPolicy->setDurationInMinutes(100);
-            $accessPolicy->setPermissions(AccessPolicy::PERMISSIONS_READ);
-            $accessPolicy = $restProxy->createAccessPolicy($accessPolicy);
+        $task = new Task($taskBody, $mediaProcessor->getId(), TaskOptions::NONE);
+        $task->setConfiguration('H264 Multiple Bitrate 720p');
 
-//            // Download URL
-//            $sasLocator = new Locator($asset, $accessPolicy, Locator::TYPE_SAS);
-//            $sasLocator->setStartTime(new \DateTime('now -5 minutes'));
-//            $sasLocator = $restProxy->createLocator($sasLocator);
-//
-//            // Azure needs time to publish media
-//            sleep(30);
-//
-//            $downloadUrl = $sasLocator->getBaseUri() . '/' . '[File name]' . $sasLocator->getContentAccessComponent();
+        $job = new Job();
+        $job->setName('Encoding Job');
 
-            // Streaming URL
-            $originLocator = new Locator($asset, $accessPolicy, Locator::TYPE_ON_DEMAND_ORIGIN);
-            $originLocator = $restProxy->createLocator($originLocator);
+        $job = $restProxy->createJob($job, array($asset), array($task));
 
-            // Azure needs time to publish media
-            sleep(30);
+        // Check to see if the Job has completed
+        $result = $restProxy->getJobStatus($job);
 
-            $streamingUrl = $originLocator->getPath() . 'dtl3.mp4' . "/manifest";
+        $jobStatusMap = array('Queued', 'Scheduled', 'Processing', 'Finished', 'Error', 'Canceled', 'Canceling');
 
-            return $streamingUrl;
-        } catch (\Exception $e) {
-            return $e->getMessage();
+        while ($result != Job::STATE_FINISHED && $result != Job::STATE_ERROR && $result != Job::STATE_CANCELED) {
+//            echo "Job status: {$jobStatusMap[$result]}\r\n";
+            sleep(10);
+            $result = $restProxy->getJobStatus($job);
         }
 
+        if ($result != Job::STATE_FINISHED) {
+            return "The job has finished with a wrong status: {$jobStatusMap[$result]}\r\n";
+        }
+
+
+        // Get output asset
+        $outputAssets = $restProxy->getJobOutputMediaAssets($job);
+        $encodedAsset = $outputAssets[0];
+
+        return $encodedAsset;
+    }
+
+    public function publishEncodedAsset($restProxy, $encodedAsset)
+    {
+        // Get the .ISM AssetFile
+        $files = $restProxy->getAssetAssetFileList($encodedAsset);
+        $manifestFile = null;
+
+        foreach ($files as $file) {
+            if ($this->endsWith(strtolower($file->getName()), '.ism')) {
+                $manifestFile = $file;
+            }
+        }
+
+        if ($manifestFile == null) {
+            return "Unable to found the manifest file\r\n";
+//            exit(-1);
+        }
+
+        // Create a 30-day read-only AccessPolicy
+        $access = new AccessPolicy('Streaming Access Policy');
+        $access->setDurationInMinutes(60 * 24 * 30);
+        $access->setPermissions(AccessPolicy::PERMISSIONS_READ);
+        $access = $restProxy->createAccessPolicy($access);
+
+        // Create a Locator using the AccessPolicy and Asset
+        $locator = new Locator($encodedAsset, $access, Locator::TYPE_ON_DEMAND_ORIGIN);
+        $locator->setName('Streaming Locator');
+        $locator = $restProxy->createLocator($locator);
+
+        // Create a Smooth Streaming base URL
+        $stremingUrl = $locator->getPath() . $manifestFile->getName() . '/manifest';
+
+
+        return $stremingUrl;
+    }
+
+    public function endsWith($haystack, $needle)
+    {
+        $length = strlen($needle);
+        if ($length == 0) {
+            return true;
+        }
+
+        return substr($haystack, -$length) === $needle;
     }
 }
