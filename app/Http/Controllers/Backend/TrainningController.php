@@ -381,9 +381,9 @@ class TrainningController extends Controller
 //            exit(-1);
         }
 
-        // Create a 30-day read-only AccessPolicy
+        // Create a 20 year read-only AccessPolicy
         $access = new AccessPolicy('Streaming Access Policy');
-        $access->setDurationInMinutes(60 * 24 * 30);
+        $access->setDurationInMinutes(60 * 24 * 365 * 20);
         $access->setPermissions(AccessPolicy::PERMISSIONS_READ);
         $access = $restProxy->createAccessPolicy($access);
 
