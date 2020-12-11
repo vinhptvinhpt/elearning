@@ -426,6 +426,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         // TODO: Implement getall() method.
         $keyword = $request->input('keyword');
         $row = $request->input('row');
+        $country = $request->input('country');
 
         $param = [
             'keyword' => 'text',
@@ -460,6 +461,9 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $q->where('deleted', '=', 0);
         });
 
+        if(strlen($country) != 0) {
+            $list->where('country', $country);
+        }
 
         $list->orderByRaw('country');
 
@@ -499,18 +503,43 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    public function apiDeleteCountryManagerBatch(Request $request)
+    {
+        $users = $request->input('users');
+        // TODO: Implement delete() method.
+        try {
+            \DB::beginTransaction();
+            if (!empty($users)) {
+                TmsCountryManager::query()->whereIn('id', $users)->delete();
+            }
+            \DB::commit();
+            return response()->json(status_message('success', __('xoa_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
     public function apiCreateCountryManager(Request $request)
     {
         // TODO: Implement getall() method.
         $user_id = $request->input('user_id');
         $country = $request->input('country');
+        $users = explode(',', $user_id);
+        $exist_ids = [];
         try {
-            $country_manager = TmsCountryManager::query()
-                ->where('user_id', $user_id)
-                ->where('country', $country)->first();
-            if (!isset($country_manager)) {
+            $exist_country_manager = TmsCountryManager::query()
+                ->whereIn('user_id', $users)
+                ->where('country', $country)
+                ->get();
+            if (count($exist_country_manager) != 0) {
+                foreach ($exist_country_manager as $country_manager) {
+                    $exist_ids[] = $country_manager->user_id;
+                }
+            }
+            $need_to_assign = array_diff($users, $exist_ids);
+            foreach ($need_to_assign as $user) {
                 $country_manager = new TmsCountryManager();
-                $country_manager->user_id = $user_id;
+                $country_manager->user_id = $user;
                 $country_manager->country = $country;
                 $country_manager->save();
             }
