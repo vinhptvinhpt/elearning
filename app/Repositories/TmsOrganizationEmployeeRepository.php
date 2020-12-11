@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\MdlRoleAssignments;
 use App\ModelHasRole;
 use App\Role;
+use App\TmsCountryManager;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
 use App\TmsUserOrganizationCourseException;
@@ -66,31 +67,41 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
 
         $current_user_id = \Auth::user()->id;
+        $countries = [];
 
-        if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
-            $current_user_roles_and_slugs = checkRole();
-        } else {
-            $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-        }
+        $check_country_manager = TmsCountryManager::query()
+            ->where('user_id', $current_user_id)->get();
 
-
-        //nếu k kịp lấy role từ frontend => load from session
-        if ($current_user_roles_and_slugs['roles']->has_role_admin) {
-            $role = Role::ADMIN;
-        } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
-            $role = Role::ROLE_MANAGER;
-        } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
-            $role = Role::ROLE_LEADER;
-        }
-
-        if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
-            if (strlen($organization_id) == 0 || $organization_id == 0) {
-                $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
-                if (isset($check)) {
-                    $organization_id = $check->organization_id;
+        if (count($check_country_manager) != 0) { //là country manager lấy theo country
+            foreach ($check_country_manager as $country_manager) {
+                $countries[] = $country_manager->country;
+            }
+        } else { //query cho các user khác => lấy theo tổ chức
+            if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
+                $current_user_roles_and_slugs = checkRole();
+            } else {
+                $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
+            }
+            //nếu k kịp lấy role từ frontend => load from session
+            if ($current_user_roles_and_slugs['roles']->has_role_admin) {
+                $role = Role::ADMIN;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+                $role = Role::ROLE_MANAGER;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+                $role = Role::ROLE_LEADER;
+            }
+            if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
+                if (strlen($organization_id) == 0 || $organization_id == 0) {
+                    $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+                    if (isset($check)) {
+                        $organization_id = $check->organization_id;
+                    }
                 }
             }
         }
+
+
+
 
 
         //Hide user há same or higher rank
@@ -102,6 +113,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //            }
 //        }
 
+        //query cho các user khác => lấy theo tổ chức
         if (is_numeric($organization_id) && $organization_id != 0) {
             if ($view_mode == 'recursive') {
                 $list->whereIn('user_id', function ($q2) use ($organization_id) {
@@ -115,6 +127,14 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             } else {
                 $list->where('organization_id', $organization_id);
             }
+        }
+
+        //là country manager lấy theo country
+        if (!empty($countries)) {
+            $list->whereHas('user', function ($q) use ($countries) {
+                // Loại trừ user đã xóa
+                $q->whereIn('country', $countries);
+            });
         }
 
         $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
@@ -396,6 +416,105 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 TmsOrganizationEmployee::insert($data);
             }
             return response()->json(status_message('success', __('them_nhan_vien_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
+    public function apiListCountryManager(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number'
+        ];
+
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $list = TmsCountryManager::with('user');
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+            $list->whereHas('user', function ($q) use ($keyword) {
+                // Query the name field in status table
+                $q->where('fullname', 'like', '%' . $keyword . '%');
+                $q->orWhere('email', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        $list->whereHas('user', function ($q) {
+            // Loại trừ user đã xóa
+            $q->where('deleted', '=', 0);
+        });
+
+
+        $list->orderByRaw('country');
+
+        $total_all = $list->count(); //lấy tổng số khóa học hiện tại
+        $list = $list->paginate($row);
+        $total_page = ceil($list->total() / $row);
+
+        $response = [
+            'pagination' => [
+                'total_page' => $total_page,
+                'current_page' => $list->currentPage(),
+            ],
+            'data' => $list,
+            'total' => $total_all,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function apiDeleteCountryManager($id)
+    {
+        // TODO: Implement delete() method.
+        try {
+            \DB::beginTransaction();
+
+            if (!is_numeric($id)) {
+                return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+            }
+            $item = TmsCountryManager::findOrFail($id);
+            if ($item) {
+                $item->delete();
+            }
+            \DB::commit();
+            return response()->json(status_message('success', __('xoa_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
+    public function apiCreateCountryManager(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $user_id = $request->input('user_id');
+        $country = $request->input('country');
+        try {
+            $country_manager = TmsCountryManager::query()
+                ->where('user_id', $user_id)
+                ->where('country', $country)->first();
+            if (!isset($country_manager)) {
+                $country_manager = new TmsCountryManager();
+                $country_manager->user_id = $user_id;
+                $country_manager->country = $country;
+                $country_manager->save();
+            }
+            return response()->json(status_message('success', __('them_thanh_cong')));
         } catch (Exception $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
