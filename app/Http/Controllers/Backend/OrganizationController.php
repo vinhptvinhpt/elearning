@@ -51,6 +51,10 @@ class OrganizationController extends Controller
     {
         return $this->tmsOrganizationEmployeeRepository->apiDeleteCountryManager($id);
     }
+    public function apiDeleteCountryManagerBatch(Request $request)
+    {
+        return $this->tmsOrganizationEmployeeRepository->apiDeleteCountryManagerBatch($request);
+    }
 
     public function apiEditOrganization(Request $request)
     {

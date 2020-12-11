@@ -18,6 +18,7 @@
             <div class="col-md-4 col-sm-6 form-group">
               <label>{{trans.get('keys.country_manager')}} </label>
               <v-select
+                multiple
                 :options="userOptions"
                 :reduce="userOption => userOption.id"
                 :placeholder="this.trans.get('keys.chon_country_manager')"
@@ -46,6 +47,13 @@
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
+                <select id="filterCountry" class="form-control custom-select mb-4"
+                        v-model="filterCountry">
+                  <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+                  <option v-for="(country_name, country_code, index) in countries"
+                          :value="country_code">{{ country_name }}
+                  </option>
+                </select>
               </label>
             </div>
           </div>
@@ -59,6 +67,11 @@
           <table class="table_res">
             <thead>
             <tr>
+              <th class=" mobile_hide">
+                <input type="checkbox"
+                       v-model="allSelected"
+                       @click="selectAll()">
+              </th>
               <th>{{trans.get('keys.stt')}}</th>
               <th>{{trans.get('keys.quoc_gia')}}</th>
               <th>{{trans.get('keys.ten_nguoi_dung')}}</th>
@@ -78,6 +91,13 @@
             </template>
             <template v-else>
               <tr v-for="(user,index) in posts">
+                <td>
+                  <input type="checkbox"
+                         :value="user.id"
+                         v-model="users"
+                         @change="onCheckbox()"/>
+
+                </td>
                 <td>{{ (current-1)*row+(index+1) }}</td>
                 <td>{{ user.country }}</td>
                 <td>
@@ -103,6 +123,16 @@
                         :page-count="totalPages"
                         :classes=$pagination.classes
                         :labels=$pagination.labels></v-pagination>
+          <div class="text-left">
+            <button type="button" id="btnExportPdf"
+                    style="float: right; position: relative;"
+                    class="btn btn-sm danger mt-3 btn-pdf"
+                    @click="removeBatch()">
+              {{trans.get('keys.xoa_country_manager')}} <i
+              class="fa fa-spinner"
+              aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -125,9 +155,61 @@
         user_id: 0,
         userOptions: [],
         countries: [],
+        filterCountry: '',
+        allSelected: false,
+        users: [],
       }
     },
     methods: {
+      removeBatch() {
+        let current_pos = this;
+        let count = this.users.length;
+        if (count === 0) {
+          toastr['warning'](current_pos.trans.get('keys.chua_chon_user'), current_pos.trans.get('keys.thong_bao'));
+          return;
+        }
+        $('button.btn-pdf i').css("display", "inline-block");
+        let loader = $('.preloader-it');
+        loader.fadeIn();
+        axios.post('/api/organization/delete_country_manager_batch', {
+          users: this.users,
+        })
+          .then(response => {
+            loader.fadeOut();
+            if (response.data.status) {
+              toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+              current_pos.listCountryManager(current_pos.current);
+              this.allSelected = false;
+            } else {
+              toastr['error'](response.data.message, current_pos.trans.get('keys.that_bai'));
+            }
+            $('button.btn-pdf i').css("display", "none");
+          })
+          .catch(error => {
+            loader.fadeOut();
+            $('button.btn-pdf i').css("display", "none");
+            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+          });
+        //reset selected array
+        this.users = [];
+      },
+      selectAll: function () {
+        console.log('check all');
+        this.users = [];
+        this.allSelected = !this.allSelected;
+        if (this.allSelected) {
+          let countSelected = this.posts.length;
+          if (countSelected > 0) {
+            for (var i = 0; i < countSelected; i++) {
+              this.users.push(this.posts[i].id.toString());
+            }
+          }
+        }
+      },
+      onCheckbox() {
+        console.log('check one');
+        this.allSelected = false;
+      },
       createCountryManager() {
         if (!this.country) {
           $('.username_required').show();
@@ -185,7 +267,8 @@
         axios.post('/api/organization/list_country_manager', {
           page: page || this.current,
           keyword: this.keyword,
-          row: this.row
+          row: this.row,
+          country: this.filterCountry
         })
           .then(response => {
             this.posts = response.data.data ? response.data.data.data : [];
