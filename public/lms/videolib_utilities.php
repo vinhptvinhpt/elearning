@@ -70,6 +70,11 @@ class VideoLibUtilities {
             $encodedAsset = self::encodeToAdaptiveBitrateMP4Set($restProxy, $sourceAsset);
 
             $mediaLink = self::publishEncodedAsset($restProxy, $encodedAsset);
+
+            if (strpos($mediaLink,'https') === false) {
+                $mediaLink = str_replace('http', 'https', $mediaLink);
+            }
+            
         } catch (\Exception $e) {
             $mediaLink = $e->getMessage();
         }
