@@ -5402,7 +5402,7 @@ class BussinessRepository implements IBussinessInterface
 
                 //check neu cctc update thay doi, xoa du lieu trong bang tms_user_organization_course_exceptions va tms_user_organization_exceptions
                 // action lien quan den flow 1 nguoi dung quan ly du lieu thuoc cctc khac
-                if ($employee->organization_id != $organization_id) {
+                if (isset($employee) && $employee->organization_id != $organization_id) {
                     TmsUserOrganizationCourseException::where('user_id', $user_id)->delete();
                     TmsUserOrganizationException::where('user_id', $user_id)->delete();
                 }

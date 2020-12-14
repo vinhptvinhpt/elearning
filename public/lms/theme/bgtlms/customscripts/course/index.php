@@ -24,11 +24,6 @@ if ($progress != 1) {
     $sqlGetCategories = 'select id, name from mdl_course_categories where id NOT IN (7, 5, 2)';
     $categories = array_values($DB->get_records_sql($sqlGetCategories));
 }
-
-//get image badge
-$sqlGetBadge = "select path from image_certificate where type =2 and is_active";
-$pathBadge = array_values($DB->get_records_sql($sqlGetBadge))[0]->path;
-
 ?>
 
 <html>

@@ -1515,6 +1515,11 @@ $_SESSION["allowCms"] = $allowCms;
         letter-spacing: 1px;
     }
 
+    .btn-secondary {
+        background-color: <?php echo $_SESSION["color"]; ?>;
+        border-color: <?php echo $_SESSION["color"]; ?>;
+    }
+
 </style>
 
 <body>
@@ -2057,8 +2062,10 @@ $_SESSION["allowCms"] = $allowCms;
                                 <?php $count = 1;
                                 $active = 'active';
                                 foreach ($footerAddressesTab as $footerAddressTab) { ?>
-                                    <li class="li-address <?php echo $active; ?>"><a data-toggle="tab"
-                                                                                     href="#menu<?php echo $count; ?>"><?php echo $footerAddressTab; ?></a>
+                                    <li class="li-address <?php echo $active; ?>">
+                                        <a data-toggle="tab" href="#menu<?php echo $count; ?>">
+                                            <?php echo $footerAddressTab; ?>
+                                        </a>
                                     </li>
                                     <?php $count++;
                                     $active = '';

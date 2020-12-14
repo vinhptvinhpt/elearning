@@ -234,7 +234,9 @@ $user_id = isset($_REQUEST['id']) ? $_REQUEST['id'] : $USER->id;
                                     <button type="button" class="btn-update btn-click" id="password" @click="updateProfile('password')">Change</button>
                                 </div>
                                 <div class="col-12 col-xs-12 col-md-6 col-xl-3 col-lg-4 col-xxl-2 div-btn form-group">
-                                    <button type="button" class="btn-cancel btn-click btn-cancel-pass">Cancel</button>
+                                    <button type="button" class="btn-cancel btn-click btn-cancel-pass">
+                                        <a href="lms/user/profile.php" class="a-link">Cancel</a>
+                                    </button>
                                 </div>
                             </div>
 

@@ -248,17 +248,17 @@
 
                                 </div>
 
-                              <div v-if="type === 'system'" class="col-md-4 col-sm-6 form-group">
-                                <label>{{trans.get('keys.quan_ly_truc_tiep')}} </label>
-                                <v-select
-                                  :options="lineManagerSelectOptions"
-                                  :reduce="lineManagerSelectOption => lineManagerSelectOption.id"
-                                  :placeholder="this.trans.get('keys.chon_quan_ly_truc_tiep')"
-                                  :filter-by="myFilterBy"
-                                  v-model="users.employee.line_manager_id">
-                                </v-select>
+                                <div v-if="type === 'system'" class="col-md-4 col-sm-6 form-group">
+                                  <label>{{trans.get('keys.quan_ly_truc_tiep')}} </label>
+                                  <v-select
+                                    :options="lineManagerSelectOptions"
+                                    :reduce="lineManagerSelectOption => lineManagerSelectOption.id"
+                                    :placeholder="this.trans.get('keys.chon_quan_ly_truc_tiep')"
+                                    :filter-by="myFilterBy"
+                                    v-model="users.employee.line_manager_id">
+                                  </v-select>
 
-                              </div>
+                                </div>
 
 
                                 <!--                            <div class="col-md-4 col-sm-6 form-group">-->

@@ -815,6 +815,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/organization/remove-multi-user-org', 'Backend\OrganizationController@apiRemoveMultiUserOrganizationException');
 
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
+    Route::post('/api/organization/list_country_manager', 'Backend\OrganizationController@apiListCountryManager');
+    Route::post('/api/organization/delete_country_manager/{id}', 'Backend\OrganizationController@apiDeleteCountryManager');
+    Route::post('/api/organization/create_country_manager', 'Backend\OrganizationController@apiCreateCountryManager');
+    Route::post('/api/organization/delete_country_manager_batch', 'Backend\OrganizationController@apiDeleteCountryManagerBatch');
+
 
     //Attendance
     Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');
@@ -863,4 +868,4 @@ Route::post('/api/protect/azure', 'Backend\BackendController@apiGenerateAzureLin
 Route::get('/elearning/auth', 'Backend\HiStaff\SyncDataController@index');
 Route::post('/elearning/v1/auth', 'Backend\HiStaff\SyncDataController@login');
 //Route::get('/api/media-azure', 'Backend\TrainningController@testMediaAzure');
-//Route::get('/api/get-media-azure', 'Backend\TrainningController@getMediaAzure');
+Route::get('/api/get-media-azure', 'Backend\TrainningController@getMediaLink');
