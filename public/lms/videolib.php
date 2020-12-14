@@ -54,13 +54,13 @@ echo $OUTPUT->header();
                                                            data-original-title="Copy link"
                                                            @click="copyToClipboard(video.name, 'link')"><i
                                                                 class="fa fa-external-link"></i></a>
-                                                    <li><a data-toggle="tooltip" data-placement="top" title=""
+                                                    <li v-if="video.stream_link"><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy steam link"
                                                            @click="copyToClipboard(video.stream_link, 'stream_link')"><i
                                                                 class="fa fa-play"></i></a></li>
                                                     <li><a data-toggle="tooltip" data-placement="top" title=""
                                                            data-original-title="Copy link"
-                                                           @click="deleteVideo(video.name)"><i
+                                                           @click="deleteVideo(video.name, video.stream_link)"><i
                                                                 class="fa fa-trash"></i></a></li>
                                                 </ul>
                                             </div>
@@ -270,13 +270,14 @@ echo $OUTPUT->header();
                         }
                     }
                 },
-                deleteVideo: function (name) {
+                deleteVideo: function (name, stream_link) {
                     var confirmDelete = confirm("Are you sure you want to delete this video?");
                     if (confirmDelete == true) {
                         var _this = this;
                         let formData = new FormData();
                         formData.append('type', 'delete');
                         formData.append('nameFile', name);
+                        formData.append('stream_link', stream_link);
                         axios.post(_this.url + '/videolib_api.php', formData, {
                             headers: {
                                 'Content-Type': 'multipart/form-data'

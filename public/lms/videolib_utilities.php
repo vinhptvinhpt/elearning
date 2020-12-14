@@ -16,8 +16,31 @@ use WindowsAzure\MediaServices\Models\Task;
 use WindowsAzure\MediaServices\Models\TaskOptions;
 
 class VideoLibUtilities {
-    public static function deleteAsset($url) {
+    public static function deleteStreamAsset($id) {
+        $msg = '';
+        try {
+            $tenant = "quenguyeneasiatravel.onmicrosoft.com";
+            $clientId = "c49b0518-fe9c-4da1-9369-d0e93d88601b";
+            $clientKey = "ZtX_6~3xAAG9VF66DO2s9ha153-7_.e8oQ";
+            $restApiEndpoint = "https://emedia.restv2.eastasia.media.azure.net/api/";
 
+            // 1 - Instantiate the credentials
+            $credentials = new AzureAdTokenCredentials(
+                $tenant,
+                new AzureAdClientSymmetricKey($clientId, $clientKey),
+                AzureEnvironments::AZURE_CLOUD_ENVIRONMENT());
+
+            // 2 - Instantiate a token provider
+            $provider = new AzureAdTokenProvider($credentials);
+
+            // 3 - Connect to Azure Media Services
+            $restProxy = ServicesBuilder::getInstance()->createMediaServicesService(new MediaServicesSettings($restApiEndpoint, $provider));
+            $asset = $restProxy->getAsset($id);
+
+        } catch (\Exception $e) {
+            $msg = $e->getMessage();
+        }
+        return $msg;
     }
 
     public static function getMediaLink($file)
