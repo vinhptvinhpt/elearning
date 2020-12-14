@@ -143,15 +143,20 @@ if ($status == quiz_attempt::OVERDUE) {
         // $fail_info->lastattempt =  $lastattempt->attempt;
         // $fail_info->quizattempt = $attemptobj->get_quizobj()->get_quiz()->attempt;
         // $fail_info_json = json_encode($fail_info);
-        $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
-        $check_noti_result = array_values($DB->get_records_sql($check_noti, array($attemptobj->get_cm()->id, $USER->id)))[0];
-        if (($check_noti_result->completionstate == 0 || $check_noti_result->completionstate == 3) && $check_noti_result->viewed == 1) {
-            $fail_target = 'request_more_attempt';
-            $quiz_info->object_id = $USER->id;
-            $quiz_info->object_type = $fail_target;
-            $info_fail = json_encode($quiz_info);
-            $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info_fail . '\')';
-            $DB->execute($fail_noti);
+        // Check fail quiz except TOEIC course
+        $check_toeic = 'SELECT is_toeic FROM mdl_course WHERE id ='.$course_id;
+        $check_toeic_result = array_values($DB->get_records_sql($check_toeic))[0]->is_toeic;
+        if($check_toeic_result != "1"){
+            $check_noti = 'SELECT completionstate, viewed from mdl_course_modules_completion where (coursemoduleid=? and userid=?)';
+            $check_noti_result = array_values($DB->get_records_sql($check_noti, array($attemptobj->get_cm()->id, $USER->id)))[0];
+            if (($check_noti_result->completionstate == 0 || $check_noti_result->completionstate == 3) && $check_noti_result->viewed == 1) {
+                $fail_target = 'request_more_attempt';
+                $quiz_info->object_id = $USER->id;
+                $quiz_info->object_type = $fail_target;
+                $info_fail = json_encode($quiz_info);
+                $fail_noti = 'INSERT INTO tms_nofitications (type,target,status_send,sendto,createdby,course_id,content) values ("' . $noti->type . '","' . $fail_target . '", ' . $noti->status_send . ',' . $noti->sendto . ', ' . $noti->createdby . ', ' . $noti->course_id . ',\'' . $info_fail . '\')';
+                $DB->execute($fail_noti);
+            }
         }
     }
 
