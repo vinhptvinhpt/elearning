@@ -3,35 +3,33 @@
     <div class="col-sm">
       <div class="table-wrap">
         <div class="row mb-3">
-          <div class="col-12">
-            <div class="col-md-4 col-sm-6 form-group">
-              <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
-              <select id="inputCountry" class="form-control custom-select mb-4"
-                      v-model="country">
-                <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
-                <option v-for="(country_name, country_code, index) in countries"
-                        :value="country_code">{{ country_name }}
-                </option>
-              </select>
-              <label v-if="!country" class="required text-danger country_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-            </div>
-            <div class="col-md-4 col-sm-6 form-group">
-              <label>{{trans.get('keys.country_manager')}} </label>
-              <v-select
-                multiple
-                :options="userOptions"
-                :reduce="userOption => userOption.id"
-                :placeholder="this.trans.get('keys.chon_country_manager')"
-                :filter-by="myFilterBy"
-                v-model="user_id">
-              </v-select>
-              <label v-if="!user_id" class="required text-danger user_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
-            </div>
-            <div class="col-md-4 col-sm-6 form-group">
-              <button type="button tex-right" class="btn btn-primary btn-sm" @click="createCountryManager()">
-                {{trans.get('keys.gan_country_manager')}}
-              </button>
-            </div>
+          <div class="col-12 form-group">
+            <label for="inputCountry">{{trans.get('keys.quoc_gia')}} *</label>
+            <select id="inputCountry" class="form-control custom-select mb-4"
+                    v-model="country">
+              <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
+              <option v-for="(country_name, country_code, index) in countries"
+                      :value="country_code">{{ country_name }}
+              </option>
+            </select>
+            <label v-if="!country" class="required text-danger country_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+          </div>
+          <div class="col-12 form-group">
+            <label>{{trans.get('keys.country_manager')}} </label>
+            <v-select
+              multiple
+              :options="userOptions"
+              :reduce="userOption => userOption.id"
+              :placeholder="this.trans.get('keys.chon_country_manager')"
+              :filter-by="myFilterBy"
+              v-model="user_id">
+            </v-select>
+            <label v-if="!user_id" class="required text-danger user_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+          </div>
+          <div class="col-12 mt-3 form-group">
+            <button type="button tex-right" class="btn btn-primary btn-sm" @click="createCountryManager()">
+              {{trans.get('keys.gan_country_manager')}}
+            </button>
           </div>
         </div>
         <div class="row">
@@ -47,7 +45,8 @@
                   <option value="50">50</option>
                   <option value="100">100</option>
                 </select>
-                <select id="filterCountry" class="form-control custom-select mb-4"
+                <select id="filterCountry" class="form-control custom-select filter-select mb-4"
+                        @change="listCountryManager(1)"
                         v-model="filterCountry">
                   <option value="">{{trans.get('keys.chon_quoc_gia')}}</option>
                   <option v-for="(country_name, country_code, index) in countries"
@@ -99,7 +98,7 @@
 
                 </td>
                 <td>{{ (current-1)*row+(index+1) }}</td>
-                <td>{{ user.country }}</td>
+                <td>{{ all_countries[user.country] }}</td>
                 <td>
                   <router-link
                     :to="{ name: 'EditUserById', params: { user_id: user.user_id, type:'system' } }">
@@ -126,7 +125,7 @@
           <div class="text-left">
             <button type="button" id="btnExportPdf"
                     style="float: right; position: relative;"
-                    class="btn btn-sm danger mt-3 btn-pdf"
+                    class="btn btn-sm btn-danger mt-3 btn-pdf"
                     @click="removeBatch()">
               {{trans.get('keys.xoa_country_manager')}} <i
               class="fa fa-spinner"
@@ -158,6 +157,13 @@
         filterCountry: '',
         allSelected: false,
         users: [],
+        all_countries: {
+          vi: 'Vietnam',
+          la: 'Laos',
+          kh: 'Cambodia',
+          mm: 'Myanmar',
+          th: 'Thailand'
+        }
       }
     },
     methods: {
@@ -194,7 +200,6 @@
         this.users = [];
       },
       selectAll: function () {
-        console.log('check all');
         this.users = [];
         this.allSelected = !this.allSelected;
         if (this.allSelected) {
@@ -207,7 +212,6 @@
         }
       },
       onCheckbox() {
-        console.log('check one');
         this.allSelected = false;
       },
       createCountryManager() {
@@ -341,9 +345,30 @@
       this.listCountryManager();
       this.getCountries();
       this.getUsers();
+    },
+    updated() {
+      $('.vs__selected-options').css("height", 'auto');
+      $('.filter-select').css("width", 'auto');
     }
+  }
+  function convertUtf8(str) {
+    str = str.toLowerCase();
+    str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+    str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+    str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+    str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+    str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+    str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+    str = str.replace(/đ/g, "d");
+    str = str.replace(/!|@|%|\^|\*|\(|\)|\+|\=|\<|\>|\?|\/|,|\.|\:|\;|\'|\"|\&|\#|\[|\]|~|\$|_|`|-|{|}|\||\\/g, " ");
+    str = str.replace(/ + /g, " ");
+    str = str.trim();
+    return str;
   }
 </script>
 
 <style scoped>
+  /*.vs__selected-options {*/
+  /*  height: auto;*/
+  /*}*/
 </style>
