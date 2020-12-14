@@ -393,10 +393,10 @@ class TrainningController extends Controller
         $locator = $restProxy->createLocator($locator);
 
         // Create a Smooth Streaming base URL
-        $stremingUrl = $locator->getPath() . $manifestFile->getName() . '/manifest';
+        $streamingUrl = $locator->getPath() . $manifestFile->getName() . '/manifest';
 
 
-        return $stremingUrl;
+        return $streamingUrl;
     }
 
     public function endsWith($haystack, $needle)

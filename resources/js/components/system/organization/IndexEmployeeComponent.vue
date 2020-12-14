@@ -120,6 +120,20 @@
 <!--                                        :organization_id="query_organization_id"-->
 <!--                                      ></assign-employee>-->
 
+                        <div class="card" v-if="selected_role === 'root' || selected_role === 'admin'">
+                          <div class="card-header d-flex justify-content-between">
+                            <a class="collapsed" role="button" data-toggle="collapse" href="#collapse_2"
+                               aria-expanded="true">
+                              <i class="fal fa-flag mr-3"></i>{{trans.get('keys.country_manager')}}
+                            </a>
+                          </div>
+                          <div id="collapse_2" class="collapse" data-parent="#accordion_1" role="tabpanel">
+                            <div class="card-body">
+                              <assign-country-manager></assign-country-manager>
+                            </div>
+                          </div>
+                        </div>
+
                         <div class="card">
                             <div class="card-body">
                                 <div class="listData">
@@ -283,11 +297,13 @@
     //import vPagination from 'vue-plain-pagination'
     import AssignEmployee from './AssignEmployeeComponent'
     import SystemUserCreate from '../user/CreateComponent'
+    import AssignCountryManager from './AssignCountryManagerComponent'
 
     export default {
         components: {
             //vPagination,
             AssignEmployee,
+            AssignCountryManager,
             SystemUserCreate
         },
         props: {

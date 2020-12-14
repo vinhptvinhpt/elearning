@@ -815,6 +815,11 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/organization/remove-multi-user-org', 'Backend\OrganizationController@apiRemoveMultiUserOrganizationException');
 
     Route::get('/api/organization/getorganizations', 'Backend\OrganizationController@apiGetOrganizations');
+    Route::post('/api/organization/list_country_manager', 'Backend\OrganizationController@apiListCountryManager');
+    Route::post('/api/organization/delete_country_manager/{id}', 'Backend\OrganizationController@apiDeleteCountryManager');
+    Route::post('/api/organization/create_country_manager', 'Backend\OrganizationController@apiCreateCountryManager');
+    Route::post('/api/organization/delete_country_manager_batch', 'Backend\OrganizationController@apiDeleteCountryManagerBatch');
+
 
     //Attendance
     Route::post('/api/course/attendance_list', 'Backend\CourseController@apiAttendanceList');
