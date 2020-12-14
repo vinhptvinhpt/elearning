@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\MdlRoleAssignments;
 use App\ModelHasRole;
 use App\Role;
+use App\TmsCountryManager;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
 use App\TmsUserOrganizationCourseException;
@@ -66,14 +67,15 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
 
         $current_user_id = \Auth::user()->id;
+        $line_employees = [];
+        $countries = [];
 
+//lấy theo tổ chức
         if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
             $current_user_roles_and_slugs = checkRole();
         } else {
             $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
         }
-
-
         //nếu k kịp lấy role từ frontend => load from session
         if ($current_user_roles_and_slugs['roles']->has_role_admin) {
             $role = Role::ADMIN;
@@ -82,6 +84,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
             $role = Role::ROLE_LEADER;
         }
+
 
         if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
             if (strlen($organization_id) == 0 || $organization_id == 0) {
@@ -92,8 +95,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             }
         }
 
-
-        //Hide user há same or higher rank
+        //Hide user has same or higher rank
 //        if (strlen($role) != 0) {
 //            if ($role == Role::ROLE_MANAGER) {
 //                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
@@ -102,6 +104,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //            }
 //        }
 
+        //query cho các user khác => lấy theo tổ chức
         if (is_numeric($organization_id) && $organization_id != 0) {
             if ($view_mode == 'recursive') {
                 $list->whereIn('user_id', function ($q2) use ($organization_id) {
@@ -115,6 +118,32 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             } else {
                 $list->where('organization_id', $organization_id);
             }
+        }
+
+//là line manager lấy line employees
+        $check_line_employees = TmsOrganizationEmployee::query()
+            ->where('line_manager_id', $current_user_id)->get();
+        if (count($check_line_employees) != 0) {
+            foreach ($check_line_employees as $line_employee) {
+                $line_employees[] = $line_employee->user_id;
+            }
+        }
+        if (!empty($line_employees)) {
+            $list->orWhereIn('user_id', $line_employees);
+        }
+
+//là country manager lấy theo country
+        $check_country_manager = TmsCountryManager::query()
+            ->where('user_id', $current_user_id)->get();
+        if (count($check_country_manager) != 0) {
+            foreach ($check_country_manager as $country_manager) {
+                $countries[] = $country_manager->country;
+            }
+        }
+        if (!empty($countries)) {
+            $list->orwhereHas('user', function ($q) use ($countries) {
+                $q->whereIn('country', $countries);
+            });
         }
 
         $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
@@ -396,6 +425,134 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
                 TmsOrganizationEmployee::insert($data);
             }
             return response()->json(status_message('success', __('them_nhan_vien_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
+    public function apiListCountryManager(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $keyword = $request->input('keyword');
+        $row = $request->input('row');
+        $country = $request->input('country');
+
+        $param = [
+            'keyword' => 'text',
+            'row' => 'number'
+        ];
+
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $list = TmsCountryManager::with('user');
+
+        if ($keyword) {
+            //lỗi query của mysql, không search được kết quả khi keyword bắt đầu với kỳ tự d or D
+            // code xử lý remove ký tự đầu tiên của keyword đi
+            if (substr($keyword, 0, 1) === 'd' || substr($keyword, 0, 1) === 'D') {
+                $total_len = strlen($keyword);
+                if ($total_len > 2) {
+                    $keyword = substr($keyword, 1, $total_len - 1);
+                }
+            }
+            $list->whereHas('user', function ($q) use ($keyword) {
+                // Query the name field in status table
+                $q->where('fullname', 'like', '%' . $keyword . '%');
+                $q->orWhere('email', 'like', '%' . $keyword . '%');
+            });
+        }
+
+        $list->whereHas('user', function ($q) {
+            // Loại trừ user đã xóa
+            $q->where('deleted', '=', 0);
+        });
+
+        if(strlen($country) != 0) {
+            $list->where('country', $country);
+        }
+
+        $list->orderByRaw('country');
+
+        $total_all = $list->count(); //lấy tổng số khóa học hiện tại
+        $list = $list->paginate($row);
+        $total_page = ceil($list->total() / $row);
+
+        $response = [
+            'pagination' => [
+                'total_page' => $total_page,
+                'current_page' => $list->currentPage(),
+            ],
+            'data' => $list,
+            'total' => $total_all,
+        ];
+
+        return response()->json($response);
+    }
+
+    public function apiDeleteCountryManager($id)
+    {
+        // TODO: Implement delete() method.
+        try {
+            \DB::beginTransaction();
+
+            if (!is_numeric($id)) {
+                return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+            }
+            $item = TmsCountryManager::findOrFail($id);
+            if ($item) {
+                $item->delete();
+            }
+            \DB::commit();
+            return response()->json(status_message('success', __('xoa_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
+    public function apiDeleteCountryManagerBatch(Request $request)
+    {
+        $users = $request->input('users');
+        // TODO: Implement delete() method.
+        try {
+            \DB::beginTransaction();
+            if (!empty($users)) {
+                TmsCountryManager::query()->whereIn('id', $users)->delete();
+            }
+            \DB::commit();
+            return response()->json(status_message('success', __('xoa_thanh_cong')));
+        } catch (Exception $e) {
+            return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
+        }
+    }
+
+    public function apiCreateCountryManager(Request $request)
+    {
+        // TODO: Implement getall() method.
+        $user_id = $request->input('user_id');
+        $country = $request->input('country');
+        $users = explode(',', $user_id);
+        $exist_ids = [];
+        try {
+            $exist_country_manager = TmsCountryManager::query()
+                ->whereIn('user_id', $users)
+                ->where('country', $country)
+                ->get();
+            if (count($exist_country_manager) != 0) {
+                foreach ($exist_country_manager as $country_manager) {
+                    $exist_ids[] = $country_manager->user_id;
+                }
+            }
+            $need_to_assign = array_diff($users, $exist_ids);
+            foreach ($need_to_assign as $user) {
+                $country_manager = new TmsCountryManager();
+                $country_manager->user_id = $user;
+                $country_manager->country = $country;
+                $country_manager->save();
+            }
+            return response()->json(status_message('success', __('them_thanh_cong')));
         } catch (Exception $e) {
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
