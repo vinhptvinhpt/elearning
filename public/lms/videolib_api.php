@@ -23,7 +23,7 @@ $type = isset($_POST['type']) ? $_POST['type']:'get';
 $page = isset($_POST['current']) ? $_POST['current']:1;
 $recordPerPage = isset($_POST['recordPerPage']) ? $_POST['recordPerPage']:1;
 $nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
-$nameFile = isset($_POST['nameFile']) ? $_POST['nameFile']: "";
+$stream_link = isset($_POST['stream_link']) ? $_POST['stream_link']: "";
 $file = isset($_FILES['file']) ? $_FILES['file'] : "";
 
 //type = get: get list
@@ -47,6 +47,15 @@ else if($type == 'delete'){
     try {
         //call function delete
         $resultVid = deleteVideo($nameFile, $containerName, $accountName);
+        //get stream_link
+        if (strlen($stream_link) > 0) {
+            $org_link = preg_replace("(^https?://)", "", $stream_link);
+            $org_link_extract = explode('/', $org_link);
+            $asset_id = $org_link_extract[1];
+            if (strlen($asset_id) > 0) {
+                //$delete_stream = VideoLibUtilities::deleteStreamAsset($asset_id);
+            }
+        }
         if($resultVid == 1){
             $sql = "delete from tms_videolib where name = '".$nameFile."'";
             $DB->execute($sql);
