@@ -67,44 +67,35 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
 
         $current_user_id = \Auth::user()->id;
+        $line_employees = [];
         $countries = [];
 
-        $check_country_manager = TmsCountryManager::query()
-            ->where('user_id', $current_user_id)->get();
+//lấy theo tổ chức
+        if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
+            $current_user_roles_and_slugs = checkRole();
+        } else {
+            $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
+        }
+        //nếu k kịp lấy role từ frontend => load from session
+        if ($current_user_roles_and_slugs['roles']->has_role_admin) {
+            $role = Role::ADMIN;
+        } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+            $role = Role::ROLE_MANAGER;
+        } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+            $role = Role::ROLE_LEADER;
+        }
 
-        if (count($check_country_manager) != 0) { //là country manager lấy theo country
-            foreach ($check_country_manager as $country_manager) {
-                $countries[] = $country_manager->country;
-            }
-        } else { //query cho các user khác => lấy theo tổ chức
-            if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
-                $current_user_roles_and_slugs = checkRole();
-            } else {
-                $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-            }
-            //nếu k kịp lấy role từ frontend => load from session
-            if ($current_user_roles_and_slugs['roles']->has_role_admin) {
-                $role = Role::ADMIN;
-            } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
-                $role = Role::ROLE_MANAGER;
-            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
-                $role = Role::ROLE_LEADER;
-            }
-            if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
-                if (strlen($organization_id) == 0 || $organization_id == 0) {
-                    $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
-                    if (isset($check)) {
-                        $organization_id = $check->organization_id;
-                    }
+
+        if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
+            if (strlen($organization_id) == 0 || $organization_id == 0) {
+                $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+                if (isset($check)) {
+                    $organization_id = $check->organization_id;
                 }
             }
         }
 
-
-
-
-
-        //Hide user há same or higher rank
+        //Hide user has same or higher rank
 //        if (strlen($role) != 0) {
 //            if ($role == Role::ROLE_MANAGER) {
 //                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
@@ -129,10 +120,28 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             }
         }
 
-        //là country manager lấy theo country
+//là line manager lấy line employees
+        $check_line_employees = TmsOrganizationEmployee::query()
+            ->where('line_manager_id', $current_user_id)->get();
+        if (count($check_line_employees) != 0) {
+            foreach ($check_line_employees as $line_employee) {
+                $line_employees[] = $line_employee->user_id;
+            }
+        }
+        if (!empty($line_employees)) {
+            $list->orWhereIn('user_id', $line_employees);
+        }
+
+//là country manager lấy theo country
+        $check_country_manager = TmsCountryManager::query()
+            ->where('user_id', $current_user_id)->get();
+        if (count($check_country_manager) != 0) {
+            foreach ($check_country_manager as $country_manager) {
+                $countries[] = $country_manager->country;
+            }
+        }
         if (!empty($countries)) {
-            $list->whereHas('user', function ($q) use ($countries) {
-                // Loại trừ user đã xóa
+            $list->orwhereHas('user', function ($q) use ($countries) {
                 $q->whereIn('country', $countries);
             });
         }
