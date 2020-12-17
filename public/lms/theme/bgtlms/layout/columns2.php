@@ -297,6 +297,7 @@ $templatecontext = [
     'username' => $username,
     'hrm_token' => $hrm_token,
     'wwwhrm' => $wwwhrm,
+    'section' => $section
 ];
 
 $nav = $PAGE->flatnav;
