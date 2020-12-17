@@ -1723,24 +1723,24 @@ where ttc.course_id = ' . $id . ')';
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
     <!-- Modal congratulation -->
-    <!--<div class="modal fade show" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display: block;" aria-modal="true">-->
-    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="exampleModalCenterTitle">
+    <div class="modal fade show" id="myModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" style="display: block;" aria-modal="true">
+<!--    <div class="modal fade" id="myModal" role="dialog" aria-labelledby="exampleModalCenterTitle">-->
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
                         course <?php echo $course->fullname; ?>!</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <button type="button" class="close btn-close-show" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="overflow: hidden;">
                     <img src="<?php echo $pathBadge; ?>" alt="">
                     <span class="sp-name-course"><?php echo $course->fullname; ?></span>
                 </div>
                 <div class="modal-footer" style="width: 100%">
                     <div style="margin: 0 auto">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-secondary btn-close-show" data-dismiss="modal">Close</button>
                         <!--                    <button type="button" class="btn btn-primary">Save changes</button>-->
                     </div>
                 </div>
@@ -1751,6 +1751,10 @@ where ttc.course_id = ' . $id . ')';
 $_SESSION["displayPopup"] = 2; ?>
 <script>
     $(document).ready(function () {
+
+        $(".btn-close-show").click(function () {
+           $('#myModal').css('display', 'none');
+        });
 
         $("#menu-edit").click(function () {
             var getMenuSetting = $(".dropdown-menu").get(1);
@@ -1906,9 +1910,7 @@ $_SESSION["displayPopup"] = 2; ?>
                     } else {
                         var message_access = 'This course cannot be accessed outside of the office';
                         alert(message_access);
-                        var url_next = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
-                        window.location.href = url_next;
-
+                        window.location.href = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
                     }
                 } else {
                     continue_learning();
@@ -1942,10 +1944,10 @@ $_SESSION["displayPopup"] = 2; ?>
                 success: function (data) {
                     if (data.length !== 0) {
                         r = confirm("Do you want to continue last activity in course?");
-                        if (r == true) {
+                        if (r === true) {
                             window.location.href = data;
                         } else {
-                            return;
+                            return false;
                         }
                     }
                 },
@@ -2105,14 +2107,12 @@ $_SESSION["displayPopup"] = 2; ?>
     });
 
     function resizeIframe(obj) {
-        console.log(obj);
         obj.style.height = obj.contentWindow.document.body.scrollHeight + 'px';
     }
     var onetime = true;
     function clickIframe() {
         if (onetime){
             var ifr = document.getElementById('attendance_offline');
-            ifr.src = ifr.src;
             onetime = false;
         }
 
