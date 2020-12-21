@@ -708,7 +708,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         if ($keyword) {
             $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
         } else {
-            $listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
+            $listCourses = $listCourses->orderBy('mdl_course.shortname', 'desc');
+            //$listCourses = $listCourses->orderBy('mdl_course.id', 'desc');
         }
 
         if ($row == 0) {
@@ -2081,6 +2082,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         // $listCourses = $listCourses->orderBy('c.id', 'desc');
         // Get list course order by code course (shortname) <= Ngongoc request [18.12.2020]
         $listCourses = $listCourses->orderBy('c.shortname', 'desc');
+
         if ($row == 0) {
             return $listCourses->get();
         }
