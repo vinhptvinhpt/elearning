@@ -207,7 +207,8 @@ foreach ($permissions as $permission) {
         $roleInCourse = 0;
     }
     if (strpos(strtolower($permission->name), 'student') === false
-        && strpos(strtolower($permission->name), 'employee') === false) {
+        && strpos(strtolower($permission->name), 'employee') === false
+        && strpos(strtolower($permission->name), 'executive') === false) {
         $permission_tms = true;
     }
     if ($permission->permission_slug == 'tms-educate-libraly-edit') {
