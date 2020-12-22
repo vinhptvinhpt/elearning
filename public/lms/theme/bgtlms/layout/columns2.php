@@ -206,7 +206,9 @@ foreach ($permissions as $permission) {
     if (in_array($permission->name, ['admin', 'root'])) {
         $roleInCourse = 0;
     }
-    if (!in_array($permission->name, ['student', 'employee'])) {
+    if (strpos(strtolower($permission->name), 'student') === false
+        && strpos(strtolower($permission->name), 'employee') === false
+        && strpos(strtolower($permission->name), 'executive') === false) {
         $permission_tms = true;
     }
     if ($permission->permission_slug == 'tms-educate-libraly-edit') {
@@ -297,6 +299,7 @@ $templatecontext = [
     'username' => $username,
     'hrm_token' => $hrm_token,
     'wwwhrm' => $wwwhrm,
+    'section' => $section
 ];
 
 $nav = $PAGE->flatnav;
