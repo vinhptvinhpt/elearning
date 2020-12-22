@@ -149,7 +149,7 @@
     var confirm = 2;
 
     $(document).ready(function () {
-        let warning = 'We recommend you do not use firefox browser for security';
+        let warning = 'We recommend you do not use firefox browser for security, please switch to another browser and try again';
         checkFirefox(warning);
     });
 
@@ -312,9 +312,9 @@
     }
 
     function loginSso(order) {
-
-        let warning = 'We recommend you do not use firefox browser for security, please switch to another browser and try again';
-        checkFirefox(warning);
+        // Comment because of Ngo Ngoc's Request
+        // let warning = 'We recommend you do not use firefox browser for security, please switch to another browser and try again';
+        // checkFirefox(warning);
 
         var user = $('#username').val();
         var pass = $('#pass').val();
