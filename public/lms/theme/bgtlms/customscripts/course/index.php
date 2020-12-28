@@ -32,13 +32,6 @@ if ($progress != 1) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
 <link rel="shortcut icon" href="images/favicon.png">
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
 <style>
     @font-face {
@@ -1006,7 +999,6 @@ if ($progress != 1) {
     <?php echo $OUTPUT->footer(); ?>
 </div>
 
-
 <script>
     $(document).ready(function () {
         //tab categories click
@@ -1110,7 +1102,6 @@ if ($progress != 1) {
         });
     }
 </script>
-
 
 </body>
 </html>
