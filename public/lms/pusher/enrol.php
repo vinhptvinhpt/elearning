@@ -85,7 +85,7 @@ try {
     // Executed when user enrolment was changed to check if course contacts cache needs to be cleared
     $cache = cache::make('core', 'coursecontacts');
     // remove course contacts cache for this course.
-    $cache->delete($courseid);
+    $cache->delete($course_id);
     // this must be done after the enrolment event so that the role_assigned event is triggered afterwards
     role_assign(5, $user_id, $context_id);
 } catch (Exception $e) {
