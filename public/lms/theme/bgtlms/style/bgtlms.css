@@ -15,14 +15,14 @@
 }
 
 .search_label_button {
-    border: 1px solid #862055;
-    color: #862055;
+    /*border: 1px solid #862055;*/
+    /*color: #862055;*/
     width: 100%;
     white-space: inherit;
 }
 
 .ss-main .ss-multi-selected .ss-values .ss-value {
-    background-color: #862055 !important;
+    /*background-color: #862055 !important;*/
 }
 
 .ss-value-delete {
@@ -34,14 +34,16 @@
     text-transform: uppercase;
     font-weight: bold;
     color: #ffffff;
-    background-color: #862055 !important;
-    border-color: #86170f !important;
+    /*background-color: #862055 !important;*/
+    /*border-color: #86170f !important;*/
+    line-height: 17px !important;
 }
 
 .btn-bgtlms-clear {
     text-transform: uppercase;
     font-weight: bold;
     border-color: #000000 !important;
+    line-height: 17px !important;
 }
 
 .logo {
