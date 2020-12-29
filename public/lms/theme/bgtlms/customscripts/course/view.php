@@ -1890,12 +1890,11 @@ $_SESSION["displayPopup"] = 2; ?>
 
         $.getJSON("https://api.ipify.org?format=json",
             function (data) {
+                let count_ip = 0;
                 let result_ip = '<?php echo $result_ip; ?>';
                 if (result_ip.length !== 0) {
                     let array_ip = JSON.parse(result_ip);
-                    let count_ip = array_ip.list_access_ip.length;
-                } else {
-                    let count_ip = 0;
+                    count_ip = array_ip.list_access_ip.length;
                 }
                 if (count_ip > 0) {
                     let check_exception_account = <?php echo json_encode($userCheck); ?>;
