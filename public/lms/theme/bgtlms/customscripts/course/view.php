@@ -1895,19 +1895,18 @@ $_SESSION["displayPopup"] = 2; ?>
                 if (result_ip.length !== 0) {
                     let array_ip = JSON.parse(result_ip);
                     count_ip = array_ip.list_access_ip.length;
-                }
-                if (count_ip > 0) {
-                    let check_exception_account = <?php echo json_encode($userCheck); ?>;
-                    if (array_ip.list_access_ip.includes(data.ip) || check_exception_account.length > 0) {
-                        continue_learning();
-                    } else {
-                        let message_access = 'This course cannot be accessed outside of the office';
-                        alert(message_access);
-                        window.location.href = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
+                    if (count_ip > 0) {
+                        let check_exception_account = <?php echo json_encode($userCheck); ?>;
+                        if (array_ip.list_access_ip.includes(data.ip) || check_exception_account.length > 0) {
+                            continue_learning();
+                        } else {
+                            let message_access = 'This course cannot be accessed outside of the office';
+                            alert(message_access);
+                            window.location.href = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
+                        }
                     }
-                } else {
-                    continue_learning();
                 }
+                continue_learning();
             }
         );
     });
