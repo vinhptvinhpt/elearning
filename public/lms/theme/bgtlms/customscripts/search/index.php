@@ -227,6 +227,7 @@ $PAGE->set_url($url);
 
 // We are ready to render.
 echo $OUTPUT->header();
+
 ?>
 <style>
     .hide {
@@ -239,6 +240,9 @@ echo $OUTPUT->header();
         color: #dc3545;
     }
 </style>
+<base href="../../">
+<script src="lms/theme/bgtlms/js/bootstrap-datetimepicker.js"></script>
+<link rel="stylesheet" type="text/css" href="lms/theme/bgtlms/style/bootstrap-datetimepicker.css">
 <?php
 //echo $OUTPUT->heading($pagetitle); //Ẩn title
 
@@ -275,7 +279,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             <h4 class="mt-3">Filter</h4>
             <div class="row">
                 <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
-                    <label class="btn search_label_button">Title</label>
+                    <label class="btn btn-sm search_label_button">Title</label>
                 </div>
                 <div class="col-md-9 col-sm-6 col-xs-12">
                     <div class="input-group">
@@ -285,7 +289,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             </div>
             <div class="row mt-3">
                 <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
-                    <label class="btn search_label_button">Area</label>
+                    <label class="btn btn-sm search_label_button">Area</label>
                 </div>
                 <div class="col-md-9 col-sm-6 col-xs-12">
                     <!--http://slimselectjs.com-->
@@ -300,7 +304,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             </div>
             <div class="row mt-3">
                 <div class="col-md-3 col-sm-6 col-xs-12 col-title-container">
-                    <label class="btn search_label_button">Course</label>
+                    <label class="btn btn-sm search_label_button">Course</label>
                 </div>
                 <div class="col-md-9 col-sm-6 col-xs-12">
                     <select multiple name="courseids[]" id="id_courseids">
@@ -313,7 +317,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             </div>
             <div class="row mt-3">
                 <div class="col-md-5 col-sm-5 col-xs-12 col-title-container">
-                    <label class="btn search_label_button">Modified before</label>
+                    <label class="btn btn-sm search_label_button">Modified before</label>
                 </div>
                 <div class="col-md-7 col-sm-7 col-xs-12">
                     <!--https://www.malot.fr/bootstrap-datetimepicker/-->
@@ -324,7 +328,7 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
 
             <div class="row mt-3">
                 <div class="col-md-5 col-sm-5 col-xs-12 col-title-container">
-                    <label class="btn search_label_button">Modified after</label>
+                    <label class="btn btn-sm search_label_button">Modified after</label>
                 </div>
                 <div class="col-md-7 col-sm-7 col-xs-12">
                     <input size="16" type="text" value="<?php echo $params_timeend_custom ?>"  name="timeend_custom" readonly class="form_datetime form-control" placeholder="yyyy/mm/dd hh:mm">
@@ -334,8 +338,8 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
             <input type="hidden" id="cat" name="cat" value="core-all">
             <input type="hidden" id="mform_isexpanded_id_filtersection" name="mform_isexpanded_id_filtersection" value="1">
             <div class="text-center mt-3">
-                <input type="submit" class="btn btn-md btn-bgtlms" name="submitbutton" id="id_submitbutton" value="Search">
-                <button type="button" class="btn btn-md btn-bgtlms-clear" onclick="resetForm()">CLEAR</button>
+                <input type="submit" class="btn btn-sm btn-bgtlms" name="submitbutton" id="id_submitbutton" value="Search">
+                <button type="button" class="btn btn-sm btn-bgtlms-clear" onclick="resetForm()">CLEAR</button>
             </div>
         </form>
     </div>
@@ -363,6 +367,17 @@ if ($errorstr = $search->get_engine()->get_query_error()) {
 <script>
 
     $(document).ready(function() {
+        //Fill color
+        $('.search_label_button').css({
+            "border": '1px solid <?php echo $_SESSION["color"]; ?>',
+            "color": '<?php echo $_SESSION["color"]; ?>'
+        });
+        $('.ss-main .ss-multi-selected .ss-values .ss-value').css("background-color", '<?php echo $_SESSION["color"]; ?>');
+        $('.btn-bgtlms').css({
+            "background-color": '<?php echo $_SESSION["color"]; ?>',
+            "border-color": '<?php echo $_SESSION["color"]; ?>'
+        });
+
         let missing_q_text = $("#error-missing-q");
         let q_input = $("#id_q");
         let q_input_append = $("#id-q-append");

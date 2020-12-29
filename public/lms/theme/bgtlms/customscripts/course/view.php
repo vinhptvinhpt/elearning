@@ -106,14 +106,6 @@ if (!isloggedin()) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
 <link rel="shortcut icon" href="images/favicon.png">
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-
-<script src="//unpkg.com/vue-plain-pagination@0.2.1"></script>
 
 <style>
     @font-face {
@@ -1716,9 +1708,6 @@ where ttc.course_id = ' . $id . ')';
         <!--    --><?php //}
         ?>
     </div>
-
-    <?php echo $OUTPUT->footer(); ?>
-
 </div>
 
 <?php if ($_SESSION["displayPopup"] == 1) { ?>
@@ -1901,23 +1890,25 @@ $_SESSION["displayPopup"] = 2; ?>
 
         $.getJSON("https://api.ipify.org?format=json",
             function (data) {
-                var result_ip = <?php echo $result_ip;  ?>;
-                var count_ip = result_ip.list_access_ip.length;
-                let check = <?php echo json_encode($userCheck); ?>;
-                if (count_ip > 0) {
-                    if (result_ip.list_access_ip.includes(data.ip) || check.length > 0) {
-                        continue_learning();
-                    } else {
-                        var message_access = 'This course cannot be accessed outside of the office';
-                        alert(message_access);
-                        window.location.href = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
+                let count_ip = 0;
+                let result_ip = '<?php echo $result_ip; ?>';
+                if (result_ip.length !== 0) {
+                    let array_ip = JSON.parse(result_ip);
+                    count_ip = array_ip.list_access_ip.length;
+                    if (count_ip > 0) {
+                        let check_exception_account = <?php echo json_encode($userCheck); ?>;
+                        if (array_ip.list_access_ip.includes(data.ip) || check_exception_account.length > 0) {
+                            continue_learning();
+                        } else {
+                            let message_access = 'This course cannot be accessed outside of the office';
+                            alert(message_access);
+                            window.location.href = '<?php echo $url_to_page = new moodle_url($root_url); ?>';
+                        }
                     }
-                } else {
-                    continue_learning();
                 }
-
-
-            });
+                continue_learning();
+            }
+        );
     });
 
 
@@ -2120,7 +2111,7 @@ $_SESSION["displayPopup"] = 2; ?>
 </script>
 
 </body>
-
+<?php echo $OUTPUT->footer(); ?>
 </html>
 
 
