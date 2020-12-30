@@ -1868,16 +1868,12 @@ $_SESSION["displayPopup"] = 2; ?>
     $("#myModal").on('hide.bs.modal', function () {
     });
 </script>
-
-<script src="js/popper.min.js"></script>
-
 <script>
     $(document).ready(function () {
         // Show modal on page load
         $("#myModal").modal('show');
     });
 </script>
-
 <script>
     //Notify tiếp tục module đang học dở
     $(document).ready(function () {
