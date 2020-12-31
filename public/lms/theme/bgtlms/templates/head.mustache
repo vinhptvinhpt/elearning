@@ -27,8 +27,6 @@
     {{{ output.standard_head_html }}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="sso_smsc_apikey" content="bd629ce2de47436e3a9cdd2673e97b17"/>
-
-
     <!--Jquery & bootstrap & font-awesome-->
     {{#viewCoursePage}}
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
@@ -59,7 +57,6 @@
     <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.0/js/bootstrap-toggle.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="/lms/theme/bgtlms/style/bgtlms.css">
-
     <script>
         $(document).ready(function () {
 
@@ -72,10 +69,10 @@
             var currentUrl = window.location.href;
             var getAuthUser = localStorage.getItem('auth.user');
             //if null -> required login
-            // if (!getAuthUser) {
-            //     localStorage.clear();
-            //     window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
-            // }
+            if (!getAuthUser) {
+                localStorage.clear();
+                window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+            }
             var jwtsso = getToken();
             if (jwtsso) {
                 <!-- $.ajax({ -->
@@ -105,17 +102,17 @@
                 <!-- } -->
                 <!-- }); -->
             } else {
-                // $.ajax({
-                //     url: '/lms/login/index.php',
-                //     data: {action: 'sso.logout'},
-                //     type: 'POST',
-                //     //dataType: 'json',
-                //     success: function (data) {
-                //         //  if (data == 1 && window.location.href != '/lms/login/index.php') {
-                //         window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
-                //         //}
-                //     }
-                // });
+                $.ajax({
+                    url: '/lms/login/index.php',
+                    data: {action: 'sso.logout'},
+                    type: 'POST',
+                    //dataType: 'json',
+                    success: function (data) {
+                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        //}
+                    }
+                });
             }
         });
 
@@ -143,44 +140,44 @@
         }
 
         // Disable F12/inspect item + right click LMS
-        // window.onload = function () {
-        //     document.addEventListener("contextmenu", function (e) {
-        //         e.preventDefault();
-        //     }, false);
-        //     document.addEventListener("keydown", function (e) {
-        //         //document.onkeydown = function(e) {
-        //         // "I" key
-        //         if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
-        //             disabledEvent(e);
-        //         }
-        //         // "J" key
-        //         if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
-        //             disabledEvent(e);
-        //         }
-        //         // "S" key + macOS
-        //         if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
-        //             disabledEvent(e);
-        //         }
-        //         // "U" key
-        //         if (e.ctrlKey && e.keyCode == 85) {
-        //             disabledEvent(e);
-        //         }
-        //         // "F12" key
-        //         if (event.keyCode == 123) {
-        //             disabledEvent(e);
-        //         }
-        //     }, false);
-        //
-        //     function disabledEvent(e) {
-        //         if (e.stopPropagation) {
-        //             e.stopPropagation();
-        //         } else if (window.event) {
-        //             window.event.cancelBubble = true;
-        //         }
-        //         e.preventDefault();
-        //         return false;
-        //     }
-        // }
+        window.onload = function () {
+            document.addEventListener("contextmenu", function (e) {
+                e.preventDefault();
+            }, false);
+            document.addEventListener("keydown", function (e) {
+                //document.onkeydown = function(e) {
+                // "I" key
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 73) {
+                    disabledEvent(e);
+                }
+                // "J" key
+                if (e.ctrlKey && e.shiftKey && e.keyCode == 74) {
+                    disabledEvent(e);
+                }
+                // "S" key + macOS
+                if (e.keyCode == 83 && (navigator.platform.match("Mac") ? e.metaKey : e.ctrlKey)) {
+                    disabledEvent(e);
+                }
+                // "U" key
+                if (e.ctrlKey && e.keyCode == 85) {
+                    disabledEvent(e);
+                }
+                // "F12" key
+                if (event.keyCode == 123) {
+                    disabledEvent(e);
+                }
+            }, false);
+
+            function disabledEvent(e) {
+                if (e.stopPropagation) {
+                    e.stopPropagation();
+                } else if (window.event) {
+                    window.event.cancelBubble = true;
+                }
+                e.preventDefault();
+                return false;
+            }
+        }
 
     </script>
     <style>
