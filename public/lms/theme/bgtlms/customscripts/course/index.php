@@ -713,6 +713,11 @@ if ($progress != 1) {
     .regions .address, .regions .name {
         letter-spacing: 1px;
     }
+
+    .course-select {
+        width: 100%;
+        height: 100%;
+    }
 </style>
 <body>
 <div class="wrapper"><!-- wrapper -->
@@ -736,7 +741,7 @@ if ($progress != 1) {
                                     <form v-on:submit.prevent="searchCourse(category, 1)">
                                         <div class="row col-12 block-search">
                                             <div class="col-5 col-md-4 block-search__select">
-                                                <select name="category" id="category" class="form-control course-select"
+                                                <select name="category" id="category" class="course-select"
                                                         @change="searchCourse(category, 1)"
                                                         v-model="category">
                                                     <?php if ($progress == 1) {
@@ -755,7 +760,7 @@ if ($progress != 1) {
                                                 </select>
                                             </div>
                                             <div class="col-6 col-md-8 block-search__btn">
-                                                <input type="text" class=" input-search" v-model="txtSearch"
+                                                <input type="text" class="input-search" v-model="txtSearch"
                                                        placeholder="Search by name course">
                                                 <div class="btn-search" @click="searchCourse(category, 1)"><i
                                                         class="fa fa-search" aria-hidden="true"></i><input
