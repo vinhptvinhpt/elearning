@@ -760,7 +760,7 @@ if ($progress != 1) {
                                                 </select>
                                             </div>
                                             <div class="col-6 col-md-8 block-search__btn">
-                                                <input type="text" class=" input-search" v-model="txtSearch"
+                                                <input type="text" class="input-search" v-model="txtSearch"
                                                        placeholder="Search by name course">
                                                 <div class="btn-search" @click="searchCourse(category, 1)"><i
                                                         class="fa fa-search" aria-hidden="true"></i><input
