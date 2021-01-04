@@ -77,7 +77,9 @@ else{
     try {
         if(!empty($nameFile)){
             //Create live stream link, use uploaded temp file to upload, not need to save file
-            $live_stream_link = VideoLibUtilities::getMediaLink($file["tmp_name"]);
+            //comment out Jan 04 2020 by cuonghq
+            //$live_stream_link = VideoLibUtilities::getMediaLink($file["tmp_name"]);
+            $live_stream_link = '';
             $urlVideo = $containerName."/".$nameFile;
             $sql = "INSERT INTO tms_videolib(name, url, stream_link, user_id, deleted) VALUES('".$nameFile."', '".$urlVideo."', '".$live_stream_link."', ".$USER->id.", 0)";
             $DB->execute($sql);
