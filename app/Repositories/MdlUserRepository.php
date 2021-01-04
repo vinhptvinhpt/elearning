@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class MdlUserRepository implements IMdlUserInterface
 {
+    /**
+     * Get list competency framework which user joined
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getTrainningUser(Request $request)
     {
         // TODO: Implement getTrainningUser() method.
@@ -37,6 +42,11 @@ class MdlUserRepository implements IMdlUserInterface
         return response()->json($lstData);
     }
 
+    /**
+     * Get list learner history of specific user
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getLearnerHistory(Request $request)
     {
         // TODO: Implement getLearnerHistory() method.
@@ -82,6 +92,11 @@ class MdlUserRepository implements IMdlUserInterface
         return response()->json($response);
     }
 
+    /**
+     * Get list competency framework which user joined and learned
+     * @param $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getTrainningHistory($user_id)
     {
         // TODO: Implement getLearnerHistory() method.
@@ -89,6 +104,11 @@ class MdlUserRepository implements IMdlUserInterface
         return response()->json($lstData);
     }
 
+    /**
+     * Change working status of user
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiUserChangeWorkingStatus(Request $request)
     {
         // TODO: Implement apiUserChangeWorkingStatus() method.
@@ -145,6 +165,11 @@ class MdlUserRepository implements IMdlUserInterface
         return response()->json($response);
     }
 
+    /**
+     * Fetch list login logs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function loginStatistic(Request $request)
     {
         // TODO: Implement loginStatistic() method.
@@ -197,7 +222,6 @@ class MdlUserRepository implements IMdlUserInterface
                 $enddate = strtotime($enddate);
                 $lstData = $lstData->where('mls.timecreated', '<=', $enddate);
             }
-
         }
 
         $lstData = $lstData->orderBy('mls.id', 'desc');
@@ -218,6 +242,11 @@ class MdlUserRepository implements IMdlUserInterface
         return response()->json($response);
     }
 
+    /**
+     * Fetch user info by id
+     * @param $user_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUserInfo($user_id)
     {
         // TODO: Implement getUserInfo() method.

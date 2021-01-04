@@ -22,6 +22,11 @@ use Illuminate\Support\Facades\DB;
 
 class TmsOrganizationRepository implements ICommonInterface
 {
+    /**
+     * get all organization with paging
+     * @param Request $request
+     * @return TmsOrganization[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\JsonResponse
+     */
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
@@ -164,6 +169,11 @@ class TmsOrganizationRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Create organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         try {
@@ -277,6 +287,11 @@ class TmsOrganizationRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Update organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         try {
@@ -414,6 +429,11 @@ class TmsOrganizationRepository implements ICommonInterface
         // TODO: Implement update() method.
     }
 
+    /**
+     * Delete organization
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -450,6 +470,12 @@ class TmsOrganizationRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Get more detail for organization
+     * @param $id
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function customDetail($id, Request $request)
     {
         if (!is_numeric($id))
@@ -473,6 +499,11 @@ class TmsOrganizationRepository implements ICommonInterface
         return response()->json($data);
     }
 
+    /**
+     * Clear roles of organization
+     * @param $id
+     * @throws Exception
+     */
     public function clearRoleOrganization($id) {
         $check_role = TmsRoleOrganization::with('role')->where('organization_id', $id)->first();
         if (isset($check_role)) {
@@ -503,6 +534,10 @@ class TmsOrganizationRepository implements ICommonInterface
         // TODO: Implement detail() method.
     }
 
+    /**
+     * Get only level 2 top level organizations
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function GetOrganizations(){
         $data = TmsOrganization::whereIn('level', [1, 2])
             ->get();

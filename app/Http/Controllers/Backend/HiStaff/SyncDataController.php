@@ -242,7 +242,16 @@ class SyncDataController
 
             $org_mapping = TmsOrganizationHistaffMapping::where('histaff_code', $data['code'])->select('tms_code')->first();
 
-            $org_code_check = $org_mapping->tms_code;
+            if ($org_mapping) {
+                $org_code_check = $org_mapping->tms_code;
+            } else {
+                $org_mapping = TmsOrganizationHistaffMapping::firstOrCreate(
+                    [
+                        'tms_code' => $data['code'],
+                        'histaff_code' => $data['code']
+                    ]
+                );
+            }
             if ($company_parent)
                 $org_code_check = $company_parent . '-' . $org_mapping->tms_code;
 

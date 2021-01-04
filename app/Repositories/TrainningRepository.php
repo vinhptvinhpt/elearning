@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\MdlContext;
 use App\MdlCourse;
@@ -35,11 +33,18 @@ use Illuminate\Support\Facades\Storage;
 class TrainningRepository implements ITranningInterface, ICommonInterface
 {
 
+    /* Manage training programs */
+
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
     }
 
+    /**
+     * Create
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         // TODO: Implement store() method.
@@ -159,6 +164,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Update
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -287,6 +297,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Delete
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -323,6 +338,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * List
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetListTrainning(Request $request)
     {
         $this->keyword = $request->input('keyword');
@@ -407,6 +427,10 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * List for filter
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetListTrainingForFilter()
     {
         $response = TmsTrainningProgram::select('id', 'code', 'name')
@@ -416,6 +440,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Detail
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetDetailTrainning($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -452,7 +481,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($trainning);
     }
 
-    //lay danh sach khoa hoc mau da co trong khung nang luc
+    /**
+     * List sample courses in training program
+     * lay danh sach khoa hoc mau da co trong khung nang luc
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetCourseSampleTrainning(Request $request)
     {
         $this->keyword = $request->input('keyword');
@@ -501,6 +535,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * List courses in training programs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetListTrainingCourse(Request $request)
     {
         // TODO: Implement getall() method.
@@ -588,6 +627,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Save order position changes
+     * @param Request $request
+     * @return array|\Illuminate\Http\JsonResponse
+     */
     public function apiSaveOrder(Request $request)
     {
         $list = $request->input('list');
@@ -648,7 +692,12 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    //lay danh sach khoa hoc mau chua co trong khung nang luc
+    /**
+     * List sample courses not in training program
+     * lay danh sach khoa hoc mau chua co trong khung nang luc
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetListSampleCourse(Request $request)
     {
         $this->keyword = $request->input('keyword');
@@ -726,7 +775,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    //them khoa hoc vao khung nang luc
+    /**
+     * Add courses to training program
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiAddCourseTrainning(Request $request)
     {
         $response = new ResponseModel();
@@ -954,7 +1007,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    //them khoa hoc vao khung nang luc
+    /**
+     * Add courses to training program
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiAddCourseToTraining(Request $request)
     {
         $response = new ResponseModel();
@@ -1012,8 +1069,8 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-
     /**
+     * Generate append string for code
      * @param $num
      * @return string
      */
@@ -1028,6 +1085,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     }
 
     /**
+     * Extract code
      * @param $code
      * @return array
      */
@@ -1052,8 +1110,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return $response;
     }
 
-
-    //xoa khoa hoc khoi khung nang luc
+    /**
+     * Remove courses from training program
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiRemoveCourseTrainning(Request $request)
     {
         $response = new ResponseModel();
@@ -1093,6 +1154,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Remove courses from training program
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiRemoveCourseFromTraining(Request $request)
     {
         $response = new ResponseModel();
@@ -1128,7 +1194,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-
+    /**
+     * List users in training programs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiTrainningListUser(Request $request)
     {
         try {
@@ -1196,6 +1266,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
     }
 
+    /**
+     * Remove users in training program
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiTrainningRemove(Request $request)
     {
         try {
@@ -1230,7 +1305,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         // TODO: Implement detail() method.
     }
 
-    //lay danh sach user ko nam trong KNL
+    /**
+     * List users not in training programs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiGetUsersOutTranning(Request $request)
     {
         try {
@@ -1302,7 +1381,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
     }
 
     /**
-     *
+     * insert mail notify to tms_nofitications table
      * @param $target
      * @param $receiver
      * @param $content
@@ -1340,7 +1419,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         }
     }
 
-    //them nguoi dung vao KNL
+    /**
+     * Add users to training programs
+     * @param Request $request
+     * @return false|\Illuminate\Http\JsonResponse|string
+     */
     public function apiAddUserToTrainning(Request $request)
     {
         $response = new ResponseModel();
@@ -1413,7 +1496,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
-    //them nguoi dung vao KNL
+    /**
+     * Add organization users to training programs
+     * @param Request $request
+     * @return false|\Illuminate\Http\JsonResponse|string
+     */
     public function apiAddUserOrganiToTrainning(Request $request)
     {
         $response = new ResponseModel();
@@ -1525,6 +1612,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Remove multiple users from training programs
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeMultiUser(Request $request)
     {
         // TODO: Implement removeMultiUser() method.
