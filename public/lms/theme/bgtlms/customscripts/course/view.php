@@ -1265,6 +1265,8 @@ where `mhr`.`model_id` = ' . $USER->id . ' and `mhr`.`model_type` = "App/MdlUser
             }
         }
     }
+
+    //Open for test
     //$_SESSION["displayPopup"] = 1;
 
     //get content of competency framework
@@ -1745,11 +1747,6 @@ $_SESSION["displayPopup"] = 2; ?>
            $('#myModal').css('display', 'none');
         });
 
-        $("#menu-edit").click(function () {
-            var getMenuSetting = $(".dropdown-menu").get(1);
-            $(getMenuSetting).toggleClass('show-setting');
-        });
-
         //Cần click này vì xảy ra trường hợp: click vào body nhưng k phải dropmenu thì sẽ hidden
         $(document).on('click', function (event) {
             if (!$(event.target).closest('.dropdown-menu').length) {
@@ -1858,30 +1855,9 @@ $_SESSION["displayPopup"] = 2; ?>
         $("#unit-link").addClass('active');
         $("[section-no=<?php echo $section_no ?>]").trigger("click");
         <?php } ?>
-    });
 
-    function notifyNoContent() {
-        alert("Course has no content, please try again later");
-        return false;
-    }
 
-    $("#myModal").on('hide.bs.modal', function () {
-    });
-</script>
-
-<script src="js/popper.min.js"></script>
-
-<script>
-    $(document).ready(function () {
-        // Show modal on page load
-        $("#myModal").modal('show');
-    });
-</script>
-
-<script>
-    //Notify tiếp tục module đang học dở
-    $(document).ready(function () {
-
+        //Notify tiếp tục module đang học dở
         //set courseid to localStorage
         let courseid = parseInt(<?php echo $id ?>);
         if (parseInt(courseid) > 0) {
@@ -1911,6 +1887,13 @@ $_SESSION["displayPopup"] = 2; ?>
         );
     });
 
+    function notifyNoContent() {
+        alert("Course has no content, please try again later");
+        return false;
+    }
+
+    $("#myModal").on('hide.bs.modal', function () {
+    });
 
     function continue_learning() {
         <?php if ($id != $source) { ?> //Vào từ màn khóa học khác
@@ -1949,8 +1932,9 @@ $_SESSION["displayPopup"] = 2; ?>
         }
         <?php } ?>
     }
+</script>
 
-
+<script>
     Vue.component('v-pagination', window['vue-plain-pagination'])
     var app = new Vue({
         el: '#app',
@@ -2106,15 +2090,11 @@ $_SESSION["displayPopup"] = 2; ?>
             var ifr = document.getElementById('attendance_offline');
             onetime = false;
         }
-
     }
 </script>
-
-</body>
 <?php echo $OUTPUT->footer(); ?>
+</body>
 </html>
-
-
 <?php
 die;
 ?>

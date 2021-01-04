@@ -708,11 +708,7 @@ $_SESSION["allowCms"] = $allowCms;
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <base href="../../">
 <link rel="shortcut icon" href="images/favicon.png">
-<link rel="stylesheet" href="css/bootstrap.min.css">
-<link rel="stylesheet" href="css/font-awesome.min.css">
-<script src="js/jquery.min.js"></script>
-<script src="js/bootstrap.min.js"></script>
-<script src="js/highcharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highcharts/8.1.0/highcharts.js"></script>
 
 <style>
     @font-face {

@@ -213,16 +213,25 @@ class SyncDataController
             $company_parent = '';
 
             if (!empty($data['parent_code'])) {
-                $arr_org = explode('-', $data['parent_code']);
-                $company_parent = convertOrgCode($arr_org[0]);
+                if (strpos($data['parent_code'], '-') !== false) {
+                    $arr_org = explode('-', $data['parent_code']);
+                    $company_parent = convertOrgCode($arr_org[0]);
 
-                $org_code = str_replace($arr_org[0] . '-', '', $data['parent_code']);
+                    $org_code = str_replace($arr_org[0] . '-', '', $data['parent_code']);
 
+                    $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
+                        ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
+                        ->where('tohm.histaff_code', '=', $org_code)
+                        ->select('tor.id', 'tor.code')->first();
 
-                $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
-                    ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
-                    ->where('tohm.histaff_code', '=', $org_code)
-                    ->select('tor.id', 'tor.code')->first();
+                } else {
+                    $company_parent = convertOrgCode($data['parent_code']);
+                    $org_code = $company_parent;
+
+                    $org_parent = DB::table('tms_organization as tor')
+                        ->where('tor.code', '=', $org_code)
+                        ->select('tor.id', 'tor.code')->first();
+                }
 
                 if ($org_parent) {
                     $parent_id = $org_parent->id;
