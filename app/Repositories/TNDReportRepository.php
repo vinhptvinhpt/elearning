@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\TmsTdCompetency;
 use App\TmsTdCompetencyCourse;
@@ -14,7 +12,11 @@ use Illuminate\Support\Facades\Log;
 
 class TNDReportRepository implements ITNDReportInteface, ICommonInterface
 {
-
+    /**
+     * List all
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
@@ -46,6 +48,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
 
     }
 
+    /**
+     * Create
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         // TODO: Implement store() method.
@@ -94,6 +101,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Update
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -139,6 +151,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Delete
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -159,6 +176,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * View detail
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail($id)
     {
         // TODO: Implement detail() method.
@@ -166,6 +188,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($competency);
     }
 
+    /**
+     * List children course
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getCompetencyCourse(Request $request)
     {
         // TODO: Implement getCompetencyCourse() method.
@@ -246,6 +273,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Assign children courses
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function assignCourseCompetency(Request $request)
     {
         // TODO: Implement assignCourseCompetency() method.
@@ -284,6 +316,11 @@ class TNDReportRepository implements ITNDReportInteface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Remove children courses
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeAssignCourseCompetency(Request $request)
     {
         // TODO: Implement removeAssignCourseCompetency() method.

@@ -137,6 +137,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
+    //api lấy chi tiết survey
     public function apiGetDetailSurvey($id)
     {
         $survey = TmsSurvey::findOrFail($id);
@@ -379,7 +380,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-    #region question
+    //region question
     public function apiGetListQuestion(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -436,7 +437,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-    //api lấy danh sách survey
+    //api lấy danh sách question
     public function apiGetListSurveyQuestion()
     {
         $lstSurvey = TmsSurvey::query();
@@ -447,6 +448,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($lstSurvey);
     }
 
+    //api tạo question
     public function apiCreateQuestion(Request $request)
     {
         $response = new ResponseModel();
@@ -635,7 +637,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-
+    //api chi tiết
     public function apiGetDetailQuestion($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -644,6 +646,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($question);
     }
 
+    //api lấy danh sách câu trả lời
     public function apiGetListAnswerQuestion($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -657,6 +660,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($lstAnswer);
     }
 
+    //api lấy list câu hỏi child
     public function apiGetListQuestionChild($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -667,6 +671,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($questionData);
     }
 
+    //api update question
     public function apiUpdateQuestion($id, Request $request)
     {
         $response = new ResponseModel();
@@ -875,7 +880,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-
+    //api delete question
     public function apiDeleteQuestion(Request $request)
     {
         $response = new ResponseModel();
@@ -931,7 +936,6 @@ class SurveyRepository implements ISurveyInterface
 
         return response()->json($dataSurvey);
     }
-
 
     //api submit ket qua survey
     public function apiSubmitSurvey($id, Request $request)
@@ -1117,7 +1121,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
-
+    //api xem chi tiết survey
     public function apiStatisticSurveyView(Request $request)
     {
         $survey_id = $request->input('survey_id');
@@ -1475,13 +1479,12 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($datas);
     }
 
-
+    //api lấy danh sách filter cities
     public function apiGetProvinces()
     {
         $dataProvinces = TmsCity::select('id', 'name')->where('parent', '=', 0)->get();
         return response()->json($dataProvinces);
     }
-
 
     //api lay danh sach dai ly theo tinh thanh
     public function apiGetBarnchs($province_id)
@@ -1516,6 +1519,7 @@ class SurveyRepository implements ISurveyInterface
 
     public $dataResult;
 
+    //api export file
     public function apiExportFile(Request $request)
     {
         $survey_id = $request->input('survey_id');
@@ -1860,8 +1864,9 @@ class SurveyRepository implements ISurveyInterface
         return response()->json(storage_path($filename));
     }
 
-    #endregion
+    //endregion
 
+    //api kết quả survey
     public function resultSurvey($survey_id, $user_id, $course_id)
     {
         // TODO: Implement resultSurvey() method.
@@ -1879,6 +1884,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($preview);
     }
 
+    //api list users survey
     public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
     {
         // TODO: Implement getListUserSurvey() method.
@@ -1955,6 +1961,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
+    //api get user view survey
     public function getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
     {
         // TODO: Implement getUserViewSurvey() method.
@@ -2032,6 +2039,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($response);
     }
 
+    //api save user view survey
     public function saveUserViewSurvey($survey_id, $course_id)
     {
         // TODO: Implement saveUserViewSurvey() method.
@@ -2050,6 +2058,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($responseModel);
     }
 
+    //api export survey result
     public function exportSurveyResult($survey_id, $org_id, $course_id, $startdate, $enddate, $type_file, $couse_info)
     {
         // TODO: Implement exportSurveyResult() method.
@@ -2073,8 +2082,8 @@ class SurveyRepository implements ISurveyInterface
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
+                                on mc.id = su.course_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2110,10 +2119,10 @@ class SurveyRepository implements ISurveyInterface
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
+                                on mc.id = su.course_id
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '    
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2131,13 +2140,13 @@ class SurveyRepository implements ISurveyInterface
 
                 } else if ($course_id) {
 
-                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,qd.question_id as qd_pr, 
+                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,qd.question_id as qd_pr,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . ' 
+                                on mc.id = su.course_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2159,10 +2168,10 @@ class SurveyRepository implements ISurveyInterface
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
+                                on mc.id = su.course_id
                                 join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
+                                on org_tp.org_uid = su.user_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2291,6 +2300,7 @@ class SurveyRepository implements ISurveyInterface
         return response()->json($responseModel);
     }
 
+    //api show result survey fill text
     public function showSurveyResultFillText($survey_id, $org_id, $course_id, $startdate, $enddate)
     {
         // TODO: Implement showSurveyResultFillText() method.
@@ -2309,13 +2319,13 @@ class SurveyRepository implements ISurveyInterface
 
             $main_tables = DB::raw($main_tables);
 
-            $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer, 
+            $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
+                                on mc.id = su.course_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2344,15 +2354,15 @@ class SurveyRepository implements ISurveyInterface
             if ($course_id || $org_id) {
                 if ($org_id && $course_id) {
 
-                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer, 
+                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
+                                on mc.id = su.course_id
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '    
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2370,13 +2380,13 @@ class SurveyRepository implements ISurveyInterface
 
                 } else if ($course_id) {
 
-                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer, 
+                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . ' 
+                                on mc.id = su.course_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
                                 group by su.user_id,su.ques_parent,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2393,15 +2403,15 @@ class SurveyRepository implements ISurveyInterface
 
                 } else if ($org_id) {
 
-                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer, 
+                    $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
-                                on mc.id = su.course_id 
+                                on mc.id = su.course_id
                                 join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id 
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '    
+                                on org_tp.org_uid = su.user_id
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . '
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 

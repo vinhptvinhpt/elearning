@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\Imports\QuestionImport;
 use App\Imports\UsersImport;
@@ -41,7 +39,6 @@ use Illuminate\Support\Facades\Storage;
 
 class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 {
-
     //api xóa khóa học
     public function apiDeleteCourse(Request $request)
     {
@@ -213,7 +210,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
         return response()->json($listCourses);
     }
-
 
     //api clone khóa học
     public function apiCloneCourse(Request $request)
@@ -532,7 +528,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return response()->json($response);
     }
-
 
     //api lấy danh sách khóa học tập trung
     public function apiGetListCourseConcen(Request $request)
@@ -1023,6 +1018,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api người dùng đã mời vào khóa
     public function apiUserCurrentInvite(Request $request)
     {
         $course_id = $request->input('course_id');
@@ -1091,7 +1087,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
-
     //api lấy danh sách người dùng ngoại lệ được vào khóa học
     public function apiUserCourseException(Request $request)
     {
@@ -1150,12 +1145,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
-
-    //api lấy danh sách người dùng cần ghi danh
     //ThoLD 14/09/2019
     public $courseCurrent_id;
     public $category_id;
 
+    //api lấy danh sách người dùng cần ghi danh
     public function apiUserNeedEnrol(Request $request)
     {
         $this->courseCurrent_id = $request->input('course_id');
@@ -1252,6 +1246,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api lấy người dùng chưa ghi danh vào khóa
     public function apiUserNeedInvite(Request $request)
     {
         $this->courseCurrent_id = $request->input('course_id');
@@ -1362,6 +1357,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api lấy người dùng chưa ghi danh vào exception
     public function apiUserNeedInviteToException(Request $request)
     {
         $this->courseCurrent_id = $request->input('course_id');
@@ -1450,7 +1446,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($listCategories);
     }
 
-
     //api lấy danh sách danh mục khóa học
     //hiển hị dưới view create và edit course
     public function apiGetListCategoryForEdit()
@@ -1462,7 +1457,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ->where('mdl_course_categories.visible', '=', 1)->get();
         return response()->json($listCategories);
     }
-
 
     //api lấy danh sách danh mục khóa học cho chức năng restore
     //hiển hị dưới view create và edit course
@@ -1529,6 +1523,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api intive user vào khóa
     public function apiInviteUser(Request $request)
     {
         $response = new ResponseModel();
@@ -1593,7 +1588,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
-    //api enrol học viên vào khóa học
+    //api huy enrol học viên vào khóa học
     //ThoLD 15/09/2019
     public function apiRemoveEnrolUser(Request $request)
     {
@@ -1634,6 +1629,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api huy invite học viên vào khóa học
     public function apiRemoveInviteUser(Request $request)
     {
         $response = new ResponseModel();
@@ -1662,6 +1658,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api add học viên vào exception
     public function apiEnrolUserException(Request $request)
     {
         self::apiInviteUser($request);
@@ -1724,6 +1721,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api remove học viên khỏi exception
     public function apiRemoveUserException(Request $request)
     {
         self::apiRemoveInviteUser($request);
@@ -1753,6 +1751,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api chi tiết invitation, user click link on email to open page
     public function apiInvitationDetail($id)
     {
         $invitation = TmsInvitation::with('course')->where('id', $id)->first();
@@ -1760,6 +1759,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($invitation);
     }
 
+    //api chấp nhận invitation, click accept deny in invitation confirm page
     public function apiInvitationConfirm(Request $request)
     {
         $id = $request->input('id');
@@ -2103,6 +2103,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api lấy danh sách đã phân quyền dữ liệu / chưa phân quyền dữ liệu cho 1 role
     public function getAllPermissionData(Request $request)
     {
         // TODO: Implement getall() method.
@@ -2224,6 +2225,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api thêm khóa học
     public function store(Request $request)
     {
         $avatar = $request->file('file');
@@ -2458,6 +2460,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return $course;
     }
 
+    //tách list ip khỏi json
     public function spitIP($ip)
     {
         $access_ip = '{"list_access_ip":[';
@@ -2474,11 +2477,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return $access_ip;
     }
 
+    //api update khóa học => blank
     public function update(Request $request)
     {
         // TODO: Implement update() method.
     }
 
+    //api update khóa học
     public function updateCourse($id, Request $request)
     {
         // TODO: Implement updateCourse() method.
@@ -2697,11 +2702,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api xóa khóa học
     public function delete($id)
     {
         // TODO: Implement delete() method.
     }
 
+    //api đổi trặng thái khóa học
     public function changestatuscourse(Request $request)
     {
         // TODO: Implement changestatuscourse() method.
@@ -2751,7 +2758,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
-
+    //Lấy số activities trong khóa => Không sủ dụng
     public function apiGetTotalActivityCourse(Request $request)
     {
         $course_id = $request->input('course_id');
@@ -2776,6 +2783,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($totalActivity);
     }
 
+    //api lấy tiến trình học của các học viên trong khóa học
     public function apiStatisticUserInCourse(Request $request)
     {
         $course_id = $request->input('course_id');
@@ -2854,7 +2862,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
-
     //Lấy danh sách học viên điểm danh theo lớp
     public function apiListAttendanceUsers(Request $request)
     {
@@ -2916,6 +2923,8 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //Unenrol user
+    //Not use
     public function apiDeleteEnrolNotUse()
     {
         $responseModel = new ResponseModel();
@@ -2949,6 +2958,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($responseModel);
     }
 
+    //api get course detail by id
     public function apiGetCourseDetail($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -2988,7 +2998,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($course_info);
     }
 
-
+    //api get last update time, user of course
     public function apiGetCourseLastUpdate($id)
     {
         $id = is_numeric($id) ? $id : 0;
@@ -3025,7 +3035,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return response()->json(['last' => $last_update]);
     }
-
 
     //api enrol học viên vào khóa học tập trung
     public function apiEnrolUserCourseConcent(Request $request)
@@ -3089,7 +3098,6 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return json_encode($response);
     }
-
 
     //api import câu hỏi vào ngân hàng câu hỏi
     public function apiImportQuestion(Request $request)
@@ -3316,11 +3324,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return json_encode($response);
     }
 
+    //api import enrol học viên vào khóa học
     public function detail($id)
     {
         // TODO: Implement detail() method.
     }
 
+    //api lấy danh sách điểm danh
     public function apiAttendanceList(Request $request)
     { //Skipped
         // TODO: Implement getall() method.
@@ -3374,6 +3384,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api get list module of course
     public function apiGetListModule($course_id)
     {
         $modules = DB::table('mdl_course_modules as cm')
@@ -3385,6 +3396,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($modules);
     }
 
+    //api get list document of course
     public function apiGetListDocument(Request $request)
     {
         $course_id = $request->input('course_id');
@@ -3458,6 +3470,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api gợi ý khóa học theo mã
     public function apiHintCourseCode(Request $request)
     {
         $type = $request->input('type');
@@ -3533,6 +3546,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //api danh sách thu viện khóa học
     public function apiGetListLibrary()
     {
         $libraries = MdlCourse::query()
@@ -3544,6 +3558,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($libraries);
     }
 
+    //api lấy bắt đầu mã khóa học theo tổ chức
     public function apiGetListLibraryCodes()
     {
         $codes = TmsOrganization::query()
@@ -3553,6 +3568,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($codes);
     }
 
+    //api lấy mã khóa học đã tồn tại
     public function apiGetExistedCodes()
     {
         $codes = MdlCourse::query()
@@ -3561,6 +3577,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($codes);
     }
 
+    //api lấy mã thư viện khóa học đã tồn tại
     public function apiGetExistedCodeLibraries()
     {
         $codes = MdlCourse::query()
@@ -3572,6 +3589,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
 
 
     /**
+     * Tạo số tăng dần sau mã khoa học
      * @param $num
      * @return string
      */
@@ -3585,7 +3603,13 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
     }
 
-    //#region optonal courses
+    //region optional courses
+
+    /**
+     * list optional courses đã gán / chưa gán
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getOptionalCourses(Request $request)
     {
         // TODO: Implement getOptionalCourses() method.
@@ -3664,6 +3688,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Gán khóa học thành optional course
+     * @param Request $request
+     * @return false|\Illuminate\Http\JsonResponse|string
+     */
     public function assignOptionalCourse(Request $request)
     {
         // TODO: Implement assignOptionalCourse() method.
@@ -3706,6 +3735,11 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Hủy khóa học khỏi optional courses
+     * @param Request $request
+     * @return false|\Illuminate\Http\JsonResponse|string
+     */
     public function removeAssignOptionalCourse(Request $request)
     {
         // TODO: Implement removeAssignOptionalCourse() method.
@@ -3735,9 +3769,9 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         }
         return response()->json($response);
     }
+    //endregion
 
-    //#endregion
-
+    //Clone khóa học từ khóa thư viện
     public function cloneCourseLibrary(Request $request)
     {
         $avatar = $request->input('course_avatar');
@@ -3975,6 +4009,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return $course;
     }
 
+    //Unuse
     public function importFile()
     {
         // TODO: Implement importFile() method.

@@ -11,6 +11,11 @@ use Illuminate\Http\Request;
 class TmsCourseInfrastructureRepository implements ICommonInterface
 {
 
+    /**
+     * List infrastructures with pagination
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
@@ -56,6 +61,11 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Create infrastructure
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         // TODO: Implement store() method.
@@ -93,6 +103,11 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Update infrastructure
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         // TODO: Implement update() method.
@@ -138,6 +153,11 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Delete infrastructure
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -164,6 +184,11 @@ class TmsCourseInfrastructureRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Detail infrastructure
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail($id)
     {
         // TODO: Implement detail() method.

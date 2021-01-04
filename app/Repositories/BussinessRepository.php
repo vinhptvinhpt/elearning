@@ -100,7 +100,7 @@ class BussinessRepository implements IBussinessInterface
         // TODO: Implement reportbranch() method.
     }
 
-    // BackendController
+    //region BackendController
     public function apiActivityLog(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -477,8 +477,7 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-    #region check role for current user
-
+    //check role for current user
     public function checkRole(Request $request)
     {
         $checkRole = new CheckRoleModel();
@@ -559,12 +558,9 @@ class BussinessRepository implements IBussinessInterface
 
         return response()->json($response);
     }
-    #endregion
+    //endregion
 
-    // End BackendController
-
-    // BranchController
-
+    //region BranchController
     public function apiListUserByBranch(Request $request)
     {
         $branch_id = $request->input('id');
@@ -659,7 +655,6 @@ class BussinessRepository implements IBussinessInterface
         }
     }
 
-
     public function detailBranchUser(Request $request, $branch_id, $user_id)
     {
         $branch = TmsBranch::find($branch_id);
@@ -699,9 +694,9 @@ class BussinessRepository implements IBussinessInterface
         $salerooms = $salerooms->get()->toArray();
         return response()->json($salerooms);
     }
+    //endregion
 
-    // End BranchController
-
+    //region CourseController
     //api lấy danh sách giáo viên
     //hiển hị dưới view create và edit course
     //ThoLD (21/08/2019)
@@ -730,16 +725,13 @@ class BussinessRepository implements IBussinessInterface
         return $access_ip;
     }
 
-
     public function importFile()
     {
         return view('survey.test');
     }
+    //endregion
 
-
-    // End CourseController
-
-    // LanguageController
+    //region LanguageController
     public function getInfoSidebar()
     {
         $permissions = [];
@@ -766,9 +758,9 @@ class BussinessRepository implements IBussinessInterface
 
         return response()->json($permissions);
     }
-    // End LanguageController
+    //endregion
 
-    // NotificationController
+    //region NotificationController
     public function apiListUserNotification(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -854,11 +846,9 @@ class BussinessRepository implements IBussinessInterface
             }
         }
     }
-    // End NotificationController
+    //endregion
 
-    // PermissionController
-
-
+    //region PermissionController
     public function apiAttemptDetail($id)
     {
         $check = new \stdClass();
@@ -900,7 +890,6 @@ class BussinessRepository implements IBussinessInterface
 
         return response()->json($check);
     }
-
 
     public function apiUnlockConfirm(Request $request)
     {
@@ -1034,18 +1023,15 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($data);
 
     }
+    //endregion
 
-
-    // End PermissionController
-
-    // ReportController
+    //region ReportController
     //Api lấy danh sách chi nhánh
     public function apiGetDistrict(Request $request)
     {
         $districts = TmsDepartments::all()->toArray();
         return response()->json($districts);
     }
-
 
     //Api lấy danh sách tỉnh thành theo khu vực
     public function apiGetCityByDistrictReport(Request $request)
@@ -2540,9 +2526,9 @@ class BussinessRepository implements IBussinessInterface
     {
         return array_intersect_key($array, array_unique(array_map('serialize', $array)));
     }
-    // End ReportController
+    //endregion
 
-    // RoleController
+    //region RoleController
     public function apiCreateRole(Request $request)
     {
         try {
@@ -3279,11 +3265,9 @@ class BussinessRepository implements IBussinessInterface
         }
         return json_encode($response);
     }
+    //endregion
 
-
-    // End RoleController
-
-    // SaleRoomController
+    //region SaleRoomController
     public function apiListSaleRoomByBranchSaleroom(Request $request)
     {
         $branch_id = $request->input('id');
@@ -3317,9 +3301,9 @@ class BussinessRepository implements IBussinessInterface
             return response()->json($response);
         }
     }
-    // End SaleRoomController
+    //endregion
 
-    // SaleRoomUserController
+    //region SaleRoomUserController
     public function apiListUsers(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -3388,9 +3372,9 @@ class BussinessRepository implements IBussinessInterface
             ->get()->toArray();
         return response()->json($data);
     }
-    // End SaleRoomUserController
+    //endregion
 
-    // StudentController
+    //region StudentController
     //api to get students achieve certificate
     public function apiListStudentsUncertificate(Request $request)
     {
@@ -3513,7 +3497,6 @@ class BussinessRepository implements IBussinessInterface
             return 'error';
         }
     }
-
 
     //gen mã chứng chỉ
     public function generateCodeCertificate(Request $request)
@@ -3660,7 +3643,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-
     //thêm vào table TmsNotification để tự động cron và gửi
     public function sendMail($user, $certificate_code = '', $framework = '')
     {
@@ -3699,7 +3681,6 @@ class BussinessRepository implements IBussinessInterface
         } catch (\Exception $e) {
         }
     }
-
 
     public function settingCertificate()
     {
@@ -3835,7 +3816,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($certificate_info);
     }
 
-
     //update ảnh chứng chỉ
     public function apiUpdateCertificate(Request $request)
     {
@@ -3960,7 +3940,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-
     public function apiAutoGenCertificate()
     {
         $responseModel = new ResponseModel();
@@ -4001,9 +3980,9 @@ class BussinessRepository implements IBussinessInterface
         }
         return response()->json($message);
     }
-    // End StudentController
+    //endregion
 
-    // EducationController
+    //region EducationController
     public function apiListUserTeacher(Request $request)
     {
         $this->keyword = $request->input('keyword');
@@ -4208,10 +4187,9 @@ class BussinessRepository implements IBussinessInterface
         ];
         return response()->json($response);
     }
-    // End EducationController
+    //endregion
 
-
-    // SystemController
+    //region SystemController
     public function apiListRole(Request $request)
     {
         $type = $request->input('type');
@@ -5859,7 +5837,7 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($this->importOutput);
     }
 
-    //import excel multip sheets
+    //import excel multiple sheets
     public function apiImportExcel(Request $request)
     {
         set_time_limit(0);
@@ -6970,7 +6948,6 @@ class BussinessRepository implements IBussinessInterface
     $destinationPath = public_path('/upload/file_import/');
     $file->move($destinationPath, $name);*/
 
-
     public function apiListUserTrash(Request $request)
     {
         $this->keyword = $request->input('keyword');
@@ -7621,7 +7598,6 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-
     //Danh sách người dùng là chủ đại lý
     public function apiListBranchMaster(Request $request)
     {
@@ -7679,7 +7655,6 @@ class BussinessRepository implements IBussinessInterface
         ];
         return response()->json($response);
     }
-
 
     //Danh sách người dùng có thể gán quyền nhân viên giám sát thị trường
     public function apiShowUserMarket(Request $request)
@@ -8635,10 +8610,9 @@ class BussinessRepository implements IBussinessInterface
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
+    //endregion
 
-    // End SystemController
-
-    // SystemOrganizeController
+    //region SystemOrganizeController
     public function apiLoadDataOrganize()
     {
         $response = TmsCity::select('id', 'name')->with('city_branch.branch_name.branch_sale_room.sale_room_name')
@@ -9257,7 +9231,6 @@ class BussinessRepository implements IBussinessInterface
     }
 
     //Api Xóa đại lý Uydd
-
     public function apiBranchDelete($branch_id, Request $request)
     {
         try {
@@ -11283,7 +11256,6 @@ class BussinessRepository implements IBussinessInterface
         }
     }
 
-
     public function apiDepartmentCity(Request $request)
     {
         try {
@@ -11466,9 +11438,9 @@ class BussinessRepository implements IBussinessInterface
             return response()->json([]);
         }
     }
-    // End SystemOrganizeController
+    //endregion
 
-    // TrainningController
+    //region TrainningController
 
     public function apiCreateTrainning(Request $request)
     {
@@ -11829,9 +11801,9 @@ class BussinessRepository implements IBussinessInterface
         }
         return response()->json($response);
     }
-    // End TrainningController
+    //endregion
 
-    // UserExamController
+    //region UserExamController
     public function getListUser(Request $request)
     {
         $keyword = $request->input('keyword');
@@ -11910,10 +11882,9 @@ class BussinessRepository implements IBussinessInterface
             return response()->json(status_message('error', __('loi_he_thong_thao_tac_that_bai')));
         }
     }
-    // End UserExamController
+    //endregion
 
-
-    // Confirm email
+    //Confirm email
     public function apiConfirmEmail($no_id, $email)
     {
         if (empty($no_id) || empty($email)) {
@@ -11943,8 +11914,7 @@ class BussinessRepository implements IBussinessInterface
         return 'Xác nhận thất bại';
     }
 
-
-    //badge
+    //Badge
     public function apiGetListImagesBadge()
     {
         //lấy theo tổ chức
