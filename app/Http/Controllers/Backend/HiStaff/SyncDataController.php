@@ -258,7 +258,7 @@ class SyncDataController
             $org_check = TmsOrganization::where('code', $org_code_check)->first();
 
             if ($org_check) {
-                $org_check->code = $data['code'];
+                $org_check->code = $company_parent . '-' . $data['code'];
                 $org_check->name = $data['name'];
                 $org_check->description = $data['description'];
                 $org_check->parent_id = $parent_id;
@@ -270,7 +270,7 @@ class SyncDataController
             } else {
 
                 TmsOrganization::firstOrCreate([
-                    'code' => $data['code'],
+                    'code' => $company_parent . '-' . $data['code'],
                     'parent_id' => $parent_id
                 ],
                     [
