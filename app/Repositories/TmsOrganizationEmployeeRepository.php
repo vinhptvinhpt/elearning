@@ -17,6 +17,11 @@ use Illuminate\Support\Facades\DB;
 
 class TmsOrganizationEmployeeRepository implements ICommonInterface
 {
+    /**
+     * Get list all employee with pagination
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
@@ -165,6 +170,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Create employee
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         try {
@@ -203,6 +213,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Update employee
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         try {
@@ -282,6 +297,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         // TODO: Implement update() method.
     }
 
+    /**
+     * delete employee
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -304,6 +324,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Get a employee detail
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail($id)
     {
         if (!is_numeric($id))
@@ -314,6 +339,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         return response()->json($data);
     }
 
+    /**
+     * Get user detail
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function userDetail($id)
     {
         if (!is_numeric($id))
@@ -328,6 +358,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         return response()->json($data);
     }
 
+    /**
+     * Get list user by organization with pagination
+     * @param Request $request
+     * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Http\JsonResponse
+     */
     public function getUser(Request $request)
     {
         // TODO: Implement getall() method.
@@ -401,6 +436,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Add employee to organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function assignEmployee(Request $request)
     {
         // TODO: Implement getall() method.
@@ -430,6 +470,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * List country manager with pagination
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiListCountryManager(Request $request)
     {
         // TODO: Implement getall() method.
@@ -492,6 +537,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Delete country manager
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiDeleteCountryManager($id)
     {
         // TODO: Implement delete() method.
@@ -512,6 +562,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Delete multiple country managers
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiDeleteCountryManagerBatch(Request $request)
     {
         $users = $request->input('users');
@@ -528,6 +583,11 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Create country manager
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiCreateCountryManager(Request $request)
     {
         // TODO: Implement getall() method.

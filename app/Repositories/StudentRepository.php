@@ -9,7 +9,11 @@ use Illuminate\Http\Request;
 
 class StudentRepository implements IStudentInterface
 {
-
+    /**
+     * Check certificate image exists
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function checkImageExist(Request $request)
     {
         // TODO: Implement checkImageExist() method.

@@ -10,7 +10,6 @@ use Spatie\Permission\Models\Permission;
 
 class PermissionRepository implements IPermissionInterface
 {
-
     public function apiPermissionAdd(Request $request)
     {
         // TODO: Implement apiPermissionAdd() method.
