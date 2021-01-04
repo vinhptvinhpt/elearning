@@ -12,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class TmsOrganizationTeamRepository implements ICommonInterface
 {
+    /**
+     * List all teams
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getall(Request $request)
     {
         // TODO: Implement getall() method.
@@ -51,6 +56,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Create team
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function store(Request $request)
     {
         try {
@@ -95,6 +105,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Update team
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function update(Request $request)
     {
         try {
@@ -141,6 +156,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         // TODO: Implement update() method.
     }
 
+    /**
+     * Delete team
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function delete($id)
     {
         // TODO: Implement delete() method.
@@ -163,6 +183,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         }
     }
 
+    /**
+     * Detail team
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function detail($id)
     {
         if (!is_numeric($id))
@@ -173,6 +198,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         return response()->json($data);
     }
 
+    /**
+     * List users not in a team
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiTeamUserOut(Request $request)
     {
         $team_id = $request->input('team_id');
@@ -230,6 +260,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * List user in a team
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function apiTeamUserIn(Request $request)
     {
         $team_id = $request->input('team_id');
@@ -289,6 +324,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         return response()->json($response);
     }
 
+    /**
+     * Assign users to a team
+     * @param Request $request
+     * @return false|string
+     */
     public function apiAssignMember(Request $request)
     {
         $response = new ResponseModel();
@@ -326,6 +366,11 @@ class TmsOrganizationTeamRepository implements ICommonInterface
         return json_encode($response);
     }
 
+    /**
+     * Remove users from a team
+     * @param Request $request
+     * @return false|string
+     */
     public function apiRemoveMember(Request $request)
     {
         $response = new ResponseModel();

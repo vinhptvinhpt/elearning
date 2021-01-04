@@ -1,8 +1,6 @@
 <?php
 
-
 namespace App\Repositories;
-
 
 use App\TmsOrganizationEmployee;
 use App\TmsUserOrganizationCourseException;
@@ -12,13 +10,18 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
+//User not in allowed ip addresses but can access the course which restricted by IPs
 class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
 {
-
     public $keyword;
 
     public $current_org_id;
 
+    /**
+     * List exception users not in organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUserWithoutOrganization(Request $request)
     {
         // TODO: Implement getUserWithoutOrganization() method.
@@ -96,6 +99,11 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
 
     }
 
+    /**
+     * List exception user in organization
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function getUserOrganization(Request $request)
     {
         // TODO: Implement getUserOrganization() method.
@@ -163,6 +171,11 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
         return response()->json($response);
     }
 
+    /**
+     * Add an user to organization exception
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function addUserOrganizationException(Request $request)
     {
         // TODO: Implement addUserOrganizationException() method.
@@ -219,6 +232,11 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
         return response()->json($response);
     }
 
+    /**
+     * Remove an user to organization exception
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeUserOrganizationException(Request $request)
     {
         // TODO: Implement removeUserOrganizationException() method.
@@ -245,6 +263,11 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
         return response()->json($response);
     }
 
+    /**
+     * Remove mulitple user to organization exception
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function removeMultiUserOrganizationException(Request $request)
     {
         // TODO: Implement removeMultiUserOrganizationException() method.
@@ -256,7 +279,7 @@ class TmsUserOrgExceptionRepository implements ITmsUserOrgExceptionInterface
             DB::beginTransaction();
 
             TmsUserOrganizationException::where('organization_id', $org_id)->whereIn('user_id', $lstUserIDs)->delete();
-            
+
             TmsUserOrganizationCourseException::where('organization_id', $org_id)->whereIn('user_id', $lstUserIDs)->delete();
 
             DB::commit();

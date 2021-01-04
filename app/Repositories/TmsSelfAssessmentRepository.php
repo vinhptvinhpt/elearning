@@ -1,8 +1,5 @@
 <?php
-
-
 namespace App\Repositories;
-
 
 use App\Exports\SelfExportView;
 use App\TmsLog;
@@ -24,7 +21,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommonInterface
 {
-
     //region self assessment
     public function getall(Request $request)
     {
@@ -202,7 +198,6 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         }
         return response()->json($response);
     }
-
     //endregion
 
     //region question self assessment
@@ -569,7 +564,6 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($tms_ques);
     }
 
-
     public function getListSelfAssessment()
     {
         // TODO: Implement getListSelfAssessment() method.
@@ -612,7 +606,6 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         $datas = TmsSelfQuestion::with(['sections', 'sections.lstChildQuestion'])->findOrFail($ques_id);
         return response()->json($datas);
     }
-
     //endregion
 
     //region present self assessments
@@ -939,7 +932,6 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         }
         return response()->json($response);
     }
-
     //endregion
 
     //region statistic self assessment
@@ -1021,10 +1013,9 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($response);
 
     }
-
     //endregion
 
-
+    //region result and export result
     public function viewResult($self_id, $user_id, $course_id)
     {
         // TODO: Implement viewResult() method.
@@ -1320,4 +1311,5 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($responseModel);
 
     }
+    //endregion
 }
