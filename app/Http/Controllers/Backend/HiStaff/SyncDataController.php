@@ -222,7 +222,7 @@ class SyncDataController
                     $org_parent = DB::table('tms_organization_histaff_mapping as tohm')
                         ->join('tms_organization as tor', 'tohm.tms_code', '=', 'tor.code')
                         ->where('tohm.histaff_code', '=', $org_code)
-                        ->select('tor.id', 'tor.code')->first();
+                        ->select('tor.id', 'tor.code', 'tor.level')->first();
 
                 } else {
                     $company_parent = convertOrgCode($data['parent_code']);
@@ -230,7 +230,7 @@ class SyncDataController
 
                     $org_parent = DB::table('tms_organization as tor')
                         ->where('tor.code', '=', $org_code)
-                        ->select('tor.id', 'tor.code')->first();
+                        ->select('tor.id', 'tor.code', 'tor.level')->first();
                 }
 
                 if ($org_parent) {
