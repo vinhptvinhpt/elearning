@@ -115,6 +115,8 @@
         $(this).removeClass('error');
     });
 
+    //05/01/2020 Comment out by cuonghq: hide login sso so don't need to check
+    /*
     var userAgent = window.navigator.userAgent.toLowerCase(),
         safari = /safari/.test(userAgent),
         ios = /iphone|ipod|ipad/.test(userAgent);
@@ -161,6 +163,8 @@
             }
         }
     });
+    */
+
     $('.datepicker').datepicker();
 
     function logout() {
