@@ -65,7 +65,7 @@
 
 <script type="text/javascript" src="{{mix("/assets/js/app.js")}}"></script>
 
-<script src="/sso/sslssso.js"></script>
+{{--<script src="/sso/sslssso.js"></script>--}}
 <script src="/js/sweetalert.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
 <script src="/assets/vendors/jquery-toggles/toggles.min.js"></script>
@@ -166,14 +166,14 @@
     function logout() {
         $.ajax({
             type: "POST",
-            url: '/bgtlogout',
+            url: '/bgtlogout0',
             data: {
                 _token: '{{csrf_token()}}'
             },
             success: function (data) {
                 if (data.status) {
                     localStorage.setItem(logoutCookie, 'logout');
-                    sslssso.logout();
+                    //sslssso.logout();
                     window.location.href = "/";
                 } else {
                     swal({

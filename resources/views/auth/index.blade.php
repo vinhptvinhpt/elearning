@@ -135,9 +135,6 @@
         </form>
     </div>
 </div>
-<div class="block">
-
-</div>
 
 <script>
     var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
