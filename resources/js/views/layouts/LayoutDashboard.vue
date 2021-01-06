@@ -99,7 +99,7 @@
             window.location.href = '/';
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error.response);
           });
       }
     },
@@ -108,14 +108,14 @@
       // this.$utils.setLayout('default')
       this.checkRole();
     },
-    updated() {
-      var getAuthUser = localStorage.getItem('auth.user');
-      var getAuthToken = localStorage.getItem('auth.token');
-      //if null -> required login
-      if (!getAuthUser || !getAuthToken) {
-        this.logOut();
-      }
-    }
+    // updated() {
+    //   var getAuthUser = localStorage.getItem('auth.user');
+    //   var getAuthToken = localStorage.getItem('auth.token');
+    //   //if null -> required login
+    //   if (!getAuthUser || !getAuthToken) {
+    //     this.logOut();
+    //   }
+    // }
   }
 </script>
 
