@@ -101,12 +101,21 @@
           .catch(error => {
             console.log(error.response);
           });
+      },
+      checkLogin() {
+        var getAuthUser = localStorage.getItem('auth.user');
+        var getAuthToken = localStorage.getItem('auth.token');
+        //if null -> required login
+        if (!getAuthUser || !getAuthToken) {
+          this.logOut();
+        }
       }
     },
     mounted() {
       this.openMenu();
       // this.$utils.setLayout('default')
       this.checkRole();
+      this.checkLogin();
     },
     // updated() {
     //   var getAuthUser = localStorage.getItem('auth.user');
