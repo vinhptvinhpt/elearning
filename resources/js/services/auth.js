@@ -30,7 +30,6 @@ export default {
 
     async logout() {
         try {
-            console.log('123');
             let token = Ls.get('auth.token');
             var data = {token: token};
             await axios.post('/api/auth/logout', data);

@@ -237,11 +237,11 @@
             Ls.remove('auth.user');
             Ls.remove('auth.lang');
             Ls.remove('__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye');
-            sslssso.logout();
+            //sslssso.logout();
             window.location.href = '/';
           })
           .catch(error => {
-            console.log(error.response.data);
+            console.log(error.response);
           });
       },
       gotoDashboard() {
