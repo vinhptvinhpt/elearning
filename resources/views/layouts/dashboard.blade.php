@@ -65,7 +65,7 @@
 
 <script type="text/javascript" src="{{mix("/assets/js/app.js")}}"></script>
 
-<script src="/sso/sslssso.js"></script>
+{{--<script src="/sso/sslssso.js"></script>--}}
 <script src="/js/sweetalert.min.js"></script>
 <script src="/js/bootstrap-select.min.js"></script>
 <script src="/assets/vendors/jquery-toggles/toggles.min.js"></script>
@@ -115,6 +115,8 @@
         $(this).removeClass('error');
     });
 
+    //05/01/2020 Comment out by cuonghq: hide login sso so don't need to check
+    /*
     var userAgent = window.navigator.userAgent.toLowerCase(),
         safari = /safari/.test(userAgent),
         ios = /iphone|ipod|ipad/.test(userAgent);
@@ -161,19 +163,21 @@
             }
         }
     });
+    */
+
     $('.datepicker').datepicker();
 
     function logout() {
         $.ajax({
             type: "POST",
-            url: '/bgtlogout',
+            url: '/bgtlogout0',
             data: {
                 _token: '{{csrf_token()}}'
             },
             success: function (data) {
                 if (data.status) {
                     localStorage.setItem(logoutCookie, 'logout');
-                    sslssso.logout();
+                    //sslssso.logout();
                     window.location.href = "/";
                 } else {
                     swal({

@@ -252,13 +252,17 @@ class SyncDataController
                     ]
                 );
             }
-            if ($company_parent)
+            $code_org = $data['code'];
+            if ($company_parent) {
                 $org_code_check = $company_parent . '-' . $org_mapping->tms_code;
+                $code_org = $company_parent . '-' . $data['code'];
+            }
+
 
             $org_check = TmsOrganization::where('code', $org_code_check)->first();
 
             if ($org_check) {
-                $org_check->code = $company_parent . '-' . $data['code'];
+                $org_check->code = $code_org;
                 $org_check->name = $data['name'];
                 $org_check->description = $data['description'];
                 $org_check->parent_id = $parent_id;
@@ -270,7 +274,7 @@ class SyncDataController
             } else {
 
                 TmsOrganization::firstOrCreate([
-                    'code' => $company_parent . '-' . $data['code'],
+                    'code' => $code_org,
                     'parent_id' => $parent_id
                 ],
                     [

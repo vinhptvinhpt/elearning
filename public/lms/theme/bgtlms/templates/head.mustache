@@ -21,8 +21,7 @@
 <html {{{ output.htmlattributes }}}>
 <head>
     <title>{{{ output.page_title }}}</title>
-    <link href="/lms/theme/bgtlms/style/fontRoboto.css"
-          rel="stylesheet">
+    <link href="/lms/theme/bgtlms/style/fontRoboto.css" rel="stylesheet">
     <link rel="shortcut icon" href="/images/favicon.png"/>
     {{{ output.standard_head_html }}}
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +39,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
-    <script src="/sso/sslssso.js"></script>
+<!--    <script src="/sso/sslssso.js"></script>-->
 
     <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12"></script>
     <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
@@ -73,8 +72,8 @@
                 localStorage.clear();
                 window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
             }
-            var jwtsso = getToken();
-            if (jwtsso) {
+            //var jwtsso = getToken();
+            //if (jwtsso) {
                 <!-- $.ajax({ -->
                 <!-- url:'/sso/authentoken', -->
                 <!-- data: {'jwt': jwtsso}, -->
@@ -101,39 +100,39 @@
                 <!-- console.log(ex); -->
                 <!-- } -->
                 <!-- }); -->
-            } else {
-                $.ajax({
-                    url: '/lms/login/index.php',
-                    data: {action: 'sso.logout'},
-                    type: 'POST',
-                    //dataType: 'json',
-                    success: function (data) {
-                        //  if (data == 1 && window.location.href != '/lms/login/index.php') {
-                        window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
-                        //}
-                    }
-                });
-            }
+            // } else {
+            //     $.ajax({
+            //         url: '/lms/login/index.php',
+            //         data: {action: 'sso.logout'},
+            //         type: 'POST',
+            //         //dataType: 'json',
+            //         success: function (data) {
+            //             //  if (data == 1 && window.location.href != '/lms/login/index.php') {
+            //             window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+            //             //}
+            //         }
+            //     });
+            // }
         });
 
-        function getCookieByName(o) {
-            var e;
-            if (2 === (e = ("; " + document.cookie).split("; " + o + "=")).length) return e.pop().split(";").shift()
-        }
-
-        var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
-        var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
-
-        function isSafariBrowser() {
-            var o = navigator.userAgent.indexOf("Safari") > -1;
-            return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
-        }
-
-        function getToken() {
-            var jwtsso;
-            jwtsso = getCookieByName(safariCookie);
-            return jwtsso;
-        }
+        // function getCookieByName(o) {
+        //     var e;
+        //     if (2 === (e = ("; " + document.cookie).split("; " + o + "=")).length) return e.pop().split(";").shift()
+        // }
+        //
+        // var tokenId = 'ssls.sso.jwt.bd629ce2de47436e3a9cdd2673e97b17';
+        // var safariCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfL';
+        //
+        // function isSafariBrowser() {
+        //     var o = navigator.userAgent.indexOf("Safari") > -1;
+        //     return navigator.userAgent.indexOf("Chrome") > -1 && o && (o = !1), o
+        // }
+        //
+        // function getToken() {
+        //     var jwtsso;
+        //     jwtsso = getCookieByName(safariCookie);
+        //     return jwtsso;
+        // }
 
         function logoutClick() {
             localStorage.clear();

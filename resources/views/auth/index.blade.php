@@ -12,9 +12,10 @@
 <link href="/css/login.css" rel="stylesheet">
 
 <script src="/template/assets/node_modules/jquery/jquery-3.2.1.min.js"></script>
+
 <script src="/design/js/bootstrap.min.js"></script>
 
-<script src="/sso/sslssso.js"></script>
+{{--<script src="/sso/sslssso.js"></script>--}}
 
 <body>
 
@@ -134,12 +135,10 @@
         </form>
     </div>
 </div>
-<div class="block">
-
-</div>
 
 <script>
     var logoutCookie = '__c2FmYXJpVmVyaWZpY2F0aW9uVG9rZW4UfFzcvye';
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -238,9 +237,11 @@
         loginSso(1);
         return false;
     });
+
     $(function () {
         $(".preloader").fadeOut();
     });
+
     $(function () {
         $('[data-toggle="tooltip"]').tooltip()
     });
@@ -362,7 +363,6 @@
         normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time);
     }
 
-
     function normalSSOLogin(url, user, pass, apikey, callback, remember, confirm_status, confirm_code, order, confirm_time) {
         $.ajax({
             type: "POST",
@@ -399,7 +399,7 @@
                     localStorage.setItem('auth.token', data.jwt);
                     localStorage.setItem('auth.user', JSON.stringify(userinfo));
                     localStorage.setItem('auth.lang', 'en');
-                    sslssso.login(data.jwt);
+                    //sslssso.login(data.jwt);
                     loginLMS(data, callback);
                     // // [VinhPT]
                     // // Check if description is student => bgt.tinhvan.com/lms else => bgt.tinhvan.com
