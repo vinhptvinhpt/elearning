@@ -16,6 +16,7 @@
     "ext-json": "*",
     "ext-openssl": "*",
     "barryvdh/laravel-dompdf": "^0.8.5",
+    "bepsvpt/secure-headers": "^7.1",
     "ckeditor/ckeditor": "^4.12",
     "ckfinder/ckfinder-laravel-package": "v3.5.1.2",
     "doctrine/dbal": "^2.9",
