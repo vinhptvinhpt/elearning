@@ -572,9 +572,9 @@ return [
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
         'script-src' => [
 
-            'none' => false,
-
-            'self' => true,
+//            'none' => false,
+//
+//            'self' => true,
 
             // 'report-sample' => false,
 //            'allow' => [
