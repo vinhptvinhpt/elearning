@@ -110,7 +110,7 @@ return [
      */
 
     'hsts' => [
-        'enable' => false,
+        'enable' => true,
 
         'max-age' => 31536000,
 
@@ -460,7 +460,7 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/base-uri
         'base-uri' => [
-            //
+			'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/child-src
@@ -490,7 +490,7 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-ancestors
         'frame-ancestors' => [
-            //
+			'self' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/frame-src
@@ -520,7 +520,7 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/object-src
         'object-src' => [
-            //
+            'none' => true,
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/plugin-types
@@ -571,48 +571,49 @@ return [
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src
         'script-src' => [
-            'none' => false,
 
-            'self' => false,
+            'none' => true,
 
-            'report-sample' => false,
+            // 'self' => false,
 
-            'allow' => [
-                // 'url',
-            ],
+            // 'report-sample' => false,
 
-            'schemes' => [
-                // 'data:',
-                // 'https:',
-            ],
+            // 'allow' => [
+                // // 'url',
+            // ],
 
-            /* followings are only work for `script` and `style` related directives */
+            // 'schemes' => [
+                // // 'data:',
+                // // 'https:',
+            // ],
 
-            'unsafe-inline' => false,
+            // /* followings are only work for `script` and `style` related directives */
 
-            'unsafe-eval' => false,
+            // 'unsafe-inline' => false,
 
-            // https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
-            'unsafe-hashes' => false,
+            // 'unsafe-eval' => false,
 
-            // Enable `strict-dynamic` will *ignore* `self`, `unsafe-inline`,
-            // `allow` and `schemes`. You can find more information from:
-            // https://www.w3.org/TR/CSP3/#strict-dynamic-usage
-            'strict-dynamic' => false,
+            // // https://www.w3.org/TR/CSP3/#unsafe-hashes-usage
+            // 'unsafe-hashes' => false,
 
-            'hashes' => [
-                'sha256' => [
-                    // 'sha256-hash-value-with-base64-encode',
-                ],
+            // // Enable `strict-dynamic` will *ignore* `self`, `unsafe-inline`,
+            // // `allow` and `schemes`. You can find more information from:
+            // // https://www.w3.org/TR/CSP3/#strict-dynamic-usage
+            // 'strict-dynamic' => false,
 
-                'sha384' => [
-                    // 'sha384-hash-value-with-base64-encode',
-                ],
+            // 'hashes' => [
+                // 'sha256' => [
+                    // // 'sha256-hash-value-with-base64-encode',
+                // ],
 
-                'sha512' => [
-                    // 'sha512-hash-value-with-base64-encode',
-                ],
-            ],
+                // 'sha384' => [
+                    // // 'sha384-hash-value-with-base64-encode',
+                // ],
+
+                // 'sha512' => [
+                    // // 'sha512-hash-value-with-base64-encode',
+                // ],
+            // ],
         ],
 
         // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Security-Policy/script-src-attr
