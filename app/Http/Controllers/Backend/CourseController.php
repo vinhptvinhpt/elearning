@@ -630,17 +630,25 @@ class CourseController extends Controller
 
             //Add newly course to phân quyền dữ liệu
             $checkRoleOrg = 0;
-            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-                //admin do nothing
-                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
-                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
-                    if (isset($checkOrg)) {
-                        $checkRoleOrg = $checkOrg->id;
-                    }
+//            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+//                //admin do nothing
+//                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+//                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+//                    if (isset($checkOrg)) {
+//                        $checkRoleOrg = $checkOrg->id;
+//                    }
+//                }
+//            } else { //User thuoc to chuc
+//                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+//            }
+
+            if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+                $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+                if (isset($checkOrg)) {
+                    $checkRoleOrg = $checkOrg->id;
                 }
-            } else { //User thuoc to chuc
-                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
             }
+
             if ($checkRoleOrg != 0) {
                 $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
                 if (isset($org_role)) {
