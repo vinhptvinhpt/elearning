@@ -8,6 +8,8 @@ use App\MdlUser;
 use App\Role;
 use App\StudentCertificate;
 use App\TmsNotification;
+use App\TmsOrganizationEmployee;
+use App\TmsOrganizationTeamMember;
 use App\TmsUserDetail;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -332,6 +334,28 @@ class LoginController extends Controller
 
             $response['data'] = $data_lms;
 
+
+           /* //Get position and team and add to session
+            $org_data = array(
+                'org' => [],
+                'teams' => []
+            );
+            $checkPosition = TmsOrganizationEmployee::query()->where('user_id', $checkUser->id)->with('organization')->first();
+            if (isset($checkPosition)) {
+                $org_data['org']['org_position'] = $checkPosition->position;
+                $org_data['org']['org_id'] = $checkPosition->organization_id;
+                $org_data['org']['org_name'] = $checkPosition->organization ? $checkPosition->organization->name : '';
+            }
+            $checkTeams = TmsOrganizationTeamMember::query()->where('user_id', $checkUser->id)->with('team')->get();
+            if (!empty($checkTeams)) {
+                foreach ($checkTeams as $checkTeam) {
+                    $org_data['teams'][] = [
+                        'team_id' => $checkTeam->team_id,
+                        'team_name' => $checkTeam->team ? $checkTeam->team->name: ''
+                    ];
+                }
+            }
+            $request->session()->put($checkUser->id . '_org', $org_data);*/
             return response()->json($response);
 
         } catch (Exception $e) {
@@ -348,6 +372,16 @@ class LoginController extends Controller
             }
         } catch (\Exception $e) {
 //            return response()->json(['status' => 'FAILED']);
+        }
+        $user_id = Auth::id();
+        //Xóa session lưu role and slugs
+        $sess_key = $user_id . '_roles_and_slugs';
+        if ($request->session()->has($sess_key)) {
+            $request->session()->forget($sess_key);
+        }
+        $org_sess_key = $user_id . '_org';
+        if ($request->session()->has($org_sess_key)) {
+            $request->session()->forget($org_sess_key);
         }
         Auth::logout();
         setcookie(Config::get('constants.domain.HISTAFF-COOKIE'), '', time() - 3600, '/', Config::get('constants.domain.DOMAIN-COOKIE'), false, false);
