@@ -7,6 +7,7 @@ use App\ModelHasRole;
 use App\Role;
 use App\TmsCountryManager;
 use App\TmsOrganizationEmployee;
+use App\TmsOrganizationTeamMember;
 use App\TmsUserDetail;
 use App\TmsUserOrganizationCourseException;
 use App\TmsUserOrganizationException;
@@ -66,41 +67,94 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             $q->where('deleted', '=', 0);
         });
 
-
         if (strlen($position) != 0) {
             $list->where('position', $position);
         }
 
         $current_user_id = \Auth::user()->id;
-        $line_employees = [];
+
         $countries = [];
-
-//lấy theo tổ chức
-        if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
-            $current_user_roles_and_slugs = checkRole();
-        } else {
-            $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
-        }
-        //nếu k kịp lấy role từ frontend => load from session
-        if ($current_user_roles_and_slugs['roles']->has_role_admin) {
-            $role = Role::ADMIN;
-        } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
-            $role = Role::ROLE_MANAGER;
-        } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
-            $role = Role::ROLE_LEADER;
-        }
-
-
-        if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
-            if (strlen($organization_id) == 0 || $organization_id == 0) {
-                $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
-                if (isset($check)) {
-                    $organization_id = $check->organization_id;
-                }
+        //là country manager lấy theo country
+        $check_country_manager = TmsCountryManager::query()
+            ->where('user_id', $current_user_id)->get();
+        if (count($check_country_manager) != 0) {
+            foreach ($check_country_manager as $country_manager) {
+                $countries[] = $country_manager->country;
             }
         }
+        if (!empty($countries)) {
+            $list->whereHas('user', function ($q) use ($countries) {
+                $q->whereIn('country', $countries);
+            });
+        } else {
+            //lấy theo tổ chức
+            $team_ids = [];
+            $position = '';
+            $show_pos = array(
+                TmsOrganizationEmployee::POSITION_MANAGER,
+                TmsOrganizationEmployee::POSITION_LEADER,
+                TmsOrganizationEmployee::POSITION_EMPLOYEE
+            );
 
-        //Hide user has same or higher rank
+            if (!$request->session()->has($current_user_id . '_roles_and_slugs')) {
+                $current_user_roles_and_slugs = checkRole();
+            } else {
+                $current_user_roles_and_slugs = $request->session()->get($current_user_id . '_roles_and_slugs');
+            }
+            //nếu k kịp lấy role từ frontend => load from session
+            if ($current_user_roles_and_slugs['roles']->has_role_admin) {
+                $role = Role::ADMIN;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_manager) {
+                $role = Role::ROLE_MANAGER;
+            } else if ($current_user_roles_and_slugs['roles']->has_role_leader) {
+                $role = Role::ROLE_LEADER;
+            }
+
+            if ($role == Role::ROLE_MANAGER || $role == Role::ROLE_LEADER) {
+                if (strlen($organization_id) == 0 || $organization_id == 0) {
+//                $check = TmsOrganizationEmployee::query()->where('user_id', $current_user_id)->first();
+//                if (isset($check)) {
+//                    $organization_id = $check->organization_id;
+//                }
+                    //if ($request->session()->has($current_user_id . '_org')) {
+                    //    $org_data = $request->session()->get($current_user_id . '_org');
+                    //} else {
+
+                    self::setUserOrgData($current_user_id, $request);
+                    $org_data = $request->session()->get($current_user_id . '_org');
+                    if(isset($org_data['org']) && !empty($org_data['org'])) {
+                        $organization_id = $org_data['org']['org_id'];
+                        $position = $org_data['org']['org_position'];
+                    }
+                    if (isset($org_data['teams']) && !empty($org_data['teams'])) {
+                        foreach ($org_data['teams'] as $team) {
+                            $team_ids[] = $team['team_id'];
+                        }
+                    }
+
+                    //}
+
+                    if ($position == TmsOrganizationEmployee::POSITION_MANAGER) {
+                        $show_pos = array(
+                            TmsOrganizationEmployee::POSITION_MANAGER,
+                            TmsOrganizationEmployee::POSITION_LEADER,
+                            TmsOrganizationEmployee::POSITION_EMPLOYEE
+                        );
+                    } elseif ($position == TmsOrganizationEmployee::POSITION_LEADER) {
+                        $show_pos = array(
+                            TmsOrganizationEmployee::POSITION_LEADER,
+                            TmsOrganizationEmployee::POSITION_EMPLOYEE
+                        );
+                    }  elseif ($position == TmsOrganizationEmployee::POSITION_EMPLOYEE) {
+                        $show_pos = array(
+                            TmsOrganizationEmployee::POSITION_EMPLOYEE
+                        );
+                    }
+
+                }
+            }
+
+            //Hide user has same or higher rank
 //        if (strlen($role) != 0) {
 //            if ($role == Role::ROLE_MANAGER) {
 //                $list = $list->where('position', '<>', Role::ROLE_MANAGER);
@@ -109,22 +163,40 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
 //            }
 //        }
 
-        //query cho các user khác => lấy theo tổ chức
-        if (is_numeric($organization_id) && $organization_id != 0) {
-            if ($view_mode == 'recursive') {
-                $list->whereIn('user_id', function ($q2) use ($organization_id) {
-                    $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
+            //query cho các user khác => lấy theo tổ chức
+            if (is_numeric($organization_id) && $organization_id != 0) {
+                if ($view_mode == 'recursive') {
+                    $list->whereIn('user_id', function ($q2) use ($organization_id) {
+                        $q2->select('org_uid')->from(DB::raw("(select ttoe.organization_id, ttoe.user_id as org_uid
                             from (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe join tms_organization tor on tor.id = toe.organization_id order by tor.parent_id, toe.id) ttoe,
                             (select @pv := $organization_id) initialisation
                             where find_in_set(ttoe.parent_id, @pv) and length(@pv := concat(@pv, ',', ttoe.organization_id))
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = $organization_id) as org_tp"));
+                    });
+                } else {
+                    $list->where('organization_id', $organization_id);
+                }
+            }
+
+            if (!empty($team_ids)) { //User in team(s)
+                $list->whereIn('user_id', function ($q3) use ($team_ids) {
+                    $q3->select('user_id')
+                        ->from('tms_organization_team_members')
+                        ->whereIn('team_id', $team_ids);
                 });
-            } else {
-                $list->where('organization_id', $organization_id);
+                //Lấy các vị trí <= curent user
+                $list = $list->whereIn('position', $show_pos);
+            } else { //User not in any team
+                $list->whereNotIn('user_id', function ($q4) use ($organization_id, $show_pos) {
+                    $q4->select('user_id')->from('tms_organization_employee')
+                        ->where('organization_id', $organization_id)
+                        ->whereNotIn('position', $show_pos);
+                });
             }
         }
 
+        $line_employees = [];
 //là line manager lấy line employees
         $check_line_employees = TmsOrganizationEmployee::query()
             ->where('line_manager_id', $current_user_id)->get();
@@ -135,20 +207,6 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         }
         if (!empty($line_employees)) {
             $list->orWhereIn('user_id', $line_employees);
-        }
-
-//là country manager lấy theo country
-        $check_country_manager = TmsCountryManager::query()
-            ->where('user_id', $current_user_id)->get();
-        if (count($check_country_manager) != 0) {
-            foreach ($check_country_manager as $country_manager) {
-                $countries[] = $country_manager->country;
-            }
-        }
-        if (!empty($countries)) {
-            $list->orwhereHas('user', function ($q) use ($countries) {
-                $q->whereIn('country', $countries);
-            });
         }
 
         $list->orderByRaw(DB::raw("FIELD(position, 'manager', 'leader', 'employee')"));
@@ -168,6 +226,33 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
         ];
 
         return response()->json($response);
+    }
+
+    /**
+     * @param Request $request
+     */
+    public function setUserOrgData($user_id, Request $request) {
+        //Get position and team and add to session
+        $org_data = array(
+            'org' => [],
+            'teams' => []
+        );
+        $checkPosition = TmsOrganizationEmployee::query()->where('user_id', $user_id)->with('organization')->first();
+        if (isset($checkPosition)) {
+            $org_data['org']['org_position'] = $checkPosition->position;
+            $org_data['org']['org_id'] = $checkPosition->organization_id;
+            $org_data['org']['org_name'] = $checkPosition->organization ? $checkPosition->organization->name : '';
+        }
+        $checkTeams = TmsOrganizationTeamMember::query()->where('user_id', $user_id)->with('team')->get();
+        if (!empty($checkTeams)) {
+            foreach ($checkTeams as $checkTeam) {
+                $org_data['teams'][] = [
+                    'team_id' => $checkTeam->team_id,
+                    'team_name' => $checkTeam->team ? $checkTeam->team->name: ''
+                ];
+            }
+        }
+        $request->session()->put($user_id . '_org', $org_data);
     }
 
     /**
