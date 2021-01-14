@@ -83,7 +83,7 @@ class TmsOrganizationEmployeeRepository implements ICommonInterface
             }
         }
         if (!empty($countries)) {
-            $list->orwhereHas('user', function ($q) use ($countries) {
+            $list->whereHas('user', function ($q) use ($countries) {
                 $q->whereIn('country', $countries);
             });
         } else {
