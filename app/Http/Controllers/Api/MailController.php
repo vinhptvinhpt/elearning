@@ -14,6 +14,7 @@ use App\TmsInvitation;
 use App\TmsNotification;
 use App\TmsOrganizationEmployee;
 use App\TmsUserDetail;
+use Config;
 use Exception;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -1120,6 +1121,15 @@ class MailController extends Controller
                         $cc_again = false;
                         //org uppers, send only
                         $orgUppers = self::orgUppers($user_id);
+
+                        //Nếu k có line manager, gửi cho system email
+                        if (!empty($orgUppers)) {
+                            $system_email = Config::get('mail.username');
+                            if (strlen($system_email) != 0) {
+                                $orgUppers = array($system_email);
+                            }
+                        }
+
                         if (!empty($orgUppers)) {
                             foreach ($orgUppers as $orgUpper) {
                                 $content_to_uppers = new CourseSendMail(

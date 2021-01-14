@@ -39,12 +39,11 @@
                                                         id="sample">
                                                     <option value="">{{trans.get('keys.chon_thu_vien_khoa_hoc')}}
                                                     </option>
-                                                    <option v-for="course in coursesamples" :value="course">
+                                                    <option v-for="course in coursesamples" :value="course.id">
                                                         {{course.shortname}} - {{course.fullname}}
                                                     </option>
                                                 </select>
-                                                <label v-if="!sample"
-                                                       class="required text-danger sample_id_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
+                                                <label v-if="!sample" class="required text-danger sample_id_required hide">{{trans.get('keys.truong_bat_buoc_phai_nhap')}}</label>
                                             </div>
                                             <div class="col-sm-6 col-md-4 form-group">
                                                 <label for="inputText123">{{trans.get('keys.ma_thu_vien')}} *</label>
@@ -225,7 +224,7 @@
                 libraryid: 0,
                 is_toeic: false,
                 string_ip: "",
-                sample: '', //khóa học mẫu được chọn
+                sample: 0, //khóa học mẫu được chọn
                 coursesamples: [], //danh sách khóa học mẫu,
                 language: this.trans.get('keys.language'),
                 course_budget: 0,
@@ -243,20 +242,23 @@
         },
         methods: {
             onChange: function () {
-                this.libraryid = this.sample.shortname;
-                this.fullname = this.sample.fullname;
-                this.description = this.sample.description;
-                this.avatar = this.sample.avatar;
-                this.allow_register = this.sample.allow_register;
-                this.total_date_course = this.sample.total_date_course;
-                //CKEDITOR.instances.article_ckeditor.setData(this.description);
-                this.description = this.sample.description;
-                if (this.sample.pass_score)
-                    this.pass_score = Math.floor(this.sample.pass_score);
-                this.is_end_quiz = this.sample.is_end_quiz;
-
-                //this.shortname = this.convertToShortName(this.fullname);
-                this.setShortName();
+              this.coursesamples.forEach(function(item){
+                if (parseInt(this.sample) === parseInt(item.id)) {
+                  this.libraryid = item.shortname;
+                  this.fullname = item.fullname;
+                  this.description = item.description;
+                  this.avatar = item.avatar;
+                  this.allow_register = item.allow_register;
+                  this.total_date_course = item.total_date_course;
+                  //CKEDITOR.instances.article_ckeditor.setData(this.description);
+                  this.description = item.description;
+                  if (item.pass_score)
+                    this.pass_score = Math.floor(item.pass_score);
+                  this.is_end_quiz = item.is_end_quiz;
+                  //this.shortname = this.convertToShortName(this.fullname);
+                  this.setShortName();
+                }
+              }, this);
             },
             convertToShortName(words) {
                 var text = '';
@@ -330,6 +332,10 @@
                 axios.get('/api/courses/get_list_sample')
                     .then(response => {
                         this.coursesamples = response.data;
+                        if (this.sample === 0) {
+                          this.sample = this.course_id;
+                          this.onChange();
+                        }
                     })
                     .catch(error => {
                         console.log(error.response.data);
@@ -346,29 +352,29 @@
                     });
 
             },
-            getCourseDetail() { //lấy thông tin khóa học mẫu trong trường hợp gọi từ giao diện danh sách khóa học mẫu
-                if (this.course_id === 'new') {
-                    return;
-                }
-                axios.get('/api/courses/get_course_detail/' + this.course_id)
-                    .then(response => {
-                        if (response.data.pass_score)
-                            this.pass_score = Math.floor(response.data.pass_score);
-                        this.shortname = response.data.shortname;
-                        this.fullname = response.data.fullname;
-                        this.description = response.data.description;
-                        this.allow_register = response.data.allow_register;
-                        this.total_date_course = response.data.total_date_course;
-                        this.is_end_quiz = response.data.is_end_quiz;
-                        //CKEDITOR.instances.article_ckeditor.setData(this.description);
-                        this.description = response.data.description;
-                        this.avatar = response.data.avatar;
-                    })
-                    .catch(error => {
-                        console.log(error);
-                    });
-
-            },
+            // getCourseDetail() { //lấy thông tin khóa học mẫu trong trường hợp gọi từ giao diện danh sách khóa học mẫu
+            //     if (this.course_id === 'new') {
+            //         return;
+            //     }
+            //     axios.get('/api/courses/get_course_detail/' + this.course_id)
+            //         .then(response => {
+            //             if (response.data.pass_score)
+            //                 this.pass_score = Math.floor(response.data.pass_score);
+            //             this.shortname = response.data.shortname;
+            //             this.fullname = response.data.fullname;
+            //             this.description = response.data.description;
+            //             this.allow_register = response.data.allow_register;
+            //             this.total_date_course = response.data.total_date_course;
+            //             this.is_end_quiz = response.data.is_end_quiz;
+            //             //CKEDITOR.instances.article_ckeditor.setData(this.description);
+            //             this.description = response.data.description;
+            //             this.avatar = response.data.avatar;
+            //         })
+            //         .catch(error => {
+            //             console.log(error);
+            //         });
+            //
+            // },
             createCourse() {
 
                 if (!this.sample) {
@@ -562,10 +568,10 @@
             }
         },
         mounted() {
+            this.getExistedCodes();
             this.getCourseSamples();
             this.getCategories();
-            this.getCourseDetail();
-            this.getExistedCodes();
+            //this.getCourseDetail();
         },
         updated() {
             this.setFileInput();
