@@ -1011,12 +1011,16 @@ $course = array_values($DB->get_records_sql($sql))[0];
 
 //case when enrol
 //get role to show edit button
+$roleId = null;
 $sqlGetRole = 'SELECT me.roleid FROM mdl_course mc
-left join mdl_enrol me on mc.id = me.courseid
+left join mdl_enrol me on mc.id = me.courseid  AND `me`.`enrol` <> "self"
 left join mdl_user_enrolments mue on me.id = mue.enrolid
 where mc.id = ' . $id . ' and mue.userid = ' . $USER->id;
-$getRole = array_values($DB->get_records_sql($sqlGetRole))[0];
-$roleId = $getRole->roleid;
+$resultGetRole = $DB->get_records_sql($sqlGetRole);
+if (!empty($resultGetRole)) {
+    $getRole = array_values($resultGetRole)[0]; //chỉ được enrol 1 loại giáo viên hoặc học viên, nên lấy element đầu tiên là đủ
+    $roleId = $getRole->roleid;
+}
 
 //if exist course with permission of this user
 if (!is_null($course)) {
