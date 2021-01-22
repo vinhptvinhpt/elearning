@@ -349,7 +349,7 @@
                         this.loadAutoComplete();
                     })
                     .catch(error => {
-                        //console.log(error.response.data);
+                        console.log(error);
                     });
             },
             loadAutoComplete() {
@@ -575,7 +575,7 @@
                         this.total_course = response.data.total_course;
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             hintCode() {
@@ -588,7 +588,7 @@
                         }
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             composeAppend(num) {
