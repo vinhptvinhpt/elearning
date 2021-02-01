@@ -340,9 +340,11 @@
                 $("#tags").autocomplete({
                     source: this.lightWell,
                     minLength: 2,
+
                     select: function (e, ui) {
                         this.keyword = ui.item.data_search;
-                        window.location.href = '/lms/course/view.php?id=' + ui.item.id;
+                        //Update 01/02/2021 disable feature redirect to lms course detail after press enter
+                        //window.location.href = '/lms/course/view.php?id=' + ui.item.id;
                     },
                     change: function (e, ui) {
                         // alert(ui.item.value);
