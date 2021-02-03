@@ -2,8 +2,9 @@
     <div class="row">
         <!--hien thi cau hoi theo dang cau hoi phia tren, dap an o duoi -->
         <div class="col-12">
-            <h6 style="display: flex;">{{trans.get('keys.cau_hoi')}} {{index_question + 1}}: <label
-                    v-html="question.content"></label>
+            <h6 style="display: flex;">
+<!--                {{trans.get('keys.cau_hoi')}} {{index_question + 1}}: <label v-html="question.content"></label>-->
+                {{ question.name}}:&nbsp;<label v-html="question.content"></label>
             </h6>
         </div>
 
@@ -11,7 +12,7 @@
             <table class="tbl-survey">
                 <tr>
                     <th></th>
-                    <th v-for="(ans_title,index_anstit) in question.sections[0].lst_child_question[0].answers">
+                    <th class="text-center" v-for="(ans_title,index_anstit) in question.sections[0].lst_child_question[0].answers">
                         {{ans_title.content}}
                     </th>
                 </tr>
@@ -19,7 +20,7 @@
                 <tr v-for="(ques_data,index) in question.sections">
                     <td><h6 style="font-weight:400;" class="mb-2"
                             v-html="ques_data.section_name"></h6></td>
-                    <td v-for="(ans,index_ans) in ques_data.lst_child_question[0].answers">
+                    <td class="text-center" v-for="(ans,index_ans) in ques_data.lst_child_question[0].answers">
                         <input type="radio" name="row-1" data-col="1" class="ip-radio-survey"
                                :name="'customRadio-'+ques_data.id+index" required
                                :id="'customRadio-'+ans.id"
