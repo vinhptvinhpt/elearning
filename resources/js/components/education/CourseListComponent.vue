@@ -333,22 +333,27 @@
                         this.loadAutoComplete();
                     })
                     .catch(error => {
-                        //console.log(error.response.data);
+                        console.log(error);
                     });
             },
             loadAutoComplete() {
-                $("#tags").autocomplete({
+              let current_pos = this;
+              $("#tags").autocomplete({
                     source: this.lightWell,
                     minLength: 2,
                     select: function (e, ui) {
-                        this.keyword = ui.item.data_search;
-                        window.location.href = '/lms/course/view.php?id=' + ui.item.id;
+                        current_pos.setKeyword(ui.item.data_search)
+                        //this.keyword = ui.item.data_search;//Not working for global variable
+                        //Update 01/02/2021 disable feature redirect to lms course detail after press enter
+                        //window.location.href = '/lms/course/view.php?id=' + ui.item.id;
                     },
                     change: function (e, ui) {
-                        // alert(ui.item.value);
-
+                      // alert(ui.item.value);
                     }
-                });
+              });
+            },
+            setKeyword(selected) {
+              this.keyword = selected;
             },
             lightWell(request, response) {
                 function hasMatch(s) {
@@ -409,7 +414,7 @@
                         //this.categories = response.data;
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
 
             },
@@ -426,7 +431,7 @@
                         this.$router.push({name: 'CourseIndex'});
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             getCourses(paged) {
@@ -469,7 +474,7 @@
                         this.total_course = response.data.total_course;
                     })
                     .catch(error => {
-                        console.log(error.response.data);
+                        console.log(error);
                     });
             },
             onPageChange() {
