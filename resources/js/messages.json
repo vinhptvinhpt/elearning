@@ -1101,7 +1101,9 @@
         "country_manager": "Country Manager",
         "xoa_country_manager": "Remove country manager",
         "chon_country_manager": "Select country manager",
-        "gan_country_manager": "Assign country manager"
+        "gan_country_manager": "Assign country manager",
+        "xoa_ket_qua": "Delete user result",
+        "ban_co_muon_xoa_ket_qua_nay": "Are you sure you want to delete this result"
     },
     "vi.keys": {
         "language": "",
@@ -2196,6 +2198,8 @@
         "country_manager": "Country Manager",
         "xoa_country_manager": "Xóa country manager",
         "chon_country_manager": "Chọn country manager",
-        "gan_country_manager": "Assign country manager"
+        "gan_country_manager": "Assign country manager",
+        "xoa_ket_qua": "Xóa kết quả",
+        "ban_co_muon_xoa_ket_qua_nay": "Bạn có muốn xóa kết quả này"
     }
 }

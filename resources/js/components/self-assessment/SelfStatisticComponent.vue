@@ -114,6 +114,12 @@
                                                     <span class="btn-icon-wrap"><i
                                                             class="fal fa-arrow-alt-right"></i></span>
                                     </router-link>
+                                    <a v-if="selected_role === 'root' || selected_role === 'admin'" href="javascript(0)"
+                                       @click.prevent="deletePost('/api/self-assessment-result/delete/'+user.tsu_id)"
+                                       :title="trans.get('keys.xoa_ket_qua')"
+                                       class="btn btn-sm btn-icon btn-icon-circle btn-danger btn-icon-style-2 delete-user">
+                                        <span class="btn-icon-wrap"><i class="fal fa-trash"></i></span>
+                                    </a>
                                 </td>
                             </tr>
                             <tr class="hidden self-user-content" :id="'self_user_' + user.tsu_id"
@@ -181,7 +187,14 @@
     import Ls from './../../services/ls'
 
     export default {
-        props: ['self_id'],
+        props: {
+            current_roles: Object,
+            roles_ready: Boolean,
+            self_id: {
+                type: [String, Number],
+                default: ''
+            },
+        },
         components: {Ls},
         data() {
             return {
@@ -222,7 +235,8 @@
 
                 type: '',
 
-                points: []
+                points: [],
+                selected_role: 'user',
             }
         },
         methods: {
@@ -468,12 +482,62 @@
             },
             onPageChangeUS() {
                 this.getUserSurvey();
-            }
+            },
+            getRoleFromCurrentRoles(current_roles) {
+                if (current_roles.root_user === true) {
+                    this.selected_role = 'root';
+                } else if (current_roles.has_role_admin === true) {
+                    this.selected_role = 'admin';
+                } else if (current_roles.has_role_manager === true) {
+                    this.selected_role = 'manager';
+                } else if (current_roles.has_role_leader === true) {
+                    this.selected_role = 'leader';
+                } else if (current_roles.has_user_market === true) {
+                    this.selected_role = 'user_market';
+                } else {
+                    this.selected_role = 'user';
+                }
+            },
+            deletePost(url) {
+                let current_pos = this;
+                swal({
+                    title: this.trans.get('keys.thong_bao'),
+                    text: this.trans.get('keys.ban_co_muon_xoa_ket_qua_nay'),
+                    type: "warning",
+                    showCancelButton: true,
+                    closeOnConfirm: true,
+                    showLoaderOnConfirm: true
+                }, function () {
+                    axios.post(url)
+                        .then(response => {
+                            toastr['success'](response.data.message, current_pos.trans.get('keys.thanh_cong'));
+                            if(current_pos.lstUsers.length === 1){
+                                current_pos.current_rs = current_pos.current_rs > 1 ? current_pos.current_rs -1 : 1 ;
+                            }
+                            current_pos.onPageChangeUS();
+                            //reload assign batch
+                            current_pos.assignBatch += 1;
+                        })
+                        .catch(error => {
+                            toastr['error'](current_pos.trans.get('keys.loi_he_thong_thao_tac_that_bai'), current_pos.trans.get('keys.thong_bao'));
+                        });
+                });
+
+                return false;
+            },
         },
         mounted() {
             this.selectParent();
             this.getCourseSelectOptions();
             this.getUserSurvey();
+        },
+        watch: {
+          roles_ready: function(newVal, oldVal) {
+            if (newVal === true && oldVal === false) {
+                this.getRoleFromCurrentRoles(this.current_roles);
+                console.log(this.selected_role);
+            }
+          }
         }
     }
 </script>
