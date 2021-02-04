@@ -2,27 +2,30 @@
     <div class="row">
         <!--hien thi cau hoi theo dang cau hoi phia tren, dap an o duoi -->
         <div class="col-12">
-            <h6 style="display: flex;">{{trans.get('keys.cau_hoi')}} {{index_question + 1}}: <label
-                    v-html="question.content"></label></h6>
+            <h6 style="display: flex;">
+<!--              {{trans.get('keys.cau_hoi')}} {{index_question + 1}}: <label v-html="question.content"></label>-->
+              {{ question.name}}:&nbsp;<label v-html="question.content"></label>
+            </h6>
         </div>
 
         <div class="col-12">
             <div class="row" v-for="(section,index_sec) in question.sections">
                 <div class="col-12">
-                    <h6>{{trans.get('keys.section')}} {{index_sec + 1}}: {{section.section_name}}</h6>
+<!--                    <h6>{{trans.get('keys.section')}} {{index_sec + 1}}: {{section.section_name}}</h6>-->
+                    <h6>{{trans.get('keys.section')}}: {{section.section_name}}</h6>
                 </div>
                 <div class="col-12 form-group">
                     <table class="tbl-survey">
                         <tr>
                             <th></th>
-                            <th v-for="(ans_title,index_anstit) in section.lst_child_question[0].answers">
+                            <th class="text-center" v-for="(ans_title,index_anstit) in section.lst_child_question[0].answers">
                                 {{ans_title.content}}
                             </th>
                         </tr>
                         <tr v-for="(ques_data,index) in section.lst_child_question">
                             <td><h6 style="font-weight:400;" class="mb-2"
                                     v-html="ques_data.content"></h6></td>
-                            <td v-for="(ans,index_ans) in ques_data.answers">
+                            <td class="text-center" v-for="(ans,index_ans) in ques_data.answers">
                                 <input type="radio" name="row-1" data-col="1" class="ip-radio-survey" required
                                        :name="'customRadio-'+ques_data.id+index"
                                        :id="'customRadio-'+ans.id"
@@ -71,7 +74,7 @@
                     }
                 }
                 this.question_answers.push(data_answer);
-                
+
                 var gr = {
                     type_ques: type_ques,
                     section_id: section_id,

@@ -148,6 +148,76 @@
             "time": "2020-09-07T11:50:18+00:00"
         },
         {
+            "name": "bepsvpt/secure-headers",
+            "version": "7.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bepsvpt/secure-headers.git",
+                "reference": "c80c5ff1357ab61495f168d560f12cc370d8b25b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bepsvpt/secure-headers/zipball/c80c5ff1357ab61495f168d560f12cc370d8b25b",
+                "reference": "c80c5ff1357ab61495f168d560f12cc370d8b25b",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/support": "~5.1 || ~6.0 || ~7.0 || ~8.0",
+                "php": "^7.0 || ^8.0"
+            },
+            "require-dev": {
+                "ext-json": "*",
+                "ext-xdebug": "*",
+                "orchestra/testbench": "~3.1 || ~4.0 || ~5.0 || ~6.0"
+            },
+            "suggest": {
+                "friendsofphp/php-cs-fixer": "Coding style fixer",
+                "phpstan/phpstan": "Static analysis tool",
+                "phpunit/phpunit": "PHP unit testing framework"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Bepsvpt\\SecureHeaders\\SecureHeadersServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Bepsvpt\\SecureHeaders\\": "src/"
+                },
+                "files": [
+                    "src/helpers.php"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "bepsvpt",
+                    "email": "og7lsrszah6y3lz@infinitefa.email"
+                }
+            ],
+            "description": "Add security related headers to HTTP response. The package includes Service Providers for easy Laravel integration.",
+            "homepage": "https://github.com/bepsvpt/secure-headers",
+            "keywords": [
+                "clear-site-data",
+                "content-security-policy",
+                "csp",
+                "except-ct",
+                "feature-policy",
+                "header",
+                "hsts",
+                "https",
+                "laravel",
+                "referrer-policy"
+            ],
+            "time": "2020-12-12T07:01:56+00:00"
+        },
+        {
             "name": "ckeditor/ckeditor",
             "version": "4.15.1",
             "source": {
@@ -3347,6 +3417,75 @@
                 "dependency injection"
             ],
             "time": "2020-11-24T20:35:42+00:00"
+        },
+        {
+            "name": "predis/predis",
+            "version": "v1.1.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/predis/predis.git",
+                "reference": "9930e933c67446962997b05201c69c2319bf26de"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/predis/predis/zipball/9930e933c67446962997b05201c69c2319bf26de",
+                "reference": "9930e933c67446962997b05201c69c2319bf26de",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9"
+            },
+            "require-dev": {
+                "cweagans/composer-patches": "^1.6",
+                "phpunit/phpunit": "~4.8"
+            },
+            "suggest": {
+                "ext-curl": "Allows access to Webdis when paired with phpiredis",
+                "ext-phpiredis": "Allows faster serialization and deserialization of the Redis protocol"
+            },
+            "type": "library",
+            "extra": {
+                "composer-exit-on-patch-failure": true,
+                "patches": {
+                    "phpunit/phpunit-mock-objects": {
+                        "Fix PHP 7 and 8 compatibility": "./tests/phpunit_mock_objects.patch"
+                    },
+                    "phpunit/phpunit": {
+                        "Fix PHP 7 compatibility": "./tests/phpunit_php7.patch",
+                        "Fix PHP 8 compatibility": "./tests/phpunit_php8.patch"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Predis\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Daniele Alessandri",
+                    "email": "suppakilla@gmail.com",
+                    "homepage": "http://clorophilla.net",
+                    "role": "Creator & Maintainer"
+                },
+                {
+                    "name": "Till Krüss",
+                    "homepage": "https://till.im",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "Flexible and feature-complete Redis client for PHP and HHVM",
+            "homepage": "http://github.com/predis/predis",
+            "keywords": [
+                "nosql",
+                "predis",
+                "redis"
+            ],
+            "time": "2020-09-11T19:18:05+00:00"
         },
         {
             "name": "predis/predis",
@@ -7173,6 +7312,7 @@
                 "faker",
                 "fixtures"
             ],
+            "abandoned": true,
             "time": "2019-12-12T13:22:17+00:00"
         },
         {
@@ -8026,6 +8166,7 @@
             "keywords": [
                 "tokenizer"
             ],
+            "abandoned": true,
             "time": "2019-09-17T06:23:10+00:00"
         },
         {

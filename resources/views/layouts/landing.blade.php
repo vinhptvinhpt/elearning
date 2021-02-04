@@ -53,79 +53,79 @@
     var cookieValue = localStorage.getItem(logoutCookie);
     if (cookieValue == undefined || cookieValue == 'logout') {
         displayLogin();
-    }
-
-    // displayLogin();
-    var userAgent = window.navigator.userAgent.toLowerCase(),
-        safari = /safari/.test(userAgent),
-        ios = /iphone|ipod|ipad/.test(userAgent);
-
-    if (ios) {
-        if (safari) {
-            $('body').addClass('not-webview');
-        } else if (!safari) {
-            $('body').addClass('webview');
-        }
     } else {
-        $('body').addClass('not-ios');
+        window.location.href = '{{Config::get('constants.domain.LMS')}}';
     }
 
+    {{--var userAgent = window.navigator.userAgent.toLowerCase(),--}}
+    {{--    safari = /safari/.test(userAgent),--}}
+    {{--    ios = /iphone|ipod|ipad/.test(userAgent);--}}
 
-    // Fired after validating JWT on page onLoad process, or after a successful identification
-    function onIdentification(operation) {
-        console.log('onIdentification');
-        if (operation.status === 'SUCCESS' && localStorage.getItem("remember") == 'save') {
-            $.ajax({
-                type: "POST",
-                url: '/loginsso',
-                data: {
-                    username: operation.eIdentifier,
-                    _token: '{{csrf_token()}}'
-                },
-                success: function (data) {
-                    if (data.status === "SUCCESS") {
-                        sslssso.login(data.jwt);
-                        loginLMS(data);
-                        // window.location.href = '/tms/dashboard';
-                    } else {
-                        swal({
-                            title: "Thông báo",
-                            text: "Username hoặc Password không đúng!!!",
-                            type: "error",
-                            showCancelButton: false,
-                            closeOnConfirm: false,
-                            showLoaderOnConfirm: true
-                        });
-                    }
+    {{--if (ios) {--}}
+    {{--    if (safari) {--}}
+    {{--        $('body').addClass('not-webview');--}}
+    {{--    } else if (!safari) {--}}
+    {{--        $('body').addClass('webview');--}}
+    {{--    }--}}
+    {{--} else {--}}
+    {{--    $('body').addClass('not-ios');--}}
+    {{--}--}}
 
-                }
-            });
-        } else {
-            displayLogin();
-        }
-    }
 
-    //when logout
-    function onLogout() {
-        displayLogin();
-    }
+    {{--// Fired after validating JWT on page onLoad process, or after a successful identification--}}
+    {{--function onIdentification(operation) {--}}
+    {{--    if (operation.status === 'SUCCESS' && localStorage.getItem("remember") == 'save') {--}}
+    {{--        $.ajax({--}}
+    {{--            type: "POST",--}}
+    {{--            url: '/loginsso',--}}
+    {{--            data: {--}}
+    {{--                username: operation.eIdentifier,--}}
+    {{--                _token: '{{csrf_token()}}'--}}
+    {{--            },--}}
+    {{--            success: function (data) {--}}
+    {{--                if (data.status === "SUCCESS") {--}}
+    {{--                    sslssso.login(data.jwt);--}}
+    {{--                    loginLMS(data);--}}
+    {{--                    // window.location.href = '/tms/dashboard';--}}
+    {{--                } else {--}}
+    {{--                    swal({--}}
+    {{--                        title: "Thông báo",--}}
+    {{--                        text: "Username hoặc Password không đúng!!!",--}}
+    {{--                        type: "error",--}}
+    {{--                        showCancelButton: false,--}}
+    {{--                        closeOnConfirm: false,--}}
+    {{--                        showLoaderOnConfirm: true--}}
+    {{--                    });--}}
+    {{--                }--}}
 
-    function loginLMS(data) {
-        $.ajax({
-            type: "POST",
-            url: '/lms/loginfirst.php',
-            data: {
-                data: data.data
-            },
-            success: function (res) {
-                if (data.redirect_type.includes("lms")) {
-                    window.location.href = '{{Config::get('constants.domain.LMS')}}';
-                } else {
-                    window.location.href = '/lms/my';
-                }
-            }
-        });
-    }
+    {{--            }--}}
+    {{--        });--}}
+    {{--    } else {--}}
+    {{--        displayLogin();--}}
+    {{--    }--}}
+    {{--}--}}
+
+    {{--//when logout--}}
+    {{--function onLogout() {--}}
+    {{--    displayLogin();--}}
+    {{--}--}}
+
+    {{--function loginLMS(data) {--}}
+    {{--    $.ajax({--}}
+    {{--        type: "POST",--}}
+    {{--        url: '/lms/loginfirst.php',--}}
+    {{--        data: {--}}
+    {{--            data: data.data--}}
+    {{--        },--}}
+    {{--        success: function (res) {--}}
+    {{--            if (data.redirect_type.includes("lms")) {--}}
+    {{--                window.location.href = '{{Config::get('constants.domain.LMS')}}';--}}
+    {{--            } else {--}}
+    {{--                window.location.href = '/lms/my';--}}
+    {{--            }--}}
+    {{--        }--}}
+    {{--    });--}}
+    {{--}--}}
 
 </script>
 

@@ -387,5 +387,6 @@
     "duyet": "Approve",
     "survey_vuot_qua_4_cau_filltext": "Maximum input answer in survey is 4. This survey has enough input answer question",
     "da_co_hoc_vien_hoc_khung_nang_luc_nay_nen_khong_thay_doi_thu_tu_duoc": "There are students learn this competency, so you can't change its order",
-    "ma_to_chuc_da_ton_tai": "Organization code existed"
+    "ma_to_chuc_da_ton_tai": "Organization code existed",
+    "xoa_ket_qua_thanh_cong": "Delete result successfully"
 }

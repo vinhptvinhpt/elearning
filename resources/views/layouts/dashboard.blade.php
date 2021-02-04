@@ -170,7 +170,7 @@
     function logout() {
         $.ajax({
             type: "POST",
-            url: '/bgtlogout0',
+            url: '/bgtlogout',
             data: {
                 _token: '{{csrf_token()}}'
             },

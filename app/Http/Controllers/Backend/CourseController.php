@@ -630,18 +630,56 @@ class CourseController extends Controller
 
             //Add newly course to phân quyền dữ liệu
             $checkRoleOrg = 0;
-            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
-                //admin do nothing
-                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
-                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
-                    if (isset($checkOrg)) {
-                        $checkRoleOrg = $checkOrg->id;
-                    }
+//            if (tvHasRoles(\Auth::user()->id, ["admin", "root"]) or slug_can('tms-system-administrator-grant')) {
+//                //admin do nothing
+//                if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+//                    $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+//                    if (isset($checkOrg)) {
+//                        $checkRoleOrg = $checkOrg->id;
+//                    }
+//                }
+//            } else { //User thuoc to chuc
+//                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
+//            }
+
+            if ($request->input('selected_org') && strlen($request->input('selected_org')) > 0) { //Chon ma to chuc lam ma khoa hoc
+                $checkOrg = TmsOrganization::query()->where('code', $request->input('selected_org'))->first();
+                if (isset($checkOrg)) {
+                    $checkRoleOrg = $checkOrg->id;
                 }
-            } else { //User thuoc to chuc
-                $checkRoleOrg = tvHasOrganization(\Auth::user()->id);
             }
+
             if ($checkRoleOrg != 0) {
+                $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
+                if (isset($org_role)) {
+                    $new_relation = new TmsRoleCourse();
+                    $new_relation->role_id = $org_role->role_id;
+                    $new_relation->course_id = $course->id;
+                    $new_relation->save();
+                }
+
+                //lay tat ca user ngoai le duoc quyen quan ly course cua cctc
+                $lstUserExcept = TmsUserOrganizationException::where('organization_id', $checkRoleOrg)->pluck('user_id');
+
+                if ($lstUserExcept) {
+                    $arr_data = [];
+                    $data_course = [];
+
+                    foreach ($lstUserExcept as $user) {
+                        $data_course['user_id'] = $user;
+                        $data_course['organization_id'] = $checkRoleOrg;
+                        $data_course['course_id'] = $course->id;
+                        $data_course['created_at'] = Carbon::now();
+                        $data_course['updated_at'] = Carbon::now();
+
+                        array_push($arr_data, $data_course);
+                    }
+
+                    //gan course cho user ngoai le quan ly
+                    TmsUserOrganizationCourseException::insert($arr_data);
+                }
+
+
                 $org_role = TmsRoleOrganization::query()->where('organization_id', $checkRoleOrg)->first();
                 if (isset($org_role)) {
                     $new_relation = new TmsRoleCourse();
