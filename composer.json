@@ -29,7 +29,9 @@
     "tintnaingwin/email-checker": "^2.0",
     "tymon/jwt-auth": "0.5.*",
     "unisharp/laravel-ckeditor": "^4.7",
-    "unisharp/laravel-filemanager": "^2.0"
+    "unisharp/laravel-filemanager": "^2.0",
+    "ext-soap": "*",
+    "microsoft/windowsazure": "^0.5.7"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
