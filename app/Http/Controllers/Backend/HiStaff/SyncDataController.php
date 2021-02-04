@@ -17,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\DB;
+use JWTAuth;
 use Mockery\Exception;
 
 class SyncDataController
@@ -61,6 +62,13 @@ class SyncDataController
             $checkUser = MdlUser::where('username', $username)->first();
 
             if ($checkUser) {
+
+                // grab credentials from the request
+                $credentials = $request->only('username', 'password');
+                if (!$token = JWTAuth::attempt($credentials)) {
+                    return response()->json(['status' => 'invalid_credentials'], 401);
+                }
+
                 //Cuonghq
                 //Check role and update redirect type
                 $sru = DB::table('model_has_roles as mhr')
@@ -95,8 +103,10 @@ class SyncDataController
                 $response['redirect_type'] = $redirect_type;
 
                 if (empty($checkUser->token)) {
-                    $token = compact('token');
-                    $checkUser->token = $token['token'];
+                    $token = createJWT($username, 'data');
+//                    $token = compact('token');
+//                    \Log::info(json_encode($token));
+                    $checkUser->token = $token;
                     $updated = true;
                 }
 
@@ -436,7 +446,8 @@ class SyncDataController
                 return response()->json($result);
             }
 
-            $line_manager = MdlUser::where('username', $data['line_manager'])->first();
+//            $line_manager = MdlUser::where('username', $data['line_manager'])->first();
+            $line_manager = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($data['line_manager']))->first();
             $message = '';
 
             if (empty($line_manager)) {
@@ -453,7 +464,8 @@ class SyncDataController
 
             $convert_name = convert_name($data['fullname']);
 
-            $user = MdlUser::where('username', $data['username'])->first();
+//            $user = MdlUser::where('username', $data['username'])->first();
+            $user = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($data['username']))->first();
 
             $arr_data = [];
             $data_item = [];

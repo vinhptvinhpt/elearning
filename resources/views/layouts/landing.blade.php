@@ -3,10 +3,10 @@
 <head>
     <meta charset="utf-8">
 
-    <meta property="og:title" content="Elearning" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="/images/favicon.png" />
-    <meta property="og:description" content="Elearning" />
+    <meta property="og:title" content="Elearning"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content="/images/favicon.png"/>
+    <meta property="og:description" content="Elearning"/>
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{Config::get('constants.domain.TMS_NAME')}}</title>
@@ -32,10 +32,17 @@
 <body class="">
 
 <!-- Scripts -->
-<script src="/assets/landing/js/jquery-3.3.1.min.js"></script>
+{{--<script src="/assets/landing/js/jquery-3.3.1.min.js"></script>--}}
+<script
+        src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0="
+        crossorigin="anonymous"></script>
 <script src="/assets/landing/js/popper.min.js"></script>
 <script src="/assets/landing/js/owl.carousel.min.js"></script>
-<script src="/assets/landing/js/bootstrap.min.js"></script>
+{{--<script src="/assets/landing/js/bootstrap.min.js"></script>--}}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js"
+        integrity="sha384-w1Q4orYjBQndcko6MimVbzY0tgp4pWB4lZ7lr30WKz0vr/aWKhXdBNmNb5D92v7s"
+        crossorigin="anonymous"></script>
 <!-- MDB core JavaScript -->
 <script type="text/javascript" src="/js/custom.js"></script>
 
