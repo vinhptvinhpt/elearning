@@ -76,6 +76,11 @@ class SelfAssessmentController
         return $this->tmsSelfAssessmentRepository->deleteQuestionSelfAssessment($request);
     }
 
+    public function apiDeleteAssessmentResult($result_id)
+    {
+        return $this->tmsSelfAssessmentRepository->apiDeleteAssessmentResult($result_id);
+    }
+
     public function apiGetListAnswer($ques_id)
     {
         return $this->tmsSelfAssessmentRepository->getListAnswerQuestion($ques_id);
