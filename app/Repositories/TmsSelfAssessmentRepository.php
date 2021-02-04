@@ -557,6 +557,33 @@ class TmsSelfAssessmentRepository implements ITmsSelfAssessmentInterface, ICommo
         return response()->json($response);
     }
 
+    public function apiDeleteAssessmentResult($id)
+    {
+        \Log::info($id);
+        // TODO: Implement deleteQuestionSelfAssessment() method.
+        $response = new ResponseModel();
+        try {
+            $current_result = TmsSelfUser::where('id', $id)->first();
+            if (isset($current_result)) {
+                $self_id = $current_result->self_id;
+                $user_id = $current_result->user_id;
+                $course_id = $current_result->course_id;
+                TmsSelfUser::query()
+                    ->where('self_id', $self_id)
+                    ->where('user_id', $user_id)
+                    ->where('course_id', $course_id)
+                    ->delete();
+            }
+            $response->status = true;
+            $response->message = __('xoa_ket_qua_thanh_cong');
+        } catch (\Exception $e) {
+            $response->status = false;
+            //$response->message = $e->getMessage();
+            $response->message = __('loi_he_thong_thao_tac_that_bai');
+        }
+        return response()->json($response);
+    }
+
     public function getQuestionSelfAssessmentById($id)
     {
         // TODO: Implement getQuestionSelfAssessmentById() method.
