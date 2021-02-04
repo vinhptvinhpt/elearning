@@ -62,13 +62,6 @@ class SyncDataController
             $checkUser = MdlUser::where('username', $username)->first();
 
             if ($checkUser) {
-
-                // grab credentials from the request
-                $credentials = $request->only('username', 'password');
-                if (!$token = JWTAuth::attempt($credentials)) {
-                    return response()->json(['status' => 'invalid_credentials'], 401);
-                }
-
                 //Cuonghq
                 //Check role and update redirect type
                 $sru = DB::table('model_has_roles as mhr')
