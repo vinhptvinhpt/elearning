@@ -155,24 +155,40 @@ class LoginController extends Controller
                 return response()->json(['status' => $validator]);
             }
 
-            $checkCertificate = StudentCertificate::where('code', $username)->first();
-            if (isset($checkCertificate)) {
-                $checkUser = MdlUser::where('id', $checkCertificate->userid)->first();
-            } else {
-                $checkUser = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($username))->first();
-            }
+//            $checkCertificate = StudentCertificate::where('code', $username)->first();
+//            if (isset($checkCertificate)) {
+//                $checkUser = MdlUser::where('id', $checkCertificate->userid)->first();
+//            } else {
+//                $checkUser = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($username))->first();
+//            }
+
+            $checkUser = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($username))->first();
 
             if (!$checkUser) {
                 return response()->json(['status' => 'FAILUSER']);
             }
 
-            if ($checkUser->deleted == 1) {
+            if ($checkUser->deleted == 1 || $checkUser->active == 0) {
                 return response()->json(['status' => 'FAILBANNED']);
             }
 
-            if ($checkUser->active == 0) {
+            $working_status = 0;
+            if ($username != 'admin') {
+                $tms_user = TmsUserDetail::where('user_id', $checkUser->id)->first();
+                $working_status = $tms_user->working_status;
+            }
+
+            if ($working_status == 1) {
                 return response()->json(['status' => 'FAILBANNED']);
             }
+//
+//            if ($checkUser->deleted == 1) {
+//                return response()->json(['status' => 'FAILBANNED']);
+//            }
+//
+//            if ($checkUser->active == 0) {
+//                return response()->json(['status' => 'FAILBANNED']);
+//            }
 
             if (!password_verify($password, $checkUser->password)) {
                 return response()->json(['status' => 'FAILPASSWORD']);
@@ -335,27 +351,27 @@ class LoginController extends Controller
             $response['data'] = $data_lms;
 
 
-           /* //Get position and team and add to session
-            $org_data = array(
-                'org' => [],
-                'teams' => []
-            );
-            $checkPosition = TmsOrganizationEmployee::query()->where('user_id', $checkUser->id)->with('organization')->first();
-            if (isset($checkPosition)) {
-                $org_data['org']['org_position'] = $checkPosition->position;
-                $org_data['org']['org_id'] = $checkPosition->organization_id;
-                $org_data['org']['org_name'] = $checkPosition->organization ? $checkPosition->organization->name : '';
-            }
-            $checkTeams = TmsOrganizationTeamMember::query()->where('user_id', $checkUser->id)->with('team')->get();
-            if (!empty($checkTeams)) {
-                foreach ($checkTeams as $checkTeam) {
-                    $org_data['teams'][] = [
-                        'team_id' => $checkTeam->team_id,
-                        'team_name' => $checkTeam->team ? $checkTeam->team->name: ''
-                    ];
-                }
-            }
-            $request->session()->put($checkUser->id . '_org', $org_data);*/
+            /* //Get position and team and add to session
+             $org_data = array(
+                 'org' => [],
+                 'teams' => []
+             );
+             $checkPosition = TmsOrganizationEmployee::query()->where('user_id', $checkUser->id)->with('organization')->first();
+             if (isset($checkPosition)) {
+                 $org_data['org']['org_position'] = $checkPosition->position;
+                 $org_data['org']['org_id'] = $checkPosition->organization_id;
+                 $org_data['org']['org_name'] = $checkPosition->organization ? $checkPosition->organization->name : '';
+             }
+             $checkTeams = TmsOrganizationTeamMember::query()->where('user_id', $checkUser->id)->with('team')->get();
+             if (!empty($checkTeams)) {
+                 foreach ($checkTeams as $checkTeam) {
+                     $org_data['teams'][] = [
+                         'team_id' => $checkTeam->team_id,
+                         'team_name' => $checkTeam->team ? $checkTeam->team->name: ''
+                     ];
+                 }
+             }
+             $request->session()->put($checkUser->id . '_org', $org_data);*/
             return response()->json($response);
 
         } catch (Exception $e) {
@@ -484,9 +500,25 @@ class LoginController extends Controller
             if (!$username)
                 return response()->json(['status' => 'FAIL']);
 
+
             $checkUser = MdlUser::where('username', $username)->first();
 
             if ($checkUser) {
+
+                if ($checkUser->deleted == 1 || $checkUser->active == 0) {
+                    return response()->json(['status' => 'FAIL']);
+                }
+
+                $working_status = 0;
+                if ($username != 'admin') {
+                    $tms_user = TmsUserDetail::where('user_id', $checkUser->id)->first();
+                    $working_status = $tms_user->working_status;
+                }
+
+                if ($working_status == 1) {
+                    return response()->json(['status' => 'FAIL']);
+                }
+
                 //Cuonghq
                 //Check role and update redirect type
                 $sru = DB::table('model_has_roles as mhr')
