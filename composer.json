@@ -32,7 +32,9 @@
     "tymon/jwt-auth": "0.5.*",
     "unisharp/laravel-ckeditor": "^4.7",
     "unisharp/laravel-filemanager": "^2.0",
-    "webklex/laravel-imap": "^1.4"
+    "webklex/laravel-imap": "^1.4",
+    "ext-soap": "*",
+    "microsoft/windowsazure": "^0.5.7"
   },
   "require-dev": {
     "filp/whoops": "^2.0",
