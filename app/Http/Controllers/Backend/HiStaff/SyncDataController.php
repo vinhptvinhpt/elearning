@@ -484,6 +484,7 @@ class SyncDataController
                 $tms_user->address = $data['address'];
                 $tms_user->city = $data['office'];
                 $tms_user->country = 'vi';
+                $tms_user->start_time = $data['startdate'];
 
                 $tms_user->sex = $data['sex'] ? 1 : 0;
                 $tms_user->working_status = $data['working_status'] ? 0 : 1;
