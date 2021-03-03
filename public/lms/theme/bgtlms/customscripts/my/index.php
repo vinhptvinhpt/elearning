@@ -103,7 +103,7 @@ switch ($organizationCode) {
             $_SESSION["organizationName"] = 'Easia';
             $_SESSION["color"] = '#862055';
             $_SESSION["pathLogo"] = 'images/logo-black.png';
-            $_SESSION["pathLogoWhite"] = 'images/logo-white.png';
+            $_SESSION["pathLogoWhite"] = 'images/logo-easia.png';
             $_SESSION["component"] = 'images/cpn-easia.png';
             $_SESSION["pathBackground"] = 'images/bg-a-02.jpg';
         }
