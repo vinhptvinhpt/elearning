@@ -3464,6 +3464,9 @@ EOD;
         $loginurl = get_login_url();
         // If not logged in, show the typical not-logged-in string.
         if (!isloggedin()) {
+            // [VinhPT][MODIFY] Auto logout when display default moodle login page
+            echo file_get_contents("./login/logout_loader.html");
+            die;
             $returnstr = get_string('loggedinnot', 'moodle');
             if (!$loginpage) {
                 $returnstr .= " (<a href=\"$loginurl\">" . get_string('login') . '</a>)';
