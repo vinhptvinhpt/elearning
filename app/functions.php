@@ -3606,7 +3606,7 @@ function getBlobUrl($accountName, $container, $blob, $resourceType, $permissions
 function convertOrgCode($input)
 {
     $org_code = '';
-    switch ($input) {
+    switch (strtoupper($input)) {
         case 'EASIA':
             $org_code = 'EA';
             break;
