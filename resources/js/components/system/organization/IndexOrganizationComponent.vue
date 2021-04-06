@@ -128,7 +128,7 @@
                                                             class="custom-select custom-select-sm form-control form-control-sm"
                                                             @change="getDataList(1)">
                                                         <option value="0">{{ trans.get('keys.chon_cap') }}</option>
-                                                        <option v-for="n in max_level" :value="n">{{ n }}</option>
+                                                        <option v-for="n in max_level" :value="n">{{trans.get("keys.org_" + n)}}</option>
                                                     </select>
                                                 </label>
                                             </div>
