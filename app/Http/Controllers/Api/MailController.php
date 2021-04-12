@@ -2759,6 +2759,8 @@ class MailController extends Controller
                 'dean@easia-travel.com',
                 'ngongoc@phh-group.com',
                 'tuyetdung@easia-travel.com',
+                'ward@easia-travel.com',
+                'alizee@easia-travel.com'
             ];
             $filter_email = array_merge($dev_email, $tester_email);
             if (in_array($email, $filter_email)) {
