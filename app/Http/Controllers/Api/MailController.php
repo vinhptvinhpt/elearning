@@ -26,10 +26,7 @@ use Tintnaingwin\EmailChecker\Facades\EmailChecker;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-
-    const DEVELOPMENT = 1;
 //    const DEVELOPMENT = 0;
-
 
     /* Load / generate configuration */
     public function loadConfiguration()
@@ -99,7 +96,6 @@ class MailController extends Controller
         //get all emails in db
         $users = DB::table('tms_user_detail')
             ->whereIn('user_id', $lstData)
-			
             ->select(
                 'email',
                 'fullname',
@@ -112,34 +108,19 @@ class MailController extends Controller
             foreach ($users as $user) {
                 //send mail can not continue if has fake email
                 if (strlen($user->email) != 0 && filter_var($user->email, FILTER_VALIDATE_EMAIL)) {
-                    // Mail::to($user->email)->send(new CourseSendMail(
-                        // TmsNotification::NOTICE_SPAM_EMAIL,
-                        // '',
-                        // $user->fullname
-                    // ));
-					
-					// Mail::to($user->email)->send(new CourseSendMail(
-                    // TmsNotification::NOTICE_SPAM_EMAIL,
-                    // $user->email,
-                    // $user->fullname,
-                    // '',
-                    // '',
-                    // '',
-                    // '',
-                    // '',
-                    // '',
-                    // ''
-                // ));
-				
-		
- \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
-                    sleep(100);
+                    Mail::to($user->email)->send(new CourseSendMail(
+                        TmsNotification::NOTICE_SPAM_EMAIL,
+                        '',
+                        $user->fullname
+                    ));
+
+                    usleep(100);
                     $sent += 1;
                 } else {
                     $fail += 1;
                 }
             }
-            // \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
+            \Log::info('success: ' . $user->user_id . ', email: ' . $user->email);
             $sent += 1;
 
         } catch (\Mockery\Exception $e) {
@@ -2709,75 +2690,77 @@ class MailController extends Controller
         //Nếu không có thì đang trong chế độ nhà phát triển
         if ($mail_development_mode) {
             $dev_email = [
-                // 'immrhy@gmail.com',
-                // 'innrhy@gmail.com',
-                // 'fruity.tester@gmail.com',
-                // 'linhnt@tinhvan.com',
-                // 'nguyenlinhcksl@gmail.com',
+                'immrhy@gmail.com',
+                'innrhy@gmail.com',
+                'fruity.tester@gmail.com',
+                'linhnt@tinhvan.com',
+                'nguyenlinhcksl@gmail.com',
                 'leduytho93@gmail.com',
-                // 'duongtiendat.it@gmail.com',
-                // 'zerozeralot001@gmail.com',
-                // 'zerozeralot002@gmail.com',
-                // 'zerozeralot003@gmail.com',
-                // 'zerozeralot004@gmail.com'
+                'duongtiendat.it@gmail.com',
+                'zerozeralot001@gmail.com',
+                'zerozeralot002@gmail.com',
+                'zerozeralot003@gmail.com',
+                'zerozeralot004@gmail.com'
             ];
             $tester_email = [
-                // 'dieuly@easia-travel.com',
-                // 'nguyenthao@easia-travel.com',
-                // 'lanphuong@easia-travel.com',
+                'dieuly@easia-travel.com',
+                'nguyenthao@easia-travel.com',
+                'lanphuong@easia-travel.com',
                 'haison@easia-travel.com',
-                // 'quenguyen@easia-travel.com',
-                // 'thuylinh@easia-travel.com',
-                // 'quanghuy@easia-travel.com',
-                // 'thaontp@easia-travel.com',
+                'quenguyen@easia-travel.com',
+                'thuylinh@easia-travel.com',
+                'quanghuy@easia-travel.com',
+                'thaontp@easia-travel.com',
 //                'hongtham@easia-travel.com',
 //                'maihuong@easia-travel.com',
-                // 'minhtrang@easia-travel.com',
-                // 'nguyentrang@easia-travel.com',
+                'minhtrang@easia-travel.com',
+                'nguyentrang@easia-travel.com',
                 'ngocanh@easia-travel.com',
-                // 'myhanh@easia-travel.com',
-                // 'adam@easia-travel.com',
-                // 'wailin@easia-travel.com',
-                // 'j.renault@easia-travel.com',
-                // 'celia@easia-travel.com',
-                // 'suingun@easia-travel.com',
-                // 'yadanar@easia-travel.com',
-                // 'matt@easia-travel.com',
-                // 'diemmy@easia-travel.com',
-                // 'myvan@easia-travel.com',
-                // 'hoaithu@easia-travel.com',
-                // 'ngocthang@easia-travel.com',
+                'myhanh@easia-travel.com',
+                'adam@easia-travel.com',
+                'wailin@easia-travel.com',
+                'j.renault@easia-travel.com',
+                'celia@easia-travel.com',
+                'suingun@easia-travel.com',
+                'yadanar@easia-travel.com',
+                'matt@easia-travel.com',
+                'diemmy@easia-travel.com',
+                'myvan@easia-travel.com',
+                'hoaithu@easia-travel.com',
+                'ngocthang@easia-travel.com',
 //                'nguyenthuphuong@easia-travel.com',
-                // 'thuananh@easia-travel.com',
-                // 'soulikone@easia-travel.com',
-                // 'boun@easia-travel.com',
-                // 'rany@easia-travel.com',
-                // 'sreymom@easia-travel.com',
-                // 'sokharat@easia-travel.com',
-                // 'jessica@easia-travel.com',
-                // 'bandit@easia-travel.com',
-                // 'bram@easia-travel.com',
-                // 'pornpawee@easia-travel.com',
-                // 'suvaree@easia-travel.com',
-                // 'anong@easia-travel.com',
-                // 'suthi@easia-travel.com',
-                // 'nadi@easia-travel.com',
-                // 'zaryi@easia-travel.com',
-                // 'thomas@easia-travel.com',
-                // 'pichet@easia-travel.com',
-                // 'nathalie@easia-travel.com',
-                // 'sichan@easia-travel.com',
-                // 'minhphuc@easia-travel.com',
-                // 'tuphuong@easia-travel.com',
-                // 'minhhoa@easia-travel.com',
-                // 'baothu@easia-travel.com',
-                // 'phuocdoan@easia-travel.com',
-                // 'myvan@easia-travel.com',
-                // 'ngochien@easia-travel.com',
-                // 'quockhanh@easia-travel.com',
+                'thuananh@easia-travel.com',
+                'soulikone@easia-travel.com',
+                'boun@easia-travel.com',
+                'rany@easia-travel.com',
+                'sreymom@easia-travel.com',
+                'sokharat@easia-travel.com',
+                'jessica@easia-travel.com',
+                'bandit@easia-travel.com',
+                'bram@easia-travel.com',
+                'pornpawee@easia-travel.com',
+                'suvaree@easia-travel.com',
+                'anong@easia-travel.com',
+                'suthi@easia-travel.com',
+                'nadi@easia-travel.com',
+                'zaryi@easia-travel.com',
+                'thomas@easia-travel.com',
+                'pichet@easia-travel.com',
+                'nathalie@easia-travel.com',
+                'sichan@easia-travel.com',
+                'minhphuc@easia-travel.com',
+                'tuphuong@easia-travel.com',
+                'minhhoa@easia-travel.com',
+                'baothu@easia-travel.com',
+                'phuocdoan@easia-travel.com',
+                'myvan@easia-travel.com',
+                'ngochien@easia-travel.com',
+                'quockhanh@easia-travel.com',
                 'dean@easia-travel.com',
                 'ngongoc@phh-group.com',
-                // 'tuyetdung@easia-travel.com',
+                'tuyetdung@easia-travel.com',
+                'ward@easia-travel.com',
+                'alizee@easia-travel.com'
             ];
             $filter_email = array_merge($dev_email, $tester_email);
             if (in_array($email, $filter_email)) {
@@ -2792,8 +2775,8 @@ class MailController extends Controller
 
     function cc($content) {
         $to = [
-            // 'quenguyen@easia-travel.com',
-            // 'quenguyen@begodi.com',
+            //'quenguyen@easia-travel.com',
+            //'quenguyen@begodi.com',
             'leduytho93@gmail.com'
         ];
         foreach ($to as $item) {
