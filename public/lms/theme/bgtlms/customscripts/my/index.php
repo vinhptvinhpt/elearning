@@ -1684,7 +1684,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Teacher name" class="teacher"
+                                                                        <a title="Content creator name" class="teacher"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1700,10 +1700,10 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                 aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
                                                                     <?php } ?>
-                                                                    <p class="units" title="Estimate time"><i
+                                                                    <p class="units" title="Estimated learning duration"><i
                                                                             class="fa fa-clock-o"
                                                                             aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                        hours</p>
+                                                                        hour(s)</p>
                                                                 </div>
                                                             </div>
                                                             <?php if ($course->training_deleted == 0) { ?>
@@ -1775,7 +1775,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         </p></a>
                                                                     <div class="info-course">
                                                                         <?php if (!empty($course->teacher_name)) { ?>
-                                                                            <a title="Teacher name" class="teacher"
+                                                                            <a title="Content creator name" class="teacher"
                                                                                data-toggle="modal"
                                                                                data-target="#exampleModal"
                                                                                data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1791,10 +1791,10 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                     aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                             </p>
                                                                         <?php } ?>
-                                                                        <p class="units" title="Estimate time"><i
+                                                                        <p class="units" title="Estimated learning duration"><i
                                                                                 class="fa fa-clock-o"
                                                                                 aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                            hours</p>
+                                                                            hour(s)</p>
                                                                     </div>
                                                                 </div>
                                                                 <?php if ($course->training_deleted == 0) { ?>
@@ -1854,7 +1854,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Teacher name" class="teacher"
+                                                                        <a title="Content creator name" class="teacher"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1870,10 +1870,10 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                 aria-hidden="true"></i> <?php echo $course->training_name; ?>
                                                                         </p>
                                                                     <?php } ?>
-                                                                    <p class="units" title="Estimate time"><i
+                                                                    <p class="units" title="Estimated learning duration"><i
                                                                             class="fa fa-clock-o"
                                                                             aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                                                        hours</p>
+                                                                        hour(s)</p>
                                                                 </div>
                                                             </div>
                                                             <?php if ($course->training_deleted == 0) { ?>
@@ -1937,7 +1937,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Teacher name" class="teacher"
+                                                                        <a title="Content creator name" class="teacher"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1947,7 +1947,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                                aria-hidden="true"></i>&nbsp;<?php if (!empty($course->teacher_name)) echo $course->teacher_name; else echo "No teacher assign"; ?>
                                                                         </a>
                                                                     <?php } ?>
-                                                                    <p class="units" title="Estimate time"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>hours</p>
+                                                                    <p class="units" title="Estimated learning duration"><i class="fa fa-clock-o" aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>hour(s)</p>
                                                                 </div>
                                                             </div>
                                                             <p class="number-order number-order-hide"></p>
@@ -2147,7 +2147,7 @@ $_SESSION["allowCms"] = $allowCms;
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="exampleModalLabel">Instructor Info</h2>
+                <h2 class="modal-title" id="exampleModalLabel">Content creator information</h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
