@@ -840,7 +840,7 @@ if ($progress != 1) {
                                                 <div class="course-info__detail">
                                                     <ul>
                                                         <li class="teacher" v-if="course.teacher_name"
-                                                            title="Teacher name">
+                                                            title="Content creator name">
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{
                                                             course.teacher_name }}
                                                         </li>
@@ -852,7 +852,7 @@ if ($progress != 1) {
                                                         <li class="units" v-if="course.estimate_duration"
                                                             title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                            {{course.estimate_duration}} hours
+                                                            {{course.estimate_duration}} hour(s)
                                                         </li>
                                                     </ul>
                                                 </div>
@@ -885,7 +885,7 @@ if ($progress != 1) {
                                                 <div class="course-info__detail">
                                                     <ul>
                                                         <li class="teacher" v-if="course.teacher_name"
-                                                            title="Teacher name">
+                                                            title="Content creator name">
                                                             <i class="fa fa-user" aria-hidden="true"></i> {{
                                                             course.teacher_name }}
                                                         </li>
@@ -896,7 +896,7 @@ if ($progress != 1) {
                                                         <li class="units" v-if="course.estimate_duration"
                                                             title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
-                                                            {{course.estimate_duration}} hours
+                                                            {{course.estimate_duration}} hour(s)
                                                         </li>
                                                     </ul>
                                                 </div>
