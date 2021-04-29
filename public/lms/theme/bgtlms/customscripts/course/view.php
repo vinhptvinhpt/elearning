@@ -1723,7 +1723,7 @@ where ttc.course_id = ' . $id . ')';
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLongTitle">I congratulate you on finishing the
+                    <h5 class="modal-title" id="exampleModalLongTitle">We congratulate you on finishing the
                         course <?php echo $course->fullname; ?>!</h5>
                     <button type="button" class="close btn-close-show" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
