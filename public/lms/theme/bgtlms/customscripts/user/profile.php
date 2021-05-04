@@ -907,6 +907,28 @@ $hrm_link = $CFG->wwwhrm;
         border: none !important;
     }
 
+    #certificate .contcert {
+        height: 100%;
+        position: relative;
+        padding-bottom: 30px;
+    }
+
+    #certificate .contcert .item-btn {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+    }
+
+    .contbadge {
+        height: 100%;
+        position: relative;
+        padding-bottom: 30px;
+    }
+    .contbadge .item-btn {
+        width: 100%;
+        position: absolute;
+        bottom: 0;
+    }
 
     /*Ipad dọc(768 x 1024)*/
     @media screen and (max-width: 768px) {
@@ -1197,17 +1219,19 @@ $hrm_link = $CFG->wwwhrm;
                                     <div class="row col-lg-12 pb-3">
                                         <?php foreach ($certificates as $certificate) { ?>
                                             <div class="col-lg-3 mb-3">
-                                                <div class="item-image">
-                                                    <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
-                                                         alt="">
-                                                </div>
-                                                <div class="item-content mt-2">
-                                                    <p class="item-content__name"><?php echo $certificate->name; ?></p>
-                                                    <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
-                                                </div>
-                                                <div class="item-btn" style="text-align: center;color: #fff;">
-                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
-                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg')">Copy link</a>
+                                                <div class="contcert">
+                                                    <div class="item-image">
+                                                        <img src="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg"
+                                                            alt="">
+                                                    </div>
+                                                    <div class="item-content mt-2">
+                                                        <p class="item-content__name"><?php echo $certificate->name; ?></p>
+                                                        <p class="item-content__date"><?php echo date('m/d/Y', $certificate->timecertificate); ?></p>
+                                                    </div>
+                                                    <div class="item-btn" style="text-align: center;color: #fff;">
+                                                        <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $certificate->name; ?>">Preview</a>
+                                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $certificate->code; ?>_certificate.jpeg')">Copy link</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <?php } ?>
@@ -1228,17 +1252,19 @@ $hrm_link = $CFG->wwwhrm;
                                     if (count($badges) != 0) {
                                         foreach ($badges as $badge) { ?>
                                             <div class="col-lg-3 mb-3">
-                                                <div class="item-image">
-                                                    <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
-                                                         alt="">
-                                                </div>
-                                                <div class="item-content mt-2">
-                                                    <p class="item-content__name"><?php echo $badge->name; ?></p>
-                                                    <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
-                                                </div>
-                                                <div class="item-btn" style="text-align: center;color: #fff;">
-                                                    <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
-                                                    <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg')">Copy link</a>
+                                                <div class="contbadge">
+                                                    <div class="item-image">
+                                                        <img class="img-view" src="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg"
+                                                            alt="">
+                                                    </div>
+                                                    <div class="item-content mt-2">
+                                                        <p class="item-content__name"><?php echo $badge->name; ?></p>
+                                                        <p class="item-content__date"><?php echo date('m/d/Y', $badge->timecertificate); ?></p>
+                                                    </div>
+                                                    <div class="item-btn" style="text-align: center;color: #fff;">
+                                                        <a class="btn btn-primary img-view" data-toggle="modal" imgSrc="storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg" data-target="#exampleModalCenter" nameImg="<?php echo $badge->name; ?>">Preview</a>
+                                                        <a class="btn btn-primary" data-toggle="tooltip" data-placement="top" title="" data-original-title="Copy link" onclick="copyToClipboard('<?php echo $CFG->wwwtmsbase; ?>storage/upload/certificate/<?php echo $badge->code; ?>_badge.jpeg')">Copy link</a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         <?php }
