@@ -950,7 +950,7 @@ if ($progress != 1) {
                             <!--                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>-->
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a href="lms/my">FAQs</a></li>
+                                    <li><a target="_blank" href="https://docs.google.com/spreadsheets/u/4/d/e/2PACX-1vSnFkIhasu5pNS8qUjRzFEDGzIwn3wInquSIrxVR_JMASdBBxiv2YpIdgiHEzBGzw/pubhtml#">FAQs</a></li>
                                 </ul>
                             </div>
                         </div>
