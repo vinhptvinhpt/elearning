@@ -1381,7 +1381,7 @@ where ttc.course_id = ' . $id . ')';
                                     </li>
                                     <li class="units"><i class="fa fa-clock-o"
                                                          aria-hidden="true"></i> <?php echo $course->estimate_duration; ?>
-                                        hours
+                                        hour(s)
                                     </li>
                                 </ul>
                             </div>
