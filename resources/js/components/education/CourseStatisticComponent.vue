@@ -470,11 +470,15 @@
                         <tbody>
                         <tr v-for="(att,index) in documents">
                           <td>{{ index+1 }}</td>
+
                           <td>{{ JSON.parse(att.other) && JSON.parse(att.other).hasOwnProperty('modulename') ? JSON.parse(att.other).modulename : ''}}</td>
-                          <!--                          <td>{{ isset(JSON.parse(att.other).name) ? JSON.parse(att.other).name : att.name }}</td>-->
-                          <td v-if="JSON.parse(att.other) !== undefined">{{ JSON.parse(att.other).name }}
+                          <!-- <td>{{ isset(JSON.parse(att.other).name) ? JSON.parse(att.other).name : att.name }}</td>-->
+
+                          <td v-if="JSON.parse(att.other)">
+                            {{ JSON.parse(att.other).hasOwnProperty('name') ? JSON.parse(att.other).name : '' }}
                           </td>
                           <td v-else>{{ att.name }}</td>
+
                           <td>{{ att.action }}</td>
                           <td>{{ att.username }}</td>
                           <td>{{ att.timecreated | convertDateTime }}</td>

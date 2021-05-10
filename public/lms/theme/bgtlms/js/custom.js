@@ -10,10 +10,10 @@
                 $('body').addClass('not-webview');
             } else if (!safari) {
                 $('body').addClass('webview');
-            };
+            }
         } else {
             $('body').addClass('not-ios');
-        };
+        }
 
         $('.course-content ul.topics li.section .content h3.sectionname > span > a').click(function () {
             if (!$('body.pagelayout-course').hasClass('editing')) {
@@ -84,8 +84,8 @@
             var id = $(this).attr('id');
             var ques_num = id.replace("quiznavbutton", "");
             var content_id_element = $('#responseform .que:first-child');
-            if (content_id_element && content_id_element.hasOwnProperty('id')) {
-              var content_id = content_id_element.attr('id')
+            if (content_id_element && content_id_element.hasAttribute('id')) {
+              var content_id = content_id_element.attr('id');
               var ques_content_id = content_id.replace("1", "");
               var offset_top = $('#' + ques_content_id + ques_num).offset().top;
               $("html, body").animate({ scrollTop: offset_top - 60 }, "slow");
