@@ -930,17 +930,24 @@ class BussinessRepository implements IBussinessInterface
                         if ($content->quiz_id && $content->quiz_id != 0) {
                             $attempt_data = MdlQuiz::query()
                                 ->where('mdl_quiz.id', $content->quiz_id)
+                                ->where('mdl_quiz_overrides.userid', $notification->sendto)
                                 ->leftJoin('mdl_quiz_overrides', 'mdl_quiz.id', '=', 'mdl_quiz_overrides.quiz')
                                 ->select(
                                     'mdl_quiz.attempts as base_attempt',
                                     'mdl_quiz_overrides.id as updated_id',
-                                    'mdl_quiz_overrides.attempts as updated_attempt'
+                                    'mdl_quiz_overrides.attempts as updated_attempt',
+                                    'mdl_quiz_overrides.userid as userid'
                                 )
                                 ->first();
-
-                            if (isset($attempt_data)) {
+                            $quiz_data = MdlQuiz::query()
+                                ->where('id', $content->quiz_id)
+                                ->select(
+                                    'attempts as base_attempt'
+                                )
+                                ->first();
+                            if (isset($quiz_data)) {
                                 $user_id = $notification->sendto;
-                                if ($attempt_data->updated_id != null) {
+                                if (isset($attempt_data) && ($attempt_data->updated_id != null) && ($attempt_data->userid == $user_id)) {
                                     $updated_attempt = $attempt_data->updated_attempt + 1;
                                     DB::table('mdl_quiz_overrides')
                                         ->where('quiz', $content->quiz_id)
@@ -949,7 +956,7 @@ class BussinessRepository implements IBussinessInterface
                                             'attempts' => $updated_attempt
                                         ]);
                                 } else {
-                                    $new_attempts = $attempt_data->base_attempt + 1;
+                                    $new_attempts = $quiz_data->base_attempt + 1;
                                     DB::table('mdl_quiz_overrides')->insert([
                                         ['quiz' => $content->quiz_id, 'userid' => $user_id, 'attempts' => $new_attempts]
                                     ]);
