@@ -956,8 +956,9 @@ if ($edit == 0) {
 
 // Switch to edit mode
 if ($notifyeditingon == 1) {
-} else if ($edit == 1 || $USER->editing == 1) {
+} else if ($edit == 1 || (($USER->editing == 1) && ($USER->course_editing == $course_id))) {
     $USER->editing = 1;
+    $USER->course_editing = $course_id;
     $url = new moodle_url("/course/viewedit.php?id=" . $id, array('notifyeditingon' => 1));
     redirect($url);
 }
