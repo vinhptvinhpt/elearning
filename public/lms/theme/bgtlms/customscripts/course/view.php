@@ -716,7 +716,31 @@ if (!isloggedin()) {
             font-size: 13px !important;
         }
     }
+    .info-course-detail ul li {
+    margin-right: 10px;
+    white-space: nowrap;
+    }
 
+    @media only screen and (max-width: 992px){
+        .progress-info__content .row .info-course-detail {
+            -ms-flex: 0 0 100%;
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
+
+        .progress-info__content .row .info-course-progress {
+            -ms-flex: 0 0 70%;
+            flex: 0 0 70%;
+            max-width: 70%;
+        }
+
+        .progress-info__content .row .info-course-btn {
+            -ms-flex: 0 0 30%;
+            flex: 0 0 30%;
+            max-width: 30%;
+        }
+    }
+    
     @media only screen and (max-width: 1024px) {
         .block {
             display: contents;
