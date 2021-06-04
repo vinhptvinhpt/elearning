@@ -1848,7 +1848,7 @@ class MailController extends Controller
                         } else { // user exists in array, just update content element
                             $data[$user_item->username]['content'][] = array(
                                 //'course_id' => $user_item->course,
-                                'course_id' => $user_item->courseid,
+                                'course_id' => $user_item->course_id,
                                 'course_code' => $user_item->shortname,
                                 'course_name' => $user_item->fullname,
                                 'startdate' => $user_item->startdate,
