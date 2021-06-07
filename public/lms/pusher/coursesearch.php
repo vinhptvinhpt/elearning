@@ -34,6 +34,7 @@ mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
+mc.enddate,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
@@ -95,6 +96,7 @@ mc.id,
 mc.fullname,
 mc.category,
 mc.course_avatar,
+mc.enddate,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
@@ -207,6 +209,7 @@ mc.estimate_duration,
 		mc.fullname,
 		mc.category,
 		mc.course_avatar,
+        mc.enddate,
 		(
 			select
 				count(cm.id) as num
@@ -315,6 +318,7 @@ mc.estimate_duration,
     mc.fullname,
     mc.category,
     mc.course_avatar,
+    mc.enddate,
     (
     select
         count(cm.id) as num
@@ -423,6 +427,9 @@ mc.estimate_duration,
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
             $course->enable = true;
+            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                $course->enable = false;
+            }
             $course->category_type = '';
             //current first
             if ($course->numofmodule > 0 && $course->numoflearned / $course->numofmodule > 0 && $course->numoflearned / $course->numofmodule < 1) {
@@ -540,6 +547,7 @@ mc.id,
 mc.fullname,
 mc.category,
 SUBSTR(mc.course_avatar, 2) as course_avatar,
+mc.enddate,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
 ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0  and cm.course = mc.id) as numofmodule,
@@ -604,6 +612,9 @@ and mue.userid = ' . $USER->id;
             $teacher_name = '';
             $teacher_created = 0;
             $course->enable = true;
+            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                $course->enable = false;
+            }
             $course->category_type = $course->category;
 
             if (strlen($teachers) != 0) {

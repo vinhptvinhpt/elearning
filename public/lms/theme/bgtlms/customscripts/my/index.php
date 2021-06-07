@@ -189,6 +189,7 @@ mc.fullname,
 mc.category,
 mc.course_avatar,
 mc.is_toeic,
+mc.enddate,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
@@ -246,6 +247,7 @@ mc.fullname,
 mc.category,
 mc.course_avatar,
 mc.is_toeic,
+mc.enddate,
 mc.estimate_duration,
 ( select count(mcs.id) from mdl_course_sections mcs where mcs.course = mc.id and mcs.section <> 0) as numofsections,
  ( select count(cm.id) as num from mdl_course_modules cm inner join mdl_course_sections cs on cm.course = cs.course and cm.section = cs.id where cs.section <> 0 AND cm.completion <> 0 and cm.course = mc.id) as numofmodule,
@@ -1668,13 +1670,23 @@ $_SESSION["allowCms"] = $allowCms;
                                             <?php $countBlock = 1;
                                             //get first training id of list course
                                             $training_id = array_values($courses_current)[0]->training_id;
-                                            foreach ($courses_current as $course) { ?>
+                                            foreach ($courses_current as $course) { 
+                                                $enablecurrent = 'enable';
+                                                // Disable course when expired (enddate < cunrrent date)
+                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                                                    $enablecurrent = 'disable';
+                                                }
+                                                ?>
                                                 <div class="col-xxl-4 col-md-6 col-sm-6 col-xs-12 mb-3 course-mx-5">
-                                                    <div class="block-items__item">
+                                                <div class="block-data">
+                                                    <div class="block-items__item <?php echo $enablecurrent; ?>">
                                                         <div class="block-item__image col-5"
                                                              style="background-image: url('<?php echo $CFG->wwwtmsbase . $course->course_avatar; ?>')">
+                                                             <div class="div-info-progress-<?php echo $enablecurrent; ?>">
                                                             <img src="<?php echo $_SESSION['component'] ?>"
                                                                  alt=""><span><?php echo round($course->numoflearned * 100 / $course->numofmodule); ?>%</span>
+                                                                 </div>
+                                                                <div class="div-<?php echo $enablecurrent; ?>"></div>
                                                         </div>
                                                         <div class="block-item__content col-7">
                                                             <div class="block-item__content_text">
@@ -1713,6 +1725,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                             <?php } ?>
                                                         </div>
                                                     </div>
+                                                    </div>
                                                 </div>
                                                 <?php $countBlock++;
                                                 if ($countBlock == 5) break;
@@ -1746,6 +1759,10 @@ $_SESSION["allowCms"] = $allowCms;
                                             $countBlock = 1;
                                             foreach ($courses_required as $course) {
                                                 $enable = 'enable';
+                                                // Disable course when expired (enddate < cunrrent date)
+                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                                                    $enable = 'disable';
+                                                }
                                                 if (isset($training_next[$course->training_id])) {
                                                     if ($course->order_no > $training_next[$course->training_id]) {
                                                         $enable = 'disable';
