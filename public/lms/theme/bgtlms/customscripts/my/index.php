@@ -1696,7 +1696,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Content creator name" class="teacher" id="ttlInfoModal"
+                                                                        <a title="Content creator name" class="teacher ttlInfoModal"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1792,7 +1792,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         </p></a>
                                                                     <div class="info-course">
                                                                         <?php if (!empty($course->teacher_name)) { ?>
-                                                                            <a title="Content creator name" class="teacher" id="ttlInfoModal"
+                                                                            <a title="Content creator name" class="teacher ttlInfoModal"
                                                                                data-toggle="modal"
                                                                                data-target="#exampleModal"
                                                                                data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1871,7 +1871,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Content creator name" class="teacher" id="ttlInfoModal"
+                                                                        <a title="Content creator name" class="teacher ttlInfoModal"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -1954,7 +1954,7 @@ $_SESSION["allowCms"] = $allowCms;
                                                                         <i></i><?php echo $course->fullname; ?></p></a>
                                                                 <div class="info-course">
                                                                     <?php if (!empty($course->teacher_name)) { ?>
-                                                                        <a title="Content creator name" class="teacher" id="ttlInfoModal"
+                                                                        <a title="Content creator name" class="teacher ttlInfoModal"
                                                                            data-toggle="modal"
                                                                            data-target="#exampleModal"
                                                                            data-teacher-name="<?php echo $course->teacher_name; ?>"
@@ -2146,7 +2146,7 @@ $_SESSION["allowCms"] = $allowCms;
 
     });
 
-    $("#ttlInfoModal").click(function(){
+    $(".ttlInfoModal").click(function(){
         $(document).on('shown.bs.modal', '#exampleModal', function (event) {
             let button = $(event.relatedTarget) // Button that triggered the modal
             //var teacher_name = button.attr("data-teacher-name");
