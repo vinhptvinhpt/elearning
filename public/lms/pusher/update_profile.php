@@ -77,6 +77,10 @@ switch ($btnType) {
                     $status = false;
                     $msg = 'Full name incorrect format. Please try again later';
                 } else {
+                    // Get firstname and lastname from fullname
+                    $convert_name = convert_name($fullname);
+                    $firstname = $convert_name['firstname'];
+                    $lastname = $convert_name['lastname'];
                     //
                     $sql = "update tms_user_detail set fullname = N'" . $fullname . "', " .
                         " dob = '" . $dob . "', " .
@@ -106,10 +110,20 @@ switch ($btnType) {
 
                     //if everything oke
                     if ($status) {
+                        // Update avatar
                         if ($is_avatar)
                             $sql .= ", avatar = " . "'/storage/upload/user/avatar_" . $user_id . ".png'";
                         $sql .= " where user_id = " . $user_id;
                         $DB->execute($sql);
+                                                
+                        // Update information in mdl_user
+                        $get_user_info = "SELECT 0, username from mdl_user where id =" . $user_id;
+                        $user_info = array_values($DB->get_records_sql($get_user_info))[0];
+                        if ($user_info) {
+                            $update_user_info = "UPDATE mdl_user set firstname = ?, lastname = ? where id = ?";
+                            $DB->execute($update_user_info, array($firstname, $lastname,$user_id));
+                        }
+						
                         $msg = 'Update profile successful';
                     }
                 }
@@ -142,4 +156,19 @@ function validate_password_func($password)
         $validate = false;
     }
     return $validate;
+}
+
+
+// Convert full to firstname and lastname
+function convert_name($fullname)
+{
+    $name = [];
+    $nameExpl = explode(' ', $fullname);
+    $rowname = count($nameExpl);
+    $firstname = $nameExpl[$rowname - 1] ? $nameExpl[$rowname - 1] : '';
+    $lastname = str_replace($nameExpl[$rowname - 1], '', $fullname);
+    $lastname = $lastname ? $lastname : $firstname;
+    $name['firstname'] = $firstname;
+    $name['lastname'] = $lastname;
+    return $name;
 }

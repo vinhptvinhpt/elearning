@@ -1673,7 +1673,7 @@ $_SESSION["allowCms"] = $allowCms;
                                             foreach ($courses_current as $course) { 
                                                 $enablecurrent = 'enable';
                                                 // Disable course when expired (enddate < cunrrent date)
-                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < (time() + 86400)){
                                                     $enablecurrent = 'disable';
                                                 }
                                                 ?>
@@ -1760,7 +1760,7 @@ $_SESSION["allowCms"] = $allowCms;
                                             foreach ($courses_required as $course) {
                                                 $enable = 'enable';
                                                 // Disable course when expired (enddate < cunrrent date)
-                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+                                                if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < (time() + 86400)){
                                                     $enable = 'disable';
                                                 }
                                                 if (isset($training_next[$course->training_id])) {
