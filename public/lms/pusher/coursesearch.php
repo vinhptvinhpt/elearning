@@ -427,7 +427,7 @@ mc.estimate_duration,
         foreach ($courses as &$course) {
             $course->sttShow = $stt;
             $course->enable = true;
-            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < (time() + 86400)){
                 $course->enable = false;
             }
             $course->category_type = '';
@@ -612,7 +612,7 @@ and mue.userid = ' . $USER->id;
             $teacher_name = '';
             $teacher_created = 0;
             $course->enable = true;
-            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < time()){
+            if (!empty($course->enddate) && isset($course->enddate) && strcmp($course->enddate, "0") && $course->enddate < (time() + 86400)){
                 $course->enable = false;
             }
             $course->category_type = $course->category;
