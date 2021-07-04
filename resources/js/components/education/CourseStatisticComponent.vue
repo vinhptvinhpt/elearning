@@ -155,7 +155,7 @@
                 <div class="col-sm">
                   <div class="table-wrap">
                     <div class="row">
-                      <div class="col-6 dataTables_wrapper">
+                      <div class="col-3 dataTables_wrapper">
                         <div class="dataTables_length">
                           <label>{{trans.get('keys.hien_thi')}}
                             <select v-model="row"
@@ -169,7 +169,7 @@
                           </label>
                         </div>
                       </div>
-                      <div class="col-6">
+                      <div class="col-3">
                         <treeselect v-model="organization_id" :multiple="false" :options="options" @input="getStatictisUserCourse(1)"/>
                       </div>
                       <div class="col-6">
