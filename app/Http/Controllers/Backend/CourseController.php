@@ -439,6 +439,11 @@ class CourseController extends Controller
         return $this->mdlCourseRepository->apiStatisticUserInCourse($request);
     }
 
+    public function apiStatisticUserInCourseWithOrg(Request $request)
+    {
+        return $this->mdlCourseRepository->apiStatisticUserInCourseWithOrg($request);
+    }
+
     public function apiListAttendanceUsers(Request $request)
     {
         return $this->mdlCourseRepository->apiListAttendanceUsers($request);

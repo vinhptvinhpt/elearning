@@ -170,6 +170,9 @@
                         </div>
                       </div>
                       <div class="col-6">
+                        <treeselect v-model="organization_id" :multiple="false" :options="options" @input="getStatictisUserCourse(1)"/>
+                      </div>
+                      <div class="col-6">
                         <form v-on:submit.prevent="getStatictisUserCourse(1)">
                           <div class="d-flex flex-row form-group">
                             <input v-model="keyword" type="text"
@@ -541,6 +544,14 @@
         totalPagesDoc: 1,
         module_id: 0,
         actionDoc: '',
+        //organization options
+        options: [
+          {
+            id: 0,
+            label: this.trans.get('keys.chon_to_chuc')
+          }
+        ],
+        organization_id: 0
       }
     },
     filters: {
@@ -675,10 +686,11 @@
         this.getLogCourse();
       },
       getStatictisUserCourse(paged) {
-        axios.post('/api/course/statistic', {
+        axios.post('/api/course/statistic_with_org', {
           course_id: this.course_id,
           row: this.row,
           keyword: this.keyword,
+          organization_id: this.organization_id,
           page: paged || this.current,
         })
           .then(response => {
@@ -711,6 +723,43 @@
             console.log(error.response.data);
           });
       },
+      selectOrganization(current_id) {
+        $('.content_search_box').addClass('loadding');
+        axios.post('/organization/list',{
+          keyword: this.organization_keyword,
+          level: 1, // lấy cấp lơn nhất only, vì đã đệ quy
+          paginated: 0 //không phân trang
+        })
+          .then(response => {
+            this.organization_list = response.data;
+            //Set options recursive
+            this.options = this.setOptions(response.data, current_id);
+            $('.content_search_box').removeClass('loadding');
+          })
+          .catch(error => {
+            $('.content_search_box').removeClass('loadding');
+          })
+      },
+      setOptions(list, current_id) {
+        let outPut = [];
+        for (const [key, item] of Object.entries(list)) {
+          let newOption = {
+            id: item.id,
+            label: item.name,
+          };
+          if (item.children.length > 0) {
+            for (const [key, child] of Object.entries(item.children)) {
+              if (child.id === current_id) {
+                newOption.isDefaultExpanded = true;
+                break;
+              }
+            }
+            newOption.children = this.setOptions(item.children, current_id);
+          }
+          outPut.push(newOption);
+        }
+        return outPut;
+      },
       exportExcelAttendance() {
         axios.post('/api/exportAttendance', {
           keyword: this.keywordAtt,
@@ -733,6 +782,7 @@
     },
     mounted() {
       this.getCourseDetail();
+      this.selectOrganization();
       this.getStatictisUserCourse(1);
       this.getStatictisUserAttendance(1);
       this.getModule();
