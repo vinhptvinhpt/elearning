@@ -506,6 +506,7 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/api/course/import_enrol', 'Backend\CourseController@apiImportExcelEnrol');
     Route::get('/education/course/statistic/{id}/{come_from}', 'Backend\CourseController@viewStatisticCourse');
     Route::post('/api/course/statistic', 'Backend\CourseController@apiStatisticUserInCourse');
+    Route::post('/api/course/statistic_with_org', 'Backend\CourseController@apiStatisticUserInCourseWithOrg');
     Route::post('/api/course/total_activity', 'Backend\CourseController@apiGetTotalActivityCourse');
     Route::post('/api/courses/get_list_category_clone', 'Backend\CourseController@apiGetListCategoryForClone');
     Route::post('/api/courses/get_list_category_edit', 'Backend\CourseController@apiGetListCategoryForEdit');

@@ -2862,6 +2862,106 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
         return response()->json($response);
     }
 
+    //Api get progress of trainee in target course (with filter oraginzation)
+    public function apiStatisticUserInCourseWithOrg(Request $request)
+    {
+        $course_id = $request->input('course_id');
+        $row = $request->input('row');
+        $keyword = $request->input('keyword');
+        $organization_id = $request->input('organization_id');
+
+        $param = [
+            'course_id' => 'number',
+            'row' => 'number',
+            'keyword' => 'text',
+            'organization_id' => 'number'
+        ];
+        $validator = validate_fails($request, $param);
+        if (!empty($validator)) {
+            return response()->json([]);
+        }
+
+        $totalActivity = DB::table('mdl_course_modules as cm')
+            ->join("mdl_course_sections as cs", function ($join) {
+                $join->on("cs.course", "=", "cm.course")
+                    ->on("cs.id", "=", "cm.section");
+            })
+            ->where('cs.section', '<>', 0)
+            ->where('cm.course', '=', $course_id)
+            ->where('cm.completion', '<>', 0)
+            ->count();
+
+        $lstUserCourse = DB::table('mdl_user_enrolments as mu')
+            ->join('mdl_user as u', 'u.id', '=', 'mu.userid')
+            ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
+            ->join('model_has_roles', 'u.id', '=', 'model_has_roles.model_id')
+            ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
+            ->join('mdl_enrol as e', 'e.id', '=', 'mu.enrolid')
+            ->join('mdl_course as c', 'c.id', '=', 'e.courseid')
+            ->where('c.id', '=', $course_id)
+            //->where('roles.id', 5)//hoc vien only
+            ->where('e.roleid', '=', Role::ROLE_STUDENT)
+            ->select(
+                'u.id as user_id',
+                'u.username',
+                'u.firstname',
+                'u.lastname',
+                'tud.fullname',
+                DB::raw('(select count(cmc.coursemoduleid) as course_learn from mdl_course_modules cm inner join
+                mdl_course_modules_completion cmc on cm.id = cmc.coursemoduleid inner join mdl_course_sections cs on
+                cm.course = cs.course and cm.section = cs.id inner join mdl_course cc on cm.course = cc.id where
+                cs.section <> 0 and cmc.completionstate in (1,2) and cm.course = c.id and cmc.userid = u.id and cm.completion <> 0) as user_course_learn'),
+
+                DB::raw('(select `g`.`finalgrade`
+                from mdl_grade_items as gi
+                join mdl_grade_grades as g
+                on g.itemid = gi.id
+                where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
+            );
+
+        if (strlen($organization_id) != 0 && $organization_id != 0) {
+
+            $org_query = '(select ttoe.organization_id,
+                                   ttoe.user_id as org_uid
+                            from    (select toe.organization_id, toe.user_id,tor.parent_id from tms_organization_employee toe
+                                     join tms_organization tor on tor.id = toe.organization_id
+                                     order by tor.parent_id, toe.id) ttoe,
+                                    (select @pv := ' . $organization_id . ') initialisation
+                            where   find_in_set(ttoe.parent_id, @pv)
+                            and     length(@pv := concat(@pv, \',\', ttoe.organization_id))
+                            UNION
+                            select toe.organization_id,toe.user_id from tms_organization_employee toe where toe.organization_id = ' . $organization_id . '
+                            ) as org_tp';
+
+            $org_query = DB::raw($org_query);
+
+            $lstUserCourse = $lstUserCourse->join($org_query, 'org_tp.org_uid', '=', 'u.id');
+        }   
+
+        if ($keyword) {
+            $lstUserCourse = $lstUserCourse->whereRaw('( u.username like "%' . $keyword . '%" OR tud.fullname like "%' . $keyword . '%" )');
+        }
+
+        $lstUserCourse = $lstUserCourse->orderBy('u.id', 'desc')->groupBy('u.id');
+
+        $total_Data = $lstUserCourse->get()->count();
+
+        $lstUserCourse = $lstUserCourse->paginate($row);
+        $total = ceil($total_Data / $row);
+
+        $response = [
+            'pagination' => [
+                'total' => $total,
+                'current_page' => $lstUserCourse->currentPage(),
+            ],
+            'data' => $lstUserCourse,
+            'total_course' => $totalActivity
+        ];
+
+
+        return response()->json($response);
+    }    
+
     //Lấy danh sách học viên điểm danh theo lớp
     public function apiListAttendanceUsers(Request $request)
     {
