@@ -2916,7 +2916,12 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
                 from mdl_grade_items as gi
                 join mdl_grade_grades as g
                 on g.itemid = gi.id
-                where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade')
+                where gi.courseid = c.id and gi.itemtype = "course" and g.userid = u.id ) as finalgrade'),
+                
+                DB::raw('(SELECT name
+                FROM tms_organization
+                INNER JOIN tms_organization_employee on tms_organization.id = tms_organization_employee.organization_id where tms_organization_employee.user_id = u.id) as org_name')
+
             );
 
         if (strlen($organization_id) != 0 && $organization_id != 0) {

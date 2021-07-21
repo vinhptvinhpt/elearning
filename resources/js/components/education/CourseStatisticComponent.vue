@@ -196,6 +196,9 @@
                           <th class=" mobile_hide" style="width: 20%;">
                             {{trans.get('keys.ho_ten')}}
                           </th>
+                          <th class=" mobile_hide" style="width: 20%;">
+                            {{trans.get('keys.to_chuc')}}
+                          </th>
                           <th class="text-center">{{trans.get('keys.tien_do_hoc_%')}}</th>
 <!--                          <th class="text-center mobile_hide">-->
 <!--                            {{trans.get('keys.diem_hoc_vien')}}-->
@@ -209,6 +212,7 @@
                           <td>
                             {{ cu.username }}
                           <td class=" mobile_hide">{{ cu.fullname }}</td>
+                          <td class=" mobile_hide">{{ cu.org_name }}</td>
                           <td class="text-center">
                             <div v-if="total_course>0">
                               <div v-if="cu.user_course_learn == 0">
