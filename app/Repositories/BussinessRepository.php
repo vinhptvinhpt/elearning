@@ -429,6 +429,7 @@ class BussinessRepository implements IBussinessInterface
                     $query->where('enddate', '>=', $now)
                         ->orWhere('enddate', '=', 0);
                 })
+                ->orderBy('startdate', 'desc')
                 ->select(
                     'mdl_course.id',
                     'mdl_course.shortname',
