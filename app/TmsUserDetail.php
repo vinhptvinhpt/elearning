@@ -11,7 +11,8 @@ class TmsUserDetail extends Model
         'la' => 'Laos',
         'kh' => 'Cambodia',
         'mm' => 'Myanmar',
-        'th' => 'Thailand'
+        'th' => 'Thailand',
+        'eu' => 'Europe'
     );
 
     protected $table = 'tms_user_detail';
