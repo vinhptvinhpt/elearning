@@ -236,7 +236,7 @@
                                     </template>
                                     <template v-else>
                                         <br/>
-                                        <p>No courses in competency framework</p>
+                                        <p>No courses in Trainning curriculum</p>
                                     </template>
 
                                 </b-tab>
