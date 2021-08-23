@@ -1139,7 +1139,7 @@ $hrm_link = $CFG->wwwhrm;
                         </div>
                     </div>
                     <div class="block courses">
-                        <div class="title"><p>Your competency courses</p></div>
+                        <div class="title"><p>YOUR TRAINING CURRICULUM</p></div>
                         <div class="block-content table-responsive">
                             <table class="table borderless table-keep">
                                 <thead>
