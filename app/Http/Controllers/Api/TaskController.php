@@ -2440,7 +2440,7 @@ class TaskController extends Controller
                 //$end_date = Carbon::now()->addHour(23)->addMinute(58);
                 //$end_date = Carbon::now()->addSecond(12);
                 //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
-                $end_date = Carbon::now()->addMinute(3);
+                $end_date = Carbon::now()->addMinute(30);
 
                 $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
 
@@ -2481,7 +2481,7 @@ class TaskController extends Controller
 
                         $blob_name = $arr_name[0];
                         //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
-                        $end_date = Carbon::now()->addMinute(3);
+                        $end_date = Carbon::now()->addMinute(30);
                         //$end_date = Carbon::now()->addHour(23)->addMinute(59);
                         //$end_date = Carbon::now()->addSecond(12);
 
