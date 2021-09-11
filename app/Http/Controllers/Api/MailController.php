@@ -1703,16 +1703,7 @@ class MailController extends Controller
             $now = time();
             $next_3_days = time() + 86400 * 3;
 
-            //Type 2
-//            $subQuery = MdlUser::query()
-//                //Check không có trong bảng notification
-//                ->whereNotIn('id', function ($query) {
-//                    //check exist in table tms_nofitications
-//                    $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::REMIND_EXPIRE_REQUIRED_COURSE);
-//                })
-//                ->limit(self::DEFAULT_ITEMS_PER_SESSION);
-
-
+            //TODO: query chưa tối ưu, lấy duplicate record do (cùng course nhưng có 2 record trong table course_completion - do có thêm trainning ID)
             $userNeedRemindExpired =
                 //Type 1 limit using sub query with same condition
                 DB::query()->fromSub(function ($query) use ($next_3_days, $now) {
@@ -1740,30 +1731,9 @@ class MailController extends Controller
                         ->where('mdl_course.enddate', '<>', '')
                         ->where('mdl_course.deleted', '=', 0)
                         ->whereNotNull('mdl_course.enddate')
-
-//                        ->whereIn('id', function ($query) use ($next_3_days) {
-//                            $query->select('userid')
-//                                ->from('mdl_course_completions')
-//                                ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-//                                ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
-//                                ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required
-//                                ->where('mdl_course.enddate', '<', $next_3_days)
-//                                ->where('mdl_course.enddate', '<>', '')
-//                                ->whereNotNull('mdl_course.enddate')
-//                                ->whereNull('mdl_course_completions.timecompleted');
-//                        })
-
                         ->limit(self::DEFAULT_ITEMS_PER_SESSION)
                         ->select('mdl_user.*');
                 }, 'mdl_user')
-
-                    //Type 2 limit using subquery
-                    //DB::table(DB::raw("(({$subQuery->toSql()}) mdl_user)"))
-                    //->mergeBindings($subQuery->getQuery())
-
-                    //Type old: query all
-                    //MdlUser::query()
-
                     ->join('mdl_user_enrolments', 'mdl_user_enrolments.userid', '=', 'mdl_user.id')
                     ->join('mdl_enrol', 'mdl_user_enrolments.enrolid', '=', 'mdl_enrol.id')
                     ->join('mdl_course', 'mdl_course.id', '=', 'mdl_enrol.courseid')
@@ -1771,15 +1741,6 @@ class MailController extends Controller
                         $join->on('mdl_course.id', '=', 'course_completion.courseid');
                         $join->on('mdl_user.id', '=', 'course_completion.userid');
                     })
-
-//                    ->join('mdl_course_completions', 'mdl_user.id', '=', 'mdl_course_completions.userid')
-//                    ->join('mdl_course', 'mdl_course.id', '=', 'mdl_course_completions.course')
-//                    ->whereNull('mdl_course_completions.timecompleted')
-//                    // ->where('mdl_course.category', 3) //Khoa bat buoc cu => khong su dung nua
-//                    ->where('mdl_course.category', '<>', 2) //tat ca khoa deu required tru kha thu vien
-//                    ->where('mdl_course.enddate', '<', $next_3_days)
-//                    ->where('mdl_course.enddate', '<>', '')
-//                    ->whereNotNull('mdl_course.enddate')
 
                     //Check không có trong bảng notification
                     ->whereNotIn('mdl_user.id', function ($query) {
@@ -1792,6 +1753,7 @@ class MailController extends Controller
                     ->where('mdl_course.enddate', '>', $now)
                     ->where('mdl_course.enddate', '<>', '')
                     ->where('mdl_course.deleted', '=', 0)
+                    ->whereNull('course_completion.timecompleted')
                     ->whereNotNull('mdl_course.enddate')
 
                     ->select(
@@ -1800,14 +1762,7 @@ class MailController extends Controller
                         'mdl_user.firstname',
                         'mdl_user.lastname',
                         'mdl_user.email',
-
-//                        'mdl_course_completions.course as course_id',
-//                        'mdl_course_completions.timeenrolled',
-//                        'mdl_course_completions.timecompleted',
-
-                        //'course_completion.courseid as course_id',
                         'course_completion.timecompleted',
-
                         'mdl_course.id as course_id',
                         'mdl_course.shortname',
                         'mdl_course.fullname',
@@ -1834,6 +1789,7 @@ class MailController extends Controller
                                 'updated_at' => date('Y-m-d H:i:s', time()),
                             );
                             $element['content'] = array(
+                                $user_item->course_id => 
                                 array(
                                     //'course_id' => $user_item->course,
                                     'course_id' => $user_item->course_id,
@@ -1845,8 +1801,8 @@ class MailController extends Controller
                                 )
                             );
                             $data[$user_item->username] = $element;
-                        } else { // user exists in array, just update content element
-                            $data[$user_item->username]['content'][] = array(
+                        } else if(!array_key_exists($user_item->course_id, $data[$user_item->username]['content'])){ // user exists in array, just update content element (not duplicate record)
+                            $data[$user_item->username]['content'][$user_item->course_id] = array(
                                 //'course_id' => $user_item->course,
                                 'course_id' => $user_item->course_id,
                                 'course_code' => $user_item->shortname,
