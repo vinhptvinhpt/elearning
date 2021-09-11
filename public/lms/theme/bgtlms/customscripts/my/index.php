@@ -630,6 +630,31 @@ function push_course(&$array, $course)
 
 $_SESSION["couresIdAllow"] = array_unique($couresIdAllow);
 
+// Resort $courses_completed order by completed time
+if ($courses_completed){
+    // Convert completed courses into string for query
+    $courses_completed_key = implode(", ",array_keys($courses_completed));
+    $sql_check_time_completed = 
+    "select
+        cc.courseid,
+        cc.timecompleted
+    from
+        course_completion cc
+    where
+        cc.userid = ".$USER->id." 
+        and cc.training_id is null
+        and cc.courseid in (".$courses_completed_key.") 
+    order by cc.timecompleted desc" ;
+    // Get sorted by timecompleted courses
+    $completed_courses_with_time = array_keys($DB->get_records_sql($sql_check_time_completed));
+    // Order $courses_completed by $completed_courses_with_time
+    usort($courses_completed, function ($a, $b) use ($completed_courses_with_time) {
+        $pos_a = array_search($a->id, $completed_courses_with_time);
+        $pos_b = array_search($b->id, $completed_courses_with_time);
+        return $pos_a - $pos_b;
+    });
+}
+
 $countBlock = 1;
 // Set session variables
 if ($sttTotalCourse > 0) {
