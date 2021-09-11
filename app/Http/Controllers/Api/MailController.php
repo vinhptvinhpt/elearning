@@ -26,7 +26,9 @@ use Tintnaingwin\EmailChecker\Facades\EmailChecker;
 class MailController extends Controller
 {
     const DEFAULT_ITEMS_PER_SESSION = 200;
-//    const DEVELOPMENT = 0;
+
+    const DEVELOPMENT = 1;
+    //    const DEVELOPMENT = 0;
 
     /* Load / generate configuration */
     public function loadConfiguration()
