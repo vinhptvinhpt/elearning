@@ -1657,6 +1657,7 @@ class TaskController extends Controller
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->leftJoin('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
+            ->where('ttp.run_cron', '=', 1)
             ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->whereNotNull('ttc.id')
@@ -1966,6 +1967,7 @@ class TaskController extends Controller
             ->leftJoin('tms_trainning_groups as ttg', 'ttg.trainning_id', '=', 'ttp.id')
             ->leftJoin('tms_trainning_courses as ttc', 'ttc.trainning_id', '=', 'ttp.id')
             ->where('ttp.deleted', '=', 0)
+            ->where('ttp.run_cron', '=', 1)
             ->where('ttp.style', '!=', 2)//ko quet cac KNL group course da hoan thanh
             ->whereNull('ttg.id')
             ->whereNotNull('ttc.id')
