@@ -2747,7 +2747,10 @@ class MailController extends Controller
                 'pornpawee@easia-travel.com',
                 'socheat@easia-travel.com',
                 'thomas@easia-travel.com',
-                'philippe@easia-travel.com'
+                'philippe@easia-travel.com',
+                'uthai@easia-travel.com',
+                'raphael@easia-travel.com',
+                'christina@easia-incentive.com'
                 
                 // 'dieuly@easia-travel.com',
                 // 'lanphuong@easia-travel.com',
