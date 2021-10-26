@@ -2750,7 +2750,9 @@ class MailController extends Controller
                 'philippe@easia-travel.com',
                 'uthai@easia-travel.com',
                 'raphael@easia-travel.com',
-                'christina@easia-incentive.com'
+                'christina@easia-incentive.com',
+                'hongnhung@easia-travel.com',
+                'nguyenhuyen@easia-travel.com'
                 
                 // 'dieuly@easia-travel.com',
                 // 'lanphuong@easia-travel.com',
