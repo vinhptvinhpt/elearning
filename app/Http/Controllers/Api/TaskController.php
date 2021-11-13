@@ -270,7 +270,7 @@ class TaskController extends Controller
                             join mdl_enrol as me on me.id = mue.enrolid
                             join mdl_course as mc on mc.id = me.courseid
                             left join tms_traninning_users as ttu on ttu.user_id = mu.id and ttu.trainning_id = ' . $data->trainning_id . '
-                            where mc.id = ' . $data->course_id . ' and tud.deleted = 0 and ttu.trainning_id is null)';
+                            where mc.id = ' . $data->course_id . ' and tud.deleted = 0 and tud.working_status = 0 and ttu.trainning_id is null)';
 
             $query_sql = DB::raw($query_sql);
             $lstUser = DB::select($query_sql);
@@ -782,6 +782,7 @@ class TaskController extends Controller
                     ->where('model_has_roles.role_id', "<>", $student_role);
             })
             ->where('tud.deleted', '=', 0)
+            ->where('tud.working_status', '=', 0)
             ->where('tud.confirm', '=', 0)
             ->where('ttu.trainning_id', '=', \App\TmsTrainningProgram::PROGRAM_CERTIFICATE)//id khung nang luc bat buoc
             ->where('tud.email', 'not like', '%bgt%')//ko xoa cac account la nhan vien BGT, phuong an xu ly tam thoi voi so luong user BGT hien co trong he thong
@@ -1674,6 +1675,7 @@ class TaskController extends Controller
                     ->select('ttpp.trainning_id', 'tud.user_id')
                     ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
                     ->where('tud.deleted', '=', 0)
+                    ->where('tud.working_status', '=', 0)
                     ->whereNull('ttpp.trainning_id')
                     ->pluck('tud.user_id');
                 if (!empty($users)) {
@@ -1747,6 +1749,7 @@ class TaskController extends Controller
                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
                                      where tud.deleted = 0
+                                     and tud.working_status = 0
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
@@ -1754,7 +1757,7 @@ class TaskController extends Controller
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe
                               join tms_user_detail tud on tud.user_id = toe.user_id
-                            where tud.deleted = 0 and toe.organization_id = ' . $org_id . '
+                            where tud.deleted = 0 and tud.working_status = 0 and toe.organization_id = ' . $org_id . '
                             ) as org_tp';
 
                     $org_query = DB::raw($org_query);
@@ -1820,7 +1823,7 @@ class TaskController extends Controller
                     join model_has_roles mhr on mhr.model_id = u.id
                     join tms_user_detail tud on tud.user_id = u.id
                     left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
-                    where mhr.role_id = ' . $trainning->group_id . ' and tud.deleted = 0 and ttu.id is null)';
+                    where mhr.role_id = ' . $trainning->group_id . ' and tud.deleted = 0 and tud.working_status = 0 and ttu.id is null)';
 
                         $users = DB::raw($users);
                         $users = DB::select($users);
@@ -1880,6 +1883,7 @@ class TaskController extends Controller
                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
                                      where tud.deleted = 0
+                                     and tud.working_status = 0
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $trainning->group_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
@@ -1887,7 +1891,7 @@ class TaskController extends Controller
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe
                               join tms_user_detail tud on tud.user_id = toe.user_id
-                            where tud.deleted = 0 and toe.organization_id = ' . $trainning->group_id . '
+                            where tud.deleted = 0 and tud.working_status = 0 and toe.organization_id = ' . $trainning->group_id . '
                             ) as org_us';
 
 
@@ -1984,6 +1988,7 @@ class TaskController extends Controller
                     ->select('ttpp.trainning_id', 'tud.user_id')
                     ->leftJoin($leftjoin, 'ttpp.user_id', '=', 'tud.user_id')
                     ->where('tud.deleted', '=', 0)
+                    ->where('tud.working_status', '=', 0)
                     ->whereNull('ttpp.trainning_id')
                     ->pluck('tud.user_id');
                 if (!empty($users)) {
@@ -2035,7 +2040,10 @@ class TaskController extends Controller
         foreach ($lstDataTrainning as $trainning) {
             $count_courses = TmsTrainningCourse::where('trainning_id', $trainning->trainning_id)->where('deleted', 0)->count();
 
-            if ($count_courses > 0) {
+            // Check run_cron - tms_traninning_programs for auto add user of group to trainning
+			$check_run_cron = TmsTrainningProgram::where('id', $trainning->trainning_id)->where('run_cron', 1)->count();
+
+            if ($count_courses > 0 && $check_run_cron > 0) {
                 usleep(50);
                 if ($trainning->total_tr == 2) {
                     //region xu ly cho TH KNL ap dung cho ca role va cctc
@@ -2059,6 +2067,7 @@ class TaskController extends Controller
                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
                                      where tud.deleted = 0
+                                     and tud.working_status = 0 
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $org_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
@@ -2066,7 +2075,7 @@ class TaskController extends Controller
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe
                               join tms_user_detail tud on tud.user_id = toe.user_id
-                            where tud.deleted = 0 and toe.organization_id = ' . $org_id . '
+                            where tud.deleted = 0 and tud.working_status = 0 and toe.organization_id = ' . $org_id . '
                             ) as org_tp';
 
                     $org_query = DB::raw($org_query);
@@ -2132,7 +2141,7 @@ class TaskController extends Controller
                     join model_has_roles mhr on mhr.model_id = u.id
                     join tms_user_detail tud on tud.user_id = u.id
                     left join tms_traninning_users ttu on ttu.trainning_id = ' . $trainning->trainning_id . ' and ttu.user_id = mhr.model_id
-                    where mhr.role_id = ' . $trainning->group_id . ' and tud.deleted = 0 and ttu.id is null)';
+                    where mhr.role_id = ' . $trainning->group_id . ' and tud.deleted = 0 and tud.working_status = 0 and ttu.id is null)';
 
                         $users = DB::raw($users);
                         $users = DB::select($users);
@@ -2192,6 +2201,7 @@ class TaskController extends Controller
                                     join tms_user_detail tud on tud.user_id = toe.user_id
                                      join tms_organization tor on tor.id = toe.organization_id
                                      where tud.deleted = 0
+                                     and tud.working_status = 0
                                      order by tor.parent_id, toe.id) ttoe,
                                     (select @pv := ' . $trainning->group_id . ') initialisation
                             where   find_in_set(ttoe.parent_id, @pv)
@@ -2199,7 +2209,7 @@ class TaskController extends Controller
                             UNION
                             select toe.organization_id,toe.user_id from tms_organization_employee toe
                               join tms_user_detail tud on tud.user_id = toe.user_id
-                            where tud.deleted = 0 and toe.organization_id = ' . $trainning->group_id . '
+                            where tud.deleted = 0 and tud.working_status = 0 and toe.organization_id = ' . $trainning->group_id . '
                             ) as org_us';
 
 
