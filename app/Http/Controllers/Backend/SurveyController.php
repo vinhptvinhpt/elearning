@@ -264,10 +264,15 @@ class SurveyController extends Controller
         $survey_id = $request->input('survey_id');
         $org_id = $request->input('org_id');
         $course_id = $request->input('course_id');
+        $courses = $request->input('courses');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
+        $course_ids = [];
+        if (is_array($courses) && !empty($courses)) {
+            $course_ids = array_column($courses, 'id');
+        }
 
-        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate);
+        return $this->surveyRepository->getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate, $course_ids);
     }
 
     public function apiSaveUserViewSurvey(Request $request)
@@ -285,10 +290,15 @@ class SurveyController extends Controller
         $survey_id = $request->input('survey_id');
         $org_id = $request->input('org_id');
         $course_id = $request->input('course_id');
+        $courses = $request->input('courses');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
 
-        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate);
+        $course_ids = [];
+        if (is_array($courses) && !empty($courses)) {
+            $course_ids = array_column($courses, 'id');
+        }
+        return $this->surveyRepository->getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate, $course_ids);
     }
 
     public function apiShowResultInputText(Request $request)

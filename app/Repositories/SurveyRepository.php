@@ -157,7 +157,7 @@ class SurveyRepository implements ISurveyInterface
 
             $param = [
                 'sur_code' => 'code',
-                'sur_name' => 'text',
+                'sur_name' => 'longtext',
                 'description' => 'longtext'
             ];
             $validator = validate_fails($request, $param);
@@ -1129,6 +1129,12 @@ class SurveyRepository implements ISurveyInterface
         $enddate = $request->input('enddate');
         $organization_id = $request->input('organization_id');
         $course_id = $request->input('course_id');
+        $courses = $request->input('courses');
+
+        $course_ids = [];
+        if (is_array($courses) && !empty($courses)) {
+            $course_ids = array_column($courses, 'id');
+        }
 
         $param = [
             'survey_id' => 'number',
@@ -1168,6 +1174,10 @@ class SurveyRepository implements ISurveyInterface
             $data = $data->where('uv.course_id', '=', $course_id);
         }
 
+        if (!empty($course_ids)) {
+            $data = $data->whereIn('uv.course_id', $course_ids);
+        }
+
         if ($startdate) {
             $full_start_date = $startdate . " 00:00:00";
             $start_time = strtotime($full_start_date);
@@ -1193,8 +1203,14 @@ class SurveyRepository implements ISurveyInterface
         $survey_id = $request->input('survey_id');
         $organization_id = $request->input('organization_id');
         $course_id = $request->input('course_id');
+        $courses = $request->input('courses');
         $startdate = $request->input('startdate');
         $enddate = $request->input('enddate');
+
+        $course_ids = [];
+        if (is_array($courses) && !empty($courses)) {
+            $course_ids = array_column($courses, 'id');
+        }
 
         $param = [
             'survey_id' => 'number',
@@ -1241,18 +1257,34 @@ class SurveyRepository implements ISurveyInterface
         if ($course_id || $organization_id) {
             if ($organization_id && $course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
-                                join mdl_course mc
-                                on mc.id = su.course_id
-                                join ' . $org_query . '
-                                on org_tp.org_uid = su.user_id
-                                and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+                            join mdl_course mc
+                            on mc.id = su.course_id
+                            join ' . $org_query . '
+                            on org_tp.org_uid = su.user_id
+                            and mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
 
-            } else if ($course_id) {
+            }
+            if ($organization_id && !empty($course_ids)) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                            join mdl_course mc
+                            on mc.id = su.course_id
+                            join ' . $org_query . '
+                            on org_tp.org_uid = su.user_id
+                            and mc.id IN (' . implode($course_ids, ',') . ') group by su.question_id,su.answer_id) as su';
+            }
+            else if ($course_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
                                 where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
-            } else if ($organization_id) {
+            }
+            else if (!empty($course_ids)) {
+                $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
+                                join mdl_course mc
+                                on mc.id = su.course_id
+                                where mc.id = ' . $course_id . ' group by su.question_id,su.answer_id) as su';
+            }
+            else if ($organization_id) {
                 $join_tables = '(SELECT su.survey_id, su.user_id, su.answer_id, su.created_at,(count(su.answer_id)) as total_choice FROM tms_survey_users su
                                 join mdl_course mc
                                 on mc.id = su.course_id
@@ -1885,7 +1917,7 @@ class SurveyRepository implements ISurveyInterface
     }
 
     //api list users survey
-    public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
+    public function getListUserSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate, $course_ids)
     {
         // TODO: Implement getListUserSurvey() method.
         $lstData = DB::table('mdl_user as u')
@@ -1909,6 +1941,10 @@ class SurveyRepository implements ISurveyInterface
 
         if ($course_id) {
             $lstData = $lstData->where('tsu.course_id', '=', $course_id);
+        }
+
+        if (!empty($course_ids)) {
+            $lstData = $lstData->whereIn('tsu.course_id', $course_ids);
         }
 
         if (strlen($org_id) != 0 && $org_id != 0) {
@@ -1962,7 +1998,7 @@ class SurveyRepository implements ISurveyInterface
     }
 
     //api get user view survey
-    public function getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate)
+    public function getUserViewSurvey($keyword, $row, $survey_id, $org_id, $course_id, $startdate, $enddate, $course_ids)
     {
         // TODO: Implement getUserViewSurvey() method.
         $lstData = DB::table('mdl_user as u')
@@ -1986,6 +2022,10 @@ class SurveyRepository implements ISurveyInterface
 
         if ($course_id) {
             $lstData = $lstData->where('tsuv.course_id', '=', $course_id);
+        }
+
+        if (!empty($course_ids)) {
+            $lstData = $lstData->whereIn('tsuv.course_id', $course_ids);
         }
 
         if (strlen($org_id) != 0 && $org_id != 0) {

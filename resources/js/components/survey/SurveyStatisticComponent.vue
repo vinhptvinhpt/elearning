@@ -48,15 +48,31 @@
                                     </div>
                                     <div class="col-sm-4">
                                         <div class="d-flex flex-row form-group">
-                                            <input v-model="keyword" type="text" class="form-control" id="tags"
-                                                   :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+
+<!--                                            <input v-model="keyword" type="text" class="form-control" id="tags"-->
+<!--                                                   :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">-->
+
+                                          <multiselect
+                                            id="courses_filter"
+                                            v-model="courses"
+                                            :options="courseSelectOptions"
+                                            label="label"
+                                            track-by="id"
+                                            :searchable="true"
+                                            :close-on-select="false"
+                                            placeholder="Select courses"
+                                            :multiple="true"
+                                            :allow-empty="true"
+                                          >
+                                          </multiselect>
+
                                         </div>
                                     </div>
                                     <div class="col-sm-3 form-group">
 
                                         <div class="d-flex flex-row form-group">
                                             <button type="button" id="btnFilter"
-                                                    class="btn btn-primary d-none d-lg-block"
+                                                    class="btn btn-primary btn-sm d-none d-lg-block"
                                                     @click="search()">
                                                 {{trans.get('keys.tim')}}
                                             </button>
@@ -196,17 +212,34 @@
                                         </div>
                                         <div class="col-sm-4">
                                             <div class="d-flex flex-row form-group">
-                                                <input v-model="keyword_us" type="text" class="form-control"
-                                                       id="tag-users"
-                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">
+<!--                                                <input v-model="keyword_us" type="text" class="form-control"-->
+<!--                                                       id="tag-users"-->
+<!--                                                       :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ma_hoac_ten_khoa_dao_tao')+' ...'">-->
+
+                                              <multiselect
+                                                id="courses_filter_sr"
+                                                v-model="courses_sr"
+                                                :options="courseSelectOptions"
+                                                label="label"
+                                                track-by="id"
+                                                :searchable="searchable"
+                                                :close-on-select="false"
+                                                placeholder="Select courses"
+                                                :multiple="true"
+                                                :allow-empty="true"
+                                              >
+                                              </multiselect>
                                             </div>
                                         </div>
                                         <div class="col-4">
+
                                             <form v-on:submit.prevent="searchUser()">
                                                 <div class="d-flex flex-row form-group">
+
                                                     <input v-model="keyword_rs" type="text"
                                                            class="form-control search_text"
                                                            :placeholder="trans.get('keys.nhap_thong_tin_tim_kiem_theo_ten_dang_nhap_fullname')+' ...'">
+
                                                     <button type="button" id="btnFilter1"
                                                             class="btn btn-primary btn-sm"
                                                             @click="searchUser()">
@@ -214,6 +247,8 @@
                                                     </button>
                                                 </div>
                                             </form>
+
+
                                         </div>
                                     </div>
 
@@ -376,19 +411,24 @@
     import CheckboxStatistic from "./template/StatisticCheckboxComponent"
     import Ls from './../../services/ls'
     import datePicker from 'vue-bootstrap-datetimepicker'
+    import Multiselect from "vue-multiselect";
 
     export default {
         props: ['survey_id'],
         components: {
-            QuestionStatistic,
-            GroupQuestionStatistic,
-            MinMaxQuestionStatistic,
-            CheckboxStatistic,
-            Ls,
-            datePicker
+          QuestionStatistic,
+          GroupQuestionStatistic,
+          MinMaxQuestionStatistic,
+          CheckboxStatistic,
+          Ls,
+          datePicker,
+          Multiselect
         },
         data() {
             return {
+                courses: [],
+                courses_sr: [],
+                courseSelectOptions: [],
                 organization: {
                     name: '',
                     code: '',
@@ -415,7 +455,6 @@
                 survey_exam: [],
 
                 course_id: '',
-
                 startdate: '',
                 enddate: '',
                 base_url: '',
@@ -459,7 +498,7 @@
                         response.data.forEach(function (cityItem) {
                             let newCity = {
                                 label: cityItem.shortname + ' - ' + cityItem.fullname,
-                                data_search: cityItem.fullname,
+                                //data_search: cityItem.fullname,
                                 id: cityItem.id
                             };
                             additionalCities.push(newCity);
@@ -542,14 +581,11 @@
                 }
                 response(matches);
             },
-
-
             changeChartFormat(type) {
                 this.chart_type = type;
                 this.survey_exam = [];
                 this.getStatictisSurveyExam();
             },
-
             selectParentItem(parent_id) {
                 this.organization.parent_id = parent_id;
             },
@@ -584,7 +620,6 @@
                 }
                 return outPut;
             },
-
             fetch() {
                 axios.post('/bridge/fetch', {
                     view: 'SurveyStatistic'
@@ -596,7 +631,6 @@
                         console.log(error);
                     })
             },
-
             getPropertyName(arrData) {
                 return Object.getOwnPropertyNames(arrData);
             },
@@ -611,11 +645,11 @@
                     Ls.set('course_data', '');
                 }
                 this.course_id = Ls.get('course');
-
                 axios.post('/api/survey/statistic_exam', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
-                    course_id: this.course_id,
+                    //course_id: this.course_id,
+                    courses: this.courses,
                     startdate: this.startdate,
                     enddate: this.enddate
                 })
@@ -646,7 +680,8 @@
                 axios.post('/api/survey/statistic_view', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
-                    course_id: this.course_id,
+                    //course_id: this.course_id,
+                    courses: this.courses,
                     startdate: this.startdate,
                     enddate: this.enddate
                 }).then(response => {
@@ -673,7 +708,8 @@
                     page: paged || this.current_rs,
                     survey_id: this.survey_id,
                     org_id: this.organization_id_1,
-                    course_id: this.course_id,
+                    //course_id: this.course_id,
+                    courses: this.courses_sr,
                     keyword: this.keyword_rs,
                     row: this.row_rs,
                     startdate: this.startdate_us,
@@ -700,7 +736,8 @@
                     page: paged || this.current_vs,
                     survey_id: this.survey_id,
                     org_id: this.organization_id_1,
-                    course_id: this.course_id,
+                    //course_id: this.course_id,
+                    courses: this.courses_sr,
                     keyword: this.keyword_rs,
                     row: this.row_vs,
                     startdate: this.startdate_us,
