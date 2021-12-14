@@ -2176,7 +2176,7 @@ class SurveyRepository implements ISurveyInterface
                         ->join('mdl_user as mu', 'mu.id', '=', 'su.user_id')
                         ->join($org_query, 'org_tp.org_uid', '=', 'su.user_id')
                         ->where('su.survey_id', '=', $survey_id)
-                        ->where('su.course_id', $list_course_ids)
+                        ->whereIn('su.course_id', $list_course_ids)
                         ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                         ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
                             'su.answer_id', 'su.user_id as user_id', 'mu.email as email', 'qd.question_id as qd_pr')->groupBy(['mu.id', 'su.question_id', 'su.answer_id']);
