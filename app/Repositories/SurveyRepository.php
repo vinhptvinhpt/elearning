@@ -2153,7 +2153,10 @@ class SurveyRepository implements ISurveyInterface
 
             if ($course_id || $org_id) {
                 if ($org_id && $course_id) {
-
+                    $list_course_ids = array();
+                    foreach ($course_id as $course){
+                        array_push($list_course_ids, $course['id']);
+                    }
                     $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer, qd.question_id as qd_pr,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
@@ -2162,7 +2165,7 @@ class SurveyRepository implements ISurveyInterface
                                 on mc.id = su.course_id
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id in (' . implode(',', $list_course_ids) . ') 
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2173,20 +2176,23 @@ class SurveyRepository implements ISurveyInterface
                         ->join('mdl_user as mu', 'mu.id', '=', 'su.user_id')
                         ->join($org_query, 'org_tp.org_uid', '=', 'su.user_id')
                         ->where('su.survey_id', '=', $survey_id)
-                        ->where('su.course_id', '=', $course_id)
+                        ->where('su.course_id', $list_course_ids)
                         ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                         ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
                             'su.answer_id', 'su.user_id as user_id', 'mu.email as email', 'qd.question_id as qd_pr')->groupBy(['mu.id', 'su.question_id', 'su.answer_id']);
 
                 } else if ($course_id) {
-
+                    $list_course_ids = array();
+                    foreach ($course_id as $course){
+                        array_push($list_course_ids, $course['id']);
+                    }
                     $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,qd.question_id as qd_pr,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id in (' . implode(',', $list_course_ids) . ') 
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2196,7 +2202,7 @@ class SurveyRepository implements ISurveyInterface
                         ->join('tms_question_datas as qd', 'qd.id', '=', 'su.question_id')
                         ->join('mdl_user as mu', 'mu.id', '=', 'su.user_id')
                         ->where('su.survey_id', '=', $survey_id)
-                        ->where('su.course_id', '=', $course_id)
+                        ->whereIn('su.course_id', $list_course_ids)
                         ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                         ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
                             'su.answer_id', 'su.user_id as user_id', 'mu.email as email', 'qd.question_id as qd_pr')->groupBy(['mu.id', 'su.question_id', 'su.answer_id']);
@@ -2393,7 +2399,10 @@ class SurveyRepository implements ISurveyInterface
 
             if ($course_id || $org_id) {
                 if ($org_id && $course_id) {
-
+                    $list_course_ids = array();
+                    foreach ($course_id as $course){
+                        array_push($list_course_ids, $course['id']);
+                    }
                     $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
@@ -2402,7 +2411,7 @@ class SurveyRepository implements ISurveyInterface
                                 on mc.id = su.course_id
                                 join ' . $org_query . '
                                 on org_tp.org_uid = su.user_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id in (' . implode(',', $list_course_ids) . ') 
                                 group by su.user_id,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2413,20 +2422,23 @@ class SurveyRepository implements ISurveyInterface
                         ->join('mdl_user as mu', 'mu.id', '=', 'su.user_id')
                         ->join($org_query, 'org_tp.org_uid', '=', 'su.user_id')
                         ->where('su.survey_id', '=', $survey_id)
-                        ->where('su.course_id', '=', $course_id)
+                        ->whereIn('su.course_id', $list_course_ids)
                         ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                         ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
                             'su.answer_id', 'su.user_id as user_id', 'mu.email as email')->groupBy(['mu.id', 'su.question_id', 'su.answer_id']);
 
                 } else if ($course_id) {
-
+                    $list_course_ids = array();
+                    foreach ($course_id as $course){
+                        array_push($list_course_ids, $course['id']);
+                    }
                     $join_tables = '(SELECT su.survey_id, su.user_id,mu.email, su.answer_id, su.content_answer,
                                 qd.content as ques_content,su.question_id, su.type_question FROM tms_survey_users su
                                 join tms_question_datas qd
                     			on qd.id = su.question_id
                                 join mdl_course mc
                                 on mc.id = su.course_id
-                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id = ' . $course_id . '
+                                join mdl_user mu on mu.id = su.user_id where su.survey_id = ' . $survey_id . ' and mc.id in (' . implode(',', $list_course_ids) . ') 
                                 group by su.user_id,su.ques_parent,su.question_id,su.answer_id
                                 ) as su';
 
@@ -2436,7 +2448,7 @@ class SurveyRepository implements ISurveyInterface
                         ->join('tms_question_datas as qd', 'qd.id', '=', 'su.question_id')
                         ->join('mdl_user as mu', 'mu.id', '=', 'su.user_id')
                         ->where('su.survey_id', '=', $survey_id)
-                        ->where('su.course_id', '=', $course_id)
+                        ->whereIn('su.course_id', $list_course_ids)
                         ->where('su.type_question', '=', TmsQuestion::FILL_TEXT)
                         ->select('su.question_id', 'qd.content as ques_content', 'su.content_answer', 'su.type_question',
                             'su.answer_id', 'su.user_id as user_id', 'mu.email as email')->groupBy(['mu.id', 'su.ques_parent', 'su.question_id']);

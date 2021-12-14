@@ -222,7 +222,7 @@
                                                 :options="courseSelectOptions"
                                                 label="label"
                                                 track-by="id"
-                                                :searchable="searchable"
+                                                :searchable="true"
                                                 :close-on-select="false"
                                                 placeholder="Select courses"
                                                 :multiple="true"
@@ -753,7 +753,7 @@
 
             },
             exportFileData(type_file) {
-                this.course_id = Ls.get('course');
+                this.course_id = this.courses;
                 if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
                     toastr['warning'](this.trans.get('keys.chon_khoa_hoc'), this.trans.get('keys.that_bai'));
                     return;
@@ -801,15 +801,15 @@
             },
             showResultFilltext() {
                 this.course_id = Ls.get('course');
-                if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
-                    this.headers = [];
-                    this.results = [];
-                    return;
-                }
+                // if (this.course_id === '' || this.course_id === null || this.course_id === undefined) {
+                //     this.headers = [];
+                //     this.results = [];
+                //     return;
+                // }
                 axios.post('/api/survey/result-filltext', {
                     survey_id: this.survey_id,
                     organization_id: this.organization.parent_id,
-                    course_id: this.course_id,
+                    course_id: this.courses,
                     startdate: this.startdate,
                     enddate: this.enddate
                 })
