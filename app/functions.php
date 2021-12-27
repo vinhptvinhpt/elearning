@@ -351,6 +351,7 @@ function permission_slug()
                 'tms-educate-exam-online-view' => __('xem'),
                 'tms-educate-exam-online-add' => __('them'),
                 'tms-educate-exam-online-edit' => __('sua'),
+                'tms-educate-exam-online-assign' => __('ghi_danh_khoa_hoc'),
                 'tms-educate-exam-online-deleted' => __('xoa'),
                 'tms-educate-exam-online-approve' => __('duyet'),
             ],
