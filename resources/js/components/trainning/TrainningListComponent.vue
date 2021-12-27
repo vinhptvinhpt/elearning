@@ -76,6 +76,8 @@
                                         <th>{{trans.get('keys.ten_knl')}}</th>
                                         <!--                    <th>{{trans.get('keys.quyen')}}</th>-->
                                         <!--                    <th>{{trans.get('keys.co_cau_to_chuc')}}</th>-->
+                                        <th class="text-center mobile_hide">{{trans.get('keys.bat_dau')}}</th>
+                                        <th class="text-center mobile_hide">{{trans.get('keys.ket_thuc')}}</th>
                                         <th>{{trans.get('keys.hoc_vien')}}</th>
                                         <th class="text-center">{{trans.get('keys.hanh_dong')}}</th>
                                     </tr>
@@ -93,6 +95,10 @@
                                         <!--                    <td>-->
                                         <!--                      {{ sur.group_organize && sur.group_organize.organize ? sur.group_organize.organize.name : '' }}-->
                                         <!--                    </td>-->
+                                        <td class="text-center mobile_hide">{{ sur.time_start |convertDateTime}}
+                                            </td>
+                                        <td class="text-center mobile_hide">{{ sur.time_end |convertDateTime}}
+                                            </td>
                                         <td>
                                             {{ sur.total_user ? sur.total_user : 0 }}
                                         </td>
@@ -152,6 +158,15 @@
                 current: 1,
                 totalPages: 0,
                 row: 10
+            }
+        },
+        filters: {
+            convertDateTime(value) {
+                if (value) {
+                    var time = new Date(value * 1000);
+                    return time.toLocaleDateString();
+                }
+                return "";
             }
         },
         methods: {
