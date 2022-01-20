@@ -340,5 +340,6 @@
     "survey_vuot_qua_4_cau_filltext": "Khảo sát chỉ chấp nhận tối đa 4 câu hỏi điền text",
     "da_co_hoc_vien_hoc_khung_nang_luc_nay_nen_khong_thay_doi_thu_tu_duoc": "Đã có học viên học khung năng nực này nên không thay đổi thứ tự được",
     "ma_to_chuc_da_ton_tai": "Mã tổ chức đã tồn tại",
-    "xoa_ket_qua_thanh_cong": "Xóa kết quả thành công"
+    "xoa_ket_qua_thanh_cong": "Xóa kết quả thành công",
+    "them_nguoi_dung_ngoai_le": "Thêm người dùng ngoại lệ"
 }
