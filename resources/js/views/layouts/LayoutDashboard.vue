@@ -73,6 +73,8 @@
               this.selected_role = 'user';
             }
             this.roles_ready = true;
+          
+            this.goToDashboard();
           })
           .catch(error => {
             //console.log(error);
@@ -109,13 +111,19 @@
         if (!getAuthUser || !getAuthToken) {
           this.logOut();
         }
-      }
+      },
+      goToDashboard() {
+          if(this.slugs.indexOf("tms-dashboard-view") == -1 && this.slugs.indexOf("tms-system-organize-view") !== -1){
+            this.$router.replace('/tms/organization');
+          }
+      },
     },
     mounted() {
+      this.checkRole();
       this.openMenu();
       // this.$utils.setLayout('default')
-      this.checkRole();
       this.checkLogin();
+      // this.goToDashboard();
     },
     // updated() {
     //   var getAuthUser = localStorage.getItem('auth.user');

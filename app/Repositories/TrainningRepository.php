@@ -328,6 +328,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->deleted = 1;
             $trainning->save();
 
+            // Delete courses in competency
+            MdlCourse::whereIn('id', function ($query) use ($id){
+                $query->select('course_id')->from('tms_trainning_courses')->where('trainning_id', $id);
+            })->update(['deleted' => '1']);
+
             $response->status = true;
             $response->message = __('xoa_khung_nang_luc_thanh_cong');
         } catch (\Exception $e) {

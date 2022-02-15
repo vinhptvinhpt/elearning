@@ -246,6 +246,9 @@
       },
       gotoDashboard() {
         this.$router.replace('/tms/dashboard')
+        if(this.slugs.indexOf("tms-dashboard-view") == -1 && this.slugs.indexOf("tms-system-organize-view") !== -1){
+            this.$router.replace('/tms/organization');
+        }
       }
     },
     mounted() {
