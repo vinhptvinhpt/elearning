@@ -37,7 +37,18 @@ foreach ($tabs as $tab) {
     }
 }
 
-$key_first = array_key_first($faq_data);
+$key_first = '' ;
+if(function_exists('array_key_first')){
+
+    $key_first = array_key_first($faq_data);
+
+}else{
+
+    foreach ($faq_data as $key => $faq_data_item ){
+        $key_first = $key;
+        break;
+    }
+}
 
 echo $OUTPUT->header();
 
