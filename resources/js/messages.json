@@ -1106,7 +1106,17 @@
         "ban_co_muon_xoa_ket_qua_nay": "Are you sure you want to delete this result?",
         "org_1" : "Company",
         "org_2" : "Department",
-        "org_3" : "Team"
+        "org_3" : "Team",
+        "danh_sach_faq": "FAQs",
+        "them_tab": "Add tab",
+        "tab": "Tab",
+        "ten_tab": "Tab name",
+        "ten_faq": "FAQ title",
+        "them_faq": "Add FAQ",
+        "chinh_sua_faq": "Edit FAQ",
+        "co_noi_dung": "Edited",
+        "bo_trong": "Blank",
+        "chon_tab": "Select tab"
     },
     "vi.keys": {
         "language": "",
@@ -2206,6 +2216,16 @@
         "ban_co_muon_xoa_ket_qua_nay": "Bạn có muốn xóa kết quả này",
         "org_1" : "Công ty",
         "org_2" : "Phòng ban",
-        "org_3" : "Nhóm"
+        "org_3" : "Nhóm",
+        "danh_sach_faq": "Danh sách FAQs",
+        "them_tab": "Thêm tab",
+        "tab": "Tab",
+        "ten_tab": "Tên tab",
+        "ten_faq": "Tên FAQ",
+        "them_faq": "Thêm FAQ",
+        "chinh_sua_faq": "Chỉnh sửa FAQ",
+        "co_noi_dung": "Có nội dung",
+        "bo_trong": "Bỏ trống",
+        "chon_tab": "Chọn tab"
     }
 }

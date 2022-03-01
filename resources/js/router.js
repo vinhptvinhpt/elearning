@@ -107,6 +107,8 @@ import PermissionDetailComponent from "./roles/PermissionDetailComponent";
 import InviteStudentComponent from "./components/education/InviteStudentComponent";
 import TemplateIndexComponent from "./components/email/IndexComponent";
 import TemplateDetailComponent from "./components/email/DetailComponent";
+import FaqIndexComponent from "./components/faq/IndexComponent";
+import FaqDetailComponent from "./components/faq/DetailComponent";
 import ConfirmInvitationComponent from "./components/email/ConfirmInvitationComponent";
 import UnlockAttemptComponent from "./components/email/UnlockAttemptComponent";
 import AttendanceComponent from "./components/education/AttendanceComponent";
@@ -813,6 +815,21 @@ const routes = [
                 props: (route) => ({
                     name_file: route.params.name_file ? route.params.name_file : 0
                 })
+            },
+
+            //FAQ
+            {
+              path: 'faq/list',
+              component: FaqIndexComponent,
+              name: 'FaqIndex'
+            },
+            {
+              path: 'faq/detail/:id',
+              component: FaqDetailComponent,
+              name: 'FaqDetail',
+              props: (route) => ({
+                id: route.params.id,
+              })
             },
 
             //Organization new
