@@ -36,7 +36,7 @@
                   </div>
 
                   <div class="col-12 form-group">
-                    <label>{{trans.get('keys.mo_ta')}} <span style="color: red">{{trans.get('keys.chu_y_chi_sua_chu_nhung_doan_van_co_dang_vi_du_fullname_username_khong_duoc_chinh_sua_hoac_xoa')}}</span></label>
+                    <label>{{trans.get('keys.mo_ta')}}</label>
                     <ckeditor v-model="faq.content" :config="editorConfig"></ckeditor>
                   </div>
 

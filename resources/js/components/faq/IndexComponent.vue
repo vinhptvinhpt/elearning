@@ -174,6 +174,10 @@
                 });
             },
             addTab() {
+              if (this.tab_name.length === 0) {
+                toastr['error'](this.trans.get('keys.ten_khong_duoc_bo_trong'), this.trans.get('keys.that_bai'));
+                return;
+              }
               this.formData = new FormData();
               this.formData.append("name", this.tab_name);
               axios.post(
@@ -205,6 +209,10 @@
               });
             },
             addFaq() {
+              if (this.faq_name.length === 0) {
+                toastr['error'](this.trans.get('keys.ten_khong_duoc_bo_trong'), this.trans.get('keys.that_bai'));
+                return;
+              }
               this.formData = new FormData();
               this.formData.append("name", this.faq_name);
               this.formData.append("tab_id", this.tab_id);
