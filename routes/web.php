@@ -704,6 +704,16 @@ Route::middleware(['auth:web', 'clearance'])->group(function () {
     Route::post('/dashboard/chart_data', 'Backend\BackendController@chartData');
     Route::post('/dashboard/table_data', 'Backend\BackendController@tableData');
 
+    //Routes for faqs
+    Route::post('/api/faq/list', 'Backend\FaqController@apiGetList');
+    Route::get('/api/faq_tab/list', 'Backend\FaqController@apiGetTabList');
+    Route::post('/api/faq_tab/create', 'Backend\FaqController@apiCreateTab');
+    Route::post('/api/faq/create', 'Backend\FaqController@apiCreate');
+    Route::post('/api/faq_tab/remove', 'Backend\FaqController@apiRemoveTab');
+    Route::get('/api/faq/detail/{id}', 'Backend\FaqController@apiDetail');
+    Route::post('/api/faq/update', 'Backend\FaqController@apiUpdate');
+    Route::post('/api/faq/delete', 'Backend\FaqController@apiDelete');
+
 
     //Route for sale room
     Route::get('/sale_room_user', 'Backend\SaleRoomUserController@index');

@@ -389,5 +389,10 @@
     "da_co_hoc_vien_hoc_khung_nang_luc_nay_nen_khong_thay_doi_thu_tu_duoc": "There are students learn this competency, so you can't change its order",
     "ma_to_chuc_da_ton_tai": "Organization code existed",
     "xoa_ket_qua_thanh_cong": "Delete result successfully",
-    "them_nguoi_dung_ngoai_le": "Add the exception user"
+    "them_nguoi_dung_ngoai_le": "Add the exception user",
+    "tab_co_chua_noi_dung_khong_the_xoa": "Tab has content, can not delete",
+    "xoa_tab_thanh_cong": "Delete tab successfully",
+    "tao_tab_thanh_cong": "Create tab successfully",
+    "cap_nhat_faq_thanh_cong": "Update FAQ successfully",
+    "xoa_faq_thanh_cong": "Delete FAQ successfully"
 }
