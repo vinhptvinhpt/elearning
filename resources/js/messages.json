@@ -1117,7 +1117,7 @@
         "co_noi_dung": "Edited",
         "bo_trong": "Blank",
         "chon_tab": "Select tab",
-        "ten_khong_duoc_bo_trong": "Name can not be black"
+        "ten_khong_duoc_bo_trong": "Name can not be blank"
     },
     "vi.keys": {
         "language": "",
