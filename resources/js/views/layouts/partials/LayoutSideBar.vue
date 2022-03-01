@@ -478,6 +478,13 @@
                                     <span class="nav-link-text"> {{ trans.get('keys.cau_hinh_template_email') }}</span>
                                 </router-link>
                             </li>
+
+                            <li class="nav-item">
+                              <router-link to="/tms/faq/list" class="nav-link">
+                                <span class="nav-link-text"> {{ trans.get('keys.danh_sach_faq') }}</span>
+                              </router-link>
+                            </li>
+
                             <!--                            <li class="nav-item" v-if="slug_can('tms-setting-notification-view')">-->
                             <!--                                <router-link to="/tms/notification" class="nav-link">-->
                             <!--                                    <span class="nav-link-text"> {{ trans.get('keys.gui_notification') }}</span>-->
