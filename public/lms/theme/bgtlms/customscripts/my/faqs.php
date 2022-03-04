@@ -105,6 +105,77 @@ echo $OUTPUT->header();
             font-size: 13px;
             font-weight: normal;
         }
+
+        .faq-cat-tabs {
+            border: 0;
+        }
+
+        .faq-cat-tabs li a {
+            display: block;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            color: #000;
+        }
+
+        .faq-cat-tabs li.active a {
+            border-bottom: 1px solid #fff;
+        }
+
+        .faq-cat-content {
+            margin: 0;
+            padding: 10px;
+            border: 1px solid #dddddd;
+            margin-top: -1px;
+        }
+
+        .faq-cat-content > .tab-pane.active {
+            opacity: 1;
+        }
+
+        .faq-cat-content .tab-pane .panel-heading {
+            padding: 5px;
+        }
+
+        .faq-cat-content .tab-pane h4.panel-title {
+            font-size: 14px;
+            margin: 0;
+            color: #3659a2;
+            padding: 5px 25px 5px 0;
+            position: relative;
+        }
+
+        .faq-cat-content .tab-pane .ic_push {
+            display: inline-block;
+            font: normal normal normal 14px/1 FontAwesome;
+            font-size: inherit;
+            text-rendering: auto;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-size: 14px !important;
+            position: absolute;
+            right: 0;
+            top: 50%;
+            margin-top: -7px;
+        }
+
+        .faq-cat-content .tab-pane .collapsed .ic_push:before{
+            content: "\f067";
+        }
+
+        .faq-cat-content .tab-pane .ic_push:before{
+            content: "\f068";
+        }
+
+        .faq-cat-content .tab-pane .panel-body {
+            padding: 5px;
+            font-size: 14px;
+        }
+
+        .faq-cat-content .tab-pane .panel-collapse.collapse {
+            overflow: hidden;
+        }
+
     </style>
     <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script type="text/javascript">
@@ -123,14 +194,14 @@ echo $OUTPUT->header();
 </head>
 
 <body>
-    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>
+<!--    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">-->
+<!--    <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.0/js/bootstrap.min.js"></script>-->
     <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
     <!------ Include the above in your HEAD tag ---------->
 
     <div class="container">
-        <div class="row">
-            <div class="col-md-6 col-md-offset-3">
+        <div class="row justify-content-md-center">
+            <div class="col-md-6">
                 <!-- Nav tabs category -->
                 <ul class="nav nav-tabs faq-cat-tabs">
                     <?php foreach ($faq_data as $tab_id => $tab) { ?>
@@ -147,10 +218,10 @@ echo $OUTPUT->header();
                                 <?php foreach ($tab['items'] as $key => $faq) { ?>
                                 <div class="panel panel-default panel-faq">
                                     <div class="panel-heading">
-                                        <a data-toggle="collapse" data-parent="#accordion-cat-<?php echo $tab_id ?>" href="#faq-cat-<?php echo $tab_id ?>-sub-<?php echo $key ?>">
+                                        <a class="collapsed" data-toggle="collapse" data-parent="#accordion-cat-<?php echo $tab_id ?>" href="#faq-cat-<?php echo $tab_id ?>-sub-<?php echo $key ?>">
                                             <h4 class="panel-title">
                                                 <?php echo $faq['name'] ?>
-                                                <span class="pull-right"><i class="glyphicon glyphicon-plus"></i></span>
+                                                <span class="ic_push"></span>
                                             </h4>
                                         </a>
                                     </div>
