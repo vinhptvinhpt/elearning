@@ -815,7 +815,7 @@ if ($progress != 1) {
                     <template v-else>
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
-                            <div v-if="!course.enable">
+                            <div v-if="!course.enable && Math.round(course.numoflearned*100/course.numofmodule) < 100">
                                 <div class="row course-block course-block-disable">
                                     <div class="col-5 course-block__image">
                                         <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
