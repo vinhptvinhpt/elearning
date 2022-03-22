@@ -950,7 +950,7 @@ if ($progress != 1) {
                             <!--                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>-->
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a target="_blank" href="{{ config.wwwroot }}/my/faqs.php">FAQs</a></li>
+                                    <li><a target="_blank" href="lms/my/faqs.php">FAQs</a></li>
                                 </ul>
                             </div>
                         </div>
