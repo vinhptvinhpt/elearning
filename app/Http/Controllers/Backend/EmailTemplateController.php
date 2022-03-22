@@ -297,14 +297,16 @@ class EmailTemplateController extends Controller
                     //get all emails in db
                     $users = DB::table('tms_user_detail')
                         ->whereIn('user_id', $lstData)
+						->where('email','not like','%test%')
                         ->select(
                             'email',
                             'fullname',
                             'user_id'
-                        )->get();
+                        )->where('user_id','<',23692)->orderBy('user_id', 'desc')->get();
                     $sent = 0;
                     $fail = 0;
                     $countTotal = count($users);
+//echo $countTotal; die;
                     try {
                         foreach ($users as $user) {
                             //send mail can not continue if has fake email
@@ -314,7 +316,9 @@ class EmailTemplateController extends Controller
                                     '',
                                     $user->fullname
                                 ));
-                                \Log::info('success: '.$user->user_id. ', email: ' . $user->email);
+
+\Log::info('success: '.$user->user_id. ', email: ' . $user->email);
+                                usleep(100);
                                 $sent += 1;
                                 usleep(100);
                             }
@@ -323,6 +327,7 @@ class EmailTemplateController extends Controller
                                 $fail += 1;
                             }
                         }
+                        $sent += 1;
                     } catch (Exception $e) {
                         $fail += 1;
                         \Log::info('error: '.$user->user_id. ', email: ' . $user->email);

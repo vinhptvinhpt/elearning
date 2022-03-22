@@ -209,7 +209,7 @@
                                                     <span class="btn-icon-wrap"><i class="fal fa-book-open"></i></span>
                                                 </a>
 
-                                                <router-link
+                                                <router-link v-if="slug_can('tms-educate-exam-online-assign')"
                                                         :title="trans.get('keys.moi_tham_gia_khoa_hoc')"
                                                         :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-warning btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                         :to="{ name: 'InviteStudent', params: { id: course.id, come_from: 'online', course_name: course.fullname } }">
@@ -217,7 +217,7 @@
                                                               class="fal fa-arrow-alt-right"></i></span>
                                                 </router-link>
 
-                                                <router-link
+                                                <router-link v-if="slug_can('tms-educate-exam-online-assign')"
                                                         :title="trans.get('keys.ghi_danh_khoa_hoc')"
                                                         :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                         :to="{ name: 'CourseEnrol', params: { id: course.id, come_from: 'online' } }">
@@ -231,7 +231,7 @@
                                                              :to="{ name: 'CourseDetail', params: { id: course.id } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-pencil"></i></span>
                                                 </router-link>
-                                                <router-link :title="trans.get('keys.them_nguoi_dung_ngoai_le')"
+                                                <router-link v-if="slug_can('tms-educate-exam-online-exception')" :title="trans.get('keys.them_nguoi_dung_ngoai_le')"
                                                              :class="course.visible == 1 ? 'btn btn-sm btn-icon btn-icon-circle btn-success btn-icon-style-2' : 'btn disabled btn-sm btn-icon btn-icon-circle btn-grey btn-icon-style-2'"
                                                              :to="{ name: 'UserCourseExceptionEdit', params: { id: course.id,come_from: 'online',course_name:course.fullname } }">
                                                     <span class="btn-icon-wrap"><i class="fal fa-user-tag"></i></span>

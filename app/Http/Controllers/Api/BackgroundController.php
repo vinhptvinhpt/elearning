@@ -78,7 +78,7 @@ class BackgroundController extends Controller
     }
 
     public function importEmployee(Request $request)
-    {
+    {Log::info('71');
         set_time_limit(0);
 
         $env = "background";
@@ -157,7 +157,7 @@ class BackgroundController extends Controller
             $files = array_diff($files, array('.', '..'));
             $files = array_slice($files, 0, 1);
         }
-
+Log::info('107');
 
         foreach ($files as $file_path) {
 
@@ -185,7 +185,7 @@ class BackgroundController extends Controller
 
             //Lấy dữ liệu từ tab Staff List <= Required
             $list_employee = $list_uploaded['Staff List'];
-
+Log::info('157');
             foreach ($list_employee as $user) {
 
                 $content = array();
@@ -468,7 +468,7 @@ class BackgroundController extends Controller
 
                 $response[] = $response_item;
             }
-
+Log::info('337');
             $result_file_name = "bg_import_error_" . $file_name . ".xlsx";
 
             //xóa file cũ
@@ -479,7 +479,7 @@ class BackgroundController extends Controller
             //ghi file vào thư mục storage, không được mở file khi đang lưu nếu k sẽ lỗi k lưu được
             $exportExcel = new ImportResultSheet('Import Result', $response);
             $exportExcel->store($result_file_name, '', Excel::XLSX);
-
+Log::info('348');
             if ($env == 'cms') {
                 return response()->json(self::status_message('success', __('nhap_du_lieu_thanh_cong'), ['result_file' => $result_file_name]));
             }

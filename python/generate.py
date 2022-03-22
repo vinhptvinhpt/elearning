@@ -23,10 +23,12 @@ path = os.getcwd()
 # connect to db
 # path = 'D:\\Job\\elearning-easia\\python'
 # path_gen_img = 'D:\\Job\\elearning-easia\\storage\\app\\public\\upload'
-path = 'D:\\Work\\TinhVan\\EAsia\\dtl\\elearning-easia\\python'
-path_gen_img = 'D:\\Work\\TinhVan\\EAsia\\dtl\\elearning-easia\\storage\\app\\public\\upload'
-path_gen_logo = 'D:\\Work\\TinhVan\\EAsia\\dtl\\elearning-easia\\public\\logo'
-path_gen_signature = 'D:\\Work\\TinhVan\\EAsia\\dtl\\elearning-easia\\public\\signature'
+
+path = '/usr/share/nginx/html/source/phh/elearning-easia/python'
+path_gen_img = '/usr/share/nginx/html/source/phh/elearning-easia/storage/app/public/upload'
+path_gen_logo = '/usr/share/nginx/html/source/phh/elearning-easia/public/logo'
+path_gen_signature = '/usr/share/nginx/html/source/phh/elearning-easia/public/signature'
+
 bg_size_width = 705
 bg_size_height = 1000
 logo_size_width = 100
@@ -38,10 +40,11 @@ bg_resize_height = 457
 if __name__ == '__main__':
     get_user_id = int(sys.argv[1])
     get_training_id = int(sys.argv[2])
-    connection = mysql.connector.connect(host='localhost',
-                                         database='easia',
-                                         user='root',
-                                         password='',
+
+    connection = mysql.connector.connect(host='10.2.1.130',
+                                         database='easiaelearning',
+                                         user='easia',
+                                         password='E@sia2020',
                                          buffered=True)
     try:
         if connection.is_connected():

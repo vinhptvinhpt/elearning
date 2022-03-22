@@ -194,6 +194,8 @@ class LoginController extends Controller
                 return response()->json(['status' => 'FAILPASSWORD']);
             }
 
+
+
             if (strpos($username, 'admin') !== false) {
             } else {
                 //lấy url hiện tại
@@ -471,9 +473,17 @@ class LoginController extends Controller
                     '',
                     $password
                 ));
+				
+				// check for failures
+    if (Mail::failures()) {	
+        // return response showing failed emails
+		 return response()->json(['status' => false, 'message' => 'Password reset failed due to a system error, please try again later1']);
+    }
+
                 DB::commit();
 
             } catch (\Exception $e) {
+
                 DB::rollback();
                 return response()->json(['status' => false, 'message' => 'Password reset failed due to a system error, please try again later']);
             }

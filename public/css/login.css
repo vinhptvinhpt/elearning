@@ -135,8 +135,19 @@ a:hover {
     width: 100%;
 }
 
+
+.wrap-btn100 button {
+    /*width: 130px;*/
+    /*margin-left: 35%;*/
+    padding: 2% 10%;
+    background: #0080ef 0% 0% no-repeat padding-box;
+    border-radius: 4px;
+    color: #ffffff;
+}
+
+
 .btn-login {
-    background: #862055 0% 0% no-repeat padding-box;
+    background: #0080ef 0% 0% no-repeat padding-box;
     border-radius: 4px;
     color: #FFFFFF;
     text-align: center;

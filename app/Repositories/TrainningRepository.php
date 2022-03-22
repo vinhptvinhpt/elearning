@@ -328,6 +328,11 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
             $trainning->deleted = 1;
             $trainning->save();
 
+            // Delete courses in competency
+            MdlCourse::whereIn('id', function ($query) use ($id){
+                $query->select('course_id')->from('tms_trainning_courses')->where('trainning_id', $id);
+            })->update(['deleted' => '1']);
+
             $response->status = true;
             $response->message = __('xoa_khung_nang_luc_thanh_cong');
         } catch (\Exception $e) {
@@ -371,7 +376,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     $join->where('tud.deleted', '=', 0);
                 })
 //                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'))
-                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(DISTINCT ttu.user_id) as total_user'));
+                ->select('ttp.id', 'ttp.code', 'ttp.name', 'ttp.time_start', 'ttp.time_end', DB::raw('count(DISTINCT ttu.user_id) as total_user'));
 //                ->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
         } else {
 
@@ -388,7 +393,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                     $q->where('tms_trainning_groups.type', 1); //Training to organization relation
                 })
 //                ->leftJoin('tms_traninning_users as ttu', 'ttu.trainning_id', '=', 'ttp.id')
-                ->select('ttp.id', 'ttp.code', 'ttp.name', DB::raw('count(ttu.id) as total_user'));
+                ->select('ttp.id', 'ttp.code', 'ttp.name', 'ttp.time_start', 'ttp.time_end', DB::raw('count(ttu.id) as total_user'));
 //                ->where('ttp.deleted', '=', 0);
             //->where('ttp.deleted', '!=', 2);//cac KNL tu dong sinh ra khi tao moi khoa hoc online, tap trung;
 

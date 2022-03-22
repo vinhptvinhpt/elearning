@@ -4,11 +4,11 @@ return [
     "domain" => [
         'APP_NAME' => 'ELEARNING', //Không sửa đoạn text này khi deploy lên hệ thống mới, key mã hóa bảo mật hệ thống
 
-        'TMS' => 'https://dev-easia.tinhvan.com/',
+        'TMS' => 'https://academy.phh-group.com/',
 
         'TMS-LOCAL' => 'http://localhost:8000/',
 
-        'LMS' => 'https://dev-easia.tinhvan.com/lms',
+        'LMS' => 'https://academy.phh-group.com/lms',
 
         'DIVA' => 'https://dev-op.quanlydiembanhang.com/elearning-api/v1/', //domain run dev, thời gian đầu test trên domain này, khi nào launch hệ thống chuyển sang domain live
 
@@ -43,18 +43,20 @@ return [
 
         'ACCOUNT_KEY' => 'GRC03bagorlSpRO94e40uAuM/4o+xpw5pC/g3FMYy1u9fPDtmyybjPd4m74x0Pabc8wPmCte90f/rwYV+7nJqw==',
 
-        'TMS_NAME' => 'Easia Academy',
+
+        'TMS_NAME' => 'PHH Academy',
 
         'APP-TOKEN-SYSTEM' => 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJUVkUtVFZDIn0.8d61LFSiugnJp72Vdd3BqFCuOsMS8up7kif5bMQvYjM',
 
-        'HISTAFF-API' => 'http://222.252.30.92:2000/SynData.asmx/',
+        'HISTAFF-API' => 'http://adminhrm.phh-group.com/SynData.asmx/',
 
         'HISTAFF-KEY' => 'G6rikv0U0eQUIRak7owtmw==',
 
         'HISTAFF-COOKIE' => 'hrm_token',
 
-        'DOMAIN-COOKIE' => 'dev-easia.tinhvan.com',
+        'DOMAIN-COOKIE' => 'academy.phh-group.com',
 
-        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el']
+        'EXCEPTION-DOMAIN' => ['localhost', 'dev', 'el','phh-group']
+
     ],
 ];

@@ -246,13 +246,17 @@
       },
       gotoDashboard() {
         this.$router.replace('/tms/dashboard')
+        if(this.slugs.indexOf("tms-dashboard-view") == -1 && this.slugs.indexOf("tms-system-organize-view") !== -1){
+            this.$router.replace('/tms/organization');
+        }
       }
     },
     mounted() {
       this.getDefaultValue();
       this.domainWeb = location.hostname;
       this.imgLogo = sessionStorage.getItem('img-logo');
-      if(!this.imgLogo){
+
+      if(!this.imgLogo || this.imgLogo == undefined){
         this.imgLogo = '/assets/dist/img/logo-black.png';
       }
     },

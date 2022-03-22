@@ -815,7 +815,7 @@ if ($progress != 1) {
                     <template v-else>
                         <div class="col-xxl-3 col-md-4 col-sm-6 col-xs-12 block clctgr0"
                              v-for="(course,index) in courses">
-                            <div v-if="!course.enable">
+                            <div v-if="!course.enable && Math.round(course.numoflearned*100/course.numofmodule) < 100">
                                 <div class="row course-block course-block-disable">
                                     <div class="col-5 course-block__image">
                                         <div class="course_img" v-bind:style="{ backgroundImage: 'url('+(urlImage+''+course.course_avatar)+')' }"></div>
@@ -850,7 +850,7 @@ if ($progress != 1) {
                                                             {{course.training_name}}
                                                         </li>
                                                         <li class="units" v-if="course.estimate_duration"
-                                                            title="Estimated learning duration">
+                                                            title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hour(s)
                                                         </li>
@@ -894,7 +894,7 @@ if ($progress != 1) {
                                                             {{course.training_name}}
                                                         </li>
                                                         <li class="units" v-if="course.estimate_duration"
-                                                            title="Estimated learning duration">
+                                                            title="Estimate time">
                                                             <i class="fa fa-clock-o" aria-hidden="true"></i>
                                                             {{course.estimate_duration}} hour(s)
                                                         </li>
@@ -950,7 +950,7 @@ if ($progress != 1) {
                             <!--                            <div class="footer-block__title"><p class="footer-title">FAQs</p></div>-->
                             <div class="footer-block__ul">
                                 <ul class="footer-ul">
-                                    <li><a target="_blank" href="https://docs.google.com/spreadsheets/u/4/d/e/2PACX-1vSnFkIhasu5pNS8qUjRzFEDGzIwn3wInquSIrxVR_JMASdBBxiv2YpIdgiHEzBGzw/pubhtml#">FAQs</a></li>
+                                    <li><a target="_blank" href="{{ config.wwwroot }}/my/faqs.php">FAQs</a></li>
                                 </ul>
                             </div>
                         </div>

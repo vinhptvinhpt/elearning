@@ -24,7 +24,7 @@
     <div class="main-content"></div>
     <div class="before-main-content">
         <div class="img_fix_bg"></div>
-        <h3 class="name-organization">Easia</h3>
+        <h3 class="name-organization">PHH</h3>
         <p class="class-name-organization">ACADEMY</p>
     </div>
     <div class="wrap-login100">
@@ -51,7 +51,7 @@
                 </div>
                 <div class="wrap-remember100">
                     <input type="checkbox" checked id="ip-checkbox">
-                    <span>Remeber login</span>
+                    <span>Remember login</span>
                 </div>
                 <div class="wrap-btn100 text-center">
                     <button style="position: relative;" type="submit" class="btn btn-login">Login
@@ -96,7 +96,7 @@
         <form method="POST" class="login-form" id="recoverform" style="display: none;">
             @csrf
             <div class="wrap-content">
-                <img src="../images/logo-black.png" class="logo" alt="">
+                <img src="../images/logo-black-login.png" class="logo" alt="">
                 <p class="title-login"><br/>Password retrieval</p>
                 <div class="wrap-input100">
                     <input class="form-control" id="iprs-user" name="username" type="email" required=""
@@ -177,7 +177,7 @@
     }
 
     //for test
-    modeChangeOrganization();
+    //modeChangeOrganization();
 
     function modeChangeOrganization(){
         //

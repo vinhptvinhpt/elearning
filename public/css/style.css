@@ -10,7 +10,7 @@ button, select,.form-control {
 
 .form-control {
     font-size: 13px;
-    margin-bottom: 5px !important;
+    /*margin-bottom: 5px !important;*/
 }
 
 .hide {
