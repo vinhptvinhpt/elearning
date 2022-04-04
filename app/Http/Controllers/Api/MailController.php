@@ -2628,7 +2628,7 @@ class MailController extends Controller
 //            //continue
 //        }
         //Cache::flush();
-        $mail_development_mode = true; //Default true to avoid spam mail
+        $mail_development_mode = false; //Default true to avoid spam mail
         // //Check development_flag
         // if (Cache::has('mail_development_mode')) {
         //     $flag = Cache::get('mail_development_mode');
@@ -2645,16 +2645,6 @@ class MailController extends Controller
         //         }
         //     }
         // }
-        $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
-        //Set development_flag
-        if (isset($getDevelopment)) {
-            if ($getDevelopment->content = 'enable') {
-                $mail_development_mode = true;
-                Cache::put('mail_development_mode', true, 1440);
-            } else {//Only this case development mode is turn off
-                $mail_development_mode = false;
-            }
-        }
 
         //Nếu không có thì đang trong chế độ nhà phát triển
         if ($mail_development_mode) {
