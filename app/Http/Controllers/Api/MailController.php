@@ -2629,20 +2629,30 @@ class MailController extends Controller
 //        }
         //Cache::flush();
         $mail_development_mode = true; //Default true to avoid spam mail
-        //Check development_flag
-        if (Cache::has('mail_development_mode')) {
-            $flag = Cache::get('mail_development_mode');
-            $mail_development_mode = $flag;
-        } else {
-            $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
-            //Set development_flag
-            if (isset($getDevelopment)) {
-                if ($getDevelopment->content = 'enable') {
-                    $mail_development_mode = true;
-                    Cache::put('mail_development_mode', true, 1440);
-                } else {//Only this case development mode is turn off
-                    $mail_development_mode = false;
-                }
+        // //Check development_flag
+        // if (Cache::has('mail_development_mode')) {
+        //     $flag = Cache::get('mail_development_mode');
+        //     $mail_development_mode = $flag;
+        // } else {
+        //     $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
+        //     //Set development_flag
+        //     if (isset($getDevelopment)) {
+        //         if ($getDevelopment->content = 'enable') {
+        //             $mail_development_mode = true;
+        //             Cache::put('mail_development_mode', true, 1440);
+        //         } else {//Only this case development mode is turn off
+        //             $mail_development_mode = false;
+        //         }
+        //     }
+        // }
+        $getDevelopment = TmsConfigs::where('target', '=', TmsConfigs::DEVELOPMENT)->first();
+        //Set development_flag
+        if (isset($getDevelopment)) {
+            if ($getDevelopment->content = 'enable') {
+                $mail_development_mode = true;
+                Cache::put('mail_development_mode', true, 1440);
+            } else {//Only this case development mode is turn off
+                $mail_development_mode = false;
             }
         }
 
