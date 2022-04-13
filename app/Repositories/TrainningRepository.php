@@ -1345,6 +1345,7 @@ class TrainningRepository implements ITranningInterface, ICommonInterface
                 ->join('tms_user_detail as tud', 'mu.id', '=', 'tud.user_id')
                 //->where('mu.active', '=', 0)
                 ->where('tud.deleted', '=', 0)
+                ->where('tud.working_status', '=', 0)
                 ->whereNull('ttpu.trainning_id')
                 ->select('mu.id as user_id', 'mu.username', 'tud.fullname', 'mu.email');
 

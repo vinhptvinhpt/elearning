@@ -1175,6 +1175,7 @@ class MdlCourseRepository implements IMdlCourseInterface, ICommonInterface
             ->join('tms_user_detail', 'mdl_user.id', '=', 'tms_user_detail.user_id')
             ->join('roles', 'roles.id', '=', 'model_has_roles.role_id')
             ->where('mdl_user.deleted', '=', 0)
+            ->where('tms_user_detail.working_status', '=', 0)
             ->select('mdl_user.id', 'mdl_user.username', 'tms_user_detail.fullname', 'mdl_user.firstname', 'mdl_user.lastname', 'roles.name as rolename')
             ->whereNotExists(function ($query) use ($role_id) {
                 $query->select(DB::raw(1))
