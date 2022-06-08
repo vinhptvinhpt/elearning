@@ -563,7 +563,7 @@ class ExcelController extends Controller
             __('ma_khoa_hoc'),
             __('ten_khoa_hoc'),
             __('tien_do'),
-            //__('diem'),
+            __('thoi_gian_hoc'),
             __('trang_thai'),
         );
 
@@ -583,6 +583,7 @@ class ExcelController extends Controller
                 //$item['status_user'] == 1 &&
                 //floatval($item['finalgrade']) >= floatval($item['gradepass'])
                 //&&
+                $item['duration'] ? (float)round($item['duration']/3600, 2) : '',
                 $item['user_course_completionstate'] >= $item['user_course_learn']
                 && $item['user_course_completionstate'] > 0
                     ? __('hoan_thanh') : __('chua_hoan_thanh')
