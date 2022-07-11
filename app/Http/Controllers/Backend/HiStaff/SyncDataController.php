@@ -314,6 +314,10 @@ class SyncDataController
             $json = $request->input('data');
             $username = $request->input('username');
 
+            \Log::info("[SYNC_HISTAFF][RAW_DATA][BEGIN] GET DATA - BEFORE SAVING INTO LMS DB");
+            \Log::info($username);
+            \Log::info($json);
+            \Log::info("[SYNC_HISTAFF][RAW_DATA][END] GET DATA - BEFORE SAVING INTO LMS DB");
             if (!$header) {
                 $result->code = 'ERR01';
                 $result->status = false;
