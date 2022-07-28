@@ -118,7 +118,7 @@ interface IBussinessInterface
 
     public function generateCodeCertificate(Request $request);
 
-    public function randomNumber($length);
+    public function randomNumber($length, $exist_array);
 
     public function apiListStudentsCertificate(Request $request);
 
