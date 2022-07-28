@@ -3456,7 +3456,11 @@ class BussinessRepository implements IBussinessInterface
 
             foreach ($user_selected as $user) {
                 //update status to 1
-                $certificatecode = $user['user_id'] . $this->randomNumber(7 - strlen($user['user_id']));
+
+                $user_id = $user['user_id'];
+                // Get exist certificate code for this student
+                $exist_certificate_code = StudentCertificate::query()->selectRaw("SUBSTRING(code, strlen($user_id))")->where('code', 'like', "{$user_id}%")->distinct()->toArray();
+                $certificatecode = $user['user_id'] . $this->randomNumber(7 - strlen($user['user_id']), $exist_certificate_code);
 
                 $data_item['userid'] = $user['user_id'];
                 $data_item['trainning_id'] = $user['training_id'];
@@ -3513,8 +3517,8 @@ class BussinessRepository implements IBussinessInterface
         try {
             $user_id = $request->input('user_id');
             $trainning_id = $request->input('trainning_id');
-
-            $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id));
+            $exist_certificate_code = StudentCertificate::query()->selectRaw("SUBSTRING(code, strlen($user_id))")->where('code', 'like', "{$user_id}%")->distinct()->toArray();
+            $certificatecode = $user_id . $this->randomNumber(7 - strlen($user_id), $exist_certificate_code);
 
             StudentCertificate::create([
                 'userid' => $user_id,
@@ -3570,13 +3574,22 @@ class BussinessRepository implements IBussinessInterface
         return response()->json($response);
     }
 
-    public function randomNumber($length)
+    /*
+    * Generate unique code (not exist in DB)
+    */
+    public function randomNumber($length, $exist_array)
     {
-        $result = '';
-
-        for ($i = 0; $i < $length; $i++) {
-            $result .= mt_rand(0, 9);
-        }
+        // unique code
+        $check_unique = false; 
+        if (!$check_unique){
+            $result = '';
+            for ($i = 0; $i < $length; $i++) {
+                $result .= mt_rand(0, 9);
+            }
+            if(!in_array($result, $exist_array)){
+                $check_unique = true;
+            }
+        }     
 
         return $result;
     }

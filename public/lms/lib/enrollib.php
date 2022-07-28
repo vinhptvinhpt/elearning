@@ -2016,7 +2016,13 @@ function enrol_try_internal_enrol($courseid, $userid, $roleid = null, $timestart
     if (!$instances = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED), 'sortorder,id ASC')) {
         return false;
     }
-    $instance = reset($instances);
+    // [TODO][CUSTOMIZE] Get role exactly (=5) when $roleid (self enrol case)
+    if($roleid = "5"){
+        $instance_draft = $DB->get_records('enrol', array('enrol' => 'manual', 'courseid' => $courseid, 'status' => ENROL_INSTANCE_ENABLED, 'roleid' => $roleid), 'sortorder,id ASC');
+        $instance = reset($instance_draft);
+    }else{
+        $instance = reset($instances);
+    }
 
     $enrol->enrol_user($instance, $userid, $roleid, $timestart, $timeend);
 
