@@ -53,7 +53,7 @@ if ($showall === null) {
 $PAGE->set_url($attemptobj->review_url(null, $page, $showall));
 
 // Check login.
-//require_login($attemptobj->get_course(), false, $attemptobj->get_cm());
+require_login($attemptobj->get_course(), false, $attemptobj->get_cm());
 // $attemptobj->check_review_capability();
 
 // Create an object to manage all the other (non-roles) access rules.
