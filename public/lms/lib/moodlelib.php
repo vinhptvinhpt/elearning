@@ -2996,16 +2996,17 @@ function require_login($courseorid = null, $autologinguest = true, $cm = null, $
     }
 
     // Check visibility of activity to current user; includes visible flag, conditional availability, etc.
-    if ($cm && !$cm->uservisible) {
-        if ($preventredirect) {
-            throw new require_login_exception('Activity is hidden');
-        }
-        // Get the error message that activity is not available and why (if explanation can be shown to the user).
-        $PAGE->set_course($course);
-        $renderer = $PAGE->get_renderer('course');
-        $message = $renderer->course_section_cm_unavailable_error_message($cm);
-        redirect(course_get_url($course), $message, null, \core\output\notification::NOTIFY_ERROR);
-    }
+    // [TODO] Comment for preview attempt of user
+    // if ($cm && !$cm->uservisible) {
+    //     if ($preventredirect) {
+    //         throw new require_login_exception('Activity is hidden');
+    //     }
+    //     // Get the error message that activity is not available and why (if explanation can be shown to the user).
+    //     $PAGE->set_course($course);
+    //     $renderer = $PAGE->get_renderer('course');
+    //     $message = $renderer->course_section_cm_unavailable_error_message($cm);
+    //     redirect(course_get_url($course), $message, null, \core\output\notification::NOTIFY_ERROR);
+    // }
 
     // Set the global $COURSE.
     if ($cm) {
