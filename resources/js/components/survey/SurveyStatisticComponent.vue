@@ -46,7 +46,7 @@
                                                         @input="search()"/>
                                         </div>
                                     </div>
-                                    <div class="col-sm-4">
+                                    <div class="col-sm-7">
                                         <div class="d-flex flex-row form-group">
 
 <!--                                            <input v-model="keyword" type="text" class="form-control" id="tags"-->
@@ -68,7 +68,7 @@
 
                                         </div>
                                     </div>
-                                    <div class="col-sm-3 form-group">
+                                    <div class="col-sm-1 form-group">
 
                                         <div class="d-flex flex-row form-group">
                                             <button type="button" id="btnFilter"
