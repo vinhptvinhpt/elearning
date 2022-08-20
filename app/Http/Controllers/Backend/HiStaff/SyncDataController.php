@@ -443,7 +443,6 @@ class SyncDataController
                 return response()->json($result);
             }
 
-//            $line_manager = MdlUser::where('username', $data['line_manager'])->first();
             $line_manager = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($data['line_manager']))->first();
             $message = '';
 
@@ -461,7 +460,6 @@ class SyncDataController
 
             $convert_name = convert_name($data['fullname']);
 
-//            $user = MdlUser::where('username', $data['username'])->first();
             $user = MdlUser::where(DB::raw('LOWER(`username`)'), strtolower($data['username']))->first();
 
             $arr_data = [];
@@ -470,7 +468,11 @@ class SyncDataController
             $arr_data_enrol = [];
             $data_item_enrol = [];
 
+            $action_flag = 0;
+            $new_user_id = 0;
             if ($user) {
+                #Case update exist record
+                $action_flag = 1;
                 //update user in mdl_user
                 $user->username = $data['username'];
                 $user->firstname = $convert_name['firstname'];
@@ -506,6 +508,8 @@ class SyncDataController
                 $result->message = 'Success update user' . $message;
 
             } else {
+                // Case create a new record
+                $action_flag = 2;
                 $user = MdlUser::firstOrCreate([
                     'username' => $data['username'],
                     'email' => $data['email'],
@@ -522,6 +526,8 @@ class SyncDataController
                         'redirect_type' => 'lms'
                     ]);
 
+                // Get new user id
+                $new_user_id = $user->id;
                 //update info to tms_user_detail
                 TmsUserDetail::firstOrCreate([
                     'user_id' => $user->id,
@@ -580,6 +586,23 @@ class SyncDataController
 
             DB::commit();
             //endregion
+
+            // [TODO] Fix for unsuccessful synchronization
+            if($action_flag == 2 && $new_user_id){
+                $mdl_user = MdlUser::where('id', $new_user_id)->first();
+                //update user in mdl_user
+                $mdl_user->firstname = $convert_name['firstname'];
+                $mdl_user->lastname = $convert_name['lastname'];
+                $mdl_user->email = $data['email'];
+                $mdl_user->confirmed = 1;
+                $mdl_user->address = $data['address'];
+                $mdl_user->city = $data['office'];
+                $mdl_user->country = 'vi';
+                $mdl_user->active = 1;
+                $mdl_user->redirect_type = 'lms';
+                
+                $mdl_user->save();
+            }
 
             $result->code = 'US01';
             $result->status = true;
