@@ -2414,7 +2414,7 @@ class TaskController extends Controller
 
     public function apiGenerateSASUrlAzure()
     {
-        $arrMainId = [33, 140, 141];
+        $arrMainId = [33, 140, 141, 146, 171, 172];
         $lstData = MdlHvp::whereIn('main_library_id', $arrMainId)->select('id', 'main_library_id', 'json_content')->get();
 
         foreach ($lstData as $data) {
