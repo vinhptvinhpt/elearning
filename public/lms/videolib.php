@@ -44,9 +44,9 @@ echo $OUTPUT->header();
                                         <div class="drive-item module text-center">
                                             <div class="drive-item-inner module-inner">
                                                 <div class="drive-item-title"><a class="title-video" :title="video.name">{{ video.name }}</a></div>
-                                                <div class="drive-item-thumb">
+                                                <!-- <div class="drive-item-thumb">
                                                     <a href=""><i class="fa fa-file-video-o text-warning"></i></a>
-                                                </div>
+                                                </div> -->
                                             </div>
                                             <div class="drive-item-footer module-footer">
                                                 <ul class="utilities list-inline">
@@ -131,7 +131,7 @@ echo $OUTPUT->header();
                 additional_param: '?sv=2017-04-17&sr=c&si=746d77ad-7266-4fc9-a957-9bfbac043930&sig=nFSTSk7bpjBou7LVrrqETZdxWOfYXXq4%2Bkyp6mJ53U8%3D&st=2020-03-06T12%3A07%3A20Z&se=2120-03-06T12%3A07%3A20Z',
                 current: 1,
                 totalPage: 0,
-                recordPerPage: 5,
+                recordPerPage: 10,
                 file: '',
                 percent: 0,
                 message: "",
@@ -397,6 +397,12 @@ echo $OUTPUT->header();
         }
         .utilities li{
             margin: 0 10px;
+        }
+        .drive-wrapper .drive-item {
+            width: 100% !important;
+        }
+        .drive-wrapper .drive-item-title{
+            max-width: 100% !important;
         }
     </style>
     </body>
