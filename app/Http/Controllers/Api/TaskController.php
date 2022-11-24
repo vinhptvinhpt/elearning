@@ -2428,6 +2428,9 @@ class TaskController extends Controller
                 case 140:
                     $this->processInteractive140($jsonData, $data->id);
                     break;
+                default:
+                    $this->processInteractive140($jsonData, $data->id);
+                    break;
             }
 
         }
