@@ -2557,6 +2557,47 @@ class TaskController extends Controller
 
             usleep(200);
         }
+
+        // Case interactive book
+        if(isset($jsonData['chapters'])){
+            // TODO query all chapter of interactive book => tunning
+            foreach ($jsonData['chapters'] as $key => $data_content) {
+                foreach($data_content['params']['content'] as $key_01 => $data_content_01){
+                    foreach($data_content_01 as $key_02 => $data_content_02){
+                        if(isset($data_content_02['params']['interactiveVideo']['video'])){
+                            $path = $data_content_02['params']['interactiveVideo']['video']['files'][0]['path'];
+
+                            if (strpos($path, Config::get('constants.domain.CONTAINER_NAME')) !== false) {
+                                $file_name = basename($path);
+        
+                                $file_name_rp = str_replace('#', '?', $file_name);
+                                $arr_name = explode('?', $file_name_rp);
+        
+                                $blob_name = $arr_name[0];
+                                //[VinhPT][Request] Change time to generate new url for azure from 12 seconds to 3 minutes
+                                $end_date = Carbon::now()->addMinute(3);
+                                //$end_date = Carbon::now()->addHour(23)->addMinute(59);
+                                // $end_date = Carbon::now()->addSecond(12);
+        
+                                $end_date = gmdate('Y-m-d\TH:i:s\Z', strtotime($end_date));
+        
+                                $_signature = $this->getSASForBlob(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, Config::get('constants.domain.ACCOUNT_KEY'));
+                                $_blobUrl = $this->getBlobUrl(Config::get('constants.domain.ACCOUNT_NAME'), Config::get('constants.domain.CONTAINER_NAME'), $blob_name, 'b', 'r', $end_date, $_signature);
+        
+                                $jsonData['chapters'][$key]['params']['content'][$key_01][$key_02]['params']['interactiveVideo']['video']['files'][0]['path'] = $_blobUrl;
+        
+                                usleep(100);        
+                            }
+                        }
+                    }
+                }
+            }
+
+            $hvp = MdlHvp::findOrFail($id);
+            $hvp->json_content = json_encode($jsonData);
+            $hvp->filtered = json_encode($jsonData);
+            $hvp->save();
+        }
     }
 
     public function getSASForBlob($accountName, $container, $blob, $resourceType, $permissions, $expiry, $key)
