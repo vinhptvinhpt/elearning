@@ -1381,6 +1381,7 @@ class MailController extends Controller
                     'roles.name as rolename',
                     'mdl_user.email'
                 )
+                ->where('mdl_user.active','=',1)
                 //neu user da dang khoa hoc ki nang mem thi bo qua
                 ->whereNotExists(function ($query) {
                     $query->select(DB::raw(1))
@@ -1436,11 +1437,12 @@ class MailController extends Controller
 
             $userNeedEnrol = DB::table('tms_user_detail')
                 //Lấy thông tin user
+                // Only get available user
                 ->select(
                     'tms_user_detail.user_id',
                     'tms_user_detail.fullname',
                     'tms_user_detail.email'
-                )
+                )->where('working_status', '<>', 1)
                 //check not exist in table tms_nofitications
                 ->whereNotIn('tms_user_detail.user_id', function ($query) {
                     $query->select('sendto')->from('tms_nofitications')->where('target', '=', TmsNotification::SUGGEST);
