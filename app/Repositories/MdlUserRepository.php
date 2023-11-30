@@ -150,6 +150,12 @@ class MdlUserRepository implements IMdlUserInterface
             $mdl_user->update(array(
                 'active' => $active,
             ));
+            
+            if($status == 1){
+                $mdl_user->update(array(
+                    'token' => null,
+                ));
+            }
 
             $response = [
                 'status' => true,
@@ -253,6 +259,13 @@ class MdlUserRepository implements IMdlUserInterface
         $user = DB::table('mdl_user as u')
             ->join('tms_user_detail as tud', 'tud.user_id', '=', 'u.id')
             ->select('u.id', 'u.username', 'u.email', 'tud.fullname')
+            ->where('u.id', '=', $user_id)->first();
+        return response()->json($user);
+    }
+    public function getUserToken($user_id)
+    {
+        $user = DB::table('mdl_user as u')
+            ->select('u.id', 'u.username', 'u.email', 'u.active', 'u.token')
             ->where('u.id', '=', $user_id)->first();
         return response()->json($user);
     }
