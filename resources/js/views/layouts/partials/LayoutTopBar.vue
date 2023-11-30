@@ -244,6 +244,27 @@
             console.log(error.response);
           });
       },
+      checkToken(){      
+         let obj = Ls.get('auth.user');
+         let user_id = '';
+         if (obj && obj !== 'undefined') {
+           var user_info = JSON.parse(obj);
+           user_id = user_info.id;
+         }
+         axios.post('/api/system/user/user_token', {
+                    user_id: user_id
+                })
+                    .then(response => {
+                        this.user = response.data;
+                        
+                        if(this.user.token == null && this.user.active == 0){
+                          this.logOut();
+                        }
+                    })
+                    .catch(error => {
+                        console.log(error);
+                    });
+      },
       gotoDashboard() {
         this.$router.replace('/tms/dashboard')
         if(this.slugs.indexOf("tms-dashboard-view") == -1 && this.slugs.indexOf("tms-system-organize-view") !== -1){
@@ -252,6 +273,7 @@
       }
     },
     mounted() {
+      this.checkToken();
       this.getDefaultValue();
       this.domainWeb = location.hostname;
       this.imgLogo = sessionStorage.getItem('img-logo');

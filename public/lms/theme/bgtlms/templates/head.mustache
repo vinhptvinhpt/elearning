@@ -72,6 +72,26 @@
                 localStorage.clear();
                 window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
             }
+
+            let user_id_tmp = '';
+            if (getAuthUser && getAuthUser !== 'undefined') {
+                var user_info_tmp = JSON.parse(getAuthUser);
+                user_id_tmp = user_info_tmp.id;
+            }
+
+            $.ajax({
+                     url: '/api/system/user/user_token',
+                     data: {user_id: user_id_tmp},
+                     type: 'POST',
+                     dataType: 'json',
+                     success: function (data) {
+                        if(data.token == null && data.active == 0){
+                          localStorage.clear();
+                          window.location.href = '/sso/authenticate?apiKey=bd629ce2de47436e3a9cdd2673e97b17&callback=' + currentUrl;
+                        }
+                     }
+                 });
+
             //var jwtsso = getToken();
             //if (jwtsso) {
                 <!-- $.ajax({ -->

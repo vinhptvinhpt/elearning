@@ -446,4 +446,10 @@ class SystemController extends Controller
         $user_id = $request->input('user_id');
         return $this->userRepository->getUserInfo($user_id);
     }
+
+    public function getUserToken(Request $request)
+    {
+        $user_id = $request->input('user_id');
+        return $this->userRepository->getUserToken($user_id);
+    }
 }
