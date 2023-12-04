@@ -94,7 +94,8 @@ Route::get('/cron/mail/insertSuggestOC', 'Api\MailController@insertSuggestOption
 
 
 //Insert Others
-Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
+// customer request
+// Route::get('/cron/mail/insertRemindERC', 'Api\MailController@insertRemindExpireRequiredCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindES', 'Api\MailController@insertRemindEducationSchedule')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindLogin', 'Api\MailController@insertRemindLogin')->middleware(['App\Http\Middleware\CheckToken']); //every minute
 Route::get('/cron/mail/insertRemindUC', 'Api\MailController@insertRemindUpcomingCourses')->middleware(['App\Http\Middleware\CheckToken']); //every minute
