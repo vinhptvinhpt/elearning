@@ -143,4 +143,5 @@ Route::group(['prefix' => 'admin', 'middleware' => 'api.auth'], function () {
 //    });
 
 });
+Route::post('/system/user/user_token', 'Backend\SystemController@getUserToken');
 
