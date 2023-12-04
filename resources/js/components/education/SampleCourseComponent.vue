@@ -681,10 +681,10 @@
               document.cookie = cookie_name + "=" + 1 + ";" + expires + ";path=/";
               switch (type){
                 case 1:
-                  window.location.href = domain + "/lms/course/view.php?id=" + id;
+                  window.location.href = domain + "lms/course/view.php?id=" + id;
                   break;
                 case 2:
-                  window.open(domain + "/lms/course/view.php?id=" + id, '_blank');
+                  window.open(domain + "lms/course/view.php?id=" + id, '_blank');
                   break;
               }
             }
