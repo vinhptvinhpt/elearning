@@ -122,3 +122,7 @@
         max-width: 2000px;
     }
 }
+::selection {
+    background-color: transparent;
+    color: inherit;
+}
