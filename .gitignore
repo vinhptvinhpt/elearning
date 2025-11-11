@@ -14,3 +14,16 @@ Homestead.yaml
 .vscode
 package-lock.json
 /public/lms/config.php
+
+# Dependency files & logs
+package-lock.json
+npm-debug.log
+yarn-error.log
+
+# Laravel generated files and keys
+/storage/*.key
+/bootstrap/cache/*.php
+/storage/framework/cache/*
+/storage/framework/sessions/*
+/storage/framework/views/*
+/storage/logs/*
